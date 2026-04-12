@@ -1,5 +1,5 @@
 [package]
-name = "rule_preprocessor"
+name = "rule-preprocessor"
 version = "0.1.0"
 edition = "2024"
 

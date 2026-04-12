@@ -76,7 +76,7 @@ function(write_rust_toolchain DIR)
   endif()
 endfunction()
 
-# rule_preprocessor uses nightly
+# rule-preprocessor uses nightly
 foreach(_dir libcc2rs rules)
   write_rust_toolchain(${CMAKE_SOURCE_DIR}/${_dir})
 endforeach()
@@ -97,7 +97,7 @@ file(GLOB_RECURSE ALL_CXX_SOURCES
 add_custom_target("format"
                   COMMAND ${CLANG_FORMAT} -i ${ALL_CXX_SOURCES}
                   COMMAND rustup run ${RUST_STABLE_VERSION} cargo fmt --manifest-path ${PROJECT_SOURCE_DIR}/rules/Cargo.toml
-                  COMMAND rustup run ${RUST_STABLE_VERSION} cargo fmt --manifest-path ${PROJECT_SOURCE_DIR}/rule_preprocessor/Cargo.toml
+                  COMMAND rustup run ${RUST_STABLE_VERSION} cargo fmt --manifest-path ${PROJECT_SOURCE_DIR}/rule-preprocessor/Cargo.toml
                   COMMAND rustup run ${RUST_STABLE_VERSION} cargo fmt --manifest-path ${PROJECT_SOURCE_DIR}/libcc2rs/Cargo.toml
                   DEPENDS "install-rust-toolchain"
                   COMMENT "Running clang-format and cargo fmt on all source files"
@@ -141,13 +141,13 @@ add_custom_target("check"
 add_custom_target("gen-rules"
                   COMMAND find ${PROJECT_SOURCE_DIR}/rules -name "ir*.json" -delete
                   COMMAND cargo build
-                  COMMAND ${CMAKE_COMMAND} -E chdir ${PROJECT_SOURCE_DIR}/rule_preprocessor
+                  COMMAND ${CMAKE_COMMAND} -E chdir ${PROJECT_SOURCE_DIR}/rule-preprocessor
                           ${CMAKE_COMMAND} -E env
-                              CARGO_TARGET_DIR=${PROJECT_SOURCE_DIR}/rule_preprocessor/target
+                              CARGO_TARGET_DIR=${PROJECT_SOURCE_DIR}/rule-preprocessor/target
                               cargo clean
-                  COMMAND ${CMAKE_COMMAND} -E chdir ${PROJECT_SOURCE_DIR}/rule_preprocessor
+                  COMMAND ${CMAKE_COMMAND} -E chdir ${PROJECT_SOURCE_DIR}/rule-preprocessor
                           ${CMAKE_COMMAND} -E env
-                              CARGO_TARGET_DIR=${PROJECT_SOURCE_DIR}/rule_preprocessor/target
+                              CARGO_TARGET_DIR=${PROJECT_SOURCE_DIR}/rule-preprocessor/target
                               cargo run
                   WORKING_DIRECTORY "${PROJECT_SOURCE_DIR}/rules"
                   DEPENDS install-rust-toolchain
