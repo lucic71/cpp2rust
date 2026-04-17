@@ -383,9 +383,15 @@ bool Converter::ConvertVarDeclSkipInit(clang::VarDecl *decl) {
       return false;
     }
     StrCat(AccessSpecifierAsString(decl->getAccess()), keyword::kStatic);
+    if (!qual_type.isConstQualified()) {
+      StrCat(keyword_mut_);
+    }
     ENSURE(decl_ids_.insert(GetID(decl)).second);
   } else if (decl->isStaticLocal()) {
     StrCat(keyword::kStatic);
+    if (!qual_type.isConstQualified()) {
+      StrCat(keyword_mut_);
+    }
   } else if (decl->isLocalVarDecl()) {
     StrCat(keyword::kLet);
   }
@@ -2679,18 +2685,18 @@ std::string Converter::GetDefaultAsString(clang::QualType qual_type) {
 }
 
 std::string Converter::GetDefaultAsStringFallback(clang::QualType qual_type) {
-  static llvm::DenseMap<unsigned, std::string> default_for_type = {
-      {clang::BuiltinType::Char_U, "0_u8"},
-      {clang::BuiltinType::SChar, "0_i8"},
-      {clang::BuiltinType::UChar, "0_u8"},
-  };
-
   qual_type = qual_type.getUnqualifiedType().getCanonicalType();
-  if (auto builtin = qual_type->getAs<clang::BuiltinType>()) {
-    auto it = default_for_type.find(builtin->getKind());
-    if (it != default_for_type.end()) {
-      return it->second;
-    }
+
+  if (qual_type->isBooleanType()) {
+    return "false";
+  }
+
+  if (qual_type->isIntegerType() && !qual_type->isEnumeralType()) {
+    return std::format("0_{}", ToString(qual_type));
+  }
+
+  if (qual_type->isFloatingType()) {
+    return std::format("0.0_{}", ToString(qual_type));
   }
 
   return std::format("<{}>::default()", ToString(qual_type));
