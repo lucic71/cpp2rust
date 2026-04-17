@@ -13,6 +13,14 @@ def read_rust_version():
   with open(toolchain_path, 'rb') as f:
     return tomli.load(f)['toolchain']['channel']
 
+def shared_target_dir():
+  return os.path.abspath(os.path.join(
+      os.path.dirname(__file__),
+      '../../../../build/tmp/cargo-target'))
+
+def cargo_env():
+  return dict(os.environ, CARGO_TARGET_DIR=os.path.abspath(shared_target_dir()))
+
 class Cpp2RustTest(TestFormat):
   def __init__(self):
     self.regex_xfail = re.compile(r"//\s*XFAIL:\s*(.*)")
@@ -120,24 +128,31 @@ class Cpp2RustTest(TestFormat):
         fromfile='expected', tofile='generated'))
       return fail('different output\n' + diff)
 
+    pkg_name = "test_" + re.sub(r'[^a-zA-Z0-9_]', '_', os.path.basename(tmp_dir))
+
     # Check if we can compile the rust file
     with open(tmp_dir + "/rust-toolchain.toml", 'w') as f:
       f.write(f'[toolchain]\nchannel = "{self.rust_version}"\n')
     with open(tmp_dir + "/Cargo.toml", 'w') as f:
       f.write(f"""
 [package]
-name = "test"
+name = "{pkg_name}"
 version = "0.1.0"
 edition = "2021"
 rust-version = "{self.rust_version}"
 
+[[bin]]
+name = "{pkg_name}"
+path = "src/main.rs"
+
 [dependencies]
 libc = "0.2.169"
 libcc2rs = {{ path = "../../../libcc2rs" }}
+rules = {{ path = "../../../rules" }}
 """)
 
     cmd = ['cargo', 'build', '--release', '--quiet']
-    _, err, returncode = lit.util.executeCommand(cmd, tmp_dir)
+    _, err, returncode = lit.util.executeCommand(cmd, tmp_dir, env=cargo_env())
     if should_not_compile:
       if returncode != 0:
         shutil.rmtree(tmp_dir, True)
@@ -146,7 +161,7 @@ libcc2rs = {{ path = "../../../libcc2rs" }}
     if returncode != 0:
       return fail('cargo failed\n' + err)
 
-    rust_bin = tmp_dir + "/target/release/test"
+    rust_bin = os.path.join(shared_target_dir(), "release", pkg_name)
 
     if not skip_run:
       if should_panic:
