@@ -133,7 +133,7 @@ std::string ConverterRefCount::BoxValue(std::string &&str) const {
 }
 
 bool ConverterRefCount::Convert(clang::QualType qual_type) {
-  // Detect va_list before desugaring strips the typedef.
+  // Catch va_list before desugaring
   if (IsVaListType(qual_type)) {
     StrCat(BoxType("VaList"));
     return false;
