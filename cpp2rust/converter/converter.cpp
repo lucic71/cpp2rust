@@ -63,15 +63,15 @@ bool Converter::VisitRecoveryExpr(clang::RecoveryExpr *expr) {
 }
 
 bool Converter::Convert(clang::QualType qual_type) {
-  if (Mapper::Contains(qual_type) &&
-      Mapper::Map(qual_type) != ignore_rule_type_) {
-    StrCat(Mapper::Map(qual_type));
-    return false;
-  }
-
   // Catch va_list before desugaring
   if (IsVaListType(qual_type)) {
     StrCat("VaList");
+    return false;
+  }
+
+  if (Mapper::Contains(qual_type) &&
+      Mapper::Map(qual_type) != ignore_rule_type_) {
+    StrCat(Mapper::Map(qual_type));
     return false;
   }
 
