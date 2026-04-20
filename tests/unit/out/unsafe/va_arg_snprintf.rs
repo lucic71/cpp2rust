@@ -13,7 +13,7 @@ pub unsafe fn extract_first_0(
     mut fmt: *const u8,
     args: &[VaArg],
 ) -> i32 {
-    let mut ap: VaList = <VaList>::default();
+    let mut ap: VaList = VaList::default();
     ap = VaList::new(args);
     let mut n: i32 = ap.arg::<i32>();
     (*buf.offset((0) as isize)) = (n as u8);
