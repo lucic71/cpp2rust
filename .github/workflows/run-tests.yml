@@ -76,21 +76,42 @@ jobs:
           shopt -s nullglob
           MAX="${REPRO_MAX_ITERATIONS}"
           last_rc=0
+          # core_pattern is /cores/core.%e.%p.%t, where %e is the executable
+          # name truncated to 15 chars (TASK_COMM_LEN-1). UB tests compile to
+          # Rust binaries named test_ub<N>_<model> (truncated to test_ub<N>_<x>)
+          # and may segfault by design - those are expected and get discarded.
+          # Anything else (cpp2rust itself, or a non-UB test binary) is a real
+          # crash we want to capture.
+          is_expected_ub_core() {
+            local base exe
+            base=$(basename "$1")
+            exe=${base#core.}
+            exe=${exe%%.*}
+            [[ $exe == test_ub* ]]
+          }
           for i in $(seq 1 "$MAX"); do
             echo "::group::iteration $i / $MAX"
             ninja check-unit
             last_rc=$?
             echo "::endgroup::"
             if [[ "$RUNNER_OS" == "Linux" ]]; then
-              cores=( /cores/core.* )
-              if (( ${#cores[@]} > 0 )); then
-                echo "got a core on iteration $i (check-unit rc=$last_rc)"
-                printf '%s\n' "${cores[@]}"
+              real_cores=()
+              for c in /cores/core.*; do
+                if is_expected_ub_core "$c"; then
+                  echo "ignoring expected UB-test core: $(basename "$c")"
+                  rm -f "$c"
+                else
+                  real_cores+=( "$c" )
+                fi
+              done
+              if (( ${#real_cores[@]} > 0 )); then
+                echo "got a real core on iteration $i (check-unit rc=$last_rc)"
+                printf '%s\n' "${real_cores[@]}"
                 exit 1
               fi
             fi
             if (( last_rc != 0 )); then
-              echo "iteration $i failed with rc=$last_rc but no core captured - continuing"
+              echo "iteration $i failed with rc=$last_rc but no real core captured - continuing"
             fi
           done
           # Mirror original semantics: fail the step if the last run failed,
