@@ -39,6 +39,21 @@ jobs:
       - name: Install Python dependencies
         run: pip install tomli
 
+      - name: Install gdb (Linux)
+        if: runner.os == 'Linux'
+        run: sudo apt-get install -y gdb
+
+      - name: Enable core dumps (Linux)
+        if: runner.os == 'Linux'
+        run: |
+          sudo mkdir -p /cores
+          sudo chmod 1777 /cores
+          sudo sysctl -w kernel.core_pattern='/cores/core.%e.%p.%t'
+          sudo sysctl -w kernel.core_uses_pid=1
+          sudo systemctl stop apport.service 2>/dev/null || true
+          sudo systemctl stop apport.socket 2>/dev/null || true
+          cat /proc/sys/kernel/core_pattern
+
       - name: Configure
         run: |
           mkdir build && cd build
@@ -50,9 +65,74 @@ jobs:
         run: ninja
         working-directory: build
 
-      - name: Run unit tests
-        run: ninja check
+      - name: Run unit tests (loop until segfault or cap)
         working-directory: build
+        shell: bash
+        env:
+          REPRO_MAX_ITERATIONS: "50"
+        run: |
+          set +e
+          ulimit -c unlimited 2>/dev/null || true
+          shopt -s nullglob
+          MAX="${REPRO_MAX_ITERATIONS}"
+          last_rc=0
+          for i in $(seq 1 "$MAX"); do
+            echo "::group::iteration $i / $MAX"
+            ninja check-unit
+            last_rc=$?
+            echo "::endgroup::"
+            if [[ "$RUNNER_OS" == "Linux" ]]; then
+              cores=( /cores/core.* )
+              if (( ${#cores[@]} > 0 )); then
+                echo "got a core on iteration $i (check-unit rc=$last_rc)"
+                printf '%s\n' "${cores[@]}"
+                exit 1
+              fi
+            fi
+            if (( last_rc != 0 )); then
+              echo "iteration $i failed with rc=$last_rc but no core captured - continuing"
+            fi
+          done
+          # Mirror original semantics: fail the step if the last run failed,
+          # even without a core dump.
+          exit $last_rc
+
+      - name: Generate backtraces from cores (Linux)
+        if: failure() && runner.os == 'Linux'
+        shell: bash
+        run: |
+          set -x
+          ls -la /cores || true
+          shopt -s nullglob
+          for core in /cores/core.*; do
+            echo "=== $core ==="
+            gdb -batch \
+                -ex "set pagination off" \
+                -ex "thread apply all bt full" \
+                -ex "info registers" \
+                -ex "info sharedlibrary" \
+                ./cpp2rust/cpp2rust "$core" 2>&1 | tee "${core}.bt.txt" || true
+          done
+        working-directory: build
+
+      - name: Package binary + cores for local gdb (Linux)
+        if: failure() && runner.os == 'Linux'
+        shell: bash
+        run: |
+          mkdir -p /tmp/repro-bundle
+          cp -v ./build/cpp2rust/cpp2rust /tmp/repro-bundle/ || true
+          find ./build -maxdepth 4 -name 'libcc2rs*' -exec cp -v {} /tmp/repro-bundle/ \; || true
+          cp -v /cores/core.* /tmp/repro-bundle/ 2>/dev/null || true
+          ls -la /tmp/repro-bundle
+
+      - name: Upload coredump bundle
+        if: failure() && runner.os == 'Linux'
+        uses: actions/upload-artifact@v4
+        with:
+          name: segfault-repro-${{ matrix.os }}-${{ matrix.build_type }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: /tmp/repro-bundle/**
+          if-no-files-found: warn
+          retention-days: 7
 
       - name: Check rules
         run: ninja check-rules
