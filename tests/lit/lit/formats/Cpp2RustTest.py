@@ -172,7 +172,10 @@ rules = {{ path = "../../../rules" }}
       elif is_nondet_result:
         lit.util.executeCommand(rust_bin)
       else:
-        cc = 'clang' if cc_input.endswith('.c') else 'clang++'
+        if cc_input.endswith('.c'):
+          cc = os.environ.get('CC', 'clang')
+        else:
+          cc = os.environ.get('CXX', 'clang++')
         cmd = [cc, '-O3', '-o', tmp_dir + '/cpp', cc_input]
         _, _, code = lit.util.executeCommand(cmd)
         if code != 0:
