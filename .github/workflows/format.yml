@@ -50,13 +50,13 @@ jobs:
           cargo fmt --manifest-path libcc2rs/Cargo.toml
           find tests -name '*.rs' -print0 | xargs -0 rustfmt
 
-      - name: Capture diff for later auto-commit
+      - name: Capture diff for later suggestion posting
         id: diff
         if: github.event_name == 'pull_request'
         run: |
           git diff > /tmp/format.diff
-          echo "${{ github.event.pull_request.head.repo.full_name }}" > /tmp/head-repo.txt
-          echo "${{ github.event.pull_request.head.ref }}" > /tmp/head-branch.txt
+          echo "${{ github.event.pull_request.number }}" > /tmp/pr-number.txt
+          echo "${{ github.event.pull_request.head.sha }}" > /tmp/head-sha.txt
           if [ -s /tmp/format.diff ]; then
             echo "has_diff=true" >> "$GITHUB_OUTPUT"
           else
@@ -70,8 +70,8 @@ jobs:
           name: format-diff
           path: |
             /tmp/format.diff
-            /tmp/head-repo.txt
-            /tmp/head-branch.txt
+            /tmp/pr-number.txt
+            /tmp/head-sha.txt
           retention-days: 1
 
       - name: Check C++ formatting

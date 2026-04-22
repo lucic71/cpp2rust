@@ -6,11 +6,12 @@ on:
     types: [completed]
 
 jobs:
-  apply:
+  suggest:
     runs-on: ubuntu-latest
     if: github.event.workflow_run.event == 'pull_request'
     permissions:
-      contents: write
+      contents: read
+      pull-requests: write
 
     steps:
       - name: Download diff artifact
@@ -21,23 +22,26 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           path: ${{ runner.temp }}/format-diff
 
-      - name: Read PR head
-        id: head
+      - name: Read PR metadata
+        id: meta
         run: |
-          echo "repo=$(cat ${{ runner.temp }}/format-diff/head-repo.txt)" >> "$GITHUB_OUTPUT"
-          echo "branch=$(cat ${{ runner.temp }}/format-diff/head-branch.txt)" >> "$GITHUB_OUTPUT"
+          echo "number=$(cat ${{ runner.temp }}/format-diff/pr-number.txt)" >> "$GITHUB_OUTPUT"
+          echo "sha=$(cat ${{ runner.temp }}/format-diff/head-sha.txt)" >> "$GITHUB_OUTPUT"
 
-      - name: Checkout PR head
+      - name: Checkout base repo at PR head
         uses: actions/checkout@v6
         with:
-          repository: ${{ steps.head.outputs.repo }}
-          ref: ${{ steps.head.outputs.branch }}
-          token: ${{ secrets.GITHUB_TOKEN }}
+          ref: ${{ steps.meta.outputs.sha }}
 
-      - name: Apply diff
+      - name: Replay diff in working tree
         run: git apply ${{ runner.temp }}/format-diff/format.diff
 
-      - name: Commit and push
-        uses: stefanzweifel/git-auto-commit-action@v5
+      - name: Post suggestions
+        uses: reviewdog/action-suggester@v1
+        env:
+          CI_PULL_REQUEST: ${{ steps.meta.outputs.number }}
+          CI_COMMIT: ${{ steps.meta.outputs.sha }}
+          REVIEWDOG_GITHUB_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          commit_message: "Automatically apply formatting and lint fixes"
+          tool_name: format
+          filter_mode: nofilter
