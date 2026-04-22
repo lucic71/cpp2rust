@@ -36,11 +36,23 @@ jobs:
       - name: Replay diff in working tree
         run: git apply ${{ runner.temp }}/format-diff/format.diff
 
+      - name: Fabricate a pull_request event for reviewdog
+        run: |
+          cat > ${{ runner.temp }}/pr-event.json <<EOF
+          {
+            "number": ${{ steps.meta.outputs.number }},
+            "pull_request": {
+              "number": ${{ steps.meta.outputs.number }},
+              "head": { "sha": "${{ steps.meta.outputs.sha }}" }
+            }
+          }
+          EOF
+          echo "GITHUB_EVENT_NAME=pull_request" >> $GITHUB_ENV
+          echo "GITHUB_EVENT_PATH=${{ runner.temp }}/pr-event.json" >> $GITHUB_ENV
+
       - name: Post suggestions
         uses: reviewdog/action-suggester@v1
         env:
-          CI_PULL_REQUEST: ${{ steps.meta.outputs.number }}
-          CI_COMMIT: ${{ steps.meta.outputs.sha }}
           REVIEWDOG_GITHUB_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tool_name: format
