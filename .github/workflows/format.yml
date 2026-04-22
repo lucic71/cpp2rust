@@ -55,8 +55,7 @@ jobs:
         if: github.event_name == 'pull_request'
         run: |
           git diff > /tmp/format.diff
-          echo "${{ github.event.pull_request.number }}" > /tmp/pr-number.txt
-          echo "${{ github.event.pull_request.head.sha }}" > /tmp/head-sha.txt
+          cp "$GITHUB_EVENT_PATH" /tmp/pr-event.json
           if [ -s /tmp/format.diff ]; then
             echo "has_diff=true" >> "$GITHUB_OUTPUT"
           else
@@ -70,8 +69,7 @@ jobs:
           name: format-diff
           path: |
             /tmp/format.diff
-            /tmp/pr-number.txt
-            /tmp/head-sha.txt
+            /tmp/pr-event.json
           retention-days: 1
 
       - name: Check C++ formatting

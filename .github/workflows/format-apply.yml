@@ -22,11 +22,11 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           path: ${{ runner.temp }}/format-diff
 
-      - name: Read PR metadata
+      - name: Extract head SHA from event
         id: meta
         run: |
-          echo "number=$(cat ${{ runner.temp }}/format-diff/pr-number.txt)" >> "$GITHUB_OUTPUT"
-          echo "sha=$(cat ${{ runner.temp }}/format-diff/head-sha.txt)" >> "$GITHUB_OUTPUT"
+          sha=$(jq -r '.pull_request.head.sha' ${{ runner.temp }}/format-diff/pr-event.json)
+          echo "sha=$sha" >> "$GITHUB_OUTPUT"
 
       - name: Checkout base repo at PR head
         uses: actions/checkout@v6
@@ -36,19 +36,8 @@ jobs:
       - name: Replay diff in working tree
         run: git apply ${{ runner.temp }}/format-diff/format.diff
 
-      - name: Fabricate a pull_request event for reviewdog
-        run: |
-          cat > ${{ runner.temp }}/pr-event.json <<EOF
-          {
-            "number": ${{ steps.meta.outputs.number }},
-            "pull_request": {
-              "number": ${{ steps.meta.outputs.number }},
-              "head": { "sha": "${{ steps.meta.outputs.sha }}" }
-            }
-          }
-          EOF
-          echo "GITHUB_EVENT_NAME=pull_request" >> $GITHUB_ENV
-          echo "GITHUB_EVENT_PATH=${{ runner.temp }}/pr-event.json" >> $GITHUB_ENV
+      - name: Overwrite the runner's event file with the PR event
+        run: cp ${{ runner.temp }}/format-diff/pr-event.json "$GITHUB_EVENT_PATH"
 
       - name: Post suggestions
         uses: reviewdog/action-suggester@v1
