@@ -1056,7 +1056,7 @@ std::vector<Rule> Load(const std::filesystem::path &path, Model model) {
   }
 
   auto src_rules = LoadSrc(path);
-  if (src_rules.size() == 0) {
+  if (src_rules.empty()) {
     return {};
   }
   for (auto &[name, src_rule] : src_rules) {
