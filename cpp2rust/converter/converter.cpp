@@ -2621,63 +2621,67 @@ bool Converter::VisitImplicitValueInitExpr(clang::ImplicitValueInitExpr *expr) {
   return false;
 }
 
-static std::unordered_set<clang::SwitchCase *> visited_cases;
+bool Converter::ConvertSwitchCaseCondition(clang::SwitchCase *stmt) {
+  clang::Stmt *cur = stmt;
+  clang::SwitchCase *last = nullptr;
+  bool first = true;
 
-bool Converter::VisitSwitchCase(clang::SwitchCase *stmt) {
-  if (visited_cases.contains(stmt)) {
-    return false;
-  }
-  visited_cases.insert(stmt);
-
-  if (auto case_stmt = clang::dyn_cast<clang::CaseStmt>(stmt)) {
-    Convert(case_stmt->getLHS());
-  }
-
-  if (clang::isa<clang::CaseStmt>(stmt->getSubStmt())) {
-    StrCat("|| v == ");
-  } else {
-    if (clang::isa<clang::CaseStmt>(stmt)) {
-      StrCat(" => {");
-    } else {
-      StrCat("_ => {");
+  while (auto *sc = clang::dyn_cast<clang::SwitchCase>(cur)) {
+    if (auto *case_stmt = clang::dyn_cast<clang::CaseStmt>(sc)) {
+      if (!first) {
+        StrCat("|| v == ");
+      }
+      Convert(case_stmt->getLHS());
     }
+    last = sc;
+    first = false;
+    cur = sc->getSubStmt();
   }
 
-  Convert(stmt->getSubStmt());
+  if (clang::isa<clang::CaseStmt>(last)) {
+    StrCat(" => {");
+  } else /* DefaultStmt */ {
+    StrCat("_ => {");
+  }
   return false;
+}
+
+void Converter::EmitSwitchArm(clang::CompoundStmt *body, clang::SwitchCase *sc,
+                              bool is_default) {
+  if (is_default) {
+    StrCat("_ => {");
+  } else {
+    StrCat("v if v == ");
+    ConvertSwitchCaseCondition(sc);
+  }
+  for (auto *t : GetSwitchCaseBody(body, sc)) {
+    Convert(t);
+  }
+  StrCat("},");
 }
 
 bool Converter::VisitSwitchStmt(clang::SwitchStmt *stmt) {
   PushBreakTarget push(break_target_, BreakTarget::Switch);
+  auto *body = clang::dyn_cast<clang::CompoundStmt>(stmt->getBody());
+  assert(body);
+
   StrCat("'switch: {");
   StrCat(std::format("let __match_cond = {};", ToString(stmt->getCond())));
   StrCat("match __match_cond");
   StrCat("{");
 
-  bool has_default_case = false;
-  auto body = llvm::cast<clang::CompoundStmt>(stmt->getBody());
-  assert(body);
-
-  for (auto it = body->body_begin(), end = body->body_end(); it != end;) {
-    if (auto switch_case = clang::dyn_cast<clang::SwitchCase>(*it)) {
-      if (clang::isa<clang::CaseStmt>(switch_case)) {
-        StrCat("v if v == ");
-      } else {
-        has_default_case = true;
-      }
-      VisitSwitchCase(switch_case);
-      ++it;
+  clang::SwitchCase *default_case = nullptr;
+  for (auto *sc : GetTopLevelSwitchCases(stmt)) {
+    if (SwitchCaseContainsDefault(sc)) {
+      default_case = sc;
+      continue;
     }
-
-    while (it != end && !clang::isa<clang::SwitchCase>(*it)) {
-      Convert(*it);
-      ++it;
-    }
-
-    StrCat("},");
+    EmitSwitchArm(body, sc, /*is_default=*/false);
   }
 
-  if (!has_default_case) {
+  if (default_case) {
+    EmitSwitchArm(body, default_case, /*is_default=*/true);
+  } else {
     StrCat(R"( _ => {})");
   }
 

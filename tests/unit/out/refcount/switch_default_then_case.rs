@@ -6,7 +6,7 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-pub fn default_middle_0(x: i32) -> i32 {
+pub fn default_then_case_0(x: i32) -> i32 {
     let x: Value<i32> = Rc::new(RefCell::new(x));
     let r: Value<i32> = Rc::new(RefCell::new(0));
     'switch: {
@@ -16,12 +16,12 @@ pub fn default_middle_0(x: i32) -> i32 {
                 (*r.borrow_mut()) = 1;
                 break 'switch;
             }
-            v if v == 2 => {
-                (*r.borrow_mut()) = 2;
+            v if v == 3 => {
+                (*r.borrow_mut()) = 3;
                 break 'switch;
             }
             _ => {
-                (*r.borrow_mut()) = 99;
+                (*r.borrow_mut()) = 77;
                 break 'switch;
             }
         }
@@ -35,20 +35,26 @@ fn main_0() -> i32 {
     assert!(
         (({
             let _x: i32 = 1;
-            default_middle_0(_x)
+            default_then_case_0(_x)
         }) == 1)
     );
     assert!(
         (({
             let _x: i32 = 2;
-            default_middle_0(_x)
-        }) == 2)
+            default_then_case_0(_x)
+        }) == 77)
+    );
+    assert!(
+        (({
+            let _x: i32 = 3;
+            default_then_case_0(_x)
+        }) == 3)
     );
     assert!(
         (({
             let _x: i32 = 99;
-            default_middle_0(_x)
-        }) == 99)
+            default_then_case_0(_x)
+        }) == 77)
     );
     return 0;
 }

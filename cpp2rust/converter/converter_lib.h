@@ -155,6 +155,14 @@ bool ContainsVAArgExpr(const clang::Stmt *stmt);
 
 clang::Expr *CreateConversionToBool(clang::Expr *expr, clang::ASTContext &ctx);
 
+std::vector<clang::SwitchCase *>
+GetTopLevelSwitchCases(clang::SwitchStmt *stmt);
+
+bool SwitchCaseContainsDefault(clang::SwitchCase *c);
+
+std::vector<clang::Stmt *> GetSwitchCaseBody(clang::CompoundStmt *body,
+                                             clang::SwitchCase *head);
+
 void Unwrap(std::string &s, std::string_view prefix, std::string_view suffix);
 
 } // namespace cpp2rust
