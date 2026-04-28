@@ -1707,6 +1707,10 @@ std::string Converter::GetEscapedStringLiteral(clang::Expr *expr,
 
 bool Converter::VisitStringLiteral(clang::StringLiteral *expr) {
   StrCat(std::format("b{}.as_ptr()", GetEscapedStringLiteral(expr, true)));
+  // In C, string literals are char[], in C++ they are const char[]
+  if (!expr->getType().isConstQualified()) {
+    StrCat(".cast_mut()");
+  }
   return false;
 }
 
@@ -1726,27 +1730,27 @@ bool Converter::VisitImplicitCastExpr(clang::ImplicitCastExpr *expr) {
     SetValueFreshness(type);
     break;
   }
-  case clang::CastKind::CK_ArrayToPointerDecay:
-    if (clang::isa<clang::StringLiteral>(sub_expr) ||
-        clang::isa<clang::PredefinedExpr>(sub_expr)) {
-      Convert(sub_expr);
-      if (IsConversionFromStringLiteralToCharPtr(expr)) {
-        StrCat(".cast_mut()");
-      }
-      return false;
-    }
+  case clang::CastKind::CK_ArrayToPointerDecay: {
     // __va_list_tag [1] decays to __va_list_tag *. Just pass through by value
     if (IsVaListType(sub_expr->getType())) {
       Convert(sub_expr);
       break;
     }
     Convert(sub_expr);
-    if (sub_expr->getType().isConstQualified()) {
-      StrCat(keyword_ptr_decay_const_);
-    } else {
-      StrCat(keyword_ptr_decay_);
+    switch (GetConstCastType(
+        expr->getType()->getPointeeType(),
+        sub_expr->getType()->getAsArrayTypeUnsafe()->getElementType())) {
+    case ConstCastType::MutableToConst:
+      StrCat(".cast_const()");
+      break;
+    case ConstCastType::ConstToMutable:
+      StrCat(".cast_mut()");
+      break;
+    default:
+      break;
     }
     break;
+  }
   case clang::CastKind::CK_BitCast: {
     PushParen paren(*this);
     Convert(sub_expr);
@@ -1760,8 +1764,19 @@ bool Converter::VisitImplicitCastExpr(clang::ImplicitCastExpr *expr) {
   }
   case clang::CastKind::CK_NoOp: {
     Convert(sub_expr);
-    if (IsConversionFromStringLiteralToCharPtr(expr)) {
-      StrCat(".cast_mut()");
+    if (expr->getType()->isPointerType() &&
+        sub_expr->getType()->isPointerType()) {
+      switch (GetConstCastType(expr->getType()->getPointeeType(),
+                               sub_expr->getType()->getPointeeType())) {
+      case ConstCastType::MutableToConst:
+        StrCat(".cast_const()");
+        break;
+      case ConstCastType::ConstToMutable:
+        StrCat(".cast_mut()");
+        break;
+      default:
+        break;
+      }
     }
     break;
   }
