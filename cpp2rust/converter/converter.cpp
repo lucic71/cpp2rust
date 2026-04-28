@@ -1729,7 +1729,11 @@ bool Converter::VisitImplicitCastExpr(clang::ImplicitCastExpr *expr) {
   case clang::CastKind::CK_ArrayToPointerDecay:
     if (clang::isa<clang::StringLiteral>(sub_expr) ||
         clang::isa<clang::PredefinedExpr>(sub_expr)) {
-      return Convert(sub_expr);
+      Convert(sub_expr);
+      if (IsConversionFromStringLiteralToCharPtr(expr)) {
+        StrCat(".cast_mut()");
+      }
+      return false;
     }
     // __va_list_tag [1] decays to __va_list_tag *. Just pass through by value
     if (IsVaListType(sub_expr->getType())) {
