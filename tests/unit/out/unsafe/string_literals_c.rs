@@ -18,9 +18,13 @@ unsafe fn main_0() -> i32 {
         b"b\0".as_ptr().cast_mut(),
         b"c\0".as_ptr().cast_mut(),
     ];
-    let mut immutable_strings: [*const u8; 3] = [b"a\0".as_ptr(), b"b\0".as_ptr(), b"c\0".as_ptr()];
+    let mut immutable_strings: [*const u8; 3] = [
+        b"a\0".as_ptr().cast_mut(),
+        b"b\0".as_ptr().cast_mut(),
+        b"c\0".as_ptr().cast_mut(),
+    ];
     let mut mutable_string: *mut u8 = b"hello\0".as_ptr().cast_mut();
-    let mut immutable_string: *const u8 = b"hello\0".as_ptr();
+    let mut immutable_string: *const u8 = b"hello\0".as_ptr().cast_mut();
     (unsafe {
         let _str: *mut u8 = b"world\0".as_ptr().cast_mut();
         foo_0(_str)
