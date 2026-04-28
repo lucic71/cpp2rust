@@ -1,7 +1,7 @@
 void foo(char *str) {}
 
 int main() {
-  // warning: ISO C++11 does not allow conversion from string literal to 'char *' [-Wwritable-strings]
+  // -Wwritable-strings warning triggered
   char *mutable_strings[] = {"a", "b", "c"};
   const char *immutable_strings[] = {"a", "b", "c"};
 
@@ -10,6 +10,6 @@ int main() {
 
   foo("world");
   foo(mutable_string);
-  // This is not allowed, only string literals to char* are allowed: foo(immutable_string);
+  // Calling foo with immutable_string is an error, not an warning
   return 0;
 }
