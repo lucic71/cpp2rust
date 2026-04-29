@@ -548,7 +548,7 @@ std::string mapTypeStringRecursive(const std::string &cpp_type) {
 
 std::string normalizeTranslationRule(std::string rule) {
   const std::array<std::pair<std::regex, std::string>, 2> normalization_rules{{
-      // Dettach pointer from double reference. Useful for matching translation
+      // Detach pointer from double reference. Useful for matching translation
       // rules.
       {std::regex(R"(\*\&\&)"), "* &&"},
       // Ignore constant template parameters, i.e. replace them with _.
@@ -674,7 +674,7 @@ bool ParamIsPointer(const clang::Expr *expr, unsigned index) {
 
 void AddRuleForUserDefinedType(clang::NamedDecl *decl) {
   auto cpp_name = ToString(decl);
-  auto rs_name = std::regex_replace(cpp_name, std::regex("::"), "_");
+  auto rs_name = ReplaceAll(cpp_name, "::", "_");
 
   if (types_.contains(cpp_name)) {
     return;
