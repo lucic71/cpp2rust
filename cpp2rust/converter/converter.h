@@ -286,6 +286,8 @@ public:
   virtual bool
   VisitUnaryExprOrTypeTraitExpr(clang::UnaryExprOrTypeTraitExpr *expr);
 
+  virtual bool VisitTypeTraitExpr(clang::TypeTraitExpr *expr);
+
   virtual bool VisitEnumDecl(clang::EnumDecl *decl);
 
   virtual bool VisitCXXDefaultArgExpr(clang::CXXDefaultArgExpr *expr);
