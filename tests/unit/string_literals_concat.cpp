@@ -8,13 +8,16 @@ int main() {
   assert(joined[5] == '\n');
   assert(joined[6] == 'b');
 
-  char arr[] = "foo" "bar";
+  char arr[] = "foo"
+               "bar";
   assert(arr[0] == 'f');
   assert(arr[3] == 'b');
   assert(arr[5] == 'r');
   assert(arr[6] == '\0');
 
-  const char *split_pieces = "abc" "def" "ghi";
+  const char *split_pieces = "abc"
+                             "def"
+                             "ghi";
   assert(split_pieces[0] == 'a');
   assert(split_pieces[3] == 'd');
   assert(split_pieces[6] == 'g');
