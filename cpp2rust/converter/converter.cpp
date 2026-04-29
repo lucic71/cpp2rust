@@ -1707,15 +1707,20 @@ std::string Converter::GetEscapedStringLiteral(clang::Expr *expr,
 
 bool Converter::VisitStringLiteral(clang::StringLiteral *expr) {
   if (!curr_init_type_.empty() && curr_init_type_.top()->isArrayType()) {
-    StrCat(token::kStar);
     if (auto *arr_ty = ctx_.getAsConstantArrayType(curr_init_type_.top())) {
-      uint64_t target = arr_ty->getSize().getZExtValue();
-      uint64_t pad = target > expr->getString().size()
-                         ? target - expr->getString().size()
+      uint64_t arr_size = arr_ty->getSize().getZExtValue();
+      if (expr->getString().empty()) {
+        StrCat(std::format("[0u8; {}]", arr_size));
+        return false;
+      }
+      uint64_t pad = arr_size > expr->getString().size()
+                         ? arr_size - expr->getString().size()
                          : 0;
-      StrCat(std::format("b{}", GetEscapedStringLiteral(expr, pad)));
+      StrCat(token::kStar,
+             std::format("b{}", GetEscapedStringLiteral(expr, pad)));
       return false;
     }
+    StrCat(token::kStar);
   }
   StrCat(std::format("b{}", GetEscapedStringLiteral(expr, 1)));
   return false;

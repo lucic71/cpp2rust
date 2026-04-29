@@ -949,9 +949,13 @@ bool ConverterRefCount::VisitStringLiteral(clang::StringLiteral *expr) {
   if (!curr_init_type_.empty() && curr_init_type_.top()->isArrayType()) {
     uint64_t pad = 1;
     if (auto *arr_ty = ctx_.getAsConstantArrayType(curr_init_type_.top())) {
-      uint64_t target = arr_ty->getSize().getZExtValue();
-      pad = target > expr->getString().size()
-                ? target - expr->getString().size()
+      uint64_t arr_size = arr_ty->getSize().getZExtValue();
+      if (expr->getString().empty()) {
+        StrCat(std::format("vec![0u8; {}].into_boxed_slice()", arr_size));
+        return false;
+      }
+      pad = arr_size > expr->getString().size()
+                ? arr_size - expr->getString().size()
                 : 0;
     }
     StrCat(std::format("Box::<[u8]>::from(b{}.as_slice())",
