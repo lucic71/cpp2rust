@@ -2599,6 +2599,14 @@ bool Converter::VisitUnaryExprOrTypeTraitExpr(
   return false;
 }
 
+bool Converter::VisitTypeTraitExpr(clang::TypeTraitExpr *expr) {
+  clang::Expr::EvalResult result;
+  ENSURE(expr->EvaluateAsInt(result, ctx_));
+  StrCat(std::to_string(result.Val.getInt().getExtValue()));
+  computed_expr_type_ = ComputedExprType::FreshValue;
+  return false;
+}
+
 bool Converter::VisitEnumDecl(clang::EnumDecl *decl) {
   ENSURE(decl_ids_.insert(GetID(decl)).second);
   if (Mapper::Contains(ctx_.getCanonicalTagType(decl))) {
