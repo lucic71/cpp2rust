@@ -13,12 +13,14 @@ enum Choice {
     C_LETTERS = 2,
     C_INTEGERS = 3,
 }
+#[repr(C)]
 #[derive(Copy, Clone, Default)]
 pub struct Branch_anon_0_anon_0 {
     pub items: *mut *mut u8,
     pub count: i64,
     pub cursor: i64,
 }
+#[repr(C)]
 #[derive(Copy, Clone, Default)]
 pub struct Branch_anon_0_anon_1 {
     pub lo: i32,
@@ -26,6 +28,7 @@ pub struct Branch_anon_0_anon_1 {
     pub curr: i32,
     pub step: u8,
 }
+#[repr(C)]
 #[derive(Copy, Clone, Default)]
 pub struct Branch_anon_0_anon_2 {
     pub lo: i64,
@@ -34,12 +37,19 @@ pub struct Branch_anon_0_anon_2 {
     pub step: i64,
     pub width: i32,
 }
-#[derive(Copy, Clone, Default)]
-pub struct Branch_anon_0 {
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub union Branch_anon_0 {
     pub list: Branch_anon_0_anon_0,
     pub letters: Branch_anon_0_anon_1,
     pub integers: Branch_anon_0_anon_2,
 }
+impl Default for Branch_anon_0 {
+    fn default() -> Self {
+        unsafe { std::mem::zeroed() }
+    }
+}
+#[repr(C)]
 #[derive(Copy, Clone, Default)]
 pub struct Branch {
     pub choice: Choice,
