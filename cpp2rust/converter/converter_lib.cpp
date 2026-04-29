@@ -744,6 +744,36 @@ std::vector<clang::Stmt *> GetSwitchCaseBody(clang::CompoundStmt *body,
   return out;
 }
 
+static bool SwitchCaseHasFallthrough(clang::Stmt *stmt) {
+  if (!stmt) {
+    return false;
+  }
+  if (auto *compound = clang::dyn_cast<clang::CompoundStmt>(stmt)) {
+    if (compound->body_empty()) {
+      return true;
+    }
+    return SwitchCaseHasFallthrough(compound->body_back());
+  }
+  if (clang::isa<clang::BreakStmt>(stmt) ||
+      clang::isa<clang::ContinueStmt>(stmt) ||
+      clang::isa<clang::ReturnStmt>(stmt)) {
+    return false;
+  }
+  return true;
+}
+
+bool SwitchHasFallthrough(clang::SwitchStmt *stmt) {
+  if (auto *body = clang::dyn_cast<clang::CompoundStmt>(stmt->getBody())) {
+    for (auto top_level_case : GetTopLevelSwitchCases(stmt)) {
+      auto arm = GetSwitchCaseBody(body, top_level_case);
+      if (arm.empty() || SwitchCaseHasFallthrough(arm.back())) {
+        return true;
+      }
+    }
+  }
+  return false;
+}
+
 static std::string_view Trim(std::string_view s) {
   auto is_space = [](unsigned char c) { return std::isspace(c); };
   auto b = std::find_if_not(s.begin(), s.end(), is_space);

@@ -2706,14 +2706,31 @@ void Converter::EmitSwitchArm(clang::CompoundStmt *body, clang::SwitchCase *sc,
 }
 
 bool Converter::VisitSwitchStmt(clang::SwitchStmt *stmt) {
-  PushBreakTarget push(break_target_, BreakTarget::Switch);
+  bool has_fallthrough = SwitchHasFallthrough(stmt);
+  PushBreakTarget push(break_target_, has_fallthrough
+                                          ? BreakTarget::FallthroughSwitch
+                                          : BreakTarget::Switch);
   auto *body = clang::dyn_cast<clang::CompoundStmt>(stmt->getBody());
   assert(body);
 
-  StrCat("'switch: {");
-  StrCat(std::format("let __match_cond = {};", ToString(stmt->getCond())));
-  StrCat("match __match_cond");
-  StrCat("{");
+  if (has_fallthrough) {
+    // Use the switch-with-fallthrough macro
+    StrCat("switch!");
+  } else {
+    StrCat("'switch:");
+  }
+
+  PushParen switch_macro_paren(*this, has_fallthrough);
+  PushBrace switch_label_brace(*this, !has_fallthrough);
+
+  if (has_fallthrough) {
+    StrCat("match", ToString(stmt->getCond()));
+  } else {
+    StrCat(std::format("let __match_cond = {};", ToString(stmt->getCond())));
+    StrCat("match __match_cond");
+  }
+
+  PushBrace match_brace(*this);
 
   clang::SwitchCase *default_case = nullptr;
   for (auto *sc : GetTopLevelSwitchCases(stmt)) {
@@ -2730,8 +2747,6 @@ bool Converter::VisitSwitchStmt(clang::SwitchStmt *stmt) {
     StrCat(R"( _ => {})");
   }
 
-  StrCat("}");
-  StrCat("}");
   return false;
 }
 

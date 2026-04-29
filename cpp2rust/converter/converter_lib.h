@@ -164,6 +164,8 @@ bool SwitchCaseContainsDefault(clang::SwitchCase *c);
 std::vector<clang::Stmt *> GetSwitchCaseBody(clang::CompoundStmt *body,
                                              clang::SwitchCase *head);
 
+bool SwitchHasFallthrough(clang::SwitchStmt *stmt);
+
 void Unwrap(std::string &s, std::string_view prefix, std::string_view suffix);
 
 std::string ReplaceAll(std::string str, std::string_view from,
