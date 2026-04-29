@@ -1002,19 +1002,13 @@ impl Ptr<u8> {
     pub fn from_string_literal(s: &'static str) -> Self {
         STRING_LITERALS.with(|literals| {
             let mut literals = literals.borrow_mut();
-            if let Some(rc) = literals.get(s) {
-                return Ptr {
-                    offset: 0,
-                    kind: PtrKind::Vec(Rc::downgrade(rc)),
-                };
-            }
-            let rc = Rc::new(RefCell::new({
-                let mut v = s.as_bytes().to_vec();
-                v.push(0);
-                v
+            let weak = Rc::downgrade(literals.entry(s).or_insert_with(|| {
+                Rc::new(RefCell::new({
+                    let mut v = s.as_bytes().to_vec();
+                    v.push(0);
+                    v
+                }))
             }));
-            let weak = Rc::downgrade(&rc);
-            literals.insert(s, rc);
             Ptr {
                 offset: 0,
                 kind: PtrKind::Vec(weak),
