@@ -233,7 +233,7 @@ public:
   std::string GetEscapedUTF8CharLiteral(clang::Expr *expr) const;
 
   std::string GetEscapedStringLiteral(clang::Expr *expr,
-                                      bool add_null_char = false) const;
+                                      uint64_t pad_nulls = 0) const;
   virtual bool VisitStringLiteral(clang::StringLiteral *expr);
 
   virtual bool VisitCXXBoolLiteralExpr(clang::CXXBoolLiteralExpr *expr);

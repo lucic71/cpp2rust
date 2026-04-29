@@ -1689,7 +1689,7 @@ std::string Converter::GetEscapedUTF8CharLiteral(clang::Expr *expr) const {
 }
 
 std::string Converter::GetEscapedStringLiteral(clang::Expr *expr,
-                                               bool add_null_char) const {
+                                               uint64_t pad_nulls) const {
   auto str_expr = clang::dyn_cast<clang::StringLiteral>(expr->IgnoreCasts());
   assert(str_expr);
   auto raw = str_expr->getString();
@@ -1698,7 +1698,7 @@ std::string Converter::GetEscapedStringLiteral(clang::Expr *expr,
   for (unsigned char c : raw) {
     out += GetEscapedCharLiteral(static_cast<char>(c));
   }
-  if (add_null_char) {
+  for (uint64_t i = 0; i < pad_nulls; ++i) {
     out += "\\0";
   }
   out.push_back('"');
@@ -1707,12 +1707,17 @@ std::string Converter::GetEscapedStringLiteral(clang::Expr *expr,
 
 bool Converter::VisitStringLiteral(clang::StringLiteral *expr) {
   if (!curr_init_type_.empty() && curr_init_type_.top()->isArrayType()) {
-    // b"" has type &static [u8; N]. For translating char str[] =
-    // "string_literal"; we need an initializer of type [u8; N]. Dereferencing
-    // the &static [u8; N] achieves this.
     StrCat(token::kStar);
+    if (auto *arr_ty = ctx_.getAsConstantArrayType(curr_init_type_.top())) {
+      uint64_t target = arr_ty->getSize().getZExtValue();
+      uint64_t pad = target > expr->getString().size()
+                         ? target - expr->getString().size()
+                         : 0;
+      StrCat(std::format("b{}", GetEscapedStringLiteral(expr, pad)));
+      return false;
+    }
   }
-  StrCat(std::format("b{}", GetEscapedStringLiteral(expr, true)));
+  StrCat(std::format("b{}", GetEscapedStringLiteral(expr, 1)));
   return false;
 }
 
