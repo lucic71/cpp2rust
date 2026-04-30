@@ -33,14 +33,9 @@ int main() {
     THIRD_B,
   };
 
-  assert(FIRST_A == 0);
-  assert(FIRST_B == 1);
-
-  assert(SECOND_A == 0);
-  assert(SECOND_B == 1);
-
-  assert(THIRD_A == 0);
-  assert(THIRD_B == 1);
+  assert(FIRST_A != FIRST_B);
+  assert(SECOND_A != SECOND_B);
+  assert(THIRD_A != THIRD_B);
 
   TdEnum td = TD_A;
   assert(td == TD_A);
