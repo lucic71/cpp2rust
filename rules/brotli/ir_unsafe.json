@@ -382,5 +382,9 @@
     "init": "std::ptr::null()",
     "type": "*const ::brotli_sys::BrotliDecoderState",
     "is_unsafe_pointer": true
+  },
+  "t5": {
+    "init": "::brotli_sys::BROTLI_DECODER_NO_ERROR",
+    "type": "::brotli_sys::BrotliDecoderErrorCode"
   }
 }

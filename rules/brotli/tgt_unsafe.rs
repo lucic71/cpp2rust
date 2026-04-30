@@ -6,6 +6,7 @@ fn types() {
     let t2: ::brotli_sys::BrotliEncoderMode = ::brotli_sys::BROTLI_MODE_GENERIC;
     let t3: *mut ::brotli_sys::BrotliDecoderState = std::ptr::null_mut();
     let t4: *const ::brotli_sys::BrotliDecoderState = std::ptr::null();
+    let t5: ::brotli_sys::BrotliDecoderErrorCode = ::brotli_sys::BROTLI_DECODER_NO_ERROR;
 }
 
 unsafe fn f1() -> ::brotli_sys::BrotliEncoderMode {
