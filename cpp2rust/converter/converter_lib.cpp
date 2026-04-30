@@ -622,14 +622,31 @@ std::string GetClassName(clang::QualType type) {
   return {};
 }
 
+static bool IsIteratorType(clang::QualType qt) {
+  if (auto *record = qt->getAsCXXRecordDecl()) {
+    for (auto *d : record->decls()) {
+      if (auto *tnd = llvm::dyn_cast<clang::TypedefNameDecl>(d)) {
+        if (tnd->getName() == "iterator_category")
+          return true;
+      }
+    }
+  }
+  return false;
+}
+
 bool IsRedundantCopyInConversion(clang::ASTContext &ctx,
                                  const clang::CXXConstructExpr *expr) {
-  auto parents = ctx.getParentMapContext().getParents(*expr);
-  if (parents.empty()) {
-    return false;
+  if (auto parents = ctx.getParentMapContext().getParents(*expr);
+      !parents.empty()) {
+    if (auto *parent = parents[0].get<clang::CXXConstructExpr>()) {
+      if (parent->getConstructor()->isConvertingConstructor(
+              /* AllowExplicit= */ false)) {
+        return IsIteratorType(expr->getType()) &&
+               IsIteratorType(parent->getType());
+      }
+    }
   }
-  auto *parent = parents[0].get<clang::CXXConstructExpr>();
-  return parent && parent->getConstructor()->isConvertingConstructor(false);
+  return false;
 }
 
 bool IsVaListType(clang::QualType type) {
