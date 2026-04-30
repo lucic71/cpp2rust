@@ -8,6 +8,7 @@ using t1 = BrotliDecoderResult;
 using t2 = BrotliEncoderMode;
 using t3 = BrotliDecoderStateStruct *;
 using t4 = const BrotliDecoderStateStruct *;
+using t5 = BrotliDecoderErrorCode;
 
 BrotliEncoderMode f1() { return BROTLI_MODE_FONT; }
 
