@@ -23,12 +23,12 @@ fn main_0() -> i32 {
     write!(
         libcc2rs::cout(),
         "{:}\n",
-        ((((*i1.borrow()) != (*i2.borrow())) as bool) as u8),
+        (((*i1.borrow()) != (*i2.borrow())) as u8),
     );
     write!(
         libcc2rs::cout(),
         "{:}\n",
-        ((((*i1.borrow()) == (*i2.borrow())) as bool) as u8),
+        (((*i1.borrow()) == (*i2.borrow())) as u8),
     );
     write!(libcc2rs::cout(), "{:}\n", (({ foo_0() }) as u8),);
     write!(libcc2rs::cout(), "{:}\n", (({ bar_1() }) as u8),);

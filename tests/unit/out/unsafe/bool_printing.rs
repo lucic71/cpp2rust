@@ -51,7 +51,7 @@ unsafe fn main_0() -> i32 {
                 .into_raw_fd(),
         ),
         "{:}\n",
-        ((((i1) != (i2)) as bool) as u8),
+        (((i1) != (i2)) as u8),
     );
     write!(
         std::fs::File::from_raw_fd(
@@ -62,7 +62,7 @@ unsafe fn main_0() -> i32 {
                 .into_raw_fd(),
         ),
         "{:}\n",
-        ((((i1) == (i2)) as bool) as u8),
+        (((i1) == (i2)) as u8),
     );
     write!(
         std::fs::File::from_raw_fd(

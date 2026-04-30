@@ -15,5 +15,6 @@ fn main_0() -> i32 {
     let x: Value<u8> = Rc::new(RefCell::new(
         ((*bytes.borrow()).offset((4) as isize).read()),
     ));
+    let _ = (*x.borrow_mut()).clone();
     return 0;
 }
