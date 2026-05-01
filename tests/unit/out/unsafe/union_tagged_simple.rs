@@ -12,6 +12,15 @@ enum Kind {
     KIND_NONE = 0,
     KIND_DONE = 1,
 }
+impl From<i32> for Kind {
+    fn from(n: i32) -> Kind {
+        match n {
+            0 => Kind::KIND_NONE,
+            1 => Kind::KIND_DONE,
+            _ => panic!("invalid Kind value: {}", n),
+        }
+    }
+}
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub union Event_anon_0 {
@@ -38,13 +47,13 @@ pub fn main() {
 unsafe fn main_0() -> i32 {
     let mut dummy: i32 = 0;
     let mut m1: Event = <Event>::default();
-    m1.kind = (Kind::KIND_DONE as Kind);
+    m1.kind = Kind::from((Kind::KIND_DONE as i32) as i32);
     m1.handle = ((&mut dummy as *mut i32) as *mut i32 as *mut ::libc::c_void);
     m1.payload.code = 42;
-    assert!(((m1.kind as u32) == (Kind::KIND_DONE as u32)));
+    assert!(((m1.kind as u32) == ((Kind::KIND_DONE as i32) as u32)));
     assert!(((m1.payload.code) == (42)));
     let mut m2: Event = <Event>::default();
-    m2.kind = (Kind::KIND_NONE as Kind);
+    m2.kind = Kind::from((Kind::KIND_NONE as i32) as i32);
     m2.handle = ((&mut dummy as *mut i32) as *mut i32 as *mut ::libc::c_void);
     m2.payload.obj = ((&mut dummy as *mut i32) as *mut i32 as *mut ::libc::c_void);
     assert!(((m2.payload.obj) == ((&mut dummy as *mut i32) as *mut i32 as *mut ::libc::c_void)));

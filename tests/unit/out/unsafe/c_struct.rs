@@ -31,6 +31,16 @@ enum Color {
     GREEN = 1,
     BLUE = 2,
 }
+impl From<i32> for Color {
+    fn from(n: i32) -> Color {
+        match n {
+            0 => Color::RED,
+            1 => Color::GREEN,
+            2 => Color::BLUE,
+            _ => panic!("invalid Color value: {}", n),
+        }
+    }
+}
 #[repr(C)]
 #[derive(Copy, Clone, Default)]
 pub struct Inner {
@@ -70,15 +80,15 @@ unsafe fn main_0() -> i32 {
     assert!((((*b.next).value) == (1)));
     let mut c: Container = Container {
         inner: Inner { a: 5, b: 6 },
-        color: (Color::GREEN as Color),
+        color: Color::from((Color::GREEN as i32) as i32),
         count: 42,
     };
     assert!(((c.inner.a) == (5)));
     assert!(((c.inner.b) == (6)));
-    assert!(((c.color as u32) == (Color::GREEN as u32)));
+    assert!(((c.color as u32) == ((Color::GREEN as i32) as u32)));
     assert!(((c.count) == (42)));
     let mut c2: Container = <Container>::default();
-    c2.color = (Color::BLUE as Color);
+    c2.color = Color::from((Color::BLUE as i32) as i32);
     assert!(((c2.color as u32) == (2_u32)));
     return 0;
 }

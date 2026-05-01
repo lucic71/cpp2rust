@@ -15,6 +15,18 @@ enum Tag {
     T_FLOAT = 3,
     T_REF = 4,
 }
+impl From<i32> for Tag {
+    fn from(n: i32) -> Tag {
+        match n {
+            0 => Tag::T_NUM_S,
+            1 => Tag::T_NUM_U,
+            2 => Tag::T_TEXT,
+            3 => Tag::T_FLOAT,
+            4 => Tag::T_REF,
+            _ => panic!("invalid Tag value: {}", n),
+        }
+    }
+}
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub union Slot_anon_0 {
@@ -42,24 +54,24 @@ pub fn main() {
 }
 unsafe fn main_0() -> i32 {
     let mut a: Slot = <Slot>::default();
-    a.tag = (Tag::T_NUM_S as Tag);
+    a.tag = Tag::from((Tag::T_NUM_S as i32) as i32);
     a.payload.signed_n = (-7_i32 as i64);
     assert!(((a.payload.signed_n) == (-7_i32 as i64)));
     let mut b: Slot = <Slot>::default();
-    b.tag = (Tag::T_NUM_U as Tag);
+    b.tag = Tag::from((Tag::T_NUM_U as i32) as i32);
     b.payload.unsigned_n = 3735928559_u64;
     assert!(((b.payload.unsigned_n) == (3735928559_u64)));
     let mut c: Slot = <Slot>::default();
-    c.tag = (Tag::T_TEXT as Tag);
+    c.tag = Tag::from((Tag::T_TEXT as i32) as i32);
     c.payload.text = b"hello\0".as_ptr().cast_mut().cast_const();
     assert!((((*c.payload.text.offset((0) as isize)) as i32) == ('h' as i32)));
     let mut d: Slot = <Slot>::default();
-    d.tag = (Tag::T_FLOAT as Tag);
+    d.tag = Tag::from((Tag::T_FLOAT as i32) as i32);
     d.payload.f = 1.5E+0;
     assert!(((d.payload.f) == (1.5E+0)));
     let mut x: i32 = 0;
     let mut e: Slot = <Slot>::default();
-    e.tag = (Tag::T_REF as Tag);
+    e.tag = Tag::from((Tag::T_REF as i32) as i32);
     e.payload.handle = ((&mut x as *mut i32) as *mut i32 as *mut ::libc::c_void);
     assert!(((e.payload.handle) == ((&mut x as *mut i32) as *mut i32 as *mut ::libc::c_void)));
     return 0;
