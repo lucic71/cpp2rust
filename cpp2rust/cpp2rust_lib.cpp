@@ -15,9 +15,11 @@ std::string TranspileSrc(std::string_view cc_code, Model model,
                          const std::vector<std::string_view> &cxx_flags,
                          const std::string &rules_dir,
                          std::string_view filename) {
-  auto tool_args = getPlatformClangFlags();
+  auto tool_args = getPlatformClangBeginFlags();
   tool_args.push_back("-fparse-all-comments");
   tool_args.insert(tool_args.end(), cxx_flags.begin(), cxx_flags.end());
+  auto end_flags = getPlatformClangEndFlags();
+  tool_args.insert(tool_args.end(), end_flags.begin(), end_flags.end());
 
   std::string rs_code;
   clang::tooling::runToolOnCodeWithArgs(
@@ -43,7 +45,10 @@ std::string TranspileDir(std::string_view build_dir, Model model,
 
   clang::tooling::ClangTool Tool(*compile_dbase, files);
   Tool.appendArgumentsAdjuster(clang::tooling::getInsertArgumentAdjuster(
-      getPlatformClangFlags(), clang::tooling::ArgumentInsertPosition::BEGIN));
+      getPlatformClangBeginFlags(),
+      clang::tooling::ArgumentInsertPosition::BEGIN));
+  Tool.appendArgumentsAdjuster(clang::tooling::getInsertArgumentAdjuster(
+      getPlatformClangEndFlags(), clang::tooling::ArgumentInsertPosition::END));
 
   std::string rs_code;
   FrontendActionFactory factory(rs_code, model, rules_dir);

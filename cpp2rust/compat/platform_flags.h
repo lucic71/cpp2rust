@@ -6,15 +6,20 @@
 #include <string>
 #include <vector>
 
-static inline std::vector<std::string> getPlatformClangFlags() {
+static inline std::vector<std::string> getPlatformClangBeginFlags() {
   std::vector<std::string> flags = {
       "-resource-dir=" CLANG_RESOURCE_DIR,
       "-I" COMPAT_INCLUDE_DIR,
       "-D_FORTIFY_SOURCE=0",
-      "-Wno-gnu-include-next",
   };
 #ifdef MACOS_SDK_PATH
   flags.push_back("-isysroot" MACOS_SDK_PATH);
 #endif
   return flags;
+}
+
+static inline std::vector<std::string> getPlatformClangEndFlags() {
+  return {
+      "-Wno-gnu-include-next",
+  };
 }

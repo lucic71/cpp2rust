@@ -846,8 +846,10 @@ TypeRule ParseTypeRuleJSON(const llvm::json::Object &obj) {
 
 void LoadSrc(ExprRules &exprs, TypeRules &types,
              const std::filesystem::path &src_path) {
-  clang::tooling::FixedCompilationDatabase compilations(
-      ".", getPlatformClangFlags());
+  auto flags = getPlatformClangBeginFlags();
+  auto end_flags = getPlatformClangEndFlags();
+  flags.insert(flags.end(), end_flags.begin(), end_flags.end());
+  clang::tooling::FixedCompilationDatabase compilations(".", flags);
   ActionFactory factory(exprs, types);
   clang::tooling::ClangTool tool(compilations, {src_path.string()});
   tool.run(&factory);
