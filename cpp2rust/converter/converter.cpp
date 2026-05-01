@@ -1846,6 +1846,13 @@ bool Converter::VisitImplicitCastExpr(clang::ImplicitCastExpr *expr) {
       Convert(sub_expr);
       break;
     }
+    if (type->isEnumeralType() && !sub_expr->getType()->isEnumeralType()) {
+      StrCat(std::format("{}::from", GetUnsafeTypeAsString(type)));
+      PushParen paren(*this);
+      Convert(sub_expr);
+      StrCat(keyword::kAs, "i32");
+      break;
+    }
     {
       PushParen outer(*this);
       if (clang::isa<clang::BinaryOperator>(sub_expr)) {
@@ -2207,10 +2214,14 @@ std::string Converter::ConvertDeclRefExpr(clang::DeclRefExpr *expr) {
   }
 
   if (auto enum_constant = clang::dyn_cast<clang::EnumConstantDecl>(decl)) {
-    return std::format("{}::{}",
-                       GetRecordName(clang::dyn_cast<clang::EnumDecl>(
-                           enum_constant->getDeclContext())),
-                       std::string_view(enum_constant->getName()));
+    auto qualified = std::format("{}::{}",
+                                 GetRecordName(clang::dyn_cast<clang::EnumDecl>(
+                                     enum_constant->getDeclContext())),
+                                 std::string_view(enum_constant->getName()));
+    if (!expr->getType()->isEnumeralType()) {
+      return std::format("({} as i32)", qualified);
+    }
+    return qualified;
   }
 
   if (IsGlobalVar(expr)) {
