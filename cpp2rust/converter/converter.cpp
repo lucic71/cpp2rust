@@ -1869,6 +1869,8 @@ bool Converter::VisitExplicitCastExpr(clang::ExplicitCastExpr *expr) {
   auto type = expr->getTypeAsWritten();
   auto *sub_expr = expr->getSubExpr();
   if (type->isVoidType()) {
+    PushExprKind push(*this, ExprKind::Void);
+    Convert(expr->getSubExpr());
     return false;
   }
   switch (expr->getStmtClass()) {
@@ -1950,7 +1952,10 @@ bool Converter::VisitBinaryOperator(clang::BinaryOperator *expr) {
       ConvertCast(lhs_type);
     }
   } else if (expr->isCommaOp()) {
-    Convert(lhs);
+    {
+      PushExprKind push(*this, ExprKind::Void);
+      Convert(lhs);
+    }
     StrCat(token::kSemiColon);
     Convert(rhs);
   } else if (IsUnsignedArithOp(expr)) {
@@ -2248,11 +2253,20 @@ bool Converter::VisitDeclRefExpr(clang::DeclRefExpr *expr) {
 }
 
 bool Converter::VisitParenExpr(clang::ParenExpr *expr) {
+  // Comma operator becomes (A, B, C) -> { A; B; C }
+  if (auto *bin = clang::dyn_cast<clang::BinaryOperator>(expr->getSubExpr())) {
+    if (bin->isCommaOp()) {
+      PushBrace push(*this);
+      Convert(expr->getSubExpr());
+      return false;
+    }
+  }
+
   // Add cast to avoid ambigous integers. Don't add cast if sub expression is a
   // pointer dereference because we might want to mutate the dereferenced value.
   bool should_add_integral_cast =
       expr->getType()->isIntegralOrEnumerationType() && !isAddrOf() &&
-      !clang::isa<clang::UnaryOperator>(expr->getSubExpr());
+      !isVoid() && !clang::isa<clang::UnaryOperator>(expr->getSubExpr());
   PushParen outer(*this, should_add_integral_cast);
 
   {
@@ -3399,7 +3413,7 @@ void Converter::ConvertUnsignedArithBinaryOperator(clang::BinaryOperator *op,
 
 void Converter::ConvertAddrOf(clang::Expr *expr, clang::QualType pointer_type) {
   assert(pointer_type->isPointerType());
-  if (IsReferenceType(expr)) {
+  if (IsReferenceType(expr) || pointer_type->isFunctionPointerType()) {
     PushExprKind push(*this, ExprKind::AddrOf);
     Convert(expr);
   } else {

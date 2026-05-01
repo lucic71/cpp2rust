@@ -180,4 +180,6 @@ enum class ConstCastType {
 
 ConstCastType GetConstCastType(clang::QualType to, clang::QualType from);
 
+bool TypeIsCopyable(clang::QualType ty);
+
 } // namespace cpp2rust
