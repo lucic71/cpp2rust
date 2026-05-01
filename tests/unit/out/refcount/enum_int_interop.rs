@@ -89,7 +89,7 @@ pub fn classify_option_1(option: i32) -> i32 {
 }
 pub fn make_color_2(n: i32) -> Color {
     let n: Value<i32> = Rc::new(RefCell::new(n));
-    return Color::from((*n.borrow()) as i32);
+    return Color::from((*n.borrow()));
 }
 pub fn main() {
     std::process::exit(main_0());
@@ -123,7 +123,7 @@ fn main_0() -> i32 {
     assert!(((*x.borrow()) == 0));
     let y: Value<i32> = Rc::new(RefCell::new((((*c.borrow()) as i32) + 1)));
     assert!(((*y.borrow()) == 1));
-    (*c.borrow_mut()) = Color::from(2 as i32);
+    (*c.borrow_mut()) = Color::from(2);
     assert!((((*c.borrow()) as i32) == (Color::BLUE as i32)));
     assert!((((*c.borrow()) as i32) == 2));
     (*c.borrow_mut()) = ({
@@ -132,7 +132,7 @@ fn main_0() -> i32 {
     });
     assert!((((*c.borrow()) as i32) == (Color::GREEN as i32)));
     let cmp: Value<Color> = Rc::new(RefCell::new(Color::from(
-        ((((*c.borrow()) as i32) + 1) as i32) as i32,
+        ((((*c.borrow()) as i32) + 1) as i32),
     )));
     assert!((((*cmp.borrow()) as i32) == (Color::BLUE as i32)));
     let o: Value<Option> = Rc::new(RefCell::new(Option::OPT_A));
@@ -140,7 +140,7 @@ fn main_0() -> i32 {
     assert!((((*o.borrow()) as i32) == 10));
     let oi: Value<i32> = Rc::new(RefCell::new(((*o.borrow()) as i32).clone()));
     assert!(((*oi.borrow()) == 10));
-    (*o.borrow_mut()) = Option::from(20 as i32);
+    (*o.borrow_mut()) = Option::from(20);
     assert!((((*o.borrow()) as i32) == (Option::OPT_B as i32)));
     let rc: Value<i32> = Rc::new(RefCell::new(
         ({
@@ -164,7 +164,7 @@ fn main_0() -> i32 {
     assert!((((*t.borrow()) as i32) == (Tag::TAG_ONE as i32)));
     let ti: Value<i32> = Rc::new(RefCell::new(((*t.borrow()) as i32).clone()));
     assert!(((*ti.borrow()) == 1));
-    (*t.borrow_mut()) = Tag::from(2 as i32);
+    (*t.borrow_mut()) = Tag::from(2);
     assert!((((*t.borrow()) as i32) == (Tag::TAG_TWO as i32)));
     'switch: {
         let __match_cond = ((*t.borrow()) as i32);

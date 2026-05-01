@@ -30,7 +30,7 @@ pub fn main() {
 }
 unsafe fn main_0() -> i32 {
     let mut n: i32 = 3;
-    let mut c: Color = Color::from(n as i32);
+    let mut c: Color = Color::from(n);
     return if ((c as i32) == (Color::BLUE as i32)) {
         0
     } else {

@@ -86,7 +86,7 @@ pub unsafe fn classify_option_1(mut option: i32) -> i32 {
     panic!("ub: non-void function does not return a value")
 }
 pub unsafe fn make_color_2(mut n: i32) -> Color {
-    return Color::from(n as i32);
+    return Color::from(n);
 }
 pub fn main() {
     unsafe {
@@ -122,7 +122,7 @@ unsafe fn main_0() -> i32 {
     assert!(((x) == (0)));
     let mut y: i32 = ((c as i32) + (1));
     assert!(((y) == (1)));
-    c = Color::from(2 as i32);
+    c = Color::from(2);
     assert!(((c as i32) == (Color::BLUE as i32)));
     assert!(((c as i32) == (2)));
     c = (unsafe {
@@ -130,14 +130,14 @@ unsafe fn main_0() -> i32 {
         make_color_2(_n)
     });
     assert!(((c as i32) == (Color::GREEN as i32)));
-    let mut cmp: Color = Color::from((((c as i32) + (1)) as i32) as i32);
+    let mut cmp: Color = Color::from((((c as i32) + (1)) as i32));
     assert!(((cmp as i32) == (Color::BLUE as i32)));
     let mut o: Option = Option::OPT_A;
     assert!(((o as i32) == (Option::OPT_A as i32)));
     assert!(((o as i32) == (10)));
     let mut oi: i32 = (o as i32);
     assert!(((oi) == (10)));
-    o = Option::from(20 as i32);
+    o = Option::from(20);
     assert!(((o as i32) == (Option::OPT_B as i32)));
     let mut rc: i32 = (unsafe {
         let _option: i32 = (o as i32);
@@ -159,7 +159,7 @@ unsafe fn main_0() -> i32 {
     assert!(((t as i32) == (Tag::TAG_ONE as i32)));
     let mut ti: i32 = (t as i32);
     assert!(((ti) == (1)));
-    t = Tag::from(2 as i32);
+    t = Tag::from(2);
     assert!(((t as i32) == (Tag::TAG_TWO as i32)));
     'switch: {
         let __match_cond = (t as i32);

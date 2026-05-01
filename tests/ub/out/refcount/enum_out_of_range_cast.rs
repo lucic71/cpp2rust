@@ -28,7 +28,7 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     let n: Value<i32> = Rc::new(RefCell::new(3));
-    let c: Value<Color> = Rc::new(RefCell::new(Color::from((*n.borrow()) as i32)));
+    let c: Value<Color> = Rc::new(RefCell::new(Color::from((*n.borrow()))));
     return if (((*c.borrow()) as i32) == (Color::BLUE as i32)) {
         0
     } else {

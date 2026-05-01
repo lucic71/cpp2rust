@@ -86,7 +86,7 @@ pub unsafe fn classify_option_1(mut option: i32) -> i32 {
     panic!("ub: non-void function does not return a value")
 }
 pub unsafe fn make_color_2(mut n: i32) -> Color {
-    return Color::from(n as i32);
+    return Color::from(n);
 }
 pub fn main() {
     unsafe {
@@ -94,7 +94,7 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    let mut c: Color = Color::from((Color::RED as i32) as i32);
+    let mut c: Color = Color::from((Color::RED as i32));
     assert!(((c as u32) == ((Color::RED as i32) as u32)));
     assert!(((c as u32) == (0_u32)));
     assert!(((c as u32) != (1_u32)));
@@ -122,7 +122,7 @@ unsafe fn main_0() -> i32 {
     assert!(((x) == (0)));
     let mut y: i32 = (((c as u32).wrapping_add(1_u32)) as i32);
     assert!(((y) == (1)));
-    c = Color::from(2 as i32);
+    c = Color::from(2);
     assert!(((c as u32) == ((Color::BLUE as i32) as u32)));
     assert!(((c as u32) == (2_u32)));
     c = (unsafe {
@@ -132,12 +132,12 @@ unsafe fn main_0() -> i32 {
     assert!(((c as u32) == ((Color::GREEN as i32) as u32)));
     let mut cmp: Color = Color::from((((c as u32).wrapping_add(1_u32)) as u32) as i32);
     assert!(((cmp as u32) == ((Color::BLUE as i32) as u32)));
-    let mut o: Option = Option::from((Option::OPT_A as i32) as i32);
+    let mut o: Option = Option::from((Option::OPT_A as i32));
     assert!(((o as u32) == ((Option::OPT_A as i32) as u32)));
     assert!(((o as u32) == (10_u32)));
     let mut oi: i32 = (o as i32);
     assert!(((oi) == (10)));
-    o = Option::from(20 as i32);
+    o = Option::from(20);
     assert!(((o as u32) == ((Option::OPT_B as i32) as u32)));
     let mut rc: i32 = (unsafe {
         let _option: i32 = (o as i32);
@@ -154,12 +154,12 @@ unsafe fn main_0() -> i32 {
         classify_option_1(_option)
     });
     assert!(((rc) == (3)));
-    let mut t: Tag = Tag::from((Tag::TAG_ONE as i32) as i32);
+    let mut t: Tag = Tag::from((Tag::TAG_ONE as i32));
     assert!(((t as u32) == (1_u32)));
     assert!(((t as u32) == ((Tag::TAG_ONE as i32) as u32)));
     let mut ti: i32 = (t as i32);
     assert!(((ti) == (1)));
-    t = Tag::from(2 as i32);
+    t = Tag::from(2);
     assert!(((t as u32) == ((Tag::TAG_TWO as i32) as u32)));
     'switch: {
         let __match_cond = (t as u32);
