@@ -1731,6 +1731,16 @@ bool Converter::VisitCXXBoolLiteralExpr(clang::CXXBoolLiteralExpr *expr) {
   return false;
 }
 
+void Converter::ConvertIntegerToEnumeralCast(clang::Expr *to,
+                                             clang::Expr *from) {
+  StrCat(GetUnsafeTypeAsString(to->getType()), "::from");
+  PushParen paren(*this);
+  Convert(from);
+  if (!from->getType()->isSpecificBuiltinType(clang::BuiltinType::Int)) {
+    StrCat(keyword::kAs, "i32");
+  }
+}
+
 bool Converter::VisitImplicitCastExpr(clang::ImplicitCastExpr *expr) {
   auto *sub_expr = expr->getSubExpr();
   auto type = expr->getType();
@@ -1846,6 +1856,10 @@ bool Converter::VisitImplicitCastExpr(clang::ImplicitCastExpr *expr) {
       Convert(sub_expr);
       break;
     }
+    if (type->isEnumeralType() && !sub_expr->getType()->isEnumeralType()) {
+      ConvertIntegerToEnumeralCast(expr, sub_expr);
+      break;
+    }
     {
       PushParen outer(*this);
       if (clang::isa<clang::BinaryOperator>(sub_expr)) {
@@ -1888,6 +1902,10 @@ bool Converter::VisitExplicitCastExpr(clang::ExplicitCastExpr *expr) {
       StrCat(">(");
       Convert(sub_expr);
       StrCat(')');
+      return false;
+    }
+    if (type->isEnumeralType() && !sub_expr->getType()->isEnumeralType()) {
+      ConvertIntegerToEnumeralCast(expr, sub_expr);
       return false;
     }
     {
@@ -2200,10 +2218,14 @@ std::string Converter::ConvertDeclRefExpr(clang::DeclRefExpr *expr) {
   }
 
   if (auto enum_constant = clang::dyn_cast<clang::EnumConstantDecl>(decl)) {
-    return std::format("{}::{}",
-                       GetRecordName(clang::dyn_cast<clang::EnumDecl>(
-                           enum_constant->getDeclContext())),
-                       std::string_view(enum_constant->getName()));
+    auto qualified = std::format("{}::{}",
+                                 GetRecordName(clang::dyn_cast<clang::EnumDecl>(
+                                     enum_constant->getDeclContext())),
+                                 std::string_view(enum_constant->getName()));
+    if (!expr->getType()->isEnumeralType()) {
+      return std::format("({} as i32)", qualified);
+    }
+    return qualified;
   }
 
   if (IsGlobalVar(expr)) {
@@ -2704,7 +2726,27 @@ bool Converter::VisitEnumDecl(clang::EnumDecl *decl) {
                        std::string_view(init.data(), init.size())));
   }
   StrCat("}");
+
+  AddFromImpl(decl);
   return false;
+}
+
+void Converter::AddFromImpl(clang::EnumDecl *decl) {
+  auto name = GetRecordName(decl);
+  StrCat(std::format("impl From<i32> for {}", name));
+  PushBrace impl(*this);
+  StrCat(std::format("fn from(n: i32) -> {}", name));
+  PushBrace fn(*this);
+  StrCat("match n");
+  PushBrace match(*this);
+  for (auto e : decl->enumerators()) {
+    llvm::SmallVector<char, 32> init;
+    e->getInitVal().toString(init, 10);
+    StrCat(std::format("{} => {}::{},",
+                       std::string_view(init.data(), init.size()), name,
+                       std::string_view(e->getName())));
+  }
+  StrCat(std::format("_ => panic!(\"invalid {} value: {{}}\", n),", name));
 }
 
 bool Converter::VisitCXXDefaultArgExpr(clang::CXXDefaultArgExpr *expr) {

@@ -13,6 +13,16 @@ enum Color {
     kGreen = 1,
     kBlue = 2,
 }
+impl From<i32> for Color {
+    fn from(n: i32) -> Color {
+        match n {
+            0 => Color::kRed,
+            1 => Color::kGreen,
+            2 => Color::kBlue,
+            _ => panic!("invalid Color value: {}", n),
+        }
+    }
+}
 pub fn switch_enum_0(c: Color) -> i32 {
     let c: Value<Color> = Rc::new(RefCell::new(c));
     'switch: {

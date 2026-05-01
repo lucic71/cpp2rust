@@ -241,6 +241,8 @@ public:
 
   virtual bool VisitCXXBoolLiteralExpr(clang::CXXBoolLiteralExpr *expr);
 
+  void ConvertIntegerToEnumeralCast(clang::Expr *to, clang::Expr *from);
+
   virtual bool VisitImplicitCastExpr(clang::ImplicitCastExpr *expr);
 
   virtual bool VisitExplicitCastExpr(clang::ExplicitCastExpr *expr);
@@ -292,6 +294,8 @@ public:
   virtual bool VisitTypeTraitExpr(clang::TypeTraitExpr *expr);
 
   virtual bool VisitEnumDecl(clang::EnumDecl *decl);
+
+  virtual void AddFromImpl(clang::EnumDecl *decl);
 
   virtual bool VisitCXXDefaultArgExpr(clang::CXXDefaultArgExpr *expr);
 
