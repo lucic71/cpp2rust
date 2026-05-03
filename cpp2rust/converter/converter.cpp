@@ -14,7 +14,6 @@
 #include "converter/converter_lib.h"
 #include "converter/lex.h"
 #include "converter/mapper.h"
-#include "logging.h"
 
 namespace cpp2rust {
 std::unordered_map<std::string, std::string> Converter::inner_structs_;
@@ -54,7 +53,7 @@ use std::rc::Rc;
 
 bool Converter::VisitRecoveryExpr(clang::RecoveryExpr *expr) {
   llvm::errs() << "RecoveryExpr: ";
-  expr->dump(llvm::errs(), ctx_);
+  expr->dump();
   exit(1);
   return false;
 }
@@ -3438,7 +3437,7 @@ void Converter::ConvertUnsignedArithBinaryOperator(clang::BinaryOperator *op,
   default:
     // FIXME: improve error handling
     llvm::errs() << "unsupported unsigned binary operator: " << opcode << '\n';
-    op->dump(llvm::errs(), ctx_);
+    op->dump();
     assert(0);
   }
   PushParen paren(*this);

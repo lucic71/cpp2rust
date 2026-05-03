@@ -11,7 +11,6 @@
 #include "converter/converter_lib.h"
 #include "converter/lex.h"
 #include "converter/mapper.h"
-#include "logging.h"
 
 namespace cpp2rust {
 ConverterRefCount::ConverterRefCount(std::string &rs_code,
@@ -839,7 +838,7 @@ void ConverterRefCount::ConvertPrintf(clang::CallExpr *expr) {
     format = GetEscapedStringLiteral(str);
   } else {
     llvm::errs() << "Uknown fprintf format: ";
-    expr->getArg(1)->dump(llvm::errs(), ctx_);
+    expr->getArg(1)->dump();
     llvm::errs() << "\n";
     exit(1);
   }
