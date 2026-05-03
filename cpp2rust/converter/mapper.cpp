@@ -384,11 +384,11 @@ TranslationRule::ExprRule *search(const clang::Expr *expr) {
   auto qualified_name = ToString(expr);
   auto [rule, subs] =
       search(exprs_, qualified_name, GetExprMapKey(qualified_name));
-  llvm::errs() << "search expr " << qualified_name << ", result:\n";
+  log() << "search expr " << qualified_name << ", result:\n";
   if (rule) {
     rule->dump();
   } else {
-    llvm::errs() << "None\n";
+    log() << "None\n";
   }
   return rule;
 }
@@ -396,9 +396,8 @@ TranslationRule::ExprRule *search(const clang::Expr *expr) {
 TranslationRule::TypeRule *search(clang::QualType qual_type) {
   auto type = ToString(qual_type);
   auto [rule, subs] = search(types_, type, GetTypeMapKey(type));
-  llvm::errs() << "search type " << type
-               << ", result: " << (rule ? rule->type_info.type : "None")
-               << '\n';
+  log() << "search type " << type
+        << ", result: " << (rule ? rule->type_info.type : "None") << '\n';
   return rule;
 }
 
@@ -408,7 +407,7 @@ void addRulesFromDirectory(const std::filesystem::path &dir, Model model) {
     if (entry.is_regular_file() && path.extension() == ".cpp") {
       auto [expr_rules, type_rules] = TranslationRule::Load(path, model);
       if (expr_rules.empty() && type_rules.empty()) {
-        llvm::errs() << "No rules found in " << path << '\n';
+        log() << "No rules found in " << path << '\n';
         continue;
       }
       for (auto &[_, rule] : expr_rules) {
@@ -885,11 +884,11 @@ void LoadTranslationRules(Model model, clang::ASTContext &ctx,
 
 #if 0
   for (auto &[src, rule] : exprs_) {
-    llvm::errs() << "Expr key: " << src << '\n';
+    log() << "Expr key: " << src << '\n';
     rule.dump();
   }
   for (auto &[src, rule] : types_) {
-    llvm::errs() << "Type key: " << src << '\n';
+    log() << "Type key: " << src << '\n';
     rule.dump();
   }
 #endif

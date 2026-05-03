@@ -122,7 +122,7 @@ bool Converter::VisitBuiltinType(clang::BuiltinType *type) {
     break;
   default:
     // FIXME: improve error handling
-    llvm::errs() << "unsupported builtin type\n";
+    log() << "unsupported builtin type\n";
     break;
   }
   return false;
@@ -151,7 +151,7 @@ bool Converter::VisitRecordType(clang::RecordType *type) {
 }
 
 std::string Converter::ConvertPointer(clang::Expr *expr, int line) {
-  llvm::errs() << "ConvertPointer called from line " << line << "\n";
+  log() << "ConvertPointer called from line " << line << "\n";
   PushExprKind push(*this, ExprKind::AddrOf);
   return ToString(expr);
 }
@@ -175,7 +175,7 @@ std::string Converter::ConvertLValue(clang::Expr *expr) {
 }
 
 std::string Converter::ConvertRValue(clang::Expr *expr, int line) {
-  llvm::errs() << "ConvertRValue called from line " << line << "\n";
+  log() << "ConvertRValue called from line " << line << "\n";
   PushExprKind push(*this, ExprKind::RValue);
   return ToString(expr);
 }
@@ -295,7 +295,7 @@ bool Converter::VisitFunctionDecl(clang::FunctionDecl *decl) {
   if (!IsInMainFile(decl) && !decl_ids_.insert(GetID(decl)).second) {
     return false;
   }
-  decl->dump();
+  decl->dump(log());
   curr_function_ = decl;
   std::string function_name;
   if (decl->isMain()) {
@@ -582,7 +582,7 @@ static bool recordDerivesCopy(const clang::RecordDecl *decl) {
 }
 
 bool Converter::VisitRecordDecl(clang::RecordDecl *decl) {
-  decl->dumpColor();
+  decl->dump(log());
 
   // VisitCXXRecordDecl already visited the record
   if (clang::isa<clang::CXXRecordDecl>(decl)) {
@@ -694,7 +694,7 @@ bool Converter::VisitCXXRecordDecl(clang::CXXRecordDecl *decl) {
     materializeTemplateSpecialization(decl);
   }
 
-  decl->dump();
+  decl->dump(log());
 
   Mapper::AddRuleForUserDefinedType(decl);
   if (!IsConvertibleCXXRecordDecl(decl)) {
@@ -741,7 +741,7 @@ bool Converter::VisitCXXRecordDecl(clang::CXXRecordDecl *decl) {
 }
 
 bool Converter::VisitCXXMethodDecl(clang::CXXMethodDecl *decl) {
-  decl->dump();
+  decl->dump(log());
   if (!IsConvertibleCXXMethodDecl(decl)) {
     return false;
   }
@@ -1081,10 +1081,10 @@ bool Converter::VisitCXXForRangeStmt(clang::CXXForRangeStmt *stmt) {
 
   if (!Mapper::Contains(range_init_type.getUnqualifiedType())) {
     // FIXME: improve error handling
-    llvm::errs() << "for range stmts only for types in std namespace\n";
+    log() << "for range stmts only for types in std namespace\n";
   }
 
-  llvm::errs() << "GetClassName: " << GetClassName(range_init_type) << "\n";
+  log() << "GetClassName: " << GetClassName(range_init_type) << "\n";
 
   if (GetClassName(range_init_type) == "std::map") {
     return VisitCXXForRangeStmtMap(stmt);
@@ -2712,7 +2712,7 @@ bool Converter::VisitUnaryExprOrTypeTraitExpr(
     break;
   default:
     // FIXME: improve error handling
-    llvm::errs() << "unsupported unary expr or type trait expr\n";
+    log() << "unsupported unary expr or type trait expr\n";
   }
   return false;
 }
@@ -3457,7 +3457,7 @@ void Converter::ConvertUnsignedArithBinaryOperator(clang::BinaryOperator *op,
   default:
     // FIXME: improve error handling
     llvm::errs() << "unsupported unsigned binary operator: " << opcode << '\n';
-    op->dumpColor();
+    op->dump();
     assert(0);
   }
   PushParen paren(*this);
@@ -3767,9 +3767,9 @@ void Converter::SetFreshType(clang::QualType type) {
 }
 
 void Converter::dump_expr_kinds() {
-  llvm::errs() << "isRValue: " << isRValue() << ", isXValue: " << isXValue()
-               << ", isAddrOf: " << isAddrOf() << ", isObject: " << isObject()
-               << ", isVoid: " << isVoid() << "\n";
+  log() << "isRValue: " << isRValue() << ", isXValue: " << isXValue()
+        << ", isAddrOf: " << isAddrOf() << ", isObject: " << isObject()
+        << ", isVoid: " << isVoid() << "\n";
 }
 
 void Converter::emplace_back_plugin_construct_arg(

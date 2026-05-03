@@ -28,6 +28,7 @@
 
 #include "compat/platform_flags.h"
 #include "converter/mapper.h"
+#include "logging.h"
 
 namespace cpp2rust::TranslationRule {
 
@@ -902,21 +903,19 @@ void BodyFragmentDump(const BodyFragment &frag) {
 
 } // namespace
 
-void TextFragment::dump() const {
-  llvm::errs() << "  text: \"" << text << "\"\n";
-}
+void TextFragment::dump() const { log() << "  text: \"" << text << "\"\n"; }
 
 void PlaceholderFragment::dump() const {
-  llvm::errs() << "  placeholder: " << n;
+  log() << "  placeholder: " << n;
   switch (access) {
   case Access::kRead:
-    llvm::errs() << " (read)\n";
+    log() << " (read)\n";
     break;
   case Access::kWrite:
-    llvm::errs() << " (write)\n";
+    log() << " (write)\n";
     break;
   case Access::kMove:
-    llvm::errs() << " (move)\n";
+    log() << " (move)\n";
     break;
   }
 }
@@ -931,61 +930,59 @@ const PlaceholderFragment *MethodCallFragment::getReceiverPlaceholder() const {
 }
 
 void MethodCallFragment::dump() const {
-  llvm::errs() << "  method_call:\n"
-                  "    receiver:\n";
+  log() << "  method_call:\n"
+           "    receiver:\n";
   for (const auto &frag : receiver) {
     BodyFragmentDump(frag);
   }
-  llvm::errs() << "    body:\n";
+  log() << "    body:\n";
   for (const auto &frag : body) {
     BodyFragmentDump(frag);
   }
 }
 
 void ExprRule::dump() const {
-  llvm::errs() << "Matching: " << src << '\n';
+  log() << "Matching: " << src << '\n';
   unsigned i = 0;
   for (auto &info : params) {
-    llvm::errs() << "  param a" << i++ << ": ";
+    log() << "  param a" << i++ << ": ";
     info.dump();
-    llvm::errs() << '\n';
+    log() << '\n';
   }
   if (!return_type.type.empty()) {
-    llvm::errs() << "  return: ";
+    log() << "  return: ";
     return_type.dump();
-    llvm::errs() << '\n';
+    log() << '\n';
   }
   i = 0;
   for (auto &bounds : generics) {
-    llvm::errs() << "  generic T" << ++i << ':';
+    log() << "  generic T" << ++i << ':';
     for (auto &b : bounds) {
-      llvm::errs() << ' ' << b;
+      log() << ' ' << b;
     }
-    llvm::errs() << '\n';
+    log() << '\n';
   }
   for (const auto &frag : body) {
     BodyFragmentDump(frag);
   }
 }
 
-void GenericFragment::dump() const {
-  llvm::errs() << "  generic: " << n << '\n';
-}
+void GenericFragment::dump() const { log() << "  generic: " << n << '\n'; }
 
 void TypeInfo::dump() const {
-  llvm::errs() << type;
+  log() << type;
   if (is_refcount_pointer)
-    llvm::errs() << " [rc_ptr]";
+    log() << " [rc_ptr]";
   if (is_unsafe_pointer)
-    llvm::errs() << " [unsafe_ptr]";
+    log() << " [unsafe_ptr]";
 }
 
 void TypeRule::dump() const {
-  llvm::errs() << "name: " << src << "\n  Rust type: ";
+  log() << "name: " << src << "\n  Rust type: ";
   type_info.dump();
-  llvm::errs() << '\n';
+  log() << '\n';
   if (!initializer.empty()) {
-    llvm::errs() << "  init: " << initializer << '\n';
+    log() << "  init: " << initializer << '\n';
   }
 }
 

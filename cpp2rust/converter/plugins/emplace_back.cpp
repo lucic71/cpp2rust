@@ -182,7 +182,7 @@ bool Converter::emplace_back_plugin_convert(clang::CallExpr *call) {
       StrCat(GetUnsafeTypeAsString(elem_ty));
     }
   } else {
-    call->dumpColor();
+    call->dump();
     assert(0 && "no ctor and no pod type");
     return false;
   }
