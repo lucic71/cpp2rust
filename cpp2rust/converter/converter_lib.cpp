@@ -683,9 +683,32 @@ bool ContainsVAArgExpr(const clang::Stmt *stmt) {
   return false;
 }
 
-clang::Expr *CreateConversionToBool(clang::Expr *expr, clang::ASTContext &ctx) {
+clang::Expr *NormalizeToBool(clang::Expr *expr, clang::ASTContext &ctx) {
+  if (expr->getType()->isBooleanType()) {
+    return expr;
+  }
+
+  // If logical not returns integer, then craft a new logical not that returns
+  // bool.
+  if (auto bin = clang::dyn_cast<clang::UnaryOperator>(expr)) {
+    if (bin->getOpcode() == clang::UO_LNot) {
+      return clang::UnaryOperator::Create(
+          ctx, bin->getSubExpr(), clang::UO_LNot, ctx.BoolTy, clang::VK_PRValue,
+          clang::OK_Ordinary, clang::SourceLocation(), false,
+          clang::FPOptionsOverride());
+    }
+  }
+
+  // Either to pointer -> bool, or int -> bool.
+  clang::CastKind cast_kind;
+  if (expr->getType()->isPointerType()) {
+    cast_kind = clang::CK_PointerToBoolean;
+  } else /* expr->getType()->isIntegerType() */ {
+    cast_kind = clang::CK_IntegralToBoolean;
+  }
+
   return clang::ImplicitCastExpr::Create(
-      ctx, ctx.BoolTy, clang::CK_IntegralToBoolean, expr,
+      ctx, ctx.BoolTy, cast_kind, expr,
       /*BasePath=*/nullptr, clang::VK_PRValue, clang::FPOptionsOverride());
 }
 

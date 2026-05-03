@@ -615,7 +615,8 @@ bool ConverterRefCount::ConvertIncAndDec(clang::UnaryOperator *expr) {
 
 bool ConverterRefCount::VisitConditionalOperator(
     clang::ConditionalOperator *expr) {
-  StrCat(keyword::kIf, ConvertRValue(expr->getCond()));
+  StrCat(keyword::kIf);
+  ConvertCondition(expr->getCond());
   {
     PushBrace then_brace(*this);
     StrCat(ConvertFresh(expr->getTrueExpr()));
@@ -1046,9 +1047,12 @@ bool ConverterRefCount::VisitImplicitCastExpr(clang::ImplicitCastExpr *expr) {
     }
   }
 
-  if (expr->getCastKind() == clang::CastKind::CK_NullToPointer &&
-      expr->getType()->isFunctionPointerType()) {
-    StrCat("FnPtr::null()");
+  if (expr->getCastKind() == clang::CastKind::CK_NullToPointer) {
+    if (expr->getType()->isFunctionPointerType()) {
+      StrCat("FnPtr::null()");
+    } else {
+      StrCat("Default::default()");
+    }
     computed_expr_type_ = ComputedExprType::FreshPointer;
     return false;
   }
@@ -1135,6 +1139,11 @@ bool ConverterRefCount::VisitExplicitCastExpr(clang::ExplicitCastExpr *expr) {
     if (!TypeIsCopyable(expr->getSubExpr()->getType())) {
       StrCat(".clone()");
     }
+    return false;
+  }
+  if (expr->getCastKind() == clang::CK_NullToPointer) {
+    StrCat("Default::default()");
+    computed_expr_type_ = ComputedExprType::FreshPointer;
     return false;
   }
   switch (expr->getStmtClass()) {

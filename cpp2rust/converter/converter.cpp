@@ -965,12 +965,8 @@ bool Converter::VisitReturnStmt(clang::ReturnStmt *stmt) {
 }
 
 void Converter::ConvertCondition(clang::Expr *cond) {
-  if (!cond->getType()->isBooleanType()) {
-    PushExprKind push(*this, ExprKind::RValue);
-    Convert(CreateConversionToBool(cond, ctx_));
-    return;
-  }
-  Convert(cond);
+  PushExprKind push(*this, ExprKind::RValue);
+  Convert(NormalizeToBool(cond, ctx_));
 }
 
 bool Converter::VisitIfStmt(clang::IfStmt *stmt) {
@@ -1741,6 +1737,41 @@ void Converter::ConvertIntegerToEnumeralCast(clang::Expr *to,
   }
 }
 
+void Converter::ConvertIntegralToBooleanCast(clang::ImplicitCastExpr *expr) {
+  auto sub_expr = expr->getSubExpr();
+  auto *stripped = sub_expr->IgnoreParenImpCasts();
+
+  if (auto binop = clang::dyn_cast<clang::BinaryOperator>(stripped)) {
+    // Comparison already produces bool, no wrap needed.
+    if (binop->isComparisonOp()) {
+      Convert(sub_expr);
+      return;
+    }
+    // Distribute bool conversion to each argument of the logical op.
+    if (binop->isLogicalOp()) {
+      {
+        PushParen paren(*this);
+        ConvertCondition(binop->getLHS());
+      }
+      StrCat(binop->getOpcodeStr());
+      {
+        PushParen paren(*this);
+        ConvertCondition(binop->getRHS());
+      }
+      return;
+    }
+  }
+
+  PushParen paren(*this);
+  Convert(sub_expr);
+  StrCat(token::kDiff);
+  if (sub_expr->getType()->isEnumeralType()) {
+    StrCat(GetUnsafeTypeAsString(sub_expr->getType()), "::from(0)");
+  } else /* sub_expr->getType()->isIntegerType() */ {
+    StrCat(token::kZero);
+  }
+}
+
 bool Converter::VisitImplicitCastExpr(clang::ImplicitCastExpr *expr) {
   auto *sub_expr = expr->getSubExpr();
   auto type = expr->getType();
@@ -1816,20 +1847,7 @@ bool Converter::VisitImplicitCastExpr(clang::ImplicitCastExpr *expr) {
     Convert(sub_expr);
     break;
   case clang::CastKind::CK_IntegralToBoolean:
-    if (auto binop = clang::dyn_cast<clang::BinaryOperator>(
-            sub_expr->IgnoreParenImpCasts())) {
-      // This already produces bool, no need for != 0
-      if (binop->isComparisonOp()) {
-        Convert(sub_expr);
-        break;
-      }
-    }
-
-    {
-      PushParen paren(*this);
-      Convert(sub_expr);
-      StrCat(token::kDiff, token::kZero);
-    }
+    ConvertIntegralToBooleanCast(expr);
     break;
   case clang::CastKind::CK_PointerToBoolean:
     StrCat(token::kNot);
@@ -2130,6 +2148,18 @@ bool Converter::VisitUnaryOperator(clang::UnaryOperator *expr) {
     Convert(sub_expr);
     computed_expr_type_ = ComputedExprType::FreshValue;
     break;
+  case clang::UO_LNot: {
+    bool needs_int_cast =
+        expr->getType()->isIntegerType() && !expr->getType()->isBooleanType();
+    PushParen paren_cast(*this, needs_int_cast);
+    StrCat(token::kNot);
+    ConvertCondition(sub_expr);
+    if (needs_int_cast) {
+      ConvertCast(expr->getType());
+    }
+    computed_expr_type_ = ComputedExprType::FreshValue;
+    break;
+  }
   case clang::UO_Minus:
     if (auto *literal = clang::dyn_cast<clang::IntegerLiteral>(sub_expr)) {
       if (sub_expr->getType()->isUnsignedIntegerType()) {
@@ -2173,7 +2203,7 @@ void Converter::EmitStmtExprTail(clang::Expr *tail) { Convert(tail); }
 
 bool Converter::VisitConditionalOperator(clang::ConditionalOperator *expr) {
   StrCat(keyword::kIf);
-  Convert(expr->getCond());
+  ConvertCondition(expr->getCond());
   {
     PushBrace then_brace(*this);
     if (expr->isLValue() && !isRValue() && !expr->getType()->isFunctionType()) {
@@ -2290,21 +2320,11 @@ bool Converter::VisitParenExpr(clang::ParenExpr *expr) {
     }
   }
 
-  // Add cast to avoid ambigous integers. Don't add cast if sub expression is a
-  // pointer dereference because we might want to mutate the dereferenced value.
-  bool should_add_integral_cast =
-      expr->getType()->isIntegralOrEnumerationType() && !isAddrOf() &&
-      !isVoid() && !clang::isa<clang::UnaryOperator>(expr->getSubExpr());
-  PushParen outer(*this, should_add_integral_cast);
-
   {
     PushParen inner(*this);
     Convert(expr->getSubExpr());
   }
 
-  if (should_add_integral_cast) {
-    ConvertCast(expr->getType());
-  }
   return false;
 }
 
