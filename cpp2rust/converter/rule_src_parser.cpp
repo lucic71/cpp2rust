@@ -11,6 +11,7 @@
 #include <clang/ASTMatchers/ASTMatchFinder.h>
 #include <clang/ASTMatchers/ASTMatchers.h>
 #include <clang/Frontend/FrontendActions.h>
+#include <clang/Lex/Lexer.h>
 #include <clang/Sema/Initialization.h>
 #include <clang/Sema/Lookup.h>
 #include <clang/Sema/Overload.h>
@@ -18,6 +19,9 @@
 #include <clang/Sema/Template.h>
 #include <clang/Tooling/CompilationDatabase.h>
 #include <clang/Tooling/Tooling.h>
+
+#include <string>
+#include <unordered_map>
 
 #include "compat/platform_flags.h"
 #include "converter/mapper.h"
@@ -69,7 +73,9 @@ struct LookupInfo {
 
 class Callback : public clang::ast_matchers::MatchFinder::MatchCallback {
 public:
-  explicit Callback(llvm::json::Object &out) : out_(out) {}
+  Callback(llvm::json::Object &out,
+           std::unordered_map<std::string, std::string> &expected_funcs)
+      : out_(out), expected_funcs_(expected_funcs) {}
 
   void init(clang::Sema &sema) {
     sema_ = &sema;
@@ -80,6 +86,22 @@ public:
   void run(const clang::ast_matchers::MatchFinder::MatchResult &R) override {
     assert(sema_);
     Mapper::PushASTContext scoped(*R.Context);
+
+    if (auto efunc = R.Nodes.getNodeAs<clang::FunctionDecl>("expected_func")) {
+      std::string body_src;
+      if (auto *body = efunc->getBody()) {
+        auto &sm = R.Context->getSourceManager();
+        auto &lo = R.Context->getLangOpts();
+        body_src =
+            clang::Lexer::getSourceText(
+                clang::CharSourceRange::getTokenRange(body->getSourceRange()),
+                sm, lo)
+                .str();
+      }
+      expected_funcs_[efunc->getQualifiedNameAsString()] = std::move(body_src);
+      return;
+    }
+
     if (auto var = R.Nodes.getNodeAs<clang::TypeAliasDecl>("tvar")) {
       clang::QualType type;
       if (auto *tdecl = var->getDescribedAliasTemplate()) {
@@ -171,6 +193,7 @@ public:
 
 private:
   llvm::json::Object &out_;
+  std::unordered_map<std::string, std::string> &expected_funcs_;
   clang::Sema *sema_ = nullptr;
   clang::SourceLocation loc_;
 
@@ -646,7 +669,9 @@ private:
 
 class ActionFactory : public clang::tooling::FrontendActionFactory {
 public:
-  explicit ActionFactory(llvm::json::Object &out) : cb_(out) {
+  ActionFactory(llvm::json::Object &out,
+                std::unordered_map<std::string, std::string> &expected_funcs)
+      : cb_(out, expected_funcs) {
     using namespace clang::ast_matchers;
     finder_.addMatcher(
         returnStmt(
@@ -675,6 +700,13 @@ public:
         typeAliasDecl(matchesName("(^|::)t[0-9]+$"), isExpansionInMainFile())
             .bind("tvar"),
         &cb_);
+
+    // Collect every f<n> for the post-run diff against bound bodies.
+    finder_.addMatcher(functionDecl(isDefinition(),
+                                    matchesName("(^|::)f[0-9]+$"),
+                                    isExpansionInMainFile())
+                           .bind("expected_func"),
+                       &cb_);
   }
 
   std::unique_ptr<clang::FrontendAction> create() override {
@@ -721,14 +753,28 @@ private:
 
 } // namespace
 
-void Extract(const std::filesystem::path &src_path, llvm::json::Object &out) {
+bool Extract(const std::filesystem::path &src_path, llvm::json::Object &out) {
   auto flags = getPlatformClangBeginFlags();
   auto end_flags = getPlatformClangEndFlags();
   flags.insert(flags.end(), end_flags.begin(), end_flags.end());
   clang::tooling::FixedCompilationDatabase compilations(".", flags);
-  ActionFactory factory(out);
+  std::unordered_map<std::string, std::string> expected_funcs;
+  ActionFactory factory(out, expected_funcs);
   clang::tooling::ClangTool tool(compilations, {src_path.string()});
-  tool.run(&factory);
+  bool ok = (tool.run(&factory) == 0);
+
+  for (const auto &[name, body_src] : expected_funcs) {
+    if (out.find(name) == out.end()) {
+      llvm::errs() << src_path.string() << ": " << name
+                   << ": matcher did not bind to the function body.\n"
+                   << "  body: " << body_src << '\n'
+                   << "  Likely cause: return expression shape not handled by "
+                      "rule_src_parser.cpp's ActionFactory matcher (e.g. a "
+                      "literal from a macro expansion).\n";
+      ok = false;
+    }
+  }
+  return ok;
 }
 
 } // namespace cpp2rust::RuleSrcParser

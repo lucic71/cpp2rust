@@ -9,8 +9,8 @@
 
 namespace cpp2rust::RuleSrcParser {
 
-// Visit every f<n> / t<n> declaration in `src_path`:
-// f<n> / t<n>: { "to_string": <Mapper::ToString> }
-void Extract(const std::filesystem::path &src_path, llvm::json::Object &out);
+// Emits one entry per f<n>/t<n>: { "to_string": <Mapper::ToString> }.
+// Returns false if clang errored or any f<n> body shape went unmatched.
+bool Extract(const std::filesystem::path &src_path, llvm::json::Object &out);
 
 } // namespace cpp2rust::RuleSrcParser
