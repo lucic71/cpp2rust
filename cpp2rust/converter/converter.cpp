@@ -1779,6 +1779,19 @@ void Converter::ConvertIntegralToBooleanCast(clang::ImplicitCastExpr *expr) {
   }
 }
 
+bool Converter::IsSameRustType(clang::Expr *a, clang::Expr *b) {
+  auto get_converted_type_or_mapped_type = [&](clang::Expr *expr) {
+    if (!clang::isa<clang::ImplicitCastExpr>(expr)) {
+      if (const auto *rule = Mapper::GetExprRule(expr)) {
+        return rule->return_type.type;
+      }
+    }
+    return GetUnsafeTypeAsString(expr->getType());
+  };
+  return get_converted_type_or_mapped_type(a) ==
+         get_converted_type_or_mapped_type(b);
+}
+
 bool Converter::VisitImplicitCastExpr(clang::ImplicitCastExpr *expr) {
   auto *sub_expr = expr->getSubExpr();
   auto type = expr->getType();
@@ -1878,8 +1891,7 @@ bool Converter::VisitImplicitCastExpr(clang::ImplicitCastExpr *expr) {
       break;
     }
     // Skip cast if source and target map to the same Rust type.
-    if (GetUnsafeTypeAsString(sub_expr->getType()) ==
-        GetUnsafeTypeAsString(type)) {
+    if (IsSameRustType(sub_expr, expr)) {
       Convert(sub_expr);
       break;
     }
@@ -3134,7 +3146,7 @@ std::string Converter::GetUnsafeTypeAsString(clang::QualType qual_type) const {
   std::string type_as_string;
   Converter converter(type_as_string, ctx_);
   converter.Convert(qual_type);
-  return type_as_string;
+  return std::string(Trim(type_as_string));
 }
 
 void Converter::ConvertVarInit(clang::QualType qual_type, clang::Expr *expr) {
@@ -3572,7 +3584,8 @@ void Converter::ConvertDeref(clang::Expr *expr) {
 
 void Converter::ConvertArrow(clang::Expr *expr) { ConvertDeref(expr); }
 
-void Converter::ConvertCast(clang::QualType qual_type) {
+void Converter::ConvertCast(clang::QualType qual_type, int line) {
+  log() << "[ConvertCast] Called from line " << line << "\n";
   StrCat(keyword::kAs, GetUnsafeTypeAsString(qual_type));
 }
 
