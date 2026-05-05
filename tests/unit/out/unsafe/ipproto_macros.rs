@@ -12,8 +12,8 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    let mut tcp: i32 = (libc::IPPROTO_TCP as i32);
-    let mut udp: i32 = (libc::IPPROTO_UDP as i32);
-    let mut ip: i32 = (libc::IPPROTO_IP as i32);
+    let mut tcp: i32 = libc::IPPROTO_TCP;
+    let mut udp: i32 = libc::IPPROTO_UDP;
+    let mut ip: i32 = libc::IPPROTO_IP;
     return (((tcp) + (udp)) + (ip));
 }
