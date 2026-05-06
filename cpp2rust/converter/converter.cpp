@@ -1779,17 +1779,12 @@ void Converter::ConvertIntegralToBooleanCast(clang::ImplicitCastExpr *expr) {
   }
 }
 
-bool Converter::IsSameRustType(clang::Expr *a, clang::Expr *b) {
-  auto get_converted_type_or_mapped_type = [&](clang::Expr *expr) {
-    if (!clang::isa<clang::ImplicitCastExpr>(expr)) {
-      if (const auto *rule = Mapper::GetExprRule(expr)) {
-        return rule->return_type.type;
-      }
-    }
-    return GetUnsafeTypeAsString(expr->getType());
-  };
-  return get_converted_type_or_mapped_type(a) ==
-         get_converted_type_or_mapped_type(b);
+bool Converter::IsCastRedundantInRust(clang::Expr *expr, clang::QualType target_type) {
+  auto target = GetUnsafeTypeAsString(target_type);
+  if (const auto *rule = Mapper::GetExprRule(expr)) {
+    return rule->return_type.type == target;
+  }
+  return GetUnsafeTypeAsString(expr->getType()) == target;
 }
 
 bool Converter::VisitImplicitCastExpr(clang::ImplicitCastExpr *expr) {
@@ -1891,7 +1886,7 @@ bool Converter::VisitImplicitCastExpr(clang::ImplicitCastExpr *expr) {
       break;
     }
     // Skip cast if source and target map to the same Rust type.
-    if (IsSameRustType(sub_expr, expr)) {
+    if (IsCastRedundantInRust(sub_expr, type)) {
       Convert(sub_expr);
       break;
     }

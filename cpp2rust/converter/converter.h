@@ -706,7 +706,7 @@ protected:
 
   TempMaterializationCtx CollectPrvalueToLRefArgs(clang::CallExpr *expr);
 
-  bool IsSameRustType(clang::Expr *a, clang::Expr *b);
+  bool IsCastRedundantInRust(clang::Expr *expr, clang::QualType target_type);
 
 private:
   void materializeTemplateSpecialization(clang::CXXRecordDecl *decl);
