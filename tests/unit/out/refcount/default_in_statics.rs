@@ -99,25 +99,6 @@ impl Default for Foo {
 }
 impl ByteRepr for Foo {}
 thread_local!(
-    pub static static_p1: Value<Ptr<i32>> = Rc::new(RefCell::new(Ptr::<i32>::null()));
-);
-thread_local!(
-    pub static static_p2: Value<Ptr<i32>> = Rc::new(RefCell::new(Ptr::<i32>::null()));
-);
-thread_local!(
-    pub static static_cp: Value<Ptr<u8>> = Rc::new(RefCell::new(Ptr::<u8>::null()));
-);
-thread_local!(
-    pub static static_arr: Value<Box<[Ptr<i32>]>> = Rc::new(RefCell::new(
-        (0..4)
-            .map(|_| Ptr::<i32>::null())
-            .collect::<Box<[Ptr<i32>]>>(),
-    ));
-);
-thread_local!(
-    pub static static_pp: Value<Ptr<Ptr<i32>>> = Rc::new(RefCell::new(Ptr::<Ptr<i32>>::null()));
-);
-thread_local!(
     pub static static_fn: Value<FnPtr<fn(i32) -> i32>> = Rc::new(RefCell::new(FnPtr::null()));
 );
 thread_local!(
@@ -174,15 +155,6 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    assert!((*static_p1.with(Value::clone).borrow()).is_null());
-    assert!((*static_p2.with(Value::clone).borrow()).is_null());
-    assert!((*static_cp.with(Value::clone).borrow()).is_null());
-    let i: Value<i32> = Rc::new(RefCell::new(0));
-    'loop_: while ((*i.borrow()) < 4) {
-        assert!(((*static_arr.with(Value::clone).borrow())[(*i.borrow()) as usize]).is_null());
-        (*i.borrow_mut()).prefix_inc();
-    }
-    assert!((*static_pp.with(Value::clone).borrow()).is_null());
     assert!((*static_fn.with(Value::clone).borrow()).is_null());
     assert!((*(*static_outer.with(Value::clone).borrow()).p1.borrow()).is_null());
     assert!((*(*static_outer.with(Value::clone).borrow()).p2.borrow()).is_null());

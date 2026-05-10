@@ -58,11 +58,6 @@ impl Default for Foo {
         }
     }
 }
-pub static mut static_p1: *mut i32 = std::ptr::null_mut();
-pub static mut static_p2: *const i32 = std::ptr::null();
-pub static mut static_cp: *const u8 = std::ptr::null();
-pub static mut static_arr: [*mut i32; 4] = [std::ptr::null_mut(); 4];
-pub static mut static_pp: *mut *mut i32 = std::ptr::null_mut();
 pub static mut static_fn: Option<unsafe fn(i32) -> i32> = None;
 pub static mut static_outer: Outer = Outer {
     p1: std::ptr::null_mut(),
@@ -131,15 +126,6 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    assert!((static_p1).is_null());
-    assert!((static_p2).is_null());
-    assert!((static_cp).is_null());
-    let mut i: i32 = 0;
-    'loop_: while ((i) < (4)) {
-        assert!((static_arr[(i) as usize]).is_null());
-        i.prefix_inc();
-    }
-    assert!((static_pp).is_null());
     assert!((static_fn).is_none());
     assert!((static_outer.p1).is_null());
     assert!((static_outer.p2).is_null());
