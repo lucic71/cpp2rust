@@ -1779,7 +1779,8 @@ void Converter::ConvertIntegralToBooleanCast(clang::ImplicitCastExpr *expr) {
   }
 }
 
-bool Converter::IsCastRedundantInRust(clang::Expr *expr, clang::QualType target_type) {
+bool Converter::IsCastRedundantInRust(clang::Expr *expr,
+                                      clang::QualType target_type) {
   auto target = GetUnsafeTypeAsString(target_type);
   if (const auto *rule = Mapper::GetExprRule(expr)) {
     return rule->return_type.type == target;
