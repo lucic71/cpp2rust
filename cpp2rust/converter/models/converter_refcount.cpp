@@ -503,6 +503,8 @@ void ConverterRefCount::AddByteReprTrait(const clang::RecordDecl *decl) {
   PushBrace brace(*this);
 }
 
+void ConverterRefCount::AddSyncTrait(const clang::RecordDecl *decl) {}
+
 std::string
 ConverterRefCount::GetSelfMaybeWithMut(const clang::CXXMethodDecl *decl) {
   return "&self";

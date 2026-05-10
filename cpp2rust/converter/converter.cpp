@@ -688,6 +688,7 @@ void Converter::EmitRustStructOrUnion(clang::RecordDecl *decl) {
   }
   AddDefaultTrait(decl);
   AddByteReprTrait(decl);
+  AddSyncTrait(decl);
 }
 
 bool Converter::VisitCXXRecordDecl(clang::CXXRecordDecl *decl) {
@@ -3469,6 +3470,26 @@ void Converter::AddDefaultTrait(const clang::RecordDecl *decl) {
 }
 
 void Converter::AddByteReprTrait(const clang::RecordDecl *decl) {}
+
+static bool recordImplementsSync(const clang::RecordDecl *decl) {
+  for (auto field : decl->fields()) {
+    if (field->getType()->isPointerType()) {
+      return true;
+    }
+  }
+  return false;
+}
+
+void Converter::AddSyncTrait(const clang::RecordDecl *decl) {
+  if (!recordImplementsSync(decl)) {
+    return;
+  }
+
+  StrCat("\n// SAFETY: preserves unsafe C semantics; thread-safety is the "
+         "programmer's responsibility\n");
+  StrCat("unsafe impl Sync for", GetRecordName(decl));
+  PushBrace brace(*this);
+}
 
 void Converter::ConvertUnsignedArithBinaryOperator(clang::BinaryOperator *op,
                                                    clang::Expr *expr) {
