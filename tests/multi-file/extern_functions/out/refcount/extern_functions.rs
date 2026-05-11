@@ -31,7 +31,7 @@ pub fn unrelated2_2() -> i32 {
 pub fn unrelated3_3() -> i32 {
     return 3;
 }
-pub fn helper_4(x: i32) -> i32 {
+pub fn helper_0(x: i32) -> i32 {
     let x: Value<i32> = Rc::new(RefCell::new(x));
     ({ unrelated1_1() });
     ({ unrelated2_2() });
