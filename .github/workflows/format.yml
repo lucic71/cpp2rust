@@ -58,8 +58,10 @@ jobs:
       - name: Check Python (ruff)
         uses: astral-sh/ruff-action@v3
         with:
-          args: 'check tests/lit/lit/formats/Cpp2RustTest.py'
+          args: 'check'
+          src: tests/lit/lit/formats/Cpp2RustTest.py
       - name: Check Python formatting (ruff)
         uses: astral-sh/ruff-action@v3
         with:
-          args: 'format --check tests/lit/lit/formats/Cpp2RustTest.py'
+          args: 'format --check'
+          src: tests/lit/lit/formats/Cpp2RustTest.py
