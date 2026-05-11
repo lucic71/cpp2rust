@@ -4,23 +4,338 @@
 import lit.Test
 import lit.util
 from .base import TestFormat
+from dataclasses import dataclass
+from typing import Optional, Tuple
 import difflib
 import os
 import re
 import shutil
-import random
+import tomli
+
+
+MODELS = ("refcount", "unsafe")
+PTR_RE = re.compile(r"0x[0-9a-fA-F]+")
+
+_RE_XFAIL = re.compile(r"//\s*XFAIL:\s*(.*)")
+_RE_PANIC = re.compile(r"//\s*panic\s*(?::\s*(.*))?$", re.MULTILINE)
+_RE_NOCOMPILE = re.compile(r"//\s*no-compile\s*(?::\s*(.*))?$", re.MULTILINE)
+_RE_TRANS_FAIL = re.compile(r"//\s*translation-fail\s*(?::\s*(.*))?$", re.MULTILINE)
+_RE_NONDET = re.compile(r"//\s*nondet-result\s*(?::\s*(.*))?$", re.MULTILINE)
+
+
+@dataclass
+class TestExpectations:
+    should_panic: bool = False
+    should_not_compile: bool = False
+    should_not_translate: bool = False
+    is_nondet_result: bool = False
+    xfail: bool = False
+    fail_code: int = lit.Test.FAIL
+
+    def needs_cpp(self):
+        return not (
+            self.should_panic or self.is_nondet_result or self.should_not_compile
+        )
+
+    @classmethod
+    def parse(cls, text, model):
+        def matches(match):
+            if match is None:
+                return False
+            models = match.group(1)
+            if models is None or models.strip() == "":
+                return True
+            return model in re.split(r"\s*,\s*", models.strip())
+        os.path.join(os.path.dirname(__file__), "../../../../build/tmp/cargo-target")
+    )
+
+
+def cargo_env():
+    return dict(os.environ, CARGO_TARGET_DIR=os.path.abspath(shared_target_dir()))
+
+        e = cls()
+        xfail_m = _RE_XFAIL.search(text)
+        if xfail_m:
+            models = re.split(r"\s*,\s*", xfail_m.group(1))
+            e.xfail = model in models
+            if e.xfail:
+                e.fail_code = lit.Test.XFAIL
+        e.should_panic = matches(_RE_PANIC.search(text))
+        e.should_not_compile = matches(_RE_NOCOMPILE.search(text))
+        e.should_not_translate = matches(_RE_TRANS_FAIL.search(text))
+        e.is_nondet_result = matches(_RE_NONDET.search(text))
+        return e
+
+
+@dataclass
+class TestContext:
+    cc_input: str
+    is_multi: bool
+    fname: str
+    filepath: str
+    model: str
+    tmp_dir: str
+    rs_file: str
+    expectations: TestExpectations
+    replace_expected: bool = False
+    skip_run: bool = False
+    build_dir: Optional[str] = None
+    generated: Optional[str] = None
+    pkg_name: Optional[str] = None
+    cpp_bin: Optional[str] = None
+    rust_bin: Optional[str] = None
+    cpp_result: Optional[Tuple[str, str, int]] = None
+
+    @classmethod
+    def setup(cls, test):
+        cc_input = test.getFilePath()
+        is_multi = is_multi_file_test(cc_input)
+        model = test.getSourcePath().split("/")[-1]
+        fname = (
+            os.path.basename(cc_input)
+            if is_multi
+            else os.path.splitext(os.path.basename(cc_input))[0]
+        )
+        tmp_dir = "tmp/" + fname + "-" + model
+
+        shutil.rmtree(tmp_dir, True)
+        os.makedirs(tmp_dir + "/src")
+
+        return cls(
+            cc_input=cc_input,
+            is_multi=is_multi,
+            fname=fname,
+            filepath=cc_input if is_multi else os.path.dirname(cc_input),
+            model=model,
+            tmp_dir=tmp_dir,
+            rs_file=tmp_dir + "/src/main.rs",
+            expectations=TestExpectations.parse(load_source_text(cc_input), model),
+            replace_expected=bool(os.environ.get("REPLACE_EXPECTED", False)),
+            skip_run=bool(os.environ.get("SKIP_RUN", False)),
+        )
+
+    def translate(self):
+        exp = self.expectations
+        if self.is_multi:
+            build_dir, err = setup_build_dir(self.tmp_dir, self.cc_input)
+            if err is not None:
+                return (exp.fail_code, err)
+            self.build_dir = build_dir
+
+        cmd = cpp2rust_command(self.cc_input, self.build_dir, self.model, self.rs_file)
+        out, err, returncode = lit.util.executeCommand(cmd)
+
+        if not os.path.exists(self.rs_file):
+            return (
+                exp.fail_code,
+                "no out file (rc="
+                + str(returncode)
+                + ")\n"
+                + "cmd: "
+                + " ".join(cmd)
+                + "\n"
+                + "\nstderr: "
+                + err
+                + "\nstdout: "
+                + out,
+            )
+
+        with open(self.rs_file, "r") as f:
+            self.generated = f.read()
+
+        if returncode != 0:
+            if exp.should_not_translate:
+                return (lit.Test.XFAIL, "")
+            return (exp.fail_code, "cpp2rust failed\n" + err)
+
+        if exp.should_not_translate:
+            return (exp.fail_code, "expected translation-fail but cpp2rust succeeded")
+        return None
+
+    def check_expected(self):
+        exp = self.expectations
+        if exp.should_not_compile:
+            return None
+
+        expected_file = get_expected_file(self.filepath, self.model, self.fname)
+        if not os.path.exists(expected_file) and not self.replace_expected:
+            return (exp.fail_code, "no expected file")
+
+        if self.replace_expected:
+            update_expected(self.generated, expected_file)
+
+        with open(expected_file, "r") as f:
+            expected = f.read()
+
+        if self.generated != expected:
+            diff = "".join(
+                difflib.unified_diff(
+                    expected.splitlines(keepends=True),
+                    self.generated.splitlines(keepends=True),
+                    fromfile="expected",
+                    tofile="generated",
+                )
+            )
+            return (exp.fail_code, "different output\n" + diff)
+        return None
+
+    def build_cpp(self):
+        exp = self.expectations
+        if self.skip_run or not exp.needs_cpp():
+            return None
+
+        if self.build_dir is not None:
+            cmd = ["cmake", "--build", self.build_dir]
+            _, _, rc = lit.util.executeCommand(cmd)
+            if rc != 0:
+                return (exp.fail_code, "cmake build failed")
+            self.cpp_bin = os.path.join(self.build_dir, "app")
+            return None
+
+        cc = (
+            os.environ.get("CC", "clang")
+            if self.cc_input.endswith(".c")
+            else os.environ.get("CXX", "clang++")
+        )
+        self.cpp_bin = self.tmp_dir + "/cpp"
+        cmd = [cc, "-O3", "-o", self.cpp_bin, self.cc_input]
+        _, _, rc = lit.util.executeCommand(cmd)
+        if rc != 0:
+            return (exp.fail_code, cc + " failed")
+        return None
+
+    def build_rust(self):
+        exp = self.expectations
+        rust_version = read_rust_version()
+        self.pkg_name = "test_" + re.sub(
+            r"[^a-zA-Z0-9_]", "_", os.path.basename(self.tmp_dir)
+        )
+
+        with open(self.tmp_dir + "/rust-toolchain.toml", "w") as f:
+            f.write(f'[toolchain]\nchannel = "{rust_version}"\n')
+        with open(self.tmp_dir + "/Cargo.toml", "w") as f:
+            f.write(f"""
+[package]
+name = "{self.pkg_name}"
+version = "0.1.0"
+edition = "2021"
+rust-version = "{rust_version}"
+
+[[bin]]
+name = "{self.pkg_name}"
+path = "src/main.rs"
+
+[dependencies]
+libc = "0.2.169"
+libcc2rs = {{ path = "../../../libcc2rs" }}
+""")
+
+        cmd = ["cargo", "build", "--release", "--quiet"]
+        _, err, returncode = lit.util.executeCommand(cmd, self.tmp_dir, env=cargo_env())
+        if exp.should_not_compile:
+            if returncode != 0:
+                return (lit.Test.XFAIL, "")
+            return (exp.fail_code, "expected no-compile but compiled successfully")
+        if returncode != 0:
+            return (exp.fail_code, "cargo failed\n" + err)
+
+        self.rust_bin = os.path.join(shared_target_dir(), "release", self.pkg_name)
+        return None
+
+    def run_cpp(self):
+        exp = self.expectations
+        if self.skip_run or not exp.needs_cpp():
+            return None
+        out, err, rc = lit.util.executeCommand(self.cpp_bin)
+        self.cpp_result = (out, err, rc)
+        return None
+
+    def run_rust(self):
+        exp = self.expectations
+        if self.skip_run:
+            return None
+
+        if exp.should_panic:
+            _, err, rc = lit.util.executeCommand(self.rust_bin)
+            err = str(err)
+            if not re.search(r"thread 'main' \(\d+\) panicked at", err) or rc != 101:
+                return (exp.fail_code, "expected panic\n" + err)
+            return None
+
+        if exp.is_nondet_result:
+            lit.util.executeCommand(self.rust_bin)
+            return None
+
+        out_rs, err_rs, rc_rs = lit.util.executeCommand(self.rust_bin)
+        out_cpp, err_cpp, rc_cpp = self.cpp_result
+        out_cpp_cmp = PTR_RE.sub("0xPTR", out_cpp)
+        out_rs_cmp = PTR_RE.sub("0xPTR", out_rs)
+        if out_cpp_cmp != out_rs_cmp or rc_cpp != rc_rs or err_rs != err_cpp:
+            return (
+                exp.fail_code,
+                "different output\n" + out_cpp + err_cpp + out_rs + err_rs,
+            )
+        return None
+
+    def finalize(self, result):
+        shutil.rmtree(self.tmp_dir, True)
+        return result
+
+
+class Cpp2RustTest(TestFormat):
+    def __init__(self):
+        os.environ["RUSTFLAGS"] = "-Awarnings"
+
+    def execute(self, test, litConfig):
+        ctx = TestContext.setup(test)
+
+        result = (
+            ctx.translate()
+            or ctx.check_expected()
+            or ctx.build_cpp()
+            or ctx.build_rust()
+            or ctx.run_cpp()
+            or ctx.run_rust()
+        )
+        if result is not None:
+            return ctx.finalize(result)
+
+        if ctx.expectations.xfail:
+            return ctx.finalize((lit.Test.FAIL, "did not fail as expected"))
+        return ctx.finalize((lit.Test.PASS, ""))
+
+    def getTestsForPath(self, testSuite, path_in_suite, litConfig, localConfig):
+        source_path = testSuite.getSourcePath(path_in_suite)
+        for model in MODELS:
+            yield lit.Test.Test(
+                testSuite, path_in_suite + (model,), localConfig, source_path
+            )
+
+    def getTestsInDirectory(self, testSuite, path_in_suite, litConfig, localConfig):
+        source_path = testSuite.getSourcePath(path_in_suite)
+        if is_multi_file_test(source_path):
+            for t in self.getTestsForPath(
+                testSuite, path_in_suite, litConfig, localConfig
+            ):
+                yield t
+            return
+        for entry in os.listdir(source_path):
+            full = os.path.join(source_path, entry)
+            if os.path.isfile(full) and (
+                entry.endswith(".cpp") or entry.endswith(".c")
+            ):
+                for t in self.getTestsForPath(
+                    testSuite, path_in_suite + (entry,), litConfig, localConfig
+                ):
+                    yield t
 
 
 def read_rust_version():
     toolchain_path = os.path.join(
-        os.path.dirname(__file__), "../../../../cmake/rust-toolchain.cmake"
+        os.path.dirname(__file__), "../../../../libcc2rs/rust-toolchain.toml"
     )
-    with open(toolchain_path, "r") as f:
-        for line in f:
-            m = re.match(r'set\(RUST_STABLE_VERSION\s+"([^"]+)', line)
-            if m:
-                return m.group(1)
-    raise Exception("could not find rust version in " + toolchain_path)
+    with open(toolchain_path, "rb") as f:
+        return tomli.load(f)["toolchain"]["channel"]
 
 
 def shared_target_dir():
@@ -33,212 +348,63 @@ def cargo_env():
     return dict(os.environ, CARGO_TARGET_DIR=os.path.abspath(shared_target_dir()))
 
 
-class Cpp2RustTest(TestFormat):
-    def __init__(self):
-        self.regex_xfail = re.compile(r"//\s*XFAIL:\s*(.*)")
-        self.regex_panic = re.compile(r"//\s*panic\s*(?::\s*(.*))?$", re.MULTILINE)
-        self.regex_nocompile = re.compile(
-            r"//\s*no-compile\s*(?::\s*(.*))?$", re.MULTILINE
-        )
-        self.regex_translation_fail = re.compile(
-            r"//\s*translation-fail\s*(?::\s*(.*))?$", re.MULTILINE
-        )
-        self.regex_nondet_result = re.compile(
-            r"//\s*nondet-result\s*(?::\s*(.*))?$", re.MULTILINE
-        )
-        self.rust_version = read_rust_version()
-        os.environ["RUSTFLAGS"] = "-Awarnings"
+def is_multi_file_test(path):
+    return os.path.isdir(path) and os.path.exists(os.path.join(path, "CMakeLists.txt"))
 
-    def updateExpected(self, generated, expected_path):
-        os.makedirs(os.path.dirname(expected_path), exist_ok=True)
-        with open(expected_path, "w") as f:
-            f.write(generated)
 
-    def getExpectedFile(self, filepath, model, fname):
-        return filepath + "/out/" + model + "/" + fname + ".rs"
+def load_source_text(cc_input):
+    if os.path.isdir(cc_input):
+        expectations_path = os.path.join(cc_input, "test.expectations")
+        if not os.path.exists(expectations_path):
+            return ""
+        lines = []
+        with open(expectations_path, "r") as f:
+            for line in f:
+                s = line.strip()
+                if not s or s.startswith("#"):
+                    continue
+                lines.append("// " + s)
+        return "\n".join(lines)
+    with open(cc_input, "r") as f:
+        return f.read()
 
-    def getTestsForPath(self, testSuite, path_in_suite, litConfig, localConfig):
-        source_path = testSuite.getSourcePath(path_in_suite)
-        for model in ["refcount", "unsafe"]:
-            yield lit.Test.Test(
-                testSuite, path_in_suite + (model,), localConfig, source_path
-            )
 
-    def getTestsInDirectory(self, testSuite, path_in_suite, litConfig, localConfig):
-        source_path = testSuite.getSourcePath(path_in_suite)
-        for filename in os.listdir(source_path):
-            if filename.endswith(".cpp") or filename.endswith(".c"):
-                for t in self.getTestsForPath(
-                    testSuite, path_in_suite + (filename,), litConfig, localConfig
-                ):
-                    yield t
+def setup_build_dir(tmp_dir, cc_input):
+    build_dir = os.path.abspath(os.path.join(tmp_dir, "cmake-build"))
+    os.makedirs(build_dir, exist_ok=True)
+    cmd = [
+        "cmake",
+        "-S",
+        cc_input,
+        "-B",
+        build_dir,
+        "-DCMAKE_EXPORT_COMPILE_COMMANDS=ON",
+    ]
+    _, err, rc = lit.util.executeCommand(cmd)
+    if rc != 0:
+        return None, "cmake configure failed\n" + err
+    return build_dir, None
 
-    def execute(self, test, litConfig):
-        replace_expected = os.environ.get("REPLACE_EXPECTED", False)
-        skip_run = os.environ.get("SKIP_RUN", False)
 
-        cc_input = test.getFilePath()
-        fname = os.path.splitext(os.path.basename(cc_input))[0]
-        filepath = os.path.dirname(cc_input)
-        model = test.getSourcePath().split("/")[-1]
+def cpp2rust_command(cc_input, build_dir, model, rs_file):
+    if build_dir is not None:
+        return [
+            "./cpp2rust/cpp2rust",
+            "-dir",
+            build_dir,
+            "-model",
+            model,
+            "-o",
+            rs_file,
+        ]
+    return ["./cpp2rust/cpp2rust", "-file", cc_input, "-model", model, "-o", rs_file]
 
-        with open(cc_input, "r") as f:
-            text = f.read()
 
-        def matches_model(match, model):
-            if match is None:
-                return False
-            models = match.group(1)
-            if models is None or models.strip() == "":
-                return True
-            return model in re.split(r"\s*,\s*", models.strip())
+def get_expected_file(filepath, model, fname):
+    return filepath + "/out/" + model + "/" + fname + ".rs"
 
-        should_fail = False
-        fail_code = lit.Test.FAIL
-        xfail = self.regex_xfail.search(text)
-        if xfail:
-            xfail = re.split(r"\s*,\s*", xfail.group(1))
-            should_fail = model in xfail
-            fail_code = lit.Test.XFAIL
 
-        should_panic = matches_model(self.regex_panic.search(text), model)
-        should_not_compile = matches_model(self.regex_nocompile.search(text), model)
-        should_not_translate = matches_model(
-            self.regex_translation_fail.search(text), model
-        )
-        is_nondet_result = matches_model(self.regex_nondet_result.search(text), model)
-
-        tmp_dir = (
-            "tmp/" + fname + "-" + model + "_" + format(random.getrandbits(64), "x")
-        )
-        rs_file = tmp_dir + "/src/main.rs"
-        shutil.rmtree(tmp_dir, True)
-        os.makedirs(tmp_dir + "/src")
-
-        def fail(str, code=fail_code):
-            shutil.rmtree(tmp_dir, True)
-            return code, str
-
-        cmd = ["./cpp2rust/cpp2rust", "-file", cc_input, "-model", model, "-o", rs_file]
-
-        out, err, returncode = lit.util.executeCommand(cmd)
-
-        if not os.path.exists(rs_file):
-            return fail(
-                "no out file (rc="
-                + str(returncode)
-                + ")\n"
-                + "cmd: "
-                + " ".join(cmd)
-                + "\n"
-                + "\nstderr: "
-                + err
-                + "\nstdout: "
-                + out
-            )
-
-        with open(rs_file, "r") as f:
-            generated = f.read()
-
-        if returncode != 0:
-            if should_not_translate:
-                return lit.Test.XFAIL, ""
-            return fail("cpp2rust failed\n" + err)
-
-        if should_not_translate:
-            return fail("expected translation-fail but cpp2rust succeeded")
-
-        if not should_not_compile:
-            expected_file = self.getExpectedFile(filepath, model, fname)
-            if not os.path.exists(expected_file) and not replace_expected:
-                return fail("no expected file")
-
-            if replace_expected:
-                self.updateExpected(generated, expected_file)
-
-            with open(expected_file, "r") as f:
-                expected = f.read()
-
-            if generated != expected:
-                diff = "".join(
-                    difflib.unified_diff(
-                        expected.splitlines(keepends=True),
-                        generated.splitlines(keepends=True),
-                        fromfile="expected",
-                        tofile="generated",
-                    )
-                )
-                return fail("different output\n" + diff)
-
-        pkg_name = "test_" + re.sub(r"[^a-zA-Z0-9_]", "_", os.path.basename(tmp_dir))
-
-        # Check if we can compile the rust file
-        with open(tmp_dir + "/Cargo.toml", "w") as f:
-            f.write(f"""
-[package]
-name = "{pkg_name}"
-version = "0.1.0"
-edition = "2021"
-
-[[bin]]
-name = "{pkg_name}"
-path = "src/main.rs"
-
-[dependencies]
-libc = "0.2.169"
-libcc2rs = {{ path = "../../../libcc2rs" }}
-""")
-
-        cmd = ["cargo", "+" + self.rust_version, "build", "--release", "--quiet"]
-        _, err, returncode = lit.util.executeCommand(cmd, tmp_dir, env=cargo_env())
-        if should_not_compile:
-            if returncode != 0:
-                shutil.rmtree(tmp_dir, True)
-                return lit.Test.XFAIL, ""
-            return fail("expected no-compile but compiled successfully")
-        if returncode != 0:
-            return fail("cargo failed\n" + err)
-
-        rust_bin = os.path.join(shared_target_dir(), "release", pkg_name)
-
-        if not skip_run:
-            if should_panic:
-                _, err, returncode = lit.util.executeCommand(rust_bin)
-                err = str(err)
-                if (
-                    not re.search(r"thread 'main' \(\d+\) panicked at", err)
-                    or returncode != 101
-                ):
-                    return fail("expected panic\n" + err)
-            elif is_nondet_result:
-                lit.util.executeCommand(rust_bin)
-            else:
-                if cc_input.endswith(".c"):
-                    cc = os.environ.get("CC", "clang")
-                else:
-                    cc = os.environ.get("CXX", "clang++")
-                cmd = [cc, "-O3", "-o", tmp_dir + "/cpp", cc_input]
-                _, _, code = lit.util.executeCommand(cmd)
-                if code != 0:
-                    return fail(cc + " failed")
-
-                out_cpp, err_cpp, code_cpp = lit.util.executeCommand(tmp_dir + "/cpp")
-                out_rs, err_rs, code_rs = lit.util.executeCommand(rust_bin)
-                # Normalize pointer addresses (0x...) since they differ between C++ and Rust
-                ptr_re = re.compile(r"0x[0-9a-fA-F]+")
-                out_cpp_cmp = ptr_re.sub("0xPTR", out_cpp)
-                out_rs_cmp = ptr_re.sub("0xPTR", out_rs)
-                if (
-                    out_cpp_cmp != out_rs_cmp
-                    or code_cpp != code_rs
-                    or err_rs != err_cpp
-                ):
-                    return fail(
-                        "different output\n" + out_cpp + err_cpp + out_rs + err_rs
-                    )
-
-        if should_fail:
-            return fail("did not fail as expected", lit.Test.FAIL)
-
-        shutil.rmtree(tmp_dir, True)
-        return lit.Test.PASS, ""
+def update_expected(generated, expected_path):
+    os.makedirs(os.path.dirname(expected_path), exist_ok=True)
+    with open(expected_path, "w") as f:
+        f.write(generated)
