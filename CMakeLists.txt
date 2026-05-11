@@ -86,9 +86,12 @@ add_subdirectory(libcc2rs)
 add_subdirectory(tests)
 
 find_program(CLANG_FORMAT NAMES clang-format-22 clang-format)
+find_program(RUFF NAMES ruff)
 
 file(GLOB_RECURSE ALL_CXX_SOURCES
      cpp2rust/*.cpp cpp2rust/*.h tests/*.cpp tests/*.c)
+
+set(PYTHON_SOURCES ${PROJECT_SOURCE_DIR}/tests/lit/lit/formats/Cpp2RustTest.py)
 
 add_custom_target("format"
                   COMMAND ${CLANG_FORMAT} -i ${ALL_CXX_SOURCES}
@@ -96,8 +99,10 @@ add_custom_target("format"
                   COMMAND rustup run ${RUST_STABLE_VERSION} cargo fmt --manifest-path ${PROJECT_SOURCE_DIR}/rule-preprocessor/Cargo.toml
                   COMMAND rustup run ${RUST_STABLE_VERSION} cargo fmt --manifest-path ${PROJECT_SOURCE_DIR}/libcc2rs/Cargo.toml
                   COMMAND rustup run ${RUST_STABLE_VERSION} cargo fmt --manifest-path ${PROJECT_SOURCE_DIR}/libcc2rs-macros/Cargo.toml
+                  COMMAND ${RUFF} --silent check --fix ${PYTHON_SOURCES}
+                  COMMAND ${RUFF} --silent format ${PYTHON_SOURCES}
                   DEPENDS "${RUST_STAMP_FILE}"
-                  COMMENT "Running clang-format and cargo fmt on all source files"
+                  COMMENT "Running clang-format, cargo fmt, and ruff on all source files"
                   VERBATIM
                   )
 
