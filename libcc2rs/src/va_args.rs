@@ -121,3 +121,18 @@ impl<T: 'static> VaArgGet for crate::rc::Ptr<T> {
         }
     }
 }
+
+impl<T: 'static> From<crate::FnPtr<T>> for VaArg {
+    fn from(v: crate::FnPtr<T>) -> Self {
+        VaArg::Ptr(v.to_any())
+    }
+}
+
+impl<T: 'static> VaArgGet for crate::FnPtr<T> {
+    fn get(v: &VaArg) -> Self {
+        match v {
+            VaArg::Ptr(any) => any.cast_fn::<T>().expect("VaArgGet: FnPtr type mismatch"),
+            _ => panic!("VaArgGet: expected FnPtr"),
+        }
+    }
+}
