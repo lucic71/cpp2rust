@@ -2611,7 +2611,7 @@ bool Converter::VisitVAArgExpr(clang::VAArgExpr *expr) {
   if (expr->getType()->isFunctionPointerType()) {
     StrCat("std::mem::transmute::<*mut ::libc::c_void", token::kComma);
     Convert(expr->getType());
-    StrCat(">");
+    StrCat('>');
     PushParen paren(*this);
     {
       PushExprKind push(*this, ExprKind::RValue);
