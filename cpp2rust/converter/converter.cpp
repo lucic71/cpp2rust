@@ -3552,6 +3552,12 @@ void Converter::ConvertAddrOf(clang::Expr *expr, clang::QualType pointer_type) {
   if (IsReferenceType(expr) || pointer_type->isFunctionPointerType()) {
     PushExprKind push(*this, ExprKind::AddrOf);
     Convert(expr);
+  } else if (IsGlobalVar(expr)) {
+    StrCat("&raw", pointer_type->getPointeeType().isConstQualified()
+                       ? keyword::kConst
+                       : keyword_mut_);
+    Convert(expr);
+    ConvertCast(pointer_type);
   } else {
     StrCat(token::kRef);
     if (!pointer_type->getPointeeType().isConstQualified()) {
