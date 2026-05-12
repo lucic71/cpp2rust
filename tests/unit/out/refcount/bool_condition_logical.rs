@@ -45,7 +45,7 @@ fn main_0() -> i32 {
     let zero: Value<i32> = Rc::new(RefCell::new(0));
     let storage: Value<i32> = Rc::new(RefCell::new(7));
     let p: Value<Ptr<i32>> = Rc::new(RefCell::new((storage.as_pointer())));
-    let np: Value<Ptr<i32>> = Rc::new(RefCell::new(Ptr::<i32>::null()));
+    let np: Value<Ptr<i32>> = Rc::new(RefCell::new(Default::default()));
     let u: Value<u32> = Rc::new(RefCell::new(4_u32));
     let code: Value<Code> = Rc::new(RefCell::new(Code::CODE_OK));
     if ((*n.borrow()) != 0) && (!(*p.borrow()).is_null()) {
@@ -86,16 +86,16 @@ fn main_0() -> i32 {
     assert!(((*side_effect.with(Value::clone).borrow()) == 0));
     let x: Value<i32> = Rc::new(RefCell::new(5));
     let y: Value<i32> = Rc::new(RefCell::new(3));
-    let flags: Value<u32> = Rc::new(RefCell::new(2_u32));
-    if ((*x.borrow()) > (*y.borrow())) || (((*flags.borrow()) & 1_u32) != 0) {
+    let flags: Value<u32> = Rc::new(RefCell::new(2));
+    if ((*x.borrow()) > (*y.borrow())) || (((*flags.borrow()) & 1) != 0) {
         assert!(true);
     }
-    if ((*x.borrow()) < (*y.borrow())) || (((*flags.borrow()) & 1_u32) != 0) {
+    if ((*x.borrow()) < (*y.borrow())) || (((*flags.borrow()) & 1) != 0) {
         assert!(false);
     }
-    let a: Value<u32> = Rc::new(RefCell::new(1_u32));
-    let b: Value<u32> = Rc::new(RefCell::new(2_u32));
-    let c: Value<u32> = Rc::new(RefCell::new(3_u32));
+    let a: Value<u32> = Rc::new(RefCell::new(1));
+    let b: Value<u32> = Rc::new(RefCell::new(2));
+    let c: Value<u32> = Rc::new(RefCell::new(3));
     if ((*a.borrow()) != (*c.borrow())) && ((*b.borrow()) != (*c.borrow())) {
         assert!(true);
     }
@@ -103,31 +103,31 @@ fn main_0() -> i32 {
     if (!((*p.borrow()).is_null())) && ((*s.borrow()) < 0) {
         assert!(true);
     }
-    let k: Value<u32> = Rc::new(RefCell::new(2_u32));
+    let k: Value<u32> = Rc::new(RefCell::new(2));
     let done: Value<bool> = Rc::new(RefCell::new(false));
-    if ((*k.borrow()) > 1_u32) || (!(*done.borrow())) {
+    if ((*k.borrow()) > 1) || (!(*done.borrow())) {
         assert!(true);
     }
-    if ((*x.borrow()) > (*y.borrow())) || (((*flags.borrow()) & 4_u32) != 0) {
+    if ((*x.borrow()) > (*y.borrow())) || (((*flags.borrow()) & 4) != 0) {
         assert!(true);
     }
-    let ull: Value<u64> = Rc::new(RefCell::new(7_u64));
+    let ull: Value<u64> = Rc::new(RefCell::new(7));
     if (!((*p.borrow()).is_null())) && ((*ull.borrow()) != 0) {
         assert!(true);
     }
     if ((*x.borrow()) > (*y.borrow())) && ((*ull.borrow()) != 0) {
         assert!(true);
     }
-    let mask: Value<i64> = Rc::new(RefCell::new(((1_i64 << 4) | (1_i64 << 5))));
-    let bits: Value<i64> = Rc::new(RefCell::new((1_i64 << 4)));
+    let mask: Value<i64> = Rc::new(RefCell::new(((1 << 4) | (1 << 5))));
+    let bits: Value<i64> = Rc::new(RefCell::new((1 << 4)));
     if ((*n.borrow()) != 0) && (((*bits.borrow()) & (*mask.borrow())) != 0) {
         assert!(true);
     }
-    if ((*n.borrow()) != 0) || (((*bits.borrow()) & 256_i64) != 0) {
+    if ((*n.borrow()) != 0) || (((*bits.borrow()) & 256) != 0) {
         assert!(true);
     }
     let cp: Value<Ptr<u8>> = Rc::new(RefCell::new(Ptr::from_string_literal("hi")));
-    let cnp: Value<Ptr<u8>> = Rc::new(RefCell::new(Ptr::<u8>::null()));
+    let cnp: Value<Ptr<u8>> = Rc::new(RefCell::new(Default::default()));
     if ((*x.borrow()) > (*y.borrow())) && (!(*cp.borrow()).is_null()) {
         assert!(true);
     }
