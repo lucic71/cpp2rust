@@ -1160,7 +1160,7 @@ bool ConverterRefCount::VisitExplicitCastExpr(clang::ExplicitCastExpr *expr) {
       Convert(expr->getSubExpr());
       PushConversionKind push(*this, ConversionKind::Unboxed);
       StrCat(std::format(".cast::<{}>().expect(\"ub:wrong type\")",
-                         ToString(expr->getType()->getPointeeType())));
+                         ConvertPointeeType(expr->getType())));
       return false;
     } else if (expr->getSubExpr()->getType()->isPointerType() &&
                !expr->getSubExpr()->isNullPointerConstant(
@@ -1609,7 +1609,10 @@ bool ConverterRefCount::VisitVAArgExpr(clang::VAArgExpr *expr) {
   }
   StrCat(ConvertLValue(va_list_expr));
   StrCat(".arg::<");
-  StrCat(GetUnsafeTypeAsString(expr->getType()));
+  {
+    PushConversionKind push(*this, ConversionKind::Unboxed);
+    StrCat(ToString(expr->getType()));
+  }
   StrCat(">()");
   return false;
 }
