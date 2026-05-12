@@ -1,6 +1,7 @@
 // Copyright (c) 2022-present INESC-ID.
 // Distributed under the MIT license that can be found in the LICENSE file.
 
+#include <cassert>
 #include <cstdio>
 #include <string>
 
@@ -12,6 +13,8 @@ int main() {
   fprintf(stdout, "%s\n", "fprintf stdout");
   fprintf(stdout, "%d %u %ld\n", 1, 2U, 3L);
   fprintf(stdout, "hello world");
+  FILE *in = stdin;
+  assert(in != NULL);
   printf("%s\n", "printf");
   printf("hello world");
   std::string s = "a string";

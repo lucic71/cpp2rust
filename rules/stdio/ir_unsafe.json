@@ -861,6 +861,17 @@
       "is_unsafe_pointer": true
     }
   },
+  "f10": {
+    "body": [
+      {
+        "text": "libcc2rs::cin_unsafe()"
+      }
+    ],
+    "return_type": {
+      "type": "*mut ::std::fs::File",
+      "is_unsafe_pointer": true
+    }
+  },
   "t1": {
     "init": "Default::default()",
     "type": "*mut ::std::fs::File",

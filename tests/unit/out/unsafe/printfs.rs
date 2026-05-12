@@ -34,6 +34,8 @@ unsafe fn main_0() -> i32 {
     );
     printf(b"%d %u %ld\n\0".as_ptr() as *const i8, 1, 2_u32, 3_i64);
     printf(b"hello world\0".as_ptr() as *const i8);
+    let mut in_: *mut ::std::fs::File = libcc2rs::cin_unsafe();
+    assert!(((in_) != (std::ptr::null_mut())));
     printf(b"%s\n\0".as_ptr() as *const i8, b"printf\0".as_ptr());
     printf(b"hello world\0".as_ptr() as *const i8);
     let mut s: Vec<u8> = {
