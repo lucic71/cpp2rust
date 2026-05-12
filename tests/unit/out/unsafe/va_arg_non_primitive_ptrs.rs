@@ -31,9 +31,9 @@ impl From<i32> for opt {
         }
     }
 }
-pub unsafe fn dispatch_0(mut option: i32, args: &[VaArg]) -> i32 {
+pub unsafe fn dispatch_0(mut option: i32, __args: &[VaArg]) -> i32 {
     let mut ap: VaList = VaList::default();
-    ap = VaList::new(args);
+    ap = VaList::new(__args);
     let mut result: i32 = 0;
     'switch: {
         let __match_cond = option;

@@ -31,10 +31,10 @@ impl From<i32> for opt {
         }
     }
 }
-pub fn dispatch_0(option: i32, args: &[VaArg]) -> i32 {
+pub fn dispatch_0(option: i32, __args: &[VaArg]) -> i32 {
     let option: Value<i32> = Rc::new(RefCell::new(option));
     let ap: Value<VaList> = Rc::new(RefCell::new(VaList::default()));
-    (*ap.borrow_mut()) = VaList::new(args);
+    (*ap.borrow_mut()) = VaList::new(__args);
     let result: Value<i32> = Rc::new(RefCell::new(0));
     'switch: {
         let __match_cond = (*option.borrow());
