@@ -146,7 +146,9 @@ add_custom_target("check"
                   DEPENDS check-libcc2rs check-unit
                  )
 
-file(GLOB rule_src_files ${PROJECT_SOURCE_DIR}/rules/*/src.cpp)
+file(GLOB rule_src_files
+     ${PROJECT_SOURCE_DIR}/rules/*/src.cpp
+     ${PROJECT_SOURCE_DIR}/rules/*/src.c)
 set(cpp_rules_ir_outputs)
 set(rust_rules_ir_outputs)
 set(rust_rules_inputs)

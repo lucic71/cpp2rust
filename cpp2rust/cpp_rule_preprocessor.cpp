@@ -752,9 +752,9 @@ llvm::cl::OptionCategory cat("cpp-rule-preprocessor options");
 
 llvm::cl::opt<std::string>
     SrcFile("file",
-            llvm::cl::desc("Path to a rule's src.cpp. ir_src.json is written "
-                           "next to it"),
-            llvm::cl::value_desc("src.cpp"), llvm::cl::Required,
+            llvm::cl::desc("Path to a rule's src.c or src.cpp. ir_src.json is "
+                           "written next to it"),
+            llvm::cl::value_desc("src.c|src.cpp"), llvm::cl::Required,
             llvm::cl::cat(cat));
 
 } // namespace
