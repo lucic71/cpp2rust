@@ -26,6 +26,8 @@ fn main_0() -> i32 {
     println!("{}", Ptr::from_string_literal("fprintf stdout"));
     println!("{} {} {}", 1, 2_u32, 3_i64);
     print!("hello world");
+    let in_: Value<Ptr<::std::fs::File>> = Rc::new(RefCell::new((libcc2rs::cin()).clone()));
+    assert!(!((*in_.borrow()).is_null()));
     println!("{}", Ptr::from_string_literal("printf"));
     print!("hello world");
     let s: Value<Vec<u8>> = Rc::new(RefCell::new(

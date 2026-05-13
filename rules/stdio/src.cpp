@@ -30,3 +30,5 @@ int f7(FILE *stream) { return fflush(stream); }
 FILE *f8() { return stdout; }
 
 FILE *f9() { return stderr; }
+
+FILE *f10() { return stdin; }

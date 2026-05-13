@@ -7,12 +7,25 @@ use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 
 thread_local! {
+    static SAFE_STDIN: Value<std::fs::File> = Rc::new(RefCell::new(std::fs::File::from(
+        std::io::stdin().as_fd().try_clone_to_owned().unwrap(),
+    )));
     static SAFE_STDOUT: Value<std::fs::File> = Rc::new(RefCell::new(std::fs::File::from(
         std::io::stdout().as_fd().try_clone_to_owned().unwrap(),
     )));
     static SAFE_STDERR: Value<std::fs::File> = Rc::new(RefCell::new(std::fs::File::from(
         std::io::stderr().as_fd().try_clone_to_owned().unwrap(),
     )));
+    static UNSAFE_STDIN: UnsafeCell<std::fs::File> = unsafe {
+        UnsafeCell::new(
+            std::fs::File::from_raw_fd(
+                std::io::stdin()
+                    .as_fd()
+                    .try_clone_to_owned()
+                    .unwrap()
+                    .into_raw_fd(),
+        ))
+    };
     static UNSAFE_STDOUT: UnsafeCell<std::fs::File> = unsafe {
         UnsafeCell::new(
             std::fs::File::from_raw_fd(
@@ -35,12 +48,24 @@ thread_local! {
     };
 }
 
+pub fn cin() -> Ptr<std::fs::File> {
+    SAFE_STDIN.with(AsPointer::as_pointer)
+}
+
 pub fn cout() -> Ptr<std::fs::File> {
     SAFE_STDOUT.with(AsPointer::as_pointer)
 }
 
 pub fn cerr() -> Ptr<std::fs::File> {
     SAFE_STDERR.with(AsPointer::as_pointer)
+}
+
+/// # Safety
+///
+/// The caller must ensure that the returned pointer is not used after the
+//  thread finishes.
+pub unsafe fn cin_unsafe() -> *mut std::fs::File {
+    UNSAFE_STDIN.with(UnsafeCell::get)
 }
 
 /// # Safety
