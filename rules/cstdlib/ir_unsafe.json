@@ -5,5 +5,90 @@
         "text": "std::process::abort();"
       }
     ]
+  },
+  "f2": {
+    "body": [
+      {
+        "text": "libc::free("
+      },
+      {
+        "placeholder": {
+          "arg": 0,
+          "access": "read"
+        }
+      },
+      {
+        "text": ")"
+      }
+    ],
+    "params": {
+      "a0": {
+        "type": "*mut ::libc::c_void",
+        "is_unsafe_pointer": true
+      }
+    }
+  },
+  "f3": {
+    "body": [
+      {
+        "text": "libc::malloc("
+      },
+      {
+        "placeholder": {
+          "arg": 0,
+          "access": "read"
+        }
+      },
+      {
+        "text": " as ::libc::size_t)"
+      }
+    ],
+    "params": {
+      "a0": {
+        "type": "u64"
+      }
+    },
+    "return_type": {
+      "type": "*mut ::libc::c_void",
+      "is_unsafe_pointer": true
+    }
+  },
+  "f4": {
+    "body": [
+      {
+        "text": "libc::realloc("
+      },
+      {
+        "placeholder": {
+          "arg": 0,
+          "access": "read"
+        }
+      },
+      {
+        "text": ", "
+      },
+      {
+        "placeholder": {
+          "arg": 1,
+          "access": "read"
+        }
+      },
+      {
+        "text": " as ::libc::size_t)"
+      }
+    ],
+    "params": {
+      "a0": {
+        "type": "*mut ::libc::c_void",
+        "is_unsafe_pointer": true
+      },
+      "a1": {
+        "type": "u64"
+      }
+    },
+    "return_type": {
+      "type": "*mut ::libc::c_void",
+      "is_unsafe_pointer": true
+    }
   }
 }
