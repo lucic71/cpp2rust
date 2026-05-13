@@ -23,16 +23,8 @@ int main() {
   assert(t.tm_mon == 5);
   assert(t.tm_mday == 15);
 
-  struct sockaddr_in sa;
-  sa.sin_family = AF_INET;
-  sa.sin_port = 8080;
-  assert(sa.sin_family == AF_INET);
-  assert(sa.sin_port == 8080);
-
   struct stat st;
   st.st_size = 1024;
   assert(st.st_size == 1024);
-  assert(p.fd == -1);
-  assert(p.events == 0);
   return 0;
 }

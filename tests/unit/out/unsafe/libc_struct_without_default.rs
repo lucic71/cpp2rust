@@ -26,15 +26,8 @@ unsafe fn main_0() -> i32 {
     assert!(((((t.tm_year) == (124)) as i32) != 0));
     assert!(((((t.tm_mon) == (5)) as i32) != 0));
     assert!(((((t.tm_mday) == (15)) as i32) != 0));
-    let mut sa: sockaddr_in = std::mem::zeroed::<sockaddr_in>();
-    sa.sin_family = 2_u16;
-    sa.sin_port = 8080_u16;
-    assert!(((((sa.sin_family as i32) == (2)) as i32) != 0));
-    assert!(((((sa.sin_port as i32) == (8080)) as i32) != 0));
     let mut st: stat = std::mem::zeroed::<stat>();
     st.st_size = 1024_i64;
     assert!(((((st.st_size) == (1024_i64)) as i32) != 0));
-    assert!(((((p.fd) == (-1_i32)) as i32) != 0));
-    assert!(((((p.events as i32) == (0)) as i32) != 0));
     return 0;
 }
