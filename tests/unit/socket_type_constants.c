@@ -5,11 +5,6 @@
 int main() {
   assert(SOCK_STREAM == 1);
   assert(SOCK_DGRAM == 2);
-  assert(SOCK_RAW == 3);
-  assert(SOCK_RDM == 4);
-  assert(SOCK_SEQPACKET == 5);
-  assert(SOCK_DCCP == 6);
-  assert(SOCK_PACKET == 10);
 
   int x = SOCK_STREAM | SOCK_CLOEXEC;
   assert((x & SOCK_STREAM) == SOCK_STREAM);

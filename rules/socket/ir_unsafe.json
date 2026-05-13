@@ -9,16 +9,6 @@
       "type": "i32"
     }
   },
-  "f10": {
-    "body": [
-      {
-        "text": "libc::SOCK_NONBLOCK"
-      }
-    ],
-    "return_type": {
-      "type": "i32"
-    }
-  },
   "f2": {
     "body": [
       {
@@ -42,7 +32,7 @@
   "f4": {
     "body": [
       {
-        "text": "libc::SOCK_RAW"
+        "text": "libc::SOCK_CLOEXEC"
       }
     ],
     "return_type": {
@@ -52,47 +42,7 @@
   "f5": {
     "body": [
       {
-        "text": "libc::SOCK_RDM"
-      }
-    ],
-    "return_type": {
-      "type": "i32"
-    }
-  },
-  "f6": {
-    "body": [
-      {
-        "text": "libc::SOCK_SEQPACKET"
-      }
-    ],
-    "return_type": {
-      "type": "i32"
-    }
-  },
-  "f7": {
-    "body": [
-      {
-        "text": "libc::SOCK_DCCP"
-      }
-    ],
-    "return_type": {
-      "type": "i32"
-    }
-  },
-  "f8": {
-    "body": [
-      {
-        "text": "libc::SOCK_PACKET"
-      }
-    ],
-    "return_type": {
-      "type": "i32"
-    }
-  },
-  "f9": {
-    "body": [
-      {
-        "text": "libc::SOCK_CLOEXEC"
+        "text": "libc::SOCK_NONBLOCK"
       }
     ],
     "return_type": {
