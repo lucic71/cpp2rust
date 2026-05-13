@@ -35,3 +35,11 @@ unsafe fn f4(a0: *mut u8, a1: *const u8, a2: usize) -> *mut u8 {
     }
     a0
 }
+
+unsafe fn f5(a0: *const u8, a1: i32) -> *mut u8 {
+    libc::strchr(a0 as *const i8, a1) as *mut u8
+}
+
+unsafe fn f6(a0: *const u8, a1: i32) -> *const u8 {
+    libc::strchr(a0 as *const i8, a1) as *const u8
+}
