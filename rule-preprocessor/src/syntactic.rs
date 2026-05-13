@@ -258,7 +258,7 @@ impl<'a> FnIrBuilder<'a> {
         Self { fn_item }
     }
 
-    fn cfg_target_os(&self) -> Option<String> {
+    fn get_target_os(&self) -> Option<String> {
         use ast::HasAttrs;
         for attr in self.fn_item.attrs() {
             let meta_text = attr.meta()?.syntax().text().to_string();
@@ -524,7 +524,7 @@ impl<'a> FnIrBuilder<'a> {
             },
             multi_statement,
             body,
-            cfg: self.cfg_target_os(),
+            target_os: self.get_target_os(),
         };
         ir.validate(&format!("{}:{}", path.display(), fn_name));
         ir

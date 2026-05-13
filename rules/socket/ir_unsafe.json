@@ -35,7 +35,7 @@
         "text": "libc::SOCK_CLOEXEC"
       }
     ],
-    "cfg": "linux",
+    "target_os": "linux",
     "return_type": {
       "type": "i32"
     }
@@ -46,7 +46,7 @@
         "text": "libc::SOCK_NONBLOCK"
       }
     ],
-    "cfg": "linux",
+    "target_os": "linux",
     "return_type": {
       "type": "i32"
     }

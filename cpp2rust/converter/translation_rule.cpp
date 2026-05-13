@@ -130,11 +130,11 @@ TypeRule ParseTypeRuleJSON(const llvm::json::Object &obj) {
   return rule;
 }
 
-bool CfgMatchesHost(llvm::StringRef cfg) {
+bool TargetOSMatchesHost(llvm::StringRef target_os) {
 #if defined(__linux__)
-  return cfg == "linux";
+  return target_os == "linux";
 #elif defined(__APPLE__)
-  return cfg == "macos";
+  return target_os == "macos";
 #else
   return false;
 #endif
@@ -163,7 +163,8 @@ void LoadTgtFromIR(ExprRules &exprs, TypeRules &types,
     if (!obj)
       continue;
 
-    if (auto cfg = obj->getString("cfg"); cfg && !CfgMatchesHost(*cfg)) {
+    if (auto target_os = obj->getString("target_os");
+        target_os && !TargetOSMatchesHost(*target_os)) {
       continue;
     }
 

@@ -50,7 +50,7 @@ pub struct TypeInfo {
 pub struct FnIr {
     pub body: Vec<BodyFragment>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub cfg: Option<String>,
+    pub target_os: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub generics: Option<BTreeMap<String, Vec<String>>>,
     #[serde(skip_serializing_if = "Option::is_none")]
