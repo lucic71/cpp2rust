@@ -112,7 +112,7 @@ pub fn fread_refcount(a0: AnyPtr, a1: u64, a2: u64, a3: Ptr<::std::fs::File>) ->
 
         for &byte in &buffer[..n] {
             dst.write(byte);
-            dst = dst.offset(1);
+            dst += 1;
         }
 
         read_bytes += n;
