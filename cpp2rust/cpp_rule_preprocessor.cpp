@@ -777,11 +777,11 @@ namespace {
 llvm::cl::OptionCategory cat("cpp-rule-preprocessor options");
 
 llvm::cl::opt<std::string>
-    SrcFile("file",
-            llvm::cl::desc("Path to a rule's src.cpp. ir_src.json is written "
-                           "next to it"),
-            llvm::cl::value_desc("src.cpp"), llvm::cl::Required,
-            llvm::cl::cat(cat));
+    SrcDir("dir",
+           llvm::cl::desc("Path to a rule directory containing src.c and/or "
+                          "src.cpp. ir_src.json is written into this dir."),
+           llvm::cl::value_desc("rule-dir"), llvm::cl::Required,
+           llvm::cl::cat(cat));
 
 } // namespace
 
@@ -789,12 +789,27 @@ int main(int argc, char *argv[]) {
   llvm::cl::HideUnrelatedOptions(cat);
   llvm::cl::ParseCommandLineOptions(argc, argv);
 
-  fs::path src = SrcFile.getValue();
-  llvm::errs() << "Preprocessing " << src.string() << '\n';
+  fs::path dir = SrcDir.getValue();
   llvm::json::Object root;
-  cpp2rust::Extract(src, root);
+  for (const char *name : {"src.c", "src.cpp"}) {
+    auto path = dir / name;
+    if (!fs::exists(path)) {
+      continue;
+    }
+    llvm::errs() << "Preprocessing " << path.string() << '\n';
+    llvm::json::Object file_root;
+    cpp2rust::Extract(path, file_root);
+    for (auto &[k, v] : file_root) {
+      if (!root.try_emplace(k, std::move(v)).second) {
+        llvm::errs() << "ERROR: rule name " << k.str()
+                     << " defined in multiple files in " << dir.string()
+                     << '\n';
+        return EXIT_FAILURE;
+      }
+    }
+  }
 
-  auto out_path = src.parent_path() / "ir_src.json";
+  auto out_path = dir / "ir_src.json";
   std::error_code ec;
   llvm::raw_fd_ostream out(out_path.string(), ec);
   if (ec) {

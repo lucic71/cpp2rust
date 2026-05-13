@@ -146,17 +146,20 @@ add_custom_target("check"
                   DEPENDS check-libcc2rs check-unit
                  )
 
-file(GLOB rule_src_files ${PROJECT_SOURCE_DIR}/rules/*/src.cpp)
+file(GLOB rule_subdirs ${PROJECT_SOURCE_DIR}/rules/*)
 set(cpp_rules_ir_outputs)
 set(rust_rules_ir_outputs)
 set(rust_rules_inputs)
-foreach(_src IN LISTS rule_src_files)
-  get_filename_component(_rule_dir ${_src} DIRECTORY)
+foreach(_rule_dir IN LISTS rule_subdirs)
+  file(GLOB _srcs ${_rule_dir}/src.c ${_rule_dir}/src.cpp)
+  if(NOT _srcs)
+    continue()
+  endif()
   set(_out ${_rule_dir}/ir_src.json)
   add_custom_command(
     OUTPUT ${_out}
-    COMMAND $<TARGET_FILE:cpp-rule-preprocessor> --file ${_src}
-    DEPENDS ${_src} ${PROJECT_SOURCE_DIR}/cpp2rust/cpp_rule_preprocessor.cpp
+    COMMAND $<TARGET_FILE:cpp-rule-preprocessor> --dir ${_rule_dir}
+    DEPENDS ${_srcs} ${PROJECT_SOURCE_DIR}/cpp2rust/cpp_rule_preprocessor.cpp
     VERBATIM
   )
   list(APPEND cpp_rules_ir_outputs ${_out})
