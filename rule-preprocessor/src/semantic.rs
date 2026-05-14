@@ -70,7 +70,12 @@ fn get_sysroot() -> PathBuf {
 
 fn find_deps_dir() -> PathBuf {
     let target_dir = std::env::var("CARGO_TARGET_DIR").expect("CARGO_TARGET_DIR must be set");
-    PathBuf::from(target_dir).join("debug").join("deps")
+    let profile = if cfg!(debug_assertions) {
+        "debug"
+    } else {
+        "release"
+    };
+    PathBuf::from(target_dir).join(profile).join("deps")
 }
 
 fn find_rlib(deps_dir: &Path, crate_name: &str) -> Option<PathBuf> {

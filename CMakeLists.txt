@@ -185,8 +185,8 @@ add_custom_command(
   OUTPUT ${rust_rules_ir_outputs}
   COMMAND cargo +${RUST_STABLE_VERSION} build --release --manifest-path "${PROJECT_SOURCE_DIR}/rules/Cargo.toml"
   COMMAND ${CMAKE_COMMAND} -E env
-          CARGO_TARGET_DIR="${CMAKE_CURRENT_BINARY_DIR}/target_preprocessor"
-          cargo +${RUST_NIGHTLY_VERSION} run --manifest-path "${PROJECT_SOURCE_DIR}/rule-preprocessor/Cargo.toml"
+          CARGO_TARGET_DIR=${CMAKE_BINARY_DIR}/target_preprocessor
+          cargo +${RUST_NIGHTLY_VERSION} run --release --manifest-path "${PROJECT_SOURCE_DIR}/rule-preprocessor/Cargo.toml"
   DEPENDS ${rust_rules_inputs} ${rule_preprocessor_sources} "${RUST_STAMP_FILE}"
   VERBATIM
 )
@@ -195,13 +195,11 @@ add_custom_target("preprocess-rust-rules" ALL
                   DEPENDS ${rust_rules_ir_outputs})
 
 add_custom_target("check-rules"
-                  COMMAND find ${PROJECT_SOURCE_DIR}/rules -name "ir_unsafe.json" -delete
-                  COMMAND find ${PROJECT_SOURCE_DIR}/rules -name "ir_refcount.json" -delete
-                  COMMAND find ${PROJECT_SOURCE_DIR}/rules -name "ir_src.json" -delete
-                  COMMAND ${CMAKE_COMMAND} --build --release ${CMAKE_BINARY_DIR} --target preprocess-cpp-rules
-                  COMMAND ${CMAKE_COMMAND} --build --release ${CMAKE_BINARY_DIR} --target preprocess-rust-rules
-                  COMMAND ${CMAKE_COMMAND} -E chdir ${PROJECT_SOURCE_DIR}
-                          git diff --exit-code -- rules/
+                  COMMAND find rules "\\(" -name ir_unsafe.json -o -name ir_refcount.json -o -name ir_src.json "\\)" -delete
+                  COMMAND ${CMAKE_COMMAND} --build ${CMAKE_BINARY_DIR} --target preprocess-cpp-rules
+                  COMMAND ${CMAKE_COMMAND} --build ${CMAKE_BINARY_DIR} --target preprocess-rust-rules
+                  COMMAND git diff --exit-code -- rules/
+                  WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
                  )
 
 add_custom_target("check-all"
