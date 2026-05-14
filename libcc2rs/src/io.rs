@@ -193,7 +193,7 @@ pub unsafe fn fwrite_unsafe(
         for b in buffer.iter_mut().take(to_fill) {
             unsafe {
                 *b = *src;
-                src += 1;
+                src = src.offset(1);
             }
         }
 
@@ -252,7 +252,7 @@ pub unsafe fn fread_unsafe(
         for &byte in &buffer[..n] {
             unsafe {
                 *dst = byte;
-                dst += 1;
+                dst = dst.offset(1);
             }
         }
 
