@@ -112,7 +112,7 @@ pub fn fread_refcount(a0: AnyPtr, a1: u64, a2: u64, a3: Ptr<::std::fs::File>) ->
 
         for &byte in &buffer[..n] {
             dst.write(byte);
-            dst = dst.offset(1);
+            dst += 1;
         }
 
         read_bytes += n;
@@ -142,7 +142,7 @@ pub fn fwrite_refcount(a0: AnyPtr, a1: u64, a2: u64, a3: Ptr<::std::fs::File>) -
 
         for b in buffer.iter_mut().take(to_fill) {
             *b = src.read();
-            src = src.offset(1);
+            src += 1;
         }
 
         let mut off = 0;
@@ -193,7 +193,7 @@ pub unsafe fn fwrite_unsafe(
         for b in buffer.iter_mut().take(to_fill) {
             unsafe {
                 *b = *src;
-                src = src.offset(1);
+                src += 1;
             }
         }
 
@@ -252,7 +252,7 @@ pub unsafe fn fread_unsafe(
         for &byte in &buffer[..n] {
             unsafe {
                 *dst = byte;
-                dst = dst.offset(1);
+                dst += 1;
             }
         }
 
