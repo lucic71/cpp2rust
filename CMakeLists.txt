@@ -68,8 +68,8 @@ set(RUST_STAMP_FILE "${CMAKE_BINARY_DIR}/.rust-toolchain.stamp")
 
 add_custom_command(
     OUTPUT "${RUST_STAMP_FILE}"
-    COMMAND rustup toolchain install ${RUST_STABLE_VERSION}
-    COMMAND rustup toolchain install ${RUST_NIGHTLY_VERSION} --component rustc-dev --component llvm-tools
+    COMMAND rustup toolchain install ${RUST_STABLE_VERSION} --component clippy --component rustfmt
+    COMMAND rustup toolchain install ${RUST_NIGHTLY_VERSION} --component rustc-dev --component llvm-tools --component clippy --component rustfmt
     COMMAND ${CMAKE_COMMAND} -E touch "${RUST_STAMP_FILE}"
     DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/cmake/rust-toolchain.cmake"
     USES_TERMINAL
@@ -91,16 +91,16 @@ set(PYTHON_SOURCES ${PROJECT_SOURCE_DIR}/tests/lit/lit/formats/Cpp2RustTest.py)
 add_custom_target("format"
                   COMMAND ${CLANG_FORMAT} -i ${ALL_CXX_SOURCES}
                   COMMAND cargo +${RUST_STABLE_VERSION} fmt --manifest-path ${PROJECT_SOURCE_DIR}/rules/Cargo.toml
-                  COMMAND cargo +${RUST_STABLE_VERSION}  --manifest-path ${PROJECT_SOURCE_DIR}/rule-preprocessor/Cargo.toml
+                  COMMAND cargo +${RUST_NIGHTLY_VERSION} fmt --manifest-path ${PROJECT_SOURCE_DIR}/rule-preprocessor/Cargo.toml
                   COMMAND cargo +${RUST_STABLE_VERSION} fmt --manifest-path ${PROJECT_SOURCE_DIR}/libcc2rs/Cargo.toml
                   COMMAND cargo +${RUST_STABLE_VERSION} fmt --manifest-path ${PROJECT_SOURCE_DIR}/libcc2rs-macros/Cargo.toml
-                  COMMAND cargo +${RUST_STABLE_VERSION} clippy --fix --allow-dirty --allow-staged --all-targets --all-features
+                  COMMAND cargo +${RUST_STABLE_VERSION} clippy --fix --allow-dirty --allow-no-vcs --allow-staged --all-targets --all-features
                                 --manifest-path ${PROJECT_SOURCE_DIR}/rules/Cargo.toml -- -Dwarnings
-                  COMMAND cargo +${RUST_STABLE_VERSION} clippy --fix --allow-dirty --allow-staged --all-targets --all-features
-                                --manifest-path chdir ${PROJECT_SOURCE_DIR}/rule-preprocessor/Cargo.toml -- -Dwarnings
-                  COMMAND cargo +${RUST_STABLE_VERSION} clippy --fix --allow-dirty --allow-staged --all-targets --all-features
-                                --manifest-path $${PROJECT_SOURCE_DIR}/libcc2rs/Cargo.toml -- -Dwarnings
-                  COMMAND cargo +${RUST_STABLE_VERSION} clippy --fix --allow-dirty --allow-staged --all-targets --all-features
+                  COMMAND cargo +${RUST_NIGHTLY_VERSION} clippy --fix --allow-dirty --allow-no-vcs --allow-staged --all-targets --all-features
+                                --manifest-path ${PROJECT_SOURCE_DIR}/rule-preprocessor/Cargo.toml -- -Dwarnings
+                  COMMAND cargo +${RUST_STABLE_VERSION} clippy --fix --allow-dirty --allow-no-vcs --allow-staged --all-targets --all-features
+                                --manifest-path ${PROJECT_SOURCE_DIR}/libcc2rs/Cargo.toml -- -Dwarnings
+                  COMMAND cargo +${RUST_STABLE_VERSION} clippy --fix --allow-dirty --allow-no-vcs --allow-staged --all-targets --all-features
                                 --manifest-path ${PROJECT_SOURCE_DIR}/libcc2rs-macros/Cargo.toml -- -Dwarnings
                   COMMAND ${RUFF} --silent check --fix ${PYTHON_SOURCES}
                   COMMAND ${RUFF} --silent format ${PYTHON_SOURCES}
