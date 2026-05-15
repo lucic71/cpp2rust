@@ -70,6 +70,7 @@ struct ExprRule {
   bool multi_statement = false;
 
   void dump() const;
+  void validate(const std::string &name) const;
 };
 
 struct TypeRule {
