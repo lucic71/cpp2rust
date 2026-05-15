@@ -86,6 +86,7 @@ int main() {
   head = Delete(head, 0);
   head = Delete(head, -2);
   Node *tail = Tail(head);
+
   assert(Find(head, 0)->val == 4);
   assert(Find(head, 1)->val == 3);
   assert(Find(head, 2)->val == 2);
@@ -98,5 +99,25 @@ int main() {
   assert(FindBack(tail, 3)->val == 3);
   assert(FindBack(tail, 4)->val == 4);
   assert(FindBack(tail, 4)->prev == nullptr);
+
+  assert(Find(head, 0)->next->val == 3);
+  assert(Find(head, 1)->next->next->val == 1);
+  assert(Find(head, 2)->prev->val == 3);
+  assert(Find(head, 4)->next == nullptr);
+  assert(FindBack(tail, 1)->prev->prev->val == 3);
+
+  Find(head, 0)->next->val = 30;
+  assert(Find(head, 1)->val == 30);
+  Find(head, 1)->next->val = Find(head, 0)->val + Find(head, 3)->val;
+  assert(Find(head, 2)->val == 4 + 1);
+
+  int sum = Find(head, 0)->val + Find(head, 1)->val + Find(head, 2)->val +
+            Find(head, 3)->val + Find(head, 4)->val;
+  assert(sum == 4 + 30 + 5 + 1 + -1);
+
+  assert(Find(head, 0)->val + FindBack(tail, 0)->val == 4 + -1);
+  assert(Find(head, 2)->next->val == FindBack(tail, 1)->val);
+  assert(Find(head, 0)->prev == FindBack(tail, 4)->prev);
+
   return 0;
 }

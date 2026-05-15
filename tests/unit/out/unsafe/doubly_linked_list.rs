@@ -286,5 +286,172 @@ unsafe fn main_0() -> i32 {
     }))
     .prev)
         .is_null());
+    assert!(
+        (((*(*(unsafe {
+            let _head: *mut Node = head;
+            let _idx: i32 = 0;
+            Find_0(_head, _idx)
+        }))
+        .next)
+            .val)
+            == (3))
+    );
+    assert!(
+        (((*(*(*(unsafe {
+            let _head: *mut Node = head;
+            let _idx: i32 = 1;
+            Find_0(_head, _idx)
+        }))
+        .next)
+            .next)
+            .val)
+            == (1))
+    );
+    assert!(
+        (((*(*(unsafe {
+            let _head: *mut Node = head;
+            let _idx: i32 = 2;
+            Find_0(_head, _idx)
+        }))
+        .prev)
+            .val)
+            == (3))
+    );
+    assert!(((*(unsafe {
+        let _head: *mut Node = head;
+        let _idx: i32 = 4;
+        Find_0(_head, _idx)
+    }))
+    .next)
+        .is_null());
+    assert!(
+        (((*(*(*(unsafe {
+            let _tail: *mut Node = tail;
+            let _idx: i32 = 1;
+            FindBack_1(_tail, _idx)
+        }))
+        .prev)
+            .prev)
+            .val)
+            == (3))
+    );
+    (*(*(unsafe {
+        let _head: *mut Node = head;
+        let _idx: i32 = 0;
+        Find_0(_head, _idx)
+    }))
+    .next)
+        .val = 30;
+    assert!(
+        (((*(unsafe {
+            let _head: *mut Node = head;
+            let _idx: i32 = 1;
+            Find_0(_head, _idx)
+        }))
+        .val)
+            == (30))
+    );
+    (*(*(unsafe {
+        let _head: *mut Node = head;
+        let _idx: i32 = 1;
+        Find_0(_head, _idx)
+    }))
+    .next)
+        .val = (((*(unsafe {
+        let _head: *mut Node = head;
+        let _idx: i32 = 0;
+        Find_0(_head, _idx)
+    }))
+    .val)
+        + ((*(unsafe {
+            let _head: *mut Node = head;
+            let _idx: i32 = 3;
+            Find_0(_head, _idx)
+        }))
+        .val));
+    assert!(
+        (((*(unsafe {
+            let _head: *mut Node = head;
+            let _idx: i32 = 2;
+            Find_0(_head, _idx)
+        }))
+        .val)
+            == ((4) + (1)))
+    );
+    let mut sum: i32 = ((((((*(unsafe {
+        let _head: *mut Node = head;
+        let _idx: i32 = 0;
+        Find_0(_head, _idx)
+    }))
+    .val)
+        + ((*(unsafe {
+            let _head: *mut Node = head;
+            let _idx: i32 = 1;
+            Find_0(_head, _idx)
+        }))
+        .val))
+        + ((*(unsafe {
+            let _head: *mut Node = head;
+            let _idx: i32 = 2;
+            Find_0(_head, _idx)
+        }))
+        .val))
+        + ((*(unsafe {
+            let _head: *mut Node = head;
+            let _idx: i32 = 3;
+            Find_0(_head, _idx)
+        }))
+        .val))
+        + ((*(unsafe {
+            let _head: *mut Node = head;
+            let _idx: i32 = 4;
+            Find_0(_head, _idx)
+        }))
+        .val));
+    assert!(((sum) == (((((4) + (30)) + (5)) + (1)) + (-1_i32))));
+    assert!(
+        ((((*(unsafe {
+            let _head: *mut Node = head;
+            let _idx: i32 = 0;
+            Find_0(_head, _idx)
+        }))
+        .val)
+            + ((*(unsafe {
+                let _tail: *mut Node = tail;
+                let _idx: i32 = 0;
+                FindBack_1(_tail, _idx)
+            }))
+            .val))
+            == ((4) + (-1_i32)))
+    );
+    assert!(
+        (((*(*(unsafe {
+            let _head: *mut Node = head;
+            let _idx: i32 = 2;
+            Find_0(_head, _idx)
+        }))
+        .next)
+            .val)
+            == ((*(unsafe {
+                let _tail: *mut Node = tail;
+                let _idx: i32 = 1;
+                FindBack_1(_tail, _idx)
+            }))
+            .val))
+    );
+    assert!(
+        (((*(unsafe {
+            let _head: *mut Node = head;
+            let _idx: i32 = 0;
+            Find_0(_head, _idx)
+        }))
+        .prev)
+            == ((*(unsafe {
+                let _tail: *mut Node = tail;
+                let _idx: i32 = 4;
+                FindBack_1(_tail, _idx)
+            }))
+            .prev))
+    );
     return 0;
 }
