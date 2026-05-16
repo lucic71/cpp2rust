@@ -436,7 +436,7 @@ bool Converter::ConvertLambdaVarDecl(clang::VarDecl *decl) {
   return false;
 }
 
-void ConvertVarDeclInitializer(clang::VarDecl *decl) {
+void Converter::ConvertVarDeclInitializer(clang::VarDecl *decl) {
   if (decl->hasInit()) {
     ConvertVarInit(decl->getType(), decl->getInit());
   } else if (!clang::isa<clang::ParmVarDecl>(decl)) {
