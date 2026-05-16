@@ -20,7 +20,7 @@ pub unsafe fn unused_ref_param_1(x: *const NonTrivial) {
 pub unsafe fn unused_ptr_param_2(mut p: *const NonTrivial) {
     &(*p);
 }
-pub static mut side_effect_counter: i32 = unsafe { 0 };
+pub static mut side_effect_counter: i32 = 0;
 pub unsafe fn bump_and_return_3() -> i32 {
     side_effect_counter.prefix_inc();
     return side_effect_counter;
