@@ -11,7 +11,7 @@
               "placeholder": {
                 "arg": 0,
                 "access": "read",
-                "needs_autoref": true
+                "is_index_base": true
               }
             },
             {
@@ -1196,7 +1196,7 @@
         "placeholder": {
           "arg": 0,
           "access": "write",
-          "needs_autoref": true
+          "is_index_base": true
         }
       },
       {

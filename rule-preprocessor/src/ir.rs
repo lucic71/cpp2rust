@@ -140,7 +140,7 @@ pub struct PlaceholderInner {
     pub arg: i32,
     pub access: Access,
     #[serde(default, skip_serializing_if = "std::ops::Not::not")]
-    pub needs_autoref: bool,
+    pub is_index_base: bool,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]

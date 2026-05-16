@@ -48,7 +48,7 @@ ParsePlaceholderFragmentJSON(const llvm::json::Object &obj) {
   return {
       (unsigned)*obj.getInteger("arg"),
       ParseAccessJSON(*access),
-      obj.getBoolean("needs_autoref").value_or(false),
+      obj.getBoolean("is_index_base").value_or(false),
   };
 }
 

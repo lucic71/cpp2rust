@@ -220,7 +220,7 @@ impl<'a, 'tcx> AstVisitor<'a, 'tcx> {
                     if p.access == Access::Unknown {
                         p.access = context;
                     }
-                    p.needs_autoref = true;
+                    p.is_index_base = true;
                 });
             return;
         }

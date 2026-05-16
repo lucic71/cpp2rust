@@ -3702,7 +3702,7 @@ std::string Converter::ConvertPlaceholder(clang::Expr *expr, clang::Expr *arg,
     Buffer buf(*this);
     PushExplicitAutoref autoref(
         *this,
-        ph_ctx.needs_autoref
+        ph_ctx.is_index_base
             ? std::optional(ph_ctx.access == TranslationRule::Access::kWrite)
             : std::nullopt);
     ConvertDeref(arg);
@@ -3779,7 +3779,7 @@ std::string Converter::ConvertIRFragment(
           .maps_to_rust_ptr = Mapper::MapsToPointer(arg->getType()),
           .declared_in_rule_as_rust_ptr =
               Mapper::ParamIsPointer(GetCalleeOrExpr(expr), arg_idx),
-          .needs_autoref = ph->needs_autoref,
+          .is_index_base = ph->is_index_base,
       };
       result += ConvertPlaceholder(expr, arg, ph_ctx);
     } else if (auto *mc =

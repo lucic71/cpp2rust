@@ -190,7 +190,7 @@ impl<'a> FragmentCtx<'a> {
                     placeholder: PlaceholderInner {
                         arg: token.text()[1..].parse().unwrap_or(0),
                         access,
-                        needs_autoref: false,
+                        is_index_base: false,
                     },
                 });
                 return;
