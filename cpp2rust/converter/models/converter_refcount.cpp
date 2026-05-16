@@ -1564,7 +1564,9 @@ bool ConverterRefCount::VisitCXXConstructExpr(clang::CXXConstructExpr *expr) {
   }
 
   if (ctor->isCopyConstructor()) {
-    StrCat(ConvertRValue(expr->getArg(0)));
+    StrCat(IsRedundantCopyInConversion(ctx_, expr)
+               ? ConvertRValue(expr->getArg(0))
+               : ConvertFreshRValue(expr->getArg(0)));
     return false;
   }
 
