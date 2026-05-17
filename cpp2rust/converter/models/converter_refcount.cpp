@@ -1628,6 +1628,11 @@ std::string ConverterRefCount::GetDefaultAsString(clang::QualType qual_type) {
     return BoxValue("VaList::default()");
   }
 
+  if (auto init = Mapper::MapInitializer(qual_type); !init.empty()) {
+    computed_expr_type_ = ComputedExprType::FreshValue;
+    return BoxValue(std::move(init));
+  }
+
   std::string ret;
   if (qual_type->isPointerType()) {
     auto pointee_type = qual_type->getPointeeType();
