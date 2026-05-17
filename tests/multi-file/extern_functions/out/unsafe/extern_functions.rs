@@ -34,8 +34,8 @@ pub unsafe fn unrelated3_3() -> i32 {
     return 3;
 }
 pub unsafe fn helper_0(mut x: i32) -> i32 {
-    (unsafe { unrelated1_1() });
-    (unsafe { unrelated2_2() });
-    (unsafe { unrelated3_3() });
+    &(unsafe { unrelated1_1() });
+    &(unsafe { unrelated2_2() });
+    &(unsafe { unrelated3_3() });
     return ((x) + (1));
 }
