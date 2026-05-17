@@ -15,11 +15,10 @@ fn f2<T1: Clone + PartialOrd + ByteRepr, T2: Clone + From<T1> + ByteRepr>(
     a1: Ptr<T1>,
     a2: Ptr<T2>,
 ) -> Ptr<T2> {
+    let count = a1.get_offset() - a0.get_offset();
     let mut outptr = a2.clone();
-    let mut curr = a0.clone();
-    while curr < a1 {
-        outptr.write((curr.read()).clone().into());
-        curr += 1;
+    for value in PtrValueIter::new(a0, count) {
+        outptr.write(value.into());
         outptr += 1;
     }
     outptr
@@ -52,21 +51,17 @@ where
 }
 
 fn f8<T1: PartialOrd + Clone + ByteRepr>(a0: Ptr<T1>, a1: Ptr<T1>) -> Ptr<T1> {
-    if a0 == a1 {
-        a0.clone()
-    } else {
-        let mut __a0 = a0.clone();
-        let mut max_it = a0.clone();
-        __a0.postfix_inc();
-
-        while __a0 != a1 {
-            if max_it.read() < __a0.read() {
-                max_it = __a0.clone();
-            }
-            __a0.postfix_inc();
-        }
-        max_it
-    }
+    let count = a1.get_offset() - a0.get_offset();
+    let max_index = PtrValueIter::new(a0.clone(), count)
+        .enumerate()
+        .max_by(|(_, val_a), (_, val_b)| {
+            val_a
+                .partial_cmp(val_b)
+                .unwrap_or(std::cmp::Ordering::Equal)
+        })
+        .map(|(idx, _)| idx)
+        .unwrap_or(0);
+    a0 + max_index
 }
 
 fn f9<T1: Clone + ByteRepr>(a0: Ptr<T1>, a1: Ptr<T1>) {
@@ -76,27 +71,26 @@ fn f9<T1: Clone + ByteRepr>(a0: Ptr<T1>, a1: Ptr<T1>) {
 }
 
 fn f10<T1: PartialEq + Clone + ByteRepr>(a0: Ptr<T1>, a1: Ptr<T1>) -> Ptr<T1> {
-    if a0 == a1 {
-        a0.clone()
-    } else {
-        let mut write = a0.clone();
-        let mut prev = a0.clone();
-        let mut it = a0.clone();
-        it.postfix_inc();
-
-        while it != a1 {
-            if prev.read() != it.read() {
-                write.postfix_inc();
-                let v = it.read().clone();
-                write.write(v);
-                prev = write.clone();
-            }
-            it.postfix_inc();
-        }
-
-        write.postfix_inc();
-        write
+    let count = a1.get_offset() - a0.get_offset();
+    if count <= 1 {
+        return a1;
     }
+
+    let mut write_ptr = a0.clone();
+    let mut iter = PtrValueIter::new(a0, count);
+    let mut last_unique = iter.next().unwrap();
+
+    // the first unique value is already in place
+    write_ptr += 1;
+
+    for current_val in iter {
+        if current_val != last_unique {
+            write_ptr.write(current_val.clone());
+            last_unique = current_val;
+            write_ptr += 1;
+        }
+    }
+    write_ptr
 }
 
 fn f12<T1: Clone + ByteRepr>(a0: Ptr<T1>, a1: Ptr<T1>, a2: T1) {
@@ -104,7 +98,7 @@ fn f12<T1: Clone + ByteRepr>(a0: Ptr<T1>, a1: Ptr<T1>, a2: T1) {
     while __a0 != a1 {
         let v = a2.clone();
         __a0.write(v);
-        __a0.postfix_inc();
+        __a0 += 1;
     }
 }
 

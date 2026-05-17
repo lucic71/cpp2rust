@@ -113,23 +113,15 @@ fn f34<T1>(a0: &mut Ptr<T1>) -> Ptr<T1> {
 }
 
 fn f35<T1: Clone + ByteRepr>(a0: Ptr<T1>, a1: Ptr<T1>) -> Vec<T1> {
-    let mut __a0 = a0.clone();
-    let mut __out = Vec::with_capacity(a1.get_offset() - __a0.get_offset());
-    while __a0 != a1 {
-        __out.push(__a0.read());
-        __a0 += 1;
-    }
-    __out
+    let __count = a1.get_offset() - a0.get_offset();
+    PtrValueIter::new(a0, __count).collect::<Vec<_>>()
 }
 
 fn f37<T1: TryFrom<T2>, T2: Clone + ByteRepr>(a0: Ptr<T2>, a1: Ptr<T2>) -> Vec<T1> {
-    let mut __a0 = a0.clone();
-    let mut __out = Vec::with_capacity(a1.get_offset() - __a0.get_offset());
-    while __a0 != a1 {
-        __out.push(T1::try_from(__a0.read()).ok().unwrap());
-        __a0 += 1;
-    }
-    __out
+    let __count = a1.get_offset() - a0.get_offset();
+    PtrValueIter::new(a0.clone(), __count)
+        .map(|item| T1::try_from(item).ok().unwrap())
+        .collect::<Vec<_>>()
 }
 
 fn f40<T1>(a0: Ptr<T1>) -> Ptr<T1> {
@@ -141,21 +133,15 @@ fn f41<T1>(a0: Ptr<T1>) -> Ptr<T1> {
 }
 
 fn f42(a0: Ptr<u8>, a1: Ptr<u8>) -> Ptr<u8> {
-    if a0 == a1 {
-        a0.clone()
-    } else {
-        let mut __a0 = a0.clone();
-        let mut max_it = a0.clone();
-        __a0 += 1;
+    let __a0 = a0.clone();
+    let __count = a1.get_offset() - __a0.get_offset();
+    let max_index = PtrValueIter::new(__a0, __count)
+        .enumerate()
+        .max_by_key(|&(_, val)| val)
+        .map(|(idx, _)| idx)
+        .unwrap_or(0);
 
-        while __a0 != a1 {
-            if max_it.read() < __a0.read() {
-                max_it = __a0.clone();
-            }
-            __a0 += 1;
-        }
-        max_it
-    }
+    a0 + max_index
 }
 
 fn f43<T1>(a0: Ptr<T1>) -> Ptr<T1> {
@@ -188,14 +174,13 @@ fn f53<T1: Clone + ByteRepr>(
     a2: Ptr<T1>,
     a3: Ptr<T1>,
 ) -> Ptr<Vec<T1>> {
-    let mut __idx = a1.get_offset() as usize;
-    let mut __a2 = a2.clone();
-    while __a2 != a3 {
-        a0.with_mut(|__v: &mut Vec<T1>| __v.insert(__idx, __a2.read()));
-        __idx += 1;
-        __a2 += 1;
-    }
-    a0
+    let start_idx = a1.get_offset();
+    let count = a3.get_offset() - a2.get_offset();
+    let temp_vec: Vec<T1> = PtrValueIter::new(a2, count).collect();
+    a0.with_mut(|v: &mut Vec<T1>| {
+        v.splice(start_idx..start_idx, temp_vec);
+    });
+    a0 + start_idx
 }
 
 fn f56<T1: ByteRepr>(a0: &Vec<Value<Vec<T1>>>) -> Ptr<Vec<T1>> {

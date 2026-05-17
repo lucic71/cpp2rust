@@ -1025,27 +1025,7 @@
   "f35": {
     "body": [
       {
-        "text": "let mut __a0 = "
-      },
-      {
-        "method_call": {
-          "receiver": [
-            {
-              "placeholder": {
-                "arg": 0,
-                "access": "read"
-              }
-            }
-          ],
-          "body": [
-            {
-              "text": ".clone()"
-            }
-          ]
-        }
-      },
-      {
-        "text": ";\n    let mut __out = Vec::with_capacity("
+        "text": "let __count = "
       },
       {
         "method_call": {
@@ -1071,7 +1051,10 @@
         "method_call": {
           "receiver": [
             {
-              "text": "__a0"
+              "placeholder": {
+                "arg": 0,
+                "access": "read"
+              }
             }
           ],
           "body": [
@@ -1082,50 +1065,30 @@
         }
       },
       {
-        "text": ");\n    while __a0 != "
-      },
-      {
-        "placeholder": {
-          "arg": 1,
-          "access": "read"
-        }
-      },
-      {
-        "text": " {\n        "
+        "text": ";\n    "
       },
       {
         "method_call": {
           "receiver": [
             {
-              "text": "__out"
+              "text": "PtrValueIter::new("
+            },
+            {
+              "placeholder": {
+                "arg": 0,
+                "access": "read"
+              }
+            },
+            {
+              "text": ", __count)"
             }
           ],
           "body": [
             {
-              "text": ".push("
-            },
-            {
-              "method_call": {
-                "receiver": [
-                  {
-                    "text": "__a0"
-                  }
-                ],
-                "body": [
-                  {
-                    "text": ".read()"
-                  }
-                ]
-              }
-            },
-            {
-              "text": ")"
+              "text": ".collect::<Vec<_>>()"
             }
           ]
         }
-      },
-      {
-        "text": ";\n        __a0 += 1;\n    }\n    __out"
       }
     ],
     "generics": {
@@ -1152,27 +1115,7 @@
   "f37": {
     "body": [
       {
-        "text": "let mut __a0 = "
-      },
-      {
-        "method_call": {
-          "receiver": [
-            {
-              "placeholder": {
-                "arg": 0,
-                "access": "read"
-              }
-            }
-          ],
-          "body": [
-            {
-              "text": ".clone()"
-            }
-          ]
-        }
-      },
-      {
-        "text": ";\n    let mut __out = Vec::with_capacity("
+        "text": "let __count = "
       },
       {
         "method_call": {
@@ -1198,7 +1141,10 @@
         "method_call": {
           "receiver": [
             {
-              "text": "__a0"
+              "placeholder": {
+                "arg": 0,
+                "access": "read"
+              }
             }
           ],
           "body": [
@@ -1209,81 +1155,83 @@
         }
       },
       {
-        "text": ");\n    while __a0 != "
-      },
-      {
-        "placeholder": {
-          "arg": 1,
-          "access": "read"
-        }
-      },
-      {
-        "text": " {\n        "
+        "text": ";\n    "
       },
       {
         "method_call": {
           "receiver": [
             {
-              "text": "__out"
-            }
-          ],
-          "body": [
-            {
-              "text": ".push("
-            },
-            {
               "method_call": {
                 "receiver": [
+                  {
+                    "text": "PtrValueIter::new("
+                  },
                   {
                     "method_call": {
                       "receiver": [
                         {
-                          "generic": 1
-                        },
-                        {
-                          "text": "::try_from("
-                        },
-                        {
-                          "method_call": {
-                            "receiver": [
-                              {
-                                "text": "__a0"
-                              }
-                            ],
-                            "body": [
-                              {
-                                "text": ".read()"
-                              }
-                            ]
+                          "placeholder": {
+                            "arg": 0,
+                            "access": "read"
                           }
-                        },
-                        {
-                          "text": ")"
                         }
                       ],
                       "body": [
                         {
-                          "text": ".ok()"
+                          "text": ".clone()"
                         }
                       ]
                     }
+                  },
+                  {
+                    "text": ", __count)"
                   }
                 ],
                 "body": [
                   {
-                    "text": ".unwrap()"
+                    "text": ".map(|item| "
+                  },
+                  {
+                    "method_call": {
+                      "receiver": [
+                        {
+                          "method_call": {
+                            "receiver": [
+                              {
+                                "generic": 1
+                              },
+                              {
+                                "text": "::try_from(item)"
+                              }
+                            ],
+                            "body": [
+                              {
+                                "text": ".ok()"
+                              }
+                            ]
+                          }
+                        }
+                      ],
+                      "body": [
+                        {
+                          "text": ".unwrap()"
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "text": ")"
                   }
                 ]
               }
-            },
+            }
+          ],
+          "body": [
             {
-              "text": ")"
+              "text": ".collect::<Vec<_>>()"
             }
           ]
         }
-      },
-      {
-        "text": ";\n        __a0 += 1;\n    }\n    __out"
       }
     ],
     "generics": {
@@ -1370,7 +1318,114 @@
   "f42": {
     "body": [
       {
-        "text": "if "
+        "text": "let __a0 = "
+      },
+      {
+        "method_call": {
+          "receiver": [
+            {
+              "placeholder": {
+                "arg": 0,
+                "access": "read"
+              }
+            }
+          ],
+          "body": [
+            {
+              "text": ".clone()"
+            }
+          ]
+        }
+      },
+      {
+        "text": ";\n    let __count = "
+      },
+      {
+        "method_call": {
+          "receiver": [
+            {
+              "placeholder": {
+                "arg": 1,
+                "access": "read"
+              }
+            }
+          ],
+          "body": [
+            {
+              "text": ".get_offset()"
+            }
+          ]
+        }
+      },
+      {
+        "text": " - "
+      },
+      {
+        "method_call": {
+          "receiver": [
+            {
+              "text": "__a0"
+            }
+          ],
+          "body": [
+            {
+              "text": ".get_offset()"
+            }
+          ]
+        }
+      },
+      {
+        "text": ";\n    let max_index = "
+      },
+      {
+        "method_call": {
+          "receiver": [
+            {
+              "method_call": {
+                "receiver": [
+                  {
+                    "method_call": {
+                      "receiver": [
+                        {
+                          "method_call": {
+                            "receiver": [
+                              {
+                                "text": "PtrValueIter::new(__a0, __count)"
+                              }
+                            ],
+                            "body": [
+                              {
+                                "text": ".enumerate()"
+                              }
+                            ]
+                          }
+                        }
+                      ],
+                      "body": [
+                        {
+                          "text": ".max_by_key(|&(_, val)| val)"
+                        }
+                      ]
+                    }
+                  }
+                ],
+                "body": [
+                  {
+                    "text": ".map(|(idx, _)| idx)"
+                  }
+                ]
+              }
+            }
+          ],
+          "body": [
+            {
+              "text": ".unwrap_or(0)"
+            }
+          ]
+        }
+      },
+      {
+        "text": ";\n\n    "
       },
       {
         "placeholder": {
@@ -1379,138 +1434,10 @@
         }
       },
       {
-        "text": " == "
-      },
-      {
-        "placeholder": {
-          "arg": 1,
-          "access": "read"
-        }
-      },
-      {
-        "text": " {\n        "
-      },
-      {
-        "method_call": {
-          "receiver": [
-            {
-              "placeholder": {
-                "arg": 0,
-                "access": "read"
-              }
-            }
-          ],
-          "body": [
-            {
-              "text": ".clone()"
-            }
-          ]
-        }
-      },
-      {
-        "text": "\n    } else {\n        let mut __a0 = "
-      },
-      {
-        "method_call": {
-          "receiver": [
-            {
-              "placeholder": {
-                "arg": 0,
-                "access": "read"
-              }
-            }
-          ],
-          "body": [
-            {
-              "text": ".clone()"
-            }
-          ]
-        }
-      },
-      {
-        "text": ";\n        let mut max_it = "
-      },
-      {
-        "method_call": {
-          "receiver": [
-            {
-              "placeholder": {
-                "arg": 0,
-                "access": "read"
-              }
-            }
-          ],
-          "body": [
-            {
-              "text": ".clone()"
-            }
-          ]
-        }
-      },
-      {
-        "text": ";\n        __a0 += 1;\n\n        while __a0 != "
-      },
-      {
-        "placeholder": {
-          "arg": 1,
-          "access": "read"
-        }
-      },
-      {
-        "text": " {\n            if "
-      },
-      {
-        "method_call": {
-          "receiver": [
-            {
-              "text": "max_it"
-            }
-          ],
-          "body": [
-            {
-              "text": ".read()"
-            }
-          ]
-        }
-      },
-      {
-        "text": " < "
-      },
-      {
-        "method_call": {
-          "receiver": [
-            {
-              "text": "__a0"
-            }
-          ],
-          "body": [
-            {
-              "text": ".read()"
-            }
-          ]
-        }
-      },
-      {
-        "text": " {\n                max_it = "
-      },
-      {
-        "method_call": {
-          "receiver": [
-            {
-              "text": "__a0"
-            }
-          ],
-          "body": [
-            {
-              "text": ".clone()"
-            }
-          ]
-        }
-      },
-      {
-        "text": ";\n            }\n            __a0 += 1;\n        }\n        max_it\n    }"
+        "text": " + max_index"
       }
     ],
+    "multi_statement": true,
     "params": {
       "a0": {
         "type": "Ptr<u8>",
@@ -1810,7 +1737,7 @@
   "f53": {
     "body": [
       {
-        "text": "let mut __idx = "
+        "text": "let start_idx = "
       },
       {
         "method_call": {
@@ -1830,7 +1757,27 @@
         }
       },
       {
-        "text": " as usize;\n    let mut __a2 = "
+        "text": ";\n    let count = "
+      },
+      {
+        "method_call": {
+          "receiver": [
+            {
+              "placeholder": {
+                "arg": 3,
+                "access": "read"
+              }
+            }
+          ],
+          "body": [
+            {
+              "text": ".get_offset()"
+            }
+          ]
+        }
+      },
+      {
+        "text": " - "
       },
       {
         "method_call": {
@@ -1844,22 +1791,45 @@
           ],
           "body": [
             {
-              "text": ".clone()"
+              "text": ".get_offset()"
             }
           ]
         }
       },
       {
-        "text": ";\n    while __a2 != "
+        "text": ";\n    let temp_vec: Vec<"
       },
       {
-        "placeholder": {
-          "arg": 3,
-          "access": "read"
+        "generic": 1
+      },
+      {
+        "text": "> = "
+      },
+      {
+        "method_call": {
+          "receiver": [
+            {
+              "text": "PtrValueIter::new("
+            },
+            {
+              "placeholder": {
+                "arg": 2,
+                "access": "read"
+              }
+            },
+            {
+              "text": ", count)"
+            }
+          ],
+          "body": [
+            {
+              "text": ".collect()"
+            }
+          ]
         }
       },
       {
-        "text": " {\n        "
+        "text": ";\n    "
       },
       {
         "method_call": {
@@ -1873,59 +1843,45 @@
           ],
           "body": [
             {
-              "text": ".with_mut(|__v: &mut Vec<"
+              "text": ".with_mut(|v: &mut Vec<"
             },
             {
               "generic": 1
             },
             {
-              "text": ">| "
+              "text": ">| {\n        "
             },
             {
               "method_call": {
                 "receiver": [
                   {
-                    "text": "__v"
+                    "text": "v"
                   }
                 ],
                 "body": [
                   {
-                    "text": ".insert(__idx, "
-                  },
-                  {
-                    "method_call": {
-                      "receiver": [
-                        {
-                          "text": "__a2"
-                        }
-                      ],
-                      "body": [
-                        {
-                          "text": ".read()"
-                        }
-                      ]
-                    }
-                  },
-                  {
-                    "text": ")"
+                    "text": ".splice(start_idx..start_idx, temp_vec)"
                   }
                 ]
               }
             },
             {
-              "text": ")"
+              "text": ";\n    })"
             }
           ]
         }
       },
       {
-        "text": ";\n        __idx += 1;\n        __a2 += 1;\n    }\n    "
+        "text": ";\n    "
       },
       {
         "placeholder": {
           "arg": 0,
           "access": "read"
         }
+      },
+      {
+        "text": " + start_idx"
       }
     ],
     "generics": {

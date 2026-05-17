@@ -202,14 +202,11 @@ unsafe fn f52<T1: Clone>(a0: &mut Vec<Vec<T1>>, a1: Vec<T1>) {
 
 unsafe fn f53<T1: Clone>(a0: &mut Vec<T1>, a1: *const T1, a2: *const T1, a3: *const T1) -> *mut T1 {
     let __off = a1.offset_from(a0.as_ptr()) as usize;
-    let mut __idx = __off;
-    let mut __a1 = a1;
-    let mut __a2 = a2;
-    while __a2 != a3 {
-        a0.insert(__idx, (*__a2).clone());
-        __a2 = __a2.add(1);
-        __idx += 1;
-    }
+    let count = a3.offset_from(a2) as usize;
+    a0.splice(
+        __off..__off,
+        std::slice::from_raw_parts(a2, count).iter().cloned(),
+    );
     a0.as_mut_ptr().add(__off)
 }
 

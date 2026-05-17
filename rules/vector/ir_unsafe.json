@@ -2286,34 +2286,36 @@
         }
       },
       {
-        "text": " as usize;\n    let mut __idx = __off;\n    let mut __a1 = "
+        "text": " as usize;\n    let count = "
       },
       {
-        "placeholder": {
-          "arg": 1,
-          "access": "read"
+        "method_call": {
+          "receiver": [
+            {
+              "placeholder": {
+                "arg": 3,
+                "access": "read"
+              }
+            }
+          ],
+          "body": [
+            {
+              "text": ".offset_from("
+            },
+            {
+              "placeholder": {
+                "arg": 2,
+                "access": "read"
+              }
+            },
+            {
+              "text": ")"
+            }
+          ]
         }
       },
       {
-        "text": ";\n    let mut __a2 = "
-      },
-      {
-        "placeholder": {
-          "arg": 2,
-          "access": "read"
-        }
-      },
-      {
-        "text": ";\n    while __a2 != "
-      },
-      {
-        "placeholder": {
-          "arg": 3,
-          "access": "read"
-        }
-      },
-      {
-        "text": " {\n        "
+        "text": " as usize;\n    "
       },
       {
         "method_call": {
@@ -2327,47 +2329,50 @@
           ],
           "body": [
             {
-              "text": ".insert(__idx, "
+              "text": ".splice(\n        __off..__off,\n        "
             },
             {
               "method_call": {
                 "receiver": [
                   {
-                    "text": "(*__a2)"
+                    "method_call": {
+                      "receiver": [
+                        {
+                          "text": "std::slice::from_raw_parts("
+                        },
+                        {
+                          "placeholder": {
+                            "arg": 2,
+                            "access": "read"
+                          }
+                        },
+                        {
+                          "text": ", count)"
+                        }
+                      ],
+                      "body": [
+                        {
+                          "text": ".iter()"
+                        }
+                      ]
+                    }
                   }
                 ],
                 "body": [
                   {
-                    "text": ".clone()"
+                    "text": ".cloned()"
                   }
                 ]
               }
             },
             {
-              "text": ")"
+              "text": ",\n    )"
             }
           ]
         }
       },
       {
-        "text": ";\n        __a2 = "
-      },
-      {
-        "method_call": {
-          "receiver": [
-            {
-              "text": "__a2"
-            }
-          ],
-          "body": [
-            {
-              "text": ".add(1)"
-            }
-          ]
-        }
-      },
-      {
-        "text": ";\n        __idx += 1;\n    }\n    "
+        "text": ";\n    "
       },
       {
         "method_call": {

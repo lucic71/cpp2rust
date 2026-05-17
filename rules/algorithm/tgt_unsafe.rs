@@ -18,6 +18,7 @@ unsafe fn f2<T1: Clone, T2: From<T1>>(a0: *const T1, a1: *const T1, a2: *mut T2)
     }
     outptr
 }
+
 unsafe fn f3<T1: PartialEq>(a0: *mut T1, a1: *mut T1, a2: T1) -> *mut T1 {
     let mut it = a0;
     while it != a1 && *it != a2 {
@@ -25,6 +26,7 @@ unsafe fn f3<T1: PartialEq>(a0: *mut T1, a1: *mut T1, a2: T1) -> *mut T1 {
     }
     it
 }
+
 unsafe fn f6<T1: Ord, T2>(a0: *mut T1, a1: *mut T1, a2: &mut T2)
 where
     T2: FnMut(&T1, &T1) -> bool,
@@ -58,21 +60,13 @@ where
 }
 
 unsafe fn f8<T1: PartialOrd>(a0: *mut T1, a1: *mut T1) -> *mut T1 {
-    if a0 == a1 {
-        a0
-    } else {
-        let mut __a0 = a0;
-        let mut max_it = a0;
-        __a0 = __a0.add(1);
-
-        while __a0 != a1 {
-            if *max_it < *__a0 {
-                max_it = __a0;
-            }
-            __a0 = __a0.add(1);
-        }
-        max_it
-    }
+    let count = a1.offset_from(a0) as usize;
+    std::slice::from_raw_parts(a0, count)
+        .iter()
+        .enumerate()
+        .max_by(|(_, x), (_, y)| x.partial_cmp(y).unwrap_or(std::cmp::Ordering::Equal))
+        .map(|(i, _)| a0.add(i))
+        .unwrap_or(a0)
 }
 
 unsafe fn f9<T1>(a0: &mut T1, a1: &mut T1) {
@@ -103,11 +97,8 @@ unsafe fn f10<T1: PartialOrd + Clone>(a0: *mut T1, a1: *mut T1) -> *mut T1 {
 }
 
 unsafe fn f12<T1: Clone>(a0: *mut T1, a1: *mut T1, a2: T1) {
-    let mut __a0 = a0;
-    while __a0 != a1 {
-        *__a0 = a2.clone();
-        __a0 = __a0.add(1);
-    }
+    let count = a1.offset_from(a0) as usize;
+    std::slice::from_raw_parts_mut(a0, count).fill(a2)
 }
 
 unsafe fn f13(a0: *const u8, a1: *const u8, a2: &mut ::std::fs::File) -> ::std::fs::File {

@@ -80,18 +80,13 @@ pub fn push_local_from_field_1(jpg: Ptr<JPEGData>, cond: bool) {
         |__v: &mut Vec<Value<Vec<u8>>>| {
             __v.push(Rc::new(RefCell::new(
                 {
-                    let mut __a0 = (head.as_pointer() as Ptr<u8>).clone();
-                    let mut __out = Vec::with_capacity(
-                        (head.as_pointer() as Ptr<u8>)
-                            .offset((3) as isize)
-                            .get_offset()
-                            - __a0.get_offset(),
-                    );
-                    while __a0 != (head.as_pointer() as Ptr<u8>).offset((3) as isize) {
-                        __out.push(u8::try_from(__a0.read()).ok().unwrap());
-                        __a0 += 1;
-                    }
-                    __out
+                    let __count = (head.as_pointer() as Ptr<u8>)
+                        .offset((3) as isize)
+                        .get_offset()
+                        - (head.as_pointer() as Ptr<u8>).get_offset();
+                    PtrValueIter::new((head.as_pointer() as Ptr<u8>).clone(), __count)
+                        .map(|item| u8::try_from(item).ok().unwrap())
+                        .collect::<Vec<_>>()
                 }
                 .clone(),
             )))
@@ -126,18 +121,13 @@ pub fn emplace_local_from_field_4(jpg: Ptr<JPEGData>, cond: bool) {
         .as_pointer()
         .with_mut(|__v: &mut Vec<Value<Vec<u8>>>| {
             __v.push(Rc::new(RefCell::new({
-                let mut __a0 = (head.as_pointer() as Ptr<u8>).clone();
-                let mut __out = Vec::with_capacity(
-                    (head.as_pointer() as Ptr<u8>)
-                        .offset((3) as isize)
-                        .get_offset()
-                        - __a0.get_offset(),
-                );
-                while __a0 != (head.as_pointer() as Ptr<u8>).offset((3) as isize) {
-                    __out.push(u8::try_from(__a0.read()).ok().unwrap());
-                    __a0 += 1;
-                }
-                __out
+                let __count = (head.as_pointer() as Ptr<u8>)
+                    .offset((3) as isize)
+                    .get_offset()
+                    - (head.as_pointer() as Ptr<u8>).get_offset();
+                PtrValueIter::new((head.as_pointer() as Ptr<u8>).clone(), __count)
+                    .map(|item| u8::try_from(item).ok().unwrap())
+                    .collect::<Vec<_>>()
             })))
         });
 }

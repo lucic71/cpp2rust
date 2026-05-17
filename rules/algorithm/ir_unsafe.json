@@ -252,62 +252,68 @@
   "f12": {
     "body": [
       {
-        "text": "let mut __a0 = "
-      },
-      {
-        "placeholder": {
-          "arg": 0,
-          "access": "read"
-        }
-      },
-      {
-        "text": ";\n    while __a0 != "
-      },
-      {
-        "placeholder": {
-          "arg": 1,
-          "access": "read"
-        }
-      },
-      {
-        "text": " {\n        *__a0 = "
+        "text": "let count = "
       },
       {
         "method_call": {
           "receiver": [
             {
               "placeholder": {
-                "arg": 2,
-                "access": "read"
+                "arg": 1,
+                "access": "write"
               }
             }
           ],
           "body": [
             {
-              "text": ".clone()"
+              "text": ".offset_from("
+            },
+            {
+              "placeholder": {
+                "arg": 0,
+                "access": "read"
+              }
+            },
+            {
+              "text": ")"
             }
           ]
         }
       },
       {
-        "text": ";\n        __a0 = "
+        "text": " as usize;\n    "
       },
       {
         "method_call": {
           "receiver": [
             {
-              "text": "__a0"
+              "text": "std::slice::from_raw_parts_mut("
+            },
+            {
+              "placeholder": {
+                "arg": 0,
+                "access": "write"
+              }
+            },
+            {
+              "text": ", count)"
             }
           ],
           "body": [
             {
-              "text": ".add(1)"
+              "text": ".fill("
+            },
+            {
+              "placeholder": {
+                "arg": 2,
+                "access": "read"
+              }
+            },
+            {
+              "text": ")"
             }
           ]
         }
-      },
-      {
-        "text": ";\n    }"
       }
     ],
     "generics": {
@@ -1181,95 +1187,160 @@
   "f8": {
     "body": [
       {
-        "text": "if "
-      },
-      {
-        "placeholder": {
-          "arg": 0,
-          "access": "read"
-        }
-      },
-      {
-        "text": " == "
-      },
-      {
-        "placeholder": {
-          "arg": 1,
-          "access": "read"
-        }
-      },
-      {
-        "text": " {\n        "
-      },
-      {
-        "placeholder": {
-          "arg": 0,
-          "access": "read"
-        }
-      },
-      {
-        "text": "\n    } else {\n        let mut __a0 = "
-      },
-      {
-        "placeholder": {
-          "arg": 0,
-          "access": "read"
-        }
-      },
-      {
-        "text": ";\n        let mut max_it = "
-      },
-      {
-        "placeholder": {
-          "arg": 0,
-          "access": "read"
-        }
-      },
-      {
-        "text": ";\n        __a0 = "
+        "text": "let count = "
       },
       {
         "method_call": {
           "receiver": [
             {
-              "text": "__a0"
+              "placeholder": {
+                "arg": 1,
+                "access": "write"
+              }
             }
           ],
           "body": [
             {
-              "text": ".add(1)"
+              "text": ".offset_from("
+            },
+            {
+              "placeholder": {
+                "arg": 0,
+                "access": "read"
+              }
+            },
+            {
+              "text": ")"
             }
           ]
         }
       },
       {
-        "text": ";\n\n        while __a0 != "
-      },
-      {
-        "placeholder": {
-          "arg": 1,
-          "access": "read"
-        }
-      },
-      {
-        "text": " {\n            if *max_it < *__a0 {\n                max_it = __a0;\n            }\n            __a0 = "
+        "text": " as usize;\n    "
       },
       {
         "method_call": {
           "receiver": [
             {
-              "text": "__a0"
+              "method_call": {
+                "receiver": [
+                  {
+                    "method_call": {
+                      "receiver": [
+                        {
+                          "method_call": {
+                            "receiver": [
+                              {
+                                "method_call": {
+                                  "receiver": [
+                                    {
+                                      "text": "std::slice::from_raw_parts("
+                                    },
+                                    {
+                                      "placeholder": {
+                                        "arg": 0,
+                                        "access": "read"
+                                      }
+                                    },
+                                    {
+                                      "text": ", count)"
+                                    }
+                                  ],
+                                  "body": [
+                                    {
+                                      "text": ".iter()"
+                                    }
+                                  ]
+                                }
+                              }
+                            ],
+                            "body": [
+                              {
+                                "text": ".enumerate()"
+                              }
+                            ]
+                          }
+                        }
+                      ],
+                      "body": [
+                        {
+                          "text": ".max_by(|(_, x), (_, y)| "
+                        },
+                        {
+                          "method_call": {
+                            "receiver": [
+                              {
+                                "method_call": {
+                                  "receiver": [
+                                    {
+                                      "text": "x"
+                                    }
+                                  ],
+                                  "body": [
+                                    {
+                                      "text": ".partial_cmp(y)"
+                                    }
+                                  ]
+                                }
+                              }
+                            ],
+                            "body": [
+                              {
+                                "text": ".unwrap_or(std::cmp::Ordering::Equal)"
+                              }
+                            ]
+                          }
+                        },
+                        {
+                          "text": ")"
+                        }
+                      ]
+                    }
+                  }
+                ],
+                "body": [
+                  {
+                    "text": ".map(|(i, _)| "
+                  },
+                  {
+                    "method_call": {
+                      "receiver": [
+                        {
+                          "placeholder": {
+                            "arg": 0,
+                            "access": "write"
+                          }
+                        }
+                      ],
+                      "body": [
+                        {
+                          "text": ".add(i)"
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "text": ")"
+                  }
+                ]
+              }
             }
           ],
           "body": [
             {
-              "text": ".add(1)"
+              "text": ".unwrap_or("
+            },
+            {
+              "placeholder": {
+                "arg": 0,
+                "access": "read"
+              }
+            },
+            {
+              "text": ")"
             }
           ]
         }
-      },
-      {
-        "text": ";\n        }\n        max_it\n    }"
       }
     ],
     "generics": {
@@ -1277,6 +1348,7 @@
         "PartialOrd"
       ]
     },
+    "multi_statement": true,
     "params": {
       "a0": {
         "type": "*mut T1",

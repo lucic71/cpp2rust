@@ -631,6 +631,40 @@ impl<T> Iterator for Ptr<T> {
     }
 }
 
+// Ptr iterator that yields values instead of pointers.
+// It's more efficient and it's useful to implement idiomatic iterator patterns
+pub struct PtrValueIter<T> {
+    ptr: Ptr<T>,
+    n: usize,
+}
+
+impl<T> PtrValueIter<T> {
+    pub fn new(ptr: Ptr<T>, n: usize) -> Self {
+        Self { ptr, n }
+    }
+}
+
+impl<T: Clone + ByteRepr> Iterator for PtrValueIter<T> {
+    type Item = T;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        if self.n > 0 {
+            let value = self.ptr.read();
+            self.ptr += 1;
+            self.n -= 1;
+            Some(value)
+        } else {
+            None
+        }
+    }
+
+    fn size_hint(&self) -> (usize, Option<usize>) {
+        (self.n, Some(self.n))
+    }
+}
+
+impl<T: Clone + ByteRepr> ExactSizeIterator for PtrValueIter<T> {}
+
 pub struct StringIterator<T> {
     ptr: Ptr<T>,
 }
@@ -697,7 +731,7 @@ macro_rules! impl_ptr_add_sub_assign {
         }
     )+ }
 }
-impl_ptr_add_sub_assign!(i32, u32, u64, isize);
+impl_ptr_add_sub_assign!(i32, u32, u64, isize, usize);
 
 macro_rules! impl_ptr_add_sub {
     ($($rhs:ty),+) => { $(
@@ -723,7 +757,7 @@ macro_rules! impl_ptr_add_sub {
         }
     )+ }
 }
-impl_ptr_add_sub!(i32, u32, u64, isize);
+impl_ptr_add_sub!(i32, u32, u64, isize, usize);
 
 impl<T> PostfixInc for Ptr<T> {
     #[inline]
@@ -1005,7 +1039,7 @@ impl Ptr<u8> {
     }
 
     pub fn to_rust_string(&self) -> String {
-        let bytes: Vec<u8> = self.to_string_iterator().map(|p| p.read()).collect();
+        let bytes: Vec<u8> = self.to_c_string_iterator().collect();
         String::from_utf8_lossy(&bytes).into_owned()
     }
 }

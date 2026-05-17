@@ -15,11 +15,13 @@ fn main_0() -> i32 {
         (0..3).map(|_| <i32>::default()).collect::<Box<[i32]>>(),
     ));
     {
+        let count = (input.as_pointer() as Ptr<i32>)
+            .offset((3) as isize)
+            .get_offset()
+            - (input.as_pointer() as Ptr<i32>).get_offset();
         let mut outptr = (output.as_pointer() as Ptr<i32>).clone();
-        let mut curr = (input.as_pointer() as Ptr<i32>).clone();
-        while curr < (input.as_pointer() as Ptr<i32>).offset((3) as isize) {
-            outptr.write((curr.read()).clone().into());
-            curr += 1;
+        for value in PtrValueIter::new((input.as_pointer() as Ptr<i32>), count) {
+            outptr.write(value.into());
             outptr += 1;
         }
         outptr
