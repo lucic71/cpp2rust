@@ -6,7 +6,7 @@ use std::collections::BTreeMap;
 use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
-static mut C_inner_const: i32 = 1;
+static mut C_inner_const: i32 = unsafe { 1 };
 #[repr(C)]
 #[derive(Copy, Clone, Default)]
 pub struct C {}
@@ -15,7 +15,7 @@ impl C {
         return C_inner_const;
     }
 }
-pub static mut S_inner_const: i32 = 2;
+pub static mut S_inner_const: i32 = unsafe { 2 };
 #[repr(C)]
 #[derive(Copy, Clone, Default)]
 pub struct S {}
