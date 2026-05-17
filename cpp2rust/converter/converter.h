@@ -400,6 +400,8 @@ protected:
 
   virtual std::string GetDefaultAsString(clang::QualType qual_type);
 
+  virtual std::string GetArrayDefaultAsString(clang::QualType qual_type);
+
   virtual std::string GetDefaultAsStringFallback(clang::QualType qual_type);
 
   virtual std::string ConvertVarDefaultInit(clang::QualType qual_type);

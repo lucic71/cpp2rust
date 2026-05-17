@@ -1623,9 +1623,29 @@ bool ConverterRefCount::VisitCXXDefaultArgExpr(clang::CXXDefaultArgExpr *expr) {
   return Converter::VisitCXXDefaultArgExpr(expr);
 }
 
+std::string
+ConverterRefCount::GetArrayDefaultAsString(clang::QualType qual_type) {
+  if (auto *array_type = clang::dyn_cast<clang::ConstantArrayType>(qual_type)) {
+    const auto &size = array_type->getSize();
+    auto size_as_string = GetNumAsString(size);
+    auto element_type = array_type->getElementType();
+    PushConversionKind push(*this, ConversionKind::Unboxed);
+    auto element_type_as_string = ToString(element_type);
+    auto default_as_string = GetDefaultAsString(element_type);
+    return std::format("(0..{}).map(|_| {}).collect::<Box<[{}]>>()",
+                       size_as_string.c_str(), default_as_string,
+                       element_type_as_string);
+  }
+  return Converter::GetArrayDefaultAsString(qual_type);
+}
+
 std::string ConverterRefCount::GetDefaultAsString(clang::QualType qual_type) {
   if (IsVaListType(qual_type)) {
     return BoxValue("VaList::default()");
+  }
+
+  if (auto arr = GetArrayDefaultAsString(qual_type); !arr.empty()) {
+    return BoxValue(std::move(arr));
   }
 
   if (auto init = Mapper::MapInitializer(qual_type); !init.empty()) {
@@ -1646,26 +1666,6 @@ std::string ConverterRefCount::GetDefaultAsString(clang::QualType qual_type) {
         ret = std::format("Ptr::<{}>::null()", ConvertPointeeType(qual_type));
       }
     }
-  } else if (auto *array_type =
-                 clang::dyn_cast<clang::ConstantArrayType>(qual_type)) {
-    const auto &size = array_type->getSize();
-    auto size_as_string = GetNumAsString(size);
-    auto element_type = array_type->getElementType();
-    PushConversionKind push(*this, ConversionKind::Unboxed);
-    auto element_type_as_string = ToString(element_type);
-    auto default_as_string = GetDefaultAsString(element_type);
-    ret = std::format("(0..{}).map(|_| {}).collect::<Box<[{}]>>()",
-                      size_as_string.c_str(), default_as_string,
-                      element_type_as_string);
-  } else if (Mapper::ToString(qual_type) == "struct std::pair") {
-    auto template_args = *GetTemplateArgs(qual_type);
-    auto first_type = template_args[0].getAsType();
-    auto second_type = template_args[1].getAsType();
-    ret = std::format("(Rc::new(RefCell::new({})), Rc::new(RefCell::new({})))",
-                      GetDefaultAsString(first_type),
-                      GetDefaultAsString(second_type));
-  } else if (Mapper::ToString(qual_type).contains("std::array")) {
-    ret = Converter::GetDefaultAsString(qual_type);
   } else {
     return Converter::GetDefaultAsString(qual_type);
   }

@@ -2997,10 +2997,57 @@ bool Converter::VisitCXXStdInitializerListExpr(
   return false;
 }
 
+std::string Converter::GetArrayDefaultAsString(clang::QualType qual_type) {
+  if (auto *array_type = clang::dyn_cast<clang::ConstantArrayType>(qual_type)) {
+    auto size_as_string = GetNumAsString(array_type->getSize());
+    auto element_type = array_type->getElementType();
+    auto element_type_as_string = GetDefaultAsString(element_type);
+    return std::format("[{}; {}]", element_type_as_string,
+                       size_as_string.c_str());
+  }
+  if (auto *array_type =
+          clang::dyn_cast<clang::IncompleteArrayType>(qual_type)) {
+    return GetDefaultAsString(array_type->getElementType());
+  }
+  if (Mapper::ToString(qual_type).contains("std::array")) {
+    assert(GetTemplateArgs(qual_type).has_value());
+    auto template_args = *GetTemplateArgs(qual_type);
+    assert(template_args.size() == 2);
+    auto array_size = template_args[1];
+    unsigned size = 0;
+    switch (array_size.getKind()) {
+    case clang::TemplateArgument::Expression: {
+      auto array_size_expr = array_size.getAsExpr();
+      assert(array_size_expr && !array_size_expr->isValueDependent());
+      clang::Expr::EvalResult result;
+      ENSURE(array_size_expr->EvaluateAsInt(result, ctx_));
+      size = result.Val.getInt().getZExtValue();
+      break;
+    }
+    case clang::TemplateArgument::Integral: {
+      size = array_size.getAsIntegral().getZExtValue();
+      break;
+    }
+    default:
+      assert(0 && "Unsupported array size kind");
+      break;
+    }
+    return std::format(
+        "std::array::from_fn::<_, {}, _>(|_| Default::default()).to_vec()",
+        size);
+  }
+  return {};
+}
+
 std::string Converter::GetDefaultAsString(clang::QualType qual_type) {
   if (IsVaListType(qual_type)) {
     computed_expr_type_ = ComputedExprType::FreshValue;
     return "VaList::default()";
+  }
+
+  if (auto arr = GetArrayDefaultAsString(qual_type); !arr.empty()) {
+    computed_expr_type_ = ComputedExprType::FreshValue;
+    return arr;
   }
 
   if (auto init = Mapper::MapInitializer(qual_type); !init.empty()) {
@@ -3019,48 +3066,7 @@ std::string Converter::GetDefaultAsString(clang::QualType qual_type) {
   }
 
   computed_expr_type_ = ComputedExprType::FreshValue;
-
-  if (auto *array_type = clang::dyn_cast<clang::ConstantArrayType>(qual_type)) {
-    auto size_as_string = GetNumAsString(array_type->getSize());
-    auto element_type = array_type->getElementType();
-    auto element_type_as_string = GetDefaultAsString(element_type);
-    return std::format("[{}; {}]", element_type_as_string,
-                       size_as_string.c_str());
-  } else if (auto *array_type =
-                 clang::dyn_cast<clang::IncompleteArrayType>(qual_type)) {
-    return GetDefaultAsString(array_type->getElementType());
-  } else {
-    auto qual_type_str = Mapper::ToString(qual_type);
-    if (qual_type_str.contains("std::array")) {
-      assert(GetTemplateArgs(qual_type).has_value());
-      auto template_args = *GetTemplateArgs(qual_type);
-      assert(template_args.size() == 2);
-      auto array_size = template_args[1];
-      unsigned size = 0;
-      switch (array_size.getKind()) {
-      case clang::TemplateArgument::Expression: {
-        auto array_size_expr = array_size.getAsExpr();
-        assert(array_size_expr && !array_size_expr->isValueDependent());
-        clang::Expr::EvalResult result;
-        ENSURE(array_size_expr->EvaluateAsInt(result, ctx_));
-        size = result.Val.getInt().getZExtValue();
-        break;
-      }
-      case clang::TemplateArgument::Integral: {
-        size = array_size.getAsIntegral().getZExtValue();
-        break;
-      }
-      default:
-        assert(0 && "Unsupported array size kind");
-        break;
-      }
-      return std::format(
-          "std::array::from_fn::<_, {}, _>(|_| Default::default()).to_vec()",
-          size);
-    } else {
-      return GetDefaultAsStringFallback(qual_type);
-    }
-  }
+  return GetDefaultAsStringFallback(qual_type);
 }
 
 std::string Converter::GetDefaultAsStringFallback(clang::QualType qual_type) {
