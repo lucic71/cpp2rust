@@ -8,7 +8,7 @@ struct T1;
 struct T2;
 
 fn types() {
-    let t1: (T1, T2) = (T1::default(), T2::default());
+    let t1: (T1, T2) = <(T1, T2)>::default();
 }
 
 unsafe fn f1<T1, T2>(a0: (T1, T2)) -> T2 {

@@ -5,7 +5,7 @@ use libcc2rs::*;
 use std::io::prelude::*;
 
 fn types() -> Result<(), Box<dyn std::error::Error>> {
-    let t1: *mut ::std::fs::File = Default::default();
+    let t1: *mut ::std::fs::File = std::ptr::null_mut();
     Ok(())
 }
 

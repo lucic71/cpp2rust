@@ -459,7 +459,7 @@
     }
   },
   "t1": {
-    "init": "(T1::default(), T2::default())",
+    "init": "<(T1, T2)>::default()",
     "type": "(T1, T2)"
   }
 }

@@ -625,6 +625,18 @@ std::string Map(clang::QualType qual_type) {
   return {};
 }
 
+std::string MapInitializer(clang::QualType qual_type) {
+  auto type_str = ToString(qual_type);
+  auto [rule, subs] = search(types_, type_str, GetTypeMapKey(type_str));
+  if (rule && !rule->initializer.empty()) {
+    for (auto &ty : subs) {
+      ty = mapTypeStringRecursive(ty);
+    }
+    return instantiateTgt(subs, rule->initializer);
+  }
+  return {};
+}
+
 bool MapsToPointer(clang::QualType qual_type) {
   auto rule = search(qual_type);
   return rule && rule->type_info.is_pointer();

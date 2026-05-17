@@ -3003,6 +3003,11 @@ std::string Converter::GetDefaultAsString(clang::QualType qual_type) {
     return "VaList::default()";
   }
 
+  if (auto init = Mapper::MapInitializer(qual_type); !init.empty()) {
+    computed_expr_type_ = ComputedExprType::FreshValue;
+    return init;
+  }
+
   if (qual_type->isPointerType()) {
     auto pointee = qual_type->getPointeeType();
     if (pointee->isFunctionType()) {
@@ -3026,13 +3031,7 @@ std::string Converter::GetDefaultAsString(clang::QualType qual_type) {
     return GetDefaultAsString(array_type->getElementType());
   } else {
     auto qual_type_str = Mapper::ToString(qual_type);
-    if (qual_type_str == "struct std::pair") {
-      auto template_args = *GetTemplateArgs(qual_type);
-      auto first_type = template_args[0].getAsType();
-      auto second_type = template_args[1].getAsType();
-      return std::format("({}, {})", GetDefaultAsString(first_type),
-                         GetDefaultAsString(second_type));
-    } else if (qual_type_str.contains("std::array")) {
+    if (qual_type_str.contains("std::array")) {
       assert(GetTemplateArgs(qual_type).has_value());
       auto template_args = *GetTemplateArgs(qual_type);
       assert(template_args.size() == 2);
