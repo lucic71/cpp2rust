@@ -18,7 +18,7 @@ fn main_0() -> i32 {
             - (src.as_pointer() as Ptr<u32>).get_offset();
         PtrValueIter::new((src.as_pointer() as Ptr<u32>).clone(), __count)
             .map(|item| u32::try_from(item).ok().unwrap())
-            .collect()
+            .collect::<Vec<_>>()
     }));
     assert!(((*v1.borrow()).len() as u64 == 3_u64));
     assert!(
@@ -33,7 +33,7 @@ fn main_0() -> i32 {
             - (src.as_pointer() as Ptr<u32>).get_offset();
         PtrValueIter::new((src.as_pointer() as Ptr<u32>).clone(), __count)
             .map(|item| u64::try_from(item).ok().unwrap())
-            .collect()
+            .collect::<Vec<_>>()
     }));
     assert!(((*v2.borrow()).len() as u64 == 3_u64));
     assert!(
@@ -48,7 +48,7 @@ fn main_0() -> i32 {
             - (src.as_pointer() as Ptr<u32>).get_offset();
         PtrValueIter::new((src.as_pointer() as Ptr<u32>).clone(), __count)
             .map(|item| i32::try_from(item).ok().unwrap())
-            .collect()
+            .collect::<Vec<_>>()
     }));
     assert!(((*v3.borrow()).len() as u64 == 3_u64));
     assert!(
@@ -60,7 +60,7 @@ fn main_0() -> i32 {
     let v4: Value<Vec<u32>> = Rc::new(RefCell::new({
         let __count = (src1.as_pointer() as Ptr<u32>).to_end().get_offset()
             - (src1.as_pointer() as Ptr<u32>).get_offset();
-        PtrValueIter::new((src1.as_pointer() as Ptr<u32>), __count).collect()
+        PtrValueIter::new((src1.as_pointer() as Ptr<u32>), __count).collect::<Vec<_>>()
     }));
     assert!(((*v4.borrow()).len() as u64 == 3_u64));
     assert!(
