@@ -3709,6 +3709,7 @@ std::string Converter::ConvertPlaceholder(clang::Expr *expr, clang::Expr *arg,
         ph_ctx.is_index_base
             ? std::optional(ph_ctx.access == TranslationRule::Access::kWrite)
             : std::nullopt);
+    PushExprKind push(*this, ExprKind::RValue);
     ConvertDeref(arg);
     return std::move(buf).str();
   }
