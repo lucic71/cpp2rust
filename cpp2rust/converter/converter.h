@@ -550,7 +550,7 @@ protected:
       auto *ctor = expr->getConstructor();
       if (!ctor->isCopyOrMoveConstructor() &&
           ctor->isConvertingConstructor(/*AllowExplicit=*/false) &&
-          ctor->getNumParams() == 1) {
+          ctor->getNumParams() == 1 && IsIteratorType(expr->getType())) {
         c.suppress_iterator_clone_ = true;
       }
     }
@@ -561,6 +561,19 @@ protected:
 
     static bool take(Converter &c) {
       return std::exchange(c.suppress_iterator_clone_, false);
+    }
+
+  private:
+    static bool IsIteratorType(clang::QualType qt) {
+      if (auto *record = qt->getAsCXXRecordDecl()) {
+        for (auto *d : record->decls()) {
+          if (auto *tnd = llvm::dyn_cast<clang::TypedefNameDecl>(d)) {
+            if (tnd->getName() == "iterator_category")
+              return true;
+          }
+        }
+      }
+      return false;
     }
   };
 
