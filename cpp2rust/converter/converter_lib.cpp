@@ -658,6 +658,7 @@ static bool IsIteratorType(clang::QualType qt) {
 
 bool IsRedundantCopyInConversion(clang::ASTContext &ctx,
                                  const clang::CXXConstructExpr *expr) {
+  return false;
   if (auto parents = ctx.getParentMapContext().getParents(*expr);
       !parents.empty()) {
     if (auto *parent = parents[0].get<clang::CXXConstructExpr>()) {
