@@ -50,10 +50,10 @@ unsafe fn main_0() -> i32 {
     let mut it: UnsafeMapIterator<i16, u32> =
         UnsafeMapIterator::find_key(&m as *const BTreeMap<i16, Box<u32>>, &1_i16);
     let mut const_it: UnsafeMapIterator<i16, u32> =
-        UnsafeMapIterator::find_key(&m as *const BTreeMap<i16, Box<u32>>, &10_i16);
+        UnsafeMapIterator::find_key(&m as *const BTreeMap<i16, Box<u32>>, &10_i16).clone();
     let mut x1: u32 = if it == end { 0_u32 } else { *it.second() };
     assert!(((x1) == (4_u32)));
-    let mut x2: u32 = if const_it == end {
+    let mut x2: u32 = if const_it == end.clone() {
         0_u32
     } else {
         *const_it.second()
@@ -65,11 +65,12 @@ unsafe fn main_0() -> i32 {
         *it.second()
     };
     assert!(((x3) == (4_u32)));
-    let mut x4: u32 = if const_it == UnsafeMapIterator::end(&m as *const BTreeMap<i16, Box<u32>>) {
-        0_u32
-    } else {
-        *const_it.second()
-    };
+    let mut x4: u32 =
+        if const_it == UnsafeMapIterator::end(&m as *const BTreeMap<i16, Box<u32>>).clone() {
+            0_u32
+        } else {
+            *const_it.second()
+        };
     assert!(((x4) == (0_u32)));
     (*m.entry(4_i16).or_default().as_mut()) = 5_u32;
     let mut it4: UnsafeMapIterator<i16, u32> =
