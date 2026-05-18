@@ -120,8 +120,8 @@ fn f17<T1: Ord + Clone + 'static, T2: 'static>(
     RefcountMapIter::find_key(a0, &a1)
 }
 
-fn f19<T1, T2>(a0: RefcountMapIter<T1, T2>) -> RefcountMapIter<T1, T2> {
-    a0
+fn f19<T1: Clone, T2>(a0: RefcountMapIter<T1, T2>) -> RefcountMapIter<T1, T2> {
+    a0.clone()
 }
 
 fn f20<T1: Ord + Clone + 'static, T2: 'static>(a0: RefcountMapIter<T1, T2>) -> Value<T1> {

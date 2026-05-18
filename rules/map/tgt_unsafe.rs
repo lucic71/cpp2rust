@@ -83,8 +83,8 @@ unsafe fn f17<T1: Ord + Clone, T2>(a0: BTreeMap<T1, Box<T2>>, a1: T1) -> UnsafeM
     UnsafeMapIterator::find_key(&a0 as *const BTreeMap<T1, Box<T2>>, &a1)
 }
 
-unsafe fn f19<T1, T2>(a0: UnsafeMapIterator<T1, T2>) -> UnsafeMapIterator<T1, T2> {
-    a0
+unsafe fn f19<T1: Clone, T2>(a0: UnsafeMapIterator<T1, T2>) -> UnsafeMapIterator<T1, T2> {
+    a0.clone()
 }
 
 unsafe fn f20<T1: Ord + Clone, T2>(a0: UnsafeMapIterator<T1, T2>) -> *const T1 {

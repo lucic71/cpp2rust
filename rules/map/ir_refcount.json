@@ -462,14 +462,27 @@
   "f19": {
     "body": [
       {
-        "placeholder": {
-          "arg": 0,
-          "access": "read"
+        "method_call": {
+          "receiver": [
+            {
+              "placeholder": {
+                "arg": 0,
+                "access": "read"
+              }
+            }
+          ],
+          "body": [
+            {
+              "text": ".clone()"
+            }
+          ]
         }
       }
     ],
     "generics": {
-      "T1": [],
+      "T1": [
+        "Clone"
+      ],
       "T2": []
     },
     "params": {

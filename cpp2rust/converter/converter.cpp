@@ -2754,6 +2754,8 @@ void Converter::ConvertCXXConstructExprArgs(clang::CXXConstructExpr *expr) {
 }
 
 bool Converter::VisitCXXConstructExpr(clang::CXXConstructExpr *expr) {
+  PushSuppressIteratorClone push(*this, expr);
+
   if (auto str = GetMappedAsString(expr, expr->getArgs(), expr->getNumArgs());
       !str.empty()) {
     StrCat(str);
@@ -2764,8 +2766,10 @@ bool Converter::VisitCXXConstructExpr(clang::CXXConstructExpr *expr) {
   if (ctor->isCopyOrMoveConstructor() ||
       (ctor->isConvertingConstructor(false) && ctor->getNumParams() == 1 &&
        ctor->getParamDecl(0)->getType()->isRValueReferenceType())) {
+    // Take supress before recursing into the child.
+    bool suppress = PushSuppressIteratorClone::take(*this);
     Convert(expr->getArg(0));
-    if (ctor->isCopyConstructor() && !IsRedundantCopyInConversion(ctx_, expr)) {
+    if (ctor->isCopyConstructor() && !suppress) {
       StrCat(".clone()");
     }
     return false;

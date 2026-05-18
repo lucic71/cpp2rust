@@ -192,7 +192,8 @@ fn main_0() -> i32 {
         &1_i16,
     )));
     let const_it: Value<RefcountMapIter<i16, u32>> = Rc::new(RefCell::new(
-        RefcountMapIter::find_key((m.as_pointer() as Ptr<BTreeMap<i16, Value<u32>>>), &10_i16),
+        RefcountMapIter::find_key((m.as_pointer() as Ptr<BTreeMap<i16, Value<u32>>>), &10_i16)
+            .clone(),
     ));
     let x1: Value<u32> = Rc::new(RefCell::new(if (*it.borrow()) == (*end.borrow()) {
         0_u32
@@ -200,11 +201,13 @@ fn main_0() -> i32 {
         (*(*it.borrow()).second().borrow())
     }));
     assert!(((*x1.borrow()) == 4_u32));
-    let x2: Value<u32> = Rc::new(RefCell::new(if (*const_it.borrow()) == (*end.borrow()) {
-        0_u32
-    } else {
-        (*(*const_it.borrow()).second().borrow())
-    }));
+    let x2: Value<u32> = Rc::new(RefCell::new(
+        if (*const_it.borrow()) == (*end.borrow()).clone() {
+            0_u32
+        } else {
+            (*(*const_it.borrow()).second().borrow())
+        },
+    ));
     assert!(((*x2.borrow()) == 0_u32));
     let x3: Value<u32> = Rc::new(RefCell::new(
         if (*it.borrow())
@@ -218,7 +221,7 @@ fn main_0() -> i32 {
     assert!(((*x3.borrow()) == 4_u32));
     let x4: Value<u32> = Rc::new(RefCell::new(
         if (*const_it.borrow())
-            == RefcountMapIter::end((m.as_pointer() as Ptr<BTreeMap<i16, Value<u32>>>))
+            == RefcountMapIter::end((m.as_pointer() as Ptr<BTreeMap<i16, Value<u32>>>)).clone()
         {
             0_u32
         } else {
@@ -274,7 +277,7 @@ fn main_0() -> i32 {
     );
     RefcountMapIter::erase(
         ((r).clone() as Ptr<BTreeMap<i16, Value<u32>>>),
-        &(*it4.borrow()),
+        &(*it4.borrow()).clone(),
     );
     assert!(((*r.upgrade().deref()).len() as u64 == 3_u64));
     assert!(

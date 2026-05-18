@@ -644,16 +644,6 @@ std::string GetClassName(clang::QualType type) {
   return {};
 }
 
-bool IsRedundantCopyInConversion(clang::ASTContext &ctx,
-                                 const clang::CXXConstructExpr *expr) {
-  auto parents = ctx.getParentMapContext().getParents(*expr);
-  if (parents.empty()) {
-    return false;
-  }
-  auto *parent = parents[0].get<clang::CXXConstructExpr>();
-  return parent && parent->getConstructor()->isConvertingConstructor(false);
-}
-
 bool IsVaListType(clang::QualType type) {
   for (auto t = type; !t.isNull();) {
     if (auto *adjusted = t->getAs<clang::AdjustedType>()) {
