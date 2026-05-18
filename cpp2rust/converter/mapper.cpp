@@ -639,7 +639,9 @@ std::string MapInitializer(clang::QualType qual_type) {
   auto [rule, subs] = search(types_, type_str, GetTypeMapKey(type_str));
   if (rule && !rule->initializer.empty()) {
     for (auto &ty : subs) {
-      ty = mapTypeStringRecursive(*ty);
+      if (ty) {
+        ty = mapTypeStringRecursive(*ty);
+      }
     }
     return instantiateTgt(subs, rule->initializer);
   }
