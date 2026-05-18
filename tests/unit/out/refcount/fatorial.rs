@@ -19,11 +19,7 @@ pub fn fatorial_0(n: i32) -> i32 {
 }
 pub fn fatorial_by_ref_1(n: Ptr<i32>) {
     if ((n.read()) == 1) {
-        {
-            let __ptr = n.clone();
-            let __tmp = __ptr.read() * 1;
-            __ptr.write(__tmp)
-        };
+        n.write(n.read() * 1);
         return;
     }
     let n_1: Value<i32> = Rc::new(RefCell::new(((n.read()) - 1)));
@@ -32,20 +28,12 @@ pub fn fatorial_by_ref_1(n: Ptr<i32>) {
         fatorial_by_ref_1(_n)
     });
     let __rhs = (*n_1.borrow());
-    {
-        let __ptr = n.clone();
-        let __tmp = __ptr.read() * __rhs;
-        __ptr.write(__tmp)
-    };
+    n.write(n.read() * __rhs);
 }
 pub fn fatorial_by_ptr_2(n: Ptr<i32>) {
     let n: Value<Ptr<i32>> = Rc::new(RefCell::new(n));
     if (((*n.borrow()).read()) == 1) {
-        {
-            let __ptr = (*n.borrow()).clone();
-            let __tmp = __ptr.read() * 1;
-            __ptr.write(__tmp)
-        };
+        (*n.borrow()).write((*n.borrow()).read() * 1);
         return;
     }
     let n_1: Value<i32> = Rc::new(RefCell::new((((*n.borrow()).read()) - 1)));
@@ -54,11 +42,7 @@ pub fn fatorial_by_ptr_2(n: Ptr<i32>) {
         fatorial_by_ptr_2(_n)
     });
     let __rhs = (*n_1.borrow());
-    {
-        let __ptr = (*n.borrow()).clone();
-        let __tmp = __ptr.read() * __rhs;
-        __ptr.write(__tmp)
-    };
+    (*n.borrow()).write((*n.borrow()).read() * __rhs);
 }
 pub fn main() {
     std::process::exit(main_0());

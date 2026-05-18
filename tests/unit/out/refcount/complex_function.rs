@@ -139,17 +139,9 @@ fn main_0() -> i32 {
         bar_2(_x)
     });
     let __rhs = (*x1.borrow());
-    {
-        let __ptr = r2.clone();
-        let __tmp = __ptr.read() + __rhs;
-        __ptr.write(__tmp)
-    };
+    r2.write(r2.read() + __rhs);
     let __rhs = (r1.read());
-    {
-        let __ptr = r3.clone();
-        let __tmp = __ptr.read() + __rhs;
-        __ptr.write(__tmp)
-    };
+    r3.write(r3.read() + __rhs);
     let x4: Value<i32> = Rc::new(RefCell::new(
         ((({
             let _x: i32 = (*x3.borrow());
@@ -230,15 +222,18 @@ fn main_0() -> i32 {
         .v
         .borrow()),
     ));
-    {
-        let __ptr = ({
+    ({
+        let _x: Ptr<i32> = x1.as_pointer();
+        bar_2(_x)
+    })
+    .write(
+        ({
             let _x: Ptr<i32> = x1.as_pointer();
             bar_2(_x)
         })
-        .clone();
-        let __tmp = __ptr.read() + 10;
-        __ptr.write(__tmp)
-    };
+        .read()
+            + 10,
+    );
     ({
         let _x: Ptr<i32> = x1.as_pointer();
         bar_2(_x)
@@ -282,8 +277,21 @@ fn main_0() -> i32 {
             foo_0(_x)
         }))
         + 1);
-    {
-        let __ptr = ({
+    ({
+        let _x: Ptr<i32> = (*({
+            (*({ (*({ (*d.borrow()).get() }).upgrade().deref()).get() })
+                .upgrade()
+                .deref())
+            .get()
+        })
+        .upgrade()
+        .deref())
+        .v
+        .as_pointer();
+        bar_2(_x)
+    })
+    .write(
+        ({
             let _x: Ptr<i32> = (*({
                 (*({ (*({ (*d.borrow()).get() }).upgrade().deref()).get() })
                     .upgrade()
@@ -296,10 +304,9 @@ fn main_0() -> i32 {
             .as_pointer();
             bar_2(_x)
         })
-        .clone();
-        let __tmp = __ptr.read() + 10;
-        __ptr.write(__tmp)
-    };
+        .read()
+            + 10,
+    );
     ({
         let _x: Ptr<i32> = (*({
             (*({ (*({ (*d.borrow()).get() }).upgrade().deref()).get() })
@@ -349,15 +356,18 @@ fn main_0() -> i32 {
         ptr_1(_x)
     })
     .with_mut(|__v| __v.prefix_inc());
-    {
-        let __ptr = ({
+    ({
+        let _x: Ptr<i32> = (x1.as_pointer());
+        ptr_1(_x)
+    })
+    .write(
+        ({
             let _x: Ptr<i32> = (x1.as_pointer());
             ptr_1(_x)
         })
-        .clone();
-        let __tmp = __ptr.read() + 1;
-        __ptr.write(__tmp)
-    };
+        .read()
+            + 1,
+    );
     ({
         let _x: Ptr<i32> = ((*({
             (*({ (*({ (*d.borrow()).get() }).upgrade().deref()).get() })
@@ -372,8 +382,21 @@ fn main_0() -> i32 {
         ptr_1(_x)
     })
     .with_mut(|__v| __v.prefix_inc());
-    {
-        let __ptr = ({
+    ({
+        let _x: Ptr<i32> = ((*({
+            (*({ (*({ (*d.borrow()).get() }).upgrade().deref()).get() })
+                .upgrade()
+                .deref())
+            .get()
+        })
+        .upgrade()
+        .deref())
+        .v
+        .as_pointer());
+        ptr_1(_x)
+    })
+    .write(
+        ({
             let _x: Ptr<i32> = ((*({
                 (*({ (*({ (*d.borrow()).get() }).upgrade().deref()).get() })
                     .upgrade()
@@ -386,12 +409,24 @@ fn main_0() -> i32 {
             .as_pointer());
             ptr_1(_x)
         })
-        .clone();
-        let __tmp = __ptr.read() + 1;
-        __ptr.write(__tmp)
-    };
-    {
-        let __ptr = ({
+        .read()
+            + 1,
+    );
+    ({
+        let _x: Ptr<i32> = ((*({
+            (*({ (*({ (*d.borrow()).get() }).upgrade().deref()).get() })
+                .upgrade()
+                .deref())
+            .get()
+        })
+        .upgrade()
+        .deref())
+        .v
+        .as_pointer());
+        ptr_1(_x)
+    })
+    .write(
+        ({
             let _x: Ptr<i32> = ((*({
                 (*({ (*({ (*d.borrow()).get() }).upgrade().deref()).get() })
                     .upgrade()
@@ -404,10 +439,9 @@ fn main_0() -> i32 {
             .as_pointer());
             ptr_1(_x)
         })
-        .clone();
-        let __tmp = __ptr.read() + 1;
-        __ptr.write(__tmp)
-    };
+        .read()
+            + 1,
+    );
     let ptr1: Value<i32> = Rc::new(RefCell::new(
         ({
             let _x: Ptr<i32> = ((*({

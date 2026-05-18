@@ -57,11 +57,7 @@ pub fn DoStuffWithSafePointer_0(safe_ptr: Ptr<Option<Value<SafePointer>>>) {
     (*(*x3.borrow_mut()).as_ref().unwrap().borrow_mut()) = __rhs;
     (*x4.borrow_mut()) = (*x3.borrow_mut()).take();
     let raw_ptr2: Value<Ptr<i32>> = Rc::new(RefCell::new(((*x4.borrow()).as_pointer())));
-    {
-        let __ptr = (*raw_ptr2.borrow()).clone();
-        let __tmp = __ptr.read() + 1;
-        __ptr.write(__tmp)
-    };
+    (*raw_ptr2.borrow()).write((*raw_ptr2.borrow()).read() + 1);
     let pair: Value<Option<Value<Pair>>> =
         Rc::new(RefCell::new(Some(Rc::new(RefCell::new(Pair {
             x: Rc::new(RefCell::new(((*raw_ptr2.borrow()).read()))),

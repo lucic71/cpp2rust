@@ -1796,13 +1796,10 @@ void ConverterRefCount::ConvertAssignment(clang::Expr *lhs, clang::Expr *rhs,
     auto lhs_str = ConvertLValue(lhs);
     if (!pending_deref_.empty()) {
       auto ptr = pending_deref_.take();
-      // *ptr += val => { let __ptr = ptr.clone(); let __tmp = __ptr.read() +
-      // val;
-      // __ptr.write(__tmp) }
       auto op = assign_operator;
       op.remove_suffix(1); // remove '='
-      StrCat("{ let __ptr = ", ptr, ".clone(); let __tmp = __ptr.read() ", op,
-             " ", rhs_as_string, "; __ptr.write(__tmp) }");
+      StrCat(std::format("{}.write({}.read() {} {})", ptr, ptr, op,
+                         rhs_as_string));
     } else {
       StrCat(lhs_str, assign_operator, rhs_as_string);
     }
