@@ -91,7 +91,7 @@ unsafe fn main_0() -> i32 {
         UnsafeMapIterator::find_key(&m as *const BTreeMap<i16, Box<u32>>, &4_i16)
             != UnsafeMapIterator::end(&m as *const BTreeMap<i16, Box<u32>>)
     );
-    UnsafeMapIterator::erase(&(*r) as *const BTreeMap<i16, Box<u32>>, &it4);
+    UnsafeMapIterator::erase(&(*r) as *const BTreeMap<i16, Box<u32>>, &it4.clone());
     assert!((((*r).len() as u64) == (3_u64)));
     assert!(
         UnsafeMapIterator::find_key(&m as *const BTreeMap<i16, Box<u32>>, &4_i16)
