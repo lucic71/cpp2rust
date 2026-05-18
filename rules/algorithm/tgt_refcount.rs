@@ -73,24 +73,24 @@ fn f9<T1: Clone + ByteRepr>(a0: Ptr<T1>, a1: Ptr<T1>) {
 fn f10<T1: PartialEq + Clone + ByteRepr>(a0: Ptr<T1>, a1: Ptr<T1>) -> Ptr<T1> {
     let count = a1.get_offset() - a0.get_offset();
     if count <= 1 {
-        return a1;
-    }
+        a1
+    } else {
+        let mut write_ptr = a0.clone();
+        let mut iter = PtrValueIter::new(a0, count);
+        let mut last_unique = iter.next().unwrap();
 
-    let mut write_ptr = a0.clone();
-    let mut iter = PtrValueIter::new(a0, count);
-    let mut last_unique = iter.next().unwrap();
+        // the first unique value is already in place
+        write_ptr += 1;
 
-    // the first unique value is already in place
-    write_ptr += 1;
-
-    for current_val in iter {
-        if current_val != last_unique {
-            write_ptr.write(current_val.clone());
-            last_unique = current_val;
-            write_ptr += 1;
+        for current_val in iter {
+            if current_val != last_unique {
+                write_ptr.write(current_val.clone());
+                last_unique = current_val;
+                write_ptr += 1;
+            }
         }
+        write_ptr
     }
-    write_ptr
 }
 
 fn f12<T1: Clone + ByteRepr>(a0: Ptr<T1>, a1: Ptr<T1>, a2: T1) {

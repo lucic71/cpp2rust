@@ -98,7 +98,7 @@
         }
       },
       {
-        "text": ";\n    if count <= 1 {\n        return "
+        "text": ";\n    if count <= 1 {\n        "
       },
       {
         "placeholder": {
@@ -107,7 +107,7 @@
         }
       },
       {
-        "text": ";\n    }\n\n    let mut write_ptr = "
+        "text": "\n    } else {\n        let mut write_ptr = "
       },
       {
         "method_call": {
@@ -127,7 +127,7 @@
         }
       },
       {
-        "text": ";\n    let mut iter = PtrValueIter::new("
+        "text": ";\n        let mut iter = PtrValueIter::new("
       },
       {
         "placeholder": {
@@ -136,7 +136,7 @@
         }
       },
       {
-        "text": ", count);\n    let mut last_unique = "
+        "text": ", count);\n        let mut last_unique = "
       },
       {
         "method_call": {
@@ -164,7 +164,7 @@
         }
       },
       {
-        "text": ";\n\n    // the first unique value is already in place\n    write_ptr += 1;\n\n    for current_val in iter {\n        if current_val != last_unique {\n            "
+        "text": ";\n\n        // the first unique value is already in place\n        write_ptr += 1;\n\n        for current_val in iter {\n            if current_val != last_unique {\n                "
       },
       {
         "method_call": {
@@ -198,7 +198,7 @@
         }
       },
       {
-        "text": ";\n            last_unique = current_val;\n            write_ptr += 1;\n        }\n    }\n    write_ptr"
+        "text": ";\n                last_unique = current_val;\n                write_ptr += 1;\n            }\n        }\n        write_ptr\n    }"
       }
     ],
     "generics": {

@@ -391,15 +391,8 @@ impl<'a> FnIrBuilder<'a> {
                                 }
                             Some(Access::Unknown)
                         },
-                        ast::ReturnExpr(ret) => {
-                            if self.returns_mut_ref()
-                                && ret.expr().is_some_and(|e|
-                                    e.syntax().text_range() == name_ref.syntax().text_range())
-                            {
-                                Some(Access::Write)
-                            } else {
-                                Some(Access::Read)
-                            }
+                        ast::ReturnExpr(_) => {
+                            panic!("return statements are not supported in rule bodies");
                         },
                         ast::StmtList(sl) => {
                             if self.returns_mut_ref()
