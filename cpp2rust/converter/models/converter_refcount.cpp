@@ -1798,8 +1798,11 @@ void ConverterRefCount::ConvertAssignment(clang::Expr *lhs, clang::Expr *rhs,
       auto ptr = pending_deref_.take();
       auto op = assign_operator;
       op.remove_suffix(1); // remove '='
-      StrCat(std::format("{}.write({}.read() {} {})", ptr, ptr, op,
-                         rhs_as_string));
+      {
+        PushBrace brace(*this);
+        StrCat(std::format("let _ptr = {}.clone();", ptr));
+        StrCat(std::format("_ptr.write(_ptr.read() {} {})", op, rhs_as_string));
+      }
     } else {
       StrCat(lhs_str, assign_operator, rhs_as_string);
     }

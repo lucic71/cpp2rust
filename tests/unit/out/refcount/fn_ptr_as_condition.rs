@@ -8,7 +8,10 @@ use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
 pub fn double_it_0(x: Ptr<i32>) {
     let x: Value<Ptr<i32>> = Rc::new(RefCell::new(x));
-    (*x.borrow()).write((*x.borrow()).read() * 2);
+    {
+        let _ptr = (*x.borrow()).clone();
+        _ptr.write(_ptr.read() * 2)
+    };
 }
 pub fn maybe_call_1(cb: FnPtr<fn(Ptr<i32>)>, x: Ptr<i32>) {
     let cb: Value<FnPtr<fn(Ptr<i32>)>> = Rc::new(RefCell::new(cb));

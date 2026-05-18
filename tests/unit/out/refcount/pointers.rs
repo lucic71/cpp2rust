@@ -70,8 +70,10 @@ fn main_0() -> i32 {
     let t3: Value<Ptr<Test>> = Rc::new(RefCell::new(Ptr::<Test>::null()));
     (*t3.borrow_mut()) = (*t2.borrow()).clone();
     (*(*(*t3.borrow()).upgrade().deref()).x.borrow_mut()) = 15;
-    ({ (*(*t3.borrow()).upgrade().deref()).as_ptr() })
-        .write(({ (*(*t3.borrow()).upgrade().deref()).as_ptr() }).read() + 10);
+    {
+        let _ptr = ({ (*(*t3.borrow()).upgrade().deref()).as_ptr() }).clone();
+        _ptr.write(_ptr.read() + 10)
+    };
     return {
         let _lhs = {
             let _lhs = (*(*(*t3.borrow()).upgrade().deref()).x.borrow());

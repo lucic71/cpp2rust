@@ -67,23 +67,41 @@ pub fn convert_with_rhs_1() {
     let __rhs = ((*p.borrow()).read());
     (*arr.borrow_mut())[(0) as usize] = __rhs;
     let __rhs = (*x.borrow());
-    z.write(z.read() + __rhs);
+    {
+        let _ptr = z.clone();
+        _ptr.write(_ptr.read() + __rhs)
+    };
     let __rhs = (*y.borrow());
-    z.write(z.read() + __rhs);
+    {
+        let _ptr = z.clone();
+        _ptr.write(_ptr.read() + __rhs)
+    };
     let __rhs = ((*p.borrow()).read());
-    z.write(z.read() + __rhs);
+    {
+        let _ptr = z.clone();
+        _ptr.write(_ptr.read() + __rhs)
+    };
     let __rhs = ((*y.borrow()) + (*x.borrow()));
-    (*p.borrow()).write((*p.borrow()).read() + __rhs);
+    {
+        let _ptr = (*p.borrow()).clone();
+        _ptr.write(_ptr.read() + __rhs)
+    };
     let __rhs = {
         let _lhs = (*x.borrow());
         _lhs + (z.read())
     };
-    (*p.borrow()).write((*p.borrow()).read() + __rhs);
+    {
+        let _ptr = (*p.borrow()).clone();
+        _ptr.write(_ptr.read() + __rhs)
+    };
     let __rhs = {
         let _lhs = (*y.borrow());
         _lhs + (z.read())
     };
-    (*p.borrow()).write((*p.borrow()).read() + __rhs);
+    {
+        let _ptr = (*p.borrow()).clone();
+        _ptr.write(_ptr.read() + __rhs)
+    };
 }
 pub fn main() {
     std::process::exit(main_0());

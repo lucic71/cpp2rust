@@ -33,8 +33,10 @@ impl ByteRepr for StackArray {}
 pub fn IncrementAll_0(s: Ptr<StackArray>) {
     let i: Value<i32> = Rc::new(RefCell::new(0));
     'loop_: while ((*i.borrow()) < 3) {
-        (*(*s.upgrade().deref()).arr.borrow())[(*i.borrow()) as usize]
-            .write((*(*s.upgrade().deref()).arr.borrow())[(*i.borrow()) as usize].read() + 1);
+        {
+            let _ptr = (*(*s.upgrade().deref()).arr.borrow())[(*i.borrow()) as usize].clone();
+            _ptr.write(_ptr.read() + 1)
+        };
         (*i.borrow_mut()).prefix_inc();
     }
 }

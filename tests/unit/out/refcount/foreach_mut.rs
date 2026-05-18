@@ -37,7 +37,10 @@ fn main_0() -> i32 {
     (*v2.borrow_mut()).push(((v1.as_pointer() as Ptr<i32>).offset(2_u64 as isize)));
     'loop_: for mut p in v2.as_pointer() as Ptr<Ptr<i32>> {
         let p: Value<Ptr<i32>> = Rc::new(RefCell::new(p.read().clone()));
-        (*p.borrow()).write((*p.borrow()).read() + 5);
+        {
+            let _ptr = (*p.borrow()).clone();
+            _ptr.write(_ptr.read() + 5)
+        };
     }
     'loop_: for p in v2.as_pointer() as Ptr<Ptr<i32>> {
         let p: Value<Ptr<i32>> = Rc::new(RefCell::new(p.read().clone()));

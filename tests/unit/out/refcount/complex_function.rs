@@ -139,9 +139,15 @@ fn main_0() -> i32 {
         bar_2(_x)
     });
     let __rhs = (*x1.borrow());
-    r2.write(r2.read() + __rhs);
+    {
+        let _ptr = r2.clone();
+        _ptr.write(_ptr.read() + __rhs)
+    };
     let __rhs = (r1.read());
-    r3.write(r3.read() + __rhs);
+    {
+        let _ptr = r3.clone();
+        _ptr.write(_ptr.read() + __rhs)
+    };
     let x4: Value<i32> = Rc::new(RefCell::new(
         ((({
             let _x: i32 = (*x3.borrow());
@@ -222,18 +228,14 @@ fn main_0() -> i32 {
         .v
         .borrow()),
     ));
-    ({
-        let _x: Ptr<i32> = x1.as_pointer();
-        bar_2(_x)
-    })
-    .write(
-        ({
+    {
+        let _ptr = ({
             let _x: Ptr<i32> = x1.as_pointer();
             bar_2(_x)
         })
-        .read()
-            + 10,
-    );
+        .clone();
+        _ptr.write(_ptr.read() + 10)
+    };
     ({
         let _x: Ptr<i32> = x1.as_pointer();
         bar_2(_x)
@@ -277,21 +279,8 @@ fn main_0() -> i32 {
             foo_0(_x)
         }))
         + 1);
-    ({
-        let _x: Ptr<i32> = (*({
-            (*({ (*({ (*d.borrow()).get() }).upgrade().deref()).get() })
-                .upgrade()
-                .deref())
-            .get()
-        })
-        .upgrade()
-        .deref())
-        .v
-        .as_pointer();
-        bar_2(_x)
-    })
-    .write(
-        ({
+    {
+        let _ptr = ({
             let _x: Ptr<i32> = (*({
                 (*({ (*({ (*d.borrow()).get() }).upgrade().deref()).get() })
                     .upgrade()
@@ -304,9 +293,9 @@ fn main_0() -> i32 {
             .as_pointer();
             bar_2(_x)
         })
-        .read()
-            + 10,
-    );
+        .clone();
+        _ptr.write(_ptr.read() + 10)
+    };
     ({
         let _x: Ptr<i32> = (*({
             (*({ (*({ (*d.borrow()).get() }).upgrade().deref()).get() })
@@ -356,18 +345,14 @@ fn main_0() -> i32 {
         ptr_1(_x)
     })
     .with_mut(|__v| __v.prefix_inc());
-    ({
-        let _x: Ptr<i32> = (x1.as_pointer());
-        ptr_1(_x)
-    })
-    .write(
-        ({
+    {
+        let _ptr = ({
             let _x: Ptr<i32> = (x1.as_pointer());
             ptr_1(_x)
         })
-        .read()
-            + 1,
-    );
+        .clone();
+        _ptr.write(_ptr.read() + 1)
+    };
     ({
         let _x: Ptr<i32> = ((*({
             (*({ (*({ (*d.borrow()).get() }).upgrade().deref()).get() })
@@ -382,21 +367,8 @@ fn main_0() -> i32 {
         ptr_1(_x)
     })
     .with_mut(|__v| __v.prefix_inc());
-    ({
-        let _x: Ptr<i32> = ((*({
-            (*({ (*({ (*d.borrow()).get() }).upgrade().deref()).get() })
-                .upgrade()
-                .deref())
-            .get()
-        })
-        .upgrade()
-        .deref())
-        .v
-        .as_pointer());
-        ptr_1(_x)
-    })
-    .write(
-        ({
+    {
+        let _ptr = ({
             let _x: Ptr<i32> = ((*({
                 (*({ (*({ (*d.borrow()).get() }).upgrade().deref()).get() })
                     .upgrade()
@@ -409,24 +381,11 @@ fn main_0() -> i32 {
             .as_pointer());
             ptr_1(_x)
         })
-        .read()
-            + 1,
-    );
-    ({
-        let _x: Ptr<i32> = ((*({
-            (*({ (*({ (*d.borrow()).get() }).upgrade().deref()).get() })
-                .upgrade()
-                .deref())
-            .get()
-        })
-        .upgrade()
-        .deref())
-        .v
-        .as_pointer());
-        ptr_1(_x)
-    })
-    .write(
-        ({
+        .clone();
+        _ptr.write(_ptr.read() + 1)
+    };
+    {
+        let _ptr = ({
             let _x: Ptr<i32> = ((*({
                 (*({ (*({ (*d.borrow()).get() }).upgrade().deref()).get() })
                     .upgrade()
@@ -439,9 +398,9 @@ fn main_0() -> i32 {
             .as_pointer());
             ptr_1(_x)
         })
-        .read()
-            + 1,
-    );
+        .clone();
+        _ptr.write(_ptr.read() + 1)
+    };
     let ptr1: Value<i32> = Rc::new(RefCell::new(
         ({
             let _x: Ptr<i32> = ((*({
