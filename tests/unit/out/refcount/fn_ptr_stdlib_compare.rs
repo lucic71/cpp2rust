@@ -69,7 +69,7 @@ fn main_0() -> i32 {
             let _arg0: AnyPtr = AnyPtr::default();
             let _arg1: u64 = 0_u64;
             let _arg2: u64 = 0_u64;
-            let _arg3: Ptr<::std::fs::File> = Ptr::<::std::fs::File>::null();
+            let _arg3: Ptr<::std::fs::File> = Ptr::null();
             (*(*f3.borrow()))(_arg0, _arg1, _arg2, _arg3)
         }) == 22_u64)
     );
@@ -234,7 +234,7 @@ fn main_0() -> i32 {
             let _arg0: AnyPtr = AnyPtr::default();
             let _arg1: u64 = 0_u64;
             let _arg2: u64 = 0_u64;
-            let _arg3: Ptr<::std::fs::File> = Ptr::<::std::fs::File>::null();
+            let _arg3: Ptr<::std::fs::File> = Ptr::null();
             (*(*g3.borrow()))(_arg0, _arg1, _arg2, _arg3)
         }) == 33_u64)
     );

@@ -756,7 +756,7 @@
     }
   },
   "t1": {
-    "init": "Default::default()",
+    "init": "std::ptr::null_mut()",
     "type": "*mut ::std::fs::File",
     "is_unsafe_pointer": true
   }

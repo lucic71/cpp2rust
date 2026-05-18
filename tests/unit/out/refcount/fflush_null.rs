@@ -10,8 +10,7 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let file_ptr: Value<Ptr<::std::fs::File>> =
-        Rc::new(RefCell::new(Ptr::<::std::fs::File>::null()));
+    let file_ptr: Value<Ptr<::std::fs::File>> = Rc::new(RefCell::new(Ptr::null()));
     return if !(*file_ptr.borrow()).is_null() {
         match (*file_ptr.borrow()).with_mut(|v| v.sync_all()) {
             Ok(_) => 0,
