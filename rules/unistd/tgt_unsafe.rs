@@ -40,3 +40,7 @@ unsafe fn f9(a0: *mut u8, a1: u64) -> i32 {
 unsafe fn f10(a0: i32, a1: *const ::libc::c_void, a2: u64) -> i64 {
     libc::write(a0, a1, a2 as usize) as i64
 }
+
+unsafe fn f11(a0: *const u8) -> i32 {
+    libc::rmdir(a0 as *const i8)
+}

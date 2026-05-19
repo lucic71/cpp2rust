@@ -24,3 +24,5 @@ int f9(char *name, size_t len) { return gethostname(name, len); }
 ssize_t f10(int fd, const void *buf, size_t count) {
   return write(fd, buf, count);
 }
+
+int f11(const char *pathname) { return rmdir(pathname); }
