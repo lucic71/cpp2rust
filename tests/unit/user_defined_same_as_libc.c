@@ -1,10 +1,14 @@
 #include <assert.h>
-#include <stddef.h>
+#include <stdio.h>
 
-char *strchr(const char *s, int c) { return NULL; }
+FILE *fopen(const char *path, const char *mode) {
+  (void)path;
+  (void)mode;
+  return NULL;
+}
 
 int main() {
-  const char *p = strchr("hello", 'l');
-  assert(p == NULL);
+  FILE *fp = fopen("/etc/passwd", "r");
+  assert(fp == NULL);
   return 0;
 }
