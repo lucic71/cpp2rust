@@ -400,6 +400,169 @@
       "type": "i32"
     }
   },
+  "f13": {
+    "body": [
+      {
+        "text": "let bytes = "
+      },
+      {
+        "method_call": {
+          "receiver": [
+            {
+              "text": "std::ffi::CStr::from_ptr("
+            },
+            {
+              "placeholder": {
+                "arg": 0,
+                "access": "read"
+              }
+            },
+            {
+              "text": " as *const i8)"
+            }
+          ],
+          "body": [
+            {
+              "text": ".to_bytes()"
+            }
+          ]
+        }
+      },
+      {
+        "text": ";\n    let stdout = libcc2rs::cout_unsafe();\n    let r1 = "
+      },
+      {
+        "method_call": {
+          "receiver": [
+            {
+              "text": "(*stdout)"
+            }
+          ],
+          "body": [
+            {
+              "text": ".write_all(bytes)"
+            }
+          ]
+        }
+      },
+      {
+        "text": ";\n    let r2 = "
+      },
+      {
+        "method_call": {
+          "receiver": [
+            {
+              "text": "(*stdout)"
+            }
+          ],
+          "body": [
+            {
+              "text": ".write_all(b\"\\n\")"
+            }
+          ]
+        }
+      },
+      {
+        "text": ";\n    if "
+      },
+      {
+        "method_call": {
+          "receiver": [
+            {
+              "text": "r1"
+            }
+          ],
+          "body": [
+            {
+              "text": ".is_ok()"
+            }
+          ]
+        }
+      },
+      {
+        "text": " && "
+      },
+      {
+        "method_call": {
+          "receiver": [
+            {
+              "text": "r2"
+            }
+          ],
+          "body": [
+            {
+              "text": ".is_ok()"
+            }
+          ]
+        }
+      },
+      {
+        "text": " { 0 } else { -1 }"
+      }
+    ],
+    "multi_statement": true,
+    "params": {
+      "a0": {
+        "type": "*const u8",
+        "is_unsafe_pointer": true
+      }
+    },
+    "return_type": {
+      "type": "i32"
+    }
+  },
+  "f14": {
+    "body": [
+      {
+        "text": "if "
+      },
+      {
+        "placeholder": {
+          "arg": 0,
+          "access": "read"
+        }
+      },
+      {
+        "text": " == libcc2rs::cin_unsafe() {\n        0\n    } else if "
+      },
+      {
+        "placeholder": {
+          "arg": 0,
+          "access": "read"
+        }
+      },
+      {
+        "text": " == libcc2rs::cout_unsafe() {\n        1\n    } else if "
+      },
+      {
+        "placeholder": {
+          "arg": 0,
+          "access": "read"
+        }
+      },
+      {
+        "text": " == libcc2rs::cerr_unsafe() {\n        2\n    } else {\n        ::std::os::fd::AsRawFd::as_raw_fd(&*"
+      },
+      {
+        "placeholder": {
+          "arg": 0,
+          "access": "read"
+        }
+      },
+      {
+        "text": ")\n    }"
+      }
+    ],
+    "params": {
+      "a0": {
+        "type": "*mut ::std::fs::File",
+        "is_unsafe_pointer": true
+      }
+    },
+    "return_type": {
+      "type": "i32"
+    }
+  },
   "f2": {
     "body": [
       {
