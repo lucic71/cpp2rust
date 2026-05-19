@@ -7,16 +7,16 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 pub unsafe fn get_greeting_0() -> *const u8 {
-    return b"hello\0".as_ptr().cast_mut().cast_const();
+    return (b"hello\0".as_ptr().cast_mut()).cast_const();
 }
 pub unsafe fn get_empty_1() -> *const u8 {
-    return b"\0".as_ptr().cast_mut().cast_const();
+    return (b"\0".as_ptr().cast_mut()).cast_const();
 }
 pub unsafe fn get_branch_2(mut x: i32) -> *const u8 {
     if ((((x) > (0)) as i32) != 0) {
-        return b"positive\0".as_ptr().cast_mut().cast_const();
+        return (b"positive\0".as_ptr().cast_mut()).cast_const();
     }
-    return b"non-positive\0".as_ptr().cast_mut().cast_const();
+    return (b"non-positive\0".as_ptr().cast_mut()).cast_const();
 }
 pub fn main() {
     unsafe {

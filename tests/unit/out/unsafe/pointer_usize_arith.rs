@@ -63,7 +63,7 @@ unsafe fn main_0() -> i32 {
     assert!((((*bq) as i32) == (4)));
     let mut bdiff: i64 = ((bq as usize - bp as usize) / ::std::mem::size_of::<u8>()) as i64;
     assert!(((bdiff) == (4_i64)));
-    let mut cp: *const i32 = arr.as_mut_ptr().cast_const();
+    let mut cp: *const i32 = (arr.as_mut_ptr()).cast_const();
     let mut cq: *const i32 = cp.offset((2) as isize);
     assert!(((*cq) == (12)));
     let mut cdiff: i64 = ((cq as usize - cp as usize) / ::std::mem::size_of::<i32>()) as i64;

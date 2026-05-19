@@ -128,7 +128,7 @@ unsafe fn main_0() -> i32 {
     if (((((((n) != (0)) as i32) != 0) || (((bits) & (256_i64)) != 0)) as i32) != 0) {
         assert!((1 != 0));
     }
-    let mut cp: *const u8 = b"hi\0".as_ptr().cast_mut().cast_const();
+    let mut cp: *const u8 = (b"hi\0".as_ptr().cast_mut()).cast_const();
     let mut cnp: *const u8 = std::ptr::null();
     if (((((((x) > (y)) as i32) != 0) && (!(cp).is_null())) as i32) != 0) {
         assert!((1 != 0));

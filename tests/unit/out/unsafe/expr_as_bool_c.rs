@@ -66,7 +66,7 @@ unsafe fn main_0() -> i32 {
     assert!(((((eq) == (1)) as i32) != 0));
     assert!(((((lt) == (0)) as i32) != 0));
     assert!(((((neq) == (0)) as i32) != 0));
-    let mut p1: *const u8 = b"hi\0".as_ptr().cast_mut().cast_const();
+    let mut p1: *const u8 = (b"hi\0".as_ptr().cast_mut()).cast_const();
     let mut p2: *const u8 = std::ptr::null();
     let mut either: i32 = (((!(p1).is_null()) || (!(p2).is_null())) as i32);
     let mut both: i32 = (((!(p1).is_null()) && (!(p2).is_null())) as i32);

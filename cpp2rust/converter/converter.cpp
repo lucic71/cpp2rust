@@ -1856,21 +1856,28 @@ bool Converter::VisitImplicitCastExpr(clang::ImplicitCastExpr *expr) {
     break;
   }
   case clang::CastKind::CK_NoOp: {
-    Convert(sub_expr);
+    const char *suffix = nullptr;
     if (expr->getType()->isPointerType() &&
         sub_expr->getType()->isPointerType() &&
         !clang::isa<clang::CXXThisExpr>(expr->IgnoreImplicit())) {
       switch (GetConstCastType(expr->getType()->getPointeeType(),
                                sub_expr->getType()->getPointeeType())) {
       case ConstCastType::MutableToConst:
-        StrCat(".cast_const()");
+        suffix = ".cast_const()";
         break;
       case ConstCastType::ConstToMutable:
-        StrCat(".cast_mut()");
+        suffix = ".cast_mut()";
         break;
       default:
         break;
       }
+    }
+    {
+      PushParen paren(*this, suffix);
+      Convert(sub_expr);
+    }
+    if (suffix) {
+      StrCat(suffix);
     }
     break;
   }
