@@ -1,0 +1,13 @@
+{
+  "f1": {
+    "body": [
+      {
+        "text": "libc::__errno_location()"
+      }
+    ],
+    "return_type": {
+      "type": "*mut i32",
+      "is_unsafe_pointer": true
+    }
+  }
+}

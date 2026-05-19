@@ -34,6 +34,8 @@ pub mod cstring_tgt_unsafe;
 pub mod deque_tgt_refcount;
 #[path = r#"../deque/tgt_unsafe.rs"#]
 pub mod deque_tgt_unsafe;
+#[path = r#"../errno/tgt_unsafe.rs"#]
+pub mod errno_tgt_unsafe;
 #[path = r#"../fstream/tgt_refcount.rs"#]
 pub mod fstream_tgt_refcount;
 #[path = r#"../fstream/tgt_unsafe.rs"#]
