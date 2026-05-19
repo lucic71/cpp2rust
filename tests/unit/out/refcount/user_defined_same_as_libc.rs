@@ -6,22 +6,24 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-pub fn strchr_0(s: Ptr<u8>, c: i32) -> Ptr<u8> {
-    let s: Value<Ptr<u8>> = Rc::new(RefCell::new(s));
-    let c: Value<i32> = Rc::new(RefCell::new(c));
-    return Ptr::<u8>::null();
+pub fn fopen_0(path: Ptr<u8>, mode: Ptr<u8>) -> Ptr<::std::fs::File> {
+    let path: Value<Ptr<u8>> = Rc::new(RefCell::new(path));
+    let mode: Value<Ptr<u8>> = Rc::new(RefCell::new(mode));
+    (*path.borrow()).clone();
+    (*mode.borrow()).clone();
+    return Ptr::null();
 }
 pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let p: Value<Ptr<u8>> = Rc::new(RefCell::new(
+    let fp: Value<Ptr<::std::fs::File>> = Rc::new(RefCell::new(
         ({
-            let _s: Ptr<u8> = Ptr::from_string_literal("hello");
-            let _c: i32 = ('l' as i32);
-            strchr_0(_s, _c)
+            let _path: Ptr<u8> = Ptr::from_string_literal("/etc/passwd");
+            let _mode: Ptr<u8> = Ptr::from_string_literal("r");
+            fopen_0(_path, _mode)
         }),
     ));
-    assert!(((((*p.borrow()).is_null()) as i32) != 0));
+    assert!(((((*fp.borrow()).is_null()) as i32) != 0));
     return 0;
 }
