@@ -63,7 +63,7 @@ unsafe fn main_0() -> i32 {
     assert!(((((b.payload.unsigned_n) == (3735928559_u64)) as i32) != 0));
     let mut c: Slot = <Slot>::default();
     c.tag = Tag::T_TEXT;
-    c.payload.text = b"hello\0".as_ptr().cast_mut().cast_const();
+    c.payload.text = (b"hello\0".as_ptr().cast_mut()).cast_const();
     assert!((((((*c.payload.text.offset((0) as isize)) as i32) == ('h' as i32)) as i32) != 0));
     let mut d: Slot = <Slot>::default();
     d.tag = Tag::T_FLOAT;

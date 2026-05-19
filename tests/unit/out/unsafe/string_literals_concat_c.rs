@@ -17,7 +17,7 @@ unsafe fn main_0() -> i32 {
     assert!(((((arr[(3) as usize] as i32) == ('b' as i32)) as i32) != 0));
     assert!(((((arr[(5) as usize] as i32) == ('r' as i32)) as i32) != 0));
     assert!(((((arr[(6) as usize] as i32) == ('\0' as i32)) as i32) != 0));
-    let mut split_pieces: *const u8 = b"abcdefghi\0".as_ptr().cast_mut().cast_const();
+    let mut split_pieces: *const u8 = (b"abcdefghi\0".as_ptr().cast_mut()).cast_const();
     assert!((((((*split_pieces.offset((0) as isize)) as i32) == ('a' as i32)) as i32) != 0));
     assert!((((((*split_pieces.offset((3) as isize)) as i32) == ('d' as i32)) as i32) != 0));
     assert!((((((*split_pieces.offset((6) as isize)) as i32) == ('g' as i32)) as i32) != 0));

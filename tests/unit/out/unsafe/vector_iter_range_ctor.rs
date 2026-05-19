@@ -61,7 +61,7 @@ unsafe fn main_0() -> i32 {
             && ((v4[(2_u64) as usize]) == (3_u32))
     );
     let mut buf: [u8; 5] = [10_u8, 20_u8, 30_u8, 40_u8, 50_u8];
-    let mut start: *const u8 = buf.as_mut_ptr().cast_const();
+    let mut start: *const u8 = (buf.as_mut_ptr()).cast_const();
     let mut len: u64 = 5_u64;
     let mut v5: Vec<u8> = core::slice::from_raw_parts(
         start,

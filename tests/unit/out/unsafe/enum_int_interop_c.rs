@@ -72,17 +72,17 @@ pub static mut global_tag: Tag = unsafe { Tag::TAG_TWO };
 pub static mut entries: [Entry; 3] = unsafe {
     [
         Entry {
-            name: b"first\0".as_ptr().cast_mut().cast_const(),
+            name: (b"first\0".as_ptr().cast_mut()).cast_const(),
             color: Color::RED,
             opt: Option::OPT_NONE,
         },
         Entry {
-            name: b"second\0".as_ptr().cast_mut().cast_const(),
+            name: (b"second\0".as_ptr().cast_mut()).cast_const(),
             color: Color::GREEN,
             opt: Option::OPT_A,
         },
         Entry {
-            name: b"third\0".as_ptr().cast_mut().cast_const(),
+            name: (b"third\0".as_ptr().cast_mut()).cast_const(),
             color: Color::BLUE,
             opt: Option::OPT_C,
         },

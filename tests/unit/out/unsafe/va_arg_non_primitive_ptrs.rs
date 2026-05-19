@@ -40,7 +40,7 @@ pub unsafe fn dispatch_0(mut option: i32, __args: &[VaArg]) -> i32 {
         match __match_cond {
             v if v == (opt::OPT_STRING_OUT as i32) => {
                 let mut out: *mut *const u8 = ap.arg::<*mut *const u8>();
-                (*out) = b"hello\0".as_ptr().cast_mut().cast_const();
+                (*out) = (b"hello\0".as_ptr().cast_mut()).cast_const();
                 result = 1;
                 break 'switch;
             }
