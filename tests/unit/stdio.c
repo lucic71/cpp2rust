@@ -1,4 +1,5 @@
 // no-compile: refcount
+#include <assert.h>
 #include <stdio.h>
 
 static void test_fputc(void) {
@@ -18,8 +19,26 @@ static void test_fputs(void) {
   fputc('\n', stdout);
 }
 
+static void test_puts(void) {
+  puts("puts hello");
+  const char *s = "puts variable";
+  puts(s);
+}
+
+static void test_fileno(void) {
+  assert(fileno(stdin) == 0);
+  assert(fileno(stdout) == 1);
+  assert(fileno(stderr) == 2);
+  FILE *fp = fopen("/tmp/cpp2rust_fileno_test.tmp", "wb");
+  assert(fp != NULL);
+  assert(fileno(fp) > 2);
+  fclose(fp);
+}
+
 int main(void) {
   test_fputc();
   test_fputs();
+  test_puts();
+  test_fileno();
   return 0;
 }
