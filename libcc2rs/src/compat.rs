@@ -11,6 +11,14 @@ unsafe extern "C" {
     #[cfg(target_os = "macos")]
     #[link_name = "malloc_size"]
     fn platform_malloc_size(ptr: *const c_void) -> usize;
+
+    #[cfg(target_os = "linux")]
+    #[link_name = "__errno_location"]
+    fn platform_errno_location() -> *mut i32;
+
+    #[cfg(target_os = "macos")]
+    #[link_name = "__error"]
+    fn platform_errno_location() -> *mut i32;
 }
 
 /// # Safety
@@ -27,4 +35,11 @@ pub unsafe fn malloc_usable_size(ptr: *mut c_void) -> usize {
     {
         unsafe { platform_malloc_size(ptr as *const c_void) }
     }
+}
+
+/// # Safety
+///
+/// Invokes the platform specific errno.
+pub unsafe fn cpp2rust_errno() -> *mut i32 {
+    unsafe { platform_errno_location() }
 }
