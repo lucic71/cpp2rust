@@ -105,3 +105,38 @@ unsafe fn f9() -> *mut ::std::fs::File {
 unsafe fn f10() -> *mut ::std::fs::File {
     libcc2rs::cin_unsafe()
 }
+
+unsafe fn f11(a0: i32, a1: *mut ::std::fs::File) -> i32 {
+    match (*a1).write_all(&[a0 as u8]) {
+        Ok(()) => a0 & 0xff,
+        Err(_) => -1,
+    }
+}
+
+unsafe fn f12(a0: *const u8, a1: *mut ::std::fs::File) -> i32 {
+    let bytes = std::ffi::CStr::from_ptr(a0 as *const i8).to_bytes();
+    match (*a1).write_all(bytes) {
+        Ok(()) => 0,
+        Err(_) => -1,
+    }
+}
+
+unsafe fn f13(a0: *const u8) -> i32 {
+    let bytes = std::ffi::CStr::from_ptr(a0 as *const i8).to_bytes();
+    let stdout = libcc2rs::cout_unsafe();
+    let r1 = (*stdout).write_all(bytes);
+    let r2 = (*stdout).write_all(b"\n");
+    if r1.is_ok() && r2.is_ok() { 0 } else { -1 }
+}
+
+unsafe fn f14(a0: *mut ::std::fs::File) -> i32 {
+    if a0 == libcc2rs::cin_unsafe() {
+        0
+    } else if a0 == libcc2rs::cout_unsafe() {
+        1
+    } else if a0 == libcc2rs::cerr_unsafe() {
+        2
+    } else {
+        ::std::os::fd::AsRawFd::as_raw_fd(&*a0)
+    }
+}

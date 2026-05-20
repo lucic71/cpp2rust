@@ -36,9 +36,8 @@ pub fn more_refs_0(x1: i32, x2: i32, r1: Ptr<i32>, r2: Ptr<i32>) {
         _lhs + (r.read())
     };
     {
-        let __ptr = rx2.clone();
-        let __tmp = __ptr.read() + __rhs;
-        __ptr.write(__tmp)
+        let _ptr = rx2.clone();
+        _ptr.write(_ptr.read() + __rhs)
     };
     let __rhs = (rx2.read());
     r1.write(__rhs);
