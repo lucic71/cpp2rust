@@ -38,9 +38,8 @@ fn main_0() -> i32 {
     'loop_: for mut p in v2.as_pointer() as Ptr<Ptr<i32>> {
         let p: Value<Ptr<i32>> = Rc::new(RefCell::new(p.read().clone()));
         {
-            let __ptr = (*p.borrow()).clone();
-            let __tmp = __ptr.read() + 5;
-            __ptr.write(__tmp)
+            let _ptr = (*p.borrow()).clone();
+            _ptr.write(_ptr.read() + 5)
         };
     }
     'loop_: for p in v2.as_pointer() as Ptr<Ptr<i32>> {
