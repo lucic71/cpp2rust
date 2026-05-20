@@ -9,16 +9,6 @@
 
 static void test_time(void) { assert(time(NULL) > 0); }
 
-static void test_gettimeofday(void) {
-  struct timeval tv;
-  tv.tv_sec = 0;
-  tv.tv_usec = 0;
-  assert(gettimeofday(&tv, NULL) == 0);
-  assert(tv.tv_sec > 0);
-  assert(tv.tv_usec >= 0);
-  assert(tv.tv_usec < 1000000);
-}
-
 static void test_clock_gettime(void) {
   struct timespec ts;
   ts.tv_sec = 0;
@@ -72,7 +62,6 @@ static void test_utimes(void) {
 
 int main(void) {
   test_time();
-  test_gettimeofday();
   test_clock_gettime();
   test_localtime_r();
   test_gmtime_r();

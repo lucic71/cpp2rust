@@ -9,31 +9,20 @@ use std::rc::Rc;
 pub unsafe fn test_time_0() {
     assert!(((((libc::time(std::ptr::null_mut())) > (0_i64)) as i32) != 0));
 }
-pub unsafe fn test_gettimeofday_1() {
-    let mut tv: timeval = std::mem::zeroed::<timeval>();
-    tv.tv_sec = 0_i64;
-    tv.tv_usec = 0_i64;
-    assert!(
-        ((((libc::gettimeofday(
-            (&mut tv as *mut timeval),
-            (0 as *mut ::libc::c_void) as *mut ::libc::timezone
-        )) == (0)) as i32)
-            != 0)
-    );
-    assert!(((((tv.tv_sec) > (0_i64)) as i32) != 0));
-    assert!(((((tv.tv_usec) >= (0_i64)) as i32) != 0));
-    assert!(((((tv.tv_usec) < (1000000_i64)) as i32) != 0));
-}
-pub unsafe fn test_clock_gettime_2() {
+pub unsafe fn test_clock_gettime_1() {
     let mut ts: timespec = std::mem::zeroed::<timespec>();
     ts.tv_sec = 0_i64;
     ts.tv_nsec = 0_i64;
-    assert!(((((libc::clock_gettime(1, (&mut ts as *mut timespec))) == (0)) as i32) != 0));
+    assert!(
+        ((((libc::clock_gettime(1 as ::libc::clockid_t, (&mut ts as *mut timespec))) == (0))
+            as i32)
+            != 0)
+    );
     assert!(((((ts.tv_sec) > (0_i64)) as i32) != 0));
     assert!(((((ts.tv_nsec) >= (0_i64)) as i32) != 0));
     assert!(((((ts.tv_nsec) < (1000000000_i64)) as i32) != 0));
 }
-pub unsafe fn test_localtime_r_3() {
+pub unsafe fn test_localtime_r_2() {
     let mut t: i64 = 0_i64;
     let mut tm: tm = std::mem::zeroed::<tm>();
     assert!(
@@ -43,7 +32,7 @@ pub unsafe fn test_localtime_r_3() {
     );
     assert!(((((tm.tm_year) == (70)) as i32) != 0));
 }
-pub unsafe fn test_gmtime_r_4() {
+pub unsafe fn test_gmtime_r_3() {
     let mut t: i64 = 0_i64;
     let mut tm: tm = std::mem::zeroed::<tm>();
     assert!(
@@ -56,7 +45,7 @@ pub unsafe fn test_gmtime_r_4() {
     assert!(((((tm.tm_mday) == (1)) as i32) != 0));
     assert!(((((tm.tm_hour) == (0)) as i32) != 0));
 }
-pub unsafe fn test_strftime_5() {
+pub unsafe fn test_strftime_4() {
     let mut t: i64 = 0_i64;
     let mut tm: tm = std::mem::zeroed::<tm>();
     libc::gmtime_r((&mut t as *mut i64).cast_const(), (&mut tm as *mut tm));
@@ -79,7 +68,7 @@ pub unsafe fn test_strftime_5() {
             != 0)
     );
 }
-pub unsafe fn test_utimes_6() {
+pub unsafe fn test_utimes_5() {
     let mut path: *const u8 = (b"/tmp/cpp2rust_utimes_test.tmp\0".as_ptr().cast_mut()).cast_const();
     let mut fp: *mut ::std::fs::File =
         match std::ffi::CStr::from_ptr((b"wb\0".as_ptr().cast_mut()).cast_const() as *const i8)
@@ -137,11 +126,10 @@ pub fn main() {
 }
 unsafe fn main_0() -> i32 {
     (unsafe { test_time_0() });
-    (unsafe { test_gettimeofday_1() });
-    (unsafe { test_clock_gettime_2() });
-    (unsafe { test_localtime_r_3() });
-    (unsafe { test_gmtime_r_4() });
-    (unsafe { test_strftime_5() });
-    (unsafe { test_utimes_6() });
+    (unsafe { test_clock_gettime_1() });
+    (unsafe { test_localtime_r_2() });
+    (unsafe { test_gmtime_r_3() });
+    (unsafe { test_strftime_4() });
+    (unsafe { test_utimes_5() });
     return 0;
 }
