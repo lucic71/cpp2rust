@@ -1,6 +1,7 @@
 // no-compile: refcount
 #include <assert.h>
 #include <stdio.h>
+#include <unistd.h>
 
 static void test_fputc(void) {
   fputc('H', stdout);
@@ -34,8 +35,7 @@ static void test_fileno(void) {
   assert(fp != NULL);
   assert(fileno(fp) > 2);
   fclose(fp);
-  // TODO: uncomment when unlink is available
-  // assert(unlink(file) == 0);
+  assert(unlink(file) == 0);
 }
 
 int main(void) {

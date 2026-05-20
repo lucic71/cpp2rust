@@ -76,6 +76,8 @@ pub mod string_tgt_unsafe;
 pub mod unique_ptr_tgt_refcount;
 #[path = r#"../unique_ptr/tgt_unsafe.rs"#]
 pub mod unique_ptr_tgt_unsafe;
+#[path = r#"../unistd/tgt_unsafe.rs"#]
+pub mod unistd_tgt_unsafe;
 #[path = r#"../vector/tgt_refcount.rs"#]
 pub mod vector_tgt_refcount;
 #[path = r#"../vector/tgt_unsafe.rs"#]

@@ -175,6 +175,7 @@ pub unsafe fn test_fileno_3() {
         Box::from_raw(fp);
         0
     };
+    assert!(((((libc::unlink(file as *const i8)) == (0)) as i32) != 0));
 }
 pub fn main() {
     unsafe {
