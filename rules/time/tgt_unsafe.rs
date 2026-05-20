@@ -9,8 +9,8 @@ unsafe fn f2(a0: *mut ::libc::timeval, a1: *mut ::libc::timezone) -> i32 {
     libc::gettimeofday(a0, a1 as *mut ::libc::timezone)
 }
 
-unsafe fn f3(a0: i32, a1: *mut ::libc::timespec) -> i32 {
-    libc::clock_gettime(a0, a1)
+unsafe fn f3(a0: ::libc::clockid_t, a1: *mut ::libc::timespec) -> i32 {
+    libc::clock_gettime(a0 as ::libc::clockid_t, a1)
 }
 
 unsafe fn f4(a0: *const i64, a1: *mut ::libc::tm) -> *mut ::libc::tm {
