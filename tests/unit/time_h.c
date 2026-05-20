@@ -7,9 +7,7 @@
 #include <time.h>
 #include <unistd.h>
 
-static void test_time(void) {
-  assert(time(NULL) > 0);
-}
+static void test_time(void) { assert(time(NULL) > 0); }
 
 static void test_gettimeofday(void) {
   struct timeval tv;

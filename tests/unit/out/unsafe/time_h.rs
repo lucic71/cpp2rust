@@ -11,6 +11,8 @@ pub unsafe fn test_time_0() {
 }
 pub unsafe fn test_gettimeofday_1() {
     let mut tv: timeval = std::mem::zeroed::<timeval>();
+    tv.tv_sec = 0_i64;
+    tv.tv_usec = 0_i64;
     assert!(
         ((((libc::gettimeofday(
             (&mut tv as *mut timeval),
@@ -19,10 +21,17 @@ pub unsafe fn test_gettimeofday_1() {
             != 0)
     );
     assert!(((((tv.tv_sec) > (0_i64)) as i32) != 0));
+    assert!(((((tv.tv_usec) >= (0_i64)) as i32) != 0));
+    assert!(((((tv.tv_usec) < (1000000_i64)) as i32) != 0));
 }
 pub unsafe fn test_clock_gettime_2() {
     let mut ts: timespec = std::mem::zeroed::<timespec>();
+    ts.tv_sec = 0_i64;
+    ts.tv_nsec = 0_i64;
     assert!(((((libc::clock_gettime(1, (&mut ts as *mut timespec))) == (0)) as i32) != 0));
+    assert!(((((ts.tv_sec) > (0_i64)) as i32) != 0));
+    assert!(((((ts.tv_nsec) >= (0_i64)) as i32) != 0));
+    assert!(((((ts.tv_nsec) < (1000000000_i64)) as i32) != 0));
 }
 pub unsafe fn test_localtime_r_3() {
     let mut t: i64 = 0_i64;

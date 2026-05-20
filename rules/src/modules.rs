@@ -72,6 +72,8 @@ pub mod stdio_tgt_unsafe;
 pub mod string_tgt_refcount;
 #[path = r#"../string/tgt_unsafe.rs"#]
 pub mod string_tgt_unsafe;
+#[path = r#"../time/tgt_unsafe.rs"#]
+pub mod time_tgt_unsafe;
 #[path = r#"../unique_ptr/tgt_refcount.rs"#]
 pub mod unique_ptr_tgt_refcount;
 #[path = r#"../unique_ptr/tgt_unsafe.rs"#]
