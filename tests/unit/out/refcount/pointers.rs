@@ -80,9 +80,8 @@ fn main_0() -> i32 {
     (*t3.borrow_mut()) = (*t2.borrow()).clone();
     (*(*(*t3.borrow()).upgrade().deref()).x.borrow_mut()) = 15;
     {
-        let __ptr = ({ (*(*t3.borrow()).upgrade().deref()).as_ptr() }).clone();
-        let __tmp = __ptr.read() + 10;
-        __ptr.write(__tmp)
+        let _ptr = ({ (*(*t3.borrow()).upgrade().deref()).as_ptr() }).clone();
+        _ptr.write(_ptr.read() + 10)
     };
     return {
         let _lhs = {
