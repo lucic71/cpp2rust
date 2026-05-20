@@ -1,6 +1,7 @@
 // no-compile: refcount
 #include <assert.h>
 #include <stdio.h>
+#include <unistd.h>
 
 static void test_fputc(void) {
   fputc('H', stdout);
