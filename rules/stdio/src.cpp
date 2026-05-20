@@ -32,3 +32,11 @@ FILE *f8() { return stdout; }
 FILE *f9() { return stderr; }
 
 FILE *f10() { return stdin; }
+
+int f11(int c, FILE *stream) { return fputc(c, stream); }
+
+int f12(const char *s, FILE *stream) { return fputs(s, stream); }
+
+int f13(const char *s) { return puts(s); }
+
+int f14(FILE *stream) { return fileno(stream); }
