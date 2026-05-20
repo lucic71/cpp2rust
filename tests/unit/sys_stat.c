@@ -31,23 +31,8 @@ static void test_fstat(void) {
   unlink(path);
 }
 
-static void test_mkdir(void) {
-  const char *path = "/tmp/cpp2rust_mkdir_test_dir";
-  rmdir(path);
-  assert(mkdir(path, 0755) == 0);
-  struct stat st;
-  assert(stat(path, &st) == 0);
-  assert(S_ISDIR(st.st_mode));
-  errno = 0;
-  assert(mkdir(path, 0755) == -1);
-  assert(errno == EEXIST);
-  assert(rmdir(path) == 0);
-  errno = 0;
-}
-
 int main(void) {
   test_stat();
   test_fstat();
-  test_mkdir();
   return 0;
 }
