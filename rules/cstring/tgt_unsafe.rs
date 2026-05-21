@@ -77,7 +77,7 @@ unsafe fn f14(a0: *mut u8, a1: i32) -> *mut u8 {
 }
 
 unsafe fn f15(a0: *const u8) -> *mut u8 {
-    libc::strdup(a0 as *const i8) as *mut u8
+    libcc2rs::strdup_unsafe(a0)
 }
 
 unsafe fn f16(a0: *const u8, a1: *const u8) -> u64 {

@@ -22,6 +22,9 @@ pub use rules::*;
 mod io;
 pub use io::*;
 
+mod alloc;
+pub use alloc::*;
+
 mod iterators;
 pub use iterators::*;
 
