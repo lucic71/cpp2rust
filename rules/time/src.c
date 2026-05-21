@@ -10,10 +10,6 @@ int f2(clockid_t clk_id, struct timespec *tp) {
   return clock_gettime(clk_id, tp);
 }
 
-int f3(struct timeval *tv, struct timezone *tz) {
-  return gettimeofday(tv, tz);
-}
-
 struct tm *f4(const time_t *timer, struct tm *result) {
   return gmtime_r(timer, result);
 }
