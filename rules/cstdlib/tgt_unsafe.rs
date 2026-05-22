@@ -6,19 +6,19 @@ unsafe fn f1() {
 }
 
 unsafe fn f2(a0: *mut ::libc::c_void) {
-    libc::free(a0)
+    libcc2rs::free_unsafe(a0)
 }
 
 unsafe fn f3(a0: u64) -> *mut ::libc::c_void {
-    libc::malloc(a0 as ::libc::size_t)
+    libcc2rs::malloc_unsafe(a0)
 }
 
 unsafe fn f4(a0: *mut ::libc::c_void, a1: u64) -> *mut ::libc::c_void {
-    libc::realloc(a0, a1 as ::libc::size_t)
+    libcc2rs::realloc_unsafe(a0, a1)
 }
 
 unsafe fn f5(a0: u64, a1: u64) -> *mut ::libc::c_void {
-    libc::calloc(a0 as ::libc::size_t, a1 as ::libc::size_t)
+    libcc2rs::calloc_unsafe(a0, a1)
 }
 
 unsafe fn f6(a0: *const u8) -> *mut u8 {

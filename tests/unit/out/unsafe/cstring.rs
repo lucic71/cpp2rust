@@ -267,7 +267,7 @@ pub unsafe fn test_strrchr_9() {
     );
 }
 pub unsafe fn test_strdup_10() {
-    let mut d: *mut u8 = libc::strdup(b"hello\0".as_ptr() as *const i8) as *mut u8;
+    let mut d: *mut u8 = libcc2rs::strdup_unsafe(b"hello\0".as_ptr());
     assert!(!((d).is_null()));
     assert!(
         ((libc::strcmp(
@@ -275,14 +275,14 @@ pub unsafe fn test_strdup_10() {
             b"hello\0".as_ptr() as *const i8
         )) == (0))
     );
-    libc::free((d as *mut u8 as *mut ::libc::c_void));
+    libcc2rs::free_unsafe((d as *mut u8 as *mut ::libc::c_void));
     let mut p: *const u8 = b"world\0".as_ptr();
     let mut buf: [u8; 4] = [('a' as u8), ('b' as u8), ('c' as u8), ('\0' as u8)];
-    let mut d2: *mut u8 = libc::strdup(p as *const i8) as *mut u8;
+    let mut d2: *mut u8 = libcc2rs::strdup_unsafe(p);
     assert!(!((d2).is_null()));
     assert!(((libc::strcmp((d2).cast_const() as *const i8, p as *const i8)) == (0)));
-    libc::free((d2 as *mut u8 as *mut ::libc::c_void));
-    let mut d3: *mut u8 = libc::strdup((buf.as_mut_ptr()).cast_const() as *const i8) as *mut u8;
+    libcc2rs::free_unsafe((d2 as *mut u8 as *mut ::libc::c_void));
+    let mut d3: *mut u8 = libcc2rs::strdup_unsafe((buf.as_mut_ptr()).cast_const());
     assert!(!((d3).is_null()));
     assert!(
         ((libc::strcmp(
@@ -290,7 +290,7 @@ pub unsafe fn test_strdup_10() {
             (buf.as_mut_ptr()).cast_const() as *const i8
         )) == (0))
     );
-    libc::free((d3 as *mut u8 as *mut ::libc::c_void));
+    libcc2rs::free_unsafe((d3 as *mut u8 as *mut ::libc::c_void));
 }
 pub unsafe fn test_strcspn_11() {
     assert!(

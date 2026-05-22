@@ -283,7 +283,7 @@
   "f15": {
     "body": [
       {
-        "text": "libc::strdup("
+        "text": "libcc2rs::strdup_unsafe("
       },
       {
         "placeholder": {
@@ -292,7 +292,7 @@
         }
       },
       {
-        "text": " as *const i8) as *mut u8"
+        "text": ")"
       }
     ],
     "params": {
