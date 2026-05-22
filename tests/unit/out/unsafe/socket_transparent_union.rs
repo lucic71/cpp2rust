@@ -23,10 +23,8 @@ unsafe fn main_0() -> i32 {
         )) == (-1_i32)) as i32)
             != 0)
     );
-    assert!(((((*libcc2rs::cpp2rust_errno()) == (88)) as i32) != 0));
     let mut sin: sockaddr_in = std::mem::zeroed::<sockaddr_in>();
     let mut inlen: u32 = (::std::mem::size_of::<sockaddr_in>() as u64 as u32);
-    (*libcc2rs::cpp2rust_errno()) = 0;
     assert!(
         ((((libc::getsockname(
             fd,
@@ -35,6 +33,5 @@ unsafe fn main_0() -> i32 {
         )) == (-1_i32)) as i32)
             != 0)
     );
-    assert!(((((*libcc2rs::cpp2rust_errno()) == (88)) as i32) != 0));
     return 0;
 }

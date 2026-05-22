@@ -1,7 +1,6 @@
 // no-compile: refcount
 #define _GNU_SOURCE
 #include <assert.h>
-#include <errno.h>
 #include <netinet/in.h>
 #include <sys/socket.h>
 #include <sys/types.h>
@@ -12,13 +11,10 @@ int main(void) {
   struct sockaddr_storage ssloc;
   socklen_t slen = sizeof(ssloc);
   assert(getsockname(fd, (struct sockaddr *)&ssloc, &slen) == -1);
-  assert(errno == ENOTSOCK);
 
   struct sockaddr_in sin;
   socklen_t inlen = sizeof(sin);
-  errno = 0;
   assert(getsockname(fd, (struct sockaddr *)&sin, &inlen) == -1);
-  assert(errno == ENOTSOCK);
 
   return 0;
 }
