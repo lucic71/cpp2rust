@@ -23,6 +23,3 @@ int f7(unsigned long x) { return __builtin_ctzl(x); }
 int f8(unsigned long x) { return __builtin_popcountl(x); }
 bool f9(long a, long b, long *r) { return __builtin_mul_overflow(a, b, r); }
 bool f10(long long a, long long b, long long *r) { return __builtin_mul_overflow(a, b, r); }
-#if defined(__x86_64__) || defined(__i386__)
-void f11() { return __builtin_ia32_pause(); }
-#endif

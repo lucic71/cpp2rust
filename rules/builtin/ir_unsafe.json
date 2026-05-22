@@ -81,13 +81,6 @@
       "type": "bool"
     }
   },
-  "f11": {
-    "body": [
-      {
-        "text": "std::hint::spin_loop()"
-      }
-    ]
-  },
   "f2": {
     "body": [
       {
