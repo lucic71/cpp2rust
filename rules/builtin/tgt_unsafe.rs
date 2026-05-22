@@ -19,3 +19,9 @@ unsafe fn f5(a0: u32) -> u32 {
 unsafe fn f6(a0: u64) -> u64 {
     a0.swap_bytes()
 }
+unsafe fn f7(a0: u64) -> i32 {
+    a0.trailing_zeros() as i32
+}
+unsafe fn f8(a0: u64) -> i32 {
+    a0.count_ones() as i32
+}

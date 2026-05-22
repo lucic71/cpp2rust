@@ -19,3 +19,5 @@ unsigned short f4(unsigned short x) { return __builtin_bswap16(x); }
 unsigned int f5(unsigned int x) { return __builtin_bswap32(x); }
 unsigned long long f6(unsigned long long x) { return __builtin_bswap64(x); }
 #endif
+int f7(unsigned long x) { return __builtin_ctzl(x); }
+int f8(unsigned long x) { return __builtin_popcountl(x); }
