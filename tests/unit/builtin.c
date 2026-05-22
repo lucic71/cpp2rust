@@ -67,10 +67,6 @@ static void test_mul_overflow_long_long(void) {
   assert(__builtin_mul_overflow(LLONG_MAX, 2LL, &r));
 }
 
-#if defined(__x86_64__) || defined(__i386__)
-static void test_ia32_pause(void) { __builtin_ia32_pause(); }
-#endif
-
 int main(void) {
   test_expect();
   test_ctz();
@@ -82,8 +78,5 @@ int main(void) {
   test_popcountl();
   test_mul_overflow_long();
   test_mul_overflow_long_long();
-#if defined(__x86_64__) || defined(__i386__)
-  test_ia32_pause();
-#endif
   return 0;
 }

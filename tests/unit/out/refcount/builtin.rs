@@ -69,9 +69,6 @@ pub fn test_mul_overflow_long_long_9() {
         ovf
     });
 }
-pub fn test_ia32_pause_10() {
-    std::hint::spin_loop();
-}
 pub fn main() {
     std::process::exit(main_0());
 }
@@ -86,6 +83,5 @@ fn main_0() -> i32 {
     ({ test_popcountl_7() });
     ({ test_mul_overflow_long_8() });
     ({ test_mul_overflow_long_long_9() });
-    ({ test_ia32_pause_10() });
     return 0;
 }

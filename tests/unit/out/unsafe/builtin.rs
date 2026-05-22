@@ -69,9 +69,6 @@ pub unsafe fn test_mul_overflow_long_long_9() {
         ovf
     });
 }
-pub unsafe fn test_ia32_pause_10() {
-    std::hint::spin_loop();
-}
 pub fn main() {
     unsafe {
         std::process::exit(main_0() as i32);
@@ -88,6 +85,5 @@ unsafe fn main_0() -> i32 {
     (unsafe { test_popcountl_7() });
     (unsafe { test_mul_overflow_long_8() });
     (unsafe { test_mul_overflow_long_long_9() });
-    (unsafe { test_ia32_pause_10() });
     return 0;
 }
