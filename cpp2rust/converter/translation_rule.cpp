@@ -344,11 +344,10 @@ void TypeRule::dump() const {
   }
 }
 
-std::pair<ExprRules, TypeRules> Load(const std::filesystem::path &path,
+std::pair<ExprRules, TypeRules> Load(const std::filesystem::path &dir,
                                      Model model) {
   ExprRules exprs;
   TypeRules types;
-  auto dir = path.parent_path();
   LoadTgtFromIR(exprs, types, dir / "ir_unsafe.json");
 
   if (model == Model::kRefCount) {
