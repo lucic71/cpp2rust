@@ -779,9 +779,14 @@ llvm::cl::OptionCategory cat("cpp-rule-preprocessor options");
 llvm::cl::opt<std::string>
     SrcDir("dir",
            llvm::cl::desc("Path to a rule directory containing src.c and/or "
-                          "src.cpp. ir_src.json is written into this dir."),
+                          "src.cpp."),
            llvm::cl::value_desc("rule-dir"), llvm::cl::Required,
            llvm::cl::cat(cat));
+
+llvm::cl::opt<std::string>
+    OutPath("out", llvm::cl::desc("Path of the ir_src.json file to write."),
+            llvm::cl::value_desc("out.json"), llvm::cl::Required,
+            llvm::cl::cat(cat));
 
 } // namespace
 
@@ -809,7 +814,7 @@ int main(int argc, char *argv[]) {
     }
   }
 
-  auto out_path = dir / "ir_src.json";
+  fs::path out_path = OutPath.getValue();
   std::error_code ec;
   llvm::raw_fd_ostream out(out_path.string(), ec);
   if (ec) {
