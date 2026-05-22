@@ -17,8 +17,11 @@ use semantic::SemanticAnalysis;
 use syntactic::SyntacticAnalysis;
 
 fn main() {
+    let out_dir = std::env::args()
+        .nth(1)
+        .expect("usage: rule-preprocessor <out-dir>");
     SemanticAnalysis::run(SyntacticAnalysis::run(
         &std::fs::canonicalize("../rules").unwrap(),
     ))
-    .write_ir();
+    .write_ir(&std::path::PathBuf::from(out_dir));
 }
