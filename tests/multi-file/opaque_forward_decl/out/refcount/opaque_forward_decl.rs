@@ -32,7 +32,4 @@ pub fn touch_0(c: Ptr<container>) {
     let c: Value<Ptr<container>> = Rc::new(RefCell::new(c));
     (*(*(*c.borrow()).upgrade().deref()).p.borrow()).clone();
 }
-#[repr(C)]
-pub struct opaque {
-    _opaque: [u8; 0],
-}
+pub struct opaque;

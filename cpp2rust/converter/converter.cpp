@@ -53,12 +53,12 @@ use std::rc::Rc;
 )");
 }
 
-std::string Converter::EmitOpaqueRecordMarkers() {
+std::string Converter::EmitOpaqueRecords() {
   std::string out;
   record_decls_.ForEachUndefined([&](const std::string &name) {
-    out += "#[repr(C)] pub struct ";
+    out += "pub struct ";
     out += name;
-    out += " { _opaque: [u8; 0] }\n";
+    out += ";\n";
   });
   return out;
 }

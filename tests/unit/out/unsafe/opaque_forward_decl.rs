@@ -25,7 +25,4 @@ unsafe fn main_0() -> i32 {
     &(c.p);
     return ((c.x) - (42));
 }
-#[repr(C)]
-pub struct opaque {
-    _opaque: [u8; 0],
-}
+pub struct opaque;

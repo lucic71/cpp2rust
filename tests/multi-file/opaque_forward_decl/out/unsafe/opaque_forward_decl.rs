@@ -33,7 +33,4 @@ unsafe fn main_0() -> i32 {
 pub unsafe fn touch_0(mut c: *mut container) {
     &((*c).p);
 }
-#[repr(C)]
-pub struct opaque {
-    _opaque: [u8; 0],
-}
+pub struct opaque;

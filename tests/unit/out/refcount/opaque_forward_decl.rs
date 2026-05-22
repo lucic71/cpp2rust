@@ -23,7 +23,4 @@ fn main_0() -> i32 {
     (*(*c.borrow()).p.borrow()).clone();
     return ((*(*c.borrow()).x.borrow()) - 42);
 }
-#[repr(C)]
-pub struct opaque {
-    _opaque: [u8; 0],
-}
+pub struct opaque;

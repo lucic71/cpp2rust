@@ -51,7 +51,7 @@ public:
 
   virtual void EmitFilePreamble();
 
-  static std::string EmitOpaqueRecordMarkers();
+  static std::string EmitOpaqueRecords();
 
   virtual bool VisitBuiltinType(clang::BuiltinType *type);
 
