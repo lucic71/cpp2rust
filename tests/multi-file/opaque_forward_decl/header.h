@@ -1,6 +1,5 @@
 #pragma once
 
-/* Forward declaration only; no full definition exists anywhere in the build. */
 struct opaque;
 
 struct container {

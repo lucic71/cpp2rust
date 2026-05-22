@@ -1,6 +1,5 @@
 #include <stddef.h>
 
-/* Forward declaration only; no body for `opaque` anywhere in this TU. */
 struct opaque;
 
 struct container {
