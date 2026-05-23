@@ -105,7 +105,7 @@ static bool HasIRFiles(const fs::path &dir) {
 static bool ResolveRulesDir() {
   std::array<fs::path, 3> candidates = {fs::path("./rules"),
                                         fs::path("../rules"),
-                                        GetExecutableDir() / "../../rules"};
+                                        GetExecutableDir() / "../rules"};
 
   for (const auto &dir : candidates) {
     if (fs::exists(dir) && fs::is_directory(dir) && HasIRFiles(dir)) {
