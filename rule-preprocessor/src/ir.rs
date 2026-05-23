@@ -57,8 +57,6 @@ pub struct FnIr {
     pub params: Option<BTreeMap<String, TypeInfo>>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub return_type: Option<TypeInfo>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub target_os: Option<String>,
 }
 
 impl FnIr {
