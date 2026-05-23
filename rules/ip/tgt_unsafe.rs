@@ -14,6 +14,7 @@ unsafe fn f4() -> i32 {
     libc::IPPROTO_IPV6
 }
 
+#[cfg(target_os = "linux")]
 unsafe fn f5() -> i32 {
     libc::IPPROTO_MPTCP
 }
