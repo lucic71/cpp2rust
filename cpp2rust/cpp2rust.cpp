@@ -86,13 +86,29 @@ static fs::path GetExecutableDir() {
   return ".";
 }
 
+static bool HasIRFiles(const fs::path &dir) {
+  std::error_code ec;
+  for (auto it = fs::recursive_directory_iterator(dir, ec);
+       !ec && it != fs::recursive_directory_iterator(); it.increment(ec)) {
+    if (!it->is_directory()) {
+      continue;
+    }
+    const auto &p = it->path();
+    if (fs::exists(p / "ir_src.json") && (fs::exists(p / "ir_unsafe.json") ||
+                                          fs::exists(p / "ir_refcount.json"))) {
+      return true;
+    }
+  }
+  return false;
+}
+
 static bool ResolveRulesDir() {
   std::array<fs::path, 3> candidates = {fs::path("./rules"),
                                         fs::path("../rules"),
-                                        GetExecutableDir() / "../../rules"};
+                                        GetExecutableDir() / "../rules"};
 
   for (const auto &dir : candidates) {
-    if (fs::exists(dir) && fs::is_directory(dir)) {
+    if (fs::exists(dir) && fs::is_directory(dir) && HasIRFiles(dir)) {
       RulesDir = fs::canonical(dir).string();
       llvm::errs() << "Using rules directory: " << RulesDir << '\n';
       return true;

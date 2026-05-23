@@ -221,19 +221,23 @@ pub struct RulesIR {
 }
 
 impl RulesIR {
-    pub fn write_ir(&self) {
-        let crate_root = self.crate_root.canonicalize().unwrap();
+    pub fn write_ir(&self, out_dir: &Path) {
         for (rule_path, file_ir) in &self.all_ir {
             let rule_path = Path::new(rule_path);
-            let file_name = rule_path.file_name().unwrap().to_str().unwrap();
-            let json_name = file_name.replace("tgt_", "ir_").replace(".rs", ".json");
-            let json_path = rule_path.parent().unwrap().join(json_name);
+            let rule_name = rule_path.parent().unwrap().file_name().unwrap();
+            let json_name = rule_path
+                .file_name()
+                .unwrap()
+                .to_str()
+                .unwrap()
+                .replace("tgt_", "ir_")
+                .replace(".rs", ".json");
+            let json_path = out_dir.join(rule_name).join(json_name);
 
+            std::fs::create_dir_all(json_path.parent().unwrap()).unwrap();
             let json = serde_json::to_string_pretty(file_ir).unwrap();
             std::fs::write(&json_path, format!("{json}\n")).unwrap();
-
-            let json_rel = json_path.strip_prefix(&crate_root).unwrap_or(&json_path);
-            println!("{}", json_rel.display());
+            println!("{}", json_path.display());
         }
     }
 }

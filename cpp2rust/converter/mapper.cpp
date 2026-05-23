@@ -409,21 +409,22 @@ TranslationRule::TypeRule *search(clang::QualType qual_type) {
 }
 
 void addRulesFromDirectory(const std::filesystem::path &dir, Model model) {
-  for (const auto &entry : std::filesystem::recursive_directory_iterator(dir)) {
-    auto &path = entry.path();
-    if (entry.is_regular_file() &&
-        (path.extension() == ".cpp" || path.extension() == ".c")) {
-      auto [expr_rules, type_rules] = TranslationRule::Load(path, model);
-      if (expr_rules.empty() && type_rules.empty()) {
-        log() << "No rules found in " << path << '\n';
-        continue;
-      }
-      for (auto &[_, rule] : expr_rules) {
-        exprs_.emplace(GetExprMapKey(rule.src), std::move(rule));
-      }
-      for (auto &[_, rule] : type_rules) {
-        types_.emplace(GetTypeMapKey(rule.src), std::move(rule));
-      }
+  namespace fs = std::filesystem;
+  for (const auto &entry : fs::directory_iterator(dir)) {
+    const auto &path = entry.path();
+    assert(fs::exists(path / "ir_src.json") &&
+           (fs::exists(path / "ir_unsafe.json") ||
+            fs::exists(path / "ir_refcount.json")));
+    auto [expr_rules, type_rules] = TranslationRule::Load(path, model);
+    if (expr_rules.empty() && type_rules.empty()) {
+      log() << "No rules found in " << path << '\n';
+      continue;
+    }
+    for (auto &[_, rule] : expr_rules) {
+      exprs_.emplace(GetExprMapKey(rule.src), std::move(rule));
+    }
+    for (auto &[_, rule] : type_rules) {
+      types_.emplace(GetTypeMapKey(rule.src), std::move(rule));
     }
   }
 }
