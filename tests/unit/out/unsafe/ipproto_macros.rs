@@ -16,6 +16,5 @@ unsafe fn main_0() -> i32 {
     let mut udp: i32 = libc::IPPROTO_UDP;
     let mut ip: i32 = libc::IPPROTO_IP;
     let mut ip6: i32 = libc::IPPROTO_IPV6;
-    let mut mptcp: i32 = libc::IPPROTO_MPTCP;
-    return (((((tcp) + (udp)) + (ip)) + (ip6)) + (mptcp));
+    return ((((tcp) + (udp)) + (ip)) + (ip6));
 }
