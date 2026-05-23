@@ -303,24 +303,35 @@ void ExprRule::dump() const {
   }
 }
 
-std::array<const char *, kMaxGenerics> kGenericPlaceholders = {
-    "T1", "T2", "T3", "T4", "T5", "T6", "T7", "T8", "T9"};
-
 void ExprRule::validate(const std::string &name) const {
   if (src.empty()) {
     llvm::errs() << name << '\n';
     dump();
-    assert(0 && "Expr rule loaded from IR but has no src");
+    llvm::report_fatal_error("Expr rule loaded from IR but has no src");
   }
 
-  for (unsigned i = 0, e = generics.size(); i < e; ++i) {
-    const char *placeholder = kGenericPlaceholders[i];
-    if (src.find(placeholder) == std::string::npos) {
+  if (generics.empty())
+    return;
+
+  bool has_generic[kMaxGenerics] = {false};
+  for (size_t i = 0, e = src.size(); i < e; ++i) {
+    auto pos = src.find('T', i);
+    if (pos == std::string::npos)
+      break;
+    auto ch = pos + 1 < e ? src[pos + 1] : '\0';
+    if (ch >= '1' && ch <= '9') {
+      has_generic[ch - '1'] = true;
+      i = pos + 1;
+    }
+  }
+
+  for (size_t i = 0, e = generics.size(); i < e; ++i) {
+    if (!has_generic[i]) {
       llvm::errs() << name << '\n';
       dump();
-      llvm::errs() << "generic " << placeholder
+      llvm::errs() << "generic T" << (i + 1)
                    << " declared but missing from src: " << src << '\n';
-      assert(0 && "Expr rule declares a generic absent from its src");
+      llvm::report_fatal_error("Absent generic from src");
     }
   }
 }

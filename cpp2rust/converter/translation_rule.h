@@ -15,7 +15,7 @@
 
 namespace cpp2rust::TranslationRule {
 
-inline constexpr unsigned kMaxGenerics = 9;
+static inline constexpr unsigned kMaxGenerics = 9;
 
 struct TextFragment {
   std::string text;
@@ -23,7 +23,7 @@ struct TextFragment {
   void dump() const;
 };
 
-enum class Access { kRead, kWrite, kMove };
+enum class Access : int8_t { kRead, kWrite, kMove };
 
 struct PlaceholderFragment {
   unsigned n; // "a0", "a1", ...
