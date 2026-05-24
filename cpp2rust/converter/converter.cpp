@@ -19,10 +19,10 @@
 
 namespace cpp2rust {
 std::unordered_map<std::string, std::string> Converter::inner_structs_;
-std::unordered_set<std::string> Converter::record_decls_;
 std::unordered_set<std::string> Converter::decl_ids_;
 std::unordered_set<std::string> Converter::globals_;
 std::unordered_set<std::string> Converter::abstract_structs_;
+Converter::RecordIndex Converter::record_decls_;
 
 void Converter::ConvertUniquePtrDeref(clang::CXXOperatorCallExpr *expr) {
   bool is_star = expr->getOperator() == clang::OverloadedOperatorKind::OO_Star;
@@ -51,6 +51,16 @@ use std::io::{Read, Write, Seek};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 )");
+}
+
+std::string Converter::EmitOpaqueRecords() {
+  std::string out;
+  record_decls_.ForEachUndefined([&](const std::string &name) {
+    out += "pub struct ";
+    out += name;
+    out += ";\n";
+  });
+  return out;
 }
 
 bool Converter::VisitRecoveryExpr(clang::RecoveryExpr *expr) {
@@ -160,7 +170,11 @@ bool Converter::VisitRecordType(clang::RecordType *type) {
     }
   }
 
-  StrCat(GetRecordName(decl));
+  auto name = GetRecordName(decl);
+  StrCat(name);
+  if (!ctx_.getSourceManager().isInSystemHeader(decl->getLocation())) {
+    record_decls_.MarkReferenced(std::move(name));
+  }
   Mapper::AddRuleForUserDefinedType(decl);
   return false;
 }
@@ -617,7 +631,7 @@ bool Converter::VisitRecordDecl(clang::RecordDecl *decl) {
     return false;
   }
 
-  if (!record_decls_.insert(GetID(decl)).second) {
+  if (!record_decls_.MarkDefined(GetRecordName(decl))) {
     return false;
   }
 
@@ -734,7 +748,7 @@ bool Converter::VisitCXXRecordDecl(clang::CXXRecordDecl *decl) {
       }
     }
 
-    if (!record_decls_.insert(GetID(decl)).second) {
+    if (!record_decls_.MarkDefined(GetRecordName(decl))) {
       return false;
     }
 

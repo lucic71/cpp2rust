@@ -51,6 +51,8 @@ public:
 
   virtual void EmitFilePreamble();
 
+  static std::string EmitOpaqueRecords();
+
   virtual bool VisitBuiltinType(clang::BuiltinType *type);
 
   virtual bool VisitRecordType(clang::RecordType *type);
@@ -646,8 +648,37 @@ protected:
     ~ScopedMapIterDecl() { c.map_iter_decls_.erase(decl); }
   };
   static std::unordered_set<std::string> decl_ids_;
-  static std::unordered_set<std::string> record_decls_;
   static std::unordered_set<std::string> abstract_structs_;
+
+  class RecordIndex {
+  public:
+    void MarkReferenced(std::string name) {
+      entries_.try_emplace(std::move(name), false);
+    }
+    // Returns false if `name` is already defined; otherwise marks it and
+    // returns true.
+    bool MarkDefined(const std::string &name) {
+      bool &defined = entries_[name];
+      if (defined) {
+        return false;
+      }
+      defined = true;
+      return true;
+    }
+    template <typename F> void ForEachUndefined(F &&f) const {
+      for (const auto &[name, defined] : entries_) {
+        if (!defined) {
+          f(name);
+        }
+      }
+    }
+
+  private:
+    // record name -> true if a definition has been emitted, false if only
+    // referenced.
+    std::unordered_map<std::string, bool> entries_;
+  };
+  static RecordIndex record_decls_;
 
   enum class ExprKind : uint8_t {
     Callee,
