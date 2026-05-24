@@ -225,18 +225,18 @@ public:
   std::optional<TempMaterializationCtx> ConvertCallExpr(clang::CallExpr *expr);
 
   struct CallArg {
-    enum class Kind {
+    enum class Kind : int8_t {
       Hoisted,
       Inline,
       Materialized,
     };
 
-    clang::Expr *expr;
-    Kind kind;
     std::string param_name;
-    clang::QualType param_type;
-    bool has_default;
     std::string ref_temp_name;
+    clang::QualType param_type;
+    clang::Expr *expr;
+    bool has_default;
+    Kind kind;
   };
 
   struct CallInfo {
