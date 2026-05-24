@@ -1,7 +1,9 @@
 // Copyright (c) 2022-present INESC-ID.
 // Distributed under the MIT license that can be found in the LICENSE file.
 
-use ra_ap_syntax::ast::{HasGenericParams, HasName, HasTypeBounds};
+use cfg_expr::Expression;
+use cfg_expr::expr::{Predicate, TargetPredicate};
+use ra_ap_syntax::ast::{HasAttrs, HasGenericParams, HasName, HasTypeBounds};
 use ra_ap_syntax::{AstNode, SyntaxKind, ast, match_ast};
 use std::collections::{BTreeMap, HashMap};
 use std::path::{Path, PathBuf};
@@ -38,6 +40,31 @@ fn pointer_flags(ty: &ast::Type) -> (bool, bool) {
     flags
 }
 
+fn cfg_matches_host(fn_item: &ast::Fn) -> bool {
+    for attr in fn_item.attrs() {
+        let Some(meta) = attr.meta() else { continue };
+        let Some(path) = meta.path() else { continue };
+        if path.syntax().text() != "cfg" {
+            continue;
+        }
+        let meta_text = meta.syntax().text().to_string();
+        let expr = Expression::parse(&meta_text)
+            .unwrap_or_else(|e| panic!("failed to parse `{meta_text}`: {e}"));
+        let matches = expr.eval(|pred| match pred {
+            Predicate::Target(TargetPredicate::Os(os)) => match os.as_str() {
+                "linux" => cfg!(target_os = "linux"),
+                "macos" => cfg!(target_os = "macos"),
+                other => panic!("unsupported target_os in cfg: {other}"),
+            },
+            _ => panic!("unsupported cfg predicate in `{meta_text}`"),
+        });
+        if !matches {
+            return false;
+        }
+    }
+    true
+}
+
 pub struct SyntacticAnalysis;
 
 impl SyntacticAnalysis {
@@ -48,12 +75,6 @@ impl SyntacticAnalysis {
         for rule_file in &rule_files {
             let source = std::fs::read_to_string(rule_file).unwrap();
             let file_ir = Self::parse_rule_file(&source, rule_file);
-
-            assert!(
-                !file_ir.is_empty(),
-                "Rule file {} produced no IR",
-                rule_file.display()
-            );
 
             let canonical = rule_file
                 .canonicalize()
@@ -103,6 +124,9 @@ impl SyntacticAnalysis {
                     file_ir.insert(name, RuleIr::Type(ir));
                 }
             } else if fn_name.starts_with('f') {
+                if !cfg_matches_host(&fn_item) {
+                    continue;
+                }
                 file_ir.insert(
                     fn_name.clone(),
                     RuleIr::Fn(FnIrBuilder::new(&fn_item).build(path)),
@@ -251,31 +275,6 @@ struct FnIrBuilder<'a> {
 impl<'a> FnIrBuilder<'a> {
     fn new(fn_item: &'a ast::Fn) -> Self {
         Self { fn_item }
-    }
-
-    fn get_target_os(&self) -> Option<String> {
-        use ast::HasAttrs;
-        for attr in self.fn_item.attrs() {
-            let meta_text = attr.meta()?.syntax().text().to_string();
-            let syn::Meta::List(list) = syn::parse_str(&meta_text).ok()? else {
-                continue;
-            };
-            if !list.path.is_ident("cfg") {
-                continue;
-            }
-            let mut found = None;
-            let _ = list.parse_nested_meta(|nested| {
-                if nested.path.is_ident("target_os") {
-                    let lit: syn::LitStr = nested.value()?.parse()?;
-                    found = Some(lit.value());
-                }
-                Ok(())
-            });
-            if found.is_some() {
-                return found;
-            }
-        }
-        None
     }
 
     fn params(&self) -> Vec<ParamInfo> {
@@ -512,7 +511,6 @@ impl<'a> FnIrBuilder<'a> {
             },
             multi_statement,
             body,
-            target_os: self.get_target_os(),
         };
         ir.validate(&format!("{}:{}", path.display(), fn_name));
         ir
