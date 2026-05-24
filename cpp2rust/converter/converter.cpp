@@ -1553,8 +1553,9 @@ Converter::CallInfo Converter::CollectCallInfo(clang::CallExpr *expr) {
     CallArg ca{
         .expr = arg,
         .kind = Kind::Hoisted,
-        .param_name = function ? function->getParamDecl(i)->getNameAsString()
-                               : ("arg" + std::to_string(i)),
+        .param_name = function
+                          ? ("_" + function->getParamDecl(i)->getNameAsString())
+                          : ("_arg" + std::to_string(i)),
         .param_type = function ? function->getParamDecl(i)->getType()
                                : proto->getParamType(i),
         .has_default = function && function->getParamDecl(i)->hasDefaultArg(),
@@ -1591,15 +1592,14 @@ void Converter::EmitHoistedArgs(CallInfo &info) {
   for (auto &ca : info.args) {
     switch (ca.kind) {
     case Kind::Hoisted:
-      StrCat("let",
-             std::format("_{}: {}", ca.param_name, ToString(ca.param_type)),
-             "=");
+      StrCat(
+          std::format("let {}: {} =", ca.param_name, ToString(ca.param_type)));
       ConvertParamTy(ca.param_type, ca.expr);
       StrCat(";");
       break;
     case Kind::Materialized: {
-      auto [binding, ref] = MaterializeTemp(std::format("_{}", ca.param_name),
-                                            ca.param_type, ca.expr);
+      auto [binding, ref] =
+          MaterializeTemp(ca.param_name, ca.param_type, ca.expr);
       StrCat(binding);
       ca.ref_temp_name = std::move(ref);
       break;
@@ -1623,7 +1623,7 @@ void Converter::EmitArgList(const CallInfo &info) {
       PushParen push(*this, ca.has_default);
       switch (ca.kind) {
       case Kind::Hoisted:
-        StrCat(std::format("_{}", ca.param_name));
+        StrCat(ca.param_name);
         break;
       case Kind::Materialized:
         StrCat(ca.ref_temp_name);
