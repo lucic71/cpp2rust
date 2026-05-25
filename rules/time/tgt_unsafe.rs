@@ -24,3 +24,13 @@ unsafe fn f6(a0: *mut u8, a1: u64, a2: *const u8, a3: *const ::libc::tm) -> u64 
 unsafe fn f7(a0: *const u8, a1: *const ::libc::timeval) -> i32 {
     libc::utimes(a0 as *const i8, a1)
 }
+
+#[cfg(target_os = "linux")]
+unsafe fn f8(a0: *mut libc::timeval, a1: *mut libc::timezone) -> i32 {
+    libc::gettimeofday(a0, a1)
+}
+
+#[cfg(target_os = "macos")]
+unsafe fn f8(a0: *mut libc::timeval, a1: *mut libc::c_void) -> i32 {
+    libc::gettimeofday(a0, a1)
+}

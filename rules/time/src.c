@@ -25,3 +25,15 @@ size_t f6(char *s, size_t maxsize, const char *format, const struct tm *tp) {
 int f7(const char *file, const struct timeval tvp[2]) {
   return utimes(file, tvp);
 }
+
+#if defined(__linux__)
+int f8(struct timeval *tv, struct timezone *tz) {
+  return gettimeofday(tv, tz);
+}
+#elif defined(__APPLE__)
+int f8(struct timeval *tv, void *tz) {
+  return gettimeofday(tv, tz);
+}
+#else
+#error "Unsupported platform for gettimeofday"
+#endif
