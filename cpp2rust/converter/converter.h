@@ -226,6 +226,9 @@ public:
   virtual void
   ConvertFunctionToFunctionPointer(const clang::FunctionDecl *fn_decl);
 
+  // Option<fn> implements Copy
+  virtual bool FunctionPointerImplementsCopy() const { return true; }
+
   virtual void ConvertPrintf(clang::CallExpr *expr);
 
   void ConvertVAArgCall(clang::CallExpr *expr);
@@ -527,6 +530,8 @@ protected:
   virtual bool IsReferenceType(const clang::Expr *expr) const;
 
   virtual bool RecordDerivesDefault(const clang::RecordDecl *decl);
+
+  bool RecordDerivesCopy(const clang::RecordDecl *decl);
 
   bool ShouldReplaceWithMappedBody(clang::DeclRefExpr *expr) const;
 

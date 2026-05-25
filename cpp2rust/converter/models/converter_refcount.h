@@ -72,6 +72,9 @@ public:
   void
   ConvertFunctionToFunctionPointer(const clang::FunctionDecl *fn_decl) override;
 
+  // FnPtr does not implement Copy
+  bool FunctionPointerImplementsCopy() const override { return false; }
+
   bool VisitCallExpr(clang::CallExpr *expr) override;
 
   bool VisitStringLiteral(clang::StringLiteral *expr) override;

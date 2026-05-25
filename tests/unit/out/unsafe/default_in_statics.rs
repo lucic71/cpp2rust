@@ -13,7 +13,7 @@ pub struct Inner {
     pub name: *const u8,
 }
 #[repr(C)]
-#[derive(Clone)]
+#[derive(Copy, Clone)]
 pub struct Outer {
     pub p1: *mut i32,
     pub p2: *const i32,
@@ -39,7 +39,7 @@ impl Default for Outer {
     }
 }
 #[repr(C)]
-#[derive(Clone)]
+#[derive(Copy, Clone)]
 pub struct Foo {
     pub s1: *const u8,
     pub s2: *const u8,

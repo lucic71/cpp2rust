@@ -584,7 +584,7 @@ bool Converter::RecordDerivesDefault(const clang::RecordDecl *decl) {
   return true;
 }
 
-static bool recordDerivesCopy(const clang::RecordDecl *decl) {
+bool Converter::RecordDerivesCopy(const clang::RecordDecl *decl) {
   for (auto f : decl->fields()) {
     // Records that contain std::vector, std::array, std::string or anything
     // that is translated to Vec<>, do not derive Copy
@@ -601,16 +601,17 @@ static bool recordDerivesCopy(const clang::RecordDecl *decl) {
       return false;
     }
 
-    // Records that contain function pointer do not derive Copy
     if (auto ptr_ty = f->getType()->getAs<clang::PointerType>()) {
       if (ptr_ty->getPointeeType()->isFunctionType()) {
-        return false;
+        if (!FunctionPointerImplementsCopy()) {
+          return false;
+        }
       }
     }
 
     // Look recursively into fields that are RecordDecl
     if (auto field_record = f->getType()->getAsRecordDecl()) {
-      if (!recordDerivesCopy(field_record)) {
+      if (!RecordDerivesCopy(field_record)) {
         return false;
       }
     }
@@ -3220,7 +3221,7 @@ Converter::GetStructAttributes(const clang::RecordDecl *decl) {
 
   std::vector<const char *> struct_attrs = {};
 
-  if (recordDerivesCopy(decl)) {
+  if (RecordDerivesCopy(decl)) {
     struct_attrs.emplace_back("Copy");
   }
 
