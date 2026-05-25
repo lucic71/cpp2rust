@@ -7,7 +7,7 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 #[repr(C)]
-#[derive(Clone)]
+#[derive(Copy, Clone)]
 pub struct Handler {
     pub tag: i32,
     pub cb: Option<unsafe fn(i32) -> i32>,
