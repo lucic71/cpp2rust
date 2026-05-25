@@ -27,7 +27,7 @@ unsafe fn f7(a0: *const u8, a1: *const ::libc::timeval) -> i32 {
 
 #[cfg(target_os = "linux")]
 unsafe fn f8(a0: *mut libc::timeval, a1: *mut libc::timezone) -> i32 {
-    libc::gettimeofday(a0, a1)
+    libc::gettimeofday(a0, a1 as *mut libc::timezone)
 }
 
 #[cfg(target_os = "macos")]
