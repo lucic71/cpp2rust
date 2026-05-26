@@ -24,15 +24,15 @@ impl From<i32> for Code {
     }
 }
 libcc2rs::impl_enum_inc_dec!(Code);
-pub static mut s_side_effect: i32 = unsafe { 0 };
-pub unsafe fn observe_0(mut v: i32) -> i32 {
-    s_side_effect.prefix_inc();
+pub static mut side_effect_0: i32 = unsafe { 0 };
+pub unsafe fn observe_1(mut v: i32) -> i32 {
+    side_effect_0.prefix_inc();
     return v;
 }
-pub unsafe fn returns_one_1() -> i32 {
+pub unsafe fn returns_one_2() -> i32 {
     return 1;
 }
-pub unsafe fn returns_zero_2() -> i32 {
+pub unsafe fn returns_zero_3() -> i32 {
     return 0;
 }
 pub fn main() {
@@ -63,25 +63,25 @@ unsafe fn main_0() -> i32 {
     if (((n != 0) && (u != 0)) && (!(p).is_null())) && ((code as i32) == (Code::CODE_OK as i32)) {
         assert!(true);
     }
-    s_side_effect = 0;
+    side_effect_0 = 0;
     if (zero != 0)
         && ((unsafe {
             let _v: i32 = 1;
-            observe_0(_v)
+            observe_1(_v)
         }) != 0)
     {
         assert!(false);
     }
-    assert!(((s_side_effect) == (0)));
+    assert!(((side_effect_0) == (0)));
     if (n != 0)
         || ((unsafe {
             let _v: i32 = 1;
-            observe_0(_v)
+            observe_1(_v)
         }) != 0)
     {
         assert!(true);
     }
-    assert!(((s_side_effect) == (0)));
+    assert!(((side_effect_0) == (0)));
     let mut x: i32 = 5;
     let mut y: i32 = 3;
     let mut flags: u32 = 2_u32;
@@ -135,19 +135,19 @@ unsafe fn main_0() -> i32 {
     if ((x) > (y)) && ((n != 0) && (!(cp).is_null())) {
         assert!(true);
     }
-    if ((x) > (y)) && ((unsafe { returns_one_1() }) != 0) {
+    if ((x) > (y)) && ((unsafe { returns_one_2() }) != 0) {
         assert!(true);
     }
-    if ((x) > (y)) && (!((unsafe { returns_zero_2() }) != 0)) {
+    if ((x) > (y)) && (!((unsafe { returns_zero_3() }) != 0)) {
         assert!(true);
     }
-    if ((x) < (y)) || ((unsafe { returns_one_1() }) != 0) {
+    if ((x) < (y)) || ((unsafe { returns_one_2() }) != 0) {
         assert!(true);
     }
-    if ((x) < (y)) || (!((unsafe { returns_one_1() }) != 0)) {
+    if ((x) < (y)) || (!((unsafe { returns_one_2() }) != 0)) {
         assert!(false);
     }
-    if ((!((p).is_null())) && ((unsafe { returns_one_1() }) != 0)) && ((n) != (0)) {
+    if ((!((p).is_null())) && ((unsafe { returns_one_2() }) != 0)) && ((n) != (0)) {
         assert!(true);
     }
     return 0;

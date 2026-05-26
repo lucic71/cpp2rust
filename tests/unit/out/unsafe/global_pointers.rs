@@ -12,13 +12,13 @@ pub struct Entry {
     pub name: *const u8,
     pub p: *mut i32,
 }
-pub static mut s_single_entry: Entry = unsafe {
+pub static mut single_entry_0: Entry = unsafe {
     Entry {
         name: b"alone\0".as_ptr(),
         p: std::ptr::null_mut(),
     }
 };
-pub static mut s_entries: [Entry; 2] = unsafe {
+pub static mut entries_1: [Entry; 2] = unsafe {
     [
         Entry {
             name: b"first\0".as_ptr(),
@@ -30,7 +30,7 @@ pub static mut s_entries: [Entry; 2] = unsafe {
         },
     ]
 };
-pub static mut s_arr_of_pointers: [*mut u8; 3] = unsafe {
+pub static mut arr_of_pointers_2: [*mut u8; 3] = unsafe {
     [
         std::ptr::null_mut(),
         std::ptr::null_mut(),
@@ -43,11 +43,11 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    assert!((s_single_entry.p).is_null());
+    assert!((single_entry_0.p).is_null());
     let mut i: i32 = 0;
     'loop_: while ((i) < (2)) {
-        assert!((s_entries[(i) as usize].p).is_null());
-        assert!((s_arr_of_pointers[(i) as usize]).is_null());
+        assert!((entries_1[(i) as usize].p).is_null());
+        assert!((arr_of_pointers_2[(i) as usize]).is_null());
         i.prefix_inc();
     }
     return 0;

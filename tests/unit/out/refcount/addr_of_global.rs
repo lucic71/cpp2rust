@@ -42,29 +42,29 @@ impl Clone for Outer {
 }
 impl ByteRepr for Outer {}
 thread_local!(
-    pub static s_alpha: Value<Inner> = Rc::new(RefCell::new(Inner {
+    pub static alpha_0: Value<Inner> = Rc::new(RefCell::new(Inner {
         value: Rc::new(RefCell::new(1)),
     }));
 );
 thread_local!(
-    pub static s_beta: Value<Inner> = Rc::new(RefCell::new(Inner {
+    pub static beta_1: Value<Inner> = Rc::new(RefCell::new(Inner {
         value: Rc::new(RefCell::new(2)),
     }));
 );
 thread_local!(
-    pub static s_shared: Value<Inner> = Rc::new(RefCell::new(Inner {
+    pub static shared_2: Value<Inner> = Rc::new(RefCell::new(Inner {
         value: Rc::new(RefCell::new(42)),
     }));
 );
 thread_local!(
-    pub static s_items: Value<Box<[Ptr<Inner>]>> = Rc::new(RefCell::new(Box::new([
-        (s_alpha.with(Value::clone).as_pointer()),
-        (s_beta.with(Value::clone).as_pointer()),
+    pub static items_3: Value<Box<[Ptr<Inner>]>> = Rc::new(RefCell::new(Box::new([
+        (alpha_0.with(Value::clone).as_pointer()),
+        (beta_1.with(Value::clone).as_pointer()),
     ])));
 );
 thread_local!(
-    pub static s_obj: Value<Outer> = Rc::new(RefCell::new(Outer {
-        p: Rc::new(RefCell::new((s_shared.with(Value::clone).as_pointer()))),
+    pub static obj_4: Value<Outer> = Rc::new(RefCell::new(Outer {
+        p: Rc::new(RefCell::new((shared_2.with(Value::clone).as_pointer()))),
     }));
 );
 pub fn main() {
@@ -72,7 +72,7 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     assert!(
-        ((*(*(*s_items.with(Value::clone).borrow())[(0) as usize]
+        ((*(*(*items_3.with(Value::clone).borrow())[(0) as usize]
             .upgrade()
             .deref())
         .value
@@ -80,7 +80,7 @@ fn main_0() -> i32 {
             == 1)
     );
     assert!(
-        ((*(*(*s_items.with(Value::clone).borrow())[(1) as usize]
+        ((*(*(*items_3.with(Value::clone).borrow())[(1) as usize]
             .upgrade()
             .deref())
         .value
@@ -88,7 +88,7 @@ fn main_0() -> i32 {
             == 2)
     );
     assert!(
-        ((*(*(*(*s_obj.with(Value::clone).borrow()).p.borrow())
+        ((*(*(*(*obj_4.with(Value::clone).borrow()).p.borrow())
             .upgrade()
             .deref())
         .value
@@ -96,13 +96,13 @@ fn main_0() -> i32 {
             == 42)
     );
     thread_local!(
-        static s_cache: Value<Box<[Ptr<Inner>]>> = Rc::new(RefCell::new(Box::new([
-            (s_alpha.with(Value::clone).as_pointer()),
-            (s_beta.with(Value::clone).as_pointer()),
+        static cache_5: Value<Box<[Ptr<Inner>]>> = Rc::new(RefCell::new(Box::new([
+            (alpha_0.with(Value::clone).as_pointer()),
+            (beta_1.with(Value::clone).as_pointer()),
         ])));
     );
     assert!(
-        ((*(*(*s_cache.with(Value::clone).borrow())[(0) as usize]
+        ((*(*(*cache_5.with(Value::clone).borrow())[(0) as usize]
             .upgrade()
             .deref())
         .value
@@ -110,7 +110,7 @@ fn main_0() -> i32 {
             == 1)
     );
     assert!(
-        ((*(*(*s_cache.with(Value::clone).borrow())[(1) as usize]
+        ((*(*(*cache_5.with(Value::clone).borrow())[(1) as usize]
             .upgrade()
             .deref())
         .value

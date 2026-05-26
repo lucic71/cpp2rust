@@ -369,6 +369,16 @@ std::string GetID(const clang::Decl *decl) {
 
 static std::unordered_map<std::string, size_t> type_mapping;
 
+static size_t GetDeclId(const clang::NamedDecl *decl, bool internal) {
+  std::string key =
+      clang::ASTNameGenerator(decl->getASTContext()).getName(decl) +
+      GetParamSignature(decl);
+  if (internal) {
+    key += GetLocationID(decl);
+  }
+  return type_mapping.try_emplace(key, type_mapping.size()).first->second;
+}
+
 std::string GetNamedDeclAsString(const clang::NamedDecl *decl) {
   auto name = decl->getDeclName().isIdentifier() ? decl->getName().str()
                                                  : decl->getNameAsString();
@@ -384,19 +394,19 @@ std::string GetNamedDeclAsString(const clang::NamedDecl *decl) {
     return std::format("anon_{}", GetAnonIndex(target));
   }
 
+  std::optional<size_t> id;
   if (auto *fn = clang::dyn_cast<clang::FunctionDecl>(decl)) {
     if (!clang::isa<clang::CXXMethodDecl>(fn)) {
-      auto mangled =
-          clang::ASTNameGenerator(decl->getASTContext()).getName(decl) +
-          GetParamSignature(decl);
-      if (fn->getFormalLinkage() == clang::Linkage::Internal) {
-        mangled += GetLocationID(decl);
-      }
-      auto id =
-          type_mapping.try_emplace(mangled, type_mapping.size()).first->second;
-      name += '_';
-      name += std::to_string(id);
+      id = GetDeclId(decl, fn->getFormalLinkage() == clang::Linkage::Internal);
     }
+  } else if (auto *var = clang::dyn_cast<clang::VarDecl>(decl);
+             var && (var->isFileVarDecl() || var->isStaticLocal())) {
+    id = GetDeclId(var->getCanonicalDecl(),
+                   var->getFormalLinkage() != clang::Linkage::External);
+  }
+  if (id) {
+    name += '_';
+    name += std::to_string(*id);
   }
 
   // transform decl names that are rust keywords:

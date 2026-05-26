@@ -24,15 +24,15 @@ impl From<i32> for Code {
     }
 }
 libcc2rs::impl_enum_inc_dec!(Code);
-pub static mut s_side_effect: i32 = unsafe { 0 };
-pub unsafe fn observe_0(mut v: i32) -> i32 {
-    s_side_effect.prefix_inc();
+pub static mut side_effect_0: i32 = unsafe { 0 };
+pub unsafe fn observe_1(mut v: i32) -> i32 {
+    side_effect_0.prefix_inc();
     return v;
 }
-pub unsafe fn returns_one_1() -> i32 {
+pub unsafe fn returns_one_2() -> i32 {
     return 1;
 }
-pub unsafe fn returns_zero_2() -> i32 {
+pub unsafe fn returns_zero_3() -> i32 {
     return 0;
 }
 pub fn main() {
@@ -66,27 +66,27 @@ unsafe fn main_0() -> i32 {
     {
         assert!((1 != 0));
     }
-    s_side_effect = 0;
+    side_effect_0 = 0;
     if ((((zero != 0)
         && ((unsafe {
             let _v: i32 = 1;
-            observe_0(_v)
+            observe_1(_v)
         }) != 0)) as i32)
         != 0)
     {
         assert!((0 != 0));
     }
-    assert!(((((s_side_effect) == (0)) as i32) != 0));
+    assert!(((((side_effect_0) == (0)) as i32) != 0));
     if ((((n != 0)
         || ((unsafe {
             let _v: i32 = 1;
-            observe_0(_v)
+            observe_1(_v)
         }) != 0)) as i32)
         != 0)
     {
         assert!((1 != 0));
     }
-    assert!(((((s_side_effect) == (0)) as i32) != 0));
+    assert!(((((side_effect_0) == (0)) as i32) != 0));
     let mut x: i32 = 5;
     let mut y: i32 = 3;
     let mut flags: u32 = 2_u32;
@@ -142,19 +142,19 @@ unsafe fn main_0() -> i32 {
     {
         assert!((1 != 0));
     }
-    if (((((((x) > (y)) as i32) != 0) && ((unsafe { returns_one_1() }) != 0)) as i32) != 0) {
+    if (((((((x) > (y)) as i32) != 0) && ((unsafe { returns_one_2() }) != 0)) as i32) != 0) {
         assert!((1 != 0));
     }
-    if (((((((x) > (y)) as i32) != 0) && (!((unsafe { returns_zero_2() }) != 0))) as i32) != 0) {
+    if (((((((x) > (y)) as i32) != 0) && (!((unsafe { returns_zero_3() }) != 0))) as i32) != 0) {
         assert!((1 != 0));
     }
-    if (((((((x) < (y)) as i32) != 0) || ((unsafe { returns_one_1() }) != 0)) as i32) != 0) {
+    if (((((((x) < (y)) as i32) != 0) || ((unsafe { returns_one_2() }) != 0)) as i32) != 0) {
         assert!((1 != 0));
     }
-    if (((((((x) < (y)) as i32) != 0) || (!((unsafe { returns_one_1() }) != 0))) as i32) != 0) {
+    if (((((((x) < (y)) as i32) != 0) || (!((unsafe { returns_one_2() }) != 0))) as i32) != 0) {
         assert!((0 != 0));
     }
-    if (((((((((!((p).is_null())) as i32) != 0) && ((unsafe { returns_one_1() }) != 0)) as i32)
+    if (((((((((!((p).is_null())) as i32) != 0) && ((unsafe { returns_one_2() }) != 0)) as i32)
         != 0)
         && ((((n) != (0)) as i32) != 0)) as i32)
         != 0)

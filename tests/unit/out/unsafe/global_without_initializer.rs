@@ -11,17 +11,17 @@ use std::rc::Rc;
 pub struct S {
     pub a: i32,
 }
-pub static mut s_s: *mut S = unsafe { std::ptr::null_mut() };
-pub static mut s_file: *mut ::libc::FILE = unsafe { std::ptr::null_mut() };
-pub static mut s_size: u64 = unsafe { 0_u64 };
+pub static mut s_0: *mut S = unsafe { std::ptr::null_mut() };
+pub static mut file_1: *mut ::libc::FILE = unsafe { std::ptr::null_mut() };
+pub static mut size_2: u64 = unsafe { 0_u64 };
 pub fn main() {
     unsafe {
         std::process::exit(main_0() as i32);
     }
 }
 unsafe fn main_0() -> i32 {
-    assert!((s_s).is_null());
-    assert!((s_file).is_null());
-    assert!(((s_size) == (0_u64)));
+    assert!((s_0).is_null());
+    assert!((file_1).is_null());
+    assert!(((size_2) == (0_u64)));
     return 0;
 }

@@ -29,20 +29,20 @@ impl ByteRepr for S {
     }
 }
 thread_local!(
-    pub static s_s: Value<Ptr<S>> = Rc::new(RefCell::new(Ptr::<S>::null()));
+    pub static s_0: Value<Ptr<S>> = Rc::new(RefCell::new(Ptr::<S>::null()));
 );
 thread_local!(
-    pub static s_file: Value<Ptr<::std::fs::File>> = Rc::new(RefCell::new(Ptr::null()));
+    pub static file_1: Value<Ptr<::std::fs::File>> = Rc::new(RefCell::new(Ptr::null()));
 );
 thread_local!(
-    pub static s_size: Value<u64> = <Value<u64>>::default();
+    pub static size_2: Value<u64> = <Value<u64>>::default();
 );
 pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    assert!((*s_s.with(Value::clone).borrow()).is_null());
-    assert!((*s_file.with(Value::clone).borrow()).is_null());
-    assert!(((*s_size.with(Value::clone).borrow()) == 0_u64));
+    assert!((*s_0.with(Value::clone).borrow()).is_null());
+    assert!((*file_1.with(Value::clone).borrow()).is_null());
+    assert!(((*size_2.with(Value::clone).borrow()) == 0_u64));
     return 0;
 }
