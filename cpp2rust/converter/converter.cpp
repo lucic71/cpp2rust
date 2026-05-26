@@ -393,7 +393,7 @@ void Converter::ConvertVaListVarDecl(clang::VarDecl *decl) {
   StrCat(keyword_mut_, GetNamedDeclAsString(decl), token::kColon, "VaList");
 }
 
-static std::string StaticVarName(const clang::NamedDecl *decl) {
+static std::string staticVarName(const clang::NamedDecl *decl) {
   return "s_" + ReplaceAll(Mapper::ToString(decl), "::", "_");
 }
 
@@ -407,7 +407,7 @@ bool Converter::ConvertVarDeclSkipInit(clang::VarDecl *decl) {
   }
 
   if (decl->isFileVarDecl()) {
-    name = StaticVarName(decl);
+    name = staticVarName(decl);
     if ((decl->isThisDeclarationADefinition() ==
              clang::VarDecl::DeclarationOnly &&
          !decl->hasInit()) ||
@@ -418,7 +418,7 @@ bool Converter::ConvertVarDeclSkipInit(clang::VarDecl *decl) {
            keyword_mut_);
     ENSURE(decl_ids_.insert(GetID(decl)).second);
   } else if (decl->isStaticLocal()) {
-    name = StaticVarName(decl);
+    name = staticVarName(decl);
     StrCat(keyword::kStatic, keyword_mut_);
   } else if (decl->isLocalVarDecl()) {
     StrCat(keyword::kLet);
@@ -2383,7 +2383,7 @@ std::string Converter::ConvertDeclRefExpr(clang::DeclRefExpr *expr) {
   }
 
   if (IsGlobalVar(expr)) {
-    return StaticVarName(expr->getDecl());
+    return staticVarName(expr->getDecl());
   }
 
   return GetNamedDeclAsString(decl);
