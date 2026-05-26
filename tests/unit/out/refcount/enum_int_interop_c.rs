@@ -23,7 +23,6 @@ impl From<i32> for Color {
         }
     }
 }
-libcc2rs::impl_enum_inc_dec!(Color);
 #[derive(Clone, Copy, PartialEq, Debug, Default)]
 enum Option {
     #[default]
@@ -43,7 +42,6 @@ impl From<i32> for Option {
         }
     }
 }
-libcc2rs::impl_enum_inc_dec!(Option);
 #[derive(Clone, Copy, PartialEq, Debug, Default)]
 enum Tag {
     #[default]
@@ -61,7 +59,6 @@ impl From<i32> for Tag {
         }
     }
 }
-libcc2rs::impl_enum_inc_dec!(Tag);
 #[derive(Default)]
 pub struct Entry {
     pub name: Value<Ptr<u8>>,

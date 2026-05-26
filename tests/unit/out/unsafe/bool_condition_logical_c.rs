@@ -23,7 +23,6 @@ impl From<i32> for Code {
         }
     }
 }
-libcc2rs::impl_enum_inc_dec!(Code);
 pub static mut side_effect_0: i32 = unsafe { 0 };
 pub unsafe fn observe_1(mut v: i32) -> i32 {
     side_effect_0.prefix_inc();
