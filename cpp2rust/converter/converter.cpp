@@ -2560,6 +2560,45 @@ bool Converter::VisitMemberExpr(clang::MemberExpr *expr) {
   return false;
 }
 
+// Returns the inner member and the replacement string.
+static std::pair<clang::MemberExpr *, std::string>
+replaceNonUniformLibcField(clang::MemberExpr *expr) {
+  // Example: ::struct stat::st_mtim::tv_sec -> ::libc::stat::st_mtime
+  struct Mapping {
+    const char *record;
+    const char *inner_field;
+    const char *leaf_field;
+    const char *replacement;
+  };
+  static constexpr Mapping kFields[] = {
+      {"stat", "st_mtim", "tv_sec", "st_mtime"},      // Linux
+      {"stat", "st_mtimespec", "tv_sec", "st_mtime"}, // macOS
+  };
+
+  auto getNamedIdentifierOrNull = [](auto *decl) {
+    return decl && decl->getDeclName().isIdentifier() ? decl : nullptr;
+  };
+
+  if (auto leaf = getNamedIdentifierOrNull(expr->getMemberDecl())) {
+    if (auto inner = clang::dyn_cast<clang::MemberExpr>(
+            expr->getBase()->IgnoreParenImpCasts())) {
+      if (auto field = getNamedIdentifierOrNull(
+              clang::dyn_cast<clang::FieldDecl>(inner->getMemberDecl()))) {
+        if (getNamedIdentifierOrNull(field->getParent())) {
+          for (const auto &m : kFields) {
+            if (field->getParent()->getName() == m.record &&
+                field->getName() == m.inner_field &&
+                leaf->getName() == m.leaf_field) {
+              return {inner, m.replacement};
+            }
+          }
+        }
+      }
+    }
+  }
+  return {nullptr, ""};
+}
+
 void Converter::ConvertMemberExpr(clang::MemberExpr *expr) {
   if (auto mapped = GetMappedAsString(expr); !mapped.empty()) {
     if (Mapper::ReturnsPointer(expr)) {
@@ -2571,6 +2610,11 @@ void Converter::ConvertMemberExpr(clang::MemberExpr *expr) {
   }
 
   auto *member = expr->getMemberDecl();
+  auto [inner, name_override] = replaceNonUniformLibcField(expr);
+  if (inner) {
+    expr = inner;
+  }
+
   auto *base = expr->getBase();
   bool base_is_this = clang::isa<clang::CXXThisExpr>(base->IgnoreCasts());
   PushExprKind push(*this, isLValue() ? ExprKind::LValue : ExprKind::RValue);
@@ -2584,11 +2628,11 @@ void Converter::ConvertMemberExpr(clang::MemberExpr *expr) {
       method && IsOverloadedMethod(method)) {
     StrCat(token::kDot);
     StrCat(GetOverloadedFunctionName(method));
-  } else {
-    if (member->getDeclName().isIdentifier()) {
-      StrCat(token::kDot);
-      StrCat(GetNamedDeclAsString(member));
-    }
+  } else if (!name_override.empty()) {
+    StrCat(token::kDot, name_override);
+  } else if (member->getDeclName().isIdentifier()) {
+    StrCat(token::kDot);
+    StrCat(GetNamedDeclAsString(member));
   }
 }
 
