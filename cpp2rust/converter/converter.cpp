@@ -1554,6 +1554,8 @@ Converter::CallInfo Converter::CollectCallInfo(clang::CallExpr *expr) {
       function ? function->getNumParams() : proto->getNumParams();
   info.is_variadic = function ? function->isVariadic() : proto->isVariadic();
   info.is_fn_ptr_call = !function;
+  info.is_libc_passthrough =
+      decl && ctx_.getSourceManager().isInSystemHeader(decl->getLocation());
 
   for (unsigned i = 0; i < num_named_params && i < num_args; ++i) {
     auto *arg = expr->getArg(i + arg_begin);
@@ -1565,7 +1567,7 @@ Converter::CallInfo Converter::CollectCallInfo(clang::CallExpr *expr) {
                                : proto->getParamType(i),
         .expr = arg,
         .has_default = function && function->getParamDecl(i)->hasDefaultArg(),
-        .kind = Kind::Hoisted,
+        .kind = info.is_libc_passthrough ? Kind::Inline : Kind::Hoisted,
     };
     bool is_materialize = clang::isa<clang::MaterializeTemporaryExpr>(arg);
     if (is_materialize && ca.param_type->isLValueReferenceType()) {
@@ -1645,11 +1647,16 @@ void Converter::EmitArgList(const CallInfo &info) {
   }
 
   if (info.is_variadic) {
-    StrCat(token::kRef);
-    PushBracket push(*this);
+    if (!info.is_libc_passthrough) {
+      StrCat(token::kRef);
+    }
+    PushBracket push(*this, !info.is_libc_passthrough);
     for (auto *arg : info.variadic_args) {
       ConvertVariadicArg(arg);
-      StrCat(".into()", token::kComma);
+      if (!info.is_libc_passthrough) {
+        StrCat(".into()");
+      }
+      StrCat(token::kComma);
     }
   }
 }
