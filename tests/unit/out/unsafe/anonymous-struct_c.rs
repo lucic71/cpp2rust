@@ -14,47 +14,47 @@ pub struct Named {
 }
 #[repr(C)]
 #[derive(Copy, Clone, Default)]
-pub struct Outer_anon_0 {
+pub struct anon_0 {
     pub c: i32,
     pub d: i32,
 }
 #[repr(C)]
 #[derive(Copy, Clone, Default)]
-pub struct Outer_anon_1 {
+pub struct anon_1 {
     pub g: i32,
     pub h: i32,
 }
 #[repr(C)]
 #[derive(Copy, Clone, Default)]
-pub struct Outer_anon_2 {
+pub struct anon_2 {
     pub e: i32,
     pub f: i32,
 }
 #[repr(C)]
 #[derive(Copy, Clone, Default)]
-pub struct Outer_anon_3_anon_0 {
+pub struct anon_4 {
     pub j: i32,
 }
 #[repr(C)]
 #[derive(Copy, Clone, Default)]
-pub struct Outer_anon_3_anon_1 {
+pub struct anon_5 {
     pub k: i32,
 }
 #[repr(C)]
 #[derive(Copy, Clone, Default)]
-pub struct Outer_anon_3 {
+pub struct anon_3 {
     pub i: i32,
-    pub inner_named: Outer_anon_3_anon_0,
-    pub anon_1: Outer_anon_3_anon_1,
+    pub inner_named: anon_4,
+    pub anon_5: anon_5,
 }
 #[repr(C)]
 #[derive(Copy, Clone, Default)]
 pub struct Outer {
     pub named: Named,
-    pub anon0: Outer_anon_0,
-    pub anon1: Outer_anon_1,
-    pub anon_2: Outer_anon_2,
-    pub anon_3: Outer_anon_3,
+    pub anon0: anon_0,
+    pub anon1: anon_1,
+    pub anon_2: anon_2,
+    pub anon_3: anon_3,
 }
 pub fn main() {
     unsafe {
@@ -64,10 +64,10 @@ pub fn main() {
 unsafe fn main_0() -> i32 {
     let mut o: Outer = Outer {
         named: Named { a: 0, b: 0_i32 },
-        anon0: <Outer_anon_0>::default(),
-        anon1: <Outer_anon_1>::default(),
-        anon_2: <Outer_anon_2>::default(),
-        anon_3: <Outer_anon_3>::default(),
+        anon0: <anon_0>::default(),
+        anon1: <anon_1>::default(),
+        anon_2: <anon_2>::default(),
+        anon_3: <anon_3>::default(),
     };
     o.named.a = 1;
     o.named.b = 2;
@@ -79,7 +79,7 @@ unsafe fn main_0() -> i32 {
     o.anon_2.f = 8;
     o.anon_3.i = 9;
     o.anon_3.inner_named.j = 10;
-    o.anon_3.anon_1.k = 11;
+    o.anon_3.anon_5.k = 11;
     assert!(((((o.named.a) == (1)) as i32) != 0));
     assert!(((((o.named.b) == (2)) as i32) != 0));
     assert!(((((o.anon0.c) == (3)) as i32) != 0));
@@ -90,14 +90,14 @@ unsafe fn main_0() -> i32 {
     assert!(((((o.anon_2.f) == (8)) as i32) != 0));
     assert!(((((o.anon_3.i) == (9)) as i32) != 0));
     assert!(((((o.anon_3.inner_named.j) == (10)) as i32) != 0));
-    assert!(((((o.anon_3.anon_1.k) == (11)) as i32) != 0));
+    assert!(((((o.anon_3.anon_5.k) == (11)) as i32) != 0));
     #[repr(C)]
     #[derive(Copy, Clone, Default)]
-    pub struct anon_0 {
+    pub struct anon_6 {
         pub x: i32,
         pub z: i32,
     };
-    let mut s: anon_0 = <anon_0>::default();
+    let mut s: anon_6 = <anon_6>::default();
     s.x = 1;
     s.z = 2;
     assert!(

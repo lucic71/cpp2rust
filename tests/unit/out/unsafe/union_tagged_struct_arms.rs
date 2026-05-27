@@ -26,14 +26,14 @@ impl From<i32> for Choice {
 libcc2rs::impl_enum_inc_dec!(Choice);
 #[repr(C)]
 #[derive(Copy, Clone, Default)]
-pub struct Branch_anon_0_anon_0 {
+pub struct anon_1 {
     pub items: *mut *mut u8,
     pub count: i64,
     pub cursor: i64,
 }
 #[repr(C)]
 #[derive(Copy, Clone, Default)]
-pub struct Branch_anon_0_anon_1 {
+pub struct anon_2 {
     pub lo: i32,
     pub hi: i32,
     pub curr: i32,
@@ -41,7 +41,7 @@ pub struct Branch_anon_0_anon_1 {
 }
 #[repr(C)]
 #[derive(Copy, Clone, Default)]
-pub struct Branch_anon_0_anon_2 {
+pub struct anon_3 {
     pub lo: i64,
     pub hi: i64,
     pub curr: i64,
@@ -50,12 +50,12 @@ pub struct Branch_anon_0_anon_2 {
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
-pub union Branch_anon_0 {
-    pub list: Branch_anon_0_anon_0,
-    pub letters: Branch_anon_0_anon_1,
-    pub integers: Branch_anon_0_anon_2,
+pub union anon_0 {
+    pub list: anon_1,
+    pub letters: anon_2,
+    pub integers: anon_3,
 }
-impl Default for Branch_anon_0 {
+impl Default for anon_0 {
     fn default() -> Self {
         unsafe { std::mem::zeroed() }
     }
@@ -65,7 +65,7 @@ impl Default for Branch_anon_0 {
 pub struct Branch {
     pub choice: Choice,
     pub index: i32,
-    pub v: Branch_anon_0,
+    pub v: anon_0,
 }
 pub fn main() {
     unsafe {

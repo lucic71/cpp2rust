@@ -26,13 +26,13 @@ impl From<i32> for Width {
 libcc2rs::impl_enum_inc_dec!(Width);
 #[repr(C)]
 #[derive(Copy, Clone)]
-pub union Sink_anon_0 {
+pub union anon_0 {
     pub text: *const u8,
     pub handle: *mut ::libc::c_void,
     pub signed_n: i64,
     pub f: f64,
 }
-impl Default for Sink_anon_0 {
+impl Default for anon_0 {
     fn default() -> Self {
         unsafe { std::mem::zeroed() }
     }
@@ -41,9 +41,9 @@ impl Default for Sink_anon_0 {
 #[derive(Copy, Clone, Default)]
 pub struct Sink {
     pub width: Width,
-    pub out: Sink_anon_0,
+    pub out: anon_0,
 }
-pub unsafe fn write_count_0(mut s: *mut Sink, mut count: i64) {
+pub unsafe fn write_count_1(mut s: *mut Sink, mut count: i64) {
     'switch: {
         let __match_cond = ((*s).width as u32);
         match __match_cond {
@@ -78,7 +78,7 @@ unsafe fn main_0() -> i32 {
     (unsafe {
         let _s: *mut Sink = (&mut s as *mut Sink);
         let _count: i64 = 1234605616436508552_i64;
-        write_count_0(_s, _count)
+        write_count_1(_s, _count)
     });
     assert!(((((buf64) == (1234605616436508552_i64)) as i32) != 0));
     s.width = Width::W_32;
@@ -86,7 +86,7 @@ unsafe fn main_0() -> i32 {
     (unsafe {
         let _s: *mut Sink = (&mut s as *mut Sink);
         let _count: i64 = 305419896_i64;
-        write_count_0(_s, _count)
+        write_count_1(_s, _count)
     });
     assert!(((((buf32) == (305419896)) as i32) != 0));
     s.width = Width::W_16;
@@ -94,7 +94,7 @@ unsafe fn main_0() -> i32 {
     (unsafe {
         let _s: *mut Sink = (&mut s as *mut Sink);
         let _count: i64 = 4660_i64;
-        write_count_0(_s, _count)
+        write_count_1(_s, _count)
     });
     assert!(((((buf16 as i32) == (4660)) as i32) != 0));
     return 0;

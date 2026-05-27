@@ -30,14 +30,14 @@ impl From<i32> for Tag {
 libcc2rs::impl_enum_inc_dec!(Tag);
 #[repr(C)]
 #[derive(Copy, Clone)]
-pub union Slot_anon_0 {
+pub union anon_0 {
     pub text: *const u8,
     pub handle: *mut ::libc::c_void,
     pub signed_n: i64,
     pub unsigned_n: u64,
     pub f: f64,
 }
-impl Default for Slot_anon_0 {
+impl Default for anon_0 {
     fn default() -> Self {
         unsafe { std::mem::zeroed() }
     }
@@ -46,7 +46,7 @@ impl Default for Slot_anon_0 {
 #[derive(Copy, Clone, Default)]
 pub struct Slot {
     pub tag: Tag,
-    pub payload: Slot_anon_0,
+    pub payload: anon_0,
 }
 pub fn main() {
     unsafe {
