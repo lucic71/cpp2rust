@@ -16,8 +16,11 @@ fn main_0() -> i32 {
             .chain(std::iter::once(0))
             .collect::<Vec<u8>>(),
     ));
+    let file: Value<Box<[u8]>> = Rc::new(RefCell::new(Box::<[u8]>::from(
+        b"test_stdcopy_ostream.txt\0".as_slice(),
+    )));
     let ofs: Value<::std::fs::File> = Rc::new(RefCell::new(
-        ::std::fs::File::create(Ptr::from_string_literal("test.txt").to_string())
+        ::std::fs::File::create((file.as_pointer() as Ptr<u8>).to_string())
             .expect("Failed to open file"),
     ));
     {
@@ -28,5 +31,6 @@ fn main_0() -> i32 {
         );
         (*ofs.borrow_mut()).try_clone().unwrap()
     };
+    libc::unlink((file.as_pointer() as Ptr<u8>) as *const i8);
     return 0;
 }
