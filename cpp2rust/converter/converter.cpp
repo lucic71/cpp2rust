@@ -3195,6 +3195,13 @@ std::string Converter::GetDefaultAsStringFallback(clang::QualType qual_type) {
     }
   }
 
+  if (qual_type->isEnumeralType()) {
+    auto enum_decl = qual_type->castAs<clang::EnumType>()->getDecl();
+    return std::format(
+        "{}::{}", GetRecordName(enum_decl),
+        std::string_view(enum_decl->enumerator_begin()->getName()));
+  }
+
   return std::format("<{}>::default()", ToString(qual_type));
 }
 
