@@ -33,18 +33,18 @@ impl Default for Vtable {
 }
 impl ByteRepr for Vtable {}
 thread_local!(
-    pub static storage: Value<i32> = <Value<i32>>::default();
+    pub static storage_0: Value<i32> = <Value<i32>>::default();
 );
-pub fn int_create_0(val: i32) -> AnyPtr {
+pub fn int_create_1(val: i32) -> AnyPtr {
     let val: Value<i32> = Rc::new(RefCell::new(val));
-    (*storage.with(Value::clone).borrow_mut()) = (*val.borrow());
-    return ((storage.with(Value::clone).as_pointer()) as Ptr<i32>).to_any();
+    (*storage_0.with(Value::clone).borrow_mut()) = (*val.borrow());
+    return ((storage_0.with(Value::clone).as_pointer()) as Ptr<i32>).to_any();
 }
-pub fn int_get_1(p: AnyPtr) -> i32 {
+pub fn int_get_2(p: AnyPtr) -> i32 {
     let p: Value<AnyPtr> = Rc::new(RefCell::new(p));
     return ((*p.borrow()).cast::<i32>().expect("ub:wrong type").read());
 }
-pub fn int_destroy_2(p: AnyPtr) {
+pub fn int_destroy_3(p: AnyPtr) {
     let p: Value<AnyPtr> = Rc::new(RefCell::new(p));
     (*p.borrow()).cast::<i32>().expect("ub:wrong type").write(0);
 }
@@ -54,10 +54,10 @@ pub fn main() {
 fn main_0() -> i32 {
     let vt: Value<Vtable> = Rc::new(RefCell::new(Vtable {
         create: Rc::new(RefCell::new(
-            (FnPtr::<fn(i32) -> AnyPtr>::new(int_create_0)).clone(),
+            (FnPtr::<fn(i32) -> AnyPtr>::new(int_create_1)).clone(),
         )),
-        get: Rc::new(RefCell::new(FnPtr::<fn(AnyPtr) -> i32>::new(int_get_1))),
-        destroy: Rc::new(RefCell::new(FnPtr::<fn(AnyPtr)>::new(int_destroy_2))),
+        get: Rc::new(RefCell::new(FnPtr::<fn(AnyPtr) -> i32>::new(int_get_2))),
+        destroy: Rc::new(RefCell::new(FnPtr::<fn(AnyPtr)>::new(int_destroy_3))),
     }));
     assert!(!((*(*vt.borrow()).create.borrow()).is_null()));
     assert!(!((*(*vt.borrow()).get.borrow()).is_null()));
@@ -78,7 +78,7 @@ fn main_0() -> i32 {
         let _arg0: AnyPtr = (*obj.borrow()).clone();
         (*(*(*vt.borrow()).destroy.borrow()))(_arg0)
     });
-    assert!(((*storage.with(Value::clone).borrow()) == 0));
+    assert!(((*storage_0.with(Value::clone).borrow()) == 0));
     (*(*vt.borrow()).get.borrow_mut()) = FnPtr::null();
     assert!((*(*vt.borrow()).get.borrow()).is_null());
     return 0;

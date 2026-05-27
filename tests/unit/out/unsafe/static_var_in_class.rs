@@ -6,16 +6,16 @@ use std::collections::BTreeMap;
 use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
-static mut C_inner_const: i32 = unsafe { 1 };
+static mut inner_const_0: i32 = unsafe { 1 };
 #[repr(C)]
 #[derive(Copy, Clone, Default)]
 pub struct C {}
 impl C {
     pub unsafe fn get(&mut self) -> i32 {
-        return C_inner_const;
+        return inner_const_0;
     }
 }
-pub static mut S_inner_const: i32 = unsafe { 2 };
+pub static mut inner_const_1: i32 = unsafe { 2 };
 #[repr(C)]
 #[derive(Copy, Clone, Default)]
 pub struct S {}
@@ -27,6 +27,6 @@ pub fn main() {
 unsafe fn main_0() -> i32 {
     let mut c: C = <C>::default();
     assert!(((unsafe { c.get() }) == (1)));
-    assert!(((S_inner_const) == (2)));
+    assert!(((inner_const_1) == (2)));
     return 0;
 }

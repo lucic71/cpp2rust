@@ -69,10 +69,10 @@ pub struct Entry {
     pub color: Color,
     pub opt: Option,
 }
-pub static mut global_color: Color = unsafe { Color::GREEN };
-pub static mut global_opt: Option = unsafe { Option::OPT_B };
-pub static mut global_tag: Tag = unsafe { Tag::TAG_TWO };
-pub static mut entries: [Entry; 3] = unsafe {
+pub static mut global_color_0: Color = unsafe { Color::GREEN };
+pub static mut global_opt_1: Option = unsafe { Option::OPT_B };
+pub static mut global_tag_2: Tag = unsafe { Tag::TAG_TWO };
+pub static mut entries_3: [Entry; 3] = unsafe {
     [
         Entry {
             name: b"first\0".as_ptr(),
@@ -91,10 +91,10 @@ pub static mut entries: [Entry; 3] = unsafe {
         },
     ]
 };
-pub unsafe fn as_int_0(mut c: Color) -> i32 {
+pub unsafe fn as_int_4(mut c: Color) -> i32 {
     return (c as i32);
 }
-pub unsafe fn classify_option_1(mut option: i32) -> i32 {
+pub unsafe fn classify_option_5(mut option: i32) -> i32 {
     'switch: {
         let __match_cond = option;
         match __match_cond {
@@ -117,7 +117,7 @@ pub unsafe fn classify_option_1(mut option: i32) -> i32 {
     };
     panic!("ub: non-void function does not return a value")
 }
-pub unsafe fn make_color_2(mut n: i32) -> Color {
+pub unsafe fn make_color_6(mut n: i32) -> Color {
     return Color::from(n);
 }
 pub fn main() {
@@ -159,7 +159,7 @@ unsafe fn main_0() -> i32 {
     assert!(((c as i32) == (2)));
     c = (unsafe {
         let _n: i32 = 1;
-        make_color_2(_n)
+        make_color_6(_n)
     });
     assert!(((c as i32) == (Color::GREEN as i32)));
     let mut cmp: Color = Color::from(((c as i32) + (1)));
@@ -173,17 +173,17 @@ unsafe fn main_0() -> i32 {
     assert!(((o as i32) == (Option::OPT_B as i32)));
     let mut rc: i32 = (unsafe {
         let _option: i32 = (o as i32);
-        classify_option_1(_option)
+        classify_option_5(_option)
     });
     assert!(((rc) == (2)));
     rc = (unsafe {
         let _option: i32 = 20;
-        classify_option_1(_option)
+        classify_option_5(_option)
     });
     assert!(((rc) == (2)));
     rc = (unsafe {
         let _option: i32 = (Option::OPT_C as i32);
-        classify_option_1(_option)
+        classify_option_5(_option)
     });
     assert!(((rc) == (3)));
     let mut t: Tag = Tag::TAG_ONE;
@@ -210,14 +210,14 @@ unsafe fn main_0() -> i32 {
     };
     let mut extra: i32 = (((Color::RED as i32) + (Color::GREEN as i32)) + (Color::BLUE as i32));
     assert!(((extra) == (((0) + (1)) + (2))));
-    assert!(((global_color as i32) == (Color::GREEN as i32)));
-    assert!(((global_opt as i32) == (Option::OPT_B as i32)));
-    assert!(((global_tag as i32) == (Tag::TAG_TWO as i32)));
-    assert!(((entries[(0) as usize].color as i32) == (Color::RED as i32)));
-    assert!(((entries[(0) as usize].opt as i32) == (Option::OPT_NONE as i32)));
-    assert!(((entries[(1) as usize].color as i32) == (Color::GREEN as i32)));
-    assert!(((entries[(1) as usize].opt as i32) == (Option::OPT_A as i32)));
-    assert!(((entries[(2) as usize].color as i32) == (Color::BLUE as i32)));
-    assert!(((entries[(2) as usize].opt as i32) == (Option::OPT_C as i32)));
+    assert!(((global_color_0 as i32) == (Color::GREEN as i32)));
+    assert!(((global_opt_1 as i32) == (Option::OPT_B as i32)));
+    assert!(((global_tag_2 as i32) == (Tag::TAG_TWO as i32)));
+    assert!(((entries_3[(0) as usize].color as i32) == (Color::RED as i32)));
+    assert!(((entries_3[(0) as usize].opt as i32) == (Option::OPT_NONE as i32)));
+    assert!(((entries_3[(1) as usize].color as i32) == (Color::GREEN as i32)));
+    assert!(((entries_3[(1) as usize].opt as i32) == (Option::OPT_A as i32)));
+    assert!(((entries_3[(2) as usize].color as i32) == (Color::BLUE as i32)));
+    assert!(((entries_3[(2) as usize].opt as i32) == (Option::OPT_C as i32)));
     return 0;
 }

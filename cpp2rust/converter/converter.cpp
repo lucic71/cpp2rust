@@ -403,7 +403,6 @@ bool Converter::ConvertVarDeclSkipInit(clang::VarDecl *decl) {
   }
 
   if (decl->isFileVarDecl()) {
-    name = ReplaceAll(Mapper::ToString(decl), "::", "_");
     if ((decl->isThisDeclarationADefinition() ==
              clang::VarDecl::DeclarationOnly &&
          !decl->hasInit()) ||
@@ -2378,7 +2377,7 @@ std::string Converter::ConvertDeclRefExpr(clang::DeclRefExpr *expr) {
   }
 
   if (IsGlobalVar(expr)) {
-    return ReplaceAll(Mapper::ToString(expr->getDecl()), "::", "_");
+    return GetNamedDeclAsString(expr->getDecl());
   }
 
   return GetNamedDeclAsString(decl);

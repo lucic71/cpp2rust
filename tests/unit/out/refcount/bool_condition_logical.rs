@@ -25,17 +25,17 @@ impl From<i32> for Code {
 }
 libcc2rs::impl_enum_inc_dec!(Code);
 thread_local!(
-    pub static side_effect: Value<i32> = Rc::new(RefCell::new(0));
+    pub static side_effect_0: Value<i32> = Rc::new(RefCell::new(0));
 );
-pub fn observe_0(v: i32) -> i32 {
+pub fn observe_1(v: i32) -> i32 {
     let v: Value<i32> = Rc::new(RefCell::new(v));
-    (*side_effect.with(Value::clone).borrow_mut()).prefix_inc();
+    (*side_effect_0.with(Value::clone).borrow_mut()).prefix_inc();
     return (*v.borrow());
 }
-pub fn returns_one_1() -> i32 {
+pub fn returns_one_2() -> i32 {
     return 1;
 }
-pub fn returns_zero_2() -> i32 {
+pub fn returns_zero_3() -> i32 {
     return 0;
 }
 pub fn main() {
@@ -66,25 +66,25 @@ fn main_0() -> i32 {
     {
         assert!(true);
     }
-    (*side_effect.with(Value::clone).borrow_mut()) = 0;
+    (*side_effect_0.with(Value::clone).borrow_mut()) = 0;
     if ((*zero.borrow()) != 0)
         && (({
             let _v: i32 = 1;
-            observe_0(_v)
+            observe_1(_v)
         }) != 0)
     {
         assert!(false);
     }
-    assert!(((*side_effect.with(Value::clone).borrow()) == 0));
+    assert!(((*side_effect_0.with(Value::clone).borrow()) == 0));
     if ((*n.borrow()) != 0)
         || (({
             let _v: i32 = 1;
-            observe_0(_v)
+            observe_1(_v)
         }) != 0)
     {
         assert!(true);
     }
-    assert!(((*side_effect.with(Value::clone).borrow()) == 0));
+    assert!(((*side_effect_0.with(Value::clone).borrow()) == 0));
     let x: Value<i32> = Rc::new(RefCell::new(5));
     let y: Value<i32> = Rc::new(RefCell::new(3));
     let flags: Value<u32> = Rc::new(RefCell::new(2_u32));
@@ -138,19 +138,19 @@ fn main_0() -> i32 {
     if ((*x.borrow()) > (*y.borrow())) && (((*n.borrow()) != 0) && (!(*cp.borrow()).is_null())) {
         assert!(true);
     }
-    if ((*x.borrow()) > (*y.borrow())) && (({ returns_one_1() }) != 0) {
+    if ((*x.borrow()) > (*y.borrow())) && (({ returns_one_2() }) != 0) {
         assert!(true);
     }
-    if ((*x.borrow()) > (*y.borrow())) && (!(({ returns_zero_2() }) != 0)) {
+    if ((*x.borrow()) > (*y.borrow())) && (!(({ returns_zero_3() }) != 0)) {
         assert!(true);
     }
-    if ((*x.borrow()) < (*y.borrow())) || (({ returns_one_1() }) != 0) {
+    if ((*x.borrow()) < (*y.borrow())) || (({ returns_one_2() }) != 0) {
         assert!(true);
     }
-    if ((*x.borrow()) < (*y.borrow())) || (!(({ returns_one_1() }) != 0)) {
+    if ((*x.borrow()) < (*y.borrow())) || (!(({ returns_one_2() }) != 0)) {
         assert!(false);
     }
-    if ((!((*p.borrow()).is_null())) && (({ returns_one_1() }) != 0)) && ((*n.borrow()) != 0) {
+    if ((!((*p.borrow()).is_null())) && (({ returns_one_2() }) != 0)) && ((*n.borrow()) != 0) {
         assert!(true);
     }
     return 0;
