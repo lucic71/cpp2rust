@@ -2545,7 +2545,7 @@ bool Converter::VisitMemberExpr(clang::MemberExpr *expr) {
 
   // char* fields in libc structs are *mut i8. We represent char* as *mut u8. Do
   // the i8 -> u8 conversion here.
-  if (!isLValue() && IsCharPointerFieldFromLibc(member)) {
+  if (IsCharPointerFieldFromLibc(member)) {
     StrCat(std::format("({} as {})", str,
                        member->getType()->getPointeeType().isConstQualified()
                            ? "*const u8"
