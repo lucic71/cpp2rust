@@ -16,7 +16,7 @@
 namespace cpp2rust {
 ConverterRefCount::ConverterRefCount(std::string &rs_code,
                                      clang::ASTContext &ctx)
-    : Converter(rs_code, ctx, "", "", ".as_pointer()", ""),
+    : Converter(rs_code, ctx, "", "", ""),
       conversion_kind_({ConversionKind::Unboxed}) {}
 
 void ConverterRefCount::EmitFilePreamble() {
@@ -1755,7 +1755,7 @@ ConverterRefCount::ConvertVarDefaultInit(clang::QualType qual_type) {
 
 std::vector<const char *>
 ConverterRefCount::GetStructAttributes(const clang::RecordDecl *decl) {
-  std::vector<const char *> attrs = {};
+  std::vector<const char *> attrs;
 
   if (RecordDerivesDefault(decl)) {
     attrs.emplace_back("Default");

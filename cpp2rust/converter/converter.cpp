@@ -78,7 +78,7 @@ bool Converter::Convert(clang::QualType qual_type) {
   }
 
   auto mapped = Mapper::Map(qual_type);
-  if (!mapped.empty() && mapped != ignore_rule_type_) {
+  if (!mapped.empty() && mapped != token::kIgnoreRule) {
     StrCat(mapped);
     return false;
   }
@@ -89,7 +89,7 @@ bool Converter::Convert(clang::QualType qual_type) {
 
 bool Converter::ConvertMappedType(clang::QualType qual_type) {
   std::string type_as_string = Mapper::Map(qual_type);
-  if (type_as_string == ignore_rule_type_) {
+  if (type_as_string == token::kIgnoreRule) {
     return false;
   }
   StrCat(type_as_string);
@@ -2723,7 +2723,7 @@ bool Converter::VisitArraySubscriptExpr(clang::ArraySubscriptExpr *expr) {
 }
 
 bool Converter::VisitCXXNullPtrLiteralExpr(clang::CXXNullPtrLiteralExpr *expr) {
-  StrCat(keyword_default_);
+  StrCat(token::kDefault);
   computed_expr_type_ = ComputedExprType::FreshPointer;
   return false;
 }
@@ -2753,7 +2753,7 @@ bool Converter::VisitVAArgExpr(clang::VAArgExpr *expr) {
 }
 
 bool Converter::VisitGNUNullExpr(clang::GNUNullExpr *expr) {
-  StrCat(keyword_default_);
+  StrCat(token::kDefault);
   computed_expr_type_ = ComputedExprType::FreshPointer;
   return false;
 }
@@ -2976,7 +2976,7 @@ void Converter::AddIncDecImpls(clang::EnumDecl *decl) {
 
 bool Converter::VisitCXXDefaultArgExpr(clang::CXXDefaultArgExpr *expr) {
   if (expr->getType()->isPointerType()) {
-    StrCat(keyword_default_);
+    StrCat(token::kDefault);
   }
   return false;
 }
@@ -3297,7 +3297,7 @@ Converter::GetStructAttributes(const clang::RecordDecl *decl) {
     return {"Copy", "Clone"};
   }
 
-  std::vector<const char *> struct_attrs = {};
+  std::vector<const char *> struct_attrs;
 
   if (RecordDerivesCopy(decl)) {
     struct_attrs.emplace_back("Copy");

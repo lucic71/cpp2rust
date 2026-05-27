@@ -26,11 +26,9 @@ public:
   explicit Converter(std::string &rs_code, clang::ASTContext &ctx,
                      const char *keyword_unsafe = "unsafe",
                      const char *keyword_mut = "mut",
-                     const char *keyword_ptr_decay = ".as_mut_ptr()",
                      const char *keyword_const_fn = keyword::kConst)
       : rs_code_(&rs_code), ctx_(ctx), keyword_unsafe_(keyword_unsafe),
-        keyword_mut_(keyword_mut), keyword_ptr_decay_(keyword_ptr_decay),
-        keyword_const_fn_(keyword_const_fn) {}
+        keyword_mut_(keyword_mut), keyword_const_fn_(keyword_const_fn) {}
 
   virtual ~Converter() = default;
 
@@ -799,13 +797,9 @@ private:
 
   std::string getIntegerLiteral(clang::IntegerLiteral *expr, bool incl_type,
                                 const clang::QualType *type = nullptr);
-  const char *keyword_default_ = "Default::default()";
   const char *keyword_unsafe_;
   const char *keyword_mut_;
-  const char *keyword_ptr_decay_;
   const char *keyword_const_fn_;
-  const char *keyword_ptr_decay_const_ = ".as_ptr()";
-  const char *ignore_rule_type_ = "libcc2rs::IgnoreRule";
   std::vector<ExprKind> curr_expr_kind_;
   static std::unordered_map<std::string, std::string> inner_structs_;
   static std::unordered_set<std::string> globals_;

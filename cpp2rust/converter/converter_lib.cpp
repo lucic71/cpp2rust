@@ -19,7 +19,7 @@
 #include "converter/mapper.h"
 
 // https://doc.rust-lang.org/reference/keywords.html
-static const char *rust_keywords[] = {
+static const char rust_keywords[][12] = {
     // Strict keywords
     "as",
     "async",
@@ -433,7 +433,7 @@ const char *AccessSpecifierAsString(clang::AccessSpecifier spec) {
     return keyword::kPub;
   case clang::AS_protected:
   case clang::AS_private:
-    return token::kEmpty;
+    return "";
   }
   std::unreachable();
 }
