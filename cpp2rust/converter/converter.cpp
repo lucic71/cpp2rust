@@ -2567,7 +2567,8 @@ replaceNonUniformLibcField(clang::MemberExpr *expr) {
     const char *replacement;
   };
   static constexpr Mapping kFields[] = {
-      {"stat", "st_mtim", "tv_sec", "st_mtime"},
+      {"stat", "st_mtim", "tv_sec", "st_mtime"},      // Linux
+      {"stat", "st_mtimespec", "tv_sec", "st_mtime"}, // macOS
   };
 
   auto getNamedIdentifierOrNull = [](auto *decl) {
