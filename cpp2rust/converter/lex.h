@@ -62,5 +62,5 @@ inline constexpr const char kDyn[] = "dyn";
 namespace token {
 inline constexpr const char kDefault[] = "Default::default()";
 inline constexpr const char kIgnoreRule[] = "libcc2rs::IgnoreRule";
-}
+} // namespace token
 } // namespace cpp2rust
