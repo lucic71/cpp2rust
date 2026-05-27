@@ -130,3 +130,21 @@ unsafe fn f26(a0: *mut u8, a1: i32, a2: usize) -> *mut ::libc::c_void {
 unsafe fn f27(a0: *const u8, a1: *const u8) -> i32 {
     libc::strcasecmp(a0 as *const i8, a1 as *const i8)
 }
+
+// From the man page:
+//
+// The GNU-specific strerror_r() returns a pointer to a string containing the error message.  This
+// may be either a pointer to a string that the function stores in buf, or a  pointer to some
+// (immutable) static string (in which case buf is unused)
+//
+// So it's not 100% correct to always return a1. But the Rust libc version only returns int.
+#[cfg(target_os = "linux")]
+unsafe fn f28(a0: i32, a1: *mut u8, a2: usize) -> *mut u8 {
+    libc::strerror_r(a0, a1 as *mut i8, a2 as usize);
+    a1
+}
+
+#[cfg(target_os = "macos")]
+unsafe fn f28(a0: i32, a1: *mut u8, a2: usize) -> i32 {
+    libc::strerror_r(a0, a1 as *mut i8, a2 as usize)
+}

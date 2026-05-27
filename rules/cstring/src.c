@@ -40,3 +40,15 @@ void *f24(const void *a0, int a1, size_t a2) { return memrchr(a0, a1, a2); }
 #endif
 
 int f27(const char *a0, const char *a1) { return strcasecmp(a0, a1); }
+
+#if defined(__linux__)
+char *f28(int errnum, char *buf, size_t buflen) {
+    return strerror_r(errnum, buf, buflen);
+}
+#elif defined(__APPLE__)
+int f28(int errnum, char *buf, size_t buflen) {
+    return strerror_r(errnum, buf, buflen);
+}
+#else
+#error "Unsupported platform for strerror_r"
+#endif
