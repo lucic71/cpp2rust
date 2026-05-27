@@ -24,11 +24,11 @@ impl ByteRepr for Named {
     }
 }
 #[derive(Default)]
-pub struct Outer_anon_0 {
+pub struct anon_0 {
     pub c: Value<i32>,
     pub d: Value<i32>,
 }
-impl ByteRepr for Outer_anon_0 {
+impl ByteRepr for anon_0 {
     fn to_bytes(&self, buf: &mut [u8]) {
         (*self.c.borrow()).to_bytes(&mut buf[0..4]);
         (*self.d.borrow()).to_bytes(&mut buf[4..8]);
@@ -41,11 +41,11 @@ impl ByteRepr for Outer_anon_0 {
     }
 }
 #[derive(Default)]
-pub struct Outer_anon_1 {
+pub struct anon_1 {
     pub g: Value<i32>,
     pub h: Value<i32>,
 }
-impl ByteRepr for Outer_anon_1 {
+impl ByteRepr for anon_1 {
     fn to_bytes(&self, buf: &mut [u8]) {
         (*self.g.borrow()).to_bytes(&mut buf[0..4]);
         (*self.h.borrow()).to_bytes(&mut buf[4..8]);
@@ -58,11 +58,11 @@ impl ByteRepr for Outer_anon_1 {
     }
 }
 #[derive(Default)]
-pub struct Outer_anon_2 {
+pub struct anon_2 {
     pub e: Value<i32>,
     pub f: Value<i32>,
 }
-impl ByteRepr for Outer_anon_2 {
+impl ByteRepr for anon_2 {
     fn to_bytes(&self, buf: &mut [u8]) {
         (*self.e.borrow()).to_bytes(&mut buf[0..4]);
         (*self.f.borrow()).to_bytes(&mut buf[4..8]);
@@ -75,10 +75,10 @@ impl ByteRepr for Outer_anon_2 {
     }
 }
 #[derive(Default)]
-pub struct Outer_anon_3_anon_0 {
+pub struct anon_4 {
     pub j: Value<i32>,
 }
-impl ByteRepr for Outer_anon_3_anon_0 {
+impl ByteRepr for anon_4 {
     fn to_bytes(&self, buf: &mut [u8]) {
         (*self.j.borrow()).to_bytes(&mut buf[0..4]);
     }
@@ -89,10 +89,10 @@ impl ByteRepr for Outer_anon_3_anon_0 {
     }
 }
 #[derive(Default)]
-pub struct Outer_anon_3_anon_1 {
+pub struct anon_5 {
     pub k: Value<i32>,
 }
-impl ByteRepr for Outer_anon_3_anon_1 {
+impl ByteRepr for anon_5 {
     fn to_bytes(&self, buf: &mut [u8]) {
         (*self.k.borrow()).to_bytes(&mut buf[0..4]);
     }
@@ -103,19 +103,19 @@ impl ByteRepr for Outer_anon_3_anon_1 {
     }
 }
 #[derive(Default)]
-pub struct Outer_anon_3 {
+pub struct anon_3 {
     pub i: Value<i32>,
-    pub inner_named: Value<Outer_anon_3_anon_0>,
-    pub anon_1: Value<Outer_anon_3_anon_1>,
+    pub inner_named: Value<anon_4>,
+    pub anon_5: Value<anon_5>,
 }
-impl ByteRepr for Outer_anon_3 {}
+impl ByteRepr for anon_3 {}
 #[derive(Default)]
 pub struct Outer {
     pub named: Value<Named>,
-    pub anon0: Value<Outer_anon_0>,
-    pub anon1: Value<Outer_anon_1>,
-    pub anon_2: Value<Outer_anon_2>,
-    pub anon_3: Value<Outer_anon_3>,
+    pub anon0: Value<anon_0>,
+    pub anon1: Value<anon_1>,
+    pub anon_2: Value<anon_2>,
+    pub anon_3: Value<anon_3>,
 }
 impl ByteRepr for Outer {}
 pub fn main() {
@@ -127,10 +127,10 @@ fn main_0() -> i32 {
             a: Rc::new(RefCell::new(0)),
             b: Rc::new(RefCell::new(<i32>::default())),
         })),
-        anon0: Rc::new(RefCell::new(<Outer_anon_0>::default())),
-        anon1: Rc::new(RefCell::new(<Outer_anon_1>::default())),
-        anon_2: Rc::new(RefCell::new(<Outer_anon_2>::default())),
-        anon_3: Rc::new(RefCell::new(<Outer_anon_3>::default())),
+        anon0: Rc::new(RefCell::new(<anon_0>::default())),
+        anon1: Rc::new(RefCell::new(<anon_1>::default())),
+        anon_2: Rc::new(RefCell::new(<anon_2>::default())),
+        anon_3: Rc::new(RefCell::new(<anon_3>::default())),
     }));
     (*(*(*o.borrow()).named.borrow()).a.borrow_mut()) = 1;
     (*(*(*o.borrow()).named.borrow()).b.borrow_mut()) = 2;
@@ -144,7 +144,7 @@ fn main_0() -> i32 {
     (*(*(*(*o.borrow()).anon_3.borrow()).inner_named.borrow())
         .j
         .borrow_mut()) = 10;
-    (*(*(*(*o.borrow()).anon_3.borrow()).anon_1.borrow())
+    (*(*(*(*o.borrow()).anon_3.borrow()).anon_5.borrow())
         .k
         .borrow_mut()) = 11;
     assert!(((((*(*(*o.borrow()).named.borrow()).a.borrow()) == 1) as i32) != 0));
@@ -164,18 +164,18 @@ fn main_0() -> i32 {
             != 0)
     );
     assert!(
-        ((((*(*(*(*o.borrow()).anon_3.borrow()).anon_1.borrow())
+        ((((*(*(*(*o.borrow()).anon_3.borrow()).anon_5.borrow())
             .k
             .borrow())
             == 11) as i32)
             != 0)
     );
     #[derive(Default)]
-    pub struct anon_0 {
+    pub struct anon_6 {
         pub x: Value<i32>,
         pub z: Value<i32>,
     }
-    impl ByteRepr for anon_0 {
+    impl ByteRepr for anon_6 {
         fn to_bytes(&self, buf: &mut [u8]) {
             (*self.x.borrow()).to_bytes(&mut buf[0..4]);
             (*self.z.borrow()).to_bytes(&mut buf[4..8]);
@@ -187,7 +187,7 @@ fn main_0() -> i32 {
             }
         }
     };
-    let s: Value<anon_0> = <Value<anon_0>>::default();
+    let s: Value<anon_6> = <Value<anon_6>>::default();
     (*(*s.borrow()).x.borrow_mut()) = 1;
     (*(*s.borrow()).z.borrow_mut()) = 2;
     assert!(

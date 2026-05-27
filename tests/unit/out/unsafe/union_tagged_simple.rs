@@ -24,11 +24,11 @@ impl From<i32> for Kind {
 libcc2rs::impl_enum_inc_dec!(Kind);
 #[repr(C)]
 #[derive(Copy, Clone)]
-pub union Event_anon_0 {
+pub union anon_0 {
     pub obj: *mut ::libc::c_void,
     pub code: i32,
 }
-impl Default for Event_anon_0 {
+impl Default for anon_0 {
     fn default() -> Self {
         unsafe { std::mem::zeroed() }
     }
@@ -38,7 +38,7 @@ impl Default for Event_anon_0 {
 pub struct Event {
     pub kind: Kind,
     pub handle: *mut ::libc::c_void,
-    pub payload: Event_anon_0,
+    pub payload: anon_0,
 }
 pub fn main() {
     unsafe {

@@ -571,18 +571,6 @@ std::string normalizeTranslationRule(std::string rule) {
   return rule;
 }
 
-static std::string synthesizeAnonRecordName(const clang::RecordDecl *record) {
-  std::string parent_name;
-  if (auto *parent =
-          clang::dyn_cast<clang::RecordDecl>(record->getDeclContext())) {
-    parent_name = parent->getIdentifier()
-                      ? parent->getIdentifier()->getName().str()
-                      : synthesizeAnonRecordName(parent);
-    parent_name += '_';
-  }
-  return std::format("{}anon_{}", parent_name, GetAnonIndex(record));
-}
-
 } // namespace
 
 PushASTContext::PushASTContext(clang::ASTContext &ctx) : prev_(ctx_) {
@@ -760,7 +748,7 @@ std::string ToString(const clang::NamedDecl *decl) {
     if (auto *typedef_decl = record->getTypedefNameForAnonDecl()) {
       return ToString(clang::cast<clang::NamedDecl>(typedef_decl));
     }
-    return synthesizeAnonRecordName(record);
+    return GetNamedDeclAsString(record);
   }
 
   if (auto *enum_decl = clang::dyn_cast<clang::EnumDecl>(decl);

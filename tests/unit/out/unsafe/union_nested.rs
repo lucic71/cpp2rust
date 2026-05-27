@@ -22,11 +22,11 @@ impl Default for record {
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
-pub union inner_anon_0 {
+pub union anon_0 {
     pub h: record,
     pub raw_: [u8; 128],
 }
-impl Default for inner_anon_0 {
+impl Default for anon_0 {
     fn default() -> Self {
         unsafe { std::mem::zeroed() }
     }
@@ -34,15 +34,15 @@ impl Default for inner_anon_0 {
 #[repr(C)]
 #[derive(Copy, Clone, Default)]
 pub struct inner {
-    pub view: inner_anon_0,
+    pub view: anon_0,
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
-pub union Outer_anon_0 {
+pub union anon_1 {
     pub h: record,
     pub nested: inner,
 }
-impl Default for Outer_anon_0 {
+impl Default for anon_1 {
     fn default() -> Self {
         unsafe { std::mem::zeroed() }
     }
@@ -54,7 +54,7 @@ pub struct Outer {
     pub level: i32,
     pub variant: i32,
     pub len: u32,
-    pub body: Outer_anon_0,
+    pub body: anon_1,
 }
 pub fn main() {
     unsafe {

@@ -26,14 +26,14 @@ impl From<i32> for Choice {
 libcc2rs::impl_enum_inc_dec!(Choice);
 #[repr(C)]
 #[derive(Copy, Clone, Default)]
-pub struct Branch_anon_0_anon_0 {
+pub struct anon_1 {
     pub items: *mut *mut u8,
     pub count: i64,
     pub cursor: i64,
 }
 #[repr(C)]
 #[derive(Copy, Clone, Default)]
-pub struct Branch_anon_0_anon_1 {
+pub struct anon_2 {
     pub lo: i32,
     pub hi: i32,
     pub curr: i32,
@@ -41,7 +41,7 @@ pub struct Branch_anon_0_anon_1 {
 }
 #[repr(C)]
 #[derive(Copy, Clone, Default)]
-pub struct Branch_anon_0_anon_2 {
+pub struct anon_3 {
     pub lo: i64,
     pub hi: i64,
     pub curr: i64,
@@ -50,12 +50,12 @@ pub struct Branch_anon_0_anon_2 {
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
-pub union Branch_anon_0 {
-    pub list: Branch_anon_0_anon_0,
-    pub letters: Branch_anon_0_anon_1,
-    pub integers: Branch_anon_0_anon_2,
+pub union anon_0 {
+    pub list: anon_1,
+    pub letters: anon_2,
+    pub integers: anon_3,
 }
-impl Default for Branch_anon_0 {
+impl Default for anon_0 {
     fn default() -> Self {
         unsafe { std::mem::zeroed() }
     }
@@ -65,7 +65,7 @@ impl Default for Branch_anon_0 {
 pub struct Branch {
     pub choice: Choice,
     pub index: i32,
-    pub v: Branch_anon_0,
+    pub v: anon_0,
 }
 pub fn main() {
     unsafe {
@@ -73,7 +73,7 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    static mut items: [*mut u8; 3] = unsafe {
+    static mut items_4: [*mut u8; 3] = unsafe {
         [
             b"a\0".as_ptr().cast_mut(),
             b"b\0".as_ptr().cast_mut(),
@@ -83,7 +83,7 @@ unsafe fn main_0() -> i32 {
     let mut p_list: Branch = <Branch>::default();
     p_list.choice = Choice::C_LIST;
     p_list.index = 0;
-    p_list.v.list.items = items.as_mut_ptr();
+    p_list.v.list.items = items_4.as_mut_ptr();
     p_list.v.list.count = 3_i64;
     p_list.v.list.cursor = 1_i64;
     assert!(((((p_list.v.list.count) == (3_i64)) as i32) != 0));

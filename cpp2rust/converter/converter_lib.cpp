@@ -328,25 +328,6 @@ unsigned GetArraySize(clang::QualType array_type) {
   return constant_array_ty->getSize().getZExtValue();
 }
 
-unsigned GetAnonIndex(const clang::NamedDecl *decl) {
-  if (auto *parent =
-          clang::dyn_cast<clang::RecordDecl>(decl->getDeclContext())) {
-    unsigned counter = 0;
-    for (auto *d : parent->decls()) {
-      if (d == decl) {
-        return counter;
-      }
-      auto *named = clang::dyn_cast<clang::NamedDecl>(d);
-      if (named && named->getKind() == decl->getKind() &&
-          named->getName().empty()) {
-        counter++;
-      }
-    }
-    return counter;
-  }
-  return 0;
-}
-
 static std::string GetLocationID(const clang::Decl *decl) {
   return GetFileName(decl) + std::to_string(GetLineNumber(decl)) +
          std::to_string(GetColumnNumber(decl));
@@ -373,15 +354,19 @@ std::string GetNamedDeclAsString(const clang::NamedDecl *decl) {
   auto name = decl->getDeclName().isIdentifier() ? decl->getName().str()
                                                  : decl->getNameAsString();
 
-  // Anonymous record field
-  if (auto *field = clang::dyn_cast<clang::FieldDecl>(decl);
-      field && name.empty()) {
-    const clang::NamedDecl *target = field;
-    if (auto *record = field->getType()->getAsRecordDecl();
-        record && !record->getIdentifier()) {
-      target = record;
+  // Anonymous record
+  if (name.empty() && (clang::isa<clang::RecordDecl>(decl) ||
+                       clang::isa<clang::FieldDecl>(decl))) {
+    const clang::NamedDecl *target = decl;
+    if (auto *field = clang::dyn_cast<clang::FieldDecl>(decl)) {
+      if (auto *record = field->getType()->getAsRecordDecl();
+          record && !record->getIdentifier()) {
+        target = record;
+      }
     }
-    return std::format("anon_{}", GetAnonIndex(target));
+    return std::format(
+        "anon_{}", type_mapping.try_emplace(GetID(target), type_mapping.size())
+                       .first->second);
   }
 
   if (auto *fn = clang::dyn_cast<clang::FunctionDecl>(decl)) {
