@@ -1642,7 +1642,8 @@ void Converter::EmitArgList(const CallInfo &info) {
       case Kind::Inline:
         ConvertParamTy(ca.param_type, ca.expr);
         if (info.is_libc_passthrough) {
-          StrCat(std::format("as {}", Mapper::GetParamType(callee, i)));
+          StrCat(std::format(
+              "as {}", Mapper::GetParamType(GetCalleeOrExpr(info.expr), i)));
         }
         break;
       }
