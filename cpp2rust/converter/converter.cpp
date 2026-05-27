@@ -1623,7 +1623,9 @@ void Converter::EmitArgList(const CallInfo &info) {
   using Kind = CallArg::Kind;
   PushParen call_args(*this);
 
-  for (const auto &ca : info.args) {
+  for (unsigned i = 0; i < info.args.size(); i++) {
+    const auto &ca = info.args[i];
+
     if (ca.has_default) {
       StrCat("Some");
     }
@@ -1639,6 +1641,9 @@ void Converter::EmitArgList(const CallInfo &info) {
         break;
       case Kind::Inline:
         ConvertParamTy(ca.param_type, ca.expr);
+        if (info.is_libc_passthrough) {
+          StrCat(std::format("as {}", Mapper::GetParamType(callee, i)));
+        }
         break;
       }
     }
