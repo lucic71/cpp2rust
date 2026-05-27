@@ -56,3 +56,8 @@ int f19(FILE *stream, off_t offset, int whence) {
 }
 
 FILE *f20(int fd, const char *mode) { return fdopen(fd, mode); }
+
+template <typename... Args>
+int f21(char *a0, size_t a1, const char *a2, Args... args) {
+  return snprintf(a0, a1, a2, args...);
+}
