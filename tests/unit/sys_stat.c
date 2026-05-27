@@ -14,6 +14,8 @@ static void test_stat(void) {
   struct stat st;
   assert(stat(path, &st) == 0);
   assert(st.st_size == 5);
+  assert(st.st_mtime > 0);
+  assert(st.st_mtim.tv_nsec > 0);
   unlink(path);
 }
 
@@ -27,6 +29,8 @@ static void test_fstat(void) {
   struct stat st;
   assert(fstat(fd, &st) == 0);
   assert(st.st_size == 11);
+  assert(st.st_mtime > 0);
+  assert(st.st_mtim.tv_nsec > 0);
   assert(fclose(fp) == 0);
   unlink(path);
 }
