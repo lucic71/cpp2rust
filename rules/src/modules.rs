@@ -38,12 +38,16 @@ pub mod deque_tgt_refcount;
 pub mod deque_tgt_unsafe;
 #[path = r#"../errno/tgt_unsafe.rs"#]
 pub mod errno_tgt_unsafe;
+#[path = r#"../fcntl/tgt_unsafe.rs"#]
+pub mod fcntl_tgt_unsafe;
 #[path = r#"../fstream/tgt_refcount.rs"#]
 pub mod fstream_tgt_refcount;
 #[path = r#"../fstream/tgt_unsafe.rs"#]
 pub mod fstream_tgt_unsafe;
 #[path = r#"../initializer_list/tgt_unsafe.rs"#]
 pub mod initializer_list_tgt_unsafe;
+#[path = r#"../ioctl/tgt_unsafe.rs"#]
+pub mod ioctl_tgt_unsafe;
 #[path = r#"../iomanip/tgt_unsafe.rs"#]
 pub mod iomanip_tgt_unsafe;
 #[path = r#"../iostream/tgt_refcount.rs"#]

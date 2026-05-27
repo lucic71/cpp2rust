@@ -57,6 +57,8 @@ pub struct FnIr {
     pub params: Option<BTreeMap<String, TypeInfo>>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub return_type: Option<TypeInfo>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub is_variadic: Option<bool>,
 }
 
 impl FnIr {
@@ -104,7 +106,10 @@ impl FnIr {
             1,
             &format!("Rule {name} generics"),
         );
-        assert!(!self.body.is_empty(), "Rule {name}: body must not be empty");
+        assert!(
+            self.is_variadic == Some(true) || !self.body.is_empty(),
+            "Rule {name}: body must not be empty"
+        );
     }
 }
 

@@ -85,3 +85,7 @@ unsafe fn f19(a0: *mut ::libc::FILE, a1: i64, a2: i32) -> i32 {
 unsafe fn f20(a0: i32, a1: *const u8) -> *mut ::libc::FILE {
     libc::fdopen(a0, a1 as *const i8)
 }
+
+unsafe extern "C" {
+    fn f21(a0: *mut u8, a1: u64, a2: *const u8, ...) -> i32;
+}
