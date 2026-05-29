@@ -1050,22 +1050,20 @@ bool Converter::VisitWhileStmt(clang::WhileStmt *stmt) {
 
 bool Converter::VisitDoStmt(clang::DoStmt *stmt) {
   PushBreakTarget push(break_target_, BreakTarget::Loop);
-  StrCat("'loop_:");
-  StrCat(keyword::kLoop);
+  const char *control_var = "__do_while";
+  StrCat(keyword::kLet, "mut", control_var, token::kAssign, keyword::kTrue,
+         token::kSemiColon);
+  StrCat("'loop_:", keyword::kWhile, control_var, "||");
+  {
+    PushParen paren(*this);
+    ConvertCondition(stmt->getCond());
+  }
   {
     PushBrace loop_brace(*this);
+    StrCat(control_var, token::kAssign, keyword::kFalse, token::kSemiColon);
     curr_for_inc_.emplace_back(nullptr);
     Convert(stmt->getBody());
     curr_for_inc_.pop_back();
-    StrCat(keyword::kIf, token::kNot);
-    {
-      PushParen paren(*this);
-      ConvertCondition(stmt->getCond());
-    }
-    {
-      PushBrace if_brace(*this);
-      StrCat(keyword::kBreak, token::kSemiColon);
-    }
   }
   return false;
 }

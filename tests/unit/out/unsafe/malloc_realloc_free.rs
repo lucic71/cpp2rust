@@ -12,7 +12,9 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    'loop_: loop {
+    let mut __do_while = true;
+    'loop_: while __do_while || (0 != 0) {
+        __do_while = false;
         let mut p: *mut i32 =
             (libcc2rs::malloc_unsafe(::std::mem::size_of::<i32>() as u64) as *mut i32);
         (*p) = 42;
@@ -53,9 +55,6 @@ unsafe fn main_0() -> i32 {
             i.postfix_inc();
         }
         libcc2rs::free_unsafe((zeros as *mut i32 as *mut ::libc::c_void));
-        if !(0 != 0) {
-            break;
-        }
     }
     let mut pmalloc: Option<unsafe fn(u64) -> *mut ::libc::c_void> = Some(libcc2rs::malloc_unsafe);
     let mut pfree: Option<unsafe fn(*mut ::libc::c_void)> = Some(libcc2rs::free_unsafe);
@@ -63,7 +62,9 @@ unsafe fn main_0() -> i32 {
         Some(libcc2rs::realloc_unsafe);
     let mut pcalloc: Option<unsafe fn(u64, u64) -> *mut ::libc::c_void> =
         Some(libcc2rs::calloc_unsafe);
-    'loop_: loop {
+    let mut __do_while = true;
+    'loop_: while __do_while || (0 != 0) {
+        __do_while = false;
         let mut p: *mut i32 = ((unsafe {
             let _arg0: u64 = ::std::mem::size_of::<i32>() as u64;
             (pmalloc).unwrap()(_arg0)
@@ -124,9 +125,6 @@ unsafe fn main_0() -> i32 {
             let _arg0: *mut ::libc::c_void = (zeros as *mut i32 as *mut ::libc::c_void);
             (pfree).unwrap()(_arg0)
         });
-        if !(0 != 0) {
-            break;
-        }
     }
     return 0;
 }
