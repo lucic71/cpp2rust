@@ -7,19 +7,17 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 pub unsafe fn dowhile_0(mut x: i32) -> i32 {
-    'loop_: loop {
+    let mut __do_while = true;
+    'loop_: while __do_while || ((x) <= (200)) {
+        __do_while = false;
         x += 1;
-        'loop_: loop {
+        let mut __do_while = true;
+        'loop_: while __do_while || ((x) <= (100)) {
+            __do_while = false;
             x += 1;
             x += 1;
-            if !((x) <= (100)) {
-                break;
-            }
         }
         x += 1;
-        if !((x) <= (200)) {
-            break;
-        }
     }
     return x;
 }

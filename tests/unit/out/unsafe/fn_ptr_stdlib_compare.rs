@@ -58,7 +58,9 @@ unsafe fn main_0() -> i32 {
             (f3).unwrap()(_arg0, _arg1, _arg2, _arg3)
         }) == (22_u64))
     );
-    'loop_: loop {
+    let mut __do_while = true;
+    'loop_: while __do_while || (0 != 0) {
+        __do_while = false;
         let mut stream: *mut ::libc::FILE = libc::fopen(
             b"/dev/zero\0".as_ptr() as *const i8,
             b"rb\0".as_ptr() as *const i8,
@@ -90,11 +92,10 @@ unsafe fn main_0() -> i32 {
             i.prefix_inc();
         }
         libc::fclose(stream);
-        if !(0 != 0) {
-            break;
-        }
     }
-    'loop_: loop {
+    let mut __do_while = true;
+    'loop_: while __do_while || (0 != 0) {
+        __do_while = false;
         let mut stream: *mut ::libc::FILE = libc::fopen(
             b"/dev/zero\0".as_ptr() as *const i8,
             b"rb\0".as_ptr() as *const i8,
@@ -127,9 +128,6 @@ unsafe fn main_0() -> i32 {
             i.prefix_inc();
         }
         libc::fclose(stream);
-        if !(0 != 0) {
-            break;
-        }
     }
     let mut gn1: Option<unsafe fn(*const ::libc::c_void, u64, u64, *mut ::libc::FILE) -> u64> =
         Some(libcc2rs::fwrite_unsafe);
@@ -161,7 +159,9 @@ unsafe fn main_0() -> i32 {
             (g3).unwrap()(_arg0, _arg1, _arg2, _arg3)
         }) == (33_u64))
     );
-    'loop_: loop {
+    let mut __do_while = true;
+    'loop_: while __do_while || (0 != 0) {
+        __do_while = false;
         let mut stream: *mut ::libc::FILE = libc::fopen(
             b"/dev/null\0".as_ptr() as *const i8,
             b"wb\0".as_ptr() as *const i8,
@@ -183,11 +183,10 @@ unsafe fn main_0() -> i32 {
         );
         assert!(((n) == (10_u64)));
         libc::fclose(stream);
-        if !(0 != 0) {
-            break;
-        }
     }
-    'loop_: loop {
+    let mut __do_while = true;
+    'loop_: while __do_while || (0 != 0) {
+        __do_while = false;
         let mut stream: *mut ::libc::FILE = libc::fopen(
             b"/dev/null\0".as_ptr() as *const i8,
             b"wb\0".as_ptr() as *const i8,
@@ -211,9 +210,6 @@ unsafe fn main_0() -> i32 {
         });
         assert!(((n) == (10_u64)));
         libc::fclose(stream);
-        if !(0 != 0) {
-            break;
-        }
     }
     return 0;
 }

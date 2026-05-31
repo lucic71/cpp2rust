@@ -73,7 +73,9 @@ fn main_0() -> i32 {
             (*(*f3.borrow()))(_arg0, _arg1, _arg2, _arg3)
         }) == 22_u64)
     );
-    'loop_: loop {
+    let mut __do_while = true;
+    'loop_: while __do_while || (0 != 0) {
+        __do_while = false;
         let stream: Value<Ptr<::std::fs::File>> = Rc::new(RefCell::new(
             match Ptr::from_string_literal("rb").to_rust_string() {
                 v if v == "rb" => std::fs::OpenOptions::new()
@@ -124,11 +126,10 @@ fn main_0() -> i32 {
             (*stream.borrow()).delete();
             0
         };
-        if !(0 != 0) {
-            break;
-        }
     }
-    'loop_: loop {
+    let mut __do_while = true;
+    'loop_: while __do_while || (0 != 0) {
+        __do_while = false;
         let stream: Value<Ptr<::std::fs::File>> = Rc::new(RefCell::new(
             match Ptr::from_string_literal("rb").to_rust_string() {
                 v if v == "rb" => std::fs::OpenOptions::new()
@@ -181,9 +182,6 @@ fn main_0() -> i32 {
             (*stream.borrow()).delete();
             0
         };
-        if !(0 != 0) {
-            break;
-        }
     }
     let gn1: Value<FnPtr<fn(AnyPtr, u64, u64, Ptr<::std::fs::File>) -> u64>> =
         Rc::new(RefCell::new(FnPtr::<
@@ -239,7 +237,9 @@ fn main_0() -> i32 {
             (*(*g3.borrow()))(_arg0, _arg1, _arg2, _arg3)
         }) == 33_u64)
     );
-    'loop_: loop {
+    let mut __do_while = true;
+    'loop_: while __do_while || (0 != 0) {
+        __do_while = false;
         let stream: Value<Ptr<::std::fs::File>> = Rc::new(RefCell::new(
             match Ptr::from_string_literal("wb").to_rust_string() {
                 v if v == "rb" => std::fs::OpenOptions::new()
@@ -280,11 +280,10 @@ fn main_0() -> i32 {
             (*stream.borrow()).delete();
             0
         };
-        if !(0 != 0) {
-            break;
-        }
     }
-    'loop_: loop {
+    let mut __do_while = true;
+    'loop_: while __do_while || (0 != 0) {
+        __do_while = false;
         let stream: Value<Ptr<::std::fs::File>> = Rc::new(RefCell::new(
             match Ptr::from_string_literal("wb").to_rust_string() {
                 v if v == "rb" => std::fs::OpenOptions::new()
@@ -327,9 +326,6 @@ fn main_0() -> i32 {
             (*stream.borrow()).delete();
             0
         };
-        if !(0 != 0) {
-            break;
-        }
     }
     return 0;
 }

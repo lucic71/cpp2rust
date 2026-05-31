@@ -8,19 +8,17 @@ use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
 pub fn dowhile_0(x: i32) -> i32 {
     let x: Value<i32> = Rc::new(RefCell::new(x));
-    'loop_: loop {
+    let mut __do_while = true;
+    'loop_: while __do_while || ((*x.borrow()) <= 200) {
+        __do_while = false;
         (*x.borrow_mut()) += 1;
-        'loop_: loop {
+        let mut __do_while = true;
+        'loop_: while __do_while || ((*x.borrow()) <= 100) {
+            __do_while = false;
             (*x.borrow_mut()) += 1;
             (*x.borrow_mut()) += 1;
-            if !((*x.borrow()) <= 100) {
-                break;
-            }
         }
         (*x.borrow_mut()) += 1;
-        if !((*x.borrow()) <= 200) {
-            break;
-        }
     }
     return (*x.borrow());
 }

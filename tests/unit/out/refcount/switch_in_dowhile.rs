@@ -10,7 +10,9 @@ pub fn switch_in_dowhile_0(n: i32) -> i32 {
     let n: Value<i32> = Rc::new(RefCell::new(n));
     let r: Value<i32> = Rc::new(RefCell::new(0));
     let i: Value<i32> = Rc::new(RefCell::new(0));
-    'loop_: loop {
+    let mut __do_while = true;
+    'loop_: while __do_while || ((*i.borrow()) < (*n.borrow())) {
+        __do_while = false;
         'switch: {
             let __match_cond = (*i.borrow());
             match __match_cond {
@@ -29,9 +31,6 @@ pub fn switch_in_dowhile_0(n: i32) -> i32 {
             }
         };
         (*i.borrow_mut()).prefix_inc();
-        if !((*i.borrow()) < (*n.borrow())) {
-            break;
-        }
     }
     return (*r.borrow());
 }
