@@ -107,7 +107,12 @@ impl GotoStateMachine {
 
 impl StateMachine for GotoStateMachine {
     fn emit(self) -> TokenStream2 {
-        let StateMachineNames { label: lbl, state: s, break_flag, cont_flag } = self.names;
+        let StateMachineNames {
+            label: lbl,
+            state: s,
+            break_flag,
+            cont_flag,
+        } = self.names;
 
         let n = self.arms.len();
         let mut arms_have_break = false;
@@ -118,6 +123,17 @@ impl StateMachine for GotoStateMachine {
             .enumerate()
             .map(|(i, arm)| {
                 let mut body = arm.body.clone();
+                GotoRewriter {
+                    map: &self
+                        .arms
+                        .iter()
+                        .enumerate()
+                        .map(|(i, a)| (a.label.clone(), i as u32))
+                        .collect(),
+                    state: s.clone(),
+                    sm_label: lbl.clone(),
+                }
+                .visit_expr_mut(&mut body);
                 let (had_br, had_cn) =
                     Self::propagate_rewrite(&mut body, &lbl, &break_flag, &cont_flag);
                 arms_have_break |= had_br;
@@ -145,6 +161,58 @@ impl StateMachine for GotoStateMachine {
             #brk_bailout
             #cnt_bailout
         }}
+    }
+}
+
+// Rewrites `goto!('label)` into `{ __s = <target index>; continue '__sm; }`.
+struct GotoRewriter<'a> {
+    // Map with labels and their indices inside the current state machine. Used to check if the
+    // label the goto jumps to is part of the current state machine. If it is, emit
+    // `__s = map[label]`
+    map: &'a HashMap<String, u32>,
+    state: Ident,
+    sm_label: Lifetime,
+}
+
+impl GotoRewriter<'_> {
+    fn expand_goto_into_state_machine_jump(&self, tokens: &TokenStream2) -> Option<Expr> {
+        let idx = *self.map.get(
+            &syn::parse2::<Lifetime>(tokens.clone())
+                .expect("goto! expects a lifetime label")
+                .ident
+                .to_string(),
+        )?;
+        let state = &self.state;
+        let sm_label = &self.sm_label;
+        Some(parse_quote!({ #state = #idx; continue #sm_label; }))
+    }
+
+    fn recurse_into_inner_goto_block(&mut self, mac: &mut syn::Macro) -> bool {
+        if mac.path.is_ident("switch") || mac.path.is_ident("goto_block") {
+            if let Ok(mut inner) = syn::parse2::<Expr>(mac.tokens.clone()) {
+                self.visit_expr_mut(&mut inner);
+                mac.tokens = quote!(#inner);
+            }
+            return true;
+        }
+        false
+    }
+}
+
+impl VisitMut for GotoRewriter<'_> {
+    fn visit_stmt_mut(&mut self, stmt: &mut Stmt) {
+        if let Stmt::Macro(sm) = stmt {
+            if sm.mac.path.is_ident("goto") {
+                if let Some(jump) = self.expand_goto_into_state_machine_jump(&sm.mac.tokens) {
+                    *stmt = Stmt::Expr(jump, Some(Default::default()));
+                }
+                return;
+            }
+            if self.recurse_into_inner_goto_block(&mut sm.mac) {
+                return;
+            }
+        }
+        visit_mut::visit_stmt_mut(self, stmt);
     }
 }
 

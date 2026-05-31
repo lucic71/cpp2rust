@@ -6,7 +6,7 @@ use proc_macro2::Span;
 use syn::parse::{Parse, ParseStream};
 use syn::{Block, Expr, ExprBlock, Lifetime, Stmt, parse_macro_input};
 
-use crate::state_machine::{Arm, GotoStateMachine, StateMachineNames, StateMachine};
+use crate::state_machine::{Arm, GotoStateMachine, StateMachine, StateMachineNames};
 
 pub fn expand(input: TokenStream) -> TokenStream {
     let GotoBlockInput { arms } = parse_macro_input!(input as GotoBlockInput);

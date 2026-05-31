@@ -6,7 +6,7 @@ use syn::parse::{Parse, ParseStream};
 use syn::{Expr, Pat, parse_macro_input};
 
 use crate::state_machine::{
-    Arm, DispatchCase, GotoStateMachine, StateMachineNames, StateMachine, SwitchStateMachine,
+    Arm, DispatchCase, GotoStateMachine, StateMachine, StateMachineNames, SwitchStateMachine,
 };
 
 pub fn expand(input: TokenStream) -> TokenStream {
