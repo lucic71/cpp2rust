@@ -229,7 +229,6 @@ fn switch_nested_loop_break_targets_inner() {
 
 #[test]
 fn switch_return_from_case() {
-    #[allow(unreachable_code)]
     fn classify(x: i32) -> &'static str {
         switch!(match x {
             0 => {
@@ -242,7 +241,7 @@ fn switch_return_from_case() {
                 return "other";
             }
         });
-        "unreachable"
+        panic!("ub: non-void function does not return a value");
     }
     assert_eq!(classify(0), "zero");
     assert_eq!(classify(1), "one");
@@ -285,7 +284,6 @@ fn goto_block_linear_fallthrough() {
 
 #[test]
 fn goto_block_return_from_arm() {
-    #[allow(unreachable_code)]
     fn run(start: u32) -> &'static str {
         goto_block!({
             'a: {
@@ -302,7 +300,7 @@ fn goto_block_return_from_arm() {
                 return "c";
             }
         });
-        "fallthrough"
+        panic!("ub: non-void function does not return a value");
     }
     assert_eq!(run(0), "a");
     assert_eq!(run(1), "b");
@@ -347,8 +345,7 @@ fn goto_block_local_visible_across_label() {
                 return ret;
             }
         });
-        #[allow(unreachable_code)]
-        0
+        panic!("ub: non-void function does not return a value");
     }
     assert_eq!(early(-1), -1);
     assert_eq!(early(5), 100);
@@ -370,8 +367,7 @@ fn goto_block_backward_goto_retry() {
                 return sum;
             }
         });
-        #[allow(unreachable_code)]
-        0
+        panic!("ub: non-void function does not return a value");
     }
     assert_eq!(f(), 6);
 }
@@ -398,8 +394,7 @@ fn goto_block_multi_label_fallthrough() {
                 return ret;
             }
         });
-        #[allow(unreachable_code)]
-        0
+        panic!("ub: non-void function does not return a value");
     }
     assert_eq!(classify(5), 5);
     assert_eq!(classify(0), 0);
@@ -431,8 +426,7 @@ fn goto_block_goto_out_of_switch() {
                 return ret;
             }
         });
-        #[allow(unreachable_code)]
-        0
+        panic!("ub: non-void function does not return a value");
     }
     assert_eq!(sm(0), 11);
     assert_eq!(sm(1), 10);
@@ -460,8 +454,7 @@ fn goto_block_goto_out_of_nested_block() {
                 return ret;
             }
         });
-        #[allow(unreachable_code)]
-        0
+        panic!("ub: non-void function does not return a value");
     }
     assert_eq!(f(1), 1);
     assert_eq!(f(-1), 12);
