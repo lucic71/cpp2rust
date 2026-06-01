@@ -6,11 +6,41 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
+#[derive(Default)]
+pub struct Point {
+    pub x: Value<i32>,
+    pub y: Value<i32>,
+}
+impl ByteRepr for Point {
+    fn to_bytes(&self, buf: &mut [u8]) {
+        (*self.x.borrow()).to_bytes(&mut buf[0..4]);
+        (*self.y.borrow()).to_bytes(&mut buf[4..8]);
+    }
+    fn from_bytes(buf: &[u8]) -> Self {
+        Self {
+            x: Rc::new(RefCell::new(<i32>::from_bytes(&buf[0..4]))),
+            y: Rc::new(RefCell::new(<i32>::from_bytes(&buf[4..8]))),
+        }
+    }
+}
 pub fn agg_0(n: i32) -> i32 {
     let n: Value<i32> = Rc::new(RefCell::new(n));
-    let mut buf: Value<Box<[u8]>> = Rc::new(RefCell::new(
+    let mut buf40: Value<Box<[u8]>> = Rc::new(RefCell::new(
         (0..40).map(|_| <u8>::default()).collect::<Box<[u8]>>(),
     ));
+    let mut buf256: Value<Box<[u8]>> = Rc::new(RefCell::new(
+        (0..256).map(|_| <u8>::default()).collect::<Box<[u8]>>(),
+    ));
+    let mut arr64: Value<Box<[i32]>> = Rc::new(RefCell::new(
+        (0..64).map(|_| <i32>::default()).collect::<Box<[i32]>>(),
+    ));
+    let mut longs: Value<Box<[i64]>> = Rc::new(RefCell::new(
+        (0..33).map(|_| <i64>::default()).collect::<Box<[i64]>>(),
+    ));
+    let mut p: Value<Point> = <Value<Point>>::default();
+    let mut ptr: Value<Ptr<i32>> = Rc::new(RefCell::new(Ptr::<i32>::null()));
+    let mut fp: Value<FnPtr<fn(i32) -> i32>> = Rc::new(RefCell::new(FnPtr::null()));
+    let mut file: Value<Ptr<::std::fs::File>> = Rc::new(RefCell::new(Ptr::null()));
     let mut total: Value<i32> = <Value<i32>>::default();
     goto_block!({
         '__entry: {
@@ -18,17 +48,7 @@ pub fn agg_0(n: i32) -> i32 {
             if ((((*n.borrow()) < 0) as i32) != 0) {
                 goto!('out);
             }
-            {
-                ((buf.as_pointer() as Ptr<u8>) as Ptr<u8>)
-                    .to_any()
-                    .memset((1) as u8, ::std::mem::size_of::<[u8; 40]>() as u64 as usize);
-                ((buf.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any().clone()
-            };
-            let i: Value<i32> = Rc::new(RefCell::new(0));
-            'loop_: while ((((*i.borrow()) < 40) as i32) != 0) {
-                (*total.borrow_mut()) += ((*buf.borrow())[(*i.borrow()) as usize] as i32);
-                (*i.borrow_mut()).postfix_inc();
-            }
+            (*total.borrow_mut()) = 1;
         }
         'out: {
             return (*total.borrow());
@@ -49,9 +69,9 @@ fn main_0() -> i32 {
     );
     assert!(
         (((({
-            let _n: i32 = 2;
+            let _n: i32 = 1;
             agg_0(_n)
-        }) == 40) as i32)
+        }) == 1) as i32)
             != 0)
     );
     return 0;

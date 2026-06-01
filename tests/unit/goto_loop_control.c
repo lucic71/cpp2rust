@@ -1,25 +1,22 @@
 #include <assert.h>
 
-static int loopctl(int n) {
-  int total = 0;
-  for (int i = 0; i < n; i++) {
-    if (i == 2) {
+static int loopctl(void) {
+  int sum = 0;
+  for (int i = 0; i < 5; i++) {
+    if (i == 1) {
       continue;
     }
-    if (i == 5) {
+    if (i == 4) {
       break;
     }
-    if (i % 2 == 0) {
-      goto even;
-    }
-    total += 1;
-  even:
-    total += 10;
+    goto add;
+  add:
+    sum += 1;
   }
-  return total;
+  return sum;
 }
 
 int main(void) {
-  assert(loopctl(10) == 42);
+  assert(loopctl() == 3);
   return 0;
 }

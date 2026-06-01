@@ -6,31 +6,28 @@ use std::collections::BTreeMap;
 use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
-pub unsafe fn loopctl_0(mut n: i32) -> i32 {
-    let mut total: i32 = 0;
+pub unsafe fn loopctl_0() -> i32 {
+    let mut sum: i32 = 0;
     let mut i: i32 = 0;
-    'loop_: while ((((i) < (n)) as i32) != 0) {
+    'loop_: while ((((i) < (5)) as i32) != 0) {
         goto_block!({
             '__entry: {
-                if ((((i) == (2)) as i32) != 0) {
+                if ((((i) == (1)) as i32) != 0) {
                     i.postfix_inc();
                     continue 'loop_;
                 }
-                if ((((i) == (5)) as i32) != 0) {
+                if ((((i) == (4)) as i32) != 0) {
                     break;
                 }
-                if (((((i) % (2)) == (0)) as i32) != 0) {
-                    goto!('even);
-                }
-                total += 1;
+                goto!('add);
             }
-            'even: {
-                total += 10;
+            'add: {
+                sum += 1;
             }
         });
         i.postfix_inc();
     }
-    return total;
+    return sum;
 }
 pub fn main() {
     unsafe {
@@ -38,12 +35,6 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    assert!(
-        ((((unsafe {
-            let _n: i32 = 10;
-            loopctl_0(_n)
-        }) == (42)) as i32)
-            != 0)
-    );
+    assert!(((((unsafe { loopctl_0() }) == (3)) as i32) != 0));
     return 0;
 }
