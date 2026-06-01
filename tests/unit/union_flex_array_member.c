@@ -1,4 +1,4 @@
-// no-compile
+// no-compile: refcount
 #include <assert.h>
 #include <stddef.h>
 #include <stdint.h>
@@ -7,6 +7,7 @@
 
 struct node {
   size_t len;
+  size_t pos;
   union {
     uint8_t bytes[1];
     void *aligner;
@@ -29,6 +30,12 @@ int main(void) {
   assert(*p == 10);
   *p = 0xAA;
   assert(n->x.bytes[10] == 0xAA);
+
+  n->pos = 20;
+  uint8_t *q = &n->x.bytes[n->pos];
+  assert(*q == 20);
+  *q = 0xBB;
+  assert(*q == 0xBB);
 
   free(n);
   return 0;
