@@ -443,6 +443,9 @@ protected:
   virtual void ConvertArraySubscript(clang::Expr *base, clang::Expr *idx,
                                      clang::QualType type);
 
+  void EmitFlexibleArrayElementPtr(clang::Expr *array, clang::Expr *idx,
+                                   bool is_mut);
+
   virtual void ConvertAssignment(clang::Expr *lhs, clang::Expr *rhs,
                                  std::string_view assign_operator);
 

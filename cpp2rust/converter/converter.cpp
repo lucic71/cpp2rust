@@ -5,6 +5,7 @@
 
 #include <clang/AST/APValue.h>
 #include <clang/AST/ParentMapContext.h>
+#include <clang/Basic/LangOptions.h>
 #include <clang/Basic/SourceManager.h>
 #include <llvm/ADT/DenseMap.h>
 #include <llvm/Support/ConvertUTF.h>
@@ -3421,8 +3422,42 @@ void Converter::ConvertPointerOffset(clang::Expr *base, clang::Expr *idx,
   computed_expr_type_ = ComputedExprType::FreshPointer;
 }
 
+static bool IsFlexibleArrayMemberAccess(clang::ASTContext &ctx,
+                                        clang::Expr *array) {
+  return array->isFlexibleArrayMemberLike(
+      ctx, clang::LangOptions::StrictFlexArraysLevelKind::OneZeroOrIncomplete,
+      /*IgnoreTemplateOrMacroSubstitution=*/true);
+}
+
+void Converter::EmitFlexibleArrayElementPtr(clang::Expr *array,
+                                            clang::Expr *idx, bool is_mut) {
+  {
+    PushExplicitAutoref no_autoref(*this, std::nullopt);
+    Convert(array);
+  }
+  StrCat(is_mut ? ".as_mut_ptr()" : ".as_ptr()", ".add");
+  {
+    PushParen call(*this);
+    {
+      PushParen paren(*this);
+      Convert(idx);
+    }
+    StrCat(keyword::kAs, "usize");
+  }
+}
+
 void Converter::ConvertArraySubscript(clang::Expr *base, clang::Expr *idx,
                                       clang::QualType type) {
+  if (auto inner = base->IgnoreImplicit()) {
+    if (inner->getType()->isArrayType() &&
+        IsFlexibleArrayMemberAccess(ctx_, inner)) {
+      PushParen outer(*this);
+      StrCat(token::kStar);
+      EmitFlexibleArrayElementPtr(inner, idx,
+                                  !inner->getType().isConstQualified());
+      return;
+    }
+  }
   if (IsUniquePtr(base->getType())) {
     PushExplicitAutoref no_autoref(*this, std::nullopt);
     Convert(base->IgnoreImplicit());
@@ -3725,6 +3760,19 @@ void Converter::ConvertUnsignedArithBinaryOperator(clang::BinaryOperator *op,
 
 void Converter::ConvertAddrOf(clang::Expr *expr, clang::QualType pointer_type) {
   assert(pointer_type->isPointerType());
+  if (auto ase =
+          clang::dyn_cast<clang::ArraySubscriptExpr>(expr->IgnoreParens())) {
+    auto base = ase->getBase();
+    auto inner = base->IgnoreImplicit();
+    if (base->IgnoreCasts()->getType()->isArrayType() &&
+        IsFlexibleArrayMemberAccess(ctx_, inner)) {
+      EmitFlexibleArrayElementPtr(
+          inner, ase->getIdx(),
+          !pointer_type->getPointeeType().isConstQualified());
+      computed_expr_type_ = ComputedExprType::FreshPointer;
+      return;
+    }
+  }
   if (IsReferenceType(expr) || pointer_type->isFunctionPointerType()) {
     PushExprKind push(*this, ExprKind::AddrOf);
     Convert(expr);
