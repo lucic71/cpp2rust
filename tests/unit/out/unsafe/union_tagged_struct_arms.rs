@@ -7,23 +7,23 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 #[derive(Clone, Copy, PartialEq, Debug, Default)]
-enum Choice {
+enum Choice_enum {
     #[default]
     C_LIST = 1,
     C_LETTERS = 2,
     C_INTEGERS = 3,
 }
-impl From<i32> for Choice {
-    fn from(n: i32) -> Choice {
+impl From<i32> for Choice_enum {
+    fn from(n: i32) -> Choice_enum {
         match n {
-            1 => Choice::C_LIST,
-            2 => Choice::C_LETTERS,
-            3 => Choice::C_INTEGERS,
-            _ => panic!("invalid Choice value: {}", n),
+            1 => Choice_enum::C_LIST,
+            2 => Choice_enum::C_LETTERS,
+            3 => Choice_enum::C_INTEGERS,
+            _ => panic!("invalid Choice_enum value: {}", n),
         }
     }
 }
-libcc2rs::impl_enum_inc_dec!(Choice);
+libcc2rs::impl_enum_inc_dec!(Choice_enum);
 #[repr(C)]
 #[derive(Copy, Clone, Default)]
 pub struct anon_1 {
@@ -63,7 +63,7 @@ impl Default for anon_0 {
 #[repr(C)]
 #[derive(Copy, Clone, Default)]
 pub struct Branch {
-    pub choice: Choice,
+    pub choice: Choice_enum,
     pub index: i32,
     pub v: anon_0,
 }
@@ -81,7 +81,7 @@ unsafe fn main_0() -> i32 {
         ]
     };;
     let mut p_list: Branch = <Branch>::default();
-    p_list.choice = Choice::C_LIST;
+    p_list.choice = Choice_enum::C_LIST;
     p_list.index = 0;
     p_list.v.list.items = items_4.as_mut_ptr();
     p_list.v.list.count = 3_i64;
@@ -93,7 +93,7 @@ unsafe fn main_0() -> i32 {
             != 0)
     );
     let mut p_letters: Branch = <Branch>::default();
-    p_letters.choice = Choice::C_LETTERS;
+    p_letters.choice = Choice_enum::C_LETTERS;
     p_letters.index = 1;
     p_letters.v.letters.lo = ('a' as i32);
     p_letters.v.letters.hi = ('z' as i32);
@@ -101,7 +101,7 @@ unsafe fn main_0() -> i32 {
     p_letters.v.letters.step = 1_u8;
     assert!((((((p_letters.v.letters.hi) - (p_letters.v.letters.lo)) == (25)) as i32) != 0));
     let mut p_integers: Branch = <Branch>::default();
-    p_integers.choice = Choice::C_INTEGERS;
+    p_integers.choice = Choice_enum::C_INTEGERS;
     p_integers.index = 2;
     p_integers.v.integers.lo = 1_i64;
     p_integers.v.integers.hi = 100_i64;
