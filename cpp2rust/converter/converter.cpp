@@ -1554,8 +1554,12 @@ Converter::CallInfo Converter::CollectCallInfo(clang::CallExpr *expr) {
       function ? function->getNumParams() : proto->getNumParams();
   info.is_variadic = function ? function->isVariadic() : proto->isVariadic();
   info.is_fn_ptr_call = !function;
-  info.is_libc_passthrough =
-      decl && ctx_.getSourceManager().isInSystemHeader(decl->getLocation());
+  info.is_libc_passthrough = false;
+  if (auto tgt_ir = Mapper::GetExprRule(GetCalleeOrExpr(expr))) {
+    if (tgt_ir->body.empty() && tgt_ir->is_variadic) {
+      info.is_libc_passthrough = true;
+    }
+  }
 
   for (unsigned i = 0; i < num_named_params && i < num_args; ++i) {
     auto *arg = expr->getArg(i + arg_begin);
