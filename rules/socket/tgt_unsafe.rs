@@ -60,3 +60,7 @@ unsafe fn f14(a0: i32, a1: *mut ::libc::sockaddr, a2: *mut u32) -> i32 {
 unsafe fn f15(a0: i32, a1: *mut ::libc::sockaddr, a2: *mut u32, a3: i32) -> i32 {
     libc::accept4(a0, a1, a2, a3)
 }
+
+unsafe fn f16(a0: i32, a1: *const ::libc::sockaddr, a2: u32) -> i32 {
+    libc::bind(a0, a1, a2)
+}

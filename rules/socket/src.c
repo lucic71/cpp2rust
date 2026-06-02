@@ -65,3 +65,7 @@ int f15(int sockfd, struct sockaddr *addr, socklen_t *addrlen, int flags) {
   return accept4(sockfd, addr, addrlen, flags);
 }
 #endif
+
+int f16(int sockfd, const struct sockaddr *addr, socklen_t addrlen) {
+  return bind(sockfd, addr, addrlen);
+}

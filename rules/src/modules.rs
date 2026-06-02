@@ -42,6 +42,8 @@ pub mod errno_tgt_unsafe;
 pub mod fstream_tgt_refcount;
 #[path = r#"../fstream/tgt_unsafe.rs"#]
 pub mod fstream_tgt_unsafe;
+#[path = r#"../ifaddrs/tgt_unsafe.rs"#]
+pub mod ifaddrs_tgt_unsafe;
 #[path = r#"../initializer_list/tgt_unsafe.rs"#]
 pub mod initializer_list_tgt_unsafe;
 #[path = r#"../iomanip/tgt_unsafe.rs"#]
