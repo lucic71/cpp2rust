@@ -1728,7 +1728,7 @@ std::string Converter::GetEscapedCharLiteral(char character) const {
     return "\\0";
   }
   auto uc = static_cast<unsigned char>(character);
-  if (uc < 0x20 || uc == 0x7F) {
+  if (uc < 0x20 || uc >= 0x7F) {
     return std::format("\\x{:02x}", uc);
   }
   return std::string(1, character);
