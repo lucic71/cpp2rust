@@ -37,12 +37,12 @@ fn main_0() -> i32 {
             mixed_args_0(
                 _count,
                 &[
-                    0.into(),
-                    10.into(),
-                    1.into(),
+                    (0).into(),
+                    (10).into(),
+                    (1).into(),
                     (x.as_pointer()).into(),
-                    0.into(),
-                    20.into(),
+                    (0).into(),
+                    (20).into(),
                 ],
             )
         }) == 130) as i32)
@@ -52,14 +52,14 @@ fn main_0() -> i32 {
     assert!(
         (((({
             let _count: i32 = 1;
-            mixed_args_0(_count, &[1.into(), (y.as_pointer()).into()])
+            mixed_args_0(_count, &[(1).into(), (y.as_pointer()).into()])
         }) == 50) as i32)
             != 0)
     );
     assert!(
         (((({
             let _count: i32 = 2;
-            mixed_args_0(_count, &[0.into(), 5.into(), 0.into(), 3.into()])
+            mixed_args_0(_count, &[(0).into(), (5).into(), (0).into(), (3).into()])
         }) == 8) as i32)
             != 0)
     );

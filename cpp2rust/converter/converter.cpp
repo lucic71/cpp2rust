@@ -1487,7 +1487,6 @@ std::optional<std::string> Converter::TryPluginConvert(clang::CallExpr *call) {
 }
 
 void Converter::ConvertVariadicArg(clang::Expr *arg) {
-  PushParen p(*this);
   if (arg->getType()->isFunctionPointerType()) {
     Convert(arg);
     StrCat(".map_or(::std::ptr::null_mut(), |f| f as *mut ::libc::c_void)");
@@ -1706,7 +1705,10 @@ void Converter::ConvertGenericCallExpr(clang::CallExpr *expr) {
       StrCat("& [");
       for (unsigned i = num_named_params; i < num_args; ++i) {
         auto *arg = expr->getArg(i + arg_begin);
-        ConvertVariadicArg(arg);
+        {
+          PushParen p(*this);
+          ConvertVariadicArg(arg);
+        }
         StrCat(".into()", token::kComma);
       }
       StrCat(']');

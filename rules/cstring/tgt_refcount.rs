@@ -21,3 +21,7 @@ fn f4(a0: AnyPtr, a1: AnyPtr, a2: usize) -> AnyPtr {
     a0.memcpy(&a1, a2 as usize);
     a0.clone()
 }
+
+unsafe fn f7(a0: Ptr<u8>) -> u64 {
+    a0.to_string_iterator().count() as u64
+}

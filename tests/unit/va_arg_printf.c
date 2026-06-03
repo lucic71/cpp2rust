@@ -1,5 +1,6 @@
 #include <assert.h>
 #include <stdarg.h>
+#include <string.h>
 
 int logf_impl(const char *fmt, va_list ap) {
   (void)fmt;
@@ -15,7 +16,8 @@ int logf(const char *fmt, ...) {
 }
 
 int main() {
-  assert(logf("hello %d %d", 10, 32) == 42);
+  const char *dummy = "dummy";
+  assert(logf("hello %d %d", 10, strlen(dummy)) == 15);
   assert(logf("x %d %d", 1, 2) == 3);
   return 0;
 }
