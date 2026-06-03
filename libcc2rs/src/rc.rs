@@ -940,9 +940,10 @@ impl fmt::Display for Ptr<u8> {
     }
 }
 
+type StringLiteralMap = HashMap<&'static [u8], Rc<RefCell<Vec<u8>>>>;
+
 thread_local! {
-    static STRING_LITERALS: RefCell<HashMap<&'static str, Rc<RefCell<Vec<u8>>>>> =
-        RefCell::new(HashMap::new());
+    static STRING_LITERALS: RefCell<StringLiteralMap> = RefCell::new(HashMap::new());
 }
 
 impl Ptr<u8> {
@@ -1020,12 +1021,12 @@ impl Ptr<u8> {
     }
 
     #[inline]
-    pub fn from_string_literal(s: &'static str) -> Self {
+    pub fn from_string_literal(s: &'static [u8]) -> Self {
         STRING_LITERALS.with(|literals| {
             let mut literals = literals.borrow_mut();
             let weak = Rc::downgrade(literals.entry(s).or_insert_with(|| {
                 Rc::new(RefCell::new({
-                    let mut v = s.as_bytes().to_vec();
+                    let mut v = s.to_vec();
                     v.push(0);
                     v
                 }))

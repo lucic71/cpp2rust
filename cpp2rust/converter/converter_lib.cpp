@@ -246,6 +246,15 @@ bool IsCallToOstream(clang::CallExpr *expr) {
   return false;
 }
 
+bool IsAsciiStringLiteral(const clang::StringLiteral *str) {
+  for (unsigned char c : str->getString()) {
+    if (c > 0x7F) {
+      return false;
+    }
+  }
+  return true;
+}
+
 std::vector<clang::CXXConstructorDecl *>
 GetTemplateInstantiatedCtors(clang::CXXRecordDecl *decl) {
   std::vector<clang::CXXConstructorDecl *> out;

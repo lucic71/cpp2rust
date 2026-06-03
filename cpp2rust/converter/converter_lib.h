@@ -65,6 +65,8 @@ bool IsUniquePtr(clang::QualType type);
 
 bool IsCallToOstream(clang::CallExpr *expr);
 
+bool IsAsciiStringLiteral(const clang::StringLiteral *str);
+
 std::vector<clang::CXXConstructorDecl *>
 GetTemplateInstantiatedCtors(clang::CXXRecordDecl *decl);
 

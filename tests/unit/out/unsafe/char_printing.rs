@@ -54,8 +54,33 @@ unsafe fn main_0() -> i32 {
                 .unwrap()
                 .into_raw_fd(),
         ),
-        "0x{:x} açordas?\nSim, 0x{:x}.\n",
+        "0x{:x}",
         27,
+    );
+    std::fs::File::from_raw_fd(
+        std::io::stdout()
+            .as_fd()
+            .try_clone_to_owned()
+            .unwrap()
+            .into_raw_fd(),
+    )
+    .write_all(
+        &([
+            (b" a\xc3\xa7ordas?" as &[u8]),
+            (&[('\n' as u8)] as &[u8]),
+            (b"Sim, 0x" as &[u8]),
+        ]
+        .concat()),
+    );
+    write!(
+        std::fs::File::from_raw_fd(
+            std::io::stdout()
+                .as_fd()
+                .try_clone_to_owned()
+                .unwrap()
+                .into_raw_fd(),
+        ),
+        "{:x}.\n",
         i,
     );
     write!(

@@ -1332,7 +1332,11 @@ bool Converter::GetFmtArg(clang::Expr *arg, std::string &fmt,
                           std::string &fmt_args, const char *&fmt_trait,
                           std::string &fmt_width) {
   std::string arg_str = Mapper::ToString(arg);
-  if (clang::isa<clang::StringLiteral>(arg->IgnoreImplicit())) {
+  if (auto *str_lit =
+          clang::dyn_cast<clang::StringLiteral>(arg->IgnoreImplicit())) {
+    if (!IsAsciiStringLiteral(str_lit)) {
+      return false;
+    }
     auto str = GetEscapedStringLiteral(arg);
     std::string_view trim(str);
     // Delete " from string
@@ -1373,6 +1377,8 @@ bool Converter::GetRawArg(clang::Expr *arg, std::string &raw_args) {
     raw_args += "(&(" + str + ")[..(" + str + ").len() - 1]";
   } else if (Mapper::ToString(arg).contains("std::endl")) {
     raw_args += "(&[b'\\n']";
+  } else if (clang::isa<clang::StringLiteral>(arg->IgnoreImplicit())) {
+    raw_args += "(b" + GetEscapedStringLiteral(arg);
   } else {
     return false;
   }
@@ -1774,8 +1780,9 @@ bool Converter::VisitFloatingLiteral(clang::FloatingLiteral *expr) {
 }
 
 bool Converter::VisitCharacterLiteral(clang::CharacterLiteral *expr) {
+  auto uc = static_cast<unsigned char>(expr->getValue());
   std::string ch = GetEscapedCharLiteral(expr->getValue());
-  ch = "'" + std::move(ch) + "'";
+  ch = (uc > 0x7F ? "b'" : "'") + std::move(ch) + '\'';
   {
     PushParen paren(*this);
     StrCat(ch, keyword::kAs, ToStringBase(expr->getType()));
@@ -1802,7 +1809,7 @@ std::string Converter::GetEscapedCharLiteral(char character) const {
     return "\\0";
   }
   auto uc = static_cast<unsigned char>(character);
-  if (uc < 0x20 || uc == 0x7F) {
+  if (uc < 0x20 || uc >= 0x7F) {
     return std::format("\\x{:02x}", uc);
   }
   return std::string(1, character);

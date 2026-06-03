@@ -1044,7 +1044,7 @@ bool ConverterRefCount::VisitStringLiteral(clang::StringLiteral *expr) {
                        GetEscapedStringLiteral(expr, pad)));
     return false;
   }
-  StrCat(GetEscapedStringLiteral(expr));
+  StrCat(std::format("b{}", GetEscapedStringLiteral(expr, 0)));
   return false;
 }
 
