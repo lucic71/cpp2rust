@@ -103,15 +103,16 @@ fn f20(a0: Ptr<u8>, a1: usize) -> Ptr<u8> {
     a0.offset(a1 as isize)
 }
 
-fn f21(a0: &mut Vec<u8>, a1: usize, a2: u8) -> &Vec<u8> {
+// TODO: This should return a0
+fn f21(a0: &mut Vec<u8>, a1: usize, a2: u8) -> Vec<u8> {
     a0.pop();
-    a0.resize(a0.len() + a1, a2);
+    a0.resize(a0.len() + (a1) as usize, a2);
     a0.push(0);
-    a0
+    a0.clone()
 }
 
 fn f26(a0: Ptr<Vec<u8>>, a1: usize) -> Ptr<u8> {
-    if a1 >= (*a0.upgrade().deref()).len().saturating_sub(1) {
+    if a1 as usize >= (*a0.upgrade().deref()).len().saturating_sub(1) {
         panic!("out of bounds access")
     } else {
         (a0.to_strong().as_pointer() as Ptr<u8>).offset(a1 as isize)
