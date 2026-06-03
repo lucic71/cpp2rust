@@ -674,13 +674,13 @@ pub struct CStringIterator {
 impl Iterator for CStringIterator {
     type Item = u8;
     fn next(&mut self) -> Option<Self::Item> {
-        let ch = self.ptr.read();
         // read until the null terminator
-        if ch != 0 {
-            self.ptr += 1;
-            Some(ch)
-        } else {
-            None
+        match self.ptr.read() {
+            0 => None,
+            ch => {
+                self.ptr += 1;
+                Some(ch)
+            }
         }
     }
 }
