@@ -32,10 +32,10 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let dummy: Value<Ptr<u8>> = Rc::new(RefCell::new(Ptr::from_string_literal("dummy")));
+    let dummy: Value<Ptr<u8>> = Rc::new(RefCell::new(Ptr::from_string_literal(b"dummy")));
     assert!(
         (((({
-            let _fmt: Ptr<u8> = Ptr::from_string_literal("hello %d %d");
+            let _fmt: Ptr<u8> = Ptr::from_string_literal(b"hello %d %d");
             logf_1(
                 _fmt,
                 &[
@@ -48,7 +48,7 @@ fn main_0() -> i32 {
     );
     assert!(
         (((({
-            let _fmt: Ptr<u8> = Ptr::from_string_literal("x %d %d");
+            let _fmt: Ptr<u8> = Ptr::from_string_literal(b"x %d %d");
             logf_1(_fmt, &[(1).into(), (2).into()])
         }) == 3) as i32)
             != 0)
