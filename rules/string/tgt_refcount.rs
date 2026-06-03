@@ -10,7 +10,8 @@ fn t2() -> Ptr<u8> {
 }
 
 fn f1(a0: Vec<u8>, a1: usize, a2: usize) -> Vec<u8> {
-    let mut __tmp1 = a0[(a1) as usize..::std::cmp::min((a1 + a2) as usize, a0.len().saturating_sub(1))].to_vec();
+    let mut __tmp1 =
+        a0[(a1) as usize..::std::cmp::min((a1 + a2) as usize, a0.len().saturating_sub(1))].to_vec();
     __tmp1.push(0);
     __tmp1
 }
@@ -63,7 +64,10 @@ fn f12(a0: Ptr<u8>) -> Ptr<u8> {
 
 fn f14(a0: Ptr<Vec<u8>>, a1: usize, a2: usize, a3: Ptr<u8>, a4: usize) -> Ptr<Vec<u8>> {
     let pos = a1 as usize;
-    let end = std::cmp::min(pos + a2 as usize, (*a0.upgrade().deref()).len().saturating_sub(1));
+    let end = std::cmp::min(
+        pos + a2 as usize,
+        (*a0.upgrade().deref()).len().saturating_sub(1),
+    );
     a0.with_mut(|__v: &mut Vec<u8>| {
         __v.splice(pos..end, a3.map(|c| c.read()).take((a4) as usize));
     });
