@@ -67,6 +67,8 @@ bool IsCallToOstream(clang::CallExpr *expr);
 
 bool IsAsciiStringLiteral(const clang::StringLiteral *str);
 
+bool IsInitExprOfStringLiteral(const clang::InitListExpr *expr);
+
 std::vector<clang::CXXConstructorDecl *>
 GetTemplateInstantiatedCtors(clang::CXXRecordDecl *decl);
 

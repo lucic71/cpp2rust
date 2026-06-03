@@ -1397,6 +1397,12 @@ bool ConverterRefCount::VisitInitListExpr(clang::InitListExpr *expr) {
     return false;
   }
 
+  if (IsInitExprOfStringLiteral(expr)) {
+    Convert(expr->getInit(0)->IgnoreParenImpCasts());
+    computed_expr_type_ = ComputedExprType::FreshValue;
+    return false;
+  }
+
   auto conv = getConversionKind();
   // 2D arrays are FullRefCount'ed on the second level as well.
   PushConversionKind push(

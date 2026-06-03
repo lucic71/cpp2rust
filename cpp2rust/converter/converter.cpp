@@ -2758,12 +2758,8 @@ bool Converter::VisitInitListExpr(clang::InitListExpr *expr) {
       StrCat(token::kComma);
     }
   } else {
-    if (expr->getNumInits() == 1 && qual_type->isArrayType() &&
-        qual_type->getArrayElementTypeNoTypeQual()->isCharType() &&
-        clang::isa<clang::StringLiteral>(
-            expr->getInit(0)->IgnoreParenImpCasts())) {
-      auto *init = expr->getInit(0);
-      ConvertVarInit(init->getType(), init);
+    if (IsInitExprOfStringLiteral(expr)) {
+      Convert(expr->getInit(0)->IgnoreParenImpCasts());
       return false;
     }
     PushBracket bracket(*this);

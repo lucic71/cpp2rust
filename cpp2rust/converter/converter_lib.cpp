@@ -255,6 +255,14 @@ bool IsAsciiStringLiteral(const clang::StringLiteral *str) {
   return true;
 }
 
+bool IsInitExprOfStringLiteral(const clang::InitListExpr *expr) {
+  auto type = expr->getType();
+  return expr->getNumInits() == 1 && type->isArrayType() &&
+         type->getArrayElementTypeNoTypeQual()->isCharType() &&
+         clang::isa<clang::StringLiteral>(
+             expr->getInit(0)->IgnoreParenImpCasts());
+}
+
 std::vector<clang::CXXConstructorDecl *>
 GetTemplateInstantiatedCtors(clang::CXXRecordDecl *decl) {
   std::vector<clang::CXXConstructorDecl *> out;
