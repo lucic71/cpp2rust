@@ -358,6 +358,31 @@ std::string GetID(const clang::Decl *decl) {
   return GetLocationID(decl) + GetParamSignature(decl);
 }
 
+std::string DisambiguateAnonymousTag(const clang::TagDecl *tag) {
+  if (!tag) {
+    return "";
+  }
+  // C++ does not allow collision between tags and typedef identifiers.
+  if (tag->getASTContext().getLangOpts().CPlusPlus) {
+    return "";
+  }
+  // Tag has an identifier, nothing to disambiguate.
+  if (tag->getIdentifier()) {
+    return "";
+  }
+  // The anonymous decl is named through a typedef; guards getName() below.
+  auto typedef_decl = tag->getTypedefNameForAnonDecl();
+  if (!typedef_decl || !typedef_decl->getDeclName().isIdentifier()) {
+    return "";
+  }
+  // Only disambiguate user-defined types.
+  if (tag->getASTContext().getSourceManager().isInSystemHeader(
+          tag->getLocation())) {
+    return "";
+  }
+  return typedef_decl->getName().str() + '_' + tag->getKindName().str();
+}
+
 static std::unordered_map<std::string, size_t> type_mapping;
 
 static size_t GetDeclId(const clang::NamedDecl *decl, bool internal) {

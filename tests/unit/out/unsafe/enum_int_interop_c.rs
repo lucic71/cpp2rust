@@ -45,23 +45,23 @@ impl From<i32> for Option {
 }
 libcc2rs::impl_enum_inc_dec!(Option);
 #[derive(Clone, Copy, PartialEq, Debug, Default)]
-enum Tag {
+enum Tag_enum {
     #[default]
     TAG_ZERO = 0,
     TAG_ONE = 1,
     TAG_TWO = 2,
 }
-impl From<i32> for Tag {
-    fn from(n: i32) -> Tag {
+impl From<i32> for Tag_enum {
+    fn from(n: i32) -> Tag_enum {
         match n {
-            0 => Tag::TAG_ZERO,
-            1 => Tag::TAG_ONE,
-            2 => Tag::TAG_TWO,
-            _ => panic!("invalid Tag value: {}", n),
+            0 => Tag_enum::TAG_ZERO,
+            1 => Tag_enum::TAG_ONE,
+            2 => Tag_enum::TAG_TWO,
+            _ => panic!("invalid Tag_enum value: {}", n),
         }
     }
 }
-libcc2rs::impl_enum_inc_dec!(Tag);
+libcc2rs::impl_enum_inc_dec!(Tag_enum);
 #[repr(C)]
 #[derive(Copy, Clone, Default)]
 pub struct Entry {
@@ -71,7 +71,7 @@ pub struct Entry {
 }
 pub static mut global_color_0: Color = unsafe { Color::GREEN };
 pub static mut global_opt_1: Option = unsafe { Option::OPT_B };
-pub static mut global_tag_2: Tag = unsafe { Tag::TAG_TWO };
+pub static mut global_tag_2: Tag_enum = unsafe { Tag_enum::TAG_TWO };
 pub static mut entries_3: [Entry; 3] = unsafe {
     [
         Entry {
@@ -186,17 +186,17 @@ unsafe fn main_0() -> i32 {
         classify_option_5(_option)
     });
     assert!(((((rc) == (3)) as i32) != 0));
-    let mut t: Tag = Tag::TAG_ONE;
+    let mut t: Tag_enum = Tag_enum::TAG_ONE;
     assert!(((((t as u32) == (1_u32)) as i32) != 0));
-    assert!(((((t as u32) == ((Tag::TAG_ONE as i32) as u32)) as i32) != 0));
+    assert!(((((t as u32) == ((Tag_enum::TAG_ONE as i32) as u32)) as i32) != 0));
     let mut ti: i32 = (t as i32);
     assert!(((((ti) == (1)) as i32) != 0));
-    t = Tag::from(2);
-    assert!(((((t as u32) == ((Tag::TAG_TWO as i32) as u32)) as i32) != 0));
+    t = Tag_enum::from(2);
+    assert!(((((t as u32) == ((Tag_enum::TAG_TWO as i32) as u32)) as i32) != 0));
     'switch: {
         let __match_cond = (t as u32);
         match __match_cond {
-            v if v == ((Tag::TAG_ZERO as i32) as u32) => {
+            v if v == ((Tag_enum::TAG_ZERO as i32) as u32) => {
                 return 90;
             }
             v if v == (1 as u32) => {
@@ -212,7 +212,7 @@ unsafe fn main_0() -> i32 {
     assert!(((((extra) == (((0) + (1)) + (2))) as i32) != 0));
     assert!(((((global_color_0 as u32) == ((Color::GREEN as i32) as u32)) as i32) != 0));
     assert!(((((global_opt_1 as u32) == ((Option::OPT_B as i32) as u32)) as i32) != 0));
-    assert!(((((global_tag_2 as u32) == ((Tag::TAG_TWO as i32) as u32)) as i32) != 0));
+    assert!(((((global_tag_2 as u32) == ((Tag_enum::TAG_TWO as i32) as u32)) as i32) != 0));
     assert!(
         ((((entries_3[(0) as usize].color as u32) == ((Color::RED as i32) as u32)) as i32) != 0)
     );

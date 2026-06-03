@@ -736,6 +736,11 @@ std::string ToString(clang::QualType qual_type) {
     return ToString(clang::cast<clang::NamedDecl>(tag));
   }
 
+  if (auto renamed = DisambiguateAnonymousTag(qual_type->getAsTagDecl());
+      !renamed.empty()) {
+    return renamed;
+  }
+
   std::string type;
   llvm::raw_string_ostream os(type);
   normalizeQualType(qual_type).print(os, getPrintPolicy());
@@ -745,16 +750,23 @@ std::string ToString(clang::QualType qual_type) {
 std::string ToString(const clang::NamedDecl *decl) {
   if (auto *record = clang::dyn_cast<clang::RecordDecl>(decl);
       record && !record->getIdentifier()) {
+    if (auto renamed = DisambiguateAnonymousTag(record); !renamed.empty()) {
+      return renamed;
+    }
     if (auto *typedef_decl = record->getTypedefNameForAnonDecl()) {
       return ToString(clang::cast<clang::NamedDecl>(typedef_decl));
     }
     return GetNamedDeclAsString(record);
   }
 
-  if (auto *enum_decl = clang::dyn_cast<clang::EnumDecl>(decl);
-      enum_decl && !enum_decl->getIdentifier() &&
-      !enum_decl->getTypedefNameForAnonDecl()) {
-    return std::format("anon_enum_{}", GetLineNumber(enum_decl));
+  if (auto *enum_decl = clang::dyn_cast<clang::EnumDecl>(decl)) {
+    if (auto renamed = DisambiguateAnonymousTag(enum_decl); !renamed.empty()) {
+      return renamed;
+    }
+    if (!enum_decl->getIdentifier() &&
+        !enum_decl->getTypedefNameForAnonDecl()) {
+      return std::format("anon_enum_{}", GetLineNumber(enum_decl));
+    }
   }
 
   std::string out;
