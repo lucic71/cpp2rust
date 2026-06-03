@@ -34,14 +34,14 @@ unsafe fn main_0() -> i32 {
     assert!(
         ((((unsafe {
             let _count: i32 = 3;
-            outer_1(_count, &[10.into(), 20.into(), 30.into()])
+            outer_1(_count, &[(10).into(), (20).into(), (30).into()])
         }) == (60)) as i32)
             != 0)
     );
     assert!(
         ((((unsafe {
             let _count: i32 = 1;
-            outer_1(_count, &[42.into()])
+            outer_1(_count, &[(42).into()])
         }) == (42)) as i32)
             != 0)
     );

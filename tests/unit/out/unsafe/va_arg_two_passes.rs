@@ -40,7 +40,7 @@ unsafe fn main_0() -> i32 {
     assert!(
         ((((unsafe {
             let _first: i32 = 2;
-            sum_then_product_0(_first, &[3.into(), 4.into(), 0.into()])
+            sum_then_product_0(_first, &[(3).into(), (4).into(), (0).into()])
         }) == (33)) as i32)
             != 0)
     );
