@@ -22,5 +22,9 @@ int main() {
   foo_const("");
   foo_const(immutable_empty);
   foo_const(immutable_empty_arr);
+
+  const char inited_through_init_list[] = {"papanasi cu smantana"};
+  foo_const(inited_through_init_list);
+
   return 0;
 }
