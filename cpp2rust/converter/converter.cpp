@@ -1944,8 +1944,8 @@ bool Converter::VisitImplicitCastExpr(clang::ImplicitCastExpr *expr) {
     }
     bool dest_pointee_const =
         expr->getType()->getPointeeType().isConstQualified();
-    if (const auto *member = clang::dyn_cast<clang::MemberExpr>(
-            sub_expr->IgnoreParenImpCasts());
+    if (const auto *member =
+            clang::dyn_cast<clang::MemberExpr>(sub_expr->IgnoreParenImpCasts());
         member && IsCharArrayFieldFromLibc(member->getMemberDecl())) {
       PushParen paren(*this);
       Convert(sub_expr);
