@@ -16,7 +16,7 @@ impl WOFF2Params {
     pub fn WOFF2Params() -> Self {
         let mut this = Self {
             extended_metadata: Rc::new(RefCell::new(
-                Ptr::from_string_literal("")
+                Ptr::from_string_literal(b"")
                     .to_c_string_iterator()
                     .chain(std::iter::once(0))
                     .collect::<Vec<u8>>(),

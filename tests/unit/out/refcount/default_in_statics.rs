@@ -111,7 +111,7 @@ thread_local!(
 );
 thread_local!(
     pub static static_foo_3: Value<Foo> = Rc::new(RefCell::new(Foo {
-        s1: Rc::new(RefCell::new(Ptr::from_string_literal("hello"))),
+        s1: Rc::new(RefCell::new(Ptr::from_string_literal(b"hello"))),
         s2: Rc::new(RefCell::new(Ptr::<u8>::null())),
         fn1: Rc::new(RefCell::new(FnPtr::null())),
         fn2: Rc::new(RefCell::new(FnPtr::null())),
@@ -121,14 +121,14 @@ thread_local!(
 thread_local!(
     pub static static_foo_array_4: Value<Box<[Foo]>> = Rc::new(RefCell::new(Box::new([
         Foo {
-            s1: Rc::new(RefCell::new(Ptr::from_string_literal("first"))),
+            s1: Rc::new(RefCell::new(Ptr::from_string_literal(b"first"))),
             s2: Rc::new(RefCell::new(Ptr::<u8>::null())),
             fn1: Rc::new(RefCell::new(FnPtr::null())),
             fn2: Rc::new(RefCell::new(FnPtr::null())),
             n: Rc::new(RefCell::new(1)),
         },
         Foo {
-            s1: Rc::new(RefCell::new(Ptr::from_string_literal("second"))),
+            s1: Rc::new(RefCell::new(Ptr::from_string_literal(b"second"))),
             s2: Rc::new(RefCell::new(Ptr::<u8>::null())),
             fn1: Rc::new(RefCell::new(FnPtr::null())),
             fn2: Rc::new(RefCell::new(FnPtr::null())),

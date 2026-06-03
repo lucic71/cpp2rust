@@ -10,8 +10,8 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let fname: Value<Ptr<u8>> = Rc::new(RefCell::new(Ptr::from_string_literal("testfile.txt")));
-    let mode: Value<Ptr<u8>> = Rc::new(RefCell::new(Ptr::from_string_literal("rb")));
+    let fname: Value<Ptr<u8>> = Rc::new(RefCell::new(Ptr::from_string_literal(b"testfile.txt")));
+    let mode: Value<Ptr<u8>> = Rc::new(RefCell::new(Ptr::from_string_literal(b"rb")));
     let file_ptr: Value<Ptr<::std::fs::File>> =
         Rc::new(RefCell::new(match (*mode.borrow()).to_rust_string() {
             v if v == "rb" => std::fs::OpenOptions::new()

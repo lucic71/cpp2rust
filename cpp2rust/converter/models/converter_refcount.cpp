@@ -1023,10 +1023,10 @@ bool ConverterRefCount::VisitStringLiteral(clang::StringLiteral *expr) {
                 : 0;
     }
     StrCat(std::format("Box::<[u8]>::from(b{}.as_slice())",
-                       GetEscapedStringLiteral(expr, pad)));
+                       GetEscapedStringLiteral(expr, pad, true)));
     return false;
   }
-  StrCat(GetEscapedStringLiteral(expr));
+  StrCat(std::format("b{}", GetEscapedStringLiteral(expr, 0, true)));
   return false;
 }
 

@@ -17,29 +17,30 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     let mutable_strings: Value<Box<[Ptr<u8>]>> = Rc::new(RefCell::new(Box::new([
-        Ptr::from_string_literal("a"),
-        Ptr::from_string_literal("b"),
-        Ptr::from_string_literal("c"),
+        Ptr::from_string_literal(b"a"),
+        Ptr::from_string_literal(b"b"),
+        Ptr::from_string_literal(b"c"),
     ])));
     let immutable_strings: Value<Box<[Ptr<u8>]>> = Rc::new(RefCell::new(Box::new([
-        Ptr::from_string_literal("a"),
-        Ptr::from_string_literal("b"),
-        Ptr::from_string_literal("c"),
+        Ptr::from_string_literal(b"a"),
+        Ptr::from_string_literal(b"b"),
+        Ptr::from_string_literal(b"c"),
     ])));
-    let mutable_string: Value<Ptr<u8>> = Rc::new(RefCell::new(Ptr::from_string_literal("hello")));
-    let immutable_string: Value<Ptr<u8>> = Rc::new(RefCell::new(Ptr::from_string_literal("hello")));
+    let mutable_string: Value<Ptr<u8>> = Rc::new(RefCell::new(Ptr::from_string_literal(b"hello")));
+    let immutable_string: Value<Ptr<u8>> =
+        Rc::new(RefCell::new(Ptr::from_string_literal(b"hello")));
     let mutable_string_arr: Value<Box<[u8]>> =
         Rc::new(RefCell::new(Box::<[u8]>::from(b"papanasi\0".as_slice())));
     let immutable_string_arr: Value<Box<[u8]>> =
         Rc::new(RefCell::new(Box::<[u8]>::from(b"papanasi\0".as_slice())));
-    let mutable_empty: Value<Ptr<u8>> = Rc::new(RefCell::new(Ptr::from_string_literal("")));
-    let immutable_empty: Value<Ptr<u8>> = Rc::new(RefCell::new(Ptr::from_string_literal("")));
+    let mutable_empty: Value<Ptr<u8>> = Rc::new(RefCell::new(Ptr::from_string_literal(b"")));
+    let immutable_empty: Value<Ptr<u8>> = Rc::new(RefCell::new(Ptr::from_string_literal(b"")));
     let mutable_empty_arr: Value<Box<[u8]>> =
         Rc::new(RefCell::new(vec![0u8; 1].into_boxed_slice()));
     let immutable_empty_arr: Value<Box<[u8]>> =
         Rc::new(RefCell::new(vec![0u8; 1].into_boxed_slice()));
     ({
-        let _str: Ptr<u8> = Ptr::from_string_literal("world");
+        let _str: Ptr<u8> = Ptr::from_string_literal(b"world");
         foo_mut_0(_str)
     });
     ({
@@ -51,7 +52,7 @@ fn main_0() -> i32 {
         foo_mut_0(_str)
     });
     ({
-        let _str: Ptr<u8> = Ptr::from_string_literal("world");
+        let _str: Ptr<u8> = Ptr::from_string_literal(b"world");
         foo_const_1(_str)
     });
     ({
@@ -71,7 +72,7 @@ fn main_0() -> i32 {
         foo_const_1(_str)
     });
     ({
-        let _str: Ptr<u8> = Ptr::from_string_literal("");
+        let _str: Ptr<u8> = Ptr::from_string_literal(b"");
         foo_const_1(_str)
     });
     ({

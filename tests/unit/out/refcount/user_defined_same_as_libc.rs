@@ -19,8 +19,8 @@ pub fn main() {
 fn main_0() -> i32 {
     let fp: Value<Ptr<::std::fs::File>> = Rc::new(RefCell::new(
         ({
-            let _path: Ptr<u8> = Ptr::from_string_literal("/tmp/irrelevant-file");
-            let _mode: Ptr<u8> = Ptr::from_string_literal("r");
+            let _path: Ptr<u8> = Ptr::from_string_literal(b"/tmp/irrelevant-file");
+            let _mode: Ptr<u8> = Ptr::from_string_literal(b"r");
             fopen_0(_path, _mode)
         }),
     ));
