@@ -1707,9 +1707,8 @@ bool Converter::VisitFloatingLiteral(clang::FloatingLiteral *expr) {
 
 bool Converter::VisitCharacterLiteral(clang::CharacterLiteral *expr) {
   auto uc = static_cast<unsigned char>(expr->getValue());
-  std::string ch = uc > 0x7F
-                       ? std::format("'\\u{{{:x}}}'", uc)
-                       : "'" + GetEscapedCharLiteral(expr->getValue()) + "'";
+  std::string ch = GetEscapedCharLiteral(expr->getValue());
+  ch = (uc > 0x7F ? "b'" : "'") + std::move(ch) + "'";
   {
     PushParen paren(*this);
     StrCat(ch, keyword::kAs, ToStringBase(expr->getType()));

@@ -55,7 +55,7 @@ fn main_0() -> i32 {
             124_u8,
             125_u8,
             126_u8,
-            ('\u{ff}' as u8),
+            (b'\xff' as u8),
         ])));
     );
     let i: Value<i32> = Rc::new(RefCell::new(0));
