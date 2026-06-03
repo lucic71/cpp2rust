@@ -2795,6 +2795,10 @@ bool Converter::VisitInitListExpr(clang::InitListExpr *expr) {
       StrCat(token::kComma);
     }
   } else {
+    if (IsInitExprOfStringLiteral(expr)) {
+      Convert(expr->getInit(0)->IgnoreParenImpCasts());
+      return false;
+    }
     PushBracket bracket(*this);
     for (auto *init : expr->inits()) {
       ConvertVarInit(init->getType(), init);
