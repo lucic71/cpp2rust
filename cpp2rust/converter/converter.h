@@ -240,13 +240,12 @@ public:
 
   virtual bool VisitCharacterLiteral(clang::CharacterLiteral *expr);
 
-  std::string GetEscapedCharLiteral(char character,
-                                    bool byte_string = false) const;
+  std::string GetEscapedCharLiteral(char character) const;
 
   std::string GetEscapedUTF8CharLiteral(clang::Expr *expr) const;
 
-  std::string GetEscapedStringLiteral(clang::Expr *expr, uint64_t pad_nulls = 0,
-                                      bool byte_string = false) const;
+  std::string GetEscapedStringLiteral(clang::Expr *expr,
+                                      uint64_t pad_nulls = 0) const;
   virtual bool VisitStringLiteral(clang::StringLiteral *expr);
 
   virtual bool VisitCXXBoolLiteralExpr(clang::CXXBoolLiteralExpr *expr);

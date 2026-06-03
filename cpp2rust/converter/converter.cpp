@@ -1258,7 +1258,11 @@ bool Converter::GetFmtArg(clang::Expr *arg, std::string &fmt,
                           std::string &fmt_args, const char *&fmt_trait,
                           std::string &fmt_width) {
   std::string arg_str = Mapper::ToString(arg);
-  if (clang::isa<clang::StringLiteral>(arg->IgnoreImplicit())) {
+  if (auto *str_lit =
+          clang::dyn_cast<clang::StringLiteral>(arg->IgnoreImplicit())) {
+    if (!IsAsciiStringLiteral(str_lit)) {
+      return false;
+    }
     auto str = GetEscapedStringLiteral(arg);
     std::string_view trim(str);
     // Delete " from string
@@ -1299,6 +1303,8 @@ bool Converter::GetRawArg(clang::Expr *arg, std::string &raw_args) {
     raw_args += "(&(" + str + ")[..(" + str + ").len() - 1]";
   } else if (Mapper::ToString(arg).contains("std::endl")) {
     raw_args += "(&[b'\\n']";
+  } else if (clang::isa<clang::StringLiteral>(arg->IgnoreImplicit())) {
+    raw_args += "(b" + GetEscapedStringLiteral(arg);
   } else {
     return false;
   }
@@ -1712,8 +1718,7 @@ bool Converter::VisitCharacterLiteral(clang::CharacterLiteral *expr) {
   return false;
 }
 
-std::string Converter::GetEscapedCharLiteral(char character,
-                                             bool byte_string) const {
+std::string Converter::GetEscapedCharLiteral(char character) const {
   switch (character) {
   case '"':
     return "\\\"";
@@ -1731,7 +1736,7 @@ std::string Converter::GetEscapedCharLiteral(char character,
     return "\\0";
   }
   auto uc = static_cast<unsigned char>(character);
-  if (uc < 0x20 || uc == 0x7F || (byte_string && uc > 0x7F)) {
+  if (uc < 0x20 || uc >= 0x7F) {
     return std::format("\\x{:02x}", uc);
   }
   return std::string(1, character);
@@ -1750,15 +1755,14 @@ std::string Converter::GetEscapedUTF8CharLiteral(clang::Expr *expr) const {
 }
 
 std::string Converter::GetEscapedStringLiteral(clang::Expr *expr,
-                                               uint64_t pad_nulls,
-                                               bool byte_string) const {
+                                               uint64_t pad_nulls) const {
   auto str_expr = clang::dyn_cast<clang::StringLiteral>(expr->IgnoreCasts());
   assert(str_expr);
   auto raw = str_expr->getString();
   std::string out;
   out.push_back('"');
   for (unsigned char c : raw) {
-    out += GetEscapedCharLiteral(static_cast<char>(c), byte_string);
+    out += GetEscapedCharLiteral(static_cast<char>(c));
   }
   for (uint64_t i = 0; i < pad_nulls; ++i) {
     out += "\\0";
@@ -1779,12 +1783,12 @@ bool Converter::VisitStringLiteral(clang::StringLiteral *expr) {
                          ? arr_size - expr->getString().size()
                          : 0;
       StrCat(token::kStar,
-             std::format("b{}", GetEscapedStringLiteral(expr, pad, true)));
+             std::format("b{}", GetEscapedStringLiteral(expr, pad)));
       return false;
     }
     StrCat(token::kStar);
   }
-  StrCat(std::format("b{}", GetEscapedStringLiteral(expr, 1, true)));
+  StrCat(std::format("b{}", GetEscapedStringLiteral(expr, 1)));
   return false;
 }
 
