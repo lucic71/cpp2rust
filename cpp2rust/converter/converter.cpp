@@ -1524,11 +1524,9 @@ bool Converter::VisitCallExpr(clang::CallExpr *expr) {
   }
 
   if (Mapper::Contains(expr->getCallee())) {
-    if (auto tgt_ir = Mapper::GetExprRule(GetCalleeOrExpr(expr))) {
-      if (tgt_ir->body.empty() && tgt_ir->is_variadic) {
-        ConvertGenericCallExpr(expr);
-        return false;
-      }
+    if (Mapper::IsLibcPassthrough(GetCalleeOrExpr(expr))) {
+      ConvertGenericCallExpr(expr);
+      return false;
     }
 
     auto **args = expr->getArgs();
@@ -1631,12 +1629,7 @@ Converter::CallInfo Converter::CollectCallInfo(clang::CallExpr *expr) {
       function ? function->getNumParams() : proto->getNumParams();
   info.is_variadic = function ? function->isVariadic() : proto->isVariadic();
   info.is_fn_ptr_call = !function;
-  info.is_libc_passthrough = false;
-  if (auto tgt_ir = Mapper::GetExprRule(GetCalleeOrExpr(expr))) {
-    if (tgt_ir->body.empty() && tgt_ir->is_variadic) {
-      info.is_libc_passthrough = true;
-    }
-  }
+  info.is_libc_passthrough = Mapper::IsLibcPassthrough(GetCalleeOrExpr(expr));
 
   for (unsigned i = 0; i < num_named_params && i < num_args; ++i) {
     auto *arg = expr->getArg(i + arg_begin);
