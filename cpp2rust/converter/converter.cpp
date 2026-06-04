@@ -1743,7 +1743,10 @@ void Converter::EmitArgList(const CallInfo &info) {
     }
     PushBracket push(*this, !info.is_libc_passthrough);
     for (auto *arg : info.variadic_args) {
-      ConvertVariadicArg(arg);
+      {
+        PushParen p(*this);
+        ConvertVariadicArg(arg);
+      }
       if (!info.is_libc_passthrough) {
         StrCat(".into()");
       }
