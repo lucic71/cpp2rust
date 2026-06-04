@@ -1618,7 +1618,7 @@ Converter::CallInfo Converter::CollectCallInfo(clang::CallExpr *expr) {
   const auto *function = decl ? decl->getAsFunction() : nullptr;
   const clang::FunctionProtoType *proto = nullptr;
   if (!function) {
-    auto callee_ty = info.callee->getType().getDesugaredType(ctx_);
+    auto callee_ty = callee->getType().getDesugaredType(ctx_);
     if (auto ptr_ty = callee_ty->getAs<clang::PointerType>()) {
       proto = ptr_ty->getPointeeType()->getAs<clang::FunctionProtoType>();
     }
@@ -1649,10 +1649,6 @@ Converter::CallInfo Converter::CollectCallInfo(clang::CallExpr *expr) {
         .expr = arg,
         .has_default = function && function->getParamDecl(i)->hasDefaultArg(),
         .kind = info.is_libc_passthrough ? Kind::Inline : Kind::Hoisted,
-    };
-    bool is_materialize = clang::isa<clang::MaterializeTemporaryExpr>(arg);
-    if (is_materialize && ca.param_type->isLValueReferenceType()) {
-      ca.kind = Kind::Materialized;
     };
     bool is_materialize = clang::isa<clang::MaterializeTemporaryExpr>(arg);
     if (is_materialize && ca.param_type->isLValueReferenceType()) {
@@ -1753,10 +1749,6 @@ void Converter::EmitArgList(const CallInfo &info) {
       StrCat(token::kComma);
     }
   }
-}
-
-void Converter::EmitCall(CallInfo &&info) {
-  EmitHoistedArgs(info);
 }
 
 void Converter::EmitCall(CallInfo &&info) {

@@ -252,12 +252,6 @@ public:
 
   void ConvertParamTy(clang::QualType param_type, clang::Expr *expr);
 
-  };
-
-  CallInfo CollectCallInfo(clang::CallExpr *expr);
-
-  void ConvertParamTy(clang::QualType param_type, clang::Expr *expr);
-
   void EmitHoistedArgs(CallInfo &info);
 
   void EmitArgList(const CallInfo &info);
