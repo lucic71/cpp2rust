@@ -92,3 +92,7 @@ unsafe fn f22(a0: *const i8, a1: *const i8) -> i32 {
 unsafe fn f23(a0: *mut ::libc::FILE) -> i32 {
     libc::fgetc(a0)
 }
+
+unsafe fn f24(a0: *mut ::libc::FILE, a1: *mut u8, a2: i32, a3: u64) -> i32 {
+    libc::setvbuf(a0, a1 as *mut i8, a2, a3 as ::libc::size_t)
+}

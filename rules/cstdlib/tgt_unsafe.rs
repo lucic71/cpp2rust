@@ -64,3 +64,7 @@ unsafe fn f9(
         >(a3 as *const ())),
     )
 }
+
+unsafe fn f10(a0: *const u8, a1: *mut u8) -> *mut u8 {
+    libc::realpath(a0 as *const i8, a1 as *mut i8) as *mut u8
+}
