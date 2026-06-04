@@ -9,6 +9,7 @@ use std::rc::{Rc, Weak};
 pub fn early_0(n: i32) -> i32 {
     let n: Value<i32> = Rc::new(RefCell::new(n));
     let ret: Value<i32> = <Value<i32>>::default();
+    let intentionally_const_var: Value<i32> = <Value<i32>>::default();
     goto_block!({
         '__entry: {
             *ret.borrow_mut() = 0;
@@ -17,9 +18,11 @@ pub fn early_0(n: i32) -> i32 {
                 goto!('out);
             }
             (*ret.borrow_mut()) = 100;
+            *intentionally_const_var.borrow_mut() = 22;
         }
         'out: {
-            return (*ret.borrow());
+            return (((*ret.borrow()) + (*intentionally_const_var.borrow()))
+                - (*intentionally_const_var.borrow()));
         }
     });
     panic!("ub: non-void function does not return a value")
