@@ -139,6 +139,16 @@ bool IsCharPointerFieldFromLibc(const clang::ValueDecl *decl) {
       field->getParent()->getLocation());
 }
 
+bool IsCharArrayFieldFromLibc(const clang::ValueDecl *decl) {
+  auto field = clang::dyn_cast<clang::FieldDecl>(decl);
+  if (!field || !field->getType()->isArrayType() ||
+      !field->getType()->getArrayElementTypeNoTypeQual()->isCharType()) {
+    return false;
+  }
+  return field->getASTContext().getSourceManager().isInSystemHeader(
+      field->getParent()->getLocation());
+}
+
 bool IsUserDefinedDecl(const clang::Decl *decl) {
   const auto &ctx = decl->getASTContext();
   const auto &src_mgr = ctx.getSourceManager();

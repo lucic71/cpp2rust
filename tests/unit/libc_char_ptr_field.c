@@ -1,4 +1,5 @@
 // no-compile: refcount
+#include <dirent.h>
 #include <pwd.h>
 #include <unistd.h>
 
@@ -8,5 +9,11 @@ int main(void) {
     return 0;
   }
   char *home = pw->pw_dir;
-  return home == 0;
+
+  struct dirent *d = readdir(opendir("/tmp"));
+  // d_name is a char array which gets translated as i8. We model chars as u8 in
+  // Rust.
+  char *dname = d->d_name;
+
+  return 0;
 }
