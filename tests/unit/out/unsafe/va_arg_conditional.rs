@@ -25,7 +25,7 @@ unsafe fn main_0() -> i32 {
         ((((unsafe {
             let _verbose: i32 = 1;
             let _fmt: *const u8 = (b"%d\0".as_ptr().cast_mut()).cast_const();
-            conditional_log_0(_verbose, _fmt, &[42.into()])
+            conditional_log_0(_verbose, _fmt, &[(42).into()])
         }) == (42)) as i32)
             != 0)
     );
@@ -33,7 +33,7 @@ unsafe fn main_0() -> i32 {
         ((((unsafe {
             let _verbose: i32 = 0;
             let _fmt: *const u8 = (b"%d\0".as_ptr().cast_mut()).cast_const();
-            conditional_log_0(_verbose, _fmt, &[99.into()])
+            conditional_log_0(_verbose, _fmt, &[(99).into()])
         }) == (-1_i32)) as i32)
             != 0)
     );

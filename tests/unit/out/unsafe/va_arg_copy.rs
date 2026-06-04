@@ -35,7 +35,7 @@ unsafe fn main_0() -> i32 {
     assert!(
         ((((unsafe {
             let _count: i32 = 3;
-            sum_with_copy_0(_count, &[10.into(), 20.into(), 30.into()])
+            sum_with_copy_0(_count, &[(10).into(), (20).into(), (30).into()])
         }) == (120)) as i32)
             != 0)
     );

@@ -45,23 +45,23 @@ impl From<i32> for Option {
 }
 libcc2rs::impl_enum_inc_dec!(Option);
 #[derive(Clone, Copy, PartialEq, Debug, Default)]
-enum Tag {
+enum Tag_enum {
     #[default]
     TAG_ZERO = 0,
     TAG_ONE = 1,
     TAG_TWO = 2,
 }
-impl From<i32> for Tag {
-    fn from(n: i32) -> Tag {
+impl From<i32> for Tag_enum {
+    fn from(n: i32) -> Tag_enum {
         match n {
-            0 => Tag::TAG_ZERO,
-            1 => Tag::TAG_ONE,
-            2 => Tag::TAG_TWO,
-            _ => panic!("invalid Tag value: {}", n),
+            0 => Tag_enum::TAG_ZERO,
+            1 => Tag_enum::TAG_ONE,
+            2 => Tag_enum::TAG_TWO,
+            _ => panic!("invalid Tag_enum value: {}", n),
         }
     }
 }
-libcc2rs::impl_enum_inc_dec!(Tag);
+libcc2rs::impl_enum_inc_dec!(Tag_enum);
 #[derive(Default)]
 pub struct Entry {
     pub name: Value<Ptr<u8>>,
@@ -76,22 +76,22 @@ thread_local!(
     pub static global_opt_1: Value<Option> = Rc::new(RefCell::new(Option::OPT_B));
 );
 thread_local!(
-    pub static global_tag_2: Value<Tag> = Rc::new(RefCell::new(Tag::TAG_TWO));
+    pub static global_tag_2: Value<Tag_enum> = Rc::new(RefCell::new(Tag_enum::TAG_TWO));
 );
 thread_local!(
     pub static entries_3: Value<Box<[Entry]>> = Rc::new(RefCell::new(Box::new([
         Entry {
-            name: Rc::new(RefCell::new(Ptr::from_string_literal("first"))),
+            name: Rc::new(RefCell::new(Ptr::from_string_literal(b"first"))),
             color: Rc::new(RefCell::new(Color::RED)),
             opt: Rc::new(RefCell::new(Option::OPT_NONE)),
         },
         Entry {
-            name: Rc::new(RefCell::new(Ptr::from_string_literal("second"))),
+            name: Rc::new(RefCell::new(Ptr::from_string_literal(b"second"))),
             color: Rc::new(RefCell::new(Color::GREEN)),
             opt: Rc::new(RefCell::new(Option::OPT_A)),
         },
         Entry {
-            name: Rc::new(RefCell::new(Ptr::from_string_literal("third"))),
+            name: Rc::new(RefCell::new(Ptr::from_string_literal(b"third"))),
             color: Rc::new(RefCell::new(Color::BLUE)),
             opt: Rc::new(RefCell::new(Option::OPT_C)),
         },
@@ -106,16 +106,16 @@ pub fn classify_option_5(option: i32) -> i32 {
     'switch: {
         let __match_cond = (*option.borrow());
         match __match_cond {
-            v if v == (Option::OPT_NONE as i32) => {
+            __v if __v == (Option::OPT_NONE as i32) => {
                 return -1_i32;
             }
-            v if v == (Option::OPT_A as i32) => {
+            __v if __v == (Option::OPT_A as i32) => {
                 return 1;
             }
-            v if v == (Option::OPT_B as i32) => {
+            __v if __v == (Option::OPT_B as i32) => {
                 return 2;
             }
-            v if v == (Option::OPT_C as i32) => {
+            __v if __v == (Option::OPT_C as i32) => {
                 return 3;
             }
             _ => {
@@ -143,13 +143,13 @@ fn main_0() -> i32 {
     'switch: {
         let __match_cond = ((*c.borrow()) as u32);
         match __match_cond {
-            v if v == (0 as u32) => {
+            __v if __v == (0 as u32) => {
                 break 'switch;
             }
-            v if v == (1 as u32) => {
+            __v if __v == (1 as u32) => {
                 return 1;
             }
-            v if v == (2 as u32) => {
+            __v if __v == (2 as u32) => {
                 return 2;
             }
             _ => {
@@ -199,23 +199,23 @@ fn main_0() -> i32 {
         classify_option_5(_option)
     });
     assert!(((((*rc.borrow()) == 3) as i32) != 0));
-    let t: Value<Tag> = Rc::new(RefCell::new(Tag::TAG_ONE));
+    let t: Value<Tag_enum> = Rc::new(RefCell::new(Tag_enum::TAG_ONE));
     assert!((((((*t.borrow()) as u32) == 1_u32) as i32) != 0));
-    assert!((((((*t.borrow()) as u32) == ((Tag::TAG_ONE as i32) as u32)) as i32) != 0));
+    assert!((((((*t.borrow()) as u32) == ((Tag_enum::TAG_ONE as i32) as u32)) as i32) != 0));
     let ti: Value<i32> = Rc::new(RefCell::new(((*t.borrow()) as i32).clone()));
     assert!(((((*ti.borrow()) == 1) as i32) != 0));
-    (*t.borrow_mut()) = Tag::from(2);
-    assert!((((((*t.borrow()) as u32) == ((Tag::TAG_TWO as i32) as u32)) as i32) != 0));
+    (*t.borrow_mut()) = Tag_enum::from(2);
+    assert!((((((*t.borrow()) as u32) == ((Tag_enum::TAG_TWO as i32) as u32)) as i32) != 0));
     'switch: {
         let __match_cond = ((*t.borrow()) as u32);
         match __match_cond {
-            v if v == ((Tag::TAG_ZERO as i32) as u32) => {
+            __v if __v == ((Tag_enum::TAG_ZERO as i32) as u32) => {
                 return 90;
             }
-            v if v == (1 as u32) => {
+            __v if __v == (1 as u32) => {
                 return 91;
             }
-            v if v == (2 as u32) => {
+            __v if __v == (2 as u32) => {
                 break 'switch;
             }
             _ => {}
@@ -236,8 +236,8 @@ fn main_0() -> i32 {
             != 0)
     );
     assert!(
-        (((((*global_tag_2.with(Value::clone).borrow()) as u32) == ((Tag::TAG_TWO as i32) as u32))
-            as i32)
+        (((((*global_tag_2.with(Value::clone).borrow()) as u32)
+            == ((Tag_enum::TAG_TWO as i32) as u32)) as i32)
             != 0)
     );
     assert!(

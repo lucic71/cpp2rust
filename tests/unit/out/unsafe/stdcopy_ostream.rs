@@ -16,8 +16,9 @@ unsafe fn main_0() -> i32 {
         let s = b"Hello, world!\n\0".as_ptr();
         std::slice::from_raw_parts(s, (0..).take_while(|&i| *s.add(i) != 0).count() + 1).to_vec()
     };
+    let file: [u8; 25] = *b"test_stdcopy_ostream.txt\0";
     let mut ofs: ::std::fs::File = ::std::fs::File::create(
-        ::std::ffi::CStr::from_ptr(b"test.txt\0".as_ptr() as *const i8)
+        ::std::ffi::CStr::from_ptr(file.as_ptr() as *const i8)
             .to_str()
             .unwrap(),
     )
@@ -29,5 +30,6 @@ unsafe fn main_0() -> i32 {
         ofs.write_all(::std::slice::from_raw_parts(__start, __len));
         ofs.try_clone().unwrap()
     };
+    libc::unlink(file.as_ptr() as *const i8);
     return 0;
 }

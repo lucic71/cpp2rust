@@ -1,9 +1,8 @@
 // Copyright (c) 2022-present INESC-ID.
 // Distributed under the MIT license that can be found in the LICENSE file.
 
-fn types() -> Result<(), Box<dyn std::error::Error>> {
-    let t1: *mut ::libc::FILE = std::ptr::null_mut();
-    Ok(())
+fn t1() -> *mut ::libc::FILE {
+    std::ptr::null_mut()
 }
 
 unsafe fn f1(a0: *const u8, a1: *const u8) -> *mut ::libc::FILE {
@@ -88,4 +87,12 @@ unsafe fn f20(a0: i32, a1: *const u8) -> *mut ::libc::FILE {
 
 unsafe extern "C" {
     fn f21(a0: *mut i8, a1: usize, a2: *const i8, ...) -> i32;
+}
+
+unsafe fn f22(a0: *const i8, a1: *const i8) -> i32 {
+    libc::rename(a0 as *const i8, a1 as *const i8)
+}
+
+unsafe fn f23(a0: *mut ::libc::FILE) -> i32 {
+    libc::fgetc(a0)
 }

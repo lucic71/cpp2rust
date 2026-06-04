@@ -2,14 +2,16 @@
 // Distributed under the MIT license that can be found in the LICENSE file.
 
 use proc_macro::TokenStream;
+use proc_macro2::Span;
 use syn::parse::{Parse, ParseStream};
-use syn::{Expr, Lifetime, Token, parse_macro_input};
+use syn::{Block, Expr, ExprBlock, Lifetime, Stmt, parse_macro_input};
 
-use crate::state_machine::{Arm, GotoStateMachine, StateMachine};
+use crate::state_machine::{Arm, GotoStateMachine, StateMachine, StateMachineNames};
 
 pub fn expand(input: TokenStream) -> TokenStream {
     let GotoBlockInput { arms } = parse_macro_input!(input as GotoBlockInput);
     GotoStateMachine {
+        names: StateMachineNames::fresh(),
         arms: arms
             .into_iter()
             .map(|a| Arm {
@@ -33,15 +35,29 @@ struct GotoArm {
 
 impl Parse for GotoBlockInput {
     fn parse(input: ParseStream) -> syn::Result<Self> {
+        let block: Block = input.parse()?;
         let mut arms = Vec::new();
-        while !input.is_empty() {
-            let label: Lifetime = input.parse()?;
-            input.parse::<Token![=>]>()?;
-            let body: Expr = input.parse()?;
-            arms.push(GotoArm { label, body });
-            if input.peek(Token![,]) {
-                input.parse::<Token![,]>()?;
-            }
+        for stmt in block.stmts {
+            let Stmt::Expr(Expr::Block(eb), _) = stmt else {
+                return Err(syn::Error::new(
+                    Span::call_site(),
+                    "goto_block! body must be a sequence of labeled blocks",
+                ));
+            };
+            let Some(label) = eb.label else {
+                return Err(syn::Error::new(
+                    Span::call_site(),
+                    "goto_block! arm must be a labeled block",
+                ));
+            };
+            arms.push(GotoArm {
+                label: label.name,
+                body: Expr::Block(ExprBlock {
+                    attrs: eb.attrs,
+                    label: None,
+                    block: eb.block,
+                }),
+            });
         }
         Ok(Self { arms })
     }

@@ -17,5 +17,9 @@ unsafe fn main_0() -> i32 {
         return 0;
     }
     let mut home: *mut u8 = ((*pw).pw_dir as *mut u8);
-    return (((home).is_null()) as i32);
+    let mut d: *mut dirent = libc::readdir(libc::opendir(
+        (b"/tmp\0".as_ptr().cast_mut()).cast_const() as *const i8,
+    ));
+    let mut dname: *mut u8 = ((*d).d_name.as_mut_ptr() as *mut u8);
+    return 0;
 }

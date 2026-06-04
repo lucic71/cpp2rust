@@ -49,5 +49,10 @@ unsafe fn main_0() -> i32 {
         let _str: *const u8 = immutable_empty_arr.as_ptr();
         foo_const_1(_str)
     });
+    let inited_through_init_list: [u8; 21] = *b"papanasi cu smantana\0";
+    (unsafe {
+        let _str: *const u8 = inited_through_init_list.as_ptr();
+        foo_const_1(_str)
+    });
     return 0;
 }

@@ -9,7 +9,6 @@
 
 #include <functional>
 #include <optional>
-#include <stack>
 #include <string>
 #include <unordered_map>
 #include <unordered_set>
@@ -27,11 +26,9 @@ public:
   explicit Converter(std::string &rs_code, clang::ASTContext &ctx,
                      const char *keyword_unsafe = "unsafe",
                      const char *keyword_mut = "mut",
-                     const char *keyword_ptr_decay = ".as_mut_ptr()",
                      const char *keyword_const_fn = keyword::kConst)
       : rs_code_(&rs_code), ctx_(ctx), keyword_unsafe_(keyword_unsafe),
-        keyword_mut_(keyword_mut), keyword_ptr_decay_(keyword_ptr_decay),
-        keyword_const_fn_(keyword_const_fn) {}
+        keyword_mut_(keyword_mut), keyword_const_fn_(keyword_const_fn) {}
 
   virtual ~Converter() = default;
 
@@ -85,11 +82,17 @@ public:
 
   virtual void ConvertFunctionBody(clang::FunctionDecl *decl);
 
+  void ConvertGotoBlock(clang::CompoundStmt *body);
+
+  void EmitHoistedDecls(clang::CompoundStmt *body);
+
   virtual bool VisitFunctionTemplateDecl(clang::FunctionTemplateDecl *decl);
 
   virtual bool VisitVarDecl(clang::VarDecl *decl);
 
   void ConvertVarDecl(clang::VarDecl *decl);
+
+  virtual void EmitHoistedInArmAssignment(clang::VarDecl *decl);
 
   void ConvertVarDeclInitializer(clang::VarDecl *decl);
 
@@ -128,6 +131,8 @@ public:
 
   virtual bool VisitReturnStmt(clang::ReturnStmt *stmt);
 
+  virtual bool VisitGotoStmt(clang::GotoStmt *stmt);
+
   void ConvertCondition(clang::Expr *cond);
 
   virtual bool VisitIfStmt(clang::IfStmt *stmt);
@@ -157,7 +162,7 @@ public:
   virtual bool VisitContinueStmt(clang::ContinueStmt *stmt);
 
   bool GetFmtArg(clang::Expr *arg, std::string &fmt, std::string &fmt_args,
-                 std::string &fmt_trait, std::string &fmt_width);
+                 const char *&fmt_trait, std::string &fmt_width);
 
   bool GetRawArg(clang::Expr *arg, std::string &raw_args);
 
@@ -241,6 +246,12 @@ public:
     bool is_variadic;
     bool is_fn_ptr_call;
     bool is_libc_passthrough;
+  };
+
+  CallInfo CollectCallInfo(clang::CallExpr *expr);
+
+  void ConvertParamTy(clang::QualType param_type, clang::Expr *expr);
+
   };
 
   CallInfo CollectCallInfo(clang::CallExpr *expr);
@@ -480,6 +491,9 @@ protected:
   virtual void ConvertArraySubscript(clang::Expr *base, clang::Expr *idx,
                                      clang::QualType type);
 
+  void EmitFlexibleArrayElementPtr(clang::Expr *array, clang::Expr *idx,
+                                   bool is_mut);
+
   virtual void ConvertAssignment(clang::Expr *lhs, clang::Expr *rhs,
                                  std::string_view assign_operator);
 
@@ -640,36 +654,37 @@ protected:
       }
     }
   };
-  std::stack<clang::Expr *> curr_for_inc_;
-  std::stack<clang::QualType> curr_init_type_;
+  std::vector<clang::Expr *> curr_for_inc_;
+  std::vector<clang::QualType> curr_init_type_;
 
-  enum class BreakTarget { Loop, FallthroughSwitch, Switch };
-  std::stack<BreakTarget> break_target_;
+  enum class BreakTarget : int8_t { Loop, FallthroughSwitch, Switch };
+  std::vector<BreakTarget> break_target_;
 
   bool isSwitchBreak() const {
-    return !break_target_.empty() && break_target_.top() == BreakTarget::Switch;
+    return !break_target_.empty() &&
+           break_target_.back() == BreakTarget::Switch;
   }
 
   class PushBreakTarget {
   public:
-    PushBreakTarget(std::stack<BreakTarget> &stack, BreakTarget target)
+    PushBreakTarget(std::vector<BreakTarget> &stack, BreakTarget target)
         : stack_(stack) {
-      stack_.push(target);
+      stack_.push_back(target);
     }
-    ~PushBreakTarget() { stack_.pop(); }
+    ~PushBreakTarget() { stack_.pop_back(); }
     PushBreakTarget(const PushBreakTarget &) = delete;
     PushBreakTarget &operator=(const PushBreakTarget &) = delete;
 
   private:
-    std::stack<BreakTarget> &stack_;
+    std::vector<BreakTarget> &stack_;
   };
 
   class PushInitType {
   public:
     PushInitType(Converter &c, clang::QualType type) : c_(c) {
-      c_.curr_init_type_.push(type);
+      c_.curr_init_type_.emplace_back(type);
     }
-    ~PushInitType() { c_.curr_init_type_.pop(); }
+    ~PushInitType() { c_.curr_init_type_.pop_back(); }
     PushInitType(const PushInitType &) = delete;
     PushInitType &operator=(const PushInitType &) = delete;
 
@@ -678,6 +693,24 @@ protected:
   };
 
   std::unordered_set<const clang::VarDecl *> map_iter_decls_;
+
+  // Local variables hoisted outside a goto_block so that all labels can see and
+  // use the variables.
+  std::unordered_set<const clang::VarDecl *> hoisted_decls_;
+  class PushHoistedDecls {
+  public:
+    PushHoistedDecls(std::unordered_set<const clang::VarDecl *> &field)
+        : field_(field), saved_(std::move(field)) {
+      field_.clear();
+    }
+    ~PushHoistedDecls() { field_ = std::move(saved_); }
+    PushHoistedDecls(const PushHoistedDecls &) = delete;
+    PushHoistedDecls &operator=(const PushHoistedDecls &) = delete;
+
+  private:
+    std::unordered_set<const clang::VarDecl *> &field_;
+    std::unordered_set<const clang::VarDecl *> saved_;
+  };
 
   struct ScopedMapIterDecl {
     Converter &c;
@@ -833,13 +866,9 @@ private:
 
   std::string getIntegerLiteral(clang::IntegerLiteral *expr, bool incl_type,
                                 const clang::QualType *type = nullptr);
-  const char *keyword_default_ = "Default::default()";
   const char *keyword_unsafe_;
   const char *keyword_mut_;
-  const char *keyword_ptr_decay_;
   const char *keyword_const_fn_;
-  const char *keyword_ptr_decay_const_ = ".as_ptr()";
-  const char *ignore_rule_type_ = "libcc2rs::IgnoreRule";
   std::vector<ExprKind> curr_expr_kind_;
   static std::unordered_map<std::string, std::string> inner_structs_;
   static std::unordered_set<std::string> globals_;

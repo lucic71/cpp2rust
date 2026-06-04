@@ -23,14 +23,14 @@ pub fn main() {
 fn main_0() -> i32 {
     println!(
         "{} {} {}",
-        Ptr::from_string_literal("macros.cpp"),
+        Ptr::from_string_literal(b"macros.cpp"),
         8,
-        Ptr::from_string_literal("main")
+        Ptr::from_string_literal(b"main")
     );
     ({
-        let _file: Ptr<u8> = Ptr::from_string_literal("macros.cpp");
+        let _file: Ptr<u8> = Ptr::from_string_literal(b"macros.cpp");
         let _line: i32 = 9;
-        let _func: Ptr<u8> = Ptr::from_string_literal("main");
+        let _func: Ptr<u8> = Ptr::from_string_literal(b"main");
         log_0(_file, _line, _func)
     });
     return 0;

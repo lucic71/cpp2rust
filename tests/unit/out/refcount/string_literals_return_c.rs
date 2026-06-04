@@ -7,17 +7,17 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
 pub fn get_greeting_0() -> Ptr<u8> {
-    return Ptr::from_string_literal("hello");
+    return Ptr::from_string_literal(b"hello");
 }
 pub fn get_empty_1() -> Ptr<u8> {
-    return Ptr::from_string_literal("");
+    return Ptr::from_string_literal(b"");
 }
 pub fn get_branch_2(x: i32) -> Ptr<u8> {
     let x: Value<i32> = Rc::new(RefCell::new(x));
     if ((((*x.borrow()) > 0) as i32) != 0) {
-        return Ptr::from_string_literal("positive");
+        return Ptr::from_string_literal(b"positive");
     }
-    return Ptr::from_string_literal("non-positive");
+    return Ptr::from_string_literal(b"non-positive");
 }
 pub fn main() {
     std::process::exit(main_0());

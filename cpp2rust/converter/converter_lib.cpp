@@ -19,7 +19,7 @@
 #include "converter/mapper.h"
 
 // https://doc.rust-lang.org/reference/keywords.html
-static const char *rust_keywords[] = {
+static const char rust_keywords[][12] = {
     // Strict keywords
     "as",
     "async",
@@ -139,6 +139,16 @@ bool IsCharPointerFieldFromLibc(const clang::ValueDecl *decl) {
       field->getParent()->getLocation());
 }
 
+bool IsCharArrayFieldFromLibc(const clang::ValueDecl *decl) {
+  auto field = clang::dyn_cast<clang::FieldDecl>(decl);
+  if (!field || !field->getType()->isArrayType() ||
+      !field->getType()->getArrayElementTypeNoTypeQual()->isCharType()) {
+    return false;
+  }
+  return field->getASTContext().getSourceManager().isInSystemHeader(
+      field->getParent()->getLocation());
+}
+
 bool IsUserDefinedDecl(const clang::Decl *decl) {
   const auto &ctx = decl->getASTContext();
   const auto &src_mgr = ctx.getSourceManager();
@@ -244,6 +254,23 @@ bool IsCallToOstream(clang::CallExpr *expr) {
     }
   }
   return false;
+}
+
+bool IsAsciiStringLiteral(const clang::StringLiteral *str) {
+  for (unsigned char c : str->getString()) {
+    if (c > 0x7F) {
+      return false;
+    }
+  }
+  return true;
+}
+
+bool IsInitExprOfStringLiteral(const clang::InitListExpr *expr) {
+  auto type = expr->getType();
+  return expr->getNumInits() == 1 && type->isArrayType() &&
+         type->getArrayElementTypeNoTypeQual()->isCharType() &&
+         clang::isa<clang::StringLiteral>(
+             expr->getInit(0)->IgnoreParenImpCasts());
 }
 
 std::vector<clang::CXXConstructorDecl *>
@@ -358,6 +385,31 @@ std::string GetID(const clang::Decl *decl) {
   return GetLocationID(decl) + GetParamSignature(decl);
 }
 
+std::string DisambiguateAnonymousTag(const clang::TagDecl *tag) {
+  if (!tag) {
+    return "";
+  }
+  // C++ does not allow collision between tags and typedef identifiers.
+  if (tag->getASTContext().getLangOpts().CPlusPlus) {
+    return "";
+  }
+  // Tag has an identifier, nothing to disambiguate.
+  if (tag->getIdentifier()) {
+    return "";
+  }
+  // The anonymous decl is named through a typedef; guards getName() below.
+  auto typedef_decl = tag->getTypedefNameForAnonDecl();
+  if (!typedef_decl || !typedef_decl->getDeclName().isIdentifier()) {
+    return "";
+  }
+  // Only disambiguate user-defined types.
+  if (tag->getASTContext().getSourceManager().isInSystemHeader(
+          tag->getLocation())) {
+    return "";
+  }
+  return typedef_decl->getName().str() + '_' + tag->getKindName().str();
+}
+
 static std::unordered_map<std::string, size_t> type_mapping;
 
 static size_t GetDeclId(const clang::NamedDecl *decl, bool internal) {
@@ -374,9 +426,10 @@ std::string GetNamedDeclAsString(const clang::NamedDecl *decl) {
   auto name = decl->getDeclName().isIdentifier() ? decl->getName().str()
                                                  : decl->getNameAsString();
 
-  // Anonymous record
+  // Anonymous record or enum
   if (name.empty() && (clang::isa<clang::RecordDecl>(decl) ||
-                       clang::isa<clang::FieldDecl>(decl))) {
+                       clang::isa<clang::FieldDecl>(decl) ||
+                       clang::isa<clang::EnumDecl>(decl))) {
     const clang::NamedDecl *target = decl;
     if (auto *field = clang::dyn_cast<clang::FieldDecl>(decl)) {
       if (auto *record = field->getType()->getAsRecordDecl();
@@ -433,7 +486,7 @@ const char *AccessSpecifierAsString(clang::AccessSpecifier spec) {
     return keyword::kPub;
   case clang::AS_protected:
   case clang::AS_private:
-    return token::kEmpty;
+    return "";
   }
   std::unreachable();
 }
@@ -820,7 +873,8 @@ static bool SwitchCaseHasFallthrough(clang::Stmt *stmt) {
   }
   if (clang::isa<clang::BreakStmt>(stmt) ||
       clang::isa<clang::ContinueStmt>(stmt) ||
-      clang::isa<clang::ReturnStmt>(stmt)) {
+      clang::isa<clang::ReturnStmt>(stmt) ||
+      clang::isa<clang::GotoStmt>(stmt)) {
     return false;
   }
   return true;
@@ -833,6 +887,15 @@ bool SwitchHasFallthrough(clang::SwitchStmt *stmt) {
       if (arm.empty() || SwitchCaseHasFallthrough(arm.back())) {
         return true;
       }
+    }
+  }
+  return false;
+}
+
+bool CompoundHasTopLevelLabel(const clang::CompoundStmt *compound) {
+  for (const auto *child : compound->body()) {
+    if (clang::isa<clang::LabelStmt>(child)) {
+      return true;
     }
   }
   return false;

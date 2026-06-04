@@ -57,6 +57,10 @@ public:
 
   void ConvertVaListVarDecl(clang::VarDecl *decl) override;
 
+  bool ConvertVarDeclSkipInit(clang::VarDecl *decl) override;
+
+  void EmitHoistedInArmAssignment(clang::VarDecl *decl) override;
+
   bool ConvertLambdaVarDecl(clang::VarDecl *decl) override;
 
   bool VisitDeclRefExpr(clang::DeclRefExpr *expr) override;
@@ -228,7 +232,7 @@ private:
     FullRefCount,
   };
 
-  const char *ConversionKindToString(ConversionKind k) {
+  static const char *ConversionKindToString(ConversionKind k) {
     switch (k) {
     case ConversionKind::Unboxed:
       return "Unboxed";
@@ -254,7 +258,7 @@ private:
       }
       log() << "[PushConversionKind:" << line << "] ";
       for (auto ck : c.conversion_kind_) {
-        log() << c.ConversionKindToString(ck) << ", ";
+        log() << ConversionKindToString(ck) << ", ";
       }
       log() << '\n';
     }
@@ -264,7 +268,7 @@ private:
       }
       log() << "[PopConversionKind] ";
       for (auto ck : c.conversion_kind_) {
-        log() << c.ConversionKindToString(ck) << ", ";
+        log() << ConversionKindToString(ck) << ", ";
       }
       log() << '\n';
     }

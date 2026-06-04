@@ -41,6 +41,8 @@ bool IsInMainFile(const clang::Decl *decl);
 
 bool IsCharPointerFieldFromLibc(const clang::ValueDecl *decl);
 
+bool IsCharArrayFieldFromLibc(const clang::ValueDecl *decl);
+
 bool IsUserDefinedDecl(const clang::Decl *decl);
 
 bool RefersToUserDefinedDecl(const clang::Expr *expr);
@@ -65,6 +67,10 @@ bool IsUniquePtr(clang::QualType type);
 
 bool IsCallToOstream(clang::CallExpr *expr);
 
+bool IsAsciiStringLiteral(const clang::StringLiteral *str);
+
+bool IsInitExprOfStringLiteral(const clang::InitListExpr *expr);
+
 std::vector<clang::CXXConstructorDecl *>
 GetTemplateInstantiatedCtors(clang::CXXRecordDecl *decl);
 
@@ -88,6 +94,8 @@ unsigned GetArraySize(clang::QualType array_type);
 std::string GetID(const clang::Decl *decl);
 
 std::string GetNamedDeclAsString(const clang::NamedDecl *decl);
+
+std::string DisambiguateAnonymousTag(const clang::TagDecl *tag);
 
 const char *AccessSpecifierAsString(clang::AccessSpecifier spec);
 
@@ -170,6 +178,8 @@ std::vector<clang::Stmt *> GetSwitchCaseBody(clang::CompoundStmt *body,
                                              clang::SwitchCase *head);
 
 bool SwitchHasFallthrough(clang::SwitchStmt *stmt);
+
+bool CompoundHasTopLevelLabel(const clang::CompoundStmt *compound);
 
 std::string_view Trim(std::string_view s);
 

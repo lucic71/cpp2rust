@@ -50,19 +50,6 @@ execute_process(
 )
 message(STATUS ${CLANG_OUTPUT})
 
-execute_process(
-  COMMAND rustc --version --verbose
-  OUTPUT_VARIABLE RUSTC_OUTPUT
-  OUTPUT_STRIP_TRAILING_WHITESPACE
-)
-string(REGEX MATCH "LLVM version: .*" RUSTC_LLVM_VERSION_LINE "${RUSTC_OUTPUT}")
-string(REGEX REPLACE "LLVM version: " "" RUSTC_LLVM_VERSION "${RUSTC_LLVM_VERSION_LINE}")
-message(STATUS "rustc using LLVM ${RUSTC_LLVM_VERSION}")
-
-if (NOT RUSTC_LLVM_VERSION STREQUAL LLVM_PACKAGE_VERSION)
-  message(WARNING "The LLVM versions used by rustc and clang are different!")
-endif()
-
 include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/rust-toolchain.cmake)
 set(RUST_STAMP_FILE "${CMAKE_BINARY_DIR}/.rust-toolchain.stamp")
 
@@ -121,6 +108,13 @@ add_custom_target("check-libcc2rs"
                   USES_TERMINAL
                  )
 
+add_custom_target("check-libcc2rs-macros"
+                  COMMAND cargo +${RUST_STABLE_VERSION} test
+                  WORKING_DIRECTORY "${PROJECT_SOURCE_DIR}/libcc2rs-macros"
+                  DEPENDS "${RUST_STAMP_FILE}"
+                  USES_TERMINAL
+                 )
+
 add_custom_target("check-unit"
                   COMMAND ${CMAKE_COMMAND} -E env
                           "CC=${CMAKE_C_COMPILER}"
@@ -148,7 +142,7 @@ add_custom_target("check-benchmarks"
                  )
 
 add_custom_target("check"
-                  DEPENDS check-libcc2rs check-unit
+                  DEPENDS check-libcc2rs check-libcc2rs-macros check-unit
                  )
 
 add_custom_target("check-all"
