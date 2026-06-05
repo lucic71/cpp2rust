@@ -173,6 +173,7 @@ GetOperandImplicitConversionTarget(const clang::BinaryOperator *op,
                                    const clang::Expr *operand,
                                    const clang::Expr *sibling);
 
+
 bool IsBuiltinVaStart(const clang::CallExpr *expr);
 
 bool IsBuiltinVaEnd(const clang::CallExpr *expr);
