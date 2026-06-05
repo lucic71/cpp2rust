@@ -7,8 +7,9 @@ static int early(int n) {
     goto out;
   }
   ret = 100;
+  const int intentionally_const_var = 22;
 out:
-  return ret;
+  return ret + intentionally_const_var - intentionally_const_var;
 }
 
 static int from_loop(int n) {

@@ -474,7 +474,8 @@ bool Converter::ConvertVarDeclSkipInit(clang::VarDecl *decl) {
   auto *method_or_null =
       curr_function_ ? clang::dyn_cast<clang::CXXMethodDecl>(curr_function_)
                      : nullptr;
-  if (!qual_type.isConstQualified() && !qual_type->isReferenceType() &&
+  if ((hoisted_decls_.contains(decl) || !qual_type.isConstQualified()) &&
+      !qual_type->isReferenceType() &&
       ((method_or_null == nullptr) || !method_or_null->isVirtual()) &&
       !IsGlobalVar(decl)) {
     StrCat(keyword_mut_);
