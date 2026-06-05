@@ -753,6 +753,17 @@ bool IsBuiltinVaStart(const clang::CallExpr *expr) {
   return false;
 }
 
+std::string GetNameOfScalarTypedef(clang::QualType qual_type) {
+  qual_type = qual_type.getNonReferenceType();
+  const auto *typedef_type =
+      llvm::dyn_cast<clang::TypedefType>(qual_type.getTypePtr());
+  if (!typedef_type || !qual_type.getCanonicalType()->isBuiltinType()) {
+    return {};
+  }
+  std::string name = typedef_type->getDecl()->getNameAsString();
+  return qual_type.isConstQualified() ? "const " + name : name;
+}
+
 bool IsBuiltinVaEnd(const clang::CallExpr *expr) {
   if (auto *fn = expr->getDirectCallee()) {
     return fn->getBuiltinID() == clang::Builtin::BI__builtin_va_end;

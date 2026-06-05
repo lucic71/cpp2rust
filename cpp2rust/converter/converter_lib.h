@@ -159,6 +159,8 @@ std::string GetClassName(clang::QualType type);
 
 bool IsVaListType(clang::QualType type);
 
+std::string GetNameOfScalarTypedef(clang::QualType qual_type);
+
 bool IsBuiltinVaStart(const clang::CallExpr *expr);
 
 bool IsBuiltinVaEnd(const clang::CallExpr *expr);

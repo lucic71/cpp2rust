@@ -400,12 +400,22 @@ TranslationRule::ExprRule *search(const clang::Expr *expr) {
   return rule;
 }
 
-TranslationRule::TypeRule *search(clang::QualType qual_type) {
+std::pair<TranslationRule::TypeRule *, std::vector<std::optional<std::string>>>
+search(clang::QualType qual_type) {
+  if (auto name = GetNameOfScalarTypedef(qual_type); !name.empty()) {
+    auto res = search(types_, name, GetTypeMapKey(name));
+    if (res.first) {
+      log() << "search type " << name
+            << ", result: " << res.first->type_info.type << '\n';
+      return res;
+    }
+  }
   auto type = ToString(qual_type);
-  auto [rule, subs] = search(types_, type, GetTypeMapKey(type));
+  auto res = search(types_, type, GetTypeMapKey(type));
   log() << "search type " << type
-        << ", result: " << (rule ? rule->type_info.type : "None") << '\n';
-  return rule;
+        << ", result: " << (res.first ? res.first->type_info.type : "None")
+        << '\n';
+  return res;
 }
 
 void addRulesFromDirectory(const std::filesystem::path &dir, Model model) {
@@ -579,7 +589,7 @@ PushASTContext::PushASTContext(clang::ASTContext &ctx) : prev_(ctx_) {
 PushASTContext::~PushASTContext() { ctx_ = prev_; }
 
 bool Contains(clang::QualType qual_type) {
-  return search(qual_type) != nullptr;
+  return search(qual_type).first != nullptr;
 }
 
 bool Contains(const clang::Expr *expr) { return search(expr) != nullptr; }
@@ -614,8 +624,7 @@ std::string InstantiateTemplate(const clang::Expr *expr, unsigned n) {
 }
 
 std::string Map(clang::QualType qual_type) {
-  auto type_str = ToString(qual_type);
-  auto [rule, subs] = search(types_, type_str, GetTypeMapKey(type_str));
+  auto [rule, subs] = search(qual_type);
   if (rule) {
     for (auto &ty : subs) {
       if (ty) {
@@ -628,8 +637,7 @@ std::string Map(clang::QualType qual_type) {
 }
 
 std::string MapInitializer(clang::QualType qual_type) {
-  auto type_str = ToString(qual_type);
-  auto [rule, subs] = search(types_, type_str, GetTypeMapKey(type_str));
+  auto [rule, subs] = search(qual_type);
   if (rule && !rule->initializer.empty()) {
     for (auto &ty : subs) {
       if (ty) {
@@ -642,12 +650,12 @@ std::string MapInitializer(clang::QualType qual_type) {
 }
 
 bool MapsToPointer(clang::QualType qual_type) {
-  auto rule = search(qual_type);
+  auto rule = search(qual_type).first;
   return rule && rule->type_info.is_pointer();
 }
 
 bool MapsToRefcountPointer(clang::QualType qual_type) {
-  auto rule = search(qual_type);
+  auto rule = search(qual_type).first;
   return rule && rule->type_info.is_refcount_pointer;
 }
 
