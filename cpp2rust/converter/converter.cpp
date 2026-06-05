@@ -3324,6 +3324,12 @@ std::string Converter::GetArrayDefaultAsString(clang::QualType qual_type) {
     auto size_as_string = GetNumAsString(array_type->getSize());
     auto element_type = array_type->getElementType();
     auto element_type_as_string = GetDefaultAsString(element_type);
+    if (auto *rec = element_type->getAsRecordDecl()) {
+      if (ctx_.getSourceManager().isInSystemHeader(rec->getLocation())) {
+        return std::format("std::array::from_fn::<_, {}, _>(|_| {})",
+                           size_as_string.c_str(), element_type_as_string);
+      }
+    }
     return std::format("[{}; {}]", element_type_as_string,
                        size_as_string.c_str());
   }
