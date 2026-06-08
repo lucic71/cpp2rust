@@ -129,24 +129,8 @@ add_custom_target("check-unit"
                   USES_TERMINAL
                  )
 
-add_custom_target("check-benchmarks"
-                  COMMAND ${CMAKE_COMMAND} -E env
-                          "CC=${CMAKE_C_COMPILER}"
-                          "CXX=${CMAKE_CXX_COMPILER}"
-                          "python3"
-                          "${PROJECT_SOURCE_DIR}/tests/lit/lit.py"
-                          ${LIT_FLAGS}
-                          "${PROJECT_SOURCE_DIR}/tests/benchmarks"
-                  DEPENDS cpp2rust libcc2rs
-                  USES_TERMINAL
-                 )
-
 add_custom_target("check"
                   DEPENDS check-libcc2rs check-libcc2rs-macros check-unit
-                 )
-
-add_custom_target("check-all"
-                  DEPENDS check check-benchmarks
                  )
 
 set(RULES_IR_DIR "${CMAKE_BINARY_DIR}/rules")

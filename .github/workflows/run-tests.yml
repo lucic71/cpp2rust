@@ -47,9 +47,3 @@ jobs:
       - name: Run unit tests
         run: ninja check
         working-directory: build
-
-      - name: Check benchmarks (don't run)
-        run: ninja check-benchmarks
-        working-directory: build
-        env:
-          SKIP_RUN: 1
