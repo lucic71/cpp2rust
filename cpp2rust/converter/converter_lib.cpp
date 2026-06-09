@@ -753,29 +753,6 @@ bool IsBuiltinVaStart(const clang::CallExpr *expr) {
   return false;
 }
 
-std::string GetScalarSugarName(clang::QualType qual_type) {
-  if (qual_type->isReferenceType()) {
-    return {};
-  }
-  if (const auto *decltype_type =
-          clang::dyn_cast<clang::DecltypeType>(qual_type.getTypePtr())) {
-    qual_type = decltype_type->getUnderlyingType();
-  }
-  std::string name;
-  if (const auto *typedef_type = qual_type->getAs<clang::TypedefType>()) {
-    if (!qual_type.getCanonicalType()->isBuiltinType()) {
-      return {};
-    }
-    name = typedef_type->getDecl()->getNameAsString();
-  } else if (const auto *predef =
-                 qual_type->getAs<clang::PredefinedSugarType>()) {
-    name = predef->getIdentifier()->getName().str();
-  } else {
-    return {};
-  }
-  return name;
-}
-
 bool NeedsImplicitScalarCast(clang::QualType from, clang::QualType to) {
   return !from.isNull() && !to.isNull() && from->isIntegerType() &&
          to->isIntegerType() &&

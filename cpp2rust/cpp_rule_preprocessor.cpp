@@ -114,11 +114,8 @@ public:
       } else {
         type = var->getUnderlyingType();
       }
-      auto src = GetScalarSugarName(type);
-      if (src.empty()) {
-        src = Mapper::ToString(type);
-      }
-      out_.try_emplace(var->getQualifiedNameAsString(), std::move(src));
+      out_.try_emplace(var->getQualifiedNameAsString(),
+                       Mapper::ToStringSugared(type));
       return;
     }
 

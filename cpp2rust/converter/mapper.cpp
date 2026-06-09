@@ -403,15 +403,17 @@ TranslationRule::ExprRule *search(const clang::Expr *expr) {
 
 std::pair<TranslationRule::TypeRule *, std::vector<std::optional<std::string>>>
 search(clang::QualType qual_type) {
-  if (auto name = GetScalarSugarName(qual_type); !name.empty()) {
-    auto res = search(types_, name, GetTypeMapKey(name));
-    if (res.first) {
-      log() << "search type " << name
-            << ", result: " << res.first->type_info.type << '\n';
-      return res;
-    }
+  auto sugared = ToStringSugared(qual_type);
+  if (auto res = search(types_, sugared, GetTypeMapKey(sugared)); res.first) {
+    log() << "search type " << sugared
+          << ", result: " << res.first->type_info.type << '\n';
+    return res;
   }
   auto type = ToString(qual_type);
+  if (type == sugared) {
+    log() << "search type " << type << ", result: None\n";
+    return {};
+  }
   auto res = search(types_, type, GetTypeMapKey(type));
   log() << "search type " << type
         << ", result: " << (res.first ? res.first->type_info.type : "None")
@@ -765,6 +767,24 @@ std::string ToString(clang::QualType qual_type) {
   llvm::raw_string_ostream os(type);
   normalizeQualType(qual_type).print(os, getPrintPolicy());
   return normalizeTranslationRule(std::move(type));
+}
+
+std::string ToStringSugared(clang::QualType qual_type) {
+  clang::QualType t = qual_type;
+  if (!t->isReferenceType()) {
+    if (const auto *decltype_type =
+            clang::dyn_cast<clang::DecltypeType>(t.getTypePtr())) {
+      t = decltype_type->getUnderlyingType();
+    }
+    if (const auto *typedef_type = t->getAs<clang::TypedefType>()) {
+      if (t.getCanonicalType()->isBuiltinType()) {
+        return typedef_type->getDecl()->getNameAsString();
+      }
+    } else if (const auto *predef = t->getAs<clang::PredefinedSugarType>()) {
+      return predef->getIdentifier()->getName().str();
+    }
+  }
+  return ToString(qual_type);
 }
 
 std::string ToString(const clang::NamedDecl *decl) {
