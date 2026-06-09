@@ -403,7 +403,7 @@ TranslationRule::ExprRule *search(const clang::Expr *expr) {
 
 std::pair<TranslationRule::TypeRule *, std::vector<std::optional<std::string>>>
 search(clang::QualType qual_type) {
-  if (auto name = GetNameOfScalarTypedef(qual_type); !name.empty()) {
+  if (auto name = GetScalarSugarName(qual_type); !name.empty()) {
     auto res = search(types_, name, GetTypeMapKey(name));
     if (res.first) {
       log() << "search type " << name

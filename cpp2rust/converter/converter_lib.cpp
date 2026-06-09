@@ -753,15 +753,54 @@ bool IsBuiltinVaStart(const clang::CallExpr *expr) {
   return false;
 }
 
-std::string GetNameOfScalarTypedef(clang::QualType qual_type) {
-  qual_type = qual_type.getNonReferenceType();
-  const auto *typedef_type =
-      llvm::dyn_cast<clang::TypedefType>(qual_type.getTypePtr());
-  if (!typedef_type || !qual_type.getCanonicalType()->isBuiltinType()) {
+std::string GetScalarSugarName(clang::QualType qual_type) {
+  if (qual_type->isReferenceType()) {
     return {};
   }
-  std::string name = typedef_type->getDecl()->getNameAsString();
-  return qual_type.isConstQualified() ? "const " + name : name;
+  if (const auto *decltype_type =
+          clang::dyn_cast<clang::DecltypeType>(qual_type.getTypePtr())) {
+    qual_type = decltype_type->getUnderlyingType();
+  }
+  std::string name;
+  if (const auto *typedef_type = qual_type->getAs<clang::TypedefType>()) {
+    if (!qual_type.getCanonicalType()->isBuiltinType()) {
+      return {};
+    }
+    name = typedef_type->getDecl()->getNameAsString();
+  } else if (const auto *predef =
+                 qual_type->getAs<clang::PredefinedSugarType>()) {
+    name = predef->getIdentifier()->getName().str();
+  } else {
+    return {};
+  }
+  return name;
+}
+
+bool NeedsImplicitScalarCast(clang::QualType from, clang::QualType to) {
+  return !from.isNull() && !to.isNull() && from->isIntegerType() &&
+         to->isIntegerType() &&
+         from.getCanonicalType().getUnqualifiedType() ==
+             to.getCanonicalType().getUnqualifiedType() &&
+         Mapper::Map(from) != Mapper::Map(to);
+}
+
+bool IsSizeType(clang::QualType type) {
+  auto rust_type = Mapper::Map(type);
+  return rust_type == "usize" || rust_type == "isize";
+}
+
+std::optional<clang::QualType>
+GetOperandImplicitConversionTarget(const clang::BinaryOperator *op,
+                                   const clang::Expr *operand,
+                                   const clang::Expr *sibling) {
+  bool same_type_op = op->isComparisonOp() || op->isAdditiveOp() ||
+                      op->isMultiplicativeOp() || op->isBitwiseOp();
+  if (same_type_op &&
+      NeedsImplicitScalarCast(operand->getType(), sibling->getType()) &&
+      IsSizeType(sibling->getType())) {
+    return sibling->getType();
+  }
+  return std::nullopt;
 }
 
 bool IsBuiltinVaEnd(const clang::CallExpr *expr) {

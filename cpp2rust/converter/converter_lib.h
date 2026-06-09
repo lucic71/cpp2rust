@@ -159,7 +159,7 @@ std::string GetClassName(clang::QualType type);
 
 bool IsVaListType(clang::QualType type);
 
-std::string GetNameOfScalarTypedef(clang::QualType qual_type);
+std::string GetScalarSugarName(clang::QualType qual_type);
 
 bool NeedsImplicitScalarCast(clang::QualType from, clang::QualType to);
 

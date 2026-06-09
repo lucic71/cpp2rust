@@ -114,7 +114,7 @@ public:
       } else {
         type = var->getUnderlyingType();
       }
-      auto src = GetNameOfScalarTypedef(type);
+      auto src = GetScalarSugarName(type);
       if (src.empty()) {
         src = Mapper::ToString(type);
       }
