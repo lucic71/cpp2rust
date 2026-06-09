@@ -46,28 +46,18 @@ unsafe fn f6() -> i32 {
 unsafe fn f7(
     a0: *mut ::rustls_ffi::connection::rustls_connection,
     a1: *mut u8,
-    a2: u64,
-    a3: *mut u64,
+    a2: usize,
+    a3: *mut usize,
 ) -> u32 {
-    ::rustls_ffi::connection::rustls_connection::rustls_connection_read(
-        a0,
-        a1,
-        a2 as usize,
-        a3 as *mut usize,
-    ) as u32
+    ::rustls_ffi::connection::rustls_connection::rustls_connection_read(a0, a1, a2, a3) as u32
 }
 unsafe fn f8(
     a0: *mut ::rustls_ffi::connection::rustls_connection,
     a1: *const u8,
-    a2: u64,
-    a3: *mut u64,
+    a2: usize,
+    a3: *mut usize,
 ) -> u32 {
-    ::rustls_ffi::connection::rustls_connection::rustls_connection_write(
-        a0,
-        a1,
-        a2 as usize,
-        a3 as *mut usize,
-    ) as u32
+    ::rustls_ffi::connection::rustls_connection::rustls_connection_write(a0, a1, a2, a3) as u32
 }
 unsafe fn f9(a0: *mut ::rustls_ffi::connection::rustls_connection) -> u32 {
     ::rustls_ffi::connection::rustls_connection::rustls_connection_process_new_packets(a0) as u32
@@ -90,13 +80,9 @@ unsafe fn f14(a0: *mut ::rustls_ffi::connection::rustls_connection, a1: *mut std
 unsafe fn f15(
     a0: *const ::rustls_ffi::connection::rustls_connection,
     a1: *mut *const u8,
-    a2: *mut u64,
+    a2: *mut usize,
 ) {
-    ::rustls_ffi::connection::rustls_connection::rustls_connection_get_alpn_protocol(
-        a0,
-        a1,
-        a2 as *mut usize,
-    )
+    ::rustls_ffi::connection::rustls_connection::rustls_connection_get_alpn_protocol(a0, a1, a2)
 }
 unsafe fn f16(a0: *const ::rustls_ffi::connection::rustls_connection) -> u16 {
     ::rustls_ffi::connection::rustls_connection::rustls_connection_get_protocol_version(a0)
@@ -115,12 +101,9 @@ unsafe fn f18(
 }
 unsafe fn f19(
     a0: *const ::rustls_ffi::connection::rustls_connection,
-    a1: u64,
+    a1: usize,
 ) -> *const ::rustls_ffi::certificate::rustls_certificate<'static> {
-    ::rustls_ffi::connection::rustls_connection::rustls_connection_get_peer_certificate(
-        a0,
-        a1 as usize,
-    )
+    ::rustls_ffi::connection::rustls_connection::rustls_connection_get_peer_certificate(a0, a1)
 }
 unsafe fn f20(a0: *mut ::rustls_ffi::connection::rustls_connection) {
     ::rustls_ffi::connection::rustls_connection::rustls_connection_free(a0)
@@ -206,29 +189,26 @@ unsafe fn f22(a0: *mut ::rustls_ffi::client::rustls_client_config_builder) {
 unsafe fn f23(
     a0: *const ::rustls_ffi::crypto_provider::rustls_crypto_provider,
     a1: *const u16,
-    a2: u64,
+    a2: usize,
     a3: *mut *mut ::rustls_ffi::client::rustls_client_config_builder,
 ) -> u32 {
     ::rustls_ffi::client::rustls_client_config_builder::rustls_client_config_builder_new_custom(
-        a0,
-        a1,
-        a2 as usize,
-        a3,
+        a0, a1, a2, a3,
     ) as u32
 }
 unsafe fn f24(
     a0: *mut ::rustls_ffi::client::rustls_client_config_builder,
     a1: *const ::rustls_ffi::rslice::rustls_slice_bytes<'static>,
-    a2: u64,
+    a2: usize,
 ) -> u32 {
-    ::rustls_ffi::client::rustls_client_config_builder::rustls_client_config_builder_set_alpn_protocols(a0, a1, a2 as usize) as u32
+    ::rustls_ffi::client::rustls_client_config_builder::rustls_client_config_builder_set_alpn_protocols(a0, a1, a2) as u32
 }
 unsafe fn f25(
     a0: *mut ::rustls_ffi::client::rustls_client_config_builder,
     a1: *const *const ::rustls_ffi::certificate::rustls_certified_key,
-    a2: u64,
+    a2: usize,
 ) -> u32 {
-    ::rustls_ffi::client::rustls_client_config_builder::rustls_client_config_builder_set_certified_key(a0, a1, a2 as usize) as u32
+    ::rustls_ffi::client::rustls_client_config_builder::rustls_client_config_builder_set_certified_key(a0, a1, a2) as u32
 }
 unsafe fn f26(
     a0: *mut ::rustls_ffi::client::rustls_client_config_builder,
@@ -254,24 +234,19 @@ unsafe fn f28(
 unsafe fn f29(
     a0: *const ::rustls_ffi::certificate::rustls_certificate<'static>,
     a1: *mut *const u8,
-    a2: *mut u64,
+    a2: *mut usize,
 ) -> u32 {
-    ::rustls_ffi::certificate::rustls_certificate_get_der(a0, a1, a2 as *mut usize) as u32
+    ::rustls_ffi::certificate::rustls_certificate_get_der(a0, a1, a2) as u32
 }
 unsafe fn f30(
     a0: *const u8,
-    a1: u64,
+    a1: usize,
     a2: *const u8,
-    a3: u64,
+    a3: usize,
     a4: *mut *const ::rustls_ffi::certificate::rustls_certified_key,
 ) -> u32 {
-    ::rustls_ffi::certificate::rustls_certified_key::rustls_certified_key_build(
-        a0,
-        a1 as usize,
-        a2,
-        a3 as usize,
-        a4,
-    ) as u32
+    ::rustls_ffi::certificate::rustls_certified_key::rustls_certified_key_build(a0, a1, a2, a3, a4)
+        as u32
 }
 unsafe fn f31(a0: *const ::rustls_ffi::certificate::rustls_certified_key) {
     ::rustls_ffi::certificate::rustls_certified_key::rustls_certified_key_free(a0)
@@ -282,10 +257,10 @@ unsafe fn f32(a0: *const ::rustls_ffi::certificate::rustls_certified_key) -> u32
 unsafe fn f33(
     a0: *mut ::rustls_ffi::certificate::rustls_root_cert_store_builder,
     a1: *const u8,
-    a2: u64,
+    a2: usize,
     a3: bool,
 ) -> u32 {
-    ::rustls_ffi::certificate::rustls_root_cert_store_builder::rustls_root_cert_store_builder_add_pem(a0, a1, a2 as usize, a3) as u32
+    ::rustls_ffi::certificate::rustls_root_cert_store_builder::rustls_root_cert_store_builder_add_pem(a0, a1, a2, a3) as u32
 }
 unsafe fn f34(
     a0: *mut ::rustls_ffi::certificate::rustls_root_cert_store_builder,
@@ -329,25 +304,22 @@ unsafe fn f41(a0: *mut *mut ::rustls_ffi::crypto_provider::rustls_crypto_provide
 unsafe fn f42(
     a0: *mut ::rustls_ffi::crypto_provider::rustls_crypto_provider_builder,
     a1: *const *const ::rustls_ffi::cipher::rustls_supported_ciphersuite,
-    a2: u64,
+    a2: usize,
 ) -> u32 {
-    ::rustls_ffi::crypto_provider::rustls_crypto_provider_builder_set_cipher_suites(
-        a0,
-        a1,
-        a2 as usize,
-    ) as u32
+    ::rustls_ffi::crypto_provider::rustls_crypto_provider_builder_set_cipher_suites(a0, a1, a2)
+        as u32
 }
 unsafe fn f43(a0: *const ::rustls_ffi::crypto_provider::rustls_crypto_provider) {
     ::rustls_ffi::crypto_provider::rustls_crypto_provider_free(a0)
 }
-unsafe fn f44(a0: u64) -> *const ::rustls_ffi::cipher::rustls_supported_ciphersuite {
-    ::rustls_ffi::crypto_provider::rustls_default_crypto_provider_ciphersuites_get(a0 as usize)
+unsafe fn f44(a0: usize) -> *const ::rustls_ffi::cipher::rustls_supported_ciphersuite {
+    ::rustls_ffi::crypto_provider::rustls_default_crypto_provider_ciphersuites_get(a0)
 }
-unsafe fn f45() -> u64 {
-    ::rustls_ffi::crypto_provider::rustls_default_crypto_provider_ciphersuites_len() as u64
+unsafe fn f45() -> usize {
+    ::rustls_ffi::crypto_provider::rustls_default_crypto_provider_ciphersuites_len()
 }
-unsafe fn f46(a0: *mut u8, a1: u64) -> u32 {
-    ::rustls_ffi::crypto_provider::rustls_default_crypto_provider_random(a0, a1 as usize) as u32
+unsafe fn f46(a0: *mut u8, a1: usize) -> u32 {
+    ::rustls_ffi::crypto_provider::rustls_default_crypto_provider_random(a0, a1) as u32
 }
 
 unsafe fn f47(a0: *mut *mut ::rustls_ffi::verifier::rustls_server_cert_verifier) -> u32 {
@@ -360,7 +332,7 @@ unsafe fn f48(a0: *mut ::rustls_ffi::verifier::rustls_server_cert_verifier) {
 unsafe fn f49(
     a0: *mut ::rustls_ffi::verifier::rustls_web_pki_server_cert_verifier_builder,
     a1: *const u8,
-    a2: u64,
+    a2: usize,
 ) -> u32 {
     unsafe extern "C" {
         fn rustls_web_pki_server_cert_verifier_builder_add_crl(
@@ -369,7 +341,7 @@ unsafe fn f49(
             crl_pem_len: usize,
         ) -> ::rustls_ffi::rustls_result;
     }
-    rustls_web_pki_server_cert_verifier_builder_add_crl(a0, a1, a2 as usize) as u32
+    rustls_web_pki_server_cert_verifier_builder_add_crl(a0, a1, a2) as u32
 }
 unsafe fn f50(
     a0: *mut ::rustls_ffi::verifier::rustls_web_pki_server_cert_verifier_builder,
@@ -415,13 +387,8 @@ unsafe fn f55() -> ::rustls_ffi::rslice::rustls_str<'static> {
     ::rustls_ffi::version::rustls_version()
 }
 
-unsafe fn f56(a0: u32, a1: *mut u8, a2: u64, a3: *mut u64) {
-    ::rustls_ffi::rustls_result::rustls_error(
-        a0,
-        a1 as *mut ::std::ffi::c_char,
-        a2 as usize,
-        a3 as *mut usize,
-    )
+unsafe fn f56(a0: u32, a1: *mut u8, a2: usize, a3: *mut usize) {
+    ::rustls_ffi::rustls_result::rustls_error(a0, a1 as *mut ::std::ffi::c_char, a2, a3)
 }
 unsafe fn f57(a0: u32) -> bool {
     ::rustls_ffi::rustls_result::rustls_result_is_cert_error(a0)
@@ -429,35 +396,35 @@ unsafe fn f57(a0: u32) -> bool {
 
 unsafe fn f58(
     a0: *mut ::rustls_ffi::connection::rustls_connection,
-    a1: unsafe fn(*mut ::libc::c_void, *mut u8, u64, *mut u64) -> i32,
+    a1: unsafe fn(*mut ::libc::c_void, *mut u8, usize, *mut usize) -> i32,
     a2: *mut ::libc::c_void,
-    a3: *mut u64,
+    a3: *mut usize,
 ) -> i32 {
     ::rustls_ffi::connection::rustls_connection::rustls_connection_read_tls(
         a0,
         std::mem::transmute::<*const (), ::rustls_ffi::io::rustls_read_callback>(a1 as *const ()),
         a2,
-        a3 as *mut usize,
+        a3,
     )
     .0
 }
 unsafe fn f59(
     a0: *mut ::rustls_ffi::connection::rustls_connection,
-    a1: unsafe fn(*mut ::libc::c_void, *const u8, u64, *mut u64) -> i32,
+    a1: unsafe fn(*mut ::libc::c_void, *const u8, usize, *mut usize) -> i32,
     a2: *mut ::libc::c_void,
-    a3: *mut u64,
+    a3: *mut usize,
 ) -> i32 {
     ::rustls_ffi::connection::rustls_connection::rustls_connection_write_tls(
         a0,
         std::mem::transmute::<*const (), ::rustls_ffi::io::rustls_write_callback>(a1 as *const ()),
         a2,
-        a3 as *mut usize,
+        a3,
     )
     .0
 }
 unsafe fn f60(
     a0: *mut ::rustls_ffi::client::rustls_client_config_builder,
-    a1: unsafe fn(::rustls_ffi::rslice::rustls_str<'static>, *const u8, u64, *const u8, u64),
+    a1: unsafe fn(::rustls_ffi::rslice::rustls_str<'static>, *const u8, usize, *const u8, usize),
     a2: Option<unsafe fn(::rustls_ffi::rslice::rustls_str<'static>) -> i32>,
 ) -> u32 {
     ::rustls_ffi::client::rustls_client_config_builder::rustls_client_config_builder_set_key_log(

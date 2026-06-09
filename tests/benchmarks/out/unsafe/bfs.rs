@@ -10,9 +10,9 @@ use std::rc::Rc;
 #[derive(Copy, Clone, Default)]
 pub struct Queue {
     pub elems: *mut u32,
-    pub front: u64,
-    pub back: u64,
-    pub capacity: u64,
+    pub front: usize,
+    pub back: usize,
+    pub capacity: usize,
 }
 impl Queue {
     pub unsafe fn enqueue(&mut self, mut elem: i32) {
@@ -27,13 +27,13 @@ impl Queue {
         }
         let mut elem: u32 = (*self.elems.offset((self.front.postfix_inc()) as isize));
         if ((self.front) == (self.back)) {
-            self.front = 0_u64;
-            self.back = 0_u64;
+            self.front = 0_usize;
+            self.back = 0_usize;
         }
         return elem;
     }
     pub unsafe fn empty(&self) -> bool {
-        return ((self.back) == (0_u64));
+        return ((self.back) == (0_usize));
     }
 }
 #[repr(C)]
@@ -63,23 +63,23 @@ impl Graph {
 pub unsafe fn BFS_0(graph: *const Graph, mut start_vertex: u32) -> *mut u32 {
     let mut Q: Queue = Queue {
         elems: Box::leak(
-            (0..((*graph).V as u64))
+            (0..((*graph).V as usize))
                 .map(|_| 0_u32)
                 .collect::<Box<[u32]>>(),
         )
         .as_mut_ptr(),
-        front: 0_u64,
-        back: 0_u64,
-        capacity: ((*graph).V as u64),
+        front: 0_usize,
+        back: 0_usize,
+        capacity: ((*graph).V as usize),
     };
     let mut visited: *mut bool = Box::leak(
-        (0..((*graph).V as u64))
+        (0..((*graph).V as usize))
             .map(|_| false)
             .collect::<Box<[bool]>>(),
     )
     .as_mut_ptr();
     let mut pred: *mut u32 = Box::leak(
-        (0..((*graph).V as u64))
+        (0..((*graph).V as usize))
             .map(|_| 0_u32)
             .collect::<Box<[u32]>>(),
     )
@@ -129,7 +129,7 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    let V: u64 = 5000_u64;
+    let V: usize = 5000_usize;
     let mut graph: Graph = Graph {
         V: (V as u32),
         adj: Box::leak(
@@ -140,14 +140,14 @@ unsafe fn main_0() -> i32 {
         .as_mut_ptr(),
     };
     let mut i: u32 = 0_u32;
-    'loop_: while ((i as u64) < (V)) {
+    'loop_: while ((i as usize) < (V)) {
         (*graph.adj.offset((i) as isize)) = std::ptr::null_mut();
         i.prefix_inc();
     }
     let mut i: u32 = 0_u32;
-    'loop_: while ((i as u64) < (V)) {
+    'loop_: while ((i as usize) < (V)) {
         let mut j: u32 = (i).wrapping_add(1_u32);
-        'loop_: while ((j as u64) < (V)) {
+        'loop_: while ((j as usize) < (V)) {
             (unsafe {
                 let _src: u32 = i;
                 let _dst: u32 = j;
@@ -162,7 +162,7 @@ unsafe fn main_0() -> i32 {
         BFS_0(_graph, 0_u32)
     });
     let mut i: u32 = 0_u32;
-    'loop_: while ((i as u64) < (V)) {
+    'loop_: while ((i as usize) < (V)) {
         let mut head: *mut GraphNode = (*graph.adj.offset((i) as isize));
         'loop_: while !((head).is_null()) {
             let mut next: *mut GraphNode = (*head).next;
