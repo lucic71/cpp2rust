@@ -131,7 +131,7 @@ unsafe fn main_0() -> i32 {
     assert!(((sd) == (-7_i32 as isize)));
     assert!(((sd) < (0_isize)));
     let mut l: i64 = 3_i64;
-    let mut sm: isize = (((s2) + ((l) as isize)) as isize);
+    let mut sm: isize = ((((s2) as i64) + (l)) as isize);
     assert!(((sm) == (15_isize)));
     assert!(((sm) > ((l) as isize)));
     let mut smin: isize = (({

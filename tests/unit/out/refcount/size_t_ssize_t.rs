@@ -177,7 +177,7 @@ fn main_0() -> i32 {
     assert!(((*sd.borrow()) < 0_isize));
     let l: Value<i64> = Rc::new(RefCell::new(3_i64));
     let sm: Value<isize> = Rc::new(RefCell::new(
-        (((*s2.borrow()) + ((*l.borrow()) as isize)) as isize),
+        ((((*s2.borrow()) as i64) + (*l.borrow())) as isize),
     ));
     assert!(((*sm.borrow()) == 15_isize));
     assert!(((*sm.borrow()) > ((*l.borrow()) as isize)));
