@@ -26,11 +26,11 @@ unsafe fn main_0() -> i32 {
         v1.resize_with(__a0, || <i32>::default())
     };
     assert!(((v1.len()) == (100_usize)));
-    assert!(((v1[(99_usize) as usize]) == (0)));
-    v1[(0_usize) as usize] = 40;
-    v1[(99_usize) as usize] = 50;
-    assert!(((v1[(0_usize) as usize]) == (40)));
-    assert!(((v1[(99_usize) as usize]) == (50)));
+    assert!(((v1[(99_usize)]) == (0)));
+    v1[(0_usize)] = 40;
+    v1[(99_usize)] = 50;
+    assert!(((v1[(0_usize)]) == (40)));
+    assert!(((v1[(99_usize)]) == (50)));
     let mut v2: Vec<i32> = Vec::new();
     assert!(((v2.len()) == (0_usize)));
     v2.push(1);
@@ -43,8 +43,8 @@ unsafe fn main_0() -> i32 {
         v2.as_mut_ptr()
     };
     assert!(((v2.len()) == (2_usize)));
-    assert!(((v2[(0_usize) as usize]) == (2)));
-    assert!(((v2[(1_usize) as usize]) == (3)));
+    assert!(((v2[(0_usize)]) == (2)));
+    assert!(((v2[(1_usize)]) == (3)));
     {
         let pos = v2.as_mut_ptr().offset_from(v2.as_ptr()) as usize;
         v2.insert(pos, 100);
@@ -54,15 +54,15 @@ unsafe fn main_0() -> i32 {
         copy_0(_copy_vector)
     });
     assert!(((v2.len()) == (3_usize)));
-    assert!(((v2[(0_usize) as usize]) == (100)));
-    assert!(((v2[(1_usize) as usize]) == (2)));
-    assert!(((v2[(2_usize) as usize]) == (3)));
+    assert!(((v2[(0_usize)]) == (100)));
+    assert!(((v2[(1_usize)]) == (2)));
+    assert!(((v2[(2_usize)]) == (3)));
     let mut s2: usize = v2.len();
     let mut v3: Vec<i32> = vec![1; 100_usize as usize];
     assert!(((v3.len()) == (100_usize)));
     let mut i: i32 = 0;
     'loop_: while ((i) < (100)) {
-        assert!(((v3[(i as usize) as usize]) == (1)));
+        assert!(((v3[(i as usize)]) == (1)));
         i.prefix_inc();
     }
     let mut v4: Vec<*mut i32> = (0..(100_usize) as usize)
@@ -71,7 +71,7 @@ unsafe fn main_0() -> i32 {
     assert!(((v4.len()) == (100_usize)));
     let mut i: u32 = 0_u32;
     'loop_: while ((i as usize) < (v4.len())) {
-        assert!((v4[(i as usize) as usize]).is_null());
+        assert!((v4[(i as usize)]).is_null());
         i.prefix_inc();
     }
     let mut v5: Vec<*const i32> = (0..(100_usize) as usize)
@@ -80,14 +80,14 @@ unsafe fn main_0() -> i32 {
     assert!(((v5.len()) == (100_usize)));
     let mut i: u32 = 0_u32;
     'loop_: while ((i as usize) < (v5.len())) {
-        assert!((v5[(i as usize) as usize]).is_null());
+        assert!((v5[(i as usize)]).is_null());
         i.prefix_inc();
     }
     let mut v6: Vec<f64> = vec![2.0E+0; s2 as usize];
     assert!(((v6.len()) == (s2)));
     let mut i: u32 = 0_u32;
     'loop_: while ((i as usize) < (s2)) {
-        assert!(((v6[(i as usize) as usize]) == (2.0E+0)));
+        assert!(((v6[(i as usize)]) == (2.0E+0)));
         i.prefix_inc();
     }
     let mut v7: Vec<(*const i32, i32)> = (0..(200_usize) as usize)
@@ -96,25 +96,23 @@ unsafe fn main_0() -> i32 {
     assert!(((v7.len()) == (200_usize)));
     let mut i: u32 = 0_u32;
     'loop_: while ((i) < (200_u32)) {
-        assert!(
-            ((v7[(i as usize) as usize].0).is_null()) && ((v7[(i as usize) as usize].1) == (0))
-        );
+        assert!(((v7[(i as usize)].0).is_null()) && ((v7[(i as usize)].1) == (0)));
         i.prefix_inc();
     }
     let mut p1: *const f64 = (v6.as_mut_ptr()).cast_const();
     assert!(((*p1) == (2.0E+0)));
     let mut p2: *mut i32 = v3.as_mut_ptr();
     assert!(((*p2) == (1)));
-    assert!(((v3[(0_usize) as usize]) == (1)));
-    assert!(((v3[(1_usize) as usize]) == (1)));
+    assert!(((v3[(0_usize)]) == (1)));
+    assert!(((v3[(1_usize)]) == (1)));
     (*p2) = (9.9E+1 as i32);
     assert!(((*p2) == (99)));
-    assert!(((v3[(0_usize) as usize]) == (99)));
-    assert!(((v3[(1_usize) as usize]) == (1)));
+    assert!(((v3[(0_usize)]) == (99)));
+    assert!(((v3[(1_usize)]) == (1)));
     p2.prefix_inc();
     (*p2) = 98;
-    assert!(((v3[(0_usize) as usize]) == (99)));
-    assert!(((v3[(1_usize) as usize]) == (98)));
+    assert!(((v3[(0_usize)]) == (99)));
+    assert!(((v3[(1_usize)]) == (98)));
     assert!(((v3.capacity()) == (100_usize)));
     assert!(((v3.len()) == (100_usize)));
     if 200_usize as usize > v3.capacity() as usize {

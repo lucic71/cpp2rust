@@ -74,7 +74,7 @@ pub unsafe fn RndStuff_2() {
     )));
     let mut i: i32 = 0;
     'loop_: while ((i) < (100)) {
-        x2.as_mut().unwrap()[(i as usize) as usize] = 1;
+        x2.as_mut().unwrap()[(i as usize)] = 1;
         i.prefix_inc();
     }
     x2 = Some(Box::from_raw(Box::leak(
@@ -82,7 +82,7 @@ pub unsafe fn RndStuff_2() {
     )));
     let mut i: i32 = 0;
     'loop_: while ((i) < (200)) {
-        x2.as_mut().unwrap()[(i as usize) as usize] = 2;
+        x2.as_mut().unwrap()[(i as usize)] = 2;
         i.prefix_inc();
     }
     let mut p2: *mut i32 = x2
@@ -100,7 +100,7 @@ pub unsafe fn RndStuff_2() {
     );
     let mut i: i32 = 0;
     'loop_: while ((i) < (10)) {
-        x3.as_mut().unwrap()[(i as usize) as usize] = Pair { x: 1, y: 2 };
+        x3.as_mut().unwrap()[(i as usize)] = Pair { x: 1, y: 2 };
         i.prefix_inc();
     }
     let mut p3_0: *mut Pair = x3
@@ -110,7 +110,7 @@ pub unsafe fn RndStuff_2() {
     'loop_: while ((i) < (10)) {
         assert!((((*p3_0.offset((i) as isize)).x) == (1)));
         assert!((((*p3_0.offset((i) as isize)).y) == (2)));
-        (unsafe { x3.as_mut().unwrap()[(i as usize) as usize].inc(10) });
+        (unsafe { x3.as_mut().unwrap()[(i as usize)].inc(10) });
         assert!((((*p3_0.offset((i) as isize)).x) == (11)));
         assert!((((*p3_0.offset((i) as isize)).y) == (12)));
         i.prefix_inc();
@@ -122,7 +122,7 @@ pub unsafe fn RndStuff_2() {
     )));
     let mut i: i32 = 0;
     'loop_: while ((i) < (50)) {
-        x3.as_mut().unwrap()[(i as usize) as usize] = Pair {
+        x3.as_mut().unwrap()[(i as usize)] = Pair {
             x: -1_i32,
             y: -2_i32,
         };
@@ -138,7 +138,7 @@ pub unsafe fn RndStuff_2() {
         assert!((((*p3_1.offset((i) as isize)).y) == (-2_i32)));
         (unsafe {
             let _k: i32 = -10_i32;
-            x3.as_mut().unwrap()[(i as usize) as usize].inc(_k)
+            x3.as_mut().unwrap()[(i as usize)].inc(_k)
         });
         assert!((((*p3_1.offset((i) as isize)).x) == (-11_i32)));
         assert!((((*p3_1.offset((i) as isize)).y) == (-12_i32)));

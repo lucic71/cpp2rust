@@ -98,13 +98,13 @@ unsafe fn main_0() -> i32 {
         .wrapping_div(::std::mem::size_of::<i32>() as usize);
     let mut i: usize = 0_usize;
     'loop_: while ((i) < (count)) {
-        data[(i) as usize] = (((i).wrapping_mul(2_usize)) as i32);
+        data[(i)] = (((i).wrapping_mul(2_usize)) as i32);
         i.postfix_inc();
     }
     let mut total: usize = 0_usize;
     let mut i: usize = 0_usize;
     'loop_: while ((i) < (count)) {
-        total = (total).wrapping_add((data[(i) as usize] as usize));
+        total = (total).wrapping_add((data[(i)] as usize));
         i.postfix_inc();
     }
     assert!(((total) == (56_usize)));
@@ -120,7 +120,7 @@ unsafe fn main_0() -> i32 {
     } else {
         0
     } as usize);
-    assert!(((arr[(idx) as usize]) == (2_usize)));
+    assert!(((arr[(idx)]) == (2_usize)));
     let mut s1: isize = 5_isize;
     let mut s2: isize = 12_isize;
     let mut sd: isize = (unsafe {

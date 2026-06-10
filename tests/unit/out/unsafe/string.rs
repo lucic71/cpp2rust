@@ -18,11 +18,11 @@ unsafe fn main_0() -> i32 {
     };
     assert!(((s1.len() - 1) == (5_usize)));
     assert!(((s1.len() - 1) == (s1.len() - 1)));
-    assert!(((s1[(0_usize) as usize] as i32) == (('h' as u8) as i32)));
-    assert!(((s1[(1_usize) as usize] as i32) == (('e' as u8) as i32)));
-    assert!(((s1[(2_usize) as usize] as i32) == (('l' as u8) as i32)));
-    assert!(((s1[(3_usize) as usize] as i32) == (('l' as u8) as i32)));
-    assert!(((s1[(4_usize) as usize] as i32) == (('o' as u8) as i32)));
+    assert!(((s1[(0_usize)] as i32) == (('h' as u8) as i32)));
+    assert!(((s1[(1_usize)] as i32) == (('e' as u8) as i32)));
+    assert!(((s1[(2_usize)] as i32) == (('l' as u8) as i32)));
+    assert!(((s1[(3_usize)] as i32) == (('l' as u8) as i32)));
+    assert!(((s1[(4_usize)] as i32) == (('o' as u8) as i32)));
     assert!(
         s1 == {
             let s = b"hello\0".as_ptr();
@@ -46,21 +46,21 @@ unsafe fn main_0() -> i32 {
     'loop_: while ((i as usize) < (s2.len() - 1)) {
         assert!(
             (((*p2.offset((i) as isize)) as i32) == (('a' as u8) as i32))
-                && ((s2[(i as usize) as usize] as i32) == (('a' as u8) as i32))
+                && ((s2[(i as usize)] as i32) == (('a' as u8) as i32))
         );
         i.prefix_inc();
     }
     assert!(((s2.len() - 1) == (10_usize)));
     assert!(((s2.len() - 1) == (s2.len() - 1)));
-    s2[(0_usize) as usize] = ('b' as u8);
-    s2[(1_usize) as usize] = ('c' as u8);
-    assert!(((s2[(0_usize) as usize] as i32) == (('b' as u8) as i32)));
-    assert!(((s2[(1_usize) as usize] as i32) == (('c' as u8) as i32)));
+    s2[(0_usize)] = ('b' as u8);
+    s2[(1_usize)] = ('c' as u8);
+    assert!(((s2[(0_usize)] as i32) == (('b' as u8) as i32)));
+    assert!(((s2[(1_usize)] as i32) == (('c' as u8) as i32)));
     let mut i: u32 = 2_u32;
     'loop_: while ((i as usize) < (s2.len() - 1)) {
         assert!(
             (((*p2.offset((i) as isize)) as i32) == (('a' as u8) as i32))
-                && ((s2[(i as usize) as usize] as i32) == (('a' as u8) as i32))
+                && ((s2[(i as usize)] as i32) == (('a' as u8) as i32))
         );
         i.prefix_inc();
     }
@@ -76,7 +76,7 @@ unsafe fn main_0() -> i32 {
     let mut p3: *const u8 = (s3.as_mut_ptr()).cast_const();
     let mut i: u32 = 0_u32;
     'loop_: while ((i as usize) < (s3.len() - 1)) {
-        assert!((((*p3.offset((i) as isize)) as i32) == (s3[(i as usize) as usize] as i32)));
+        assert!((((*p3.offset((i) as isize)) as i32) == (s3[(i as usize)] as i32)));
         i.prefix_inc();
     }
     let mut s4: Vec<u8> = {
@@ -103,7 +103,7 @@ unsafe fn main_0() -> i32 {
     let mut p4: *const u8 = (s4.as_mut_ptr()).cast_const();
     let mut i: u32 = 0_u32;
     'loop_: while ((i as usize) < (s4.len() - 1)) {
-        assert!((((*p4.offset((i) as isize)) as i32) == (s4[(i as usize) as usize] as i32)));
+        assert!((((*p4.offset((i) as isize)) as i32) == (s4[(i as usize)] as i32)));
         i.prefix_inc();
     }
     let mut s5: Vec<u8> = {
@@ -122,7 +122,7 @@ unsafe fn main_0() -> i32 {
     let mut p5: *const u8 = (s5.as_mut_ptr()).cast_const();
     let mut i: u32 = 0_u32;
     'loop_: while ((i as usize) < (s5.len() - 1)) {
-        assert!((((*p5.offset((i) as isize)) as i32) == (s5[(i as usize) as usize] as i32)));
+        assert!((((*p5.offset((i) as isize)) as i32) == (s5[(i as usize)] as i32)));
         i.prefix_inc();
     }
     let mut arr: [u8; 7] = [
@@ -142,9 +142,9 @@ unsafe fn main_0() -> i32 {
             .chain(std::iter::once(0))
             .collect();
     assert!(((string.len() - 1) == (3_usize)));
-    assert!(((string[(0_usize) as usize] as i32) == (('b' as u8) as i32)));
-    assert!(((string[(1_usize) as usize] as i32) == (('a' as u8) as i32)));
-    assert!(((string[(2_usize) as usize] as i32) == (('r' as u8) as i32)));
+    assert!(((string[(0_usize)] as i32) == (('b' as u8) as i32)));
+    assert!(((string[(1_usize)] as i32) == (('a' as u8) as i32)));
+    assert!(((string[(2_usize)] as i32) == (('r' as u8) as i32)));
     assert!(
         string == {
             let s = b"bar\0".as_ptr();
@@ -158,9 +158,9 @@ unsafe fn main_0() -> i32 {
         string.push(0)
     };
     assert!(((string.len() - 1) == (3_usize)));
-    assert!(((string[(0_usize) as usize] as i32) == (('b' as u8) as i32)));
-    assert!(((string[(1_usize) as usize] as i32) == (('a' as u8) as i32)));
-    assert!(((string[(2_usize) as usize] as i32) == (('r' as u8) as i32)));
+    assert!(((string[(0_usize)] as i32) == (('b' as u8) as i32)));
+    assert!(((string[(1_usize)] as i32) == (('a' as u8) as i32)));
+    assert!(((string[(2_usize)] as i32) == (('r' as u8) as i32)));
     assert!(
         string == {
             let s = b"bar\0".as_ptr();
@@ -174,27 +174,27 @@ unsafe fn main_0() -> i32 {
         string.push(0)
     };
     assert!(((string.len() - 1) == (5_usize)));
-    assert!(((string[(0_usize) as usize] as i32) == (('b' as u8) as i32)));
-    assert!(((string[(1_usize) as usize] as i32) == (('a' as u8) as i32)));
-    assert!(((string[(2_usize) as usize] as i32) == (('r' as u8) as i32)));
-    assert!(((string[(3_usize) as usize] as i32) == (0)));
-    assert!(((string[(4_usize) as usize] as i32) == (0)));
-    string[(3_usize) as usize] = ('a' as u8);
-    string[(4_usize) as usize] = ('b' as u8);
-    assert!(((string[(3_usize) as usize] as i32) == (('a' as u8) as i32)));
-    assert!(((string[(4_usize) as usize] as i32) == (('b' as u8) as i32)));
-    string[(3_usize) as usize] = 0_u8;
-    string[(4_usize) as usize] = 0_u8;
+    assert!(((string[(0_usize)] as i32) == (('b' as u8) as i32)));
+    assert!(((string[(1_usize)] as i32) == (('a' as u8) as i32)));
+    assert!(((string[(2_usize)] as i32) == (('r' as u8) as i32)));
+    assert!(((string[(3_usize)] as i32) == (0)));
+    assert!(((string[(4_usize)] as i32) == (0)));
+    string[(3_usize)] = ('a' as u8);
+    string[(4_usize)] = ('b' as u8);
+    assert!(((string[(3_usize)] as i32) == (('a' as u8) as i32)));
+    assert!(((string[(4_usize)] as i32) == (('b' as u8) as i32)));
+    string[(3_usize)] = 0_u8;
+    string[(4_usize)] = 0_u8;
     {
         string.pop();
         string.resize((4_usize) as usize, 0);
         string.push(0)
     };
     assert!(((string.len() - 1) == (4_usize)));
-    assert!(((string[(0_usize) as usize] as i32) == (('b' as u8) as i32)));
-    assert!(((string[(1_usize) as usize] as i32) == (('a' as u8) as i32)));
-    assert!(((string[(2_usize) as usize] as i32) == (('r' as u8) as i32)));
-    assert!(((string[(3_usize) as usize] as i32) == (0)));
+    assert!(((string[(0_usize)] as i32) == (('b' as u8) as i32)));
+    assert!(((string[(1_usize)] as i32) == (('a' as u8) as i32)));
+    assert!(((string[(2_usize)] as i32) == (('r' as u8) as i32)));
+    assert!(((string[(3_usize)] as i32) == (0)));
     let mut result: Vec<u8> = {
         let mut __tmp2 = string.clone();
         __tmp2.pop();
@@ -207,14 +207,14 @@ unsafe fn main_0() -> i32 {
         __tmp2
     };
     assert!(((result.len() - 1) == (8_usize)));
-    assert!(((result[(0_usize) as usize] as i32) == (('b' as u8) as i32)));
-    assert!(((result[(1_usize) as usize] as i32) == (('a' as u8) as i32)));
-    assert!(((result[(2_usize) as usize] as i32) == (('r' as u8) as i32)));
-    assert!(((result[(3_usize) as usize] as i32) == (0)));
-    assert!(((result[(4_usize) as usize] as i32) == ((' ' as u8) as i32)));
-    assert!(((result[(5_usize) as usize] as i32) == (('f' as u8) as i32)));
-    assert!(((result[(6_usize) as usize] as i32) == (('o' as u8) as i32)));
-    assert!(((result[(7_usize) as usize] as i32) == (('o' as u8) as i32)));
+    assert!(((result[(0_usize)] as i32) == (('b' as u8) as i32)));
+    assert!(((result[(1_usize)] as i32) == (('a' as u8) as i32)));
+    assert!(((result[(2_usize)] as i32) == (('r' as u8) as i32)));
+    assert!(((result[(3_usize)] as i32) == (0)));
+    assert!(((result[(4_usize)] as i32) == ((' ' as u8) as i32)));
+    assert!(((result[(5_usize)] as i32) == (('f' as u8) as i32)));
+    assert!(((result[(6_usize)] as i32) == (('o' as u8) as i32)));
+    assert!(((result[(7_usize)] as i32) == (('o' as u8) as i32)));
     let mut substr_0: Vec<u8> = {
         let mut __tmp1 = result
             [(5_usize) as usize..::std::cmp::min((5_usize + 3_usize) as usize, result.len() - 1)]
@@ -223,9 +223,9 @@ unsafe fn main_0() -> i32 {
         __tmp1
     };
     assert!(((substr_0.len() - 1) == (3_usize)));
-    assert!(((substr_0[(0_usize) as usize] as i32) == (('f' as u8) as i32)));
-    assert!(((substr_0[(1_usize) as usize] as i32) == (('o' as u8) as i32)));
-    assert!(((substr_0[(2_usize) as usize] as i32) == (('o' as u8) as i32)));
+    assert!(((substr_0[(0_usize)] as i32) == (('f' as u8) as i32)));
+    assert!(((substr_0[(1_usize)] as i32) == (('o' as u8) as i32)));
+    assert!(((substr_0[(2_usize)] as i32) == (('o' as u8) as i32)));
     let mut substr_1: Vec<u8> = {
         let mut __tmp1 = result
             [(0_usize) as usize..::std::cmp::min((0_usize + 5_usize) as usize, result.len() - 1)]
@@ -234,11 +234,11 @@ unsafe fn main_0() -> i32 {
         __tmp1
     };
     assert!(((substr_1.len() - 1) == (5_usize)));
-    assert!(((substr_1[(0_usize) as usize] as i32) == (('b' as u8) as i32)));
-    assert!(((substr_1[(1_usize) as usize] as i32) == (('a' as u8) as i32)));
-    assert!(((substr_1[(2_usize) as usize] as i32) == (('r' as u8) as i32)));
-    assert!(((substr_1[(3_usize) as usize] as i32) == (0)));
-    assert!(((substr_1[(4_usize) as usize] as i32) == ((' ' as u8) as i32)));
+    assert!(((substr_1[(0_usize)] as i32) == (('b' as u8) as i32)));
+    assert!(((substr_1[(1_usize)] as i32) == (('a' as u8) as i32)));
+    assert!(((substr_1[(2_usize)] as i32) == (('r' as u8) as i32)));
+    assert!(((substr_1[(3_usize)] as i32) == (0)));
+    assert!(((substr_1[(4_usize)] as i32) == ((' ' as u8) as i32)));
     let mut substr_2: Vec<u8> = {
         let mut __tmp1 = result
             [(0_usize) as usize..::std::cmp::min((0_usize + 15_usize) as usize, result.len() - 1)]
@@ -247,14 +247,14 @@ unsafe fn main_0() -> i32 {
         __tmp1
     };
     assert!(((substr_2.len() - 1) == (8_usize)));
-    assert!(((substr_2[(0_usize) as usize] as i32) == (('b' as u8) as i32)));
-    assert!(((substr_2[(1_usize) as usize] as i32) == (('a' as u8) as i32)));
-    assert!(((substr_2[(2_usize) as usize] as i32) == (('r' as u8) as i32)));
-    assert!(((substr_2[(3_usize) as usize] as i32) == (0)));
-    assert!(((substr_2[(4_usize) as usize] as i32) == ((' ' as u8) as i32)));
-    assert!(((substr_2[(5_usize) as usize] as i32) == (('f' as u8) as i32)));
-    assert!(((substr_2[(6_usize) as usize] as i32) == (('o' as u8) as i32)));
-    assert!(((substr_2[(7_usize) as usize] as i32) == (('o' as u8) as i32)));
+    assert!(((substr_2[(0_usize)] as i32) == (('b' as u8) as i32)));
+    assert!(((substr_2[(1_usize)] as i32) == (('a' as u8) as i32)));
+    assert!(((substr_2[(2_usize)] as i32) == (('r' as u8) as i32)));
+    assert!(((substr_2[(3_usize)] as i32) == (0)));
+    assert!(((substr_2[(4_usize)] as i32) == ((' ' as u8) as i32)));
+    assert!(((substr_2[(5_usize)] as i32) == (('f' as u8) as i32)));
+    assert!(((substr_2[(6_usize)] as i32) == (('o' as u8) as i32)));
+    assert!(((substr_2[(7_usize)] as i32) == (('o' as u8) as i32)));
     let mut pos: usize = match result.iter().rposition(|&c| {
         ::std::ffi::CStr::from_ptr(b"b\0".as_ptr() as *const i8)
             .to_str()
@@ -300,7 +300,7 @@ unsafe fn main_0() -> i32 {
         std::slice::from_raw_parts(s, (0..).take_while(|&i| *s.add(i) != 0).count() + 1).to_vec()
     };
     let mut output_data: *mut u8 =
-        ((&mut string_to_cast[(0_usize) as usize] as *mut u8) as *mut u8 as *mut u8);
+        ((&mut string_to_cast[(0_usize)] as *mut u8) as *mut u8 as *mut u8);
     assert!((((*output_data) as i32) == (('c' as u8) as i32)));
     assert!((((*output_data.offset((1) as isize)) as i32) == (('a' as u8) as i32)));
     assert!((((*output_data.offset((2) as isize)) as i32) == (('s' as u8) as i32)));

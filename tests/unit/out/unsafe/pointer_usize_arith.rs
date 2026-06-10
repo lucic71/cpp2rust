@@ -72,7 +72,7 @@ unsafe fn main_0() -> i32 {
     let mut n: usize = 3_usize;
     let mut q5: *mut i32 = arr.as_mut_ptr().offset((n) as isize);
     assert!(((*q5) == (13)));
-    let mut q6: *mut i32 = (&mut arr[(n) as usize] as *mut i32);
+    let mut q6: *mut i32 = (&mut arr[(n)] as *mut i32);
     assert!(((q6) == (q5)));
     let mut matrix: [[i32; 4]; 3] = [[0, 1, 2, 3], [4, 5, 6, 7], [8, 9, 10, 11]];
     let mut row1: *mut i32 = (&mut matrix[(1) as usize][(0) as usize] as *mut i32);

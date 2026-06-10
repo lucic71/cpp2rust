@@ -14,12 +14,12 @@ pub fn main() {
 unsafe fn main_0() -> i32 {
     let mut g: Option<Box<[i32]>> =
         Some((0..2_usize).map(|_| <i32>::default()).collect::<Box<[_]>>());
-    g.as_mut().unwrap()[(0_usize) as usize] = 11;
-    g.as_mut().unwrap()[(1_usize) as usize] = 12;
+    g.as_mut().unwrap()[(0_usize)] = 11;
+    g.as_mut().unwrap()[(1_usize)] = 12;
     let mut g_ptr: *mut i32 = g
         .as_deref_mut()
         .map_or(::std::ptr::null_mut(), |s| s.as_mut_ptr());
     (*g_ptr.offset((0) as isize)) = 13;
     (*g_ptr.offset((1) as isize)) = 14;
-    return ((g.as_mut().unwrap()[(0_usize) as usize]) + (g.as_mut().unwrap()[(1_usize) as usize]));
+    return ((g.as_mut().unwrap()[(0_usize)]) + (g.as_mut().unwrap()[(1_usize)]));
 }

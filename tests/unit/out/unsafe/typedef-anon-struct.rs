@@ -32,7 +32,7 @@ unsafe fn main_0() -> i32 {
         o.runs.push(a0_clone)
     };
     assert!(((o.runs.len()) == (1_usize)));
-    assert!(((o.runs[(0_usize) as usize].block_idx) == (1)));
-    assert!(((o.runs[(0_usize) as usize].num_extra_zero_runs) == (2)));
+    assert!(((o.runs[(0_usize)].block_idx) == (1)));
+    assert!(((o.runs[(0_usize)].num_extra_zero_runs) == (2)));
     return 0;
 }

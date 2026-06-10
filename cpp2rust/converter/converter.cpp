@@ -3637,7 +3637,10 @@ void Converter::ConvertArraySubscript(clang::Expr *base, clang::Expr *idx,
     PushParen paren(*this);
     Convert(idx);
   }
-  StrCat(keyword::kAs, "usize");
+
+  if (Mapper::Map(idx->getType()) != "usize") {
+    StrCat(keyword::kAs, "usize");
+  }
 }
 
 void Converter::ConvertAssignment(clang::Expr *lhs, clang::Expr *rhs,

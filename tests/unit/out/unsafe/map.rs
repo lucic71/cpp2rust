@@ -133,9 +133,7 @@ unsafe fn main_0() -> i32 {
     }
     let mut i: u32 = 0_u32;
     'loop_: while ((i as usize) < (indexes.len())) {
-        (*m2.entry(indexes[(i as usize) as usize])
-            .or_default()
-            .as_mut()) = ((i).wrapping_rem(2_u32) != 0);
+        (*m2.entry(indexes[(i as usize)]).or_default().as_mut()) = ((i).wrapping_rem(2_u32) != 0);
         i.prefix_inc();
     }
     assert!(((m2.len()) == (indexes.len())));

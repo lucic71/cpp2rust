@@ -52,13 +52,13 @@ pub struct MinHeap {
 }
 impl MinHeap {
     pub unsafe fn Alloc(&mut self, mut data: u8, mut freq: i32) -> *mut MinHeapNode {
-        self.alloc.as_mut().unwrap()[(self.next as usize) as usize] = MinHeapNode {
+        self.alloc.as_mut().unwrap()[(self.next as usize)] = MinHeapNode {
             data: data,
             freq: freq,
             left: std::ptr::null_mut(),
             right: std::ptr::null_mut(),
         };
-        return (&mut self.alloc.as_mut().unwrap()[(self.next.postfix_inc() as usize) as usize]
+        return (&mut self.alloc.as_mut().unwrap()[(self.next.postfix_inc() as usize)]
             as *mut MinHeapNode);
     }
     pub unsafe fn Heapify(&mut self, mut idx: i32) {
@@ -66,24 +66,23 @@ impl MinHeap {
         let mut left: i32 = (((2) * (idx)) + (1));
         let mut right: i32 = (((2) * (idx)) + (2));
         if ((left) < (self.size))
-            && (((*self.arr.as_mut().unwrap()[(left as usize) as usize]).freq)
-                < ((*self.arr.as_mut().unwrap()[(smallest as usize) as usize]).freq))
+            && (((*self.arr.as_mut().unwrap()[(left as usize)]).freq)
+                < ((*self.arr.as_mut().unwrap()[(smallest as usize)]).freq))
         {
             smallest = left;
         }
         if ((right) < (self.size))
-            && (((*self.arr.as_mut().unwrap()[(right as usize) as usize]).freq)
-                < ((*self.arr.as_mut().unwrap()[(smallest as usize) as usize]).freq))
+            && (((*self.arr.as_mut().unwrap()[(right as usize)]).freq)
+                < ((*self.arr.as_mut().unwrap()[(smallest as usize)]).freq))
         {
             smallest = right;
         }
         if ((smallest) != (idx)) {
             (unsafe {
-                let _a: *mut MinHeapNode = &mut (*self.arr.as_mut().unwrap()
-                    [(smallest as usize) as usize])
-                    as *mut MinHeapNode;
+                let _a: *mut MinHeapNode =
+                    &mut (*self.arr.as_mut().unwrap()[(smallest as usize)]) as *mut MinHeapNode;
                 let _b: *mut MinHeapNode =
-                    &mut (*self.arr.as_mut().unwrap()[(idx as usize) as usize]) as *mut MinHeapNode;
+                    &mut (*self.arr.as_mut().unwrap()[(idx as usize)]) as *mut MinHeapNode;
                 Swap_0(_a, _b)
             });
             (unsafe {
@@ -93,10 +92,9 @@ impl MinHeap {
         }
     }
     pub unsafe fn ExtractMin(&mut self) -> *mut MinHeapNode {
-        let mut out: *mut MinHeapNode = self.arr.as_mut().unwrap()[(0_usize) as usize];
+        let mut out: *mut MinHeapNode = self.arr.as_mut().unwrap()[(0_usize)];
         self.size.prefix_dec();
-        self.arr.as_mut().unwrap()[(0_usize) as usize] =
-            self.arr.as_mut().unwrap()[(self.size as usize) as usize];
+        self.arr.as_mut().unwrap()[(0_usize)] = self.arr.as_mut().unwrap()[(self.size as usize)];
         (unsafe { self.Heapify(0) });
         return out;
     }
@@ -105,13 +103,13 @@ impl MinHeap {
         let mut i: i32 = ((self.size) - (1));
         'loop_: while ((i) != (0))
             && (((*node).freq)
-                < ((*self.arr.as_mut().unwrap()[((((i) - (1)) / (2)) as usize) as usize]).freq))
+                < ((*self.arr.as_mut().unwrap()[((((i) - (1)) / (2)) as usize)]).freq))
         {
-            self.arr.as_mut().unwrap()[(i as usize) as usize] =
-                self.arr.as_mut().unwrap()[((((i) - (1)) / (2)) as usize) as usize];
+            self.arr.as_mut().unwrap()[(i as usize)] =
+                self.arr.as_mut().unwrap()[((((i) - (1)) / (2)) as usize)];
             i = (((i) - (1)) / (2));
         }
-        self.arr.as_mut().unwrap()[(i as usize) as usize] = node;
+        self.arr.as_mut().unwrap()[(i as usize)] = node;
     }
     pub unsafe fn Build(
         &mut self,
@@ -121,9 +119,9 @@ impl MinHeap {
     ) {
         let mut i: i32 = 0;
         'loop_: while ((i) < (n)) {
-            self.arr.as_mut().unwrap()[(self.size.postfix_inc() as usize) as usize] = (unsafe {
-                let _data: u8 = (*data).as_mut().unwrap()[(i as usize) as usize];
-                let _freq: i32 = (*freq).as_mut().unwrap()[(i as usize) as usize];
+            self.arr.as_mut().unwrap()[(self.size.postfix_inc() as usize)] = (unsafe {
+                let _data: u8 = (*data).as_mut().unwrap()[(i as usize)];
+                let _freq: i32 = (*freq).as_mut().unwrap()[(i as usize)];
                 self.Alloc(_data, _freq)
             });
             i.prefix_inc();
@@ -195,14 +193,14 @@ pub unsafe fn CollectCode_3(
     out: *mut Option<Box<[i32]>>,
     next: *mut i32,
 ) {
-    (*out).as_mut().unwrap()[((*next) as usize) as usize] = 0;
+    (*out).as_mut().unwrap()[((*next) as usize)] = 0;
     let mut i: i32 = 0;
     'loop_: while ((i) < (top)) {
-        (*out).as_mut().unwrap()[((*next) as usize) as usize] =
-            (((*out).as_mut().unwrap()[((*next) as usize) as usize]) * (10));
-        (*out).as_mut().unwrap()[((*next) as usize) as usize] = (((*out).as_mut().unwrap()
-            [((*next) as usize) as usize])
-            + ((*arr).as_mut().unwrap()[(i as usize) as usize]));
+        (*out).as_mut().unwrap()[((*next) as usize)] =
+            (((*out).as_mut().unwrap()[((*next) as usize)]) * (10));
+        (*out).as_mut().unwrap()[((*next) as usize)] = (((*out).as_mut().unwrap()
+            [((*next) as usize)])
+            + ((*arr).as_mut().unwrap()[(i as usize)]));
         i.prefix_inc();
     }
     (*next).prefix_inc();
@@ -215,7 +213,7 @@ pub unsafe fn CollectCodes_4(
     next: *mut i32,
 ) {
     if !(((*root).left).is_null()) {
-        (*arr).as_mut().unwrap()[(top as usize) as usize] = 0;
+        (*arr).as_mut().unwrap()[(top as usize)] = 0;
         (unsafe {
             let _root: *mut MinHeapNode = (*root).left;
             let _arr: *mut Option<Box<[i32]>> = arr;
@@ -226,7 +224,7 @@ pub unsafe fn CollectCodes_4(
         });
     }
     if !(((*root).right).is_null()) {
-        (*arr).as_mut().unwrap()[(top as usize) as usize] = 1;
+        (*arr).as_mut().unwrap()[(top as usize)] = 1;
         (unsafe {
             let _root: *mut MinHeapNode = (*root).right;
             let _arr: *mut Option<Box<[i32]>> = arr;
@@ -308,8 +306,8 @@ unsafe fn main_0() -> i32 {
     );
     let mut i: i32 = 0;
     'loop_: while ((i) < (size)) {
-        data.as_mut().unwrap()[(i as usize) as usize] = arr1[(i) as usize];
-        freq.as_mut().unwrap()[(i as usize) as usize] = arr2[(i) as usize];
+        data.as_mut().unwrap()[(i as usize)] = arr1[(i) as usize];
+        freq.as_mut().unwrap()[(i as usize)] = arr2[(i) as usize];
         i.prefix_inc();
     }
     let mut out: Option<Box<[i32]>> = (unsafe {
@@ -318,10 +316,10 @@ unsafe fn main_0() -> i32 {
         let _size: i32 = size;
         HuffmanCodes_5(_data, _freq, _size)
     });
-    return ((((((((out.as_mut().unwrap()[(0_usize) as usize]) == (0))
-        && ((out.as_mut().unwrap()[(1_usize) as usize]) == (100)))
-        && ((out.as_mut().unwrap()[(2_usize) as usize]) == (101)))
-        && ((out.as_mut().unwrap()[(3_usize) as usize]) == (1100)))
-        && ((out.as_mut().unwrap()[(4_usize) as usize]) == (1101)))
-        && ((out.as_mut().unwrap()[(5_usize) as usize]) == (111))) as i32);
+    return ((((((((out.as_mut().unwrap()[(0_usize)]) == (0))
+        && ((out.as_mut().unwrap()[(1_usize)]) == (100)))
+        && ((out.as_mut().unwrap()[(2_usize)]) == (101)))
+        && ((out.as_mut().unwrap()[(3_usize)]) == (1100)))
+        && ((out.as_mut().unwrap()[(4_usize)]) == (1101)))
+        && ((out.as_mut().unwrap()[(5_usize)]) == (111))) as i32);
 }

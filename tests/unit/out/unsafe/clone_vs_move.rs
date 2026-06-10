@@ -111,18 +111,18 @@ unsafe fn main_0() -> i32 {
     let mut v2: Vec<i32> = v1.clone();
     let mut i: i32 = 0;
     'loop_: while ((i) < (N)) {
-        assert!(((v2[(i as usize) as usize]) == (i)));
+        assert!(((v2[(i as usize)]) == (i)));
         i.prefix_inc();
     }
     let mut i: i32 = 0;
     'loop_: while ((i) < (N)) {
-        v2[(i as usize) as usize].prefix_inc();
+        v2[(i as usize)].prefix_inc();
         i.prefix_inc();
     }
     let mut i: i32 = 0;
     'loop_: while ((i) < (N)) {
-        assert!(((v2[(i as usize) as usize]) == ((i) + (1))));
-        assert!(((v1[(i as usize) as usize]) == (i)));
+        assert!(((v2[(i as usize)]) == ((i) + (1))));
+        assert!(((v1[(i as usize)]) == (i)));
         i.prefix_inc();
     }
     let mut m1: Vec<Vec<i32>> = Vec::new();
@@ -138,12 +138,12 @@ unsafe fn main_0() -> i32 {
     let mut m2: Vec<Vec<i32>> = m1.clone();
     let mut i: i32 = 0;
     'loop_: while ((i) < (N)) {
-        assert!(((m1[(i as usize) as usize].len()) == (10_usize)));
-        assert!(((m2[(i as usize) as usize].len()) == (10_usize)));
+        assert!(((m1[(i as usize)].len()) == (10_usize)));
+        assert!(((m2[(i as usize)].len()) == (10_usize)));
         let mut j: i32 = 0;
         'loop_: while ((j) < (10)) {
-            assert!(((m1[(i as usize) as usize][(j as usize) as usize]) == (0)));
-            assert!(((m2[(i as usize) as usize][(j as usize) as usize]) == (0)));
+            assert!(((m1[(i as usize)][(j as usize)]) == (0)));
+            assert!(((m2[(i as usize)][(j as usize)]) == (0)));
             j.prefix_inc();
         }
         i.prefix_inc();
@@ -152,19 +152,19 @@ unsafe fn main_0() -> i32 {
     'loop_: while ((i) < (N)) {
         let mut j: i32 = 0;
         'loop_: while ((j) < (10)) {
-            m2[(i as usize) as usize][(j as usize) as usize].postfix_inc();
+            m2[(i as usize)][(j as usize)].postfix_inc();
             j.prefix_inc();
         }
         i.prefix_inc();
     }
     let mut i: i32 = 0;
     'loop_: while ((i) < (N)) {
-        assert!(((m1[(i as usize) as usize].len()) == (10_usize)));
-        assert!(((m2[(i as usize) as usize].len()) == (10_usize)));
+        assert!(((m1[(i as usize)].len()) == (10_usize)));
+        assert!(((m2[(i as usize)].len()) == (10_usize)));
         let mut j: i32 = 0;
         'loop_: while ((j) < (10)) {
-            assert!(((m1[(i as usize) as usize][(j as usize) as usize]) == (0)));
-            assert!(((m2[(i as usize) as usize][(j as usize) as usize]) == (1)));
+            assert!(((m1[(i as usize)][(j as usize)]) == (0)));
+            assert!(((m2[(i as usize)][(j as usize)]) == (1)));
             j.prefix_inc();
         }
         i.prefix_inc();
@@ -216,15 +216,15 @@ unsafe fn main_0() -> i32 {
         .chain(std::iter::once(0))
         .collect();
     let mut s2: Vec<u8> = s1.clone();
-    s2[(0_usize) as usize] = ('b' as u8);
-    s2[(1_usize) as usize] = ('b' as u8);
-    s2[(2_usize) as usize] = ('b' as u8);
-    assert!(((s2[(0_usize) as usize] as i32) == (('b' as u8) as i32)));
-    assert!(((s2[(1_usize) as usize] as i32) == (('b' as u8) as i32)));
-    assert!(((s2[(2_usize) as usize] as i32) == (('b' as u8) as i32)));
-    assert!(((s1[(0_usize) as usize] as i32) == (('a' as u8) as i32)));
-    assert!(((s1[(1_usize) as usize] as i32) == (('a' as u8) as i32)));
-    assert!(((s1[(2_usize) as usize] as i32) == (('a' as u8) as i32)));
+    s2[(0_usize)] = ('b' as u8);
+    s2[(1_usize)] = ('b' as u8);
+    s2[(2_usize)] = ('b' as u8);
+    assert!(((s2[(0_usize)] as i32) == (('b' as u8) as i32)));
+    assert!(((s2[(1_usize)] as i32) == (('b' as u8) as i32)));
+    assert!(((s2[(2_usize)] as i32) == (('b' as u8) as i32)));
+    assert!(((s1[(0_usize)] as i32) == (('a' as u8) as i32)));
+    assert!(((s1[(1_usize)] as i32) == (('a' as u8) as i32)));
+    assert!(((s1[(2_usize)] as i32) == (('a' as u8) as i32)));
     let mut b1: Bar = Bar { w: 1 };
     let mut b2: Bar = Bar { w: 2 };
     b2 = b1;
@@ -235,14 +235,14 @@ unsafe fn main_0() -> i32 {
     v4 = v2.clone();
     let mut i: i32 = 0;
     'loop_: while ((i) < (N)) {
-        assert!(((v4[(i as usize) as usize]) == ((i) + (1))));
-        v4[(i as usize) as usize].prefix_inc();
+        assert!(((v4[(i as usize)]) == ((i) + (1))));
+        v4[(i as usize)].prefix_inc();
         i.prefix_inc();
     }
     let mut i: i32 = 0;
     'loop_: while ((i) < (N)) {
-        assert!(((v4[(i as usize) as usize]) == ((i) + (2))));
-        assert!(((v2[(i as usize) as usize]) == ((i) + (1))));
+        assert!(((v4[(i as usize)]) == ((i) + (2))));
+        assert!(((v2[(i as usize)]) == ((i) + (1))));
         i.prefix_inc();
     }
     return 0;
