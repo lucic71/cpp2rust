@@ -26,6 +26,7 @@ namespace {
 clang::ASTContext *ctx_ = nullptr;
 Model model_ = Model::kUnsafe;
 bool translation_rules_loaded_ = false;
+bool builtin_types_loaded_ = false;
 
 std::unordered_multimap<std::string, TranslationRule::ExprRule>
     exprs_; // src -> ExprRule
@@ -622,6 +623,10 @@ std::string normalizeTranslationRule(std::string rule) {
 
 PushASTContext::PushASTContext(clang::ASTContext &ctx) : prev_(ctx_) {
   ctx_ = &ctx;
+  if (!builtin_types_loaded_) {
+    builtin_types_loaded_ = true;
+    addBuiltinTypes(model_);
+  }
 }
 PushASTContext::~PushASTContext() { ctx_ = prev_; }
 
@@ -991,6 +996,7 @@ void LoadTranslationRules(Model model, clang::ASTContext &ctx,
   }
   translation_rules_loaded_ = true;
 
+  builtin_types_loaded_ = true;
   addBuiltinTypes(model);
   addRulesFromDirectory(rules_dir, model);
 
