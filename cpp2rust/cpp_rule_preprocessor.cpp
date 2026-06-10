@@ -26,7 +26,6 @@
 #include <string>
 
 #include "compat/platform_flags.h"
-#include "converter/converter_lib.h"
 #include "converter/mapper.h"
 
 namespace fs = std::filesystem;
