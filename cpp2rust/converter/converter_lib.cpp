@@ -765,9 +765,17 @@ bool NeedsRefBindingTemp(const clang::Expr *arg, clang::QualType param_type) {
   if (!param_type->isLValueReferenceType()) {
     return false;
   }
+  // Materialize a prvalue into a const lvalue reference:
+  //   void foo(const int &) {}
+  //   foo(1)
   if (clang::isa<clang::MaterializeTemporaryExpr>(arg)) {
     return true;
   }
+  // Not a MaterializeTemporaryExpr: the lvalue arg binds directly because it
+  // has the same underlying C type as the param, but the Rust types differ so a
+  // temp is still needed for the cast:
+  //   void foo(const size_t &) {}     <-- size_t        -> usize
+  //   unsigned long x = 1; foo(x);    <-- unsigned long -> u64
   return param_type->getPointeeType().isConstQualified() &&
          NeedsImplicitScalarCast(arg->IgnoreImplicit()->getType(),
                                  param_type.getNonReferenceType());
