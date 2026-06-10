@@ -699,18 +699,14 @@ bool ConverterRefCount::VisitConditionalOperator(
     clang::ConditionalOperator *expr) {
   StrCat(keyword::kIf);
   ConvertCondition(expr->getCond());
-  std::optional<clang::QualType> slot;
-  if (!expr->isGLValue()) {
-    slot = expr->getType();
-  }
   {
     PushBrace then_brace(*this);
-    StrCat(ConvertFresh(expr->getTrueExpr(), slot));
+    StrCat(ConvertFresh(expr->getTrueExpr(), expr->getType()));
   }
   StrCat(keyword::kElse);
   {
     PushBrace else_brace(*this);
-    StrCat(ConvertFresh(expr->getFalseExpr(), slot));
+    StrCat(ConvertFresh(expr->getFalseExpr(), expr->getType()));
   }
   return false;
 }
