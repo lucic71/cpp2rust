@@ -35,7 +35,7 @@ thread_local!(
     pub static file_1: Value<Ptr<::std::fs::File>> = Rc::new(RefCell::new(Ptr::null()));
 );
 thread_local!(
-    pub static size_2: Value<usize> = <Value<usize>>::default();
+    pub static size_2: Value<usize> = Rc::new(RefCell::new(0_usize));
 );
 pub fn main() {
     std::process::exit(main_0());

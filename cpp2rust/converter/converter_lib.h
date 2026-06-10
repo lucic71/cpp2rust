@@ -161,6 +161,8 @@ bool IsVaListType(clang::QualType type);
 
 bool NeedsImplicitScalarCast(clang::QualType from, clang::QualType to);
 
+bool NeedsRefBindingTemp(const clang::Expr *arg, clang::QualType param_type);
+
 bool IsSizeType(clang::QualType type);
 
 std::optional<clang::QualType>

@@ -864,7 +864,7 @@ protected:
 
   virtual const char *GetPointerDerefPrefix(clang::QualType pointee_type);
 
-  TempMaterializationCtx CollectPrvalueToLRefArgs(clang::CallExpr *expr);
+  TempMaterializationCtx CollectRefBindingTempArgs(clang::CallExpr *expr);
 
   bool IsCastRedundantInRust(clang::Expr *expr, clang::QualType target_type);
 

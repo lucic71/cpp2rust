@@ -770,7 +770,7 @@ void AddRuleForUserDefinedType(clang::NamedDecl *decl) {
 std::string ToString(clang::QualType qual_type, ScalarSugar sugar) {
   assert(ctx_);
 
-  if (sugar == ScalarSugar::kPreserve && !qual_type->isReferenceType()) {
+  if (sugar == ScalarSugar::kPreserve) {
     clang::QualType t = qual_type;
     if (const auto *decltype_type =
             clang::dyn_cast<clang::DecltypeType>(t.getTypePtr())) {

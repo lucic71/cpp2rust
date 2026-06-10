@@ -1548,7 +1548,7 @@ bool Converter::VisitCallExpr(clang::CallExpr *expr) {
   if (Mapper::Contains(expr->getCallee())) {
     auto **args = expr->getArgs();
     auto num_args = expr->getNumArgs();
-    auto ctx = CollectPrvalueToLRefArgs(expr);
+    auto ctx = CollectRefBindingTempArgs(expr);
     std::string str;
     {
       PushExprKind push(*this, ExprKind::RValue);
@@ -1784,7 +1784,7 @@ Converter::ConvertCallExpr(clang::CallExpr *expr) {
   } else if (Mapper::Contains(callee)) {
     auto **args = expr->getArgs();
     auto num_args = expr->getNumArgs();
-    auto ctx = CollectPrvalueToLRefArgs(expr);
+    auto ctx = CollectRefBindingTempArgs(expr);
     StrCat(GetMappedAsString(expr, args, num_args, &ctx));
     return ctx;
   } else if (auto *opcall = clang::dyn_cast<clang::CXXOperatorCallExpr>(expr)) {
@@ -3974,15 +3974,14 @@ void Converter::ConvertCast(clang::QualType qual_type, int line) {
 }
 
 Converter::TempMaterializationCtx
-Converter::CollectPrvalueToLRefArgs(clang::CallExpr *expr) {
+Converter::CollectRefBindingTempArgs(clang::CallExpr *expr) {
   TempMaterializationCtx ctx(expr->getNumArgs());
   if (auto *fn = expr->getCalleeDecl() ? expr->getCalleeDecl()->getAsFunction()
                                        : nullptr) {
     for (unsigned i = 0; i < expr->getNumArgs() && i < fn->getNumParams();
          ++i) {
       auto param_type = fn->getParamDecl(i)->getType();
-      if (param_type->isLValueReferenceType() &&
-          clang::isa<clang::MaterializeTemporaryExpr>(expr->getArg(i))) {
+      if (NeedsRefBindingTemp(expr->getArg(i), param_type)) {
         ctx.materialized_args[i] = param_type;
       }
     }

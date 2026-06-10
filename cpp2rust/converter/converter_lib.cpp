@@ -761,6 +761,18 @@ bool NeedsImplicitScalarCast(clang::QualType from, clang::QualType to) {
          Mapper::Map(from) != Mapper::Map(to);
 }
 
+bool NeedsRefBindingTemp(const clang::Expr *arg, clang::QualType param_type) {
+  if (!param_type->isLValueReferenceType()) {
+    return false;
+  }
+  if (clang::isa<clang::MaterializeTemporaryExpr>(arg)) {
+    return true;
+  }
+  return param_type->getPointeeType().isConstQualified() &&
+         NeedsImplicitScalarCast(arg->IgnoreImplicit()->getType(),
+                                 param_type.getNonReferenceType());
+}
+
 bool IsSizeType(clang::QualType type) {
   auto rust_type = Mapper::Map(type);
   return rust_type == "usize" || rust_type == "isize";
