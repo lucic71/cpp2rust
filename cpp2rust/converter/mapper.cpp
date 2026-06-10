@@ -456,10 +456,12 @@ void addRulesFromDirectory(const std::filesystem::path &dir, Model model) {
 void addBuiltinTypes(Model model) {
   assert(ctx_);
 
-  auto add_builtin_rule = [&](clang::QualType qt, const std::string &rust) {
-    auto cxx = ToString(qt);
-    AddTypeRule(cxx, TranslationRule::TypeRule::Plain(rust));
-    AddTypeRule("const " + cxx, TranslationRule::TypeRule::Plain(rust));
+  auto add_scalar_rule = [&](const std::string &cxx, const std::string &rust,
+                             const std::string &initializer = {}) {
+    auto plain = TranslationRule::TypeRule::Plain(rust);
+    plain.initializer = initializer;
+    AddTypeRule(cxx, TranslationRule::TypeRule(plain));
+    AddTypeRule("const " + cxx, std::move(plain));
 
     switch (model) {
     case Model::kUnsafe:
@@ -474,6 +476,24 @@ void addBuiltinTypes(Model model) {
       AddTypeRule("const " + cxx + " *", TranslationRule::TypeRule::RefcountPtr(
                                              "Ptr::<" + rust + ">"));
       break;
+    }
+  };
+
+  auto add_builtin_rule = [&](clang::QualType qt, const std::string &rust) {
+    add_scalar_rule(ToString(qt), rust);
+  };
+
+  auto add_size_rules = [&](clang::QualType size_type,
+                            std::initializer_list<const char *> aliases,
+                            const std::string &rust) {
+    auto initializer = "0_" + rust;
+    for (const char *alias : aliases) {
+      add_scalar_rule(alias, rust, initializer);
+    }
+    if (const auto *predef = clang::dyn_cast<clang::PredefinedSugarType>(
+            size_type.getTypePtr())) {
+      add_scalar_rule(predef->getIdentifier()->getName().str(), rust,
+                      initializer);
     }
   };
 
@@ -519,6 +539,9 @@ void addBuiltinTypes(Model model) {
   add_builtin_rule(ctx_->LongLongTy, build_rust_type(ctx_->LongLongTy));
   add_builtin_rule(ctx_->UnsignedLongLongTy,
                    build_rust_type(ctx_->UnsignedLongLongTy));
+
+  add_size_rules(ctx_->getSizeType(), {"size_t", "size_type"}, "usize");
+  add_size_rules(ctx_->getSignedSizeType(), {"ssize_t"}, "isize");
 }
 
 clang::QualType normalizeQualType(clang::QualType qual_type) {
