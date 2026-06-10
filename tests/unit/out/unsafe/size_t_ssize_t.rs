@@ -25,13 +25,13 @@ unsafe fn main_0() -> i32 {
     assert!(((n) == ((::std::mem::size_of::<i32>() as usize).wrapping_add(4_usize))));
     let mut ul: u64 = 10_u64;
     let mut sz: usize = 20_usize;
-    let mut mixed: usize = (((sz as u64).wrapping_add(ul)) as usize);
+    let mut mixed: usize = ((sz as u64).wrapping_add(ul) as usize);
     assert!(((mixed) == (30_usize)));
-    assert!(((sz) > ((ul) as usize)));
-    assert!((((ul) as usize) < (sz)));
-    assert!(!((sz) == ((ul) as usize)));
-    let mut chain: usize = (((((sz as u64).wrapping_add(ul)).wrapping_add(5_u64))
-        .wrapping_add(::std::mem::size_of::<i64>() as u64)) as usize);
+    assert!(((sz) > (ul as usize)));
+    assert!(((ul as usize) < (sz)));
+    assert!(!((sz) == (ul as usize)));
+    let mut chain: usize = ((((sz as u64).wrapping_add(ul)).wrapping_add(5_u64))
+        .wrapping_add(::std::mem::size_of::<i64>() as u64) as usize);
     assert!(
         ((chain)
             == (((((20) + (10)) + (5)) as usize)
@@ -50,8 +50,8 @@ unsafe fn main_0() -> i32 {
     sz = (sz).wrapping_add(1_usize);
     assert!(((sz) == (21_usize)));
     let mut fr: usize = (unsafe {
-        let _a: usize = (((::std::mem::size_of::<i32>() as u64).wrapping_add(sz as u64)) as usize);
-        let _b: usize = ((ul) as usize);
+        let _a: usize = ((::std::mem::size_of::<i32>() as u64).wrapping_add(sz as u64) as usize);
+        let _b: usize = (ul as usize);
         add_sizes_0(_a, _b)
     });
     assert!(
@@ -60,38 +60,38 @@ unsafe fn main_0() -> i32 {
                 .wrapping_add(10_usize)))
     );
     let mut fr2: u64 = (unsafe {
-        let _x: u64 = ((sz) as u64);
+        let _x: u64 = (sz as u64);
         take_ulong_1(_x)
     });
     assert!(((fr2) == (21_u64)));
-    let mut lo: usize = (({
-        let mut __tmp_0 = ((sz) as u64);
+    let mut lo: usize = ({
+        let mut __tmp_0 = (sz as u64);
         let mut __tmp_1 = (::std::mem::size_of::<i64>() as u64).wrapping_add(ul);
         (*if *&mut __tmp_0 <= *&mut __tmp_1 {
             (&mut __tmp_0) as *const _
         } else {
             (&mut __tmp_1) as *const _
         })
-    }) as usize);
-    let mut hi: usize = (({
+    } as usize);
+    let mut hi: usize = ({
         let mut __tmp_0 = (::std::mem::size_of::<i32>() as u64).wrapping_add(sz as u64);
         (*if *&mut __tmp_0 >= *&mut ul {
             (&mut __tmp_0) as *const _
         } else {
             (&mut ul) as *const _
         })
-    }) as usize);
+    } as usize);
     assert!(((lo) == ((::std::mem::size_of::<i64>() as usize).wrapping_add(10_usize))));
     assert!(((hi) == ((::std::mem::size_of::<i32>() as usize).wrapping_add(21_usize))));
-    let mut bound: usize = (({
-        let mut __tmp_0 = ((sz) as u64);
-        let mut __tmp_1 = ((4_usize) as u64);
+    let mut bound: usize = ({
+        let mut __tmp_0 = (sz as u64);
+        let mut __tmp_1 = (4_usize as u64);
         (*if *&mut __tmp_0 <= *&mut __tmp_1 {
             (&mut __tmp_0) as *const _
         } else {
             (&mut __tmp_1) as *const _
         })
-    }) as usize);
+    } as usize);
     assert!(((bound) == (4_usize)));
     let mut data: [i32; 8] = [0_i32; 8];
     let mut count: usize = (::std::mem::size_of::<[i32; 8]>() as usize)
@@ -108,11 +108,11 @@ unsafe fn main_0() -> i32 {
         i.postfix_inc();
     }
     assert!(((total) == (56_usize)));
-    let mut cond: usize = ((if ((sz) > ((ul) as usize)) {
+    let mut cond: usize = (if ((sz) > (ul as usize)) {
         (sz as u64).wrapping_add(::std::mem::size_of::<i32>() as u64)
     } else {
         ul
-    }) as usize);
+    } as usize);
     assert!(((cond) == ((21_usize).wrapping_add(::std::mem::size_of::<i32>() as usize))));
     let mut arr: [usize; 4] = [0_usize, 1_usize, 2_usize, 3_usize];
     let mut idx: usize = (if ((::std::mem::size_of::<i32>()) > (2_usize)) {
@@ -131,27 +131,27 @@ unsafe fn main_0() -> i32 {
     assert!(((sd) == (-7_i32 as isize)));
     assert!(((sd) < (0_isize)));
     let mut l: i64 = 3_i64;
-    let mut sm: isize = ((((s2) as i64) + (l)) as isize);
+    let mut sm: isize = (((s2 as i64) + (l)) as isize);
     assert!(((sm) == (15_isize)));
-    assert!(((sm) > ((l) as isize)));
-    let mut smin: isize = (({
-        let mut __tmp_0 = ((sd) as i64);
-        let mut __tmp_1 = ((sm) as i64);
+    assert!(((sm) > (l as isize)));
+    let mut smin: isize = ({
+        let mut __tmp_0 = (sd as i64);
+        let mut __tmp_1 = (sm as i64);
         (*if *&mut __tmp_0 <= *&mut __tmp_1 {
             (&mut __tmp_0) as *const _
         } else {
             (&mut __tmp_1) as *const _
         })
-    }) as isize);
-    let mut smax: isize = (({
-        let mut __tmp_0 = ((sd) as i64);
-        let mut __tmp_1 = ((sm) as i64);
+    } as isize);
+    let mut smax: isize = ({
+        let mut __tmp_0 = (sd as i64);
+        let mut __tmp_1 = (sm as i64);
         (*if *&mut __tmp_0 >= *&mut __tmp_1 {
             (&mut __tmp_0) as *const _
         } else {
             (&mut __tmp_1) as *const _
         })
-    }) as isize);
+    } as isize);
     assert!(((smin) == (-7_i32 as isize)));
     assert!(((smax) == (15_isize)));
     let mut delta: isize = ((sz as isize) - (ul as isize));

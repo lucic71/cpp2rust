@@ -1306,12 +1306,8 @@ bool Converter::Convert(clang::Expr *expr,
       expr && implicit_convert_to &&
       NeedsImplicitScalarCast(expr->IgnoreImplicit()->getType(),
                               *implicit_convert_to);
-  PushParen outer(*this, needs_conversion);
-  bool result;
-  {
-    PushParen inner(*this, needs_conversion);
-    result = TraverseStmt(expr);
-  }
+  PushParen paren(*this, needs_conversion);
+  bool result = TraverseStmt(expr);
   if (needs_conversion) {
     ConvertCast(*implicit_convert_to);
     computed_expr_type_ = ComputedExprType::FreshValue;

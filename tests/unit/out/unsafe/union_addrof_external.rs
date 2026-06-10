@@ -53,11 +53,11 @@ pub unsafe fn fill_1(mut out: *mut ::libc::c_void, mut cap: usize) {
     src[(5) as usize] = 0_u8;
     src[(6) as usize] = 0_u8;
     src[(7) as usize] = 1_u8;
-    let mut n: usize = ((if ((((::std::mem::size_of::<[u8; 16]>()) < (cap)) as i32) != 0) {
-        ((::std::mem::size_of::<[u8; 16]>()) as u64)
+    let mut n: usize = (if ((((::std::mem::size_of::<[u8; 16]>()) < (cap)) as i32) != 0) {
+        (::std::mem::size_of::<[u8; 16]>() as u64)
     } else {
-        ((cap) as u64)
-    }) as usize);
+        (cap as u64)
+    } as usize);
     {
         if n != 0 {
             ::std::ptr::copy_nonoverlapping(
