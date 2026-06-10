@@ -114,8 +114,9 @@ public:
       } else {
         type = var->getUnderlyingType();
       }
-      out_.try_emplace(var->getQualifiedNameAsString(),
-                       Mapper::ToStringSugared(type));
+      out_.try_emplace(
+          var->getQualifiedNameAsString(),
+          Mapper::ToString(type, Mapper::ScalarSugar::kPreserve));
       return;
     }
 

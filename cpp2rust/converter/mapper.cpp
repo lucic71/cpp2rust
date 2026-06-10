@@ -403,7 +403,7 @@ TranslationRule::ExprRule *search(const clang::Expr *expr) {
 
 std::pair<TranslationRule::TypeRule *, std::vector<std::optional<std::string>>>
 search(clang::QualType qual_type) {
-  auto sugared = ToStringSugared(qual_type);
+  auto sugared = ToString(qual_type, ScalarSugar::kPreserve);
   if (auto res = search(types_, sugared, GetTypeMapKey(sugared)); res.first) {
     log() << "search type " << sugared
           << ", result: " << res.first->type_info.type << '\n';
@@ -744,8 +744,33 @@ void AddRuleForUserDefinedType(clang::NamedDecl *decl) {
   }
 }
 
-std::string ToString(clang::QualType qual_type) {
+std::string ToString(clang::QualType qual_type, ScalarSugar sugar) {
   assert(ctx_);
+
+  if (sugar == ScalarSugar::kPreserve && !qual_type->isReferenceType()) {
+    clang::QualType t = qual_type;
+    if (const auto *decltype_type =
+            clang::dyn_cast<clang::DecltypeType>(t.getTypePtr())) {
+      t = decltype_type->getUnderlyingType();
+    }
+    if (const auto *typedef_type = t->getAs<clang::TypedefType>()) {
+      if (t.getCanonicalType()->isBuiltinType()) {
+        return typedef_type->getDecl()->getNameAsString();
+      }
+    } else if (const auto *predef = t->getAs<clang::PredefinedSugarType>()) {
+      return predef->getIdentifier()->getName().str();
+    } else if (const auto *ptr = t->getAs<clang::PointerType>()) {
+      auto pointee = ptr->getPointeeType();
+      auto canonical = pointee.getCanonicalType().getDesugaredType(*ctx_);
+      if (Map(pointee) == Map(canonical)) {
+        pointee = canonical;
+      }
+      std::string out;
+      llvm::raw_string_ostream os(out);
+      ctx_->getPointerType(pointee).print(os, getPrintPolicy());
+      return normalizeTranslationRule(std::move(out));
+    }
+  }
 
   if (auto cxx_record_decl = qual_type->getAsCXXRecordDecl()) {
     if (cxx_record_decl->isLambda()) {
@@ -767,24 +792,6 @@ std::string ToString(clang::QualType qual_type) {
   llvm::raw_string_ostream os(type);
   normalizeQualType(qual_type).print(os, getPrintPolicy());
   return normalizeTranslationRule(std::move(type));
-}
-
-std::string ToStringSugared(clang::QualType qual_type) {
-  clang::QualType t = qual_type;
-  if (!t->isReferenceType()) {
-    if (const auto *decltype_type =
-            clang::dyn_cast<clang::DecltypeType>(t.getTypePtr())) {
-      t = decltype_type->getUnderlyingType();
-    }
-    if (const auto *typedef_type = t->getAs<clang::TypedefType>()) {
-      if (t.getCanonicalType()->isBuiltinType()) {
-        return typedef_type->getDecl()->getNameAsString();
-      }
-    } else if (const auto *predef = t->getAs<clang::PredefinedSugarType>()) {
-      return predef->getIdentifier()->getName().str();
-    }
-  }
-  return ToString(qual_type);
 }
 
 std::string ToString(const clang::NamedDecl *decl) {
