@@ -667,6 +667,23 @@ bool HasReceiver(clang::Expr *expr) {
   return false;
 }
 
+std::optional<clang::QualType> GetParamImplicitConvertTarget(clang::Expr *expr,
+                                                             unsigned arg_idx) {
+  auto *call = clang::dyn_cast<clang::CallExpr>(expr);
+  if (!call) {
+    return std::nullopt;
+  }
+  auto *fn = call->getDirectCallee();
+  if (!fn) {
+    return std::nullopt;
+  }
+  unsigned param_idx = arg_idx - HasReceiver(expr);
+  if (param_idx >= fn->getNumParams()) {
+    return std::nullopt;
+  }
+  return fn->getParamDecl(param_idx)->getType();
+}
+
 std::optional<IteratorCategory>
 GetStrongestIteratorCategory(clang::QualType type) {
   type = type.getNonReferenceType().getUnqualifiedType();

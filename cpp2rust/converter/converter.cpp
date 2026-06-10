@@ -4127,19 +4127,9 @@ std::string Converter::ConvertIRFragment(
       auto *arg = all_args[arg_idx];
       bool is_receiver = HasReceiver(expr) && arg_idx == 0;
 
-      std::optional<clang::QualType> implicit_convert_to;
-      if (auto *call = clang::dyn_cast<clang::CallExpr>(expr)) {
-        if (auto *fn = call->getDirectCallee()) {
-          unsigned param_idx = arg_idx - HasReceiver(expr);
-          if (param_idx < fn->getNumParams()) {
-            implicit_convert_to = fn->getParamDecl(param_idx)->getType();
-          }
-        }
-      }
-
       PlaceholderCtx ph_ctx{
           .param_type = Mapper::GetParamType(GetCalleeOrExpr(expr), arg_idx),
-          .implicit_convert_to = implicit_convert_to,
+          .implicit_convert_to = GetParamImplicitConvertTarget(expr, arg_idx),
           .materialize_ctx = ctx,
           .materialize_idx =
               is_receiver ? -1 : ((int)arg_idx - HasReceiver(expr)),

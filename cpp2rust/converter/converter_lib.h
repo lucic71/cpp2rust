@@ -143,6 +143,9 @@ clang::Expr *GetCalleeOrExpr(clang::Expr *expr);
 
 bool HasReceiver(clang::Expr *expr);
 
+std::optional<clang::QualType> GetParamImplicitConvertTarget(clang::Expr *expr,
+                                                             unsigned arg_idx);
+
 // Build unified args for a call expression: for member calls, the receiver
 // becomes a0 and call args shift to a1, a2, etc. For operator/free calls,
 // args are used as-is.
