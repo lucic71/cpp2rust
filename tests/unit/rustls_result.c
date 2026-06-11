@@ -1,4 +1,3 @@
-// no-compile: refcount
 #include <stdio.h>
 
 #include "../../rules/rustls/rustls.h"
