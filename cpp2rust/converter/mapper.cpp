@@ -415,7 +415,6 @@ search(clang::QualType qual_type) {
     return {};
   }
   auto res = search(types_, type, GetTypeMapKey(type));
-  auto res = search(types_, type, GetTypeMapKey(type));
   log() << "search type " << type
         << ", result: " << (res.first ? res.first->type_info.type : "None")
         << '\n';
@@ -793,6 +792,9 @@ std::string ToString(clang::QualType qual_type, ScalarSugar sugar) {
       llvm::raw_string_ostream os(out);
       ctx_->getPointerType(pointee).print(os, getPrintPolicy());
       return normalizeTranslationRule(std::move(out));
+    }
+  }
+
     }
   }
 

@@ -117,10 +117,7 @@ public:
           type = lookupType(tdecl);
         }
       }
-      auto src = GetNameOfScalarTypedef(type);
-      if (src.empty()) {
-        src = Mapper::ToString(type);
-      }
+      auto src = Mapper::ToString(type, Mapper::ScalarSugar::kPreserve);
       out_.try_emplace(var->getQualifiedNameAsString(), std::move(src));
       return;
     }
