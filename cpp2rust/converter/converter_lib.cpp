@@ -667,6 +667,23 @@ bool HasReceiver(clang::Expr *expr) {
   return false;
 }
 
+std::optional<clang::QualType> GetParamImplicitConvertTarget(clang::Expr *expr,
+                                                             unsigned arg_idx) {
+  auto *call = clang::dyn_cast<clang::CallExpr>(expr);
+  if (!call) {
+    return std::nullopt;
+  }
+  auto *fn = call->getDirectCallee();
+  if (!fn) {
+    return std::nullopt;
+  }
+  unsigned param_idx = arg_idx - HasReceiver(expr);
+  if (param_idx >= fn->getNumParams()) {
+    return std::nullopt;
+  }
+  return fn->getParamDecl(param_idx)->getType();
+}
+
 std::optional<IteratorCategory>
 GetStrongestIteratorCategory(clang::QualType type) {
   type = type.getNonReferenceType().getUnqualifiedType();
@@ -751,6 +768,57 @@ bool IsBuiltinVaStart(const clang::CallExpr *expr) {
     return fn->getBuiltinID() == clang::Builtin::BI__builtin_va_start;
   }
   return false;
+}
+
+bool NeedsImplicitScalarCast(clang::QualType from, clang::QualType to) {
+  return !from.isNull() && !to.isNull() && from->isIntegerType() &&
+         to->isIntegerType() &&
+         from.getCanonicalType().getUnqualifiedType() ==
+             to.getCanonicalType().getUnqualifiedType() &&
+         Mapper::Map(from) != Mapper::Map(to);
+}
+
+bool NeedsRefBindingTemp(const clang::Expr *arg, clang::QualType param_type) {
+  if (!param_type->isLValueReferenceType()) {
+    return false;
+  }
+  // Materialize a prvalue into a const lvalue reference:
+  //   void foo(const int &) {}
+  //   foo(1)
+  if (clang::isa<clang::MaterializeTemporaryExpr>(arg)) {
+    return true;
+  }
+  // Not a MaterializeTemporaryExpr: the lvalue arg binds directly because it
+  // has the same underlying C type as the param, but the Rust types differ so a
+  // temp is still needed for the cast:
+  //   void foo(const size_t &) {}     <-- size_t        -> usize
+  //   unsigned long x = 1; foo(x);    <-- unsigned long -> u64
+  return param_type->getPointeeType().isConstQualified() &&
+         NeedsImplicitScalarCast(arg->IgnoreImplicit()->getType(),
+                                 param_type.getNonReferenceType());
+}
+
+bool IsSizeType(clang::QualType type) {
+  auto rust_type = Mapper::Map(type);
+  return rust_type == "usize" || rust_type == "isize";
+}
+
+std::optional<clang::QualType>
+GetOperandImplicitConversionTarget(const clang::BinaryOperator *op,
+                                   const clang::Expr *operand,
+                                   const clang::Expr *sibling) {
+  if (op->isComparisonOp()) {
+    if (NeedsImplicitScalarCast(operand->getType(), sibling->getType()) &&
+        IsSizeType(sibling->getType())) {
+      return sibling->getType();
+    }
+    return std::nullopt;
+  }
+  if ((op->isAdditiveOp() || op->isMultiplicativeOp() || op->isBitwiseOp()) &&
+      NeedsImplicitScalarCast(operand->getType(), op->getType())) {
+    return op->getType();
+  }
+  return std::nullopt;
 }
 
 bool IsBuiltinVaEnd(const clang::CallExpr *expr) {
