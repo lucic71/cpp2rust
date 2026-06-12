@@ -702,6 +702,16 @@ bool MapsToRefcountPointer(clang::QualType qual_type) {
   return rule && rule->type_info.is_refcount_pointer;
 }
 
+const std::vector<std::string> *MappedDerives(clang::QualType qual_type) {
+  auto rule = search(qual_type).first;
+  return rule ? &rule->type_info.derives : nullptr;
+}
+
+void SetDerives(clang::QualType qual_type, std::vector<std::string> derives) {
+  if (auto *rule = search(qual_type).first) {
+    rule->type_info.derives = std::move(derives);
+  }
+}
 bool ReturnsPointer(const clang::Expr *expr) {
   auto rule = search(expr);
   return rule && rule->return_type.is_pointer();
