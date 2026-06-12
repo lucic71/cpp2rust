@@ -29,6 +29,7 @@
 #include <string>
 
 #include "compat/platform_flags.h"
+#include "converter/converter_lib.h"
 #include "converter/mapper.h"
 
 namespace fs = std::filesystem;
@@ -109,14 +110,15 @@ public:
       }
       return;
     }
-    if (auto var = R.Nodes.getNodeAs<clang::TypeAliasDecl>("tvar")) {
-      clang::QualType type;
-      if (auto *tdecl = var->getDescribedAliasTemplate()) {
-        type = lookupType(tdecl);
-      } else {
-        type = var->getUnderlyingType();
+    if (auto var = R.Nodes.getNodeAs<clang::TypedefNameDecl>("tvar")) {
+      clang::QualType type = var->getUnderlyingType();
+      if (auto *alias = llvm::dyn_cast<clang::TypeAliasDecl>(var)) {
+        if (auto *tdecl = alias->getDescribedAliasTemplate()) {
+          type = lookupType(tdecl);
+        }
       }
-      out_.try_emplace(var->getQualifiedNameAsString(), Mapper::ToString(type));
+      auto src = Mapper::ToString(type, Mapper::ScalarSugar::kPreserve);
+      out_.try_emplace(var->getQualifiedNameAsString(), std::move(src));
       return;
     }
 
@@ -707,7 +709,7 @@ public:
         &cb_);
 
     finder_.addMatcher(
-        typeAliasDecl(matchesName("(^|::)t[0-9]+$"), isExpansionInMainFile())
+        typedefNameDecl(matchesName("(^|::)t[0-9]+$"), isExpansionInMainFile())
             .bind("tvar"),
         &cb_);
 

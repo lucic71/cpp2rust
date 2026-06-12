@@ -135,6 +135,8 @@ add_custom_target("check"
 
 set(RULES_IR_DIR "${CMAKE_BINARY_DIR}/rules")
 
+set(RUSTLS_HEADER "${PROJECT_SOURCE_DIR}/rules/rustls/rustls.h")
+
 file(GLOB rule_subdirs ${PROJECT_SOURCE_DIR}/rules/*)
 set(cpp_rules_ir_outputs)
 set(rust_rules_ir_outputs)
@@ -151,7 +153,7 @@ foreach(_rule_dir IN LISTS rule_subdirs)
     OUTPUT ${_out}
     COMMAND ${CMAKE_COMMAND} -E make_directory ${_out_dir}
     COMMAND $<TARGET_FILE:cpp-rule-preprocessor> --dir ${_rule_dir} --out ${_out}
-    DEPENDS ${_srcs} ${PROJECT_SOURCE_DIR}/cpp2rust/cpp_rule_preprocessor.cpp
+    DEPENDS ${_srcs} ${PROJECT_SOURCE_DIR}/cpp2rust/cpp_rule_preprocessor.cpp ${RUSTLS_HEADER}
     VERBATIM
   )
   list(APPEND cpp_rules_ir_outputs ${_out})
@@ -171,7 +173,7 @@ file(GLOB_RECURSE rule_preprocessor_sources
      ${PROJECT_SOURCE_DIR}/rule-preprocessor/src/*.rs)
 
 add_custom_command(
-  OUTPUT ${rust_rules_ir_outputs}
+  OUTPUT ${rust_rules_ir_outputs} ${RUSTLS_HEADER}
   COMMAND cargo +${RUST_STABLE_VERSION} build --release --manifest-path "${PROJECT_SOURCE_DIR}/rules/Cargo.toml"
   COMMAND ${CMAKE_COMMAND} -E env
           CARGO_TARGET_DIR=${CMAKE_BINARY_DIR}/target_preprocessor
