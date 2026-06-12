@@ -54,10 +54,10 @@ struct MethodCallFragment {
 };
 
 struct TypeInfo {
+  std::vector<std::string> derives;
   std::string type;
   bool is_refcount_pointer = false;
   bool is_unsafe_pointer = false;
-  std::vector<std::string> derives;
 
   bool is_pointer() const { return is_refcount_pointer || is_unsafe_pointer; }
 
@@ -84,13 +84,13 @@ struct TypeRule {
   void dump() const;
 
   static TypeRule Plain(std::string type) {
-    return {{}, {}, {std::move(type), false, false}};
+    return {{}, {}, {{}, std::move(type), false, false}};
   }
   static TypeRule RefcountPtr(std::string type) {
-    return {{}, {}, {std::move(type), true, false}};
+    return {{}, {}, {{}, std::move(type), true, false}};
   }
   static TypeRule UnsafePtr(std::string type) {
-    return {{}, {}, {std::move(type), false, true}};
+    return {{}, {}, {{}, std::move(type), false, true}};
   }
 };
 
