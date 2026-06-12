@@ -3151,6 +3151,11 @@ bool Converter::VisitImplicitValueInitExpr(clang::ImplicitValueInitExpr *expr) {
   if (auto arr_ty = clang::dyn_cast<clang::ArrayType>(
           expr->getType()->getCanonicalTypeInternal().getTypePtr())) {
     if (auto const_arr_ty = clang::dyn_cast<clang::ConstantArrayType>(arr_ty)) {
+      auto elem_ty = const_arr_ty->getElementType();
+      if (elem_ty->isIntegerType() && !elem_ty->isEnumeralType()) {
+        StrCat(std::format("[0; {}]", const_arr_ty->getSize().getZExtValue()));
+        return false;
+      }
       StrCat(
           std::format("std::array::from_fn::<_, {}, _>(|_| Default::default())",
                       const_arr_ty->getSize().getZExtValue()));
