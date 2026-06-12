@@ -174,6 +174,7 @@ file(GLOB_RECURSE rule_preprocessor_sources
 
 add_custom_command(
   OUTPUT ${rust_rules_ir_outputs} ${RUSTLS_HEADER}
+  COMMAND cargo +${RUST_STABLE_VERSION} build --release --manifest-path "${PROJECT_SOURCE_DIR}/rules/Cargo.toml"
   COMMAND ${CMAKE_COMMAND} -E env
           CARGO_TARGET_DIR=${CMAKE_BINARY_DIR}/target_preprocessor
           cargo +${RUST_NIGHTLY_VERSION} run --release --manifest-path "${PROJECT_SOURCE_DIR}/rule-preprocessor/Cargo.toml"
