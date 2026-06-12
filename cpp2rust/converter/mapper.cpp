@@ -460,6 +460,12 @@ void addBuiltinTypes(Model model) {
                              const std::string &initializer = {}) {
     auto plain = TranslationRule::TypeRule::Plain(rust);
     plain.initializer = initializer;
+    std::vector<std::string> derives = {"Copy",  "Clone",     "Default",
+                                        "Debug", "PartialEq", "PartialOrd"};
+    if (!(rust == "f32" || rust == "f64")) {
+      derives.insert(derives.end(), {"Eq", "Ord", "Hash"});
+    }
+    plain.type_info.derives = std::move(derives);
     AddTypeRule(cxx, TranslationRule::TypeRule(plain));
     AddTypeRule("const " + cxx, std::move(plain));
 
