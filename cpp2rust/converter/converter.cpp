@@ -3493,7 +3493,7 @@ std::string Converter::GetRecordName(const clang::NamedDecl *decl) const {
   if (auto it = inner_structs_.find(ID); it != inner_structs_.end()) {
     return it->second;
   }
-  return ReplaceAll(Mapper::ToString(decl), "::", "_");
+  return Mapper::ToRustName(Mapper::ToString(Mapper::GetTypeForDecl(decl)));
 }
 
 std::vector<const char *>
