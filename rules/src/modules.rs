@@ -40,6 +40,8 @@ pub mod deque_tgt_unsafe;
 pub mod dirent_tgt_unsafe;
 #[path = r#"../errno/tgt_unsafe.rs"#]
 pub mod errno_tgt_unsafe;
+#[path = r#"../fcntl/tgt_refcount.rs"#]
+pub mod fcntl_tgt_refcount;
 #[path = r#"../fcntl/tgt_unsafe.rs"#]
 pub mod fcntl_tgt_unsafe;
 #[path = r#"../fnmatch/tgt_unsafe.rs"#]
@@ -52,6 +54,8 @@ pub mod fstream_tgt_unsafe;
 pub mod ifaddrs_tgt_unsafe;
 #[path = r#"../initializer_list/tgt_unsafe.rs"#]
 pub mod initializer_list_tgt_unsafe;
+#[path = r#"../ioctl/tgt_refcount.rs"#]
+pub mod ioctl_tgt_refcount;
 #[path = r#"../ioctl/tgt_unsafe.rs"#]
 pub mod ioctl_tgt_unsafe;
 #[path = r#"../iomanip/tgt_unsafe.rs"#]
