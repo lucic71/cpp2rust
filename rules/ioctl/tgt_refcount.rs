@@ -3,11 +3,11 @@
 
 use libcc2rs::*;
 
-fn f1(a0: i32, a1: u64, args: &[VaArg]) -> i32 {
+fn f1(a0: i32, a1: u64, va: &[VaArg]) -> i32 {
     panic!(
         "ioctl is not supported in the refcount model (fd={}, request={}, varargs={})",
         a0,
         a1,
-        args.len()
+        va.len()
     )
 }
