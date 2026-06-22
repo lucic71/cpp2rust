@@ -80,6 +80,8 @@ std::vector<BodyFragment> ParseBodyFragmentsJSON(const llvm::json::Array &arr) {
     } else if (auto *mc = frag_obj->getObject("method_call")) {
       result.push_back(std::make_unique<MethodCallFragment>(
           ParseMethodCallFragmentJSON(*mc)));
+    } else if (frag_obj->get("va_args")) {
+      result.push_back(VaArgsFragment{});
     }
   }
   return result;
@@ -222,6 +224,8 @@ void BodyFragmentDump(const BodyFragment &frag) {
     p->dump();
   } else if (auto *g = std::get_if<GenericFragment>(&frag)) {
     g->dump();
+  } else if (auto *v = std::get_if<VaArgsFragment>(&frag)) {
+    v->dump();
   } else if (auto *mc =
                  std::get_if<std::unique_ptr<MethodCallFragment>>(&frag)) {
     (*mc)->dump();
@@ -231,6 +235,8 @@ void BodyFragmentDump(const BodyFragment &frag) {
 } // namespace
 
 void TextFragment::dump() const { log() << "  text: \"" << text << "\"\n"; }
+
+void VaArgsFragment::dump() const { log() << "  va_args\n"; }
 
 void PlaceholderFragment::dump() const {
   log() << "  placeholder: " << n;

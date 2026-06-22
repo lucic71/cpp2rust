@@ -4132,6 +4132,8 @@ std::string Converter::ConvertIRFragment(
           .is_index_base = ph->is_index_base,
       };
       result += ConvertPlaceholder(expr, arg, ph_ctx);
+    } else if (std::get_if<TranslationRule::VaArgsFragment>(&frag)) {
+      result += ConvertVariadicTail(expr, all_args);
     } else if (auto *mc =
                    std::get_if<std::unique_ptr<MethodCallFragment>>(&frag)) {
       result += ConvertMappedMethodCall(expr, **mc, args, num_args, ctx);
@@ -4139,6 +4141,25 @@ std::string Converter::ConvertIRFragment(
   }
 
   return result;
+}
+
+std::string
+Converter::ConvertVariadicTail(clang::Expr *expr,
+                               const std::vector<clang::Expr *> &all_args) {
+  const auto *tgt_ir = Mapper::GetExprRule(GetCalleeOrExpr(expr));
+  unsigned fixed = tgt_ir ? tgt_ir->params.size() : 0;
+
+  Buffer buf(*this);
+  StrCat("&[");
+  for (unsigned i = fixed; i < all_args.size(); ++i) {
+    {
+      PushParen p(*this);
+      ConvertVariadicArg(all_args[i]);
+    }
+    StrCat(".into()", token::kComma);
+  }
+  StrCat("]");
+  return std::move(buf).str();
 }
 
 std::string Converter::AccessLValueObject(clang::MemberExpr *member) {
