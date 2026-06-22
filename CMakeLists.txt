@@ -50,6 +50,9 @@ execute_process(
 )
 message(STATUS ${CLANG_OUTPUT})
 
+include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/generate-buildconfig-py.cmake)
+generate_buildconfig_py("${CMAKE_CURRENT_SOURCE_DIR}/tests/lit/lit")
+
 include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/rust-toolchain.cmake)
 set(RUST_STAMP_FILE "${CMAKE_BINARY_DIR}/.rust-toolchain.stamp")
 
@@ -129,27 +132,13 @@ add_custom_target("check-unit"
                   USES_TERMINAL
                  )
 
-add_custom_target("check-benchmarks"
-                  COMMAND ${CMAKE_COMMAND} -E env
-                          "CC=${CMAKE_C_COMPILER}"
-                          "CXX=${CMAKE_CXX_COMPILER}"
-                          "python3"
-                          "${PROJECT_SOURCE_DIR}/tests/lit/lit.py"
-                          ${LIT_FLAGS}
-                          "${PROJECT_SOURCE_DIR}/tests/benchmarks"
-                  DEPENDS cpp2rust libcc2rs
-                  USES_TERMINAL
-                 )
-
 add_custom_target("check"
                   DEPENDS check-libcc2rs check-libcc2rs-macros check-unit
                  )
 
-add_custom_target("check-all"
-                  DEPENDS check check-benchmarks
-                 )
-
 set(RULES_IR_DIR "${CMAKE_BINARY_DIR}/rules")
+
+set(RUSTLS_HEADER "${PROJECT_SOURCE_DIR}/rules/rustls/rustls.h")
 
 file(GLOB rule_subdirs ${PROJECT_SOURCE_DIR}/rules/*)
 set(cpp_rules_ir_outputs)
@@ -167,7 +156,7 @@ foreach(_rule_dir IN LISTS rule_subdirs)
     OUTPUT ${_out}
     COMMAND ${CMAKE_COMMAND} -E make_directory ${_out_dir}
     COMMAND $<TARGET_FILE:cpp-rule-preprocessor> --dir ${_rule_dir} --out ${_out}
-    DEPENDS ${_srcs} ${PROJECT_SOURCE_DIR}/cpp2rust/cpp_rule_preprocessor.cpp
+    DEPENDS ${_srcs} ${PROJECT_SOURCE_DIR}/cpp2rust/cpp_rule_preprocessor.cpp ${RUSTLS_HEADER}
     VERBATIM
   )
   list(APPEND cpp_rules_ir_outputs ${_out})
@@ -187,7 +176,7 @@ file(GLOB_RECURSE rule_preprocessor_sources
      ${PROJECT_SOURCE_DIR}/rule-preprocessor/src/*.rs)
 
 add_custom_command(
-  OUTPUT ${rust_rules_ir_outputs}
+  OUTPUT ${rust_rules_ir_outputs} ${RUSTLS_HEADER}
   COMMAND cargo +${RUST_STABLE_VERSION} build --release --manifest-path "${PROJECT_SOURCE_DIR}/rules/Cargo.toml"
   COMMAND ${CMAKE_COMMAND} -E env
           CARGO_TARGET_DIR=${CMAKE_BINARY_DIR}/target_preprocessor

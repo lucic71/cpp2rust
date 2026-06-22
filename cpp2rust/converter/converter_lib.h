@@ -145,6 +145,9 @@ clang::Expr *GetCalleeOrExpr(clang::Expr *expr);
 
 bool HasReceiver(clang::Expr *expr);
 
+std::optional<clang::QualType> GetParamImplicitConvertTarget(clang::Expr *expr,
+                                                             unsigned arg_idx);
+
 // Build unified args for a call expression: for member calls, the receiver
 // becomes a0 and call args shift to a1, a2, etc. For operator/free calls,
 // args are used as-is.
@@ -161,6 +164,17 @@ std::string GetClassName(clang::QualType type);
 
 bool IsVaListType(clang::QualType type);
 
+bool NeedsImplicitScalarCast(clang::QualType from, clang::QualType to);
+
+bool NeedsRefBindingTemp(const clang::Expr *arg, clang::QualType param_type);
+
+bool IsSizeType(clang::QualType type);
+
+std::optional<clang::QualType>
+GetOperandImplicitConversionTarget(const clang::BinaryOperator *op,
+                                   const clang::Expr *operand,
+                                   const clang::Expr *sibling);
+
 bool IsBuiltinVaStart(const clang::CallExpr *expr);
 
 bool IsBuiltinVaEnd(const clang::CallExpr *expr);
@@ -171,15 +185,15 @@ bool ContainsVAArgExpr(const clang::Stmt *stmt);
 
 clang::Expr *NormalizeToBool(clang::Expr *expr, clang::ASTContext &ctx);
 
-std::vector<clang::SwitchCase *>
-GetTopLevelSwitchCases(clang::SwitchStmt *stmt);
+struct SwitchArm {
+  std::vector<clang::Stmt *> body;
+  llvm::StringRef label;
+  clang::SwitchCase *head;
+  bool is_default_case;
+  bool has_fallthrough;
+};
 
-bool SwitchCaseContainsDefault(clang::SwitchCase *c);
-
-std::vector<clang::Stmt *> GetSwitchCaseBody(clang::CompoundStmt *body,
-                                             clang::SwitchCase *head);
-
-bool SwitchHasFallthrough(clang::SwitchStmt *stmt);
+std::vector<SwitchArm> AnalyzeSwitchArms(clang::CompoundStmt *body);
 
 bool CompoundHasTopLevelLabel(const clang::CompoundStmt *compound);
 

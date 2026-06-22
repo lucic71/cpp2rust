@@ -481,7 +481,15 @@ std::string GetNamedDeclAsString(const clang::NamedDecl *decl) {
   }
 
   if (name.empty()) {
-    name = "self";
+    auto *pdecl = llvm::dyn_cast<clang::ParmVarDecl>(decl);
+    assert(pdecl && "Unexpected unnamed construct");
+
+    const auto *ctor =
+        llvm::dyn_cast<clang::CXXConstructorDecl>(pdecl->getDeclContext());
+    name = (pdecl->isExplicitObjectParameter() ||
+            (ctor && ctor->isCopyOrMoveConstructor()))
+               ? "self"
+               : "_";
   }
 
   return name;
@@ -676,6 +684,23 @@ bool HasReceiver(clang::Expr *expr) {
   return false;
 }
 
+std::optional<clang::QualType> GetParamImplicitConvertTarget(clang::Expr *expr,
+                                                             unsigned arg_idx) {
+  auto *call = clang::dyn_cast<clang::CallExpr>(expr);
+  if (!call) {
+    return std::nullopt;
+  }
+  auto *fn = call->getDirectCallee();
+  if (!fn) {
+    return std::nullopt;
+  }
+  unsigned param_idx = arg_idx - HasReceiver(expr);
+  if (param_idx >= fn->getNumParams()) {
+    return std::nullopt;
+  }
+  return fn->getParamDecl(param_idx)->getType();
+}
+
 std::optional<IteratorCategory>
 GetStrongestIteratorCategory(clang::QualType type) {
   type = type.getNonReferenceType().getUnqualifiedType();
@@ -762,6 +787,57 @@ bool IsBuiltinVaStart(const clang::CallExpr *expr) {
   return false;
 }
 
+bool NeedsImplicitScalarCast(clang::QualType from, clang::QualType to) {
+  return !from.isNull() && !to.isNull() && from->isIntegerType() &&
+         to->isIntegerType() &&
+         from.getCanonicalType().getUnqualifiedType() ==
+             to.getCanonicalType().getUnqualifiedType() &&
+         Mapper::Map(from) != Mapper::Map(to);
+}
+
+bool NeedsRefBindingTemp(const clang::Expr *arg, clang::QualType param_type) {
+  if (!param_type->isLValueReferenceType()) {
+    return false;
+  }
+  // Materialize a prvalue into a const lvalue reference:
+  //   void foo(const int &) {}
+  //   foo(1)
+  if (clang::isa<clang::MaterializeTemporaryExpr>(arg)) {
+    return true;
+  }
+  // Not a MaterializeTemporaryExpr: the lvalue arg binds directly because it
+  // has the same underlying C type as the param, but the Rust types differ so a
+  // temp is still needed for the cast:
+  //   void foo(const size_t &) {}     <-- size_t        -> usize
+  //   unsigned long x = 1; foo(x);    <-- unsigned long -> u64
+  return param_type->getPointeeType().isConstQualified() &&
+         NeedsImplicitScalarCast(arg->IgnoreImplicit()->getType(),
+                                 param_type.getNonReferenceType());
+}
+
+bool IsSizeType(clang::QualType type) {
+  auto rust_type = Mapper::Map(type);
+  return rust_type == "usize" || rust_type == "isize";
+}
+
+std::optional<clang::QualType>
+GetOperandImplicitConversionTarget(const clang::BinaryOperator *op,
+                                   const clang::Expr *operand,
+                                   const clang::Expr *sibling) {
+  if (op->isComparisonOp()) {
+    if (NeedsImplicitScalarCast(operand->getType(), sibling->getType()) &&
+        IsSizeType(sibling->getType())) {
+      return sibling->getType();
+    }
+    return std::nullopt;
+  }
+  if ((op->isAdditiveOp() || op->isMultiplicativeOp() || op->isBitwiseOp()) &&
+      NeedsImplicitScalarCast(operand->getType(), op->getType())) {
+    return op->getType();
+  }
+  return std::nullopt;
+}
+
 bool IsBuiltinVaEnd(const clang::CallExpr *expr) {
   if (auto *fn = expr->getDirectCallee()) {
     return fn->getBuiltinID() == clang::Builtin::BI__builtin_va_end;
@@ -817,20 +893,15 @@ clang::Expr *NormalizeToBool(clang::Expr *expr, clang::ASTContext &ctx) {
       /*BasePath=*/nullptr, clang::VK_PRValue, clang::FPOptionsOverride());
 }
 
-std::vector<clang::SwitchCase *>
-GetTopLevelSwitchCases(clang::SwitchStmt *stmt) {
-  std::vector<clang::SwitchCase *> cases;
-  if (auto *body = llvm::dyn_cast<clang::CompoundStmt>(stmt->getBody())) {
-    for (auto *s : body->body()) {
-      if (auto *sc = clang::dyn_cast<clang::SwitchCase>(s)) {
-        cases.push_back(sc);
-      }
-    }
+static clang::Stmt *GetLastStmtOfSwitchCase(clang::SwitchCase *c) {
+  clang::Stmt *cur = c->getSubStmt();
+  while (auto *sc = clang::dyn_cast<clang::SwitchCase>(cur)) {
+    cur = sc->getSubStmt();
   }
-  return cases;
+  return cur;
 }
 
-bool SwitchCaseContainsDefault(clang::SwitchCase *c) {
+static bool CaseChainHasDefault(clang::SwitchCase *c) {
   for (clang::Stmt *cur = c;;) {
     if (clang::isa<clang::DefaultStmt>(cur)) {
       return true;
@@ -841,32 +912,6 @@ bool SwitchCaseContainsDefault(clang::SwitchCase *c) {
     }
     cur = sc->getSubStmt();
   }
-  return false;
-}
-
-static clang::Stmt *GetLastStmtOfSwitchCase(clang::SwitchCase *c) {
-  clang::Stmt *cur = c->getSubStmt();
-  while (auto *sc = clang::dyn_cast<clang::SwitchCase>(cur)) {
-    cur = sc->getSubStmt();
-  }
-  return cur;
-}
-
-std::vector<clang::Stmt *> GetSwitchCaseBody(clang::CompoundStmt *body,
-                                             clang::SwitchCase *head) {
-  std::vector<clang::Stmt *> out;
-  out.push_back(GetLastStmtOfSwitchCase(head));
-  auto it = body->body_begin(), end = body->body_end();
-  while (it != end && *it != head) {
-    ++it;
-  }
-  assert(it != end);
-  ++it;
-  while (it != end && !clang::isa<clang::SwitchCase>(*it)) {
-    out.push_back(*it);
-    ++it;
-  }
-  return out;
 }
 
 static bool SwitchCaseHasFallthrough(clang::Stmt *stmt) {
@@ -888,16 +933,32 @@ static bool SwitchCaseHasFallthrough(clang::Stmt *stmt) {
   return true;
 }
 
-bool SwitchHasFallthrough(clang::SwitchStmt *stmt) {
-  if (auto *body = clang::dyn_cast<clang::CompoundStmt>(stmt->getBody())) {
-    for (auto top_level_case : GetTopLevelSwitchCases(stmt)) {
-      auto arm = GetSwitchCaseBody(body, top_level_case);
-      if (arm.empty() || SwitchCaseHasFallthrough(arm.back())) {
-        return true;
-      }
+std::vector<SwitchArm> AnalyzeSwitchArms(clang::CompoundStmt *body) {
+  std::vector<SwitchArm> arms;
+  for (clang::Stmt *s : body->body()) {
+    llvm::StringRef label;
+    clang::Stmt *inner = s;
+    if (auto *outer = clang::dyn_cast<clang::LabelStmt>(inner)) {
+      label = outer->getDecl()->getName();
+      do {
+        inner = clang::cast<clang::LabelStmt>(inner)->getSubStmt();
+      } while (clang::isa<clang::LabelStmt>(inner));
+    }
+
+    if (auto *sc = clang::dyn_cast<clang::SwitchCase>(inner)) {
+      arms.emplace_back(std::vector<clang::Stmt *>{GetLastStmtOfSwitchCase(sc)},
+                        label, sc, CaseChainHasDefault(sc),
+                        /*has_fallthrough=*/false);
+    } else if (!arms.empty()) {
+      arms.back().body.push_back(s);
     }
   }
-  return false;
+
+  for (SwitchArm &arm : arms) {
+    arm.has_fallthrough =
+        arm.body.empty() || SwitchCaseHasFallthrough(arm.body.back());
+  }
+  return arms;
 }
 
 bool CompoundHasTopLevelLabel(const clang::CompoundStmt *compound) {

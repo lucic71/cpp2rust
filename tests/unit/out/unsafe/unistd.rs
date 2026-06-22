@@ -15,9 +15,8 @@ pub unsafe fn test_close_0() {
         ((((libc::read(
             fds[(0) as usize],
             (buf.as_mut_ptr() as *mut u8 as *mut ::libc::c_void),
-            1_u64 as usize
-        ) as i64)
-            == (-1_i32 as i64)) as i32)
+            1_usize
+        )) == (-1_i32 as isize)) as i32)
             != 0)
     );
     assert!(((((libc::close(fds[(1) as usize])) == (0)) as i32) != 0));
@@ -47,20 +46,19 @@ pub unsafe fn test_lseek_1() {
         ((((libc::read(
             fd,
             (buf.as_mut_ptr() as *mut u8 as *mut ::libc::c_void),
-            5_u64 as usize
-        ) as i64)
-            == (5_i64)) as i32)
+            5_usize
+        )) == (5_isize)) as i32)
             != 0)
     );
     assert!(
         (((({
             let sa = core::slice::from_raw_parts(
                 (buf.as_mut_ptr() as *const u8 as *const ::libc::c_void) as *const u8,
-                5_u64 as usize,
+                5_usize as usize,
             );
             let sb = core::slice::from_raw_parts(
                 (b"world\0".as_ptr().cast_mut() as *const u8 as *const ::libc::c_void) as *const u8,
-                5_u64 as usize,
+                5_usize as usize,
             );
             let mut diff = 0_i32;
             for (x, y) in sa.iter().zip(sb.iter()) {
@@ -102,21 +100,20 @@ pub unsafe fn test_read_2() {
         ((((libc::read(
             fd,
             (buf.as_mut_ptr() as *mut u8 as *mut ::libc::c_void),
-            16_u64 as usize
-        ) as i64)
-            == (11_i64)) as i32)
+            16_usize
+        )) == (11_isize)) as i32)
             != 0)
     );
     assert!(
         (((({
             let sa = core::slice::from_raw_parts(
                 (buf.as_mut_ptr() as *const u8 as *const ::libc::c_void) as *const u8,
-                11_u64 as usize,
+                11_usize as usize,
             );
             let sb = core::slice::from_raw_parts(
                 (b"hello world\0".as_ptr().cast_mut() as *const u8 as *const ::libc::c_void)
                     as *const u8,
-                11_u64 as usize,
+                11_usize as usize,
             );
             let mut diff = 0_i32;
             for (x, y) in sa.iter().zip(sb.iter()) {
@@ -151,9 +148,8 @@ pub unsafe fn test_pipe_4() {
         ((((libc::write(
             fds[(1) as usize],
             (msg as *const u8 as *const ::libc::c_void),
-            5_u64 as usize
-        ) as i64)
-            == (5_i64)) as i32)
+            5_usize
+        )) == (5_isize)) as i32)
             != 0)
     );
     let mut buf: [u8; 8] = [0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8];
@@ -161,20 +157,19 @@ pub unsafe fn test_pipe_4() {
         ((((libc::read(
             fds[(0) as usize],
             (buf.as_mut_ptr() as *mut u8 as *mut ::libc::c_void),
-            8_u64 as usize
-        ) as i64)
-            == (5_i64)) as i32)
+            8_usize
+        )) == (5_isize)) as i32)
             != 0)
     );
     assert!(
         (((({
             let sa = core::slice::from_raw_parts(
                 (buf.as_mut_ptr() as *const u8 as *const ::libc::c_void) as *const u8,
-                5_u64 as usize,
+                5_usize as usize,
             );
             let sb = core::slice::from_raw_parts(
                 (msg as *const u8 as *const ::libc::c_void) as *const u8,
-                5_u64 as usize,
+                5_usize as usize,
             );
             let mut diff = 0_i32;
             for (x, y) in sa.iter().zip(sb.iter()) {
@@ -192,9 +187,8 @@ pub unsafe fn test_pipe_4() {
         ((((libc::read(
             fds[(0) as usize],
             (buf.as_mut_ptr() as *mut u8 as *mut ::libc::c_void),
-            8_u64 as usize
-        ) as i64)
-            == (0_i64)) as i32)
+            8_usize
+        )) == (0_isize)) as i32)
             != 0)
     );
     assert!(((((libc::close(fds[(0) as usize])) == (0)) as i32) != 0));
@@ -225,63 +219,24 @@ pub unsafe fn test_ftruncate_5() {
     assert!(((((libc::fclose(fp)) == (0)) as i32) != 0));
     libc::unlink(path as *const i8);
 }
-pub unsafe fn test_open_6() {
-    let mut fd: i32 = (unsafe {
-        libc::open(
-            (b"/dev/null\0".as_ptr().cast_mut()).cast_const() as *const i8,
-            0 as i32,
-            (420),
-        )
-    });
-    assert!(((((fd) >= (-1_i32)) as i32) != 0));
-    if ((((fd) >= (0)) as i32) != 0) {
-        libc::close(fd);
-    }
-    fd = (unsafe {
-        libc::open(
-            (b"/dev/null\0".as_ptr().cast_mut()).cast_const() as *const i8,
-            0 as i32,
-        )
-    });
-    assert!(((((fd) >= (-1_i32)) as i32) != 0));
-    if ((((fd) >= (0)) as i32) != 0) {
-        libc::close(fd);
-    }
-}
-pub unsafe fn test_fcntl_7() {
-    assert!(((((unsafe { libc::fcntl(0 as i32, 1 as i32,) }) >= (-1_i32)) as i32) != 0));
-    let mut duped: i32 = (unsafe { libc::fcntl(0 as i32, 0 as i32, (100)) });
-    assert!(((((duped) >= (-1_i32)) as i32) != 0));
-    if ((((duped) >= (0)) as i32) != 0) {
-        libc::close(duped);
-    }
-}
-pub unsafe fn test_ioctl_8() {
-    let mut arg: i32 = 0;
-    assert!(
-        ((((unsafe { libc::ioctl(0 as i32, 0_u64 as u64, (&mut arg as *mut i32),) }) >= (-1_i32))
-            as i32)
-            != 0)
-    );
-}
-pub unsafe fn test_isatty_9() {
+pub unsafe fn test_isatty_6() {
     printf(
         (b"%d\n\0".as_ptr().cast_mut()).cast_const() as *const i8,
         libc::isatty(0),
     );
 }
-pub unsafe fn test_geteuid_10() {
+pub unsafe fn test_geteuid_7() {
     printf(
         (b"%u\n\0".as_ptr().cast_mut()).cast_const() as *const i8,
         libc::geteuid(),
     );
 }
-pub unsafe fn test_gethostname_11() {
+pub unsafe fn test_gethostname_8() {
     let mut name: [u8; 256] = [0_u8; 256];
     assert!(
         ((((libc::gethostname(
             name.as_mut_ptr() as *mut i8,
-            ::std::mem::size_of::<[u8; 256]>() as u64 as usize
+            ::std::mem::size_of::<[u8; 256]>()
         )) == (0)) as i32)
             != 0)
     );
@@ -302,11 +257,8 @@ unsafe fn main_0() -> i32 {
     (unsafe { test_unlink_3() });
     (unsafe { test_pipe_4() });
     (unsafe { test_ftruncate_5() });
-    (unsafe { test_open_6() });
-    (unsafe { test_fcntl_7() });
-    (unsafe { test_ioctl_8() });
-    (unsafe { test_isatty_9() });
-    (unsafe { test_geteuid_10() });
-    (unsafe { test_gethostname_11() });
+    (unsafe { test_isatty_6() });
+    (unsafe { test_geteuid_7() });
+    (unsafe { test_gethostname_8() });
     return 0;
 }

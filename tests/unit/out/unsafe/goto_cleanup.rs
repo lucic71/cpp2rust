@@ -8,6 +8,7 @@ use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 pub unsafe fn early_0(mut n: i32) -> i32 {
     let mut ret: i32 = 0_i32;
+    let mut intentionally_const_var: i32 = 0_i32;
     goto_block!({
         '__entry: {
             ret = 0;
@@ -16,9 +17,10 @@ pub unsafe fn early_0(mut n: i32) -> i32 {
                 goto!('out);
             }
             ret = 100;
+            intentionally_const_var = 22;
         }
         'out: {
-            return ret;
+            return (((ret) + (intentionally_const_var)) - (intentionally_const_var));
         }
     });
     panic!("ub: non-void function does not return a value")

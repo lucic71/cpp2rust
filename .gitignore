@@ -1,9 +1,11 @@
 # CMake
 build/
+_buildconfig.py
 
 # Cargo
 target/
 Cargo.lock
+rules/rustls/rustls.h
 
 # Python
 *.pyc

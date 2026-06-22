@@ -10,11 +10,13 @@
 #include <functional>
 #include <optional>
 #include <string>
+#include <type_traits>
 #include <unordered_map>
 #include <unordered_set>
 #include <utility>
 #include <vector>
 
+#include "converter/converter_lib.h"
 #include "converter/lex.h"
 #include "converter/translation_rule.h"
 #include "logging.h"
@@ -188,6 +190,7 @@ public:
 
   struct PlaceholderCtx {
     std::string param_type;
+    std::optional<clang::QualType> implicit_convert_to;
     TempMaterializationCtx *materialize_ctx;
     int materialize_idx; // <0 = no idx, >=0 idx valid
     TranslationRule::Access access;
@@ -350,6 +353,8 @@ public:
 
   virtual bool VisitTypeTraitExpr(clang::TypeTraitExpr *expr);
 
+  virtual bool VisitOffsetOfExpr(clang::OffsetOfExpr *expr);
+
   virtual bool VisitEnumDecl(clang::EnumDecl *decl);
 
   virtual void AddFromImpl(clang::EnumDecl *decl);
@@ -364,8 +369,7 @@ public:
 
   virtual bool VisitSwitchStmt(clang::SwitchStmt *stmt);
 
-  void EmitSwitchArm(clang::CompoundStmt *body, clang::SwitchCase *sc,
-                     bool is_default);
+  void EmitSwitchArm(const SwitchArm &arm, bool is_default);
 
   bool ConvertSwitchCaseCondition(clang::SwitchCase *stmt);
 
@@ -431,9 +435,15 @@ protected:
   using PushParen = PushDelim<token::kOpenParen, token::kCloseParen>;
   using PushBracket = PushDelim<token::kOpenBracket, token::kCloseBracket>;
 
-  template <typename T> inline std::string ToString(T node) {
+  template <typename T>
+  inline std::string
+  ToString(T node, std::optional<clang::QualType> implicit_convert_to = {}) {
     Buffer buf(*this);
-    Convert(node);
+    if constexpr (std::is_convertible_v<T, clang::Expr *>) {
+      Convert(node, implicit_convert_to);
+    } else {
+      Convert(node);
+    }
     return std::move(buf).str();
   }
 
@@ -450,7 +460,8 @@ protected:
 
   virtual bool Convert(clang::Decl *decl);
   virtual bool Convert(clang::Stmt *stmt);
-  virtual bool Convert(clang::Expr *expr);
+  virtual bool Convert(clang::Expr *expr,
+                       std::optional<clang::QualType> implicit_convert_to = {});
 
   virtual std::string GetDefaultAsString(clang::QualType qual_type);
 
@@ -579,6 +590,8 @@ protected:
   virtual bool RecordDerivesDefault(const clang::RecordDecl *decl);
 
   bool RecordDerivesCopy(const clang::RecordDecl *decl);
+
+  bool RecordHasCopyableFields(const clang::RecordDecl *decl);
 
   bool ShouldReplaceWithMappedBody(clang::DeclRefExpr *expr) const;
 
@@ -827,8 +840,13 @@ protected:
   void SetFreshType(clang::QualType type);
 
   std::string ConvertLValue(clang::Expr *expr);
-  std::string ConvertRValue(clang::Expr *expr, int line = __builtin_LINE());
-  virtual std::string ConvertFreshRValue(clang::Expr *expr);
+  std::string
+  ConvertRValue(clang::Expr *expr,
+                std::optional<clang::QualType> implicit_convert_to = {},
+                int line = __builtin_LINE());
+  virtual std::string
+  ConvertFreshRValue(clang::Expr *expr,
+                     std::optional<clang::QualType> implicit_convert_to = {});
   virtual std::string ConvertFreshPointer(clang::Expr *expr);
   virtual std::string ConvertFreshObject(clang::Expr *expr);
   std::string ConvertPointer(clang::Expr *expr, int line = __builtin_LINE());
@@ -854,7 +872,7 @@ protected:
 
   virtual const char *GetPointerDerefPrefix(clang::QualType pointee_type);
 
-  TempMaterializationCtx CollectPrvalueToLRefArgs(clang::CallExpr *expr);
+  TempMaterializationCtx CollectRefBindingTempArgs(clang::CallExpr *expr);
 
   bool IsCastRedundantInRust(clang::Expr *expr, clang::QualType target_type);
 

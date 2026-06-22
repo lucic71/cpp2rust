@@ -14,21 +14,21 @@ pub fn main() {
 unsafe fn main_0() -> i32 {
     let mut fd: i32 = 0;
     let mut ssloc: sockaddr_storage = unsafe { std::mem::zeroed::<sockaddr_storage>() };
-    let mut slen: u32 = (::std::mem::size_of::<sockaddr_storage>() as u64 as u32);
+    let mut slen: u32 = (::std::mem::size_of::<sockaddr_storage>() as u32);
     assert!(
         ((((libc::getsockname(
             fd,
-            ((&mut ssloc as *mut sockaddr_storage) as *mut sockaddr),
+            ((&mut ssloc as *mut sockaddr_storage) as *mut libc::sockaddr),
             (&mut slen as *mut u32)
         )) == (-1_i32)) as i32)
             != 0)
     );
     let mut sin: sockaddr_in = unsafe { std::mem::zeroed::<sockaddr_in>() };
-    let mut inlen: u32 = (::std::mem::size_of::<sockaddr_in>() as u64 as u32);
+    let mut inlen: u32 = (::std::mem::size_of::<sockaddr_in>() as u32);
     assert!(
         ((((libc::getsockname(
             fd,
-            ((&mut sin as *mut sockaddr_in) as *mut sockaddr),
+            ((&mut sin as *mut sockaddr_in) as *mut libc::sockaddr),
             (&mut inlen as *mut u32)
         )) == (-1_i32)) as i32)
             != 0)

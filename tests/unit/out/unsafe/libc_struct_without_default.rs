@@ -23,12 +23,12 @@ impl Default for UserDefined {
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct FieldIsLibcType {
-    pub addr: sockaddr,
+    pub addr: libc::sockaddr,
 }
 impl Default for FieldIsLibcType {
     fn default() -> Self {
         FieldIsLibcType {
-            addr: unsafe { std::mem::zeroed::<sockaddr>() },
+            addr: unsafe { std::mem::zeroed() },
         }
     }
 }
@@ -59,8 +59,8 @@ unsafe fn main_0() -> i32 {
     st.st_size = 1024_i64;
     assert!(((st.st_size) == (1024_i64)));
     let mut ud: UserDefined = <UserDefined>::default();
-    assert!(((ud.a[(0_u64) as usize]) == (0)));
-    assert!(((ud.v.len() as u64) == (0_u64)));
+    assert!(((ud.a[(0_usize)]) == (0)));
+    assert!(((ud.v.len()) == (0_usize)));
     let mut filt: FieldIsLibcType = <FieldIsLibcType>::default();
     assert!(((filt.addr.sa_family as i32) == (0)));
     return 0;
