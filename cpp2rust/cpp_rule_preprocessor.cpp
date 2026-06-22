@@ -355,8 +355,7 @@ private:
                           llvm::SmallVectorImpl<clang::TemplateArgument> &out) {
     for (clang::NamedDecl *param : *decl->getTemplateParameters()) {
       if (param->isTemplateParameterPack()) {
-        out.emplace_back(
-            clang::TemplateArgument::CreatePackCopy(sema_->Context, {}));
+        out.emplace_back(clang::TemplateArgument::getEmptyPack());
       } else if (llvm::isa<clang::TemplateTypeParmDecl>(param)) {
         clang::RecordDecl *rdecl = createRecordDecl(param->getName());
         clang::QualType type =
