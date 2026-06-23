@@ -30,7 +30,16 @@ fn main_0() -> i32 {
             }
         }
     }
-    impl ByteRepr for anon_0 {};
+    impl ByteRepr for anon_0 {
+        fn to_bytes(&self, buf: &mut [u8]) {
+            self.__store.to_bytes(buf);
+        }
+        fn from_bytes(buf: &[u8]) -> Self {
+            anon_0 {
+                __store: libcc2rs::UnionStorage::from_bytes(buf),
+            }
+        }
+    };
     let pp: Value<anon_0> = <Value<anon_0>>::default();
     (*pp.borrow_mut()).as_signed().write((x.as_pointer()));
     ((*pp.borrow()).as_unsigned().read()).write(42_u64);

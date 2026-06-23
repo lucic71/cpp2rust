@@ -66,7 +66,16 @@ impl Default for point {
         }
     }
 }
-impl ByteRepr for point {}
+impl ByteRepr for point {
+    fn to_bytes(&self, buf: &mut [u8]) {
+        self.__store.to_bytes(buf);
+    }
+    fn from_bytes(buf: &[u8]) -> Self {
+        point {
+            __store: libcc2rs::UnionStorage::from_bytes(buf),
+        }
+    }
+}
 #[derive(Clone)]
 pub struct slot_union {
     __store: libcc2rs::UnionStorage,
@@ -86,7 +95,16 @@ impl Default for slot_union {
         }
     }
 }
-impl ByteRepr for slot_union {}
+impl ByteRepr for slot_union {
+    fn to_bytes(&self, buf: &mut [u8]) {
+        self.__store.to_bytes(buf);
+    }
+    fn from_bytes(buf: &[u8]) -> Self {
+        slot_union {
+            __store: libcc2rs::UnionStorage::from_bytes(buf),
+        }
+    }
+}
 #[derive(Clone, Copy, PartialEq, Debug, Default)]
 enum slot {
     #[default]

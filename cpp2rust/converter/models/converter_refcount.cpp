@@ -540,6 +540,17 @@ void ConverterRefCount::AddDropTrait(const clang::CXXRecordDecl *decl) {
 void ConverterRefCount::AddByteReprTrait(const clang::RecordDecl *decl) {
   auto struct_name = GetRecordName(decl);
 
+  if (decl->isUnion()) {
+    StrCat(std::format("impl ByteRepr for {}", struct_name));
+    PushBrace impl_brace(*this);
+    StrCat(
+        "fn to_bytes(&self, buf: &mut [u8]) { self.__store.to_bytes(buf); }");
+    StrCat(std::format("fn from_bytes(buf: &[u8]) -> Self {{ {} {{ __store: "
+                       "libcc2rs::UnionStorage::from_bytes(buf) }} }}",
+                       struct_name));
+    return;
+  }
+
   if (!TypeImplementsByteRepr(ctx_.getCanonicalTagType(decl))) {
     StrCat(std::format("impl ByteRepr for {}", struct_name));
     PushBrace brace(*this);
@@ -568,16 +579,18 @@ void ConverterRefCount::AddByteReprTrait(const clang::RecordDecl *decl) {
   StrCat("fn from_bytes(buf: &[u8]) -> Self");
   {
     PushBrace fn_brace(*this);
-    PushConversionKind push(*this, ConversionKind::FullRefCount);
     StrCat("Self");
     PushBrace lit_brace(*this);
     unsigned idx = 0;
     for (auto *field : decl->fields()) {
       auto byte_off = layout.getFieldOffset(idx) / 8;
       auto byte_size = ctx_.getTypeSize(field->getType()) / 8;
+      PushConversionKind push(*this, ConversionKind::FullRefCount);
+      std::string storage_ty = ToString(field->getType());
+      Unwrap(storage_ty, "Value<", ">");
       StrCat(std::format(
           "{}: Rc::new(RefCell::new(<{}>::from_bytes(&buf[{}..{}]))),",
-          GetNamedDeclAsString(field), ToString(field->getType()), byte_off,
+          GetNamedDeclAsString(field), storage_ty, byte_off,
           byte_off + byte_size));
       ++idx;
     }

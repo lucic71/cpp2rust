@@ -102,7 +102,16 @@ impl Default for anon_0 {
         }
     }
 }
-impl ByteRepr for anon_0 {}
+impl ByteRepr for anon_0 {
+    fn to_bytes(&self, buf: &mut [u8]) {
+        self.__store.to_bytes(buf);
+    }
+    fn from_bytes(buf: &[u8]) -> Self {
+        anon_0 {
+            __store: libcc2rs::UnionStorage::from_bytes(buf),
+        }
+    }
+}
 #[derive(Default)]
 pub struct Branch {
     pub choice: Value<Choice_enum>,

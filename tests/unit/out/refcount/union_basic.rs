@@ -25,7 +25,16 @@ impl Default for basic {
         }
     }
 }
-impl ByteRepr for basic {}
+impl ByteRepr for basic {
+    fn to_bytes(&self, buf: &mut [u8]) {
+        self.__store.to_bytes(buf);
+    }
+    fn from_bytes(buf: &[u8]) -> Self {
+        basic {
+            __store: libcc2rs::UnionStorage::from_bytes(buf),
+        }
+    }
+}
 pub fn main() {
     std::process::exit(main_0());
 }

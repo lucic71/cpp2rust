@@ -32,3 +32,14 @@ impl Clone for UnionStorage {
         }
     }
 }
+
+impl ByteRepr for UnionStorage {
+    fn to_bytes(&self, buf: &mut [u8]) {
+        buf.copy_from_slice(&self.bytes.borrow());
+    }
+    fn from_bytes(buf: &[u8]) -> Self {
+        UnionStorage {
+            bytes: Rc::new(RefCell::new(buf.to_vec())),
+        }
+    }
+}
