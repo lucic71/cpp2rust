@@ -490,8 +490,8 @@ void ConverterRefCount::EmitRustUnion(clang::RecordDecl *decl) {
   }
   StrCat(")]");
 
-  StrCat(
-      std::format("pub struct {} {{ __store: libcc2rs::UnionStorage, }}", name));
+  StrCat(std::format("pub struct {} {{ __store: libcc2rs::UnionStorage, }}",
+                     name));
 
   StrCat(std::format("impl {}", name));
   {
@@ -1493,6 +1493,32 @@ bool ConverterRefCount::VisitMemberExpr(clang::MemberExpr *expr) {
     bool needs_mut = NeedsMutAccess(method, base_type);
     PushExprKind push(*this, needs_mut ? ExprKind::LValue : ExprKind::RValue);
     Converter::ConvertMemberExpr(expr);
+    return false;
+  }
+
+  if (auto *parent =
+          clang::dyn_cast<clang::RecordDecl>(member->getDeclContext());
+      parent && parent->isUnion() && clang::isa<clang::FieldDecl>(member)) {
+    std::string str;
+    {
+      Buffer buf(*this);
+      PushExprKind push(*this,
+                        isLValue() ? ExprKind::LValue : ExprKind::RValue);
+      Converter::ConvertMemberExpr(expr); // e.g. (*u.borrow()).i
+      str = std::move(buf).str();
+    }
+    str += "()";
+
+    if (isAddrOf()) {
+      StrCat(str);
+      computed_expr_type_ = ComputedExprType::Pointer;
+      return false;
+    }
+    if (isLValue()) {
+      pending_deref_.set(str);
+      return false;
+    }
+    StrCat(DerefPtrExpr(str, member->getType()));
     return false;
   }
 
