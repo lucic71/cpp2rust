@@ -753,6 +753,11 @@ void Converter::EmitRustStructOrUnion(clang::RecordDecl *decl) {
     }
   }
 
+  if (decl->isUnion()) {
+    EmitRustUnion(decl);
+    return;
+  }
+
   // Derived traits
   if (EmitsReprCForRecords()) {
     StrCat("#[repr(C)]");
@@ -770,8 +775,7 @@ void Converter::EmitRustStructOrUnion(clang::RecordDecl *decl) {
   auto access = clang::dyn_cast<clang::CXXRecordDecl>(decl)
                     ? AccessSpecifierAsString(decl->getAccess())
                     : keyword::kPub;
-  StrCat(access, decl->isUnion() ? keyword::kUnion : keyword::kStruct,
-         GetRecordName(decl));
+  StrCat(access, keyword::kStruct, GetRecordName(decl));
   {
     PushBrace brace(*this);
     for (auto *field : decl->fields()) {
@@ -813,6 +817,31 @@ void Converter::EmitRustStructOrUnion(clang::RecordDecl *decl) {
     AddCloneTrait(cxx);
     AddDropTrait(cxx);
   }
+  AddDefaultTrait(decl);
+  AddByteReprTrait(decl);
+}
+
+void Converter::EmitRustUnion(clang::RecordDecl *decl) {
+  if (EmitsReprCForRecords()) {
+    StrCat("#[repr(C)]");
+  }
+  auto attrs = GetStructAttributes(decl);
+  Mapper::SetDerives(ctx_.getCanonicalTagType(decl),
+                     std::vector<std::string>(attrs.begin(), attrs.end()));
+  StrCat("#[derive(");
+  for (auto *attr : attrs) {
+    StrCat(attr, ',');
+  }
+  StrCat(")]");
+
+  StrCat(keyword::kPub, keyword::kUnion, GetRecordName(decl));
+  {
+    PushBrace brace(*this);
+    for (auto *field : decl->fields()) {
+      VisitFieldDecl(field);
+    }
+  }
+
   AddDefaultTrait(decl);
   AddByteReprTrait(decl);
 }
