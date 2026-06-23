@@ -1488,6 +1488,9 @@ bool ConverterRefCount::VisitMemberExpr(clang::MemberExpr *expr) {
     }
     if (isLValue()) {
       pending_deref_.set(str);
+      if (member->getType()->isRecordType()) {
+        StrCat("__v");
+      }
       return false;
     }
     StrCat(DerefPtrExpr(str, member->getType()));
@@ -1924,7 +1927,11 @@ void ConverterRefCount::EmitSetOrAssign(clang::Expr *lhs,
   auto lhs_str = ConvertLValue(lhs);
   if (!pending_deref_.empty()) {
     auto ptr = pending_deref_.take();
-    StrCat(ptr, ".write(", rhs, ')');
+    if (lhs_str.empty()) {
+      StrCat(ptr, ".write(", rhs, ')');
+    } else {
+      StrCat(ptr, ".with_mut(|__v| ", lhs_str, token::kAssign, rhs, ')');
+    }
   } else {
     StrCat(lhs_str, token::kAssign, rhs);
   }
