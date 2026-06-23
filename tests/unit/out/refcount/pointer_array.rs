@@ -52,9 +52,6 @@ fn main_0() -> i32 {
             (x.as_pointer()),
         ]))),
     }));
-    ({
-        let _s: Ptr<StackArray> = s.as_pointer();
-        IncrementAll_0(_s)
-    });
+    ({ IncrementAll_0(s.as_pointer()) });
     return (*x.borrow());
 }

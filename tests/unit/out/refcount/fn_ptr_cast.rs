@@ -82,10 +82,7 @@ pub fn test_call_through_cast_5() {
     ));
     let val: Value<i32> = Rc::new(RefCell::new(100));
     let result: Value<i32> = Rc::new(RefCell::new(
-        ({
-            let _arg0: AnyPtr = ((val.as_pointer()) as Ptr<i32>).to_any();
-            (*(*gfn.borrow()))(_arg0, 42)
-        }),
+        ({ (*(*gfn.borrow()))(((val.as_pointer()) as Ptr<i32>).to_any(), 42) }),
     ));
     assert!(((*result.borrow()) == 142));
 }

@@ -50,10 +50,7 @@ fn main_0() -> i32 {
         + (*(*(*p.borrow()).as_ref().unwrap().borrow()).y.borrow()));
     (*(*(*p.borrow()).as_ref().unwrap().borrow()).y.borrow_mut()) = __rhs;
     let s: Value<i32> = Rc::new(RefCell::new(
-        ({
-            let _p: Point = (*(*p.borrow()).as_ref().unwrap().borrow()).clone();
-            sum_0(_p)
-        }),
+        ({ sum_0((*(*p.borrow()).as_ref().unwrap().borrow()).clone()) }),
     ));
     return (*s.borrow());
 }

@@ -21,32 +21,14 @@ unsafe fn main_0() -> i32 {
     let mut immutable_empty: *const u8 = b"\0".as_ptr();
     let mut mutable_empty_arr: [u8; 1] = [0u8; 1];
     let immutable_empty_arr: [u8; 1] = [0u8; 1];
-    (unsafe {
-        let _str: *mut u8 = mutable_string_arr.as_mut_ptr();
-        foo_mut_0(_str)
-    });
+    (unsafe { foo_mut_0(mutable_string_arr.as_mut_ptr()) });
     (unsafe { foo_const_1(b"world\0".as_ptr()) });
-    (unsafe {
-        let _str: *const u8 = immutable_string;
-        foo_const_1(_str)
-    });
-    (unsafe {
-        let _str: *const u8 = immutable_string_arr.as_ptr();
-        foo_const_1(_str)
-    });
+    (unsafe { foo_const_1(immutable_string) });
+    (unsafe { foo_const_1(immutable_string_arr.as_ptr()) });
     (unsafe { foo_const_1(b"\0".as_ptr()) });
-    (unsafe {
-        let _str: *const u8 = immutable_empty;
-        foo_const_1(_str)
-    });
-    (unsafe {
-        let _str: *const u8 = immutable_empty_arr.as_ptr();
-        foo_const_1(_str)
-    });
+    (unsafe { foo_const_1(immutable_empty) });
+    (unsafe { foo_const_1(immutable_empty_arr.as_ptr()) });
     let inited_through_init_list: [u8; 21] = *b"papanasi cu smantana\0";
-    (unsafe {
-        let _str: *const u8 = inited_through_init_list.as_ptr();
-        foo_const_1(_str)
-    });
+    (unsafe { foo_const_1(inited_through_init_list.as_ptr()) });
     return 0;
 }

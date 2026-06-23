@@ -1681,6 +1681,24 @@ Converter::CallInfo Converter::CollectCallInfo(clang::CallExpr *expr) {
     }
   }
 
+  // Inline arguments that don't alias
+  clang::Expr *receiver = GetCallObject(expr);
+  for (auto &ca : info.args) {
+    if (ca.kind != Kind::Hoisted) {
+      continue;
+    }
+    bool aliases = receiver && ArgsMayAlias(ca.expr, receiver);
+    for (const auto &other : info.args) {
+      if (&other != &ca && ArgsMayAlias(ca.expr, other.expr)) {
+        aliases = true;
+        break;
+      }
+    }
+    if (!aliases) {
+      ca.kind = Kind::Inline;
+    }
+  }
+
   return info;
 }
 

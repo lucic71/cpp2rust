@@ -41,14 +41,20 @@ fn main_0() -> i32 {
     (*(*ctx.borrow()).verbose.borrow_mut()) = 1;
     (*(*ctx.borrow()).last_error.borrow_mut()) = 0;
     ({
-        let _ctx: Ptr<context> = (ctx.as_pointer());
-        set_error_0(_ctx, Ptr::from_string_literal(b"error %d"), &[(42).into()])
+        set_error_0(
+            (ctx.as_pointer()),
+            Ptr::from_string_literal(b"error %d"),
+            &[(42).into()],
+        )
     });
     assert!(((((*(*ctx.borrow()).last_error.borrow()) == 42) as i32) != 0));
     (*(*ctx.borrow()).verbose.borrow_mut()) = 0;
     ({
-        let _ctx: Ptr<context> = (ctx.as_pointer());
-        set_error_0(_ctx, Ptr::from_string_literal(b"error %d"), &[(99).into()])
+        set_error_0(
+            (ctx.as_pointer()),
+            Ptr::from_string_literal(b"error %d"),
+            &[(99).into()],
+        )
     });
     assert!(((((*(*ctx.borrow()).last_error.borrow()) == 42) as i32) != 0));
     return 0;

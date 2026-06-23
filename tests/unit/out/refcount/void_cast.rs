@@ -120,13 +120,7 @@ fn main_0() -> i32 {
     let hp: Value<Ptr<Holder>> = Rc::new(RefCell::new((h.as_pointer())));
     (*(*(*hp.borrow()).upgrade().deref()).field.borrow_mut());
     let nt: Value<NonTrivial> = Rc::new(RefCell::new(<NonTrivial>::default()));
-    ({
-        let _x: Ptr<NonTrivial> = nt.as_pointer();
-        unused_ref_param_1(_x)
-    });
-    ({
-        let _p: Ptr<NonTrivial> = (nt.as_pointer());
-        unused_ptr_param_2(_p)
-    });
+    ({ unused_ref_param_1(nt.as_pointer()) });
+    ({ unused_ptr_param_2((nt.as_pointer())) });
     return 0;
 }

@@ -13,10 +13,7 @@ pub fn my_foo_0(p: AnyPtr) -> i32 {
 pub fn foo_1(fn_: FnPtr<fn(AnyPtr) -> i32>, pi: Ptr<i32>) -> i32 {
     let fn_: Value<FnPtr<fn(AnyPtr) -> i32>> = Rc::new(RefCell::new(fn_));
     let pi: Value<Ptr<i32>> = Rc::new(RefCell::new(pi));
-    return ({
-        let _arg0: AnyPtr = ((*pi.borrow()).clone() as Ptr<i32>).to_any();
-        (*(*fn_.borrow()))(_arg0)
-    });
+    return ({ (*(*fn_.borrow()))(((*pi.borrow()).clone() as Ptr<i32>).to_any()) });
 }
 pub fn main() {
     std::process::exit(main_0());
@@ -36,11 +33,7 @@ fn main_0() -> i32 {
     });
     let a: Value<i32> = Rc::new(RefCell::new(10));
     assert!({
-        let _lhs = ({
-            let _fn: FnPtr<fn(AnyPtr) -> i32> = (*fn_.borrow()).clone();
-            let _pi: Ptr<i32> = (a.as_pointer());
-            foo_1(_fn, _pi)
-        });
+        let _lhs = ({ foo_1((*fn_.borrow()).clone(), (a.as_pointer())) });
         _lhs == (*a.borrow())
     });
     return 0;

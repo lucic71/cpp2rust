@@ -1826,51 +1826,6 @@ void ConverterRefCount::ConvertVarInit(clang::QualType qual_type,
   }
 }
 
-static std::unordered_set<const clang::ValueDecl *>
-GetAllVars(const clang::Stmt *stmt) {
-  std::unordered_set<const clang::ValueDecl *> vars;
-
-  if (auto *decl_ref = clang::dyn_cast<clang::DeclRefExpr>(stmt)) {
-    vars.insert(decl_ref->getDecl());
-  } else if (auto *member = clang::dyn_cast<clang::MemberExpr>(stmt)) {
-    vars.insert(member->getMemberDecl());
-    auto child_vars = GetAllVars(member->getBase());
-    vars.insert(child_vars.begin(), child_vars.end());
-  }
-
-  for (auto *child : stmt->children()) {
-    auto child_vars = GetAllVars(child);
-    vars.insert(child_vars.begin(), child_vars.end());
-  }
-  return vars;
-}
-
-bool ConverterRefCount::MayCauseBorrowMutError(const clang::Expr *lhs,
-                                               const clang::Expr *rhs) {
-  auto lhs_vars = GetAllVars(lhs);
-  auto rhs_vars = GetAllVars(rhs);
-
-  auto predicate = [lhs](auto *var) {
-    auto qual_type = var->getType();
-    return (qual_type->isPointerType() || qual_type->isReferenceType()) &&
-           qual_type->getPointeeType()
-                   .getCanonicalType()
-                   .getUnqualifiedType() ==
-               lhs->getType().getCanonicalType().getUnqualifiedType();
-  };
-
-  if (std::ranges::any_of(rhs_vars, predicate) ||
-      (std::ranges::any_of(lhs_vars, predicate) && !rhs_vars.empty())) {
-    return true;
-  }
-
-  for (auto *lhs_var : lhs_vars) {
-    if (rhs_vars.count(lhs_var))
-      return true;
-  }
-  return false;
-}
-
 void ConverterRefCount::EmitSetOrAssign(clang::Expr *lhs,
                                         std::string_view rhs) {
   auto lhs_str = ConvertLValue(lhs);

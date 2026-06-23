@@ -13,6 +13,7 @@
 #include <cctype>
 #include <filesystem>
 #include <format>
+#include <ranges>
 #include <unordered_set>
 
 #include "converter/lex.h"
@@ -641,6 +642,75 @@ clang::Expr *GetCallObject(clang::CallExpr *expr) {
       return opcall->getArg(0)->IgnoreParenImpCasts();
   }
   return nullptr;
+}
+
+std::unordered_set<const clang::ValueDecl *>
+GetAllVars(const clang::Stmt *stmt) {
+  std::unordered_set<const clang::ValueDecl *> vars;
+  if (!stmt) {
+    return vars;
+  }
+
+  if (auto *decl_ref = clang::dyn_cast<clang::DeclRefExpr>(stmt)) {
+    vars.insert(decl_ref->getDecl());
+  } else if (auto *member = clang::dyn_cast<clang::MemberExpr>(stmt)) {
+    vars.insert(member->getMemberDecl());
+    auto child_vars = GetAllVars(member->getBase());
+    vars.insert(child_vars.begin(), child_vars.end());
+  }
+
+  for (auto *child : stmt->children()) {
+    auto child_vars = GetAllVars(child);
+    vars.insert(child_vars.begin(), child_vars.end());
+  }
+  return vars;
+}
+
+bool ReferencesThis(const clang::Stmt *stmt) {
+  if (!stmt) {
+    return false;
+  }
+  if (clang::isa<clang::CXXThisExpr>(stmt)) {
+    return true;
+  }
+  for (auto *child : stmt->children()) {
+    if (ReferencesThis(child)) {
+      return true;
+    }
+  }
+  return false;
+}
+
+bool MayCauseBorrowMutError(const clang::Expr *lhs, const clang::Expr *rhs) {
+  auto lhs_vars = GetAllVars(lhs);
+  auto rhs_vars = GetAllVars(rhs);
+
+  auto predicate = [lhs](auto *var) {
+    auto qual_type = var->getType();
+    return (qual_type->isPointerType() || qual_type->isReferenceType()) &&
+           qual_type->getPointeeType()
+                   .getCanonicalType()
+                   .getUnqualifiedType() ==
+               lhs->getType().getCanonicalType().getUnqualifiedType();
+  };
+
+  if (std::ranges::any_of(rhs_vars, predicate) ||
+      (std::ranges::any_of(lhs_vars, predicate) && !rhs_vars.empty())) {
+    return true;
+  }
+
+  for (auto *lhs_var : lhs_vars) {
+    if (rhs_vars.count(lhs_var))
+      return true;
+  }
+  return false;
+}
+
+bool ArgsMayAlias(const clang::Expr *a, const clang::Expr *b) {
+  if (ReferencesThis(a) && ReferencesThis(b)) {
+    return true;
+  }
+  return MayCauseBorrowMutError(a, b) || MayCauseBorrowMutError(b, a);
 }
 
 std::vector<clang::Expr *>

@@ -28,8 +28,5 @@ unsafe fn main_0() -> i32 {
         ('g' as u8),
         ('\0' as u8),
     ];
-    return ((unsafe {
-        let _s: *const u8 = (&s[(0) as usize] as *const u8);
-        strlen_0(_s)
-    }) as i32);
+    return ((unsafe { strlen_0((&s[(0) as usize] as *const u8)) }) as i32);
 }

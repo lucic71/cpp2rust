@@ -42,13 +42,7 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    assert!(
-        ((((unsafe {
-            let _n: i32 = -1_i32;
-            agg_0(_n)
-        }) == (0)) as i32)
-            != 0)
-    );
+    assert!(((((unsafe { agg_0(-1_i32,) }) == (0)) as i32) != 0));
     assert!(((((unsafe { agg_0(1,) }) == (1)) as i32) != 0));
     return 0;
 }

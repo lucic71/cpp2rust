@@ -55,10 +55,7 @@ fn main_0() -> i32 {
         x2: Rc::new(RefCell::new((*(*p1.borrow()).x2.borrow()))),
         x3: Rc::new(RefCell::new((*(*p1.borrow()).x3.borrow()))),
     }));
-    ({
-        let _pod: Ptr<POD> = p2.as_pointer();
-        PODIncrement_0(_pod)
-    });
+    ({ PODIncrement_0(p2.as_pointer()) });
     return (((*(*p2.borrow()).x1.borrow()) + (*(*p2.borrow()).x2.borrow()))
         + (*(*p2.borrow()).x3.borrow()));
 }

@@ -46,22 +46,17 @@ unsafe fn main_0() -> i32 {
     printf(
         b"%s\n\0".as_ptr() as *const i8,
         (unsafe {
-            let _v: Vec<u8> = {
+            fn_0({
                 let s = b"foo\0".as_ptr();
                 std::slice::from_raw_parts(s, (0..).take_while(|&i| *s.add(i) != 0).count() + 1)
                     .to_vec()
-            };
-            fn_0(_v)
+            })
         })
         .as_ptr(),
     );
     printf(
         b"%s\n\0".as_ptr() as *const i8,
-        (*(unsafe {
-            let _v: *const Vec<u8> = &s as *const Vec<u8>;
-            fn2_1(_v)
-        }))
-        .as_ptr(),
+        (*(unsafe { fn2_1(&s as *const Vec<u8>) })).as_ptr(),
     );
     return 0;
 }

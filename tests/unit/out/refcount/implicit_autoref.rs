@@ -66,9 +66,9 @@ fn main_0() -> i32 {
             == 60)
     );
     ({
-        let _p: Ptr<i32> =
-            (((*p.borrow()).to_strong().as_pointer() as Ptr<i32>).offset(0_usize as isize));
-        write_through_0(_p)
+        write_through_0(
+            (((*p.borrow()).to_strong().as_pointer() as Ptr<i32>).offset(0_usize as isize)),
+        )
     });
     assert!(
         (((((*p.borrow()).to_strong().as_pointer()) as Ptr<i32>)

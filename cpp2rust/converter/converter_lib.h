@@ -12,6 +12,7 @@
 #include <optional>
 #include <string>
 #include <string_view>
+#include <unordered_set>
 #include <vector>
 
 #include "logging.h"
@@ -138,6 +139,15 @@ void ForEachTemplateArgument(
 }
 
 clang::Expr *GetCallObject(clang::CallExpr *expr);
+
+std::unordered_set<const clang::ValueDecl *>
+GetAllVars(const clang::Stmt *stmt);
+
+bool ReferencesThis(const clang::Stmt *stmt);
+
+bool MayCauseBorrowMutError(const clang::Expr *lhs, const clang::Expr *rhs);
+
+bool ArgsMayAlias(const clang::Expr *a, const clang::Expr *b);
 
 clang::Expr *GetCalleeOrExpr(clang::Expr *expr);
 

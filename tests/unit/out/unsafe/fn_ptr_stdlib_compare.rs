@@ -50,11 +50,8 @@ unsafe fn main_0() -> i32 {
             Option<unsafe fn(*mut ::libc::c_void, usize, usize, *mut ::libc::FILE) -> usize>,
         >(Some(my_alternative_fread_0));
     assert!(
-        ((unsafe {
-            let _arg0: *mut ::libc::c_void = std::ptr::null_mut();
-            let _arg3: *mut ::libc::FILE = std::ptr::null_mut();
-            (f3).unwrap()(_arg0, 0_usize, 0_usize, _arg3)
-        }) == (22_usize))
+        ((unsafe { (f3).unwrap()(std::ptr::null_mut(), 0_usize, 0_usize, std::ptr::null_mut(),) })
+            == (22_usize))
     );
     let mut __do_while = true;
     'loop_: while __do_while || (0 != 0) {
@@ -108,9 +105,12 @@ unsafe fn main_0() -> i32 {
             (buf.as_mut_ptr() as *mut u8 as *mut ::libc::c_void)
         };
         let mut n: usize = (unsafe {
-            let _arg0: *mut ::libc::c_void = (buf.as_mut_ptr() as *mut u8 as *mut ::libc::c_void);
-            let _arg3: *mut ::libc::FILE = stream;
-            (fn1).unwrap()(_arg0, 1_usize, 10_usize, _arg3)
+            (fn1).unwrap()(
+                (buf.as_mut_ptr() as *mut u8 as *mut ::libc::c_void),
+                1_usize,
+                10_usize,
+                stream,
+            )
         });
         assert!(((n) == (10_usize)));
         let mut i: i32 = 0;
@@ -148,11 +148,8 @@ unsafe fn main_0() -> i32 {
             Option<unsafe fn(*const ::libc::c_void, usize, usize, *mut ::libc::FILE) -> usize>,
         >(Some(my_alternative_fwrite_1));
     assert!(
-        ((unsafe {
-            let _arg0: *const ::libc::c_void = std::ptr::null();
-            let _arg3: *mut ::libc::FILE = std::ptr::null_mut();
-            (g3).unwrap()(_arg0, 0_usize, 0_usize, _arg3)
-        }) == (33_usize))
+        ((unsafe { (g3).unwrap()(std::ptr::null(), 0_usize, 0_usize, std::ptr::null_mut(),) })
+            == (33_usize))
     );
     let mut __do_while = true;
     'loop_: while __do_while || (0 != 0) {
@@ -196,10 +193,12 @@ unsafe fn main_0() -> i32 {
             (buf.as_mut_ptr() as *mut u8 as *mut ::libc::c_void)
         };
         let mut n: usize = (unsafe {
-            let _arg0: *const ::libc::c_void =
-                (buf.as_mut_ptr() as *const u8 as *const ::libc::c_void);
-            let _arg3: *mut ::libc::FILE = stream;
-            (gn1).unwrap()(_arg0, 1_usize, 10_usize, _arg3)
+            (gn1).unwrap()(
+                (buf.as_mut_ptr() as *const u8 as *const ::libc::c_void),
+                1_usize,
+                10_usize,
+                stream,
+            )
         });
         assert!(((n) == (10_usize)));
         libc::fclose(stream);
