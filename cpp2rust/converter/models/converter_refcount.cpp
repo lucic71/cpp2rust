@@ -469,6 +469,42 @@ void ConverterRefCount::AddDefaultTrait(const clang::RecordDecl *decl) {
 }
 
 void ConverterRefCount::AddDefaultTraitForUnion(const clang::RecordDecl *decl) {
+  auto name = GetRecordName(decl);
+  StrCat(std::format("impl Default for {}", name));
+  PushBrace impl_brace(*this);
+  StrCat("fn default() -> Self");
+  PushBrace fn_brace(*this);
+  StrCat(std::format("{} {{ __store: libcc2rs::UnionStore::new({}) }}", name,
+                     ctx_.getASTRecordLayout(decl).getSize().getQuantity()));
+}
+
+void ConverterRefCount::EmitRustUnion(clang::RecordDecl *decl) {
+  auto name = GetRecordName(decl);
+
+  auto attrs = GetStructAttributes(decl);
+  Mapper::SetDerives(ctx_.getCanonicalTagType(decl),
+                     std::vector<std::string>(attrs.begin(), attrs.end()));
+  StrCat("#[derive(");
+  for (auto *attr : attrs) {
+    StrCat(attr, ',');
+  }
+  StrCat(")]");
+
+  StrCat(
+      std::format("pub struct {} {{ __store: libcc2rs::UnionStore, }}", name));
+
+  StrCat(std::format("impl {}", name));
+  {
+    PushBrace impl_brace(*this);
+    for (auto *field : decl->fields()) {
+      StrCat(std::format(
+          "pub fn {}(&self) -> Ptr<{}> {{ self.__store.pod(0) }}",
+          GetNamedDeclAsString(field), Mapper::Map(field->getType())));
+    }
+  }
+
+  AddDefaultTrait(decl);
+  AddByteReprTrait(decl);
 }
 
 void ConverterRefCount::AddDropTrait(const clang::CXXRecordDecl *decl) {
@@ -1797,6 +1833,11 @@ ConverterRefCount::ConvertVarDefaultInit(clang::QualType qual_type) {
 std::vector<const char *>
 ConverterRefCount::GetStructAttributes(const clang::RecordDecl *decl) {
   std::vector<const char *> attrs;
+
+  if (decl->isUnion()) {
+    attrs.emplace_back("Clone");
+    return attrs;
+  }
 
   if (RecordDerivesDefault(decl)) {
     attrs.emplace_back("Default");

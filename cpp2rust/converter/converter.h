@@ -112,6 +112,8 @@ public:
 
   virtual void EmitRustStructOrUnion(clang::RecordDecl *decl);
 
+  virtual void EmitRustUnion(clang::RecordDecl *decl);
+
   virtual bool EmitsReprCForRecords() const { return true; }
 
   virtual bool VisitCXXMethodDecl(clang::CXXMethodDecl *decl);
