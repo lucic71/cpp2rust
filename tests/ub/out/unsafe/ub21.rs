@@ -20,8 +20,5 @@ pub fn main() {
 }
 unsafe fn main_0() -> i32 {
     let s: [u8; 3] = [('s' as u8), ('t' as u8), ('r' as u8)];
-    return ((unsafe {
-        let _s: *const u8 = s.as_ptr();
-        strlen_0(_s)
-    }) as i32);
+    return ((unsafe { strlen_0(s.as_ptr()) }) as i32);
 }

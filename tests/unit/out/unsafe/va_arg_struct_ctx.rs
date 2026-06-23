@@ -29,9 +29,8 @@ unsafe fn main_0() -> i32 {
     ctx.verbose = 1;
     ctx.last_error = 0;
     (unsafe {
-        let _ctx: *mut context = (&mut ctx as *mut context);
         set_error_0(
-            _ctx,
+            (&mut ctx as *mut context),
             (b"error %d\0".as_ptr().cast_mut()).cast_const(),
             &[(42).into()],
         )
@@ -39,9 +38,8 @@ unsafe fn main_0() -> i32 {
     assert!(((((ctx.last_error) == (42)) as i32) != 0));
     ctx.verbose = 0;
     (unsafe {
-        let _ctx: *mut context = (&mut ctx as *mut context);
         set_error_0(
-            _ctx,
+            (&mut ctx as *mut context),
             (b"error %d\0".as_ptr().cast_mut()).cast_const(),
             &[(99).into()],
         )

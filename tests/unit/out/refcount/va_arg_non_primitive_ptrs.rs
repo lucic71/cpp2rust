@@ -81,25 +81,19 @@ pub fn main() {
 fn main_0() -> i32 {
     let s: Value<Ptr<u8>> = Rc::new(RefCell::new(Ptr::<u8>::null()));
     assert!(
-        (((({
-            let _option: i32 = (opt::OPT_STRING_OUT as i32);
-            dispatch_0(_option, &[(s.as_pointer()).into()])
-        }) == 1) as i32)
+        (((({ dispatch_0((opt::OPT_STRING_OUT as i32), &[(s.as_pointer()).into(),]) }) == 1)
+            as i32)
             != 0)
     );
     assert!((((!((*s.borrow()).is_null())) as i32) != 0));
     assert!(
-        (((({
-            let _option: i32 = (opt::OPT_FILE as i32);
-            dispatch_0(_option, &[(libcc2rs::cout()).into()])
-        }) == 1) as i32)
+        (((({ dispatch_0((opt::OPT_FILE as i32), &[(libcc2rs::cout()).into(),]) }) == 1) as i32)
             != 0)
     );
     assert!(
         (((({
-            let _option: i32 = (opt::OPT_FILE as i32);
             dispatch_0(
-                _option,
+                (opt::OPT_FILE as i32),
                 &[((AnyPtr::default())
                     .cast::<::std::fs::File>()
                     .expect("ub:wrong type"))
@@ -113,18 +107,13 @@ fn main_0() -> i32 {
         next: Rc::new(RefCell::new(Ptr::<node>::null())),
     }));
     assert!(
-        (((({
-            let _option: i32 = (opt::OPT_NODE as i32);
-            dispatch_0(_option, &[(head.as_pointer()).into()])
-        }) == 42) as i32)
+        (((({ dispatch_0((opt::OPT_NODE as i32), &[(head.as_pointer()).into(),]) }) == 42) as i32)
             != 0)
     );
     let outp: Value<Ptr<node>> = Rc::new(RefCell::new((head.as_pointer())));
     assert!(
-        (((({
-            let _option: i32 = (opt::OPT_NODE_OUT as i32);
-            dispatch_0(_option, &[(outp.as_pointer()).into()])
-        }) == 2) as i32)
+        (((({ dispatch_0((opt::OPT_NODE_OUT as i32), &[(outp.as_pointer()).into(),]) }) == 2)
+            as i32)
             != 0)
     );
     assert!(((((*outp.borrow()).is_null()) as i32) != 0));

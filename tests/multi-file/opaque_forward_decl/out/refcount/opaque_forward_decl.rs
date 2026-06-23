@@ -20,10 +20,7 @@ fn main_0() -> i32 {
         p: Rc::new(RefCell::new(Ptr::<opaque>::null())),
         x: Rc::new(RefCell::new(42)),
     }));
-    ({
-        let _c: Ptr<container> = (c.as_pointer());
-        touch_0(_c)
-    });
+    ({ touch_0((c.as_pointer())) });
     assert!(((((*(*c.borrow()).x.borrow()) == 42) as i32) != 0));
     assert!(((((*(*c.borrow()).p.borrow()).is_null()) as i32) != 0));
     return 0;

@@ -180,18 +180,12 @@ fn main_0() -> i32 {
     (*o.borrow_mut()) = Option::from(20);
     assert!((((((*o.borrow()) as u32) == ((Option::OPT_B as i32) as u32)) as i32) != 0));
     let rc: Value<i32> = Rc::new(RefCell::new(
-        ({
-            let _option: i32 = ((*o.borrow()) as i32).clone();
-            classify_option_5(_option)
-        }),
+        ({ classify_option_5(((*o.borrow()) as i32).clone()) }),
     ));
     assert!(((((*rc.borrow()) == 2) as i32) != 0));
     (*rc.borrow_mut()) = ({ classify_option_5(20) });
     assert!(((((*rc.borrow()) == 2) as i32) != 0));
-    (*rc.borrow_mut()) = ({
-        let _option: i32 = (Option::OPT_C as i32);
-        classify_option_5(_option)
-    });
+    (*rc.borrow_mut()) = ({ classify_option_5((Option::OPT_C as i32)) });
     assert!(((((*rc.borrow()) == 3) as i32) != 0));
     let t: Value<Tag_enum> = Rc::new(RefCell::new(Tag_enum::TAG_ONE));
     assert!((((((*t.borrow()) as u32) == 1_u32) as i32) != 0));

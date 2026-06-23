@@ -20,11 +20,7 @@ pub fn logf_1(fmt: Ptr<u8>, __args: &[VaArg]) -> i32 {
     let ap: Value<VaList> = Rc::new(RefCell::new(VaList::default()));
     (*ap.borrow_mut()) = VaList::new(__args);
     let result: Value<i32> = Rc::new(RefCell::new(
-        ({
-            let _fmt: Ptr<u8> = (*fmt.borrow()).clone();
-            let _ap: VaList = (*ap.borrow()).clone();
-            logf_impl_0(_fmt, _ap)
-        }),
+        ({ logf_impl_0((*fmt.borrow()).clone(), (*ap.borrow()).clone()) }),
     ));
     return (*result.borrow());
 }

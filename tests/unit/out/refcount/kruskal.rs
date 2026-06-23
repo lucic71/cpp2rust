@@ -248,18 +248,8 @@ impl DisjointSet {
     pub fn merge(&self, x: i32, y: i32) {
         let x: Value<i32> = Rc::new(RefCell::new(x));
         let y: Value<i32> = Rc::new(RefCell::new(y));
-        let xset: Value<i32> = Rc::new(RefCell::new(
-            ({
-                let _x: i32 = (*x.borrow());
-                self.find(_x)
-            }),
-        ));
-        let yset: Value<i32> = Rc::new(RefCell::new(
-            ({
-                let _x: i32 = (*y.borrow());
-                self.find(_x)
-            }),
-        ));
+        let xset: Value<i32> = Rc::new(RefCell::new(({ self.find((*x.borrow())) })));
+        let yset: Value<i32> = Rc::new(RefCell::new(({ self.find((*y.borrow())) })));
         if ((*xset.borrow()) == (*yset.borrow())) {
             return;
         }
@@ -345,18 +335,9 @@ pub fn MSTKruskal_2(graph: Ptr<Graph>) -> f64 {
                 .weight
                 .borrow()),
         ));
-        if (({
-            let _x: i32 = (*x.borrow());
-            (*set.borrow()).find(_x)
-        }) != ({
-            let _x: i32 = (*y.borrow());
-            (*set.borrow()).find(_x)
-        })) {
-            ({
-                let _x: i32 = (*x.borrow());
-                let _y: i32 = (*y.borrow());
-                (*set.borrow()).merge(_x, _y)
-            });
+        if (({ (*set.borrow()).find((*x.borrow())) }) != ({ (*set.borrow()).find((*y.borrow())) }))
+        {
+            ({ (*set.borrow()).merge((*x.borrow()), (*y.borrow())) });
             (*total_weight.borrow_mut()) += (*w.borrow());
         }
         (*i.borrow_mut()).prefix_inc();
@@ -418,11 +399,6 @@ fn main_0() -> i32 {
         v: Rc::new(RefCell::new(3)),
         weight: Rc::new(RefCell::new(5_f64)),
     };
-    let total_weight: Value<f64> = Rc::new(RefCell::new(
-        ({
-            let _graph: Ptr<Graph> = graph.as_pointer();
-            MSTKruskal_2(_graph)
-        }),
-    ));
+    let total_weight: Value<f64> = Rc::new(RefCell::new(({ MSTKruskal_2(graph.as_pointer()) })));
     return ((*total_weight.borrow()) as i32);
 }

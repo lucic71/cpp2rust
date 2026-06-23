@@ -90,10 +90,6 @@ fn main_0() -> i32 {
     (*v.borrow_mut()).push(6);
     (*v2.borrow_mut()).push(8);
     (*v2.borrow_mut()).push(9);
-    ({
-        let _v: Ptr<Vec<i32>> = v.as_pointer();
-        let _v3: Vec<i32> = (*v2.borrow()).clone();
-        fn_0(_v, _v3)
-    });
+    ({ fn_0(v.as_pointer(), (*v2.borrow()).clone()) });
     return 0;
 }

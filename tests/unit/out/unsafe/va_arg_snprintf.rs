@@ -27,9 +27,8 @@ unsafe fn main_0() -> i32 {
     let mut buf: [u8; 64] = [0_u8; 64];
     assert!(
         ((((unsafe {
-            let _buf: *mut u8 = buf.as_mut_ptr();
             extract_first_0(
-                _buf,
+                buf.as_mut_ptr(),
                 1,
                 (b"%d\0".as_ptr().cast_mut()).cast_const(),
                 &[(42).into()],
@@ -40,9 +39,8 @@ unsafe fn main_0() -> i32 {
     assert!(((((buf[(0) as usize] as i32) == (42)) as i32) != 0));
     assert!(
         ((((unsafe {
-            let _buf: *mut u8 = buf.as_mut_ptr();
             extract_first_0(
-                _buf,
+                buf.as_mut_ptr(),
                 1,
                 (b"%d\0".as_ptr().cast_mut()).cast_const(),
                 &[(65).into()],

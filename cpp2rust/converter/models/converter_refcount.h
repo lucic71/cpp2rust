@@ -142,8 +142,6 @@ public:
   std::vector<const char *>
   GetStructAttributes(const clang::RecordDecl *decl) override;
 
-  bool MayCauseBorrowMutError(const clang::Expr *lhs, const clang::Expr *rhs);
-
   bool Convert(clang::QualType qual_type) override;
   bool
   Convert(clang::Expr *expr,

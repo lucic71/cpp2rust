@@ -27,8 +27,5 @@ unsafe fn main_0() -> i32 {
         ('o' as u8),
         ('\0' as u8),
     ];
-    return ((unsafe {
-        let _ptr: *mut u8 = (&mut string[(0) as usize] as *mut u8);
-        strlen_0(_ptr)
-    }) as i32);
+    return ((unsafe { strlen_0((&mut string[(0) as usize] as *mut u8)) }) as i32);
 }

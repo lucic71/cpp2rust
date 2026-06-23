@@ -75,24 +75,27 @@ unsafe fn main_0() -> i32 {
     let mut s: *const u8 = std::ptr::null();
     assert!(
         ((((unsafe {
-            let _option: i32 = (opt::OPT_STRING_OUT as i32);
-            dispatch_0(_option, &[(&mut s as *mut *const u8).into()])
+            dispatch_0(
+                (opt::OPT_STRING_OUT as i32),
+                &[(&mut s as *mut *const u8).into()],
+            )
         }) == (1)) as i32)
             != 0)
     );
     assert!((((!((s).is_null())) as i32) != 0));
     assert!(
         ((((unsafe {
-            let _option: i32 = (opt::OPT_FILE as i32);
-            dispatch_0(_option, &[(libcc2rs::stdout_unsafe()).into()])
+            dispatch_0(
+                (opt::OPT_FILE as i32),
+                &[(libcc2rs::stdout_unsafe()).into()],
+            )
         }) == (1)) as i32)
             != 0)
     );
     assert!(
         ((((unsafe {
-            let _option: i32 = (opt::OPT_FILE as i32);
             dispatch_0(
-                _option,
+                (opt::OPT_FILE as i32),
                 &[((0 as *mut ::libc::c_void) as *mut ::libc::FILE).into()],
             )
         }) == (0)) as i32)
@@ -103,17 +106,17 @@ unsafe fn main_0() -> i32 {
         next: std::ptr::null_mut(),
     };
     assert!(
-        ((((unsafe {
-            let _option: i32 = (opt::OPT_NODE as i32);
-            dispatch_0(_option, &[(&mut head as *mut node).into()])
-        }) == (42)) as i32)
+        ((((unsafe { dispatch_0((opt::OPT_NODE as i32), &[(&mut head as *mut node).into(),]) })
+            == (42)) as i32)
             != 0)
     );
     let mut outp: *mut node = (&mut head as *mut node);
     assert!(
         ((((unsafe {
-            let _option: i32 = (opt::OPT_NODE_OUT as i32);
-            dispatch_0(_option, &[(&mut outp as *mut *mut node).into()])
+            dispatch_0(
+                (opt::OPT_NODE_OUT as i32),
+                &[(&mut outp as *mut *mut node).into()],
+            )
         }) == (2)) as i32)
             != 0)
     );

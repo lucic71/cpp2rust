@@ -186,18 +186,12 @@ fn main_0() -> i32 {
     (*o.borrow_mut()) = Option::from(20);
     assert!((((*o.borrow()) as i32) == (Option::OPT_B as i32)));
     let rc: Value<i32> = Rc::new(RefCell::new(
-        ({
-            let _option: i32 = ((*o.borrow()) as i32).clone();
-            classify_option_5(_option)
-        }),
+        ({ classify_option_5(((*o.borrow()) as i32).clone()) }),
     ));
     assert!(((*rc.borrow()) == 2));
     (*rc.borrow_mut()) = ({ classify_option_5(20) });
     assert!(((*rc.borrow()) == 2));
-    (*rc.borrow_mut()) = ({
-        let _option: i32 = (Option::OPT_C as i32);
-        classify_option_5(_option)
-    });
+    (*rc.borrow_mut()) = ({ classify_option_5((Option::OPT_C as i32)) });
     assert!(((*rc.borrow()) == 3));
     let t: Value<Tag> = Rc::new(RefCell::new(Tag::TAG_ONE));
     assert!((((*t.borrow()) as i32) == 1));

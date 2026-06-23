@@ -79,10 +79,7 @@ fn main_0() -> i32 {
         (*v2.borrow_mut()).insert(__off, 100);
         (v2.as_pointer() as Ptr<i32>).clone()
     };
-    ({
-        let _copy_vector: Vec<i32> = (*v2.borrow()).clone();
-        copy_0(_copy_vector)
-    });
+    ({ copy_0((*v2.borrow()).clone()) });
     assert!(((*v2.borrow()).len() == 3_usize));
     assert!(
         (((v2.as_pointer() as Ptr<i32>)
