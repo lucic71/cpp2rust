@@ -546,6 +546,8 @@ void ConverterRefCount::AddByteReprTrait(const clang::RecordDecl *decl) {
   if (decl->isUnion()) {
     StrCat(std::format("impl ByteRepr for {}", struct_name));
     PushBrace impl_brace(*this);
+    StrCat(std::format("fn byte_size() -> usize {{ {} }}",
+                       ctx_.getTypeSize(ctx_.getCanonicalTagType(decl)) / 8));
     StrCat(
         "fn to_bytes(&self, buf: &mut [u8]) { self.__store.to_bytes(buf); }");
     StrCat(std::format("fn from_bytes(buf: &[u8]) -> Self {{ {} {{ __store: "
@@ -564,6 +566,9 @@ void ConverterRefCount::AddByteReprTrait(const clang::RecordDecl *decl) {
   PushBrace impl_brace(*this);
 
   const auto &layout = ctx_.getASTRecordLayout(decl);
+
+  StrCat(std::format("fn byte_size() -> usize {{ {} }}",
+                     ctx_.getTypeSize(ctx_.getCanonicalTagType(decl)) / 8));
 
   StrCat("fn to_bytes(&self, buf: &mut [u8])");
   {
