@@ -187,15 +187,17 @@ fn main_0() -> i32 {
     let len: Value<usize> = Rc::new(RefCell::new(16_usize));
     assert!(((((*len.borrow()) <= ::std::mem::size_of::<[u8; 256]>()) as i32) != 0));
     {
-        ((*(*c.borrow()).view.borrow()).raw_())
-            .reinterpret_cast::<u8>()
+        (((*(*c.borrow()).view.borrow())
+            .raw_()
+            .reinterpret_cast::<u8>()) as Ptr<u8>)
             .to_any()
             .memcpy(
                 &((src.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any(),
                 (*len.borrow()) as usize,
             );
-        ((*(*c.borrow()).view.borrow()).raw_())
-            .reinterpret_cast::<u8>()
+        (((*(*c.borrow()).view.borrow())
+            .raw_()
+            .reinterpret_cast::<u8>()) as Ptr<u8>)
             .to_any()
             .clone()
     };

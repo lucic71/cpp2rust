@@ -1525,7 +1525,15 @@ bool ConverterRefCount::VisitMemberExpr(clang::MemberExpr *expr) {
     str += "()";
 
     if (isAddrOf()) {
-      StrCat(str);
+      if (member->getType()->isArrayType()) {
+        PushConversionKind push(*this, ConversionKind::Unboxed);
+        StrCat(std::format(
+            "{}.reinterpret_cast::<{}>()", str,
+            ToString(
+                member->getType()->getAsArrayTypeUnsafe()->getElementType())));
+      } else {
+        StrCat(str);
+      }
       computed_expr_type_ = ComputedExprType::FreshPointer;
       return false;
     }

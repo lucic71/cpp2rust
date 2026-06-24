@@ -174,16 +174,18 @@ fn main_0() -> i32 {
         .lo
         .borrow_mut()) = 8080_u16;
     assert!(
-        ((((((((*(*c.borrow()).u.borrow()).raw_()).reinterpret_cast::<u8>())
-            .offset((2) as isize)
-            .read()) as i32)
+        ((((((((*(*c.borrow()).u.borrow()).raw_().reinterpret_cast::<u8>())
+            .reinterpret_cast::<u8>())
+        .offset((2) as isize)
+        .read()) as i32)
             == 144) as i32)
             != 0)
     );
     assert!(
-        ((((((((*(*c.borrow()).u.borrow()).raw_()).reinterpret_cast::<u8>())
-            .offset((3) as isize)
-            .read()) as i32)
+        ((((((((*(*c.borrow()).u.borrow()).raw_().reinterpret_cast::<u8>())
+            .reinterpret_cast::<u8>())
+        .offset((3) as isize)
+        .read()) as i32)
             == 31) as i32)
             != 0)
     );
