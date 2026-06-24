@@ -36,6 +36,9 @@ pub struct point_struct {
     pub y: Value<i32>,
 }
 impl ByteRepr for point_struct {
+    fn byte_size() -> usize {
+        8
+    }
     fn to_bytes(&self, buf: &mut [u8]) {
         (*self.x.borrow()).to_bytes(&mut buf[0..4]);
         (*self.y.borrow()).to_bytes(&mut buf[4..8]);
@@ -67,6 +70,9 @@ impl Default for point {
     }
 }
 impl ByteRepr for point {
+    fn byte_size() -> usize {
+        4
+    }
     fn to_bytes(&self, buf: &mut [u8]) {
         self.__store.to_bytes(buf);
     }
@@ -96,6 +102,9 @@ impl Default for slot_union {
     }
 }
 impl ByteRepr for slot_union {
+    fn byte_size() -> usize {
+        4
+    }
     fn to_bytes(&self, buf: &mut [u8]) {
         self.__store.to_bytes(buf);
     }
@@ -126,6 +135,9 @@ pub struct Inner {
     pub tag_field: Value<i32>,
 }
 impl ByteRepr for Inner {
+    fn byte_size() -> usize {
+        4
+    }
     fn to_bytes(&self, buf: &mut [u8]) {
         (*self.tag_field.borrow()).to_bytes(&mut buf[0..4]);
     }
@@ -140,6 +152,9 @@ pub struct Outer {
     pub field: Value<Inner>,
 }
 impl ByteRepr for Outer {
+    fn byte_size() -> usize {
+        4
+    }
     fn to_bytes(&self, buf: &mut [u8]) {
         (*self.field.borrow()).to_bytes(&mut buf[0..4]);
     }
@@ -154,6 +169,9 @@ pub struct Inner_struct {
     pub typedef_field: Value<i32>,
 }
 impl ByteRepr for Inner_struct {
+    fn byte_size() -> usize {
+        4
+    }
     fn to_bytes(&self, buf: &mut [u8]) {
         (*self.typedef_field.borrow()).to_bytes(&mut buf[0..4]);
     }

@@ -19,6 +19,9 @@ impl Clone for Holder {
     }
 }
 impl ByteRepr for Holder {
+    fn byte_size() -> usize {
+        24
+    }
     fn to_bytes(&self, buf: &mut [u8]) {
         (*self.v.borrow()).to_bytes(&mut buf[0..24]);
     }

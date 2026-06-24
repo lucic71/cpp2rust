@@ -43,6 +43,9 @@ impl Clone for MyContainer_int_ {
     }
 }
 impl ByteRepr for MyContainer_int_ {
+    fn byte_size() -> usize {
+        24
+    }
     fn to_bytes(&self, buf: &mut [u8]) {
         (*self.vec_.borrow()).to_bytes(&mut buf[0..24]);
     }
@@ -89,6 +92,9 @@ impl Clone for MyContainer_char_ {
     }
 }
 impl ByteRepr for MyContainer_char_ {
+    fn byte_size() -> usize {
+        24
+    }
     fn to_bytes(&self, buf: &mut [u8]) {
         (*self.vec_.borrow()).to_bytes(&mut buf[0..24]);
     }
@@ -135,6 +141,9 @@ impl Clone for MyContainer_float_ {
     }
 }
 impl ByteRepr for MyContainer_float_ {
+    fn byte_size() -> usize {
+        24
+    }
     fn to_bytes(&self, buf: &mut [u8]) {
         (*self.vec_.borrow()).to_bytes(&mut buf[0..24]);
     }

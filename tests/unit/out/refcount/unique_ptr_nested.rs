@@ -21,6 +21,9 @@ impl Clone for Inner {
     }
 }
 impl ByteRepr for Inner {
+    fn byte_size() -> usize {
+        8
+    }
     fn to_bytes(&self, buf: &mut [u8]) {
         (*self.x.borrow()).to_bytes(&mut buf[0..4]);
         (*self.y.borrow()).to_bytes(&mut buf[4..8]);
@@ -37,6 +40,9 @@ pub struct Outer {
     pub inner: Value<Option<Value<Inner>>>,
 }
 impl ByteRepr for Outer {
+    fn byte_size() -> usize {
+        8
+    }
     fn to_bytes(&self, buf: &mut [u8]) {
         (*self.inner.borrow()).to_bytes(&mut buf[0..8]);
     }

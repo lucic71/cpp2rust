@@ -21,6 +21,9 @@ impl Clone for NonCopy {
     }
 }
 impl ByteRepr for NonCopy {
+    fn byte_size() -> usize {
+        32
+    }
     fn to_bytes(&self, buf: &mut [u8]) {
         (*self.data.borrow()).to_bytes(&mut buf[0..24]);
         (*self.tag.borrow()).to_bytes(&mut buf[24..28]);

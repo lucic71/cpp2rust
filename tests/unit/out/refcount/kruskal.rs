@@ -23,6 +23,9 @@ impl Clone for Edge {
     }
 }
 impl ByteRepr for Edge {
+    fn byte_size() -> usize {
+        16
+    }
     fn to_bytes(&self, buf: &mut [u8]) {
         (*self.u.borrow()).to_bytes(&mut buf[0..4]);
         (*self.v.borrow()).to_bytes(&mut buf[4..8]);
@@ -288,6 +291,9 @@ impl DisjointSet {
     }
 }
 impl ByteRepr for DisjointSet {
+    fn byte_size() -> usize {
+        24
+    }
     fn to_bytes(&self, buf: &mut [u8]) {
         (*self.rank.borrow()).to_bytes(&mut buf[0..8]);
         (*self.parent.borrow()).to_bytes(&mut buf[8..16]);
@@ -312,6 +318,9 @@ pub struct Graph {
     pub E: Value<i32>,
 }
 impl ByteRepr for Graph {
+    fn byte_size() -> usize {
+        16
+    }
     fn to_bytes(&self, buf: &mut [u8]) {
         (*self.edges.borrow()).to_bytes(&mut buf[0..8]);
         (*self.V.borrow()).to_bytes(&mut buf[8..12]);

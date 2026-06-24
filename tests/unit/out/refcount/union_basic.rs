@@ -26,6 +26,9 @@ impl Default for basic {
     }
 }
 impl ByteRepr for basic {
+    fn byte_size() -> usize {
+        4
+    }
     fn to_bytes(&self, buf: &mut [u8]) {
         self.__store.to_bytes(buf);
     }

@@ -26,6 +26,9 @@ impl Default for S {
     }
 }
 impl ByteRepr for S {
+    fn byte_size() -> usize {
+        20
+    }
     fn to_bytes(&self, buf: &mut [u8]) {
         (*self.head.borrow()).to_bytes(&mut buf[0..4]);
         (*self.tail.borrow()).to_bytes(&mut buf[4..16]);

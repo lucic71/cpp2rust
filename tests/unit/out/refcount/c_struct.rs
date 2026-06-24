@@ -12,6 +12,9 @@ pub struct Point {
     pub y: Value<i32>,
 }
 impl ByteRepr for Point {
+    fn byte_size() -> usize {
+        8
+    }
     fn to_bytes(&self, buf: &mut [u8]) {
         (*self.x.borrow()).to_bytes(&mut buf[0..4]);
         (*self.y.borrow()).to_bytes(&mut buf[4..8]);
@@ -29,6 +32,9 @@ pub struct Line {
     pub end: Value<Point>,
 }
 impl ByteRepr for Line {
+    fn byte_size() -> usize {
+        16
+    }
     fn to_bytes(&self, buf: &mut [u8]) {
         (*self.start.borrow()).to_bytes(&mut buf[0..8]);
         (*self.end.borrow()).to_bytes(&mut buf[8..16]);
@@ -70,6 +76,9 @@ pub struct Inner {
     pub b: Value<i32>,
 }
 impl ByteRepr for Inner {
+    fn byte_size() -> usize {
+        8
+    }
     fn to_bytes(&self, buf: &mut [u8]) {
         (*self.a.borrow()).to_bytes(&mut buf[0..4]);
         (*self.b.borrow()).to_bytes(&mut buf[4..8]);

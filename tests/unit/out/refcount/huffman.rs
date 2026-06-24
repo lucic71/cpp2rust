@@ -207,6 +207,9 @@ impl MinHeap {
     }
 }
 impl ByteRepr for MinHeap {
+    fn byte_size() -> usize {
+        32
+    }
     fn to_bytes(&self, buf: &mut [u8]) {
         (*self.size.borrow()).to_bytes(&mut buf[0..4]);
         (*self.capacity.borrow()).to_bytes(&mut buf[4..8]);

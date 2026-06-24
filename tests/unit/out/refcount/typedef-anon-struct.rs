@@ -21,6 +21,9 @@ impl Clone for Outer_RunInfo {
     }
 }
 impl ByteRepr for Outer_RunInfo {
+    fn byte_size() -> usize {
+        8
+    }
     fn to_bytes(&self, buf: &mut [u8]) {
         (*self.block_idx.borrow()).to_bytes(&mut buf[0..4]);
         (*self.num_extra_zero_runs.borrow()).to_bytes(&mut buf[4..8]);
@@ -45,6 +48,9 @@ impl Clone for Outer {
     }
 }
 impl ByteRepr for Outer {
+    fn byte_size() -> usize {
+        24
+    }
     fn to_bytes(&self, buf: &mut [u8]) {
         (*self.runs.borrow()).to_bytes(&mut buf[0..24]);
     }

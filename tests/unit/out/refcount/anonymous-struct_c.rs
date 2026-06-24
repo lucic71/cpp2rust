@@ -12,6 +12,9 @@ pub struct Named {
     pub b: Value<i32>,
 }
 impl ByteRepr for Named {
+    fn byte_size() -> usize {
+        8
+    }
     fn to_bytes(&self, buf: &mut [u8]) {
         (*self.a.borrow()).to_bytes(&mut buf[0..4]);
         (*self.b.borrow()).to_bytes(&mut buf[4..8]);
@@ -29,6 +32,9 @@ pub struct anon_0 {
     pub d: Value<i32>,
 }
 impl ByteRepr for anon_0 {
+    fn byte_size() -> usize {
+        8
+    }
     fn to_bytes(&self, buf: &mut [u8]) {
         (*self.c.borrow()).to_bytes(&mut buf[0..4]);
         (*self.d.borrow()).to_bytes(&mut buf[4..8]);
@@ -46,6 +52,9 @@ pub struct anon_1 {
     pub h: Value<i32>,
 }
 impl ByteRepr for anon_1 {
+    fn byte_size() -> usize {
+        8
+    }
     fn to_bytes(&self, buf: &mut [u8]) {
         (*self.g.borrow()).to_bytes(&mut buf[0..4]);
         (*self.h.borrow()).to_bytes(&mut buf[4..8]);
@@ -63,6 +72,9 @@ pub struct anon_2 {
     pub f: Value<i32>,
 }
 impl ByteRepr for anon_2 {
+    fn byte_size() -> usize {
+        8
+    }
     fn to_bytes(&self, buf: &mut [u8]) {
         (*self.e.borrow()).to_bytes(&mut buf[0..4]);
         (*self.f.borrow()).to_bytes(&mut buf[4..8]);
@@ -79,6 +91,9 @@ pub struct anon_4 {
     pub j: Value<i32>,
 }
 impl ByteRepr for anon_4 {
+    fn byte_size() -> usize {
+        4
+    }
     fn to_bytes(&self, buf: &mut [u8]) {
         (*self.j.borrow()).to_bytes(&mut buf[0..4]);
     }
@@ -93,6 +108,9 @@ pub struct anon_5 {
     pub k: Value<i32>,
 }
 impl ByteRepr for anon_5 {
+    fn byte_size() -> usize {
+        4
+    }
     fn to_bytes(&self, buf: &mut [u8]) {
         (*self.k.borrow()).to_bytes(&mut buf[0..4]);
     }
@@ -109,6 +127,9 @@ pub struct anon_3 {
     pub anon_5: Value<anon_5>,
 }
 impl ByteRepr for anon_3 {
+    fn byte_size() -> usize {
+        12
+    }
     fn to_bytes(&self, buf: &mut [u8]) {
         (*self.i.borrow()).to_bytes(&mut buf[0..4]);
         (*self.inner_named.borrow()).to_bytes(&mut buf[4..8]);
@@ -131,6 +152,9 @@ pub struct Outer {
     pub anon_3: Value<anon_3>,
 }
 impl ByteRepr for Outer {
+    fn byte_size() -> usize {
+        44
+    }
     fn to_bytes(&self, buf: &mut [u8]) {
         (*self.named.borrow()).to_bytes(&mut buf[0..8]);
         (*self.anon0.borrow()).to_bytes(&mut buf[8..16]);
@@ -206,6 +230,9 @@ fn main_0() -> i32 {
         pub z: Value<i32>,
     }
     impl ByteRepr for anon_6 {
+        fn byte_size() -> usize {
+            8
+        }
         fn to_bytes(&self, buf: &mut [u8]) {
             (*self.x.borrow()).to_bytes(&mut buf[0..4]);
             (*self.z.borrow()).to_bytes(&mut buf[4..8]);

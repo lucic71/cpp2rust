@@ -31,6 +31,9 @@ fn main_0() -> i32 {
         }
     }
     impl ByteRepr for anon_0 {
+        fn byte_size() -> usize {
+            8
+        }
         fn to_bytes(&self, buf: &mut [u8]) {
             self.__store.to_bytes(buf);
         }

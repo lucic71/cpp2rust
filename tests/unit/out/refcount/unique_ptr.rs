@@ -16,6 +16,9 @@ impl SafePointer {
     }
 }
 impl ByteRepr for SafePointer {
+    fn byte_size() -> usize {
+        8
+    }
     fn to_bytes(&self, buf: &mut [u8]) {
         (*self.ptr.borrow()).to_bytes(&mut buf[0..8]);
     }
@@ -40,6 +43,9 @@ impl Clone for Pair {
     }
 }
 impl ByteRepr for Pair {
+    fn byte_size() -> usize {
+        8
+    }
     fn to_bytes(&self, buf: &mut [u8]) {
         (*self.x.borrow()).to_bytes(&mut buf[0..4]);
         (*self.y.borrow()).to_bytes(&mut buf[4..8]);

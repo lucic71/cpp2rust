@@ -19,6 +19,9 @@ impl Clone for Chunk {
     }
 }
 impl ByteRepr for Chunk {
+    fn byte_size() -> usize {
+        4
+    }
     fn to_bytes(&self, buf: &mut [u8]) {
         (*self.data.borrow()).to_bytes(&mut buf[0..4]);
     }
@@ -68,6 +71,9 @@ impl Clone for JPEGData {
     }
 }
 impl ByteRepr for JPEGData {
+    fn byte_size() -> usize {
+        48
+    }
     fn to_bytes(&self, buf: &mut [u8]) {
         (*self.com_data.borrow()).to_bytes(&mut buf[0..24]);
         (*self.app_data.borrow()).to_bytes(&mut buf[24..48]);

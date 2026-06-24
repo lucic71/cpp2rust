@@ -11,6 +11,9 @@ pub struct Holder {
     pub val: Value<Option<Value<i32>>>,
 }
 impl ByteRepr for Holder {
+    fn byte_size() -> usize {
+        8
+    }
     fn to_bytes(&self, buf: &mut [u8]) {
         (*self.val.borrow()).to_bytes(&mut buf[0..8]);
     }

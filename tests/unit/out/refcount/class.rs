@@ -56,6 +56,9 @@ impl Clone for Pair {
     }
 }
 impl ByteRepr for Pair {
+    fn byte_size() -> usize {
+        8
+    }
     fn to_bytes(&self, buf: &mut [u8]) {
         (*self.first.borrow()).to_bytes(&mut buf[0..4]);
         (*self.second.borrow()).to_bytes(&mut buf[4..8]);
@@ -90,6 +93,9 @@ impl Clone for Route {
     }
 }
 impl ByteRepr for Route {
+    fn byte_size() -> usize {
+        16
+    }
     fn to_bytes(&self, buf: &mut [u8]) {
         (*self.path.borrow()).to_bytes(&mut buf[0..8]);
         (*self.cost.borrow()).to_bytes(&mut buf[8..16]);
