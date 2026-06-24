@@ -24,6 +24,17 @@ impl From<i32> for Choice_enum {
     }
 }
 libcc2rs::impl_enum_inc_dec!(Choice_enum);
+impl ByteRepr for Choice_enum {
+    fn byte_size() -> usize {
+        4
+    }
+    fn to_bytes(&self, buf: &mut [u8]) {
+        (*self as i32).to_bytes(buf);
+    }
+    fn from_bytes(buf: &[u8]) -> Self {
+        <Choice_enum>::from(i32::from_bytes(buf))
+    }
+}
 #[derive(Default)]
 pub struct anon_1 {
     pub items: Value<Ptr<Ptr<u8>>>,
@@ -127,7 +138,23 @@ pub struct Branch {
     pub index: Value<i32>,
     pub v: Value<anon_0>,
 }
-impl ByteRepr for Branch {}
+impl ByteRepr for Branch {
+    fn byte_size() -> usize {
+        48
+    }
+    fn to_bytes(&self, buf: &mut [u8]) {
+        (*self.choice.borrow()).to_bytes(&mut buf[0..4]);
+        (*self.index.borrow()).to_bytes(&mut buf[4..8]);
+        (*self.v.borrow()).to_bytes(&mut buf[8..48]);
+    }
+    fn from_bytes(buf: &[u8]) -> Self {
+        Self {
+            choice: Rc::new(RefCell::new(<Choice_enum>::from_bytes(&buf[0..4]))),
+            index: Rc::new(RefCell::new(<i32>::from_bytes(&buf[4..8]))),
+            v: Rc::new(RefCell::new(<anon_0>::from_bytes(&buf[8..48]))),
+        }
+    }
+}
 pub fn main() {
     std::process::exit(main_0());
 }

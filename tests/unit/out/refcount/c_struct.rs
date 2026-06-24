@@ -70,6 +70,17 @@ impl From<i32> for Color {
     }
 }
 libcc2rs::impl_enum_inc_dec!(Color);
+impl ByteRepr for Color {
+    fn byte_size() -> usize {
+        4
+    }
+    fn to_bytes(&self, buf: &mut [u8]) {
+        (*self as i32).to_bytes(buf);
+    }
+    fn from_bytes(buf: &[u8]) -> Self {
+        <Color>::from(i32::from_bytes(buf))
+    }
+}
 #[derive(Default)]
 pub struct Inner {
     pub a: Value<i32>,
@@ -96,7 +107,23 @@ pub struct Container {
     pub color: Value<Color>,
     pub count: Value<i32>,
 }
-impl ByteRepr for Container {}
+impl ByteRepr for Container {
+    fn byte_size() -> usize {
+        16
+    }
+    fn to_bytes(&self, buf: &mut [u8]) {
+        (*self.inner.borrow()).to_bytes(&mut buf[0..8]);
+        (*self.color.borrow()).to_bytes(&mut buf[8..12]);
+        (*self.count.borrow()).to_bytes(&mut buf[12..16]);
+    }
+    fn from_bytes(buf: &[u8]) -> Self {
+        Self {
+            inner: Rc::new(RefCell::new(<Inner>::from_bytes(&buf[0..8]))),
+            color: Rc::new(RefCell::new(<Color>::from_bytes(&buf[8..12]))),
+            count: Rc::new(RefCell::new(<i32>::from_bytes(&buf[12..16]))),
+        }
+    }
+}
 pub fn main() {
     std::process::exit(main_0());
 }

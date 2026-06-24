@@ -24,12 +24,37 @@ impl From<i32> for widget_enum {
     }
 }
 libcc2rs::impl_enum_inc_dec!(widget_enum);
+impl ByteRepr for widget_enum {
+    fn byte_size() -> usize {
+        4
+    }
+    fn to_bytes(&self, buf: &mut [u8]) {
+        (*self as i32).to_bytes(buf);
+    }
+    fn from_bytes(buf: &[u8]) -> Self {
+        <widget_enum>::from(i32::from_bytes(buf))
+    }
+}
 #[derive(Default)]
 pub struct widget {
     pub id: Value<i32>,
     pub mode: Value<widget_enum>,
 }
-impl ByteRepr for widget {}
+impl ByteRepr for widget {
+    fn byte_size() -> usize {
+        8
+    }
+    fn to_bytes(&self, buf: &mut [u8]) {
+        (*self.id.borrow()).to_bytes(&mut buf[0..4]);
+        (*self.mode.borrow()).to_bytes(&mut buf[4..8]);
+    }
+    fn from_bytes(buf: &[u8]) -> Self {
+        Self {
+            id: Rc::new(RefCell::new(<i32>::from_bytes(&buf[0..4]))),
+            mode: Rc::new(RefCell::new(<widget_enum>::from_bytes(&buf[4..8]))),
+        }
+    }
+}
 #[derive(Default)]
 pub struct point_struct {
     pub x: Value<i32>,
@@ -130,6 +155,17 @@ impl From<i32> for slot {
     }
 }
 libcc2rs::impl_enum_inc_dec!(slot);
+impl ByteRepr for slot {
+    fn byte_size() -> usize {
+        4
+    }
+    fn to_bytes(&self, buf: &mut [u8]) {
+        (*self as i32).to_bytes(buf);
+    }
+    fn from_bytes(buf: &[u8]) -> Self {
+        <slot>::from(i32::from_bytes(buf))
+    }
+}
 #[derive(Default)]
 pub struct Inner {
     pub tag_field: Value<i32>,
