@@ -1,0 +1,82 @@
+extern crate libcc2rs;
+use libcc2rs::*;
+use std::cell::RefCell;
+use std::collections::BTreeMap;
+use std::io::prelude::*;
+use std::io::{Read, Seek, Write};
+use std::os::fd::AsFd;
+use std::rc::{Rc, Weak};
+#[derive(Default)]
+pub struct node_a {
+    pub n: Value<i32>,
+}
+impl ByteRepr for node_a {
+    fn byte_size() -> usize {
+        4
+    }
+    fn to_bytes(&self, buf: &mut [u8]) {
+        (*self.n.borrow()).to_bytes(&mut buf[0..4]);
+    }
+    fn from_bytes(buf: &[u8]) -> Self {
+        Self {
+            n: Rc::new(RefCell::new(<i32>::from_bytes(&buf[0..4]))),
+        }
+    }
+}
+#[derive(Default)]
+pub struct node_b {
+    pub data: Value<AnyPtr>,
+    pub next: Value<Ptr<node_b>>,
+}
+impl ByteRepr for node_b {}
+pub fn main() {
+    std::process::exit(main_0());
+}
+fn main_0() -> i32 {
+    let a: Value<node_a> = Rc::new(RefCell::new(node_a {
+        n: Rc::new(RefCell::new(123)),
+    }));
+    #[derive(Clone)]
+    pub struct anon_0 {
+        __store: libcc2rs::UnionStorage,
+    }
+    impl anon_0 {
+        pub fn to_a(&self) -> Ptr<Ptr<node_a>> {
+            self.__store.reinterpret(0)
+        }
+        pub fn to_b(&self) -> Ptr<Ptr<node_b>> {
+            self.__store.reinterpret(0)
+        }
+    }
+    impl Default for anon_0 {
+        fn default() -> Self {
+            anon_0 {
+                __store: libcc2rs::UnionStorage::new(8),
+            }
+        }
+    }
+    impl ByteRepr for anon_0 {
+        fn byte_size() -> usize {
+            8
+        }
+        fn to_bytes(&self, buf: &mut [u8]) {
+            self.__store.to_bytes(buf);
+        }
+        fn from_bytes(buf: &[u8]) -> Self {
+            anon_0 {
+                __store: libcc2rs::UnionStorage::from_bytes(buf),
+            }
+        }
+    };
+    let ptr: Value<anon_0> = <Value<anon_0>>::default();
+    (*ptr.borrow_mut()).to_a().write((a.as_pointer()));
+    let out: Value<Ptr<node_b>> = Rc::new(RefCell::new(((*ptr.borrow()).to_b().read()).clone()));
+    assert!(
+        ((({
+            let _lhs = (*out.borrow()).clone().to_any();
+            _lhs == (a.as_pointer()).to_any()
+        }) as i32)
+            != 0)
+    );
+    return 0;
+}
