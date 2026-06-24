@@ -149,7 +149,6 @@ fn main_0() -> i32 {
         .borrow_mut()) = 10_u16;
     (*(*c.borrow()).len.borrow_mut()) = (28usize as u32);
     (*(*(((*(*c.borrow()).u.borrow()).a())
-        .clone()
         .to_any()
         .cast::<shape_b>()
         .expect("ub:wrong type"))

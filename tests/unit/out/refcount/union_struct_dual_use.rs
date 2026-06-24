@@ -111,7 +111,7 @@ fn main_0() -> i32 {
         .borrow_mut()) = 4;
     assert!(
         (((({
-            let _i: Ptr<Inner> = ((*(*outer.borrow()).u.borrow()).inner()).clone();
+            let _i: Ptr<Inner> = ((*(*outer.borrow()).u.borrow()).inner());
             sum_inner_0(_i)
         }) == 7) as i32)
             != 0)

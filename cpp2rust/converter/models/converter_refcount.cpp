@@ -1526,7 +1526,7 @@ bool ConverterRefCount::VisitMemberExpr(clang::MemberExpr *expr) {
 
     if (isAddrOf()) {
       StrCat(str);
-      computed_expr_type_ = ComputedExprType::Pointer;
+      computed_expr_type_ = ComputedExprType::FreshPointer;
       return false;
     }
     if (isLValue()) {
