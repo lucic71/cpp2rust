@@ -223,6 +223,18 @@ bool TypeImplementsByteRepr(clang::QualType qt) {
   return false;
 }
 
+bool RustSizeDivergesFromC(clang::QualType qt) {
+  qt = qt.getCanonicalType();
+  // Records have Rc<RefCell<>> fields that diverge from the C size
+  if (qt->isRecordType()) {
+    return true;
+  }
+  if (auto *arr = qt->getAsArrayTypeUnsafe()) {
+    return RustSizeDivergesFromC(arr->getElementType());
+  }
+  return false;
+}
+
 bool IsMutatingCall(const clang::CallExpr *expr) {
   if (auto *callee = expr->getDirectCallee()) {
     if (auto *method = clang::dyn_cast<clang::CXXMethodDecl>(callee)) {
