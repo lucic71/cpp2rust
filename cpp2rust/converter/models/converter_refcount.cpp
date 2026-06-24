@@ -1322,6 +1322,20 @@ bool ConverterRefCount::VisitExplicitCastExpr(clang::ExplicitCastExpr *expr) {
   }
 }
 
+bool ConverterRefCount::VisitUnaryExprOrTypeTraitExpr(
+    clang::UnaryExprOrTypeTraitExpr *expr) {
+  if (expr->getKind() == clang::UnaryExprOrTypeTrait::UETT_SizeOf) {
+    auto arg_type = expr->isArgumentType() ? expr->getArgumentType()
+                                           : expr->getArgumentExpr()->getType();
+    if (RustSizeDivergesFromC(arg_type)) {
+      StrCat(std::format("{}usize", ctx_.getTypeSize(arg_type) / 8));
+      computed_expr_type_ = ComputedExprType::FreshValue;
+      return false;
+    }
+  }
+  return Converter::VisitUnaryExprOrTypeTraitExpr(expr);
+}
+
 bool ConverterRefCount::VisitStmtExpr(clang::StmtExpr *expr) {
   PushConversionKind push(*this, ConversionKind::FullRefCount);
   return Converter::VisitStmtExpr(expr);
