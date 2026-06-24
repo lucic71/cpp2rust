@@ -497,9 +497,12 @@ void ConverterRefCount::EmitRustUnion(clang::RecordDecl *decl) {
   {
     PushBrace impl_brace(*this);
     for (auto *field : decl->fields()) {
+      PushConversionKind push(*this, ConversionKind::FullRefCount);
+      std::string storage_ty = ToString(field->getType());
+      Unwrap(storage_ty, "Value<", ">");
       StrCat(std::format(
           "pub fn {}(&self) -> Ptr<{}> {{ self.__store.reinterpret(0) }}",
-          GetNamedDeclAsString(field), Mapper::Map(field->getType())));
+          GetNamedDeclAsString(field), storage_ty));
     }
   }
 
