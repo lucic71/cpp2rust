@@ -17,11 +17,11 @@ impl UnionStorage {
         }
     }
 
-    pub fn reinterpret<T: ByteRepr>(&self, offset: usize) -> Ptr<T> {
+    pub fn reinterpret_sized<T>(&self, start: usize, end: usize) -> Ptr<T> {
         let alloc: Rc<dyn OriginalAlloc> = Rc::new(SliceOriginalAlloc {
             weak: Rc::downgrade(&self.bytes),
         });
-        Ptr::reinterpreted(alloc, offset)
+        Ptr::reinterpreted_sized(alloc, start, end - start)
     }
 }
 

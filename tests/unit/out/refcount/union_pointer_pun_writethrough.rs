@@ -17,10 +17,10 @@ fn main_0() -> i32 {
     }
     impl anon_0 {
         pub fn as_unsigned(&self) -> Ptr<Ptr<u64>> {
-            self.__store.reinterpret(0)
+            self.__store.reinterpret_sized(0, 8)
         }
         pub fn as_signed(&self) -> Ptr<Ptr<i64>> {
-            self.__store.reinterpret(0)
+            self.__store.reinterpret_sized(0, 8)
         }
     }
     impl Default for anon_0 {

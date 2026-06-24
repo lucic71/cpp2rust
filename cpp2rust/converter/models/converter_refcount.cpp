@@ -500,9 +500,10 @@ void ConverterRefCount::EmitRustUnion(clang::RecordDecl *decl) {
       PushConversionKind push(*this, ConversionKind::FullRefCount);
       std::string storage_ty = ToString(field->getType());
       Unwrap(storage_ty, "Value<", ">");
-      StrCat(std::format(
-          "pub fn {}(&self) -> Ptr<{}> {{ self.__store.reinterpret(0) }}",
-          GetNamedDeclAsString(field), storage_ty));
+      auto byte_size = ctx_.getTypeSize(field->getType()) / 8;
+      StrCat(std::format("pub fn {}(&self) -> Ptr<{}> {{ "
+                         "self.__store.reinterpret_sized(0, {}) }}",
+                         GetNamedDeclAsString(field), storage_ty, byte_size));
     }
   }
 

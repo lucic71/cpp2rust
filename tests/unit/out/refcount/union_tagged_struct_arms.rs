@@ -92,13 +92,13 @@ pub struct anon_0 {
 }
 impl anon_0 {
     pub fn list(&self) -> Ptr<anon_1> {
-        self.__store.reinterpret(0)
+        self.__store.reinterpret_sized(0, 24)
     }
     pub fn letters(&self) -> Ptr<anon_2> {
-        self.__store.reinterpret(0)
+        self.__store.reinterpret_sized(0, 16)
     }
     pub fn integers(&self) -> Ptr<anon_3> {
-        self.__store.reinterpret(0)
+        self.__store.reinterpret_sized(0, 40)
     }
 }
 impl Default for anon_0 {

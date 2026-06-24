@@ -12,10 +12,10 @@ pub struct basic {
 }
 impl basic {
     pub fn i(&self) -> Ptr<i32> {
-        self.__store.reinterpret(0)
+        self.__store.reinterpret_sized(0, 4)
     }
     pub fn f(&self) -> Ptr<f32> {
-        self.__store.reinterpret(0)
+        self.__store.reinterpret_sized(0, 4)
     }
 }
 impl Default for basic {

@@ -42,10 +42,10 @@ pub struct anon_0 {
 }
 impl anon_0 {
     pub fn h(&self) -> Ptr<record> {
-        self.__store.reinterpret(0)
+        self.__store.reinterpret_sized(0, 16)
     }
     pub fn raw_(&self) -> Ptr<Box<[u8]>> {
-        self.__store.reinterpret(0)
+        self.__store.reinterpret_sized(0, 128)
     }
 }
 impl Default for anon_0 {
@@ -91,10 +91,10 @@ pub struct anon_1 {
 }
 impl anon_1 {
     pub fn h(&self) -> Ptr<record> {
-        self.__store.reinterpret(0)
+        self.__store.reinterpret_sized(0, 16)
     }
     pub fn nested(&self) -> Ptr<inner> {
-        self.__store.reinterpret(0)
+        self.__store.reinterpret_sized(0, 128)
     }
 }
 impl Default for anon_1 {

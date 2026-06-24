@@ -80,13 +80,13 @@ pub struct anon_0 {
 }
 impl anon_0 {
     pub fn a(&self) -> Ptr<shape_a> {
-        self.__store.reinterpret(0)
+        self.__store.reinterpret_sized(0, 16)
     }
     pub fn b(&self) -> Ptr<shape_b> {
-        self.__store.reinterpret(0)
+        self.__store.reinterpret_sized(0, 16)
     }
     pub fn raw_(&self) -> Ptr<Box<[u8]>> {
-        self.__store.reinterpret(0)
+        self.__store.reinterpret_sized(0, 256)
     }
 }
 impl Default for anon_0 {

@@ -8,7 +8,10 @@ pub trait ByteRepr: 'static {
     where
         Self: Sized,
     {
-        panic!("byte_size is not implemented for {}", std::any::type_name::<Self>())
+        panic!(
+            "byte_size is not implemented for {}",
+            std::any::type_name::<Self>()
+        )
     }
     fn to_bytes(&self, _buf: &mut [u8]) {
         panic!("ByteRepr not supported for this type");

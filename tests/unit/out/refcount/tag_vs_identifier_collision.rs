@@ -56,10 +56,10 @@ pub struct point {
 }
 impl point {
     pub fn whole(&self) -> Ptr<i32> {
-        self.__store.reinterpret(0)
+        self.__store.reinterpret_sized(0, 4)
     }
     pub fn half(&self) -> Ptr<i16> {
-        self.__store.reinterpret(0)
+        self.__store.reinterpret_sized(0, 2)
     }
 }
 impl Default for point {
@@ -88,10 +88,10 @@ pub struct slot_union {
 }
 impl slot_union {
     pub fn i(&self) -> Ptr<i32> {
-        self.__store.reinterpret(0)
+        self.__store.reinterpret_sized(0, 4)
     }
     pub fn u(&self) -> Ptr<u32> {
-        self.__store.reinterpret(0)
+        self.__store.reinterpret_sized(0, 4)
     }
 }
 impl Default for slot_union {

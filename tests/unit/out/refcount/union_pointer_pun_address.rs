@@ -42,10 +42,10 @@ fn main_0() -> i32 {
     }
     impl anon_0 {
         pub fn to_a(&self) -> Ptr<Ptr<node_a>> {
-            self.__store.reinterpret(0)
+            self.__store.reinterpret_sized(0, 8)
         }
         pub fn to_b(&self) -> Ptr<Ptr<node_b>> {
-            self.__store.reinterpret(0)
+            self.__store.reinterpret_sized(0, 8)
         }
     }
     impl Default for anon_0 {

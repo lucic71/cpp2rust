@@ -39,10 +39,10 @@ pub struct anon_1 {
 }
 impl anon_1 {
     pub fn inner(&self) -> Ptr<Inner> {
-        self.__store.reinterpret(0)
+        self.__store.reinterpret_sized(0, 8)
     }
     pub fn raw_(&self) -> Ptr<Box<[u8]>> {
-        self.__store.reinterpret(0)
+        self.__store.reinterpret_sized(0, 16)
     }
 }
 impl Default for anon_1 {

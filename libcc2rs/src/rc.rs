@@ -19,8 +19,8 @@ pub type Value<T> = Rc<RefCell<T>>;
 struct ReinterpretedView {
     // Pointer to the source of reinterpret
     alloc: Rc<dyn OriginalAlloc>,
-    // C++ size of the reinterpreted view
-    elem_byte_size: usize,
+    // C++ byte size of one viewed value
+    byte_size: usize,
 }
 
 #[derive(Default)]
@@ -48,6 +48,7 @@ pub enum StrongPtr<T> {
     Reinterpreted {
         alloc: Rc<dyn OriginalAlloc>,
         byte_offset: usize,
+        byte_size: usize,
         // Local buffer for deref(). None until first access.
         // Read-through: refreshed from alloc on every deref() call.
         cell: RefCell<Option<T>>,
@@ -63,10 +64,11 @@ impl<T: ByteRepr> StrongPtr<T> {
             StrongPtr::Reinterpreted {
                 alloc,
                 byte_offset,
+                byte_size,
                 cell,
             } => {
                 // Read-through: always re-read from the original allocation.
-                let mut buf = vec![0u8; T::byte_size()];
+                let mut buf = vec![0u8; *byte_size];
                 alloc.read_bytes(*byte_offset, &mut buf);
                 *cell.borrow_mut() = Some(T::from_bytes(&buf));
                 Ref::map(cell.borrow(), |opt| opt.as_ref().unwrap())
@@ -258,7 +260,7 @@ impl<T> Ptr<T> {
     #[inline]
     fn elem_step(&self) -> usize {
         match &self.kind {
-            PtrKind::Reinterpreted(view) => view.elem_byte_size,
+            PtrKind::Reinterpreted(view) => view.byte_size,
             _ => 1,
         }
     }
@@ -272,7 +274,7 @@ impl<T> Ptr<T> {
             PtrKind::StackArray(weak) | PtrKind::HeapArray(weak) => {
                 weak.upgrade().expect("ub: dangling pointer").borrow().len()
             }
-            PtrKind::Reinterpreted(view) => view.alloc.total_byte_len() / view.elem_byte_size,
+            PtrKind::Reinterpreted(view) => view.alloc.total_byte_len() / view.byte_size,
         }
     }
 
@@ -349,6 +351,7 @@ impl<T> Ptr<T> {
             PtrKind::Reinterpreted(view) => StrongPtr::Reinterpreted {
                 alloc: Rc::clone(&view.alloc),
                 byte_offset: self.offset,
+                byte_size: view.byte_size,
                 cell: RefCell::new(None),
             },
         }
@@ -373,7 +376,7 @@ impl<T> Ptr<T> {
                 rc.borrow_mut()[self.offset] = value;
             }
             PtrKind::Reinterpreted(view) => {
-                let mut buf = vec![0u8; T::byte_size()];
+                let mut buf = vec![0u8; view.byte_size];
                 value.to_bytes(&mut buf);
                 view.alloc.write_bytes(self.offset, &buf);
             }
@@ -402,20 +405,19 @@ impl<T> Ptr<T> {
             panic!("cannot reinterpret_cast to zero-sized type");
         }
 
-        let src_byte_off = self.offset.wrapping_mul(T::byte_size());
         let (alloc, abs_byte_off): (Rc<dyn OriginalAlloc>, usize) = match &self.kind {
             PtrKind::Null => return Ptr::null(),
             PtrKind::StackSingle(weak) | PtrKind::HeapSingle(weak) => (
                 Rc::new(SingleOriginalAlloc { weak: weak.clone() }),
-                src_byte_off,
+                self.offset.wrapping_mul(T::byte_size()),
             ),
             PtrKind::Vec(weak) => (
                 Rc::new(SliceOriginalAlloc { weak: weak.clone() }),
-                src_byte_off,
+                self.offset.wrapping_mul(T::byte_size()),
             ),
             PtrKind::StackArray(weak) | PtrKind::HeapArray(weak) => (
                 Rc::new(SliceOriginalAlloc { weak: weak.clone() }),
-                src_byte_off,
+                self.offset.wrapping_mul(T::byte_size()),
             ),
             PtrKind::Reinterpreted(view) => (Rc::clone(&view.alloc), self.offset),
         };
@@ -424,7 +426,7 @@ impl<T> Ptr<T> {
             offset: abs_byte_off,
             kind: PtrKind::Reinterpreted(Rc::new(ReinterpretedView {
                 alloc,
-                elem_byte_size: U::byte_size(),
+                byte_size: U::byte_size(),
             })),
         }
     }
@@ -453,7 +455,7 @@ impl<T> Ptr<T> {
                 f(&mut borrow[self.offset])
             }
             PtrKind::Reinterpreted(view) => {
-                let mut buf = vec![0u8; T::byte_size()];
+                let mut buf = vec![0u8; view.byte_size];
                 view.alloc.read_bytes(self.offset, &mut buf);
                 let mut val = T::from_bytes(&buf);
                 let ret = f(&mut val);
@@ -486,7 +488,7 @@ impl<T> Ptr<T> {
                 f(&borrow[self.offset])
             }
             PtrKind::Reinterpreted(view) => {
-                let mut buf = vec![0u8; T::byte_size()];
+                let mut buf = vec![0u8; view.byte_size];
                 view.alloc.read_bytes(self.offset, &mut buf);
                 let val = T::from_bytes(&buf);
                 f(&val)
@@ -513,7 +515,7 @@ impl<T: Clone + ByteRepr> Ptr<T> {
                 weak.upgrade().expect("ub: dangling pointer").borrow()[self.offset].clone()
             }
             PtrKind::Reinterpreted(ref view) => {
-                let mut buf = vec![0u8; T::byte_size()];
+                let mut buf = vec![0u8; view.byte_size];
                 view.alloc.read_bytes(self.offset, &mut buf);
                 T::from_bytes(&buf)
             }
@@ -1203,14 +1205,15 @@ impl<T: ?Sized> AsPointerDyn<T> for Rc<RefCell<T>> {
 
 impl<T: 'static> ByteRepr for Ptr<T> {}
 
-impl<T: ByteRepr> Ptr<T> {
-    pub(crate) fn reinterpreted(alloc: Rc<dyn OriginalAlloc>, byte_offset: usize) -> Self {
+impl<T> Ptr<T> {
+    pub(crate) fn reinterpreted_sized(
+        alloc: Rc<dyn OriginalAlloc>,
+        byte_offset: usize,
+        byte_size: usize,
+    ) -> Self {
         Ptr {
             offset: byte_offset,
-            kind: PtrKind::Reinterpreted(Rc::new(ReinterpretedView {
-                alloc,
-                elem_byte_size: T::byte_size(),
-            })),
+            kind: PtrKind::Reinterpreted(Rc::new(ReinterpretedView { alloc, byte_size })),
         }
     }
 }
