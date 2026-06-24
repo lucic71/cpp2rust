@@ -1104,6 +1104,10 @@ impl AnyPtr {
         }
         self.ptr.as_any().downcast_ref::<Ptr<T>>().cloned()
     }
+
+    pub fn reinterpret_cast<T: ByteRepr>(&self) -> Ptr<T> {
+        self.ptr.as_bytes().reinterpret_cast::<T>()
+    }
 }
 
 impl PartialEq for AnyPtr {
