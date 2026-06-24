@@ -1106,6 +1106,12 @@ impl AnyPtr {
     }
 
     pub fn reinterpret_cast<T: ByteRepr>(&self) -> Ptr<T> {
+        if self.ptr.is_null() {
+            return Ptr::<T>::null();
+        }
+        if let Some(p) = self.ptr.as_any().downcast_ref::<Ptr<T>>() {
+            return p.clone();
+        }
         self.ptr.as_bytes().reinterpret_cast::<T>()
     }
 }
