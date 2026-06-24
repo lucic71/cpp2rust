@@ -14,13 +14,19 @@ pub trait ByteRepr: 'static {
         )
     }
     fn to_bytes(&self, _buf: &mut [u8]) {
-        panic!("ByteRepr not supported for this type");
+        panic!(
+            "to_bytes is not implemented for {}",
+            std::any::type_name::<Self>()
+        )
     }
     fn from_bytes(_buf: &[u8]) -> Self
     where
         Self: Sized,
     {
-        panic!("ByteRepr not supported for this type");
+        panic!(
+            "from_bytes is not implemented for {}",
+            std::any::type_name::<Self>()
+        )
     }
 }
 
