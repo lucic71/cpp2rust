@@ -566,7 +566,8 @@ static bool recordImplementsByteRepr(const clang::RecordDecl *decl) {
 void ConverterRefCount::AddByteReprTrait(const clang::RecordDecl *decl) {
   auto struct_name = GetRecordName(decl);
 
-  if (!recordImplementsByteRepr(decl)) {
+
+  if (!TypeImplementsByteRepr(ctx_.getCanonicalTagType(decl))) {
     StrCat(std::format("impl ByteRepr for {}", struct_name));
     PushBrace brace(*this);
     return;
@@ -576,6 +577,9 @@ void ConverterRefCount::AddByteReprTrait(const clang::RecordDecl *decl) {
   PushBrace impl_brace(*this);
 
   const auto &layout = ctx_.getASTRecordLayout(decl);
+
+  StrCat(std::format("fn byte_size() -> usize {{ {} }}",
+                     ctx_.getTypeSize(ctx_.getCanonicalTagType(decl)) / 8));
 
   StrCat("fn to_bytes(&self, buf: &mut [u8])");
   {
