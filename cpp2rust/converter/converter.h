@@ -112,6 +112,8 @@ public:
 
   virtual void EmitRustStructOrUnion(clang::RecordDecl *decl);
 
+  virtual void EmitRustUnion(clang::RecordDecl *decl);
+
   virtual bool EmitsReprCForRecords() const { return true; }
 
   virtual bool VisitCXXMethodDecl(clang::CXXMethodDecl *decl);
@@ -527,7 +529,7 @@ protected:
                                          std::string_view second_return,
                                          std::string_view record_name);
 
-  virtual void AddCloneTrait(const clang::CXXRecordDecl *decl);
+  virtual void AddCloneTrait(const clang::RecordDecl *decl);
 
   virtual void AddDropTrait(const clang::CXXRecordDecl *decl);
 

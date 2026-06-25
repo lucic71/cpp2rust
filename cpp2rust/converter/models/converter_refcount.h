@@ -28,12 +28,14 @@ public:
 
   bool VisitCXXRecordDecl(clang::CXXRecordDecl *decl) override;
 
+  void EmitRustUnion(clang::RecordDecl *decl) override;
+
   bool EmitsReprCForRecords() const override { return false; }
 
   void ConvertOrdAndPartialOrdTraits(const clang::CXXRecordDecl *decl,
                                      const clang::FunctionDecl *op) override;
 
-  void AddCloneTrait(const clang::CXXRecordDecl *decl) override;
+  void AddCloneTrait(const clang::RecordDecl *decl) override;
 
   void AddDropTrait(const clang::CXXRecordDecl *decl) override;
 
@@ -102,6 +104,8 @@ public:
   bool VisitArraySubscriptExpr(clang::ArraySubscriptExpr *expr) override;
 
   bool VisitMemberExpr(clang::MemberExpr *expr) override;
+
+  void ConvertUnionMemberAccessor(clang::MemberExpr *expr);
 
   bool VisitCXXNewExpr(clang::CXXNewExpr *expr) override;
 

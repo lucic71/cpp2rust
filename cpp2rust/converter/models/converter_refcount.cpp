@@ -441,17 +441,28 @@ void ConverterRefCount::ConvertOrdAndPartialOrdTraits(
                                     second_return, GetRecordName(decl));
 }
 
-void ConverterRefCount::AddCloneTrait(const clang::CXXRecordDecl *decl) {
-  if (decl->defaultedCopyConstructorIsDeleted()) {
+void ConverterRefCount::AddCloneTrait(const clang::RecordDecl *decl) {
+  auto record_name = GetRecordName(decl);
+
+  if (decl->isUnion()) {
+    StrCat("impl Clone for", record_name);
+    PushBrace impl_brace(*this);
+    StrCat("fn clone(&self) -> Self");
+    PushBrace fn_brace(*this);
+    StrCat(record_name,
+           "{ __bytes: Rc::new(RefCell::new(self.__bytes.borrow().clone())) }");
     return;
   }
 
-  auto record_name = GetRecordName(decl);
+  auto *cxx = clang::dyn_cast<clang::CXXRecordDecl>(decl);
+  if (!cxx || cxx->defaultedCopyConstructorIsDeleted()) {
+    return;
+  }
 
   StrCat(keyword::kImpl, "Clone for", record_name, '{');
   StrCat("fn clone(&self) -> Self {");
 
-  for (auto ctor : decl->ctors()) {
+  for (auto ctor : cxx->ctors()) {
     if (ctor->isCopyConstructor()) {
       PushConversionKind push(*this, ConversionKind::FullRefCount);
       ConvertCXXConstructorBody(ctor);
@@ -469,6 +480,39 @@ void ConverterRefCount::AddDefaultTrait(const clang::RecordDecl *decl) {
 }
 
 void ConverterRefCount::AddDefaultTraitForUnion(const clang::RecordDecl *decl) {
+  auto name = GetRecordName(decl);
+  StrCat("impl Default for", name);
+  PushBrace impl_brace(*this);
+  StrCat("fn default() -> Self");
+  PushBrace fn_brace(*this);
+  StrCat(std::format(
+      "{} {{ __bytes: Rc::new(RefCell::new(Box::from([0u8; {}]))) }}", name,
+      ctx_.getASTRecordLayout(decl).getSize().getQuantity()));
+}
+
+void ConverterRefCount::EmitRustUnion(clang::RecordDecl *decl) {
+  auto name = GetRecordName(decl);
+
+  auto attrs = GetStructAttributes(decl);
+  Mapper::SetDerives(ctx_.getCanonicalTagType(decl),
+                     std::vector<std::string>(attrs.begin(), attrs.end()));
+
+  StrCat(std::format("pub struct {} {{ __bytes: Value<Box<[u8]>> }}", name));
+
+  StrCat("impl", name);
+  {
+    PushBrace impl_brace(*this);
+    for (auto *field : decl->fields()) {
+      StrCat(std::format(
+          "pub fn {}(&self) -> Ptr<{}> {{ (self.__bytes.as_pointer() "
+          "as Ptr<u8>).reinterpret_cast() }}",
+          GetNamedDeclAsString(field), Mapper::Map(field->getType())));
+    }
+  }
+
+  AddCloneTrait(decl);
+  AddDefaultTrait(decl);
+  AddByteReprTrait(decl);
 }
 
 void ConverterRefCount::AddDropTrait(const clang::CXXRecordDecl *decl) {
@@ -1441,6 +1485,28 @@ bool ConverterRefCount::VisitInitListExpr(clang::InitListExpr *expr) {
   return false;
 }
 
+void ConverterRefCount::ConvertUnionMemberAccessor(clang::MemberExpr *expr) {
+  std::string str;
+  {
+    Buffer buf(*this);
+    PushExprKind push(*this, isLValue() ? ExprKind::LValue : ExprKind::RValue);
+    Converter::ConvertMemberExpr(expr);
+    str = std::move(buf).str();
+  }
+  str += "()";
+
+  if (isAddrOf()) {
+    StrCat(str);
+    computed_expr_type_ = ComputedExprType::Pointer;
+    return;
+  }
+  if (isLValue()) {
+    pending_deref_.set(str);
+    return;
+  }
+  StrCat(DerefPtrExpr(str, expr->getMemberDecl()->getType()));
+}
+
 bool ConverterRefCount::VisitMemberExpr(clang::MemberExpr *expr) {
   auto *member = expr->getMemberDecl();
   bool known = Mapper::Contains(expr);
@@ -1457,6 +1523,13 @@ bool ConverterRefCount::VisitMemberExpr(clang::MemberExpr *expr) {
     bool needs_mut = NeedsMutAccess(method, base_type);
     PushExprKind push(*this, needs_mut ? ExprKind::LValue : ExprKind::RValue);
     Converter::ConvertMemberExpr(expr);
+    return false;
+  }
+
+  if (auto *parent =
+          clang::dyn_cast<clang::RecordDecl>(member->getDeclContext());
+      parent && parent->isUnion() && clang::isa<clang::FieldDecl>(member)) {
+    ConvertUnionMemberAccessor(expr);
     return false;
   }
 
@@ -1797,6 +1870,10 @@ ConverterRefCount::ConvertVarDefaultInit(clang::QualType qual_type) {
 std::vector<const char *>
 ConverterRefCount::GetStructAttributes(const clang::RecordDecl *decl) {
   std::vector<const char *> attrs;
+
+  if (decl->isUnion()) {
+    return attrs;
+  }
 
   if (RecordDerivesDefault(decl)) {
     attrs.emplace_back("Default");
