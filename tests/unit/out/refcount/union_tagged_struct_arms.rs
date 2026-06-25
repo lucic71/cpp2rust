@@ -24,6 +24,14 @@ impl From<i32> for Choice_enum {
     }
 }
 libcc2rs::impl_enum_inc_dec!(Choice_enum);
+impl ByteRepr for Choice_enum {
+    fn to_bytes(&self, buf: &mut [u8]) {
+        (*self as i32).to_bytes(buf);
+    }
+    fn from_bytes(buf: &[u8]) -> Self {
+        <Choice_enum>::from(i32::from_bytes(buf))
+    }
+}
 #[derive(Default)]
 pub struct anon_1 {
     pub items: Value<Ptr<Ptr<u8>>>,
