@@ -822,9 +822,7 @@ void Converter::EmitRustStructOrUnion(clang::RecordDecl *decl) {
 }
 
 void Converter::EmitRustUnion(clang::RecordDecl *decl) {
-  if (EmitsReprCForRecords()) {
-    StrCat("#[repr(C)]");
-  }
+  StrCat("#[repr(C)]");
   auto attrs = GetStructAttributes(decl);
   Mapper::SetDerives(ctx_.getCanonicalTagType(decl),
                      std::vector<std::string>(attrs.begin(), attrs.end()));
