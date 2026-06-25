@@ -11,22 +11,29 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     let x: Value<i64> = Rc::new(RefCell::new((-1_i32 as i64)));
-    #[derive(Clone)]
+    #[derive()]
     pub struct anon_0 {
-        __store: libcc2rs::UnionStorage,
+        __bytes: Value<Box<[u8]>>,
     }
     impl anon_0 {
         pub fn as_unsigned(&self) -> Ptr<Ptr<u64>> {
-            self.__store.reinterpret(0)
+            (self.__bytes.as_pointer() as Ptr<u8>).reinterpret_cast()
         }
         pub fn as_signed(&self) -> Ptr<Ptr<i64>> {
-            self.__store.reinterpret(0)
+            (self.__bytes.as_pointer() as Ptr<u8>).reinterpret_cast()
+        }
+    }
+    impl Clone for anon_0 {
+        fn clone(&self) -> Self {
+            anon_0 {
+                __bytes: Rc::new(RefCell::new(self.__bytes.borrow().clone())),
+            }
         }
     }
     impl Default for anon_0 {
         fn default() -> Self {
             anon_0 {
-                __store: libcc2rs::UnionStorage::new(8),
+                __bytes: Rc::new(RefCell::new(vec![0u8; 8].into_boxed_slice())),
             }
         }
     }

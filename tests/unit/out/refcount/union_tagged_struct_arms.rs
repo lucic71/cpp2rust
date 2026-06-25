@@ -80,25 +80,32 @@ impl ByteRepr for anon_3 {
         }
     }
 }
-#[derive(Clone)]
+#[derive()]
 pub struct anon_0 {
-    __store: libcc2rs::UnionStorage,
+    __bytes: Value<Box<[u8]>>,
 }
 impl anon_0 {
     pub fn list(&self) -> Ptr<anon_1> {
-        self.__store.reinterpret(0)
+        (self.__bytes.as_pointer() as Ptr<u8>).reinterpret_cast()
     }
     pub fn letters(&self) -> Ptr<anon_2> {
-        self.__store.reinterpret(0)
+        (self.__bytes.as_pointer() as Ptr<u8>).reinterpret_cast()
     }
     pub fn integers(&self) -> Ptr<anon_3> {
-        self.__store.reinterpret(0)
+        (self.__bytes.as_pointer() as Ptr<u8>).reinterpret_cast()
+    }
+}
+impl Clone for anon_0 {
+    fn clone(&self) -> Self {
+        anon_0 {
+            __bytes: Rc::new(RefCell::new(self.__bytes.borrow().clone())),
+        }
     }
 }
 impl Default for anon_0 {
     fn default() -> Self {
         anon_0 {
-            __store: libcc2rs::UnionStorage::new(40),
+            __bytes: Rc::new(RefCell::new(vec![0u8; 40].into_boxed_slice())),
         }
     }
 }

@@ -6,22 +6,29 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Clone)]
+#[derive()]
 pub struct basic {
-    __store: libcc2rs::UnionStorage,
+    __bytes: Value<Box<[u8]>>,
 }
 impl basic {
     pub fn i(&self) -> Ptr<i32> {
-        self.__store.reinterpret(0)
+        (self.__bytes.as_pointer() as Ptr<u8>).reinterpret_cast()
     }
     pub fn f(&self) -> Ptr<f32> {
-        self.__store.reinterpret(0)
+        (self.__bytes.as_pointer() as Ptr<u8>).reinterpret_cast()
+    }
+}
+impl Clone for basic {
+    fn clone(&self) -> Self {
+        basic {
+            __bytes: Rc::new(RefCell::new(self.__bytes.borrow().clone())),
+        }
     }
 }
 impl Default for basic {
     fn default() -> Self {
         basic {
-            __store: libcc2rs::UnionStorage::new(4),
+            __bytes: Rc::new(RefCell::new(vec![0u8; 4].into_boxed_slice())),
         }
     }
 }

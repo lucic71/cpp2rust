@@ -47,42 +47,56 @@ impl ByteRepr for point_struct {
         }
     }
 }
-#[derive(Clone)]
+#[derive()]
 pub struct point {
-    __store: libcc2rs::UnionStorage,
+    __bytes: Value<Box<[u8]>>,
 }
 impl point {
     pub fn whole(&self) -> Ptr<i32> {
-        self.__store.reinterpret(0)
+        (self.__bytes.as_pointer() as Ptr<u8>).reinterpret_cast()
     }
     pub fn half(&self) -> Ptr<i16> {
-        self.__store.reinterpret(0)
+        (self.__bytes.as_pointer() as Ptr<u8>).reinterpret_cast()
+    }
+}
+impl Clone for point {
+    fn clone(&self) -> Self {
+        point {
+            __bytes: Rc::new(RefCell::new(self.__bytes.borrow().clone())),
+        }
     }
 }
 impl Default for point {
     fn default() -> Self {
         point {
-            __store: libcc2rs::UnionStorage::new(4),
+            __bytes: Rc::new(RefCell::new(vec![0u8; 4].into_boxed_slice())),
         }
     }
 }
 impl ByteRepr for point {}
-#[derive(Clone)]
+#[derive()]
 pub struct slot_union {
-    __store: libcc2rs::UnionStorage,
+    __bytes: Value<Box<[u8]>>,
 }
 impl slot_union {
     pub fn i(&self) -> Ptr<i32> {
-        self.__store.reinterpret(0)
+        (self.__bytes.as_pointer() as Ptr<u8>).reinterpret_cast()
     }
     pub fn u(&self) -> Ptr<u32> {
-        self.__store.reinterpret(0)
+        (self.__bytes.as_pointer() as Ptr<u8>).reinterpret_cast()
+    }
+}
+impl Clone for slot_union {
+    fn clone(&self) -> Self {
+        slot_union {
+            __bytes: Rc::new(RefCell::new(self.__bytes.borrow().clone())),
+        }
     }
 }
 impl Default for slot_union {
     fn default() -> Self {
         slot_union {
-            __store: libcc2rs::UnionStorage::new(4),
+            __bytes: Rc::new(RefCell::new(vec![0u8; 4].into_boxed_slice())),
         }
     }
 }
@@ -150,12 +164,7 @@ fn main_0() -> i32 {
     let w: Value<widget> = <Value<widget>>::default();
     (*(*w.borrow()).id.borrow_mut()) = 7;
     (*(*w.borrow()).mode.borrow_mut()) = widget_enum::MODE_ACTIVE;
-    assert!(
-        (({
-            let _w: Ptr<widget> = (w.as_pointer());
-            is_active_0(_w)
-        }) != 0)
-    );
+    assert!((({ is_active_0((w.as_pointer()),) }) != 0));
     (*(*w.borrow()).mode.borrow_mut()) = widget_enum::MODE_DONE;
     assert!(
         (((((*(*w.borrow()).mode.borrow()) as u32) == ((widget_enum::MODE_DONE as i32) as u32))
