@@ -80,7 +80,6 @@ impl ByteRepr for anon_3 {
         }
     }
 }
-#[derive()]
 pub struct anon_0 {
     __bytes: Value<Box<[u8]>>,
 }

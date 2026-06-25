@@ -11,7 +11,6 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     let x: Value<i64> = Rc::new(RefCell::new((-1_i32 as i64)));
-    #[derive()]
     pub struct anon_0 {
         __bytes: Value<Box<[u8]>>,
     }

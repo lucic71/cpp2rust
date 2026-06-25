@@ -499,13 +499,8 @@ void ConverterRefCount::EmitRustUnion(clang::RecordDecl *decl) {
   auto attrs = GetStructAttributes(decl);
   Mapper::SetDerives(ctx_.getCanonicalTagType(decl),
                      std::vector<std::string>(attrs.begin(), attrs.end()));
-  StrCat("#[derive(");
-  for (auto *attr : attrs) {
-    StrCat(attr, ',');
-  }
-  StrCat(")]");
 
-  StrCat(std::format("pub struct {} {{ __bytes: Value<Box<[u8]>>, }}", name));
+  StrCat(std::format("pub struct {} {{ __bytes: Value<Box<[u8]>> }}", name));
 
   StrCat(std::format("impl {}", name));
   {

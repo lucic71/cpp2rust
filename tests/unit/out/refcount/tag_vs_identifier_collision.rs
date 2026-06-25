@@ -47,7 +47,6 @@ impl ByteRepr for point_struct {
         }
     }
 }
-#[derive()]
 pub struct point {
     __bytes: Value<Box<[u8]>>,
 }
@@ -74,7 +73,6 @@ impl Default for point {
     }
 }
 impl ByteRepr for point {}
-#[derive()]
 pub struct slot_union {
     __bytes: Value<Box<[u8]>>,
 }
