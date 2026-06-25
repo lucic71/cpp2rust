@@ -12,6 +12,9 @@ pub struct Point {
     pub y: Value<i32>,
 }
 impl ByteRepr for Point {
+    fn byte_size() -> usize {
+        8
+    }
     fn to_bytes(&self, buf: &mut [u8]) {
         (*self.x.borrow()).to_bytes(&mut buf[0..4]);
         (*self.y.borrow()).to_bytes(&mut buf[4..8]);
@@ -28,7 +31,21 @@ pub struct Line {
     pub start: Value<Point>,
     pub end: Value<Point>,
 }
-impl ByteRepr for Line {}
+impl ByteRepr for Line {
+    fn byte_size() -> usize {
+        16
+    }
+    fn to_bytes(&self, buf: &mut [u8]) {
+        (*self.start.borrow()).to_bytes(&mut buf[0..8]);
+        (*self.end.borrow()).to_bytes(&mut buf[8..16]);
+    }
+    fn from_bytes(buf: &[u8]) -> Self {
+        Self {
+            start: Rc::new(RefCell::new(<Point>::from_bytes(&buf[0..8]))),
+            end: Rc::new(RefCell::new(<Point>::from_bytes(&buf[8..16]))),
+        }
+    }
+}
 #[derive(Default)]
 pub struct Node {
     pub value: Value<i32>,
@@ -53,20 +70,15 @@ impl From<i32> for Color {
     }
 }
 libcc2rs::impl_enum_inc_dec!(Color);
-impl ByteRepr for Color {
-    fn to_bytes(&self, buf: &mut [u8]) {
-        (*self as i32).to_bytes(buf);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        <Color>::from(i32::from_bytes(buf))
-    }
-}
 #[derive(Default)]
 pub struct Inner {
     pub a: Value<i32>,
     pub b: Value<i32>,
 }
 impl ByteRepr for Inner {
+    fn byte_size() -> usize {
+        8
+    }
     fn to_bytes(&self, buf: &mut [u8]) {
         (*self.a.borrow()).to_bytes(&mut buf[0..4]);
         (*self.b.borrow()).to_bytes(&mut buf[4..8]);
