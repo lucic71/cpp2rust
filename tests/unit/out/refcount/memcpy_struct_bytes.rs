@@ -12,6 +12,9 @@ pub struct point {
     pub y: Value<i32>,
 }
 impl ByteRepr for point {
+    fn byte_size() -> usize {
+        8
+    }
     fn to_bytes(&self, buf: &mut [u8]) {
         (*self.x.borrow()).to_bytes(&mut buf[0..4]);
         (*self.y.borrow()).to_bytes(&mut buf[4..8]);
@@ -45,7 +48,7 @@ fn main_0() -> i32 {
     {
         ((dst.as_pointer()) as Ptr<point>).to_any().memcpy(
             &((buf.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any(),
-            ::std::mem::size_of::<point>() as usize,
+            8usize as usize,
         );
         ((dst.as_pointer()) as Ptr<point>).to_any().clone()
     };
