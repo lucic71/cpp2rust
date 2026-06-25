@@ -34,6 +34,10 @@ macro_rules! impl_byte_repr {
     ($ty:ty) => {
         impl ByteRepr for $ty {
             #[inline]
+            fn byte_size() -> usize {
+                std::mem::size_of::<$ty>()
+            }
+            #[inline]
             fn to_bytes(&self, buf: &mut [u8]) {
                 buf.copy_from_slice(&self.to_ne_bytes());
             }
@@ -61,6 +65,10 @@ impl_byte_repr!(f32);
 impl_byte_repr!(f64);
 
 impl ByteRepr for bool {
+    #[inline]
+    fn byte_size() -> usize {
+        1
+    }
     #[inline]
     fn to_bytes(&self, buf: &mut [u8]) {
         buf[0] = *self as u8;
