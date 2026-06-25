@@ -3907,7 +3907,7 @@ void Converter::AddOrdTrait(const clang::CXXRecordDecl *decl) {
   ConvertOrdAndPartialOrdTraits(decl, methods[0]);
 }
 
-void Converter::AddCloneTrait(const clang::CXXRecordDecl *decl) {}
+void Converter::AddCloneTrait(const clang::RecordDecl *decl) {}
 
 void Converter::AddDropTrait(const clang::CXXRecordDecl *decl) {}
 

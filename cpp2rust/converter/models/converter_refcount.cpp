@@ -441,17 +441,30 @@ void ConverterRefCount::ConvertOrdAndPartialOrdTraits(
                                     second_return, GetRecordName(decl));
 }
 
-void ConverterRefCount::AddCloneTrait(const clang::CXXRecordDecl *decl) {
-  if (decl->defaultedCopyConstructorIsDeleted()) {
+void ConverterRefCount::AddCloneTrait(const clang::RecordDecl *decl) {
+  auto record_name = GetRecordName(decl);
+
+  if (decl->isUnion()) {
+    StrCat(std::format("impl Clone for {}", record_name));
+    PushBrace impl_brace(*this);
+    StrCat("fn clone(&self) -> Self");
+    PushBrace fn_brace(*this);
+    StrCat(
+        std::format("{} {{ __bytes: "
+                    "Rc::new(RefCell::new(self.__bytes.borrow().clone())) }}",
+                    record_name));
     return;
   }
 
-  auto record_name = GetRecordName(decl);
+  auto *cxx = clang::dyn_cast<clang::CXXRecordDecl>(decl);
+  if (!cxx || cxx->defaultedCopyConstructorIsDeleted()) {
+    return;
+  }
 
   StrCat(keyword::kImpl, "Clone for", record_name, '{');
   StrCat("fn clone(&self) -> Self {");
 
-  for (auto ctor : decl->ctors()) {
+  for (auto ctor : cxx->ctors()) {
     if (ctor->isCopyConstructor()) {
       PushConversionKind push(*this, ConversionKind::FullRefCount);
       ConvertCXXConstructorBody(ctor);
@@ -503,6 +516,7 @@ void ConverterRefCount::EmitRustUnion(clang::RecordDecl *decl) {
     }
   }
 
+  AddCloneTrait(decl);
   AddDefaultTrait(decl);
   AddByteReprTrait(decl);
 }
@@ -1861,7 +1875,6 @@ ConverterRefCount::GetStructAttributes(const clang::RecordDecl *decl) {
   std::vector<const char *> attrs;
 
   if (decl->isUnion()) {
-    attrs.emplace_back("Clone");
     return attrs;
   }
 

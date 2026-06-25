@@ -35,7 +35,7 @@ public:
   void ConvertOrdAndPartialOrdTraits(const clang::CXXRecordDecl *decl,
                                      const clang::FunctionDecl *op) override;
 
-  void AddCloneTrait(const clang::CXXRecordDecl *decl) override;
+  void AddCloneTrait(const clang::RecordDecl *decl) override;
 
   void AddDropTrait(const clang::CXXRecordDecl *decl) override;
 

@@ -529,7 +529,7 @@ protected:
                                          std::string_view second_return,
                                          std::string_view record_name);
 
-  virtual void AddCloneTrait(const clang::CXXRecordDecl *decl);
+  virtual void AddCloneTrait(const clang::RecordDecl *decl);
 
   virtual void AddDropTrait(const clang::CXXRecordDecl *decl);
 
