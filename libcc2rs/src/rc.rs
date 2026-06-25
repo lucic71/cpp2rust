@@ -1246,15 +1246,6 @@ impl<T: ?Sized> AsPointerDyn<T> for Rc<RefCell<T>> {
 
 impl<T: 'static> ByteRepr for Ptr<T> {}
 
-impl<T> Ptr<T> {
-    pub(crate) fn reinterpreted(alloc: Rc<dyn OriginalAlloc>, byte_offset: usize) -> Self {
-        Ptr {
-            offset: byte_offset,
-            kind: PtrKind::Reinterpreted(alloc),
-        }
-    }
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;
