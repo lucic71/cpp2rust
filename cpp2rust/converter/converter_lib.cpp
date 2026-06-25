@@ -201,10 +201,7 @@ bool IsMut(clang::QualType qual_type) {
 }
 
 bool TypeImplementsByteRepr(clang::QualType qt) {
-  if (qt->isEnumeralType()) {
-    return false;
-  }
-  if (qt->isIntegerType() || qt->isFloatingType()) {
+  if (qt->isIntegerType() || qt->isFloatingType() || qt->isEnumeralType()) {
     return true;
   }
   if (const auto *arr = qt->getAsArrayTypeUnsafe()) {

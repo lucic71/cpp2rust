@@ -84,8 +84,8 @@ impl<T> fmt::Debug for PtrKind<T> {
             PtrKind::HeapSingle(w) => write!(f, "HeapSingle({:?})", w.as_ptr()),
             PtrKind::StackArray(w) => write!(f, "StackArray({:?})", w.as_ptr()),
             PtrKind::HeapArray(w) => write!(f, "HeapArray({:?})", w.as_ptr()),
-            PtrKind::Reinterpreted(view) => {
-                write!(f, "Reinterpreted(0x{:x})", view.alloc.address())
+            PtrKind::Reinterpreted(data) => {
+                write!(f, "Reinterpreted(0x{:x})", data.alloc.address())
             }
         }
     }
@@ -100,7 +100,7 @@ impl<T> Clone for PtrKind<T> {
             PtrKind::HeapSingle(weak) => PtrKind::HeapSingle(weak.clone()),
             PtrKind::StackArray(weak) => PtrKind::StackArray(weak.clone()),
             PtrKind::HeapArray(weak) => PtrKind::HeapArray(weak.clone()),
-            PtrKind::Reinterpreted(view) => PtrKind::Reinterpreted(Rc::clone(view)),
+            PtrKind::Reinterpreted(data) => PtrKind::Reinterpreted(Rc::clone(data)),
         }
     }
 }
@@ -112,7 +112,7 @@ impl<T> PtrKind<T> {
             PtrKind::StackSingle(w) | PtrKind::HeapSingle(w) => w.as_ptr() as usize,
             PtrKind::Vec(w) => w.as_ptr() as usize,
             PtrKind::StackArray(w) | PtrKind::HeapArray(w) => w.as_ptr() as usize,
-            PtrKind::Reinterpreted(view) => view.alloc.address(),
+            PtrKind::Reinterpreted(data) => data.alloc.address(),
         }
     }
 }
@@ -258,7 +258,7 @@ impl<T> Ptr<T> {
     #[inline]
     fn elem_step(&self) -> usize {
         match &self.kind {
-            PtrKind::Reinterpreted(view) => view.elem_byte_size,
+            PtrKind::Reinterpreted(data) => data.elem_byte_size,
             _ => 1,
         }
     }
@@ -272,7 +272,7 @@ impl<T> Ptr<T> {
             PtrKind::StackArray(weak) | PtrKind::HeapArray(weak) => {
                 weak.upgrade().expect("ub: dangling pointer").borrow().len()
             }
-            PtrKind::Reinterpreted(view) => view.alloc.total_byte_len() / view.elem_byte_size,
+            PtrKind::Reinterpreted(data) => data.alloc.total_byte_len() / data.elem_byte_size,
         }
     }
 
@@ -291,7 +291,7 @@ impl<T> Ptr<T> {
                 .expect("ub: dangling pointer")
                 .borrow()
                 .is_empty(),
-            PtrKind::Reinterpreted(view) => self.offset >= view.alloc.total_byte_len(),
+            PtrKind::Reinterpreted(data) => self.offset >= data.alloc.total_byte_len(),
         }
     }
 
@@ -346,8 +346,8 @@ impl<T> Ptr<T> {
                 rc: weak.upgrade().expect("ub: dangling pointer"),
                 offset: self.offset,
             },
-            PtrKind::Reinterpreted(view) => StrongPtr::Reinterpreted {
-                alloc: Rc::clone(&view.alloc),
+            PtrKind::Reinterpreted(data) => StrongPtr::Reinterpreted {
+                alloc: Rc::clone(&data.alloc),
                 byte_offset: self.offset,
                 cell: RefCell::new(None),
             },
@@ -372,10 +372,10 @@ impl<T> Ptr<T> {
                 let rc = weak.upgrade().expect("ub: dangling pointer");
                 rc.borrow_mut()[self.offset] = value;
             }
-            PtrKind::Reinterpreted(view) => {
+            PtrKind::Reinterpreted(data) => {
                 let mut buf = vec![0u8; T::byte_size()];
                 value.to_bytes(&mut buf);
-                view.alloc.write_bytes(self.offset, &buf);
+                data.alloc.write_bytes(self.offset, &buf);
             }
         }
     }
@@ -417,7 +417,7 @@ impl<T> Ptr<T> {
                 Rc::new(SliceOriginalAlloc { weak: weak.clone() }),
                 src_byte_off,
             ),
-            PtrKind::Reinterpreted(view) => (Rc::clone(&view.alloc), self.offset),
+            PtrKind::Reinterpreted(data) => (Rc::clone(&data.alloc), self.offset),
         };
 
         Ptr {
@@ -452,13 +452,13 @@ impl<T> Ptr<T> {
                 let mut borrow = rc.borrow_mut();
                 f(&mut borrow[self.offset])
             }
-            PtrKind::Reinterpreted(view) => {
+            PtrKind::Reinterpreted(data) => {
                 let mut buf = vec![0u8; T::byte_size()];
-                view.alloc.read_bytes(self.offset, &mut buf);
+                data.alloc.read_bytes(self.offset, &mut buf);
                 let mut val = T::from_bytes(&buf);
                 let ret = f(&mut val);
                 val.to_bytes(&mut buf);
-                view.alloc.write_bytes(self.offset, &buf);
+                data.alloc.write_bytes(self.offset, &buf);
                 ret
             }
         }
@@ -485,9 +485,9 @@ impl<T> Ptr<T> {
                 let borrow = rc.borrow();
                 f(&borrow[self.offset])
             }
-            PtrKind::Reinterpreted(view) => {
+            PtrKind::Reinterpreted(data) => {
                 let mut buf = vec![0u8; T::byte_size()];
-                view.alloc.read_bytes(self.offset, &mut buf);
+                data.alloc.read_bytes(self.offset, &mut buf);
                 let val = T::from_bytes(&buf);
                 f(&val)
             }
@@ -512,9 +512,9 @@ impl<T: Clone + ByteRepr> Ptr<T> {
             PtrKind::StackArray(ref weak) | PtrKind::HeapArray(ref weak) => {
                 weak.upgrade().expect("ub: dangling pointer").borrow()[self.offset].clone()
             }
-            PtrKind::Reinterpreted(ref view) => {
+            PtrKind::Reinterpreted(ref data) => {
                 let mut buf = vec![0u8; T::byte_size()];
-                view.alloc.read_bytes(self.offset, &mut buf);
+                data.alloc.read_bytes(self.offset, &mut buf);
                 T::from_bytes(&buf)
             }
         }
@@ -909,7 +909,7 @@ impl<T> fmt::Debug for Ptr<T> {
                 (Weak::as_ptr(w) as usize).wrapping_add(self.byte_offset())
             }
             PtrKind::Vec(w) => (Weak::as_ptr(w) as usize).wrapping_add(self.byte_offset()),
-            PtrKind::Reinterpreted(view) => view.alloc.address().wrapping_add(self.byte_offset()),
+            PtrKind::Reinterpreted(data) => data.alloc.address().wrapping_add(self.byte_offset()),
         };
         write!(f, "0x{:x}", addr)
     }
@@ -1005,9 +1005,9 @@ impl Ptr<u8> {
                 let raw = strong.borrow();
                 raw[start..end].to_vec()
             }
-            PtrKind::Reinterpreted(ref view) => {
+            PtrKind::Reinterpreted(ref data) => {
                 let mut buf = vec![0u8; end.wrapping_sub(start)];
-                view.alloc.read_bytes(start, &mut buf);
+                data.alloc.read_bytes(start, &mut buf);
                 buf
             }
         }
