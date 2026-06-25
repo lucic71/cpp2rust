@@ -28,7 +28,21 @@ pub struct node_b {
     pub data: Value<AnyPtr>,
     pub next: Value<Ptr<node_b>>,
 }
-impl ByteRepr for node_b {}
+impl ByteRepr for node_b {
+    fn byte_size() -> usize {
+        16
+    }
+    fn to_bytes(&self, buf: &mut [u8]) {
+        (*self.data.borrow()).to_bytes(&mut buf[0..8]);
+        (*self.next.borrow()).to_bytes(&mut buf[8..16]);
+    }
+    fn from_bytes(buf: &[u8]) -> Self {
+        Self {
+            data: Rc::new(RefCell::new(<AnyPtr>::from_bytes(&buf[0..8]))),
+            next: Rc::new(RefCell::new(<Ptr<node_b>>::from_bytes(&buf[8..16]))),
+        }
+    }
+}
 pub fn main() {
     std::process::exit(main_0());
 }

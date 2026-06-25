@@ -22,16 +22,27 @@ impl From<i32> for Kind_enum {
     }
 }
 libcc2rs::impl_enum_inc_dec!(Kind_enum);
+impl ByteRepr for Kind_enum {
+    fn byte_size() -> usize {
+        4
+    }
+    fn to_bytes(&self, buf: &mut [u8]) {
+        (*self as i32).to_bytes(buf);
+    }
+    fn from_bytes(buf: &[u8]) -> Self {
+        <Kind_enum>::from(i32::from_bytes(buf))
+    }
+}
 #[derive(Clone)]
 pub struct anon_0 {
     __store: libcc2rs::UnionStorage,
 }
 impl anon_0 {
     pub fn obj(&self) -> Ptr<AnyPtr> {
-        self.__store.reinterpret(0)
+        self.__store.reinterpret_sized(0, 8)
     }
     pub fn code(&self) -> Ptr<i32> {
-        self.__store.reinterpret(0)
+        self.__store.reinterpret_sized(0, 4)
     }
 }
 impl Default for anon_0 {
@@ -60,7 +71,23 @@ pub struct Event {
     pub handle: Value<AnyPtr>,
     pub payload: Value<anon_0>,
 }
-impl ByteRepr for Event {}
+impl ByteRepr for Event {
+    fn byte_size() -> usize {
+        24
+    }
+    fn to_bytes(&self, buf: &mut [u8]) {
+        (*self.kind.borrow()).to_bytes(&mut buf[0..4]);
+        (*self.handle.borrow()).to_bytes(&mut buf[8..16]);
+        (*self.payload.borrow()).to_bytes(&mut buf[16..24]);
+    }
+    fn from_bytes(buf: &[u8]) -> Self {
+        Self {
+            kind: Rc::new(RefCell::new(<Kind_enum>::from_bytes(&buf[0..4]))),
+            handle: Rc::new(RefCell::new(<AnyPtr>::from_bytes(&buf[8..16]))),
+            payload: Rc::new(RefCell::new(<anon_0>::from_bytes(&buf[16..24]))),
+        }
+    }
+}
 pub fn main() {
     std::process::exit(main_0());
 }

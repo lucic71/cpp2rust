@@ -101,7 +101,23 @@ pub struct Entry {
     pub color: Value<Color>,
     pub opt: Value<Option>,
 }
-impl ByteRepr for Entry {}
+impl ByteRepr for Entry {
+    fn byte_size() -> usize {
+        16
+    }
+    fn to_bytes(&self, buf: &mut [u8]) {
+        (*self.name.borrow()).to_bytes(&mut buf[0..8]);
+        (*self.color.borrow()).to_bytes(&mut buf[8..12]);
+        (*self.opt.borrow()).to_bytes(&mut buf[12..16]);
+    }
+    fn from_bytes(buf: &[u8]) -> Self {
+        Self {
+            name: Rc::new(RefCell::new(<Ptr<u8>>::from_bytes(&buf[0..8]))),
+            color: Rc::new(RefCell::new(<Color>::from_bytes(&buf[8..12]))),
+            opt: Rc::new(RefCell::new(<Option>::from_bytes(&buf[12..16]))),
+        }
+    }
+}
 thread_local!(
     pub static global_color_0: Value<Color> = Rc::new(RefCell::new(Color::GREEN));
 );

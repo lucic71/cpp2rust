@@ -77,7 +77,19 @@ impl Clone for X3 {
         this
     }
 }
-impl ByteRepr for X3 {}
+impl ByteRepr for X3 {
+    fn byte_size() -> usize {
+        8
+    }
+    fn to_bytes(&self, buf: &mut [u8]) {
+        (*self.v.borrow()).to_bytes(&mut buf[0..8]);
+    }
+    fn from_bytes(buf: &[u8]) -> Self {
+        Self {
+            v: Rc::new(RefCell::new(<Ptr<X2>>::from_bytes(&buf[0..8]))),
+        }
+    }
+}
 #[derive(Default)]
 pub struct X4 {
     pub v: Value<X3>,
@@ -95,7 +107,19 @@ impl Clone for X4 {
         this
     }
 }
-impl ByteRepr for X4 {}
+impl ByteRepr for X4 {
+    fn byte_size() -> usize {
+        8
+    }
+    fn to_bytes(&self, buf: &mut [u8]) {
+        (*self.v.borrow()).to_bytes(&mut buf[0..8]);
+    }
+    fn from_bytes(buf: &[u8]) -> Self {
+        Self {
+            v: Rc::new(RefCell::new(<X3>::from_bytes(&buf[0..8]))),
+        }
+    }
+}
 pub fn main() {
     std::process::exit(main_0());
 }

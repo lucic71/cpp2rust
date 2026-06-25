@@ -51,7 +51,21 @@ pub struct Node {
     pub value: Value<i32>,
     pub next: Value<Ptr<Node>>,
 }
-impl ByteRepr for Node {}
+impl ByteRepr for Node {
+    fn byte_size() -> usize {
+        16
+    }
+    fn to_bytes(&self, buf: &mut [u8]) {
+        (*self.value.borrow()).to_bytes(&mut buf[0..4]);
+        (*self.next.borrow()).to_bytes(&mut buf[8..16]);
+    }
+    fn from_bytes(buf: &[u8]) -> Self {
+        Self {
+            value: Rc::new(RefCell::new(<i32>::from_bytes(&buf[0..4]))),
+            next: Rc::new(RefCell::new(<Ptr<Node>>::from_bytes(&buf[8..16]))),
+        }
+    }
+}
 #[derive(Clone, Copy, PartialEq, Debug, Default)]
 enum Color {
     #[default]

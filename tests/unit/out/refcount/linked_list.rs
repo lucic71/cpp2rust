@@ -26,7 +26,21 @@ impl Clone for Node {
         this
     }
 }
-impl ByteRepr for Node {}
+impl ByteRepr for Node {
+    fn byte_size() -> usize {
+        16
+    }
+    fn to_bytes(&self, buf: &mut [u8]) {
+        (*self.val.borrow()).to_bytes(&mut buf[0..4]);
+        (*self.next.borrow()).to_bytes(&mut buf[8..16]);
+    }
+    fn from_bytes(buf: &[u8]) -> Self {
+        Self {
+            val: Rc::new(RefCell::new(<i32>::from_bytes(&buf[0..4]))),
+            next: Rc::new(RefCell::new(<Ptr<Node>>::from_bytes(&buf[8..16]))),
+        }
+    }
+}
 pub fn Find_0(head: Ptr<Node>, idx: i32) -> Ptr<Node> {
     let head: Value<Ptr<Node>> = Rc::new(RefCell::new(head));
     let idx: Value<i32> = Rc::new(RefCell::new(idx));
