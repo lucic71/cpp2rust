@@ -203,6 +203,9 @@ bool TypeImplementsByteRepr(clang::QualType qt) {
   if (qt->isIntegerType() || qt->isFloatingType()) {
     return true;
   }
+  if (qt->isPointerType()) {
+    return true;
+  }
   if (const auto *arr = qt->getAsArrayTypeUnsafe()) {
     return TypeImplementsByteRepr(arr->getElementType());
   }

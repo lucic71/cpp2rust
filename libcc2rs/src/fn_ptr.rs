@@ -158,6 +158,9 @@ impl<T: 'static> ErasedPtr for FnPtr<T> {
     fn is_null(&self) -> bool {
         FnPtr::is_null(self)
     }
+    fn address(&self) -> usize {
+        self.original.as_ref().map_or(0, |f| f.addr())
+    }
 }
 
 impl<T: 'static> FnPtr<T> {

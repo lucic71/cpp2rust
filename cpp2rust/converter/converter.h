@@ -50,7 +50,7 @@ public:
 
   virtual void EmitFilePreamble();
 
-  static std::string EmitOpaqueRecords();
+  static std::string EmitOpaqueRecords(bool emit_byte_repr);
 
   virtual bool VisitBuiltinType(clang::BuiltinType *type);
 

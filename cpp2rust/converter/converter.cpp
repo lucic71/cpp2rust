@@ -55,12 +55,15 @@ use std::rc::Rc;
 )");
 }
 
-std::string Converter::EmitOpaqueRecords() {
+std::string Converter::EmitOpaqueRecords(bool emit_byte_repr) {
   std::string out;
   record_decls_.ForEachUndefined([&](const std::string &name) {
     out += "pub struct ";
     out += name;
     out += ";\n";
+    if (emit_byte_repr) {
+      out += "impl ByteRepr for " + name + " {}\n";
+    }
   });
   return out;
 }

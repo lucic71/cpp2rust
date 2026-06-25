@@ -1048,6 +1048,7 @@ pub(crate) trait ErasedPtr: std::any::Any {
     fn as_any(&self) -> &dyn std::any::Any;
     fn equals(&self, other: &dyn ErasedPtr) -> bool;
     fn is_null(&self) -> bool;
+    fn address(&self) -> usize;
 }
 
 impl PartialEq for dyn ErasedPtr {
@@ -1075,6 +1076,10 @@ where
 
     fn is_null(&self) -> bool {
         Ptr::is_null(self)
+    }
+
+    fn address(&self) -> usize {
+        self.kind.address().wrapping_add(self.byte_offset())
     }
 }
 
@@ -1213,7 +1218,73 @@ impl<T: ?Sized> AsPointerDyn<T> for Rc<RefCell<T>> {
     }
 }
 
-impl<T: 'static> ByteRepr for Ptr<T> {}
+thread_local! {
+    // address -> the live pointer at that address (key 0 is null, never stored)
+    static PTR_REGISTRY: RefCell<HashMap<usize, AnyPtr>> = RefCell::new(HashMap::new());
+}
+
+fn register_ptr(ptr: AnyPtr) -> usize {
+    let addr = ptr.ptr.address();
+    PTR_REGISTRY.with(|reg| reg.borrow_mut().insert(addr, ptr));
+    addr
+}
+
+fn lookup_ptr(addr: usize) -> AnyPtr {
+    PTR_REGISTRY.with(|reg| {
+        reg.borrow()
+            .get(&addr)
+            .cloned()
+            .expect("ub: unregistered pointer")
+    })
+}
+
+fn ptr_to_bytes(addr: usize, buf: &mut [u8]) {
+    buf[..std::mem::size_of::<usize>()].copy_from_slice(&addr.to_ne_bytes());
+}
+
+fn ptr_from_bytes(buf: &[u8]) -> usize {
+    let mut a = [0u8; std::mem::size_of::<usize>()];
+    a.copy_from_slice(&buf[..std::mem::size_of::<usize>()]);
+    usize::from_ne_bytes(a)
+}
+
+impl<T: ByteRepr> ByteRepr for Ptr<T> {
+    fn byte_size() -> usize {
+        std::mem::size_of::<usize>()
+    }
+
+    fn to_bytes(&self, buf: &mut [u8]) {
+        let addr = if self.is_null() { 0 } else { register_ptr(self.clone().to_any()) };
+        ptr_to_bytes(addr, buf);
+    }
+
+    fn from_bytes(buf: &[u8]) -> Self {
+        let addr = ptr_from_bytes(buf);
+        if addr == 0 {
+            return Ptr::null();
+        }
+        lookup_ptr(addr).reinterpret_cast::<T>()
+    }
+}
+
+impl ByteRepr for AnyPtr {
+    fn byte_size() -> usize {
+        std::mem::size_of::<usize>()
+    }
+
+    fn to_bytes(&self, buf: &mut [u8]) {
+        let addr = if self.ptr.is_null() { 0 } else { register_ptr(self.clone()) };
+        ptr_to_bytes(addr, buf);
+    }
+
+    fn from_bytes(buf: &[u8]) -> Self {
+        let addr = ptr_from_bytes(buf);
+        if addr == 0 {
+            return AnyPtr::default();
+        }
+        lookup_ptr(addr)
+    }
+}
 
 impl<T> Ptr<T> {
     pub(crate) fn reinterpreted_sized(
