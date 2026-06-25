@@ -1493,6 +1493,28 @@ bool ConverterRefCount::VisitInitListExpr(clang::InitListExpr *expr) {
   return false;
 }
 
+void ConverterRefCount::ConvertUnionMemberAccessor(clang::MemberExpr *expr) {
+  std::string str;
+  {
+    Buffer buf(*this);
+    PushExprKind push(*this, isLValue() ? ExprKind::LValue : ExprKind::RValue);
+    Converter::ConvertMemberExpr(expr);
+    str = std::move(buf).str();
+  }
+  str += "()";
+
+  if (isAddrOf()) {
+    StrCat(str);
+    computed_expr_type_ = ComputedExprType::Pointer;
+    return;
+  }
+  if (isLValue()) {
+    pending_deref_.set(str);
+    return;
+  }
+  StrCat(DerefPtrExpr(str, expr->getMemberDecl()->getType()));
+}
+
 bool ConverterRefCount::VisitMemberExpr(clang::MemberExpr *expr) {
   auto *member = expr->getMemberDecl();
   bool known = Mapper::Contains(expr);
@@ -1515,26 +1537,7 @@ bool ConverterRefCount::VisitMemberExpr(clang::MemberExpr *expr) {
   if (auto *parent =
           clang::dyn_cast<clang::RecordDecl>(member->getDeclContext());
       parent && parent->isUnion() && clang::isa<clang::FieldDecl>(member)) {
-    std::string str;
-    {
-      Buffer buf(*this);
-      PushExprKind push(*this,
-                        isLValue() ? ExprKind::LValue : ExprKind::RValue);
-      Converter::ConvertMemberExpr(expr);
-      str = std::move(buf).str();
-    }
-    str += "()";
-
-    if (isAddrOf()) {
-      StrCat(str);
-      computed_expr_type_ = ComputedExprType::Pointer;
-      return false;
-    }
-    if (isLValue()) {
-      pending_deref_.set(str);
-      return false;
-    }
-    StrCat(DerefPtrExpr(str, member->getType()));
+    ConvertUnionMemberAccessor(expr);
     return false;
   }
 

@@ -105,6 +105,8 @@ public:
 
   bool VisitMemberExpr(clang::MemberExpr *expr) override;
 
+  void ConvertUnionMemberAccessor(clang::MemberExpr *expr);
+
   bool VisitCXXNewExpr(clang::CXXNewExpr *expr) override;
 
   bool VisitCXXDeleteExpr(clang::CXXDeleteExpr *expr) override;
