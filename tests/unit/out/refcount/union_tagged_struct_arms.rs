@@ -112,7 +112,7 @@ impl Clone for anon_0 {
 impl Default for anon_0 {
     fn default() -> Self {
         anon_0 {
-            __bytes: Rc::new(RefCell::new(vec![0u8; 40].into_boxed_slice())),
+            __bytes: Rc::new(RefCell::new(Box::from([0u8; 40]))),
         }
     }
 }

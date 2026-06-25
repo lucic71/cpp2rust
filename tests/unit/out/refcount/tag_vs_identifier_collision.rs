@@ -87,7 +87,7 @@ impl Clone for point {
 impl Default for point {
     fn default() -> Self {
         point {
-            __bytes: Rc::new(RefCell::new(vec![0u8; 4].into_boxed_slice())),
+            __bytes: Rc::new(RefCell::new(Box::from([0u8; 4]))),
         }
     }
 }
@@ -113,7 +113,7 @@ impl Clone for slot_union {
 impl Default for slot_union {
     fn default() -> Self {
         slot_union {
-            __bytes: Rc::new(RefCell::new(vec![0u8; 4].into_boxed_slice())),
+            __bytes: Rc::new(RefCell::new(Box::from([0u8; 4]))),
         }
     }
 }

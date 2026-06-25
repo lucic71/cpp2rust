@@ -445,14 +445,12 @@ void ConverterRefCount::AddCloneTrait(const clang::RecordDecl *decl) {
   auto record_name = GetRecordName(decl);
 
   if (decl->isUnion()) {
-    StrCat(std::format("impl Clone for {}", record_name));
+    StrCat("impl Clone for", record_name);
     PushBrace impl_brace(*this);
     StrCat("fn clone(&self) -> Self");
     PushBrace fn_brace(*this);
-    StrCat(
-        std::format("{} {{ __bytes: "
-                    "Rc::new(RefCell::new(self.__bytes.borrow().clone())) }}",
-                    record_name));
+    StrCat(record_name,
+           "{ __bytes: Rc::new(RefCell::new(self.__bytes.borrow().clone())) }");
     return;
   }
 
@@ -483,14 +481,13 @@ void ConverterRefCount::AddDefaultTrait(const clang::RecordDecl *decl) {
 
 void ConverterRefCount::AddDefaultTraitForUnion(const clang::RecordDecl *decl) {
   auto name = GetRecordName(decl);
-  StrCat(std::format("impl Default for {}", name));
+  StrCat("impl Default for", name);
   PushBrace impl_brace(*this);
   StrCat("fn default() -> Self");
   PushBrace fn_brace(*this);
-  StrCat(std::format("{} {{ __bytes: Rc::new(RefCell::new(vec![0u8; "
-                     "{}].into_boxed_slice())) }}",
-                     name,
-                     ctx_.getASTRecordLayout(decl).getSize().getQuantity()));
+  StrCat(std::format(
+      "{} {{ __bytes: Rc::new(RefCell::new(Box::from([0u8; {}]))) }}", name,
+      ctx_.getASTRecordLayout(decl).getSize().getQuantity()));
 }
 
 void ConverterRefCount::EmitRustUnion(clang::RecordDecl *decl) {
@@ -502,7 +499,7 @@ void ConverterRefCount::EmitRustUnion(clang::RecordDecl *decl) {
 
   StrCat(std::format("pub struct {} {{ __bytes: Value<Box<[u8]>> }}", name));
 
-  StrCat(std::format("impl {}", name));
+  StrCat("impl", name);
   {
     PushBrace impl_brace(*this);
     for (auto *field : decl->fields()) {

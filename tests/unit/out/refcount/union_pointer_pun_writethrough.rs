@@ -32,7 +32,7 @@ fn main_0() -> i32 {
     impl Default for anon_0 {
         fn default() -> Self {
             anon_0 {
-                __bytes: Rc::new(RefCell::new(vec![0u8; 8].into_boxed_slice())),
+                __bytes: Rc::new(RefCell::new(Box::from([0u8; 8]))),
             }
         }
     }

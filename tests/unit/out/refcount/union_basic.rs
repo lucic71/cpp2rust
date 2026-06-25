@@ -27,7 +27,7 @@ impl Clone for basic {
 impl Default for basic {
     fn default() -> Self {
         basic {
-            __bytes: Rc::new(RefCell::new(vec![0u8; 4].into_boxed_slice())),
+            __bytes: Rc::new(RefCell::new(Box::from([0u8; 4]))),
         }
     }
 }
