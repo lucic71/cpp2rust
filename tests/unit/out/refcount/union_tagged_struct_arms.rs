@@ -122,14 +122,42 @@ impl Default for anon_0 {
         }
     }
 }
-impl ByteRepr for anon_0 {}
+impl ByteRepr for anon_0 {
+    fn byte_size() -> usize {
+        40
+    }
+    fn to_bytes(&self, buf: &mut [u8]) {
+        buf.copy_from_slice(&self.__bytes.borrow());
+    }
+    fn from_bytes(buf: &[u8]) -> Self {
+        anon_0 {
+            __bytes: Rc::new(RefCell::new(Box::from(buf))),
+        }
+    }
+}
 #[derive(Default)]
 pub struct Branch {
     pub choice: Value<Choice_enum>,
     pub index: Value<i32>,
     pub v: Value<anon_0>,
 }
-impl ByteRepr for Branch {}
+impl ByteRepr for Branch {
+    fn byte_size() -> usize {
+        48
+    }
+    fn to_bytes(&self, buf: &mut [u8]) {
+        (*self.choice.borrow()).to_bytes(&mut buf[0..4]);
+        (*self.index.borrow()).to_bytes(&mut buf[4..8]);
+        (*self.v.borrow()).to_bytes(&mut buf[8..48]);
+    }
+    fn from_bytes(buf: &[u8]) -> Self {
+        Self {
+            choice: Rc::new(RefCell::new(<Choice_enum>::from_bytes(&buf[0..4]))),
+            index: Rc::new(RefCell::new(<i32>::from_bytes(&buf[4..8]))),
+            v: Rc::new(RefCell::new(<anon_0>::from_bytes(&buf[8..48]))),
+        }
+    }
+}
 pub fn main() {
     std::process::exit(main_0());
 }
