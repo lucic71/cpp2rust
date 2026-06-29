@@ -213,7 +213,7 @@ bool TypeImplementsByteRepr(clang::QualType qt) {
       return false;
     }
     if (rd->isUnion()) {
-      return false;
+      return true;
     }
     for (const auto *field : rd->fields()) {
       if (!TypeImplementsByteRepr(field->getType())) {

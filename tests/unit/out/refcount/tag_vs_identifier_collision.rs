@@ -97,7 +97,19 @@ impl Default for point {
         }
     }
 }
-impl ByteRepr for point {}
+impl ByteRepr for point {
+    fn byte_size() -> usize {
+        4
+    }
+    fn to_bytes(&self, buf: &mut [u8]) {
+        buf.copy_from_slice(&self.__bytes.borrow());
+    }
+    fn from_bytes(buf: &[u8]) -> Self {
+        point {
+            __bytes: Rc::new(RefCell::new(Box::from(buf))),
+        }
+    }
+}
 pub struct slot_union {
     __bytes: Value<Box<[u8]>>,
 }
@@ -123,7 +135,19 @@ impl Default for slot_union {
         }
     }
 }
-impl ByteRepr for slot_union {}
+impl ByteRepr for slot_union {
+    fn byte_size() -> usize {
+        4
+    }
+    fn to_bytes(&self, buf: &mut [u8]) {
+        buf.copy_from_slice(&self.__bytes.borrow());
+    }
+    fn from_bytes(buf: &[u8]) -> Self {
+        slot_union {
+            __bytes: Rc::new(RefCell::new(Box::from(buf))),
+        }
+    }
+}
 #[derive(Clone, Copy, PartialEq, Debug, Default)]
 enum slot {
     #[default]

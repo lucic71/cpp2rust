@@ -36,7 +36,19 @@ fn main_0() -> i32 {
             }
         }
     }
-    impl ByteRepr for anon_0 {};
+    impl ByteRepr for anon_0 {
+        fn byte_size() -> usize {
+            8
+        }
+        fn to_bytes(&self, buf: &mut [u8]) {
+            buf.copy_from_slice(&self.__bytes.borrow());
+        }
+        fn from_bytes(buf: &[u8]) -> Self {
+            anon_0 {
+                __bytes: Rc::new(RefCell::new(Box::from(buf))),
+            }
+        }
+    };
     let pp: Value<anon_0> = <Value<anon_0>>::default();
     (*pp.borrow_mut()).as_signed().write((x.as_pointer()));
     ((*pp.borrow()).as_unsigned().read()).write(42_u64);
