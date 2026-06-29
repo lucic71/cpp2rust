@@ -31,7 +31,19 @@ impl Default for basic {
         }
     }
 }
-impl ByteRepr for basic {}
+impl ByteRepr for basic {
+    fn byte_size() -> usize {
+        4
+    }
+    fn to_bytes(&self, buf: &mut [u8]) {
+        buf.copy_from_slice(&self.__bytes.borrow());
+    }
+    fn from_bytes(buf: &[u8]) -> Self {
+        basic {
+            __bytes: Rc::new(RefCell::new(Box::from(buf))),
+        }
+    }
+}
 pub fn main() {
     std::process::exit(main_0());
 }
