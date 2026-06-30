@@ -53,7 +53,19 @@ impl Clone for Command {
         this
     }
 }
-impl ByteRepr for Command {}
+impl ByteRepr for Command {
+    fn byte_size() -> usize {
+        8
+    }
+    fn to_bytes(&self, buf: &mut [u8]) {
+        (*self.data.borrow()).to_bytes(&mut buf[0..8]);
+    }
+    fn from_bytes(buf: &[u8]) -> Self {
+        Self {
+            data: Rc::new(RefCell::new(<AnyPtr>::from_bytes(&buf[0..8]))),
+        }
+    }
+}
 pub fn test_void_ptr_to_fn_3() {
     let cmd: Value<Command> = Rc::new(RefCell::new(<Command>::default()));
     (*(*cmd.borrow()).data.borrow_mut()) = FnPtr::<fn(i32) -> i32>::new(double_it_0).to_any();

@@ -1256,6 +1256,7 @@ impl<T: ?Sized> AsPointerDyn<T> for Rc<RefCell<T>> {
 }
 
 impl<T: 'static> ByteRepr for Ptr<T> {}
+impl ByteRepr for AnyPtr {}
 
 #[cfg(test)]
 mod tests {

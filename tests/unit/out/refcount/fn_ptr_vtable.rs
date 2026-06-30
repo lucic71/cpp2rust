@@ -31,7 +31,27 @@ impl Default for Vtable {
         }
     }
 }
-impl ByteRepr for Vtable {}
+impl ByteRepr for Vtable {
+    fn byte_size() -> usize {
+        24
+    }
+    fn to_bytes(&self, buf: &mut [u8]) {
+        (*self.create.borrow()).to_bytes(&mut buf[0..8]);
+        (*self.get.borrow()).to_bytes(&mut buf[8..16]);
+        (*self.destroy.borrow()).to_bytes(&mut buf[16..24]);
+    }
+    fn from_bytes(buf: &[u8]) -> Self {
+        Self {
+            create: Rc::new(RefCell::new(<FnPtr<fn(i32) -> AnyPtr>>::from_bytes(
+                &buf[0..8],
+            ))),
+            get: Rc::new(RefCell::new(<FnPtr<fn(AnyPtr) -> i32>>::from_bytes(
+                &buf[8..16],
+            ))),
+            destroy: Rc::new(RefCell::new(<FnPtr<fn(AnyPtr)>>::from_bytes(&buf[16..24]))),
+        }
+    }
+}
 thread_local!(
     pub static storage_0: Value<i32> = <Value<i32>>::default();
 );
