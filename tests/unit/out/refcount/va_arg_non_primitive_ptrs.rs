@@ -116,10 +116,7 @@ fn main_0() -> i32 {
         (((({
             dispatch_0(
                 (opt::OPT_FILE as i32),
-                &[((AnyPtr::default())
-                    .cast::<::std::fs::File>()
-                    .expect("ub:wrong type"))
-                .into()],
+                &[((AnyPtr::default()).reinterpret_cast::<::std::fs::File>()).into()],
             )
         }) == 0) as i32)
             != 0)
