@@ -503,10 +503,13 @@ void ConverterRefCount::EmitRustUnion(clang::RecordDecl *decl) {
   {
     PushBrace impl_brace(*this);
     for (auto *field : decl->fields()) {
+      PushConversionKind push(*this, ConversionKind::FullRefCount);
+      std::string storage_ty = ToString(field->getType());
+      Unwrap(storage_ty, "Value<", ">");
       StrCat(std::format(
           "pub fn {}(&self) -> Ptr<{}> {{ (self.__bytes.as_pointer() "
           "as Ptr<u8>).reinterpret_cast() }}",
-          GetNamedDeclAsString(field), Mapper::Map(field->getType())));
+          GetNamedDeclAsString(field), storage_ty));
     }
   }
 
@@ -1310,9 +1313,9 @@ bool ConverterRefCount::VisitExplicitCastExpr(clang::ExplicitCastExpr *expr) {
     } else if (expr->getSubExpr()->getType()->isPointerType() &&
                !expr->getSubExpr()->isNullPointerConstant(
                    ctx_, clang::Expr::NPC_ValueDependentIsNull)) {
-      StrCat(std::format("({}.to_strong().as_pointer() as {})",
+      StrCat(std::format("{}.reinterpret_cast::<{}>()",
                          ToString(expr->getSubExpr()),
-                         ToString(expr->getType())));
+                         ConvertPointeeType(expr->getType())));
       return false;
     }
     return Converter::VisitExplicitCastExpr(expr);
@@ -1499,6 +1502,7 @@ bool ConverterRefCount::VisitInitListExpr(clang::InitListExpr *expr) {
 }
 
 void ConverterRefCount::ConvertUnionMemberAccessor(clang::MemberExpr *expr) {
+  auto member = expr->getMemberDecl();
   std::string str;
   {
     Buffer buf(*this);
@@ -1509,15 +1513,24 @@ void ConverterRefCount::ConvertUnionMemberAccessor(clang::MemberExpr *expr) {
   str += "()";
 
   if (isAddrOf()) {
-    StrCat(str);
+    if (member->getType()->isArrayType()) {
+      PushConversionKind push(*this, ConversionKind::Unboxed);
+      StrCat(std::format(
+          "{}.reinterpret_cast::<{}>()", str,
+          ToString(
+              member->getType()->getAsArrayTypeUnsafe()->getElementType())));
+    } else {
+      StrCat(str);
+    }
     computed_expr_type_ = ComputedExprType::Pointer;
     return;
   }
+
   if (isLValue()) {
     pending_deref_.set(str);
     return;
   }
-  StrCat(DerefPtrExpr(str, expr->getMemberDecl()->getType()));
+  StrCat(DerefPtrExpr(str, member->getType()));
 }
 
 bool ConverterRefCount::VisitMemberExpr(clang::MemberExpr *expr) {
@@ -2071,7 +2084,7 @@ bool ConverterRefCount::ConvertCXXOperatorCallExpr(
       StrCat(
           std::format("{}.as_ref().unwrap()", ConvertRValue(expr->getArg(0))));
       if (isAddrOf()) {
-        StrCat(std::format(".as_pointer().offset(({}) as isize)",
+        StrCat(std::format(".as_pointer().offset(({}))",
                            ConvertRValue(expr->getArg(1))));
       } else {
         if (isRValue()) {
@@ -2091,7 +2104,7 @@ bool ConverterRefCount::ConvertCXXOperatorCallExpr(
 
     if (isLValue()) {
       PushConversionKind push_ck(*this, ConversionKind::Unboxed);
-      pending_deref_.set(std::format("({} as {}).offset({} as isize)",
+      pending_deref_.set(std::format("({} as {}).offset({})",
                                      ConvertObject(expr->getArg(0)),
                                      ConvertPtrType(expr->getArg(0)->getType()),
                                      ConvertRValue(expr->getArg(1))),
@@ -2111,7 +2124,7 @@ bool ConverterRefCount::ConvertCXXOperatorCallExpr(
       }
 
       PushConversionKind push(*this, ConversionKind::Unboxed);
-      StrCat(std::format("({} as {}).offset({} as isize)",
+      StrCat(std::format("({} as {}).offset({})",
                          ConvertObject(expr->getArg(0)),
                          ConvertPtrType(expr->getArg(0)->getType()),
                          ConvertRValue(expr->getArg(1))));
@@ -2162,7 +2175,7 @@ void ConverterRefCount::ConvertArraySubscript(clang::Expr *base,
 
     {
       PushParen paren(*this, is_inner_boxed);
-      StrCat(std::format("({} as {}).offset({} as isize)",
+      StrCat(std::format("({} as {}).offset({})",
                          ToString(base->IgnoreImplicit()),
                          ConvertPtrType(base->IgnoreImplicit()->getType()),
                          ConvertRValue(idx)));

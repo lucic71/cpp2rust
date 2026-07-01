@@ -296,7 +296,11 @@ impl<T> Ptr<T> {
     }
 
     #[inline]
-    pub fn offset(&self, offset: isize) -> Self {
+    pub fn offset(&self, offset: impl TryInto<isize>) -> Self {
+        let offset = offset
+            .try_into()
+            .ok()
+            .expect("the offset must fit in a isize");
         let step = self.elem_step();
         Self {
             kind: self.kind.clone(),
@@ -1205,6 +1209,7 @@ impl<T: ?Sized> AsPointerDyn<T> for Rc<RefCell<T>> {
 }
 
 impl<T: 'static> ByteRepr for Ptr<T> {}
+impl ByteRepr for AnyPtr {}
 
 #[cfg(test)]
 mod tests {

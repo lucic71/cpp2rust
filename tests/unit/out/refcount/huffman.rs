@@ -29,7 +29,25 @@ impl Clone for MinHeapNode {
         this
     }
 }
-impl ByteRepr for MinHeapNode {}
+impl ByteRepr for MinHeapNode {
+    fn byte_size() -> usize {
+        24
+    }
+    fn to_bytes(&self, buf: &mut [u8]) {
+        (*self.data.borrow()).to_bytes(&mut buf[0..1]);
+        (*self.freq.borrow()).to_bytes(&mut buf[4..8]);
+        (*self.left.borrow()).to_bytes(&mut buf[8..16]);
+        (*self.right.borrow()).to_bytes(&mut buf[16..24]);
+    }
+    fn from_bytes(buf: &[u8]) -> Self {
+        Self {
+            data: Rc::new(RefCell::new(<u8>::from_bytes(&buf[0..1]))),
+            freq: Rc::new(RefCell::new(<i32>::from_bytes(&buf[4..8]))),
+            left: Rc::new(RefCell::new(<Ptr<MinHeapNode>>::from_bytes(&buf[8..16]))),
+            right: Rc::new(RefCell::new(<Ptr<MinHeapNode>>::from_bytes(&buf[16..24]))),
+        }
+    }
+}
 pub fn Swap_0(a: Ptr<MinHeapNode>, b: Ptr<MinHeapNode>) {
     let t: Value<MinHeapNode> = Rc::new(RefCell::new(MinHeapNode {
         data: Rc::new(RefCell::new((*(*a.upgrade().deref()).data.borrow()))),
@@ -83,7 +101,7 @@ impl MinHeap {
             .as_ref()
             .unwrap()
             .as_pointer()
-            .offset(((*self.next.borrow_mut()).postfix_inc() as usize) as isize))
+            .offset(((*self.next.borrow_mut()).postfix_inc() as usize)))
         .clone();
     }
     pub fn Heapify(&self, idx: i32) {
