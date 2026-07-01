@@ -44,6 +44,8 @@ bool IsCharPointerFieldFromLibc(const clang::ValueDecl *decl);
 
 bool IsCharArrayFieldFromLibc(const clang::ValueDecl *decl);
 
+bool IsUnionArrayMember(const clang::Expr *base);
+
 bool IsUserDefinedDecl(const clang::Decl *decl);
 
 bool RefersToUserDefinedDecl(const clang::Expr *expr);
