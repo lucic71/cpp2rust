@@ -45,7 +45,21 @@ impl Clone for Writer {
         this
     }
 }
-impl ByteRepr for Writer {}
+impl ByteRepr for Writer {
+    fn byte_size() -> usize {
+        16
+    }
+    fn to_bytes(&self, buf: &mut [u8]) {
+        (*self.output.borrow()).to_bytes(&mut buf[0..8]);
+        (*self.chunk.borrow()).to_bytes(&mut buf[8..12]);
+    }
+    fn from_bytes(buf: &[u8]) -> Self {
+        Self {
+            output: Rc::new(RefCell::new(<Ptr<Vec<Chunk>>>::from_bytes(&buf[0..8]))),
+            chunk: Rc::new(RefCell::new(<Chunk>::from_bytes(&buf[8..12]))),
+        }
+    }
+}
 #[derive(Default)]
 pub struct JPEGData {
     pub com_data: Value<Vec<Value<Vec<u8>>>>,

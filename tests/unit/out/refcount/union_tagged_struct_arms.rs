@@ -38,7 +38,23 @@ pub struct anon_1 {
     pub count: Value<i64>,
     pub cursor: Value<i64>,
 }
-impl ByteRepr for anon_1 {}
+impl ByteRepr for anon_1 {
+    fn byte_size() -> usize {
+        24
+    }
+    fn to_bytes(&self, buf: &mut [u8]) {
+        (*self.items.borrow()).to_bytes(&mut buf[0..8]);
+        (*self.count.borrow()).to_bytes(&mut buf[8..16]);
+        (*self.cursor.borrow()).to_bytes(&mut buf[16..24]);
+    }
+    fn from_bytes(buf: &[u8]) -> Self {
+        Self {
+            items: Rc::new(RefCell::new(<Ptr<Ptr<u8>>>::from_bytes(&buf[0..8]))),
+            count: Rc::new(RefCell::new(<i64>::from_bytes(&buf[8..16]))),
+            cursor: Rc::new(RefCell::new(<i64>::from_bytes(&buf[16..24]))),
+        }
+    }
+}
 #[derive(Default)]
 pub struct anon_2 {
     pub lo: Value<i32>,
