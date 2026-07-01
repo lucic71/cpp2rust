@@ -503,10 +503,13 @@ void ConverterRefCount::EmitRustUnion(clang::RecordDecl *decl) {
   {
     PushBrace impl_brace(*this);
     for (auto *field : decl->fields()) {
+      PushConversionKind push(*this, ConversionKind::FullRefCount);
+      std::string storage_ty = ToString(field->getType());
+      Unwrap(storage_ty, "Value<", ">");
       StrCat(std::format(
           "pub fn {}(&self) -> Ptr<{}> {{ (self.__bytes.as_pointer() "
           "as Ptr<u8>).reinterpret_cast() }}",
-          GetNamedDeclAsString(field), Mapper::Map(field->getType())));
+          GetNamedDeclAsString(field), storage_ty));
     }
   }
 
@@ -1499,6 +1502,7 @@ bool ConverterRefCount::VisitInitListExpr(clang::InitListExpr *expr) {
 }
 
 void ConverterRefCount::ConvertUnionMemberAccessor(clang::MemberExpr *expr) {
+  auto member = expr->getMemberDecl();
   std::string str;
   {
     Buffer buf(*this);
@@ -1509,15 +1513,24 @@ void ConverterRefCount::ConvertUnionMemberAccessor(clang::MemberExpr *expr) {
   str += "()";
 
   if (isAddrOf()) {
-    StrCat(str);
+    if (member->getType()->isArrayType()) {
+      PushConversionKind push(*this, ConversionKind::Unboxed);
+      StrCat(std::format(
+          "{}.reinterpret_cast::<{}>()", str,
+          ToString(
+              member->getType()->getAsArrayTypeUnsafe()->getElementType())));
+    } else {
+      StrCat(str);
+    }
     computed_expr_type_ = ComputedExprType::Pointer;
     return;
   }
+
   if (isLValue()) {
     pending_deref_.set(str);
     return;
   }
-  StrCat(DerefPtrExpr(str, expr->getMemberDecl()->getType()));
+  StrCat(DerefPtrExpr(str, member->getType()));
 }
 
 bool ConverterRefCount::VisitMemberExpr(clang::MemberExpr *expr) {
