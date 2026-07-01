@@ -41,7 +41,12 @@ fn main_0() -> i32 {
         )
         .cast::<fn(Ptr<u8>, usize, usize, AnyPtr) -> usize>(Some(
             (|a0: Ptr<u8>, a1: usize, a2: usize, a3: AnyPtr| -> usize {
-                libcc2rs::fread_refcount(a0.to_any(), a1, a2, a3.cast::<::std::fs::File>().unwrap())
+                libcc2rs::fread_refcount(
+                    a0.to_any(),
+                    a1,
+                    a2,
+                    a3.reinterpret_cast::<::std::fs::File>(),
+                )
             }) as fn(Ptr<u8>, usize, usize, AnyPtr) -> usize,
         )),
     ));
@@ -56,7 +61,7 @@ fn main_0() -> i32 {
             FnPtr::<fn(Ptr<u8>, usize, usize, AnyPtr) -> usize>::new(my_alternative_fread_0)
                 .cast::<fn(AnyPtr, usize, usize, Ptr<::std::fs::File>) -> usize>(Some(
                 (|a0: AnyPtr, a1: usize, a2: usize, a3: Ptr<::std::fs::File>| -> usize {
-                    my_alternative_fread_0(a0.cast::<u8>().unwrap(), a1, a2, a3.to_any())
+                    my_alternative_fread_0(a0.reinterpret_cast::<u8>(), a1, a2, a3.to_any())
                 }) as fn(AnyPtr, usize, usize, Ptr<::std::fs::File>) -> usize,
             )),
         ));
@@ -195,7 +200,7 @@ fn main_0() -> i32 {
                     a0.to_any(),
                     a1,
                     a2,
-                    a3.cast::<::std::fs::File>().unwrap(),
+                    a3.reinterpret_cast::<::std::fs::File>(),
                 )
             }) as fn(Ptr<u8>, usize, usize, AnyPtr) -> usize,
         )),
@@ -211,7 +216,7 @@ fn main_0() -> i32 {
             FnPtr::<fn(Ptr<u8>, usize, usize, AnyPtr) -> usize>::new(my_alternative_fwrite_1)
                 .cast::<fn(AnyPtr, usize, usize, Ptr<::std::fs::File>) -> usize>(Some(
                 (|a0: AnyPtr, a1: usize, a2: usize, a3: Ptr<::std::fs::File>| -> usize {
-                    my_alternative_fwrite_1(a0.cast::<u8>().unwrap(), a1, a2, a3.to_any())
+                    my_alternative_fwrite_1(a0.reinterpret_cast::<u8>(), a1, a2, a3.to_any())
                 }) as fn(AnyPtr, usize, usize, Ptr<::std::fs::File>) -> usize,
             )),
         ));
