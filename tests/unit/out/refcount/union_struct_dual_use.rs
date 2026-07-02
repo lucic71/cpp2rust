@@ -40,7 +40,7 @@ impl anon_1 {
     pub fn inner(&self) -> Ptr<Inner> {
         (self.__bytes.as_pointer() as Ptr<u8>).reinterpret_cast()
     }
-    pub fn raw_(&self) -> Ptr<Box<[u8]>> {
+    pub fn raw_(&self) -> Ptr<u8> {
         (self.__bytes.as_pointer() as Ptr<u8>).reinterpret_cast()
     }
 }
@@ -114,13 +114,21 @@ fn main_0() -> i32 {
             != 0)
     );
     assert!(
-        (((((((*(*outer.borrow()).u.borrow()).raw_().read())[(0) as usize] as u8) as i32) == 3)
-            as i32)
+        ((((((((*(*outer.borrow()).u.borrow())
+            .raw_()
+            .reinterpret_cast::<u8>() as Ptr::<u8>)
+            .offset((0) as isize)
+            .read()) as u8) as i32)
+            == 3) as i32)
             != 0)
     );
     assert!(
-        (((((((*(*outer.borrow()).u.borrow()).raw_().read())[(4) as usize] as u8) as i32) == 4)
-            as i32)
+        ((((((((*(*outer.borrow()).u.borrow())
+            .raw_()
+            .reinterpret_cast::<u8>() as Ptr::<u8>)
+            .offset((4) as isize)
+            .read()) as u8) as i32)
+            == 4) as i32)
             != 0)
     );
     return 0;
