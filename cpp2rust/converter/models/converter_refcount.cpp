@@ -378,7 +378,7 @@ bool ConverterRefCount::VisitArraySubscriptExpr(
     clang::ArraySubscriptExpr *expr) {
   auto *base = expr->getBase();
   if (base->IgnoreCasts()->getType()->isPointerType() ||
-      (isLValue() && IsUnionArrayMember(base))) {
+      IsUnionArrayMember(base)) {
     ConvertPointerSubscript(expr);
   } else {
     if (!base->IgnoreCasts()->getType()->isArrayType()) {
@@ -504,21 +504,16 @@ void ConverterRefCount::EmitRustUnion(clang::RecordDecl *decl) {
   {
     PushBrace impl_brace(*this);
     for (auto *field : decl->fields()) {
-      PushConversionKind push(*this, ConversionKind::FullRefCount);
-      std::string storage_ty = ToString(field->getType());
-      Unwrap(storage_ty, "Value<", ">");
-      if (field->getType()->isArrayType()) {
-        auto byte_size = ctx_.getTypeSize(field->getType()) / 8;
-        StrCat(std::format(
-            "pub fn {}(&self) -> Ptr<{}> {{ (self.__bytes.as_pointer() "
-            "as Ptr<u8>).reinterpret_sized({}) }}",
-            GetNamedDeclAsString(field), storage_ty, byte_size));
-      } else {
-        StrCat(std::format(
-            "pub fn {}(&self) -> Ptr<{}> {{ (self.__bytes.as_pointer() "
-            "as Ptr<u8>).reinterpret_cast() }}",
-            GetNamedDeclAsString(field), storage_ty));
-      }
+      PushConversionKind push(*this, ConversionKind::Unboxed);
+      auto ty =
+          field->getType()->isArrayType()
+              ? ToString(
+                    field->getType()->getAsArrayTypeUnsafe()->getElementType())
+              : ToString(field->getType());
+      StrCat(std::format(
+          "pub fn {}(&self) -> Ptr<{}> {{ (self.__bytes.as_pointer() "
+          "as Ptr<u8>).reinterpret_cast() }}",
+          GetNamedDeclAsString(field), ty));
     }
   }
 
