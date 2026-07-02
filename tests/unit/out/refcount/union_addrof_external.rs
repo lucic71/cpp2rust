@@ -51,8 +51,8 @@ impl anon_0 {
     pub fn h(&self) -> Ptr<record> {
         (self.__bytes.as_pointer() as Ptr<u8>).reinterpret_cast()
     }
-    pub fn raw_(&self) -> Ptr<Box<[u8]>> {
-        (self.__bytes.as_pointer() as Ptr<u8>).reinterpret_sized(128)
+    pub fn raw_(&self) -> Ptr<u8> {
+        (self.__bytes.as_pointer() as Ptr<u8>).reinterpret_cast()
     }
 }
 impl Clone for anon_0 {
@@ -187,12 +187,21 @@ fn main_0() -> i32 {
             != 0)
     );
     assert!(
-        ((((((*(*c.borrow()).view.borrow()).raw_().read())[(0) as usize] as i32) == 2) as i32)
+        (((((((*(*c.borrow()).view.borrow())
+            .raw_()
+            .reinterpret_cast::<u8>() as Ptr::<u8>)
+            .offset((0) as isize)
+            .read()) as i32)
+            == 2) as i32)
             != 0)
     );
     assert!(
-        (((((((*(*c.borrow()).view.borrow()).raw_().read())[(3) as usize] as u8) as i32) == 80)
-            as i32)
+        ((((((((*(*c.borrow()).view.borrow())
+            .raw_()
+            .reinterpret_cast::<u8>() as Ptr::<u8>)
+            .offset((3) as isize)
+            .read()) as u8) as i32)
+            == 80) as i32)
             != 0)
     );
     return 0;

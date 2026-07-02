@@ -10,7 +10,7 @@ pub struct anon_0 {
     __bytes: Value<Box<[u8]>>,
 }
 impl anon_0 {
-    pub fn bytes(&self) -> Ptr<Box<[u8]>> {
+    pub fn bytes(&self) -> Ptr<u8> {
         (self.__bytes.as_pointer() as Ptr<u8>).reinterpret_cast()
     }
     pub fn aligner(&self) -> Ptr<AnyPtr> {
@@ -74,7 +74,10 @@ fn main_0() -> i32 {
         .offset((0) as isize)
         .write(171_u8);
     assert!(
-        ((((((*(*n.borrow()).x.borrow()).bytes().read())[(0) as usize] as i32) == 171) as i32)
+        (((((((*(*n.borrow()).x.borrow()).bytes().reinterpret_cast::<u8>() as Ptr::<u8>)
+            .offset((0) as isize)
+            .read()) as i32)
+            == 171) as i32)
             != 0)
     );
     return 0;

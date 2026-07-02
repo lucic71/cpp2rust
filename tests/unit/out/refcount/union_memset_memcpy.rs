@@ -84,8 +84,8 @@ impl anon_0 {
     pub fn b(&self) -> Ptr<shape_b> {
         (self.__bytes.as_pointer() as Ptr<u8>).reinterpret_cast()
     }
-    pub fn raw_(&self) -> Ptr<Box<[u8]>> {
-        (self.__bytes.as_pointer() as Ptr<u8>).reinterpret_sized(256)
+    pub fn raw_(&self) -> Ptr<u8> {
+        (self.__bytes.as_pointer() as Ptr<u8>).reinterpret_cast()
     }
 }
 impl Clone for anon_0 {
@@ -158,11 +158,21 @@ fn main_0() -> i32 {
             != 0)
     );
     assert!(
-        ((((((*(*c.borrow()).view.borrow()).raw_().read())[(0) as usize] as i32) == 0) as i32)
+        (((((((*(*c.borrow()).view.borrow())
+            .raw_()
+            .reinterpret_cast::<u8>() as Ptr::<u8>)
+            .offset((0) as isize)
+            .read()) as i32)
+            == 0) as i32)
             != 0)
     );
     assert!(
-        ((((((*(*c.borrow()).view.borrow()).raw_().read())[(255) as usize] as i32) == 0) as i32)
+        (((((((*(*c.borrow()).view.borrow())
+            .raw_()
+            .reinterpret_cast::<u8>() as Ptr::<u8>)
+            .offset((255) as isize)
+            .read()) as i32)
+            == 0) as i32)
             != 0)
     );
     let src: Value<Box<[u8]>> = Rc::new(RefCell::new(Box::new([
