@@ -377,7 +377,8 @@ std::string ConverterRefCount::ConvertPtrType(clang::QualType type) {
 bool ConverterRefCount::VisitArraySubscriptExpr(
     clang::ArraySubscriptExpr *expr) {
   auto *base = expr->getBase();
-  if (base->IgnoreCasts()->getType()->isPointerType()) {
+  if (base->IgnoreCasts()->getType()->isPointerType() ||
+      (isLValue() && IsUnionArrayMember(base))) {
     ConvertPointerSubscript(expr);
   } else {
     if (!base->IgnoreCasts()->getType()->isArrayType()) {

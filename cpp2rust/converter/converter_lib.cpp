@@ -150,6 +150,16 @@ bool IsCharArrayFieldFromLibc(const clang::ValueDecl *decl) {
       field->getParent()->getLocation());
 }
 
+bool IsUnionArrayMember(const clang::Expr *base) {
+  if (auto *me =
+          clang::dyn_cast<clang::MemberExpr>(base->IgnoreParenImpCasts())) {
+    if (auto *fd = clang::dyn_cast<clang::FieldDecl>(me->getMemberDecl())) {
+      return fd->getParent()->isUnion() && fd->getType()->isArrayType();
+    }
+  }
+  return false;
+}
+
 bool IsUserDefinedDecl(const clang::Decl *decl) {
   const auto &ctx = decl->getASTContext();
   const auto &src_mgr = ctx.getSourceManager();
