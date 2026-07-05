@@ -88,7 +88,7 @@ impl anon_0 {
     pub fn b(&self) -> Ptr<shape_b> {
         (self.__bytes.as_pointer() as Ptr<u8>).reinterpret_cast()
     }
-    pub fn raw_(&self) -> Ptr<Box<[u8]>> {
+    pub fn raw_(&self) -> Ptr<u8> {
         (self.__bytes.as_pointer() as Ptr<u8>).reinterpret_cast()
     }
 }
