@@ -1307,8 +1307,30 @@ bool ConverterRefCount::VisitExplicitCastExpr(clang::ExplicitCastExpr *expr) {
     return false;
   case clang::Stmt::CStyleCastExprClass:
   case clang::Stmt::CXXStaticCastExprClass:
+    if (expr->getCastKind() == clang::CastKind::CK_PointerToIntegral ||
+        expr->getCastKind() == clang::CastKind::CK_IntegralToPointer) {
+      std::string dst_type;
+      {
+        PushConversionKind push(*this, ConversionKind::Unboxed);
+        dst_type = ToString(expr->getType());
+      }
+      if (expr->getCastKind() == clang::CastKind::CK_PointerToIntegral) {
+        StrCat(std::format("{}.to_int::<{}>()", ToString(expr->getSubExpr()),
+                           dst_type));
+        computed_expr_type_ = ComputedExprType::FreshValue;
+      } else {
+        StrCat(std::format("<{}>::from_int({})", dst_type,
+                           ToString(expr->getSubExpr())));
+        computed_expr_type_ = ComputedExprType::FreshPointer;
+      }
+      return false;
+    }
+
     if (!VisitFunctionPointerCast(expr)) {
       return false;
+    } else if (expr->getSubExpr()->getType()->isVoidPointerType() &&
+               expr->getType()->isVoidPointerType()) {
+      return Convert(expr->getSubExpr());
     } else if (expr->getSubExpr()->getType()->isVoidPointerType() &&
                expr->getType()->isPointerType()) {
       Convert(expr->getSubExpr());
