@@ -1,6 +1,28 @@
 // Copyright (c) 2022-present INESC-ID.
 // Distributed under the MIT license that can be found in the LICENSE file.
 
+use crate::rc::{AnyPtr, Ptr};
+
+pub fn malloc_refcount(_a0: usize) -> AnyPtr {
+    todo!("malloc_refcount")
+}
+
+pub fn free_refcount(_a0: AnyPtr) {
+    todo!("free_refcount")
+}
+
+pub fn realloc_refcount(_a0: AnyPtr, _a1: usize) -> AnyPtr {
+    todo!("realloc_refcount")
+}
+
+pub fn calloc_refcount(_a0: usize, _a1: usize) -> AnyPtr {
+    todo!("calloc_refcount")
+}
+
+pub fn strdup_refcount(_a0: Ptr<u8>) -> Ptr<u8> {
+    todo!("strdup_refcount")
+}
+
 /// # Safety
 ///
 /// Same contract as C's `malloc`.

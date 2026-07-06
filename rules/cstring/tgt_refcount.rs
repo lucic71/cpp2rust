@@ -25,3 +25,7 @@ fn f4(a0: AnyPtr, a1: AnyPtr, a2: usize) -> AnyPtr {
 unsafe fn f7(a0: Ptr<u8>) -> usize {
     a0.to_string_iterator().count()
 }
+
+fn f15(a0: Ptr<u8>) -> Ptr<u8> {
+    libcc2rs::strdup_refcount(a0)
+}
