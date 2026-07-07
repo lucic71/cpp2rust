@@ -41,6 +41,22 @@ out:
   return ret;
 }
 
+struct wrapper {
+  int *item;
+};
+
+static int via_pointer(struct wrapper *w, int fail) {
+  int ret = 0;
+  int *item = w->item;
+  if (fail) {
+    ret = -1;
+    goto out;
+  }
+  ret = *item;
+out:
+  return ret;
+}
+
 int main(void) {
   assert(early(-1) == -1);
   assert(early(5) == 100);
@@ -48,5 +64,9 @@ int main(void) {
   assert(from_loop(10) == 7);
   assert(from_switch(1) == 10);
   assert(from_switch(2) == 999);
+  int value = 42;
+  struct wrapper w = {&value};
+  assert(via_pointer(&w, 0) == 42);
+  assert(via_pointer(&w, 1) == -1);
   return 0;
 }

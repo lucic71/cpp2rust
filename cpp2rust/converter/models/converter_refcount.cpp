@@ -726,7 +726,7 @@ void ConverterRefCount::EmitHoistedInArmAssignment(clang::VarDecl *decl) {
   PushConversionKind push(*this, ConversionKind::Unboxed);
   StrCat(token::kStar, GetNamedDeclAsString(decl), ".borrow_mut()",
          token::kAssign);
-  Convert(decl->getInit());
+  StrCat(ConvertFreshRValue(decl->getInit(), decl->getType()));
   StrCat(token::kSemiColon);
 }
 
