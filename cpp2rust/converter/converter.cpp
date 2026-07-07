@@ -3680,6 +3680,7 @@ void Converter::ConvertPointerOffset(clang::Expr *base, clang::Expr *idx,
   PushParen neg_paren(*this, !is_addition);
   {
     PushParen inner(*this);
+    PushExprKind push(*this, ExprKind::RValue);
     Convert(idx);
   }
   StrCat(keyword::kAs, "isize");

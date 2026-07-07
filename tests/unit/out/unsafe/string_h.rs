@@ -211,6 +211,13 @@ pub unsafe fn test_strlen_5() {
             as i32)
             != 0)
     );
+    let buf: [libc::c_char; 8] = std::mem::transmute(*b"one\0two\0");
+    let mut first: *const libc::c_char = buf.as_ptr();
+    let mut second: *const libc::c_char =
+        (&buf[((libc::strlen(first)).wrapping_add(1_usize))] as *const libc::c_char);
+    assert!(
+        ((((libc::strcmp(second, (c"two".as_ptr().cast_mut()).cast_const())) == (0)) as i32) != 0)
+    );
 }
 pub unsafe fn test_strcmp_6() {
     assert!(
