@@ -6,6 +6,11 @@ use std::collections::BTreeMap;
 use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
+#[repr(C)]
+#[derive(Copy, Clone, Default)]
+pub struct record {
+    pub name: *mut libc::c_char,
+}
 pub fn main() {
     unsafe {
         std::process::exit(main_0() as i32);
@@ -40,5 +45,18 @@ unsafe fn main_0() -> i32 {
         ((((libc::strcmp((d3).cast_const(), (buf.as_mut_ptr()).cast_const())) == (0)) as i32) != 0)
     );
     libcc2rs::free_unsafe((d3 as *mut libc::c_char as *mut ::libc::c_void));
+    let mut d4: *mut libc::c_char = std::ptr::null_mut();
+    d4 = libcc2rs::strdup_unsafe(p);
+    assert!((((!((d4).is_null())) as i32) != 0));
+    assert!(((((libc::strcmp((d4).cast_const(), p)) == (0)) as i32) != 0));
+    libcc2rs::free_unsafe((d4 as *mut libc::c_char as *mut ::libc::c_void));
+    let mut rec: record = record {
+        name: std::ptr::null_mut(),
+    };
+    let mut r: *mut record = (&mut rec as *mut record);
+    (*r).name = libcc2rs::strdup_unsafe(p);
+    assert!((((!(((*r).name).is_null())) as i32) != 0));
+    assert!(((((libc::strcmp(((*r).name).cast_const(), p)) == (0)) as i32) != 0));
+    libcc2rs::free_unsafe(((*r).name as *mut libc::c_char as *mut ::libc::c_void));
     return 0;
 }

@@ -1,7 +1,11 @@
-// no-compile: refcount
+// panic: refcount
 #include <assert.h>
 #include <stdlib.h>
 #include <string.h>
+
+struct record {
+  char *name;
+};
 
 int main(void) {
   char *d = strdup("hello");
@@ -18,5 +22,16 @@ int main(void) {
   assert(d3 != NULL);
   assert(strcmp(d3, buf) == 0);
   free(d3);
+  char *d4 = 0;
+  d4 = strdup(p);
+  assert(d4 != NULL);
+  assert(strcmp(d4, p) == 0);
+  free(d4);
+  struct record rec = {0};
+  struct record *r = &rec;
+  r->name = strdup(p);
+  assert(r->name != NULL);
+  assert(strcmp(r->name, p) == 0);
+  free(r->name);
   return 0;
 }

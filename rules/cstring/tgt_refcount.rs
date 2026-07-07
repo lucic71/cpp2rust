@@ -105,7 +105,7 @@ fn f11(a0: Ptr<u8>, a1: i32) -> Ptr<u8> {
 }
 
 fn f15(a0: Ptr<u8>) -> Ptr<u8> {
-    libcc2rs::strdup_refcount(a0)
+    libcc2rs::strdup_refcount(a0.clone())
 }
 
 fn f16(a0: Ptr<u8>, a1: Ptr<u8>) -> usize {
