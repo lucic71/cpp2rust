@@ -13,7 +13,7 @@ fn main_0() -> i32 {
     let a: Value<i32> = Rc::new(RefCell::new(1));
     let p: Value<Ptr<i32>> = Rc::new(RefCell::new((a.as_pointer())));
     let q: Value<Ptr<i32>> = Rc::new(RefCell::new(
-        (<AnyPtr>::from_int(((*p.borrow()).clone() as Ptr<i32>).to_any().to_int::<u64>()))
+        (<AnyPtr>::from_int(((*p.borrow()).clone() as Ptr<i32>).to_any().to_int()))
             .reinterpret_cast::<i32>(),
     ));
     assert!({

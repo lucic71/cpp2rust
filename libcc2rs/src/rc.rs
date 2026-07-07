@@ -1212,25 +1212,25 @@ impl<T: 'static> ByteRepr for Ptr<T> {}
 impl ByteRepr for AnyPtr {}
 
 impl<T: 'static> Ptr<T> {
-    pub fn to_int<U: ByteRepr>(&self) -> U {
+    pub fn to_int(&self) -> usize {
         let mut buf = vec![0u8; Self::byte_size()];
         self.to_bytes(&mut buf);
-        U::from_bytes(&buf[..U::byte_size()])
+        usize::from_bytes(&buf[..std::mem::size_of::<usize>()])
     }
 
-    pub fn from_int<U: ByteRepr>(value: U) -> Self {
+    pub fn from_int(value: usize) -> Self {
         let mut buf = vec![0u8; Self::byte_size()];
-        value.to_bytes(&mut buf[..U::byte_size()]);
+        value.to_bytes(&mut buf[..std::mem::size_of::<usize>()]);
         Self::from_bytes(&buf)
     }
 }
 
 impl AnyPtr {
-    pub fn to_int<U: ByteRepr>(&self) -> U {
+    pub fn to_int(&self) -> usize {
         self.reinterpret_cast::<u8>().to_int()
     }
 
-    pub fn from_int<U: ByteRepr>(value: U) -> Self {
+    pub fn from_int(value: usize) -> Self {
         Ptr::<u8>::from_int(value).to_any()
     }
 }

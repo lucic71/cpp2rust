@@ -1315,8 +1315,7 @@ bool ConverterRefCount::VisitExplicitCastExpr(clang::ExplicitCastExpr *expr) {
         dst_type = ToString(expr->getType());
       }
       if (expr->getCastKind() == clang::CastKind::CK_PointerToIntegral) {
-        StrCat(std::format("{}.to_int::<{}>()", ToString(expr->getSubExpr()),
-                           dst_type));
+        StrCat(std::format("{}.to_int()", ToString(expr->getSubExpr())));
         computed_expr_type_ = ComputedExprType::FreshValue;
       } else {
         StrCat(std::format("<{}>::from_int({})", dst_type,
