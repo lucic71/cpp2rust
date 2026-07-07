@@ -40,17 +40,17 @@ fn main_0() -> i32 {
     assert!((((!((*d.borrow()).is_null())) as i32) != 0));
     assert!(
         ((({
-            let mut i: usize = 0;
+            let mut __i: usize = 0;
             loop {
-                let c1 = (*d.borrow()).offset(i).read();
-                let c2 = Ptr::from_string_literal(b"hello").offset(i).read();
-                if c1 != c2 {
-                    break (c1 as i32) - (c2 as i32);
+                let __c1 = (*d.borrow()).offset(__i).read();
+                let __c2 = Ptr::from_string_literal(b"hello").offset(__i).read();
+                if __c1 != __c2 {
+                    break (__c1 as i32) - (__c2 as i32);
                 }
-                if c1 == 0 {
+                if __c1 == 0 {
                     break 0;
                 }
-                i += 1;
+                __i += 1;
             }
         } == 0) as i32)
             != 0)
@@ -69,17 +69,17 @@ fn main_0() -> i32 {
     assert!((((!((*d2.borrow()).is_null())) as i32) != 0));
     assert!(
         ((({
-            let mut i: usize = 0;
+            let mut __i: usize = 0;
             loop {
-                let c1 = (*d2.borrow()).offset(i).read();
-                let c2 = (*p.borrow()).offset(i).read();
-                if c1 != c2 {
-                    break (c1 as i32) - (c2 as i32);
+                let __c1 = (*d2.borrow()).offset(__i).read();
+                let __c2 = (*p.borrow()).offset(__i).read();
+                if __c1 != __c2 {
+                    break (__c1 as i32) - (__c2 as i32);
                 }
-                if c1 == 0 {
+                if __c1 == 0 {
                     break 0;
                 }
-                i += 1;
+                __i += 1;
             }
         } == 0) as i32)
             != 0)
@@ -91,17 +91,17 @@ fn main_0() -> i32 {
     assert!((((!((*d3.borrow()).is_null())) as i32) != 0));
     assert!(
         ((({
-            let mut i: usize = 0;
+            let mut __i: usize = 0;
             loop {
-                let c1 = (*d3.borrow()).offset(i).read();
-                let c2 = (buf.as_pointer() as Ptr<u8>).offset(i).read();
-                if c1 != c2 {
-                    break (c1 as i32) - (c2 as i32);
+                let __c1 = (*d3.borrow()).offset(__i).read();
+                let __c2 = (buf.as_pointer() as Ptr<u8>).offset(__i).read();
+                if __c1 != __c2 {
+                    break (__c1 as i32) - (__c2 as i32);
                 }
-                if c1 == 0 {
+                if __c1 == 0 {
                     break 0;
                 }
-                i += 1;
+                __i += 1;
             }
         } == 0) as i32)
             != 0)
@@ -112,17 +112,17 @@ fn main_0() -> i32 {
     assert!((((!((*d4.borrow()).is_null())) as i32) != 0));
     assert!(
         ((({
-            let mut i: usize = 0;
+            let mut __i: usize = 0;
             loop {
-                let c1 = (*d4.borrow()).offset(i).read();
-                let c2 = (*p.borrow()).offset(i).read();
-                if c1 != c2 {
-                    break (c1 as i32) - (c2 as i32);
+                let __c1 = (*d4.borrow()).offset(__i).read();
+                let __c2 = (*p.borrow()).offset(__i).read();
+                if __c1 != __c2 {
+                    break (__c1 as i32) - (__c2 as i32);
                 }
-                if c1 == 0 {
+                if __c1 == 0 {
                     break 0;
                 }
-                i += 1;
+                __i += 1;
             }
         } == 0) as i32)
             != 0)
@@ -137,19 +137,19 @@ fn main_0() -> i32 {
     assert!((((!((*(*(*r.borrow()).upgrade().deref()).name.borrow()).is_null())) as i32) != 0));
     assert!(
         ((({
-            let mut i: usize = 0;
+            let mut __i: usize = 0;
             loop {
-                let c1 = (*(*(*r.borrow()).upgrade().deref()).name.borrow())
-                    .offset(i)
+                let __c1 = (*(*(*r.borrow()).upgrade().deref()).name.borrow())
+                    .offset(__i)
                     .read();
-                let c2 = (*p.borrow()).offset(i).read();
-                if c1 != c2 {
-                    break (c1 as i32) - (c2 as i32);
+                let __c2 = (*p.borrow()).offset(__i).read();
+                if __c1 != __c2 {
+                    break (__c1 as i32) - (__c2 as i32);
                 }
-                if c1 == 0 {
+                if __c1 == 0 {
                     break 0;
                 }
-                i += 1;
+                __i += 1;
             }
         } == 0) as i32)
             != 0)
