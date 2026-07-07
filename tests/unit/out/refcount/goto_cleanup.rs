@@ -123,6 +123,37 @@ pub fn via_pointer_3(w: Ptr<wrapper>, fail: i32) -> i32 {
     });
     panic!("ub: non-void function does not return a value")
 }
+pub fn via_arrays_4(fail: i32) -> i32 {
+    let fail: Value<i32> = Rc::new(RefCell::new(fail));
+    let ret: Value<i32> = <Value<i32>>::default();
+    let remain: Value<Box<[u8]>> = Rc::new(RefCell::new(
+        (0..4).map(|_| <u8>::default()).collect::<Box<[u8]>>(),
+    ));
+    let name: Value<Box<[u8]>> = Rc::new(RefCell::new(
+        (0..5).map(|_| <u8>::default()).collect::<Box<[u8]>>(),
+    ));
+    goto_block!({
+        '__entry: {
+            *ret.borrow_mut() = 0;
+            *remain.borrow_mut() =
+                Box::new([0_u8, <u8>::default(), <u8>::default(), <u8>::default()]);
+            *name.borrow_mut() = Box::from(*b"wxyz\0");
+            if ((*fail.borrow()) != 0) {
+                (*ret.borrow_mut()) = -1_i32;
+                goto!('out);
+            }
+            (*remain.borrow_mut())[(1) as usize] = 9_u8;
+            (*ret.borrow_mut()) = (((((*remain.borrow())[(0) as usize] as i32)
+                + ((*remain.borrow())[(1) as usize] as i32))
+                + ((((*name.borrow())[(0) as usize] as i32) == ('w' as i32)) as i32))
+                + ((((*name.borrow())[(4) as usize] as i32) == ('\0' as i32)) as i32));
+        }
+        'out: {
+            return (*ret.borrow());
+        }
+    });
+    panic!("ub: non-void function does not return a value")
+}
 pub fn main() {
     std::process::exit(main_0());
 }
@@ -139,5 +170,7 @@ fn main_0() -> i32 {
     }));
     assert!((((({ via_pointer_3((w.as_pointer()), 0,) }) == 42) as i32) != 0));
     assert!((((({ via_pointer_3((w.as_pointer()), 1,) }) == -1_i32) as i32) != 0));
+    assert!((((({ via_arrays_4(0,) }) == 11) as i32) != 0));
+    assert!((((({ via_arrays_4(1,) }) == -1_i32) as i32) != 0));
     return 0;
 }

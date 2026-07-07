@@ -97,6 +97,30 @@ pub unsafe fn via_pointer_3(mut w: *mut wrapper, mut fail: i32) -> i32 {
     });
     panic!("ub: non-void function does not return a value")
 }
+pub unsafe fn via_arrays_4(mut fail: i32) -> i32 {
+    let mut ret: i32 = 0_i32;
+    let mut remain: [u8; 4] = [0_u8; 4];
+    let mut name: [libc::c_char; 5] = [(0 as libc::c_char); 5];
+    goto_block!({
+        '__entry: {
+            ret = 0;
+            remain = [0_u8, 0_u8, 0_u8, 0_u8];
+            name = std::mem::transmute(*b"wxyz\0");
+            if (fail != 0) {
+                ret = -1_i32;
+                goto!('out);
+            }
+            remain[(1) as usize] = 9_u8;
+            ret = ((((remain[(0) as usize] as i32) + (remain[(1) as usize] as i32))
+                + (((name[(0) as usize] as i32) == ('w' as i32)) as i32))
+                + (((name[(4) as usize] as i32) == ('\0' as i32)) as i32));
+        }
+        'out: {
+            return ret;
+        }
+    });
+    panic!("ub: non-void function does not return a value")
+}
 pub fn main() {
     unsafe {
         std::process::exit(main_0() as i32);
@@ -115,5 +139,7 @@ unsafe fn main_0() -> i32 {
     };
     assert!(((((unsafe { via_pointer_3((&mut w as *mut wrapper), 0,) }) == (42)) as i32) != 0));
     assert!(((((unsafe { via_pointer_3((&mut w as *mut wrapper), 1,) }) == (-1_i32)) as i32) != 0));
+    assert!(((((unsafe { via_arrays_4(0,) }) == (11)) as i32) != 0));
+    assert!(((((unsafe { via_arrays_4(1,) }) == (-1_i32)) as i32) != 0));
     return 0;
 }
