@@ -2154,7 +2154,7 @@ bool ConverterRefCount::ConvertCXXOperatorCallExpr(
       pending_deref_.set(std::format("({} as {}).offset({})",
                                      ConvertObject(expr->getArg(0)),
                                      ConvertPtrType(expr->getArg(0)->getType()),
-                                     ConvertRValue(expr->getArg(1))),
+                                     ConvertSubscriptIndex(expr->getArg(1))),
                          expr);
       break;
     }
@@ -2174,7 +2174,7 @@ bool ConverterRefCount::ConvertCXXOperatorCallExpr(
       StrCat(std::format("({} as {}).offset({})",
                          ConvertObject(expr->getArg(0)),
                          ConvertPtrType(expr->getArg(0)->getType()),
-                         ConvertRValue(expr->getArg(1))));
+                         ConvertSubscriptIndex(expr->getArg(1))));
 
       if (is_inner_boxed) {
         StrCat(GetPointerDerefSuffix(expr->getType()), ".as_pointer()");
@@ -2209,6 +2209,14 @@ void ConverterRefCount::ConvertFunctionParameters(clang::FunctionDecl *decl) {
   }
 }
 
+std::string ConverterRefCount::ConvertSubscriptIndex(clang::Expr *idx) {
+  auto str = ConvertRValue(idx);
+  if (idx->getType()->isEnumeralType()) {
+    return std::format("({}) as isize", str);
+  }
+  return str;
+}
+
 void ConverterRefCount::ConvertArraySubscript(clang::Expr *base,
                                               clang::Expr *idx,
                                               clang::QualType type) {
@@ -2225,7 +2233,7 @@ void ConverterRefCount::ConvertArraySubscript(clang::Expr *base,
       StrCat(std::format("({} as {}).offset({})",
                          ToString(base->IgnoreImplicit()),
                          ConvertPtrType(base->IgnoreImplicit()->getType()),
-                         ConvertRValue(idx)));
+                         ConvertSubscriptIndex(idx)));
 
       if (is_inner_boxed) {
         StrCat(GetPointerDerefSuffix(type), ".as_pointer()");
