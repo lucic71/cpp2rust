@@ -1104,9 +1104,4 @@ ConstCastType GetConstCastType(clang::QualType to, clang::QualType from) {
   }
 }
 
-bool TypeIsCopyable(clang::QualType ty) {
-  return ty->isIntegerType() || ty->isFunctionPointerType() ||
-         ty->isFunctionType();
-}
-
 } // namespace cpp2rust
