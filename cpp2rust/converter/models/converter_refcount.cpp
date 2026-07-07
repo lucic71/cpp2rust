@@ -1875,7 +1875,9 @@ ConverterRefCount::GetArrayDefaultAsString(clang::QualType qual_type) {
     const auto &size = array_type->getSize();
     auto size_as_string = GetNumAsString(size);
     auto element_type = array_type->getElementType();
-    PushConversionKind push(*this, ConversionKind::Unboxed);
+    PushConversionKind push(*this, element_type->isArrayType()
+                                       ? ConversionKind::FullRefCount
+                                       : ConversionKind::Unboxed);
     auto element_type_as_string = ToString(element_type);
     auto default_as_string = GetDefaultAsString(element_type);
     return std::format("(0..{}).map(|_| {}).collect::<Box<[{}]>>()",
