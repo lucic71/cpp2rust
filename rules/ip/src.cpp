@@ -1,5 +1,10 @@
 #include <netinet/in.h>
 
+typedef struct sockaddr_in t1;
+typedef struct in_addr t2;
+typedef struct sockaddr_in6 t3;
+typedef struct in6_addr t4;
+
 int f1() {
   return IPPROTO_TCP;
 }
