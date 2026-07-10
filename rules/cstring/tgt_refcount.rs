@@ -258,3 +258,174 @@ fn f28(a0: i32, a1: Ptr<u8>, a2: usize) -> i32 {
     }
     0
 }
+
+fn f6(a0: Ptr<u8>, a1: i32) -> Ptr<u8> {
+    let mut __i: usize = 0;
+    loop {
+        let __c = a0.offset(__i).read();
+        if __c == a1 as u8 {
+            break a0.offset(__i);
+        }
+        if __c == 0 {
+            break Ptr::null();
+        }
+        __i += 1;
+    }
+}
+
+fn f12(a0: AnyPtr, a1: i32, a2: usize) -> AnyPtr {
+    match (0..a2).find(|&__i| a0.reinterpret_cast::<u8>().offset(__i).read() == a1 as u8) {
+        Some(__i) => a0.reinterpret_cast::<u8>().offset(__i).to_any(),
+        None => Ptr::<u8>::null().to_any(),
+    }
+}
+
+fn f13(a0: Ptr<u8>, a1: i32) -> Ptr<u8> {
+    let mut __i: usize = 0;
+    let mut __found = Ptr::null();
+    loop {
+        let __c = a0.offset(__i).read();
+        if __c == a1 as u8 {
+            __found = a0.offset(__i);
+        }
+        if __c == 0 {
+            break __found;
+        }
+        __i += 1;
+    }
+}
+
+fn f14(a0: Ptr<u8>, a1: i32) -> Ptr<u8> {
+    let mut __i: usize = 0;
+    let mut __found = Ptr::null();
+    loop {
+        let __c = a0.offset(__i).read();
+        if __c == a1 as u8 {
+            __found = a0.offset(__i);
+        }
+        if __c == 0 {
+            break __found;
+        }
+        __i += 1;
+    }
+}
+
+fn f19(a0: Ptr<u8>, a1: Ptr<u8>) -> Ptr<u8> {
+    let mut __s: usize = 0;
+    loop {
+        let mut __i: usize = 0;
+        let __matched = loop {
+            let __n = a1.offset(__i).read();
+            if __n == 0 {
+                break true;
+            }
+            if a0.offset(__s + __i).read() != __n {
+                break false;
+            }
+            __i += 1;
+        };
+        if __matched {
+            break a0.offset(__s);
+        }
+        if a0.offset(__s).read() == 0 {
+            break Ptr::null();
+        }
+        __s += 1;
+    }
+}
+
+fn f20(a0: Ptr<u8>, a1: Ptr<u8>) -> Ptr<u8> {
+    let mut __s: usize = 0;
+    loop {
+        let mut __i: usize = 0;
+        let __matched = loop {
+            let __n = a1.offset(__i).read();
+            if __n == 0 {
+                break true;
+            }
+            if a0.offset(__s + __i).read() != __n {
+                break false;
+            }
+            __i += 1;
+        };
+        if __matched {
+            break a0.offset(__s);
+        }
+        if a0.offset(__s).read() == 0 {
+            break Ptr::null();
+        }
+        __s += 1;
+    }
+}
+
+fn f22(a0: Ptr<u8>, a1: Ptr<u8>) -> Ptr<u8> {
+    let mut __i: usize = 0;
+    loop {
+        let __c = a0.offset(__i).read();
+        if __c == 0 {
+            break Ptr::null();
+        }
+        let mut __j: usize = 0;
+        let __hit = loop {
+            let __r = a1.offset(__j).read();
+            if __r == 0 {
+                break false;
+            }
+            if __r == __c {
+                break true;
+            }
+            __j += 1;
+        };
+        if __hit {
+            break a0.offset(__i);
+        }
+        __i += 1;
+    }
+}
+
+fn f23(a0: Ptr<u8>, a1: Ptr<u8>) -> Ptr<u8> {
+    let mut __i: usize = 0;
+    loop {
+        let __c = a0.offset(__i).read();
+        if __c == 0 {
+            break Ptr::null();
+        }
+        let mut __j: usize = 0;
+        let __hit = loop {
+            let __r = a1.offset(__j).read();
+            if __r == 0 {
+                break false;
+            }
+            if __r == __c {
+                break true;
+            }
+            __j += 1;
+        };
+        if __hit {
+            break a0.offset(__i);
+        }
+        __i += 1;
+    }
+}
+
+#[cfg(target_os = "linux")]
+fn f25(a0: AnyPtr, a1: i32, a2: usize) -> AnyPtr {
+    match (0..a2)
+        .rev()
+        .find(|&__i| a0.reinterpret_cast::<u8>().offset(__i).read() == a1 as u8)
+    {
+        Some(__i) => a0.reinterpret_cast::<u8>().offset(__i).to_any(),
+        None => Ptr::<u8>::null().to_any(),
+    }
+}
+
+#[cfg(target_os = "linux")]
+fn f26(a0: AnyPtr, a1: i32, a2: usize) -> AnyPtr {
+    match (0..a2)
+        .rev()
+        .find(|&__i| a0.reinterpret_cast::<u8>().offset(__i).read() == a1 as u8)
+    {
+        Some(__i) => a0.reinterpret_cast::<u8>().offset(__i).to_any(),
+        None => Ptr::<u8>::null().to_any(),
+    }
+}
