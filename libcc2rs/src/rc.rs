@@ -1115,6 +1115,10 @@ impl AnyPtr {
         }
         self.ptr.as_bytes().reinterpret_cast::<T>()
     }
+
+    pub fn is_null(&self) -> bool {
+        self.ptr.is_null()
+    }
 }
 
 impl PartialEq for AnyPtr {
