@@ -50,6 +50,10 @@ static void test_strlen(void) {
   assert(strlen("") == 0);
   assert(strlen("hello") == 5);
   assert(strlen("hello world") == 11);
+  const char buf[] = "one\0two";
+  const char *first = buf;
+  const char *second = &buf[strlen(first) + 1];
+  assert(strcmp(second, "two") == 0);
 }
 
 static void test_strcmp(void) {
