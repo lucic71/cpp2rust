@@ -736,7 +736,7 @@ macro_rules! impl_ptr_add_sub_assign {
         }
     )+ }
 }
-impl_ptr_add_sub_assign!(i32, u32, u64, isize, usize);
+impl_ptr_add_sub_assign!(i32, u32, i64, u64, isize, usize);
 
 macro_rules! impl_ptr_add_sub {
     ($($rhs:ty),+) => { $(
