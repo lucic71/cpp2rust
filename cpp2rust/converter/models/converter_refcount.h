@@ -244,6 +244,8 @@ private:
   std::string ConvertPtrType(clang::QualType type);
   std::string ConvertPointeeType(clang::QualType ptr_type) override;
 
+  std::string ConvertSubscriptIndex(clang::Expr *idx);
+
   std::string GetSafeTypeAsString(clang::QualType qual_type) const;
 
   /// The kind of conversion that should be performed.
