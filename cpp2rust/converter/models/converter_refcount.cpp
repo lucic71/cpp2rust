@@ -731,10 +731,10 @@ void ConverterRefCount::EmitHoistedInArmAssignment(clang::VarDecl *decl) {
   if (!decl->hasInit()) {
     return;
   }
-  PushConversionKind push(*this, ConversionKind::Unboxed);
+  PushConversionKind push(*this, ConversionKind::FullRefCount);
   StrCat(token::kStar, GetNamedDeclAsString(decl), ".borrow_mut()",
          token::kAssign);
-  Convert(decl->getInit());
+  StrCat(ConvertVarInitValue(decl->getType(), decl->getInit()));
   StrCat(token::kSemiColon);
 }
 
@@ -1965,35 +1965,34 @@ ConverterRefCount::GetStructAttributes(const clang::RecordDecl *decl) {
   return attrs;
 }
 
-void ConverterRefCount::ConvertVarInit(clang::QualType qual_type,
-                                       clang::Expr *expr) {
+std::string ConverterRefCount::ConvertVarInitValue(clang::QualType qual_type,
+                                                   clang::Expr *expr) {
   if (auto lambda = clang::dyn_cast<clang::LambdaExpr>(
           expr->IgnoreUnlessSpelledInSource())) {
-    std::string str;
-    {
-      Buffer buf(*this);
-      PushConversionKind push(*this, ConversionKind::Unboxed);
-      if (qual_type->isFunctionPointerType() && lambda->capture_size() == 0) {
-        StrCat("FnPtr::new(");
-        VisitLambdaExpr(lambda);
-        StrCat(')');
-      } else {
-        VisitLambdaExpr(lambda);
-      }
-      str = std::move(buf).str();
+    Buffer buf(*this);
+    PushConversionKind push(*this, ConversionKind::Unboxed);
+    if (qual_type->isFunctionPointerType() && lambda->capture_size() == 0) {
+      StrCat("FnPtr::new(");
+      VisitLambdaExpr(lambda);
+      StrCat(')');
+    } else {
+      VisitLambdaExpr(lambda);
     }
-    StrCat(BoxValue(std::move(str)));
-    return;
+    return std::move(buf).str();
   }
 
+  PushInitType init_type(*this, qual_type);
+  if (qual_type->isReferenceType() || qual_type->isFunctionPointerType()) {
+    return ConvertFreshPointer(expr);
+  }
+  return ConvertFreshRValue(expr, qual_type);
+}
+
+void ConverterRefCount::ConvertVarInit(clang::QualType qual_type,
+                                       clang::Expr *expr) {
   bool is_ref = qual_type->isReferenceType();
   PushConversionKind push(*this, ConversionKind::Unboxed, is_ref);
-  PushInitType init_type(*this, qual_type);
-  if (is_ref || qual_type->isFunctionPointerType()) {
-    StrCat(BoxValue(ConvertFreshPointer(expr)));
-  } else {
-    StrCat(BoxValue(ConvertFreshRValue(expr, qual_type)));
-  }
+  StrCat(BoxValue(ConvertVarInitValue(qual_type, expr)));
 }
 
 void ConverterRefCount::EmitSetOrAssign(clang::Expr *lhs,

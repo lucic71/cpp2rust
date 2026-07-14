@@ -169,6 +169,8 @@ public:
 
   void ConvertVarInit(clang::QualType qual_type, clang::Expr *expr) override;
 
+  std::string ConvertVarInitValue(clang::QualType qual_type, clang::Expr *expr);
+
   void ConvertAssignment(clang::Expr *lhs, clang::Expr *rhs,
                          std::string_view assign_operator) override;
 
