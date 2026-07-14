@@ -14,19 +14,21 @@ fn main_0() -> i32 {
     let ssloc: Value<libc::sockaddr_storage> = Rc::new(RefCell::new(unsafe { std::mem::zeroed() }));
     let slen: Value<u32> = Rc::new(RefCell::new((128usize as u32)));
     assert!(
-        ((({
-            let result: i32 = todo!("getsockname is not implemented yet");
-            result
-        } == -1_i32) as i32)
+        (((libc::getsockname(
+            (*fd.borrow()),
+            (ssloc.as_pointer()).reinterpret_cast::<libc::sockaddr>(),
+            (slen.as_pointer())
+        ) == -1_i32) as i32)
             != 0)
     );
     let sin: Value<::libc::sockaddr_in> = Rc::new(RefCell::new(unsafe { std::mem::zeroed() }));
     let inlen: Value<u32> = Rc::new(RefCell::new((16usize as u32)));
     assert!(
-        ((({
-            let result: i32 = todo!("getsockname is not implemented yet");
-            result
-        } == -1_i32) as i32)
+        (((libc::getsockname(
+            (*fd.borrow()),
+            (sin.as_pointer()).reinterpret_cast::<libc::sockaddr>(),
+            (inlen.as_pointer())
+        ) == -1_i32) as i32)
             != 0)
     );
     return 0;
