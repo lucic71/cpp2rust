@@ -103,8 +103,10 @@ fn main_0() -> i32 {
     let text: Value<Ptr<u8>> = Rc::new(RefCell::new(Ptr::from_string_literal(b"example-body")));
     let len: Value<usize> = Rc::new(RefCell::new(
         ({
+            let mut __p = (*text.borrow()).clone();
             let mut __i: usize = 0;
-            while (*text.borrow()).offset(__i).read() != 0 {
+            while __p.read() != 0 {
+                __p += 1;
                 __i += 1;
             }
             __i

@@ -18,89 +18,110 @@ fn f3(a0: AnyPtr, a1: AnyPtr, a2: usize) -> i32 {
 }
 
 fn f4(a0: AnyPtr, a1: AnyPtr, a2: usize) -> AnyPtr {
-    let __tmp: Vec<u8> = (0..a2)
-        .map(|__i| a1.reinterpret_cast::<u8>().offset(__i).read())
-        .collect();
+    let mut __src = a1.reinterpret_cast::<u8>();
+    let mut __tmp: Vec<u8> = Vec::with_capacity(a2);
+    for _ in 0..a2 {
+        __tmp.push(__src.read());
+        __src += 1;
+    }
+    let mut __dst = a0.reinterpret_cast::<u8>();
     for __i in 0..a2 {
-        a0.reinterpret_cast::<u8>().offset(__i).write(__tmp[__i]);
+        __dst.write(__tmp[__i]);
+        __dst += 1;
     }
     a0.clone()
 }
 
 fn f5(a0: Ptr<u8>, a1: i32) -> Ptr<u8> {
-    let mut __i: usize = 0;
+    let mut __p = a0.clone();
     loop {
-        let __c = a0.offset(__i).read();
+        let __c = __p.read();
         if __c == a1 as u8 {
-            break a0.offset(__i);
+            break __p;
         }
         if __c == 0 {
             break Ptr::null();
         }
-        __i += 1;
+        __p += 1;
     }
 }
 
 unsafe fn f7(a0: Ptr<u8>) -> usize {
+    let mut __p = a0.clone();
     let mut __i: usize = 0;
-    while a0.offset(__i).read() != 0 {
+    while __p.read() != 0 {
+        __p += 1;
         __i += 1;
     }
     __i
 }
 
 fn f8(a0: Ptr<u8>, a1: Ptr<u8>) -> i32 {
-    let mut __i: usize = 0;
+    let mut __p1 = a0.clone();
+    let mut __p2 = a1.clone();
     loop {
-        let __c1 = a0.offset(__i).read();
-        let __c2 = a1.offset(__i).read();
+        let __c1 = __p1.read();
+        let __c2 = __p2.read();
         if __c1 != __c2 {
             break (__c1 as i32) - (__c2 as i32);
         }
         if __c1 == 0 {
             break 0;
         }
-        __i += 1;
+        __p1 += 1;
+        __p2 += 1;
     }
 }
 
 fn f9(a0: Ptr<u8>, a1: Ptr<u8>, a2: usize) -> i32 {
+    let mut __p1 = a0.clone();
+    let mut __p2 = a1.clone();
     let mut __i: usize = 0;
     loop {
         if __i == a2 {
             break 0;
         }
-        let __c1 = a0.offset(__i).read();
-        let __c2 = a1.offset(__i).read();
+        let __c1 = __p1.read();
+        let __c2 = __p2.read();
         if __c1 != __c2 {
             break (__c1 as i32) - (__c2 as i32);
         }
         if __c1 == 0 {
             break 0;
         }
+        __p1 += 1;
+        __p2 += 1;
         __i += 1;
     }
 }
 
 fn f10(a0: AnyPtr, a1: i32, a2: usize) -> AnyPtr {
-    match (0..a2).find(|&__i| a0.reinterpret_cast::<u8>().offset(__i).read() == a1 as u8) {
-        Some(__i) => a0.reinterpret_cast::<u8>().offset(__i).to_any(),
-        None => Ptr::<u8>::null().to_any(),
+    let mut __p = a0.reinterpret_cast::<u8>();
+    let mut __i: usize = 0;
+    loop {
+        if __i == a2 {
+            break Ptr::<u8>::null().to_any();
+        }
+        if __p.read() == a1 as u8 {
+            break __p.to_any();
+        }
+        __p += 1;
+        __i += 1;
     }
 }
 
 fn f11(a0: Ptr<u8>, a1: i32) -> Ptr<u8> {
-    let mut __i: usize = 0;
+    let mut __p = a0.clone();
     let mut __found = Ptr::null();
     loop {
-        let __c = a0.offset(__i).read();
+        let __c = __p.read();
         if __c == a1 as u8 {
-            __found = a0.offset(__i);
+            __found = __p.clone();
         }
         if __c == 0 {
             break __found;
         }
-        __i += 1;
+        __p += 1;
     }
 }
 
@@ -109,127 +130,140 @@ fn f15(a0: Ptr<u8>) -> Ptr<u8> {
 }
 
 fn f16(a0: Ptr<u8>, a1: Ptr<u8>) -> usize {
+    let mut __p = a0.clone();
     let mut __i: usize = 0;
     loop {
-        let __c = a0.offset(__i).read();
+        let __c = __p.read();
         if __c == 0 {
             break __i;
         }
-        let mut __j: usize = 0;
+        let mut __q = a1.clone();
         let __hit = loop {
-            let __r = a1.offset(__j).read();
+            let __r = __q.read();
             if __r == 0 {
                 break false;
             }
             if __r == __c {
                 break true;
             }
-            __j += 1;
+            __q += 1;
         };
         if __hit {
             break __i;
         }
+        __p += 1;
         __i += 1;
     }
 }
 
 fn f17(a0: Ptr<u8>, a1: Ptr<u8>) -> usize {
+    let mut __p = a0.clone();
     let mut __i: usize = 0;
     loop {
-        let __c = a0.offset(__i).read();
+        let __c = __p.read();
         if __c == 0 {
             break __i;
         }
-        let mut __j: usize = 0;
+        let mut __q = a1.clone();
         let __hit = loop {
-            let __r = a1.offset(__j).read();
+            let __r = __q.read();
             if __r == 0 {
                 break false;
             }
             if __r == __c {
                 break true;
             }
-            __j += 1;
+            __q += 1;
         };
         if !__hit {
             break __i;
         }
+        __p += 1;
         __i += 1;
     }
 }
 
 fn f18(a0: Ptr<u8>, a1: Ptr<u8>) -> Ptr<u8> {
-    let mut __s: usize = 0;
+    let mut __p = a0.clone();
     loop {
-        let mut __i: usize = 0;
+        let mut __h = __p.clone();
+        let mut __n = a1.clone();
         let __matched = loop {
-            let __n = a1.offset(__i).read();
-            if __n == 0 {
+            let __c = __n.read();
+            if __c == 0 {
                 break true;
             }
-            if a0.offset(__s + __i).read() != __n {
+            if __h.read() != __c {
                 break false;
             }
-            __i += 1;
+            __h += 1;
+            __n += 1;
         };
         if __matched {
-            break a0.offset(__s);
+            break __p;
         }
-        if a0.offset(__s).read() == 0 {
+        if __p.read() == 0 {
             break Ptr::null();
         }
-        __s += 1;
+        __p += 1;
     }
 }
 
 fn f21(a0: Ptr<u8>, a1: Ptr<u8>) -> Ptr<u8> {
-    let mut __i: usize = 0;
+    let mut __p = a0.clone();
     loop {
-        let __c = a0.offset(__i).read();
+        let __c = __p.read();
         if __c == 0 {
             break Ptr::null();
         }
-        let mut __j: usize = 0;
+        let mut __q = a1.clone();
         let __hit = loop {
-            let __r = a1.offset(__j).read();
+            let __r = __q.read();
             if __r == 0 {
                 break false;
             }
             if __r == __c {
                 break true;
             }
-            __j += 1;
+            __q += 1;
         };
         if __hit {
-            break a0.offset(__i);
+            break __p;
         }
-        __i += 1;
+        __p += 1;
     }
 }
 
 #[cfg(target_os = "linux")]
 fn f24(a0: AnyPtr, a1: i32, a2: usize) -> AnyPtr {
-    match (0..a2)
-        .rev()
-        .find(|&__i| a0.reinterpret_cast::<u8>().offset(__i).read() == a1 as u8)
-    {
-        Some(__i) => a0.reinterpret_cast::<u8>().offset(__i).to_any(),
-        None => Ptr::<u8>::null().to_any(),
+    let mut __p = a0.reinterpret_cast::<u8>().offset(a2);
+    let mut __i: usize = a2;
+    loop {
+        if __i == 0 {
+            break Ptr::<u8>::null().to_any();
+        }
+        __p -= 1;
+        __i -= 1;
+        if __p.read() == a1 as u8 {
+            break __p.to_any();
+        }
     }
 }
 
 fn f27(a0: Ptr<u8>, a1: Ptr<u8>) -> i32 {
-    let mut __i: usize = 0;
+    let mut __p1 = a0.clone();
+    let mut __p2 = a1.clone();
     loop {
-        let __c1 = a0.offset(__i).read().to_ascii_lowercase();
-        let __c2 = a1.offset(__i).read().to_ascii_lowercase();
+        let __c1 = __p1.read().to_ascii_lowercase();
+        let __c2 = __p2.read().to_ascii_lowercase();
         if __c1 != __c2 {
             break (__c1 as i32) - (__c2 as i32);
         }
         if __c1 == 0 {
             break 0;
         }
-        __i += 1;
+        __p1 += 1;
+        __p2 += 1;
     }
 }
 
@@ -237,8 +271,10 @@ fn f27(a0: Ptr<u8>, a1: Ptr<u8>) -> i32 {
 fn f28(a0: i32, a1: Ptr<u8>, a2: usize) -> Ptr<u8> {
     let __msg = std::io::Error::from_raw_os_error(a0).to_string();
     let __len = __msg.len().min(a2.saturating_sub(1));
+    let mut __p = a1.clone();
     for __i in 0..__len {
-        a1.offset(__i).write(__msg.as_bytes()[__i]);
+        __p.write(__msg.as_bytes()[__i]);
+        __p += 1;
     }
     if a2 > 0 {
         a1.offset(__len).write(0);
@@ -250,8 +286,10 @@ fn f28(a0: i32, a1: Ptr<u8>, a2: usize) -> Ptr<u8> {
 fn f28(a0: i32, a1: Ptr<u8>, a2: usize) -> i32 {
     let __msg = std::io::Error::from_raw_os_error(a0).to_string();
     let __len = __msg.len().min(a2.saturating_sub(1));
+    let mut __p = a1.clone();
     for __i in 0..__len {
-        a1.offset(__i).write(__msg.as_bytes()[__i]);
+        __p.write(__msg.as_bytes()[__i]);
+        __p += 1;
     }
     if a2 > 0 {
         a1.offset(__len).write(0);
@@ -260,172 +298,194 @@ fn f28(a0: i32, a1: Ptr<u8>, a2: usize) -> i32 {
 }
 
 fn f6(a0: Ptr<u8>, a1: i32) -> Ptr<u8> {
-    let mut __i: usize = 0;
+    let mut __p = a0.clone();
     loop {
-        let __c = a0.offset(__i).read();
+        let __c = __p.read();
         if __c == a1 as u8 {
-            break a0.offset(__i);
+            break __p;
         }
         if __c == 0 {
             break Ptr::null();
         }
-        __i += 1;
+        __p += 1;
     }
 }
 
 fn f12(a0: AnyPtr, a1: i32, a2: usize) -> AnyPtr {
-    match (0..a2).find(|&__i| a0.reinterpret_cast::<u8>().offset(__i).read() == a1 as u8) {
-        Some(__i) => a0.reinterpret_cast::<u8>().offset(__i).to_any(),
-        None => Ptr::<u8>::null().to_any(),
+    let mut __p = a0.reinterpret_cast::<u8>();
+    let mut __i: usize = 0;
+    loop {
+        if __i == a2 {
+            break Ptr::<u8>::null().to_any();
+        }
+        if __p.read() == a1 as u8 {
+            break __p.to_any();
+        }
+        __p += 1;
+        __i += 1;
     }
 }
 
 fn f13(a0: Ptr<u8>, a1: i32) -> Ptr<u8> {
-    let mut __i: usize = 0;
+    let mut __p = a0.clone();
     let mut __found = Ptr::null();
     loop {
-        let __c = a0.offset(__i).read();
+        let __c = __p.read();
         if __c == a1 as u8 {
-            __found = a0.offset(__i);
+            __found = __p.clone();
         }
         if __c == 0 {
             break __found;
         }
-        __i += 1;
+        __p += 1;
     }
 }
 
 fn f14(a0: Ptr<u8>, a1: i32) -> Ptr<u8> {
-    let mut __i: usize = 0;
+    let mut __p = a0.clone();
     let mut __found = Ptr::null();
     loop {
-        let __c = a0.offset(__i).read();
+        let __c = __p.read();
         if __c == a1 as u8 {
-            __found = a0.offset(__i);
+            __found = __p.clone();
         }
         if __c == 0 {
             break __found;
         }
-        __i += 1;
+        __p += 1;
     }
 }
 
 fn f19(a0: Ptr<u8>, a1: Ptr<u8>) -> Ptr<u8> {
-    let mut __s: usize = 0;
+    let mut __p = a0.clone();
     loop {
-        let mut __i: usize = 0;
+        let mut __h = __p.clone();
+        let mut __n = a1.clone();
         let __matched = loop {
-            let __n = a1.offset(__i).read();
-            if __n == 0 {
+            let __c = __n.read();
+            if __c == 0 {
                 break true;
             }
-            if a0.offset(__s + __i).read() != __n {
+            if __h.read() != __c {
                 break false;
             }
-            __i += 1;
+            __h += 1;
+            __n += 1;
         };
         if __matched {
-            break a0.offset(__s);
+            break __p;
         }
-        if a0.offset(__s).read() == 0 {
+        if __p.read() == 0 {
             break Ptr::null();
         }
-        __s += 1;
+        __p += 1;
     }
 }
 
 fn f20(a0: Ptr<u8>, a1: Ptr<u8>) -> Ptr<u8> {
-    let mut __s: usize = 0;
+    let mut __p = a0.clone();
     loop {
-        let mut __i: usize = 0;
+        let mut __h = __p.clone();
+        let mut __n = a1.clone();
         let __matched = loop {
-            let __n = a1.offset(__i).read();
-            if __n == 0 {
+            let __c = __n.read();
+            if __c == 0 {
                 break true;
             }
-            if a0.offset(__s + __i).read() != __n {
+            if __h.read() != __c {
                 break false;
             }
-            __i += 1;
+            __h += 1;
+            __n += 1;
         };
         if __matched {
-            break a0.offset(__s);
+            break __p;
         }
-        if a0.offset(__s).read() == 0 {
+        if __p.read() == 0 {
             break Ptr::null();
         }
-        __s += 1;
+        __p += 1;
     }
 }
 
 fn f22(a0: Ptr<u8>, a1: Ptr<u8>) -> Ptr<u8> {
-    let mut __i: usize = 0;
+    let mut __p = a0.clone();
     loop {
-        let __c = a0.offset(__i).read();
+        let __c = __p.read();
         if __c == 0 {
             break Ptr::null();
         }
-        let mut __j: usize = 0;
+        let mut __q = a1.clone();
         let __hit = loop {
-            let __r = a1.offset(__j).read();
+            let __r = __q.read();
             if __r == 0 {
                 break false;
             }
             if __r == __c {
                 break true;
             }
-            __j += 1;
+            __q += 1;
         };
         if __hit {
-            break a0.offset(__i);
+            break __p;
         }
-        __i += 1;
+        __p += 1;
     }
 }
 
 fn f23(a0: Ptr<u8>, a1: Ptr<u8>) -> Ptr<u8> {
-    let mut __i: usize = 0;
+    let mut __p = a0.clone();
     loop {
-        let __c = a0.offset(__i).read();
+        let __c = __p.read();
         if __c == 0 {
             break Ptr::null();
         }
-        let mut __j: usize = 0;
+        let mut __q = a1.clone();
         let __hit = loop {
-            let __r = a1.offset(__j).read();
+            let __r = __q.read();
             if __r == 0 {
                 break false;
             }
             if __r == __c {
                 break true;
             }
-            __j += 1;
+            __q += 1;
         };
         if __hit {
-            break a0.offset(__i);
+            break __p;
         }
-        __i += 1;
+        __p += 1;
     }
 }
 
 #[cfg(target_os = "linux")]
 fn f25(a0: AnyPtr, a1: i32, a2: usize) -> AnyPtr {
-    match (0..a2)
-        .rev()
-        .find(|&__i| a0.reinterpret_cast::<u8>().offset(__i).read() == a1 as u8)
-    {
-        Some(__i) => a0.reinterpret_cast::<u8>().offset(__i).to_any(),
-        None => Ptr::<u8>::null().to_any(),
+    let mut __p = a0.reinterpret_cast::<u8>().offset(a2);
+    let mut __i: usize = a2;
+    loop {
+        if __i == 0 {
+            break Ptr::<u8>::null().to_any();
+        }
+        __p -= 1;
+        __i -= 1;
+        if __p.read() == a1 as u8 {
+            break __p.to_any();
+        }
     }
 }
 
 #[cfg(target_os = "linux")]
 fn f26(a0: AnyPtr, a1: i32, a2: usize) -> AnyPtr {
-    match (0..a2)
-        .rev()
-        .find(|&__i| a0.reinterpret_cast::<u8>().offset(__i).read() == a1 as u8)
-    {
-        Some(__i) => a0.reinterpret_cast::<u8>().offset(__i).to_any(),
-        None => Ptr::<u8>::null().to_any(),
+    let mut __p = a0.reinterpret_cast::<u8>().offset(a2);
+    let mut __i: usize = a2;
+    loop {
+        if __i == 0 {
+            break Ptr::<u8>::null().to_any();
+        }
+        __p -= 1;
+        __i -= 1;
+        if __p.read() == a1 as u8 {
+            break __p.to_any();
+        }
     }
 }
