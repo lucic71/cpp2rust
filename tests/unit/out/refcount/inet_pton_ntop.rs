@@ -251,57 +251,58 @@ fn main_0() -> i32 {
     let four: Value<Box<[u8]>> = Rc::new(RefCell::new(Box::new([10_u8, 0_u8, 0_u8, 1_u8])));
     assert!(
         ((({
-            let mut __i: usize = 0;
-            loop {
-                let __c1 = {
-                    let __text = if 2 == libc::AF_INET {
-                        let mut __b = [0u8; 4];
-                        for __i in 0..4 {
-                            __b[__i] = ((four.as_pointer() as Ptr<u8>) as Ptr<u8>)
-                                .to_any()
-                                .reinterpret_cast::<u8>()
-                                .offset(__i)
-                                .read();
-                        }
-                        Some(std::net::Ipv4Addr::from(__b).to_string())
-                    } else if 2 == libc::AF_INET6 {
-                        let mut __b = [0u8; 16];
-                        for __i in 0..16 {
-                            __b[__i] = ((four.as_pointer() as Ptr<u8>) as Ptr<u8>)
-                                .to_any()
-                                .reinterpret_cast::<u8>()
-                                .offset(__i)
-                                .read();
-                        }
-                        Some(std::net::Ipv6Addr::from(__b).to_string())
-                    } else {
-                        None
-                    };
-                    match __text {
-                        Some(__s)
-                            if (__s.len() as u32) < (::std::mem::size_of::<[u8; 64]>() as u32) =>
-                        {
-                            for __i in 0..__s.len() {
-                                (text.as_pointer() as Ptr<u8>)
-                                    .offset(__i)
-                                    .write(__s.as_bytes()[__i]);
-                            }
-                            (text.as_pointer() as Ptr<u8>).offset(__s.len()).write(0);
-                            (text.as_pointer() as Ptr<u8>).clone()
-                        }
-                        _ => Ptr::null(),
+            let mut __p1 = {
+                let __text = if 2 == libc::AF_INET {
+                    let mut __b = [0u8; 4];
+                    for __i in 0..4 {
+                        __b[__i] = ((four.as_pointer() as Ptr<u8>) as Ptr<u8>)
+                            .to_any()
+                            .reinterpret_cast::<u8>()
+                            .offset(__i)
+                            .read();
                     }
+                    Some(std::net::Ipv4Addr::from(__b).to_string())
+                } else if 2 == libc::AF_INET6 {
+                    let mut __b = [0u8; 16];
+                    for __i in 0..16 {
+                        __b[__i] = ((four.as_pointer() as Ptr<u8>) as Ptr<u8>)
+                            .to_any()
+                            .reinterpret_cast::<u8>()
+                            .offset(__i)
+                            .read();
+                    }
+                    Some(std::net::Ipv6Addr::from(__b).to_string())
+                } else {
+                    None
+                };
+                match __text {
+                    Some(__s)
+                        if (__s.len() as u32) < (::std::mem::size_of::<[u8; 64]>() as u32) =>
+                    {
+                        for __i in 0..__s.len() {
+                            (text.as_pointer() as Ptr<u8>)
+                                .offset(__i)
+                                .write(__s.as_bytes()[__i]);
+                        }
+                        (text.as_pointer() as Ptr<u8>).offset(__s.len()).write(0);
+                        (text.as_pointer() as Ptr<u8>).clone()
+                    }
+                    _ => Ptr::null(),
                 }
-                .offset(__i)
-                .read();
-                let __c2 = Ptr::from_string_literal(b"10.0.0.1").offset(__i).read();
+            }
+            .clone();
+            let mut __p2 = Ptr::from_string_literal(b"10.0.0.1").clone();
+            loop {
+                let __c1 = __p1.read();
+                let __c2 = __p2.read();
                 if __c1 != __c2 {
                     break (__c1 as i32) - (__c2 as i32);
                 }
                 if __c1 == 0 {
                     break 0;
                 }
-                __i += 1;
+                __p1 += 1;
+                __p2 += 1;
             }
         } == 0) as i32)
             != 0)
@@ -327,57 +328,58 @@ fn main_0() -> i32 {
     (*sixteen.borrow_mut())[(15) as usize] = 1_u8;
     assert!(
         ((({
-            let mut __i: usize = 0;
-            loop {
-                let __c1 = {
-                    let __text = if 10 == libc::AF_INET {
-                        let mut __b = [0u8; 4];
-                        for __i in 0..4 {
-                            __b[__i] = ((sixteen.as_pointer() as Ptr<u8>) as Ptr<u8>)
-                                .to_any()
-                                .reinterpret_cast::<u8>()
-                                .offset(__i)
-                                .read();
-                        }
-                        Some(std::net::Ipv4Addr::from(__b).to_string())
-                    } else if 10 == libc::AF_INET6 {
-                        let mut __b = [0u8; 16];
-                        for __i in 0..16 {
-                            __b[__i] = ((sixteen.as_pointer() as Ptr<u8>) as Ptr<u8>)
-                                .to_any()
-                                .reinterpret_cast::<u8>()
-                                .offset(__i)
-                                .read();
-                        }
-                        Some(std::net::Ipv6Addr::from(__b).to_string())
-                    } else {
-                        None
-                    };
-                    match __text {
-                        Some(__s)
-                            if (__s.len() as u32) < (::std::mem::size_of::<[u8; 64]>() as u32) =>
-                        {
-                            for __i in 0..__s.len() {
-                                (text.as_pointer() as Ptr<u8>)
-                                    .offset(__i)
-                                    .write(__s.as_bytes()[__i]);
-                            }
-                            (text.as_pointer() as Ptr<u8>).offset(__s.len()).write(0);
-                            (text.as_pointer() as Ptr<u8>).clone()
-                        }
-                        _ => Ptr::null(),
+            let mut __p1 = {
+                let __text = if 10 == libc::AF_INET {
+                    let mut __b = [0u8; 4];
+                    for __i in 0..4 {
+                        __b[__i] = ((sixteen.as_pointer() as Ptr<u8>) as Ptr<u8>)
+                            .to_any()
+                            .reinterpret_cast::<u8>()
+                            .offset(__i)
+                            .read();
                     }
+                    Some(std::net::Ipv4Addr::from(__b).to_string())
+                } else if 10 == libc::AF_INET6 {
+                    let mut __b = [0u8; 16];
+                    for __i in 0..16 {
+                        __b[__i] = ((sixteen.as_pointer() as Ptr<u8>) as Ptr<u8>)
+                            .to_any()
+                            .reinterpret_cast::<u8>()
+                            .offset(__i)
+                            .read();
+                    }
+                    Some(std::net::Ipv6Addr::from(__b).to_string())
+                } else {
+                    None
+                };
+                match __text {
+                    Some(__s)
+                        if (__s.len() as u32) < (::std::mem::size_of::<[u8; 64]>() as u32) =>
+                    {
+                        for __i in 0..__s.len() {
+                            (text.as_pointer() as Ptr<u8>)
+                                .offset(__i)
+                                .write(__s.as_bytes()[__i]);
+                        }
+                        (text.as_pointer() as Ptr<u8>).offset(__s.len()).write(0);
+                        (text.as_pointer() as Ptr<u8>).clone()
+                    }
+                    _ => Ptr::null(),
                 }
-                .offset(__i)
-                .read();
-                let __c2 = Ptr::from_string_literal(b"::1").offset(__i).read();
+            }
+            .clone();
+            let mut __p2 = Ptr::from_string_literal(b"::1").clone();
+            loop {
+                let __c1 = __p1.read();
+                let __c2 = __p2.read();
                 if __c1 != __c2 {
                     break (__c1 as i32) - (__c2 as i32);
                 }
                 if __c1 == 0 {
                     break 0;
                 }
-                __i += 1;
+                __p1 += 1;
+                __p2 += 1;
             }
         } == 0) as i32)
             != 0)
