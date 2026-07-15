@@ -226,58 +226,6 @@ impl ByteRepr for SockaddrStorage {
     }
 }
 
-impl SockaddrIn {
-    pub fn to_libc(&self) -> ::libc::sockaddr_in {
-        let mut sin_zero = [0u8; 8];
-        sin_zero.copy_from_slice(&self.sin_zero.borrow());
-        ::libc::sockaddr_in {
-            sin_family: *self.sin_family.borrow(),
-            sin_port: *self.sin_port.borrow(),
-            sin_addr: ::libc::in_addr {
-                s_addr: *self.sin_addr.borrow().s_addr.borrow(),
-            },
-            sin_zero,
-        }
-    }
-    pub fn from_libc(l: &::libc::sockaddr_in) -> Self {
-        Self {
-            sin_family: Rc::new(RefCell::new(l.sin_family)),
-            sin_port: Rc::new(RefCell::new(l.sin_port)),
-            sin_addr: Rc::new(RefCell::new(InAddr {
-                s_addr: Rc::new(RefCell::new(l.sin_addr.s_addr)),
-            })),
-            sin_zero: Rc::new(RefCell::new(l.sin_zero.to_vec().into_boxed_slice())),
-        }
-    }
-}
-
-impl SockaddrIn6 {
-    pub fn to_libc(&self) -> ::libc::sockaddr_in6 {
-        let mut s6 = [0u8; 16];
-        s6.copy_from_slice(&self.sin6_addr.borrow().s6_addr.borrow());
-        ::libc::sockaddr_in6 {
-            sin6_family: *self.sin6_family.borrow(),
-            sin6_port: *self.sin6_port.borrow(),
-            sin6_flowinfo: *self.sin6_flowinfo.borrow(),
-            sin6_addr: ::libc::in6_addr { s6_addr: s6 },
-            sin6_scope_id: *self.sin6_scope_id.borrow(),
-        }
-    }
-    pub fn from_libc(l: &::libc::sockaddr_in6) -> Self {
-        Self {
-            sin6_family: Rc::new(RefCell::new(l.sin6_family)),
-            sin6_port: Rc::new(RefCell::new(l.sin6_port)),
-            sin6_flowinfo: Rc::new(RefCell::new(l.sin6_flowinfo)),
-            sin6_addr: Rc::new(RefCell::new(In6Addr {
-                s6_addr: Rc::new(RefCell::new(
-                    l.sin6_addr.s6_addr.to_vec().into_boxed_slice(),
-                )),
-            })),
-            sin6_scope_id: Rc::new(RefCell::new(l.sin6_scope_id)),
-        }
-    }
-}
-
 impl ByteRepr for ::libc::sockaddr {}
 impl ByteRepr for ::libc::sockaddr_in {}
 impl ByteRepr for ::libc::sockaddr_in6 {}

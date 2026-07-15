@@ -63,24 +63,4 @@ impl Clone for Stat {
 
 impl ByteRepr for Stat {}
 
-impl Stat {
-    pub fn from_libc(l: &::libc::stat) -> Self {
-        Self {
-            st_dev: Rc::new(RefCell::new(l.st_dev)),
-            st_ino: Rc::new(RefCell::new(l.st_ino)),
-            st_nlink: Rc::new(RefCell::new(l.st_nlink)),
-            st_mode: Rc::new(RefCell::new(l.st_mode)),
-            st_uid: Rc::new(RefCell::new(l.st_uid)),
-            st_gid: Rc::new(RefCell::new(l.st_gid)),
-            st_rdev: Rc::new(RefCell::new(l.st_rdev)),
-            st_size: Rc::new(RefCell::new(l.st_size)),
-            st_blksize: Rc::new(RefCell::new(l.st_blksize)),
-            st_blocks: Rc::new(RefCell::new(l.st_blocks)),
-            st_atime: Rc::new(RefCell::new(l.st_atime)),
-            st_mtime: Rc::new(RefCell::new(l.st_mtime)),
-            st_ctime: Rc::new(RefCell::new(l.st_ctime)),
-        }
-    }
-}
-
 impl ByteRepr for ::libc::stat {}
