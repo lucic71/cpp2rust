@@ -46,7 +46,7 @@ fn f5(a0: Ptr<u8>, a1: i32) -> Ptr<u8> {
     }
 }
 
-unsafe fn f7(a0: Ptr<u8>) -> usize {
+fn f7(a0: Ptr<u8>) -> usize {
     let mut __p = a0.clone();
     let mut __i: usize = 0;
     while __p.read() != 0 {
