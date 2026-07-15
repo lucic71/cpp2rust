@@ -2,7 +2,7 @@
 // Distributed under the MIT license that can be found in the LICENSE file.
 
 use crate::{ByteRepr, Value};
-use std::cell::RefCell;
+use std::cell::{Cell, RefCell};
 use std::rc::Rc;
 
 pub struct Dirent {
@@ -41,7 +41,7 @@ impl ByteRepr for Dirent {}
 
 pub struct CDir {
     pub entries: Vec<(u64, Vec<u8>, u8)>,
-    pub pos: ::std::cell::Cell<usize>,
+    pub pos: Cell<usize>,
 }
 
 impl ByteRepr for CDir {}
