@@ -3,6 +3,8 @@
 
 #include <poll.h>
 
+typedef struct pollfd t1;
+
 int f1(struct pollfd *fds, nfds_t nfds, int timeout) {
   return poll(fds, nfds, timeout);
 }

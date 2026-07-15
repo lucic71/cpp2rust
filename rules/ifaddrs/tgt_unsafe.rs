@@ -1,3 +1,7 @@
+fn t1() -> libc::ifaddrs {
+    unsafe { std::mem::zeroed() }
+}
+
 unsafe fn f1(a0: *mut *mut libc::ifaddrs) -> i32 {
     libc::getifaddrs(a0)
 }

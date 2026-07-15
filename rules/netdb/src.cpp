@@ -3,6 +3,8 @@
 
 #include <netdb.h>
 
+typedef struct addrinfo t1;
+
 int f1(const char *node, const char *service, const struct addrinfo *hints,
        struct addrinfo **res) {
   return getaddrinfo(node, service, hints, res);

@@ -3,6 +3,8 @@
 
 #include <sys/stat.h>
 
+typedef struct stat t1;
+
 int f1(const char *pathname, struct stat *statbuf) {
   return stat(pathname, statbuf);
 }

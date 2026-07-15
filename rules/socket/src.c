@@ -1,8 +1,11 @@
 #define _GNU_SOURCE
 #include <sys/types.h>
 #include <sys/socket.h>
+#include <sys/un.h>
 
 typedef struct sockaddr t1;
+typedef struct sockaddr_storage t2;
+typedef struct sockaddr_un t3;
 
 int f1() {
   return MSG_NOSIGNAL;
