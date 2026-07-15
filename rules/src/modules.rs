@@ -48,6 +48,10 @@ pub mod errno_tgt_refcount;
 pub mod errno_tgt_unsafe;
 #[path = r#"../eventfd/tgt_unsafe.rs"#]
 pub mod eventfd_tgt_unsafe;
+#[path = r#"../fcntl/tgt_refcount.rs"#]
+pub mod fcntl_tgt_refcount;
+#[path = r#"../fcntl/tgt_unsafe.rs"#]
+pub mod fcntl_tgt_unsafe;
 #[path = r#"../fnmatch/tgt_unsafe.rs"#]
 pub mod fnmatch_tgt_unsafe;
 #[path = r#"../fstream/tgt_refcount.rs"#]
@@ -64,6 +68,10 @@ pub mod ifaddrs_tgt_refcount;
 pub mod ifaddrs_tgt_unsafe;
 #[path = r#"../initializer_list/tgt_unsafe.rs"#]
 pub mod initializer_list_tgt_unsafe;
+#[path = r#"../ioctl/tgt_refcount.rs"#]
+pub mod ioctl_tgt_refcount;
+#[path = r#"../ioctl/tgt_unsafe.rs"#]
+pub mod ioctl_tgt_unsafe;
 #[path = r#"../iomanip/tgt_unsafe.rs"#]
 pub mod iomanip_tgt_unsafe;
 #[path = r#"../iostream/tgt_refcount.rs"#]

@@ -1,7 +1,9 @@
 // no-compile: refcount
 #include <assert.h>
+#include <fcntl.h>
 #include <stdio.h>
 #include <string.h>
+#include <sys/ioctl.h>
 #include <sys/types.h>
 #include <unistd.h>
 
@@ -87,6 +89,33 @@ static void test_ftruncate(void) {
   unlink(path);
 }
 
+static void test_open(void) {
+  int fd = open("/dev/null", 0, 0644);
+  assert(fd >= -1);
+  if (fd >= 0) {
+    close(fd);
+  }
+  fd = open("/dev/null", 0);
+  assert(fd >= -1);
+  if (fd >= 0) {
+    close(fd);
+  }
+}
+
+static void test_fcntl(void) {
+  assert(fcntl(0, 1) >= -1);
+  int duped = fcntl(0, 0, 100);
+  assert(duped >= -1);
+  if (duped >= 0) {
+    close(duped);
+  }
+}
+
+static void test_ioctl(void) {
+  int arg = 0;
+  assert(ioctl(0, 0, &arg) >= -1);
+}
+
 static void test_isatty(void) { printf("%d\n", isatty(0)); }
 
 static void test_geteuid(void) { printf("%u\n", geteuid()); }
@@ -104,6 +133,9 @@ int main(void) {
   test_unlink();
   test_pipe();
   test_ftruncate();
+  test_open();
+  test_fcntl();
+  test_ioctl();
   test_isatty();
   test_geteuid();
   test_gethostname();

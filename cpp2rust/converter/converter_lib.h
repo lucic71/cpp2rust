@@ -144,6 +144,8 @@ void ForEachTemplateArgument(
 
 clang::Expr *GetCallObject(clang::CallExpr *expr);
 
+clang::Expr *GetCallee(clang::CallExpr *expr);
+
 std::unordered_set<const clang::ValueDecl *>
 GetAllVars(const clang::Stmt *stmt);
 

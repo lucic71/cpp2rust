@@ -89,6 +89,10 @@ unsafe fn f20(a0: i32, a1: *const libc::c_char) -> *mut ::libc::FILE {
     libc::fdopen(a0, a1)
 }
 
+unsafe extern "C" {
+    fn f21(a0: *mut libc::c_char, a1: usize, a2: *const libc::c_char, ...) -> i32;
+}
+
 unsafe fn f22(a0: *const libc::c_char, a1: *const libc::c_char) -> i32 {
     libc::rename(a0, a1)
 }

@@ -94,3 +94,13 @@ fn f9() -> Ptr<::std::fs::File> {
 fn f10() -> Ptr<::std::fs::File> {
     libcc2rs::cin()
 }
+
+fn f21(a0: Ptr<u8>, a1: usize, a2: Ptr<u8>, va: &[VaArg]) -> i32 {
+    panic!(
+        "snprintf is not supported in the refcount model (buf_is_null={}, size={}, fmt={:?}, varargs={})",
+        a0.is_null(),
+        a1,
+        a2.to_rust_string(),
+        va.len()
+    )
+}

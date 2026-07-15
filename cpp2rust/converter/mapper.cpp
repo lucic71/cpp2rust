@@ -649,6 +649,19 @@ const TranslationRule::ExprRule *GetExprRule(const clang::Expr *expr) {
   return search(expr);
 }
 
+bool IsLibcPassthrough(const clang::Expr *expr) {
+  const auto *tgt_ir = GetExprRule(expr);
+  if (tgt_ir == nullptr || !tgt_ir->body.empty() || !tgt_ir->is_extern) {
+    return false;
+  }
+  const auto *ref =
+      clang::dyn_cast<clang::DeclRefExpr>(expr->IgnoreParenImpCasts());
+  const auto *decl = ref != nullptr ? ref->getDecl() : nullptr;
+  return decl != nullptr &&
+         decl->getASTContext().getSourceManager().isInSystemHeader(
+             decl->getLocation());
+}
+
 std::string MapFunctionName(const clang::FunctionDecl *decl) {
   assert(decl);
   if (!IsUserDefinedDecl(decl) &&
@@ -927,6 +940,12 @@ std::string ToString(const clang::NamedDecl *decl) {
       os << ", ";
     }
     os << ToString(func_decl->getParamDecl(i)->getType());
+  }
+  if (func_decl->isVariadic()) {
+    if (func_decl->getNumParams()) {
+      os << ", ";
+    }
+    os << "...";
   }
   os << ')';
 

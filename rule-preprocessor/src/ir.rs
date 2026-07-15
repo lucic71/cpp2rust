@@ -59,6 +59,8 @@ pub struct FnIr {
     pub params: Option<BTreeMap<String, TypeInfo>>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub return_type: Option<TypeInfo>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub is_extern: Option<bool>,
 }
 
 impl FnIr {
@@ -106,7 +108,10 @@ impl FnIr {
             1,
             &format!("Rule {name} generics"),
         );
-        assert!(!self.body.is_empty(), "Rule {name}: body must not be empty");
+        assert!(
+            self.is_extern == Some(true) || !self.body.is_empty(),
+            "Rule {name}: body must not be empty"
+        );
     }
 }
 
@@ -120,10 +125,21 @@ pub struct TypeIr {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
 pub enum BodyFragment {
-    Text { text: String },
-    Placeholder { placeholder: PlaceholderInner },
-    Generic { generic: i32 },
-    MethodCall { method_call: MethodCallInner },
+    Text {
+        text: String,
+    },
+    Placeholder {
+        placeholder: PlaceholderInner,
+    },
+    Generic {
+        generic: i32,
+    },
+    MethodCall {
+        method_call: MethodCallInner,
+    },
+    VaArgs {
+        va_args: std::marker::PhantomData<()>,
+    },
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
