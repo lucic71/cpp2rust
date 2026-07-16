@@ -14,7 +14,7 @@ fn main_0() -> i32 {
         (0..16).map(|_| <u8>::default()).collect::<Box<[u8]>>(),
     ));
     assert!(
-        (((if 2 == libc::AF_INET {
+        (((if libc::AF_INET == libc::AF_INET {
             match Ptr::from_string_literal(b"1.2.3.4")
                 .to_rust_string()
                 .parse::<std::net::Ipv4Addr>()
@@ -32,7 +32,7 @@ fn main_0() -> i32 {
                 }
                 Err(_) => 0,
             }
-        } else if 2 == libc::AF_INET6 {
+        } else if libc::AF_INET == libc::AF_INET6 {
             match Ptr::from_string_literal(b"1.2.3.4")
                 .to_rust_string()
                 .parse::<std::net::Ipv6Addr>()
@@ -66,7 +66,7 @@ fn main_0() -> i32 {
             != 0)
     );
     assert!(
-        (((if 2 == libc::AF_INET {
+        (((if libc::AF_INET == libc::AF_INET {
             match Ptr::from_string_literal(b"999.1.1.1")
                 .to_rust_string()
                 .parse::<std::net::Ipv4Addr>()
@@ -84,7 +84,7 @@ fn main_0() -> i32 {
                 }
                 Err(_) => 0,
             }
-        } else if 2 == libc::AF_INET6 {
+        } else if libc::AF_INET == libc::AF_INET6 {
             match Ptr::from_string_literal(b"999.1.1.1")
                 .to_rust_string()
                 .parse::<std::net::Ipv6Addr>()
@@ -108,7 +108,7 @@ fn main_0() -> i32 {
             != 0)
     );
     assert!(
-        (((if 2 == libc::AF_INET {
+        (((if libc::AF_INET == libc::AF_INET {
             match Ptr::from_string_literal(b"not an ip")
                 .to_rust_string()
                 .parse::<std::net::Ipv4Addr>()
@@ -126,7 +126,7 @@ fn main_0() -> i32 {
                 }
                 Err(_) => 0,
             }
-        } else if 2 == libc::AF_INET6 {
+        } else if libc::AF_INET == libc::AF_INET6 {
             match Ptr::from_string_literal(b"not an ip")
                 .to_rust_string()
                 .parse::<std::net::Ipv6Addr>()
@@ -150,7 +150,7 @@ fn main_0() -> i32 {
             != 0)
     );
     assert!(
-        (((if 10 == libc::AF_INET {
+        (((if libc::AF_INET6 == libc::AF_INET {
             match Ptr::from_string_literal(b"::1")
                 .to_rust_string()
                 .parse::<std::net::Ipv4Addr>()
@@ -168,7 +168,7 @@ fn main_0() -> i32 {
                 }
                 Err(_) => 0,
             }
-        } else if 10 == libc::AF_INET6 {
+        } else if libc::AF_INET6 == libc::AF_INET6 {
             match Ptr::from_string_literal(b"::1")
                 .to_rust_string()
                 .parse::<std::net::Ipv6Addr>()
@@ -197,7 +197,7 @@ fn main_0() -> i32 {
             != 0)
     );
     assert!(
-        (((if 10 == libc::AF_INET {
+        (((if libc::AF_INET6 == libc::AF_INET {
             match Ptr::from_string_literal(b"2001:db8::5")
                 .to_rust_string()
                 .parse::<std::net::Ipv4Addr>()
@@ -215,7 +215,7 @@ fn main_0() -> i32 {
                 }
                 Err(_) => 0,
             }
-        } else if 10 == libc::AF_INET6 {
+        } else if libc::AF_INET6 == libc::AF_INET6 {
             match Ptr::from_string_literal(b"2001:db8::5")
                 .to_rust_string()
                 .parse::<std::net::Ipv6Addr>()
@@ -251,8 +251,8 @@ fn main_0() -> i32 {
     let four: Value<Box<[u8]>> = Rc::new(RefCell::new(Box::new([10_u8, 0_u8, 0_u8, 1_u8])));
     assert!(
         ((({
-            let mut __p1 = {
-                let __text = if 2 == libc::AF_INET {
+            let mut __it1 = {
+                let __text = if libc::AF_INET == libc::AF_INET {
                     let mut __b = [0u8; 4];
                     for __i in 0..4 {
                         __b[__i] = ((four.as_pointer() as Ptr<u8>) as Ptr<u8>)
@@ -262,7 +262,7 @@ fn main_0() -> i32 {
                             .read();
                     }
                     Some(std::net::Ipv4Addr::from(__b).to_string())
-                } else if 2 == libc::AF_INET6 {
+                } else if libc::AF_INET == libc::AF_INET6 {
                     let mut __b = [0u8; 16];
                     for __i in 0..16 {
                         __b[__i] = ((four.as_pointer() as Ptr<u8>) as Ptr<u8>)
@@ -290,19 +290,17 @@ fn main_0() -> i32 {
                     _ => Ptr::null(),
                 }
             }
-            .clone();
-            let mut __p2 = Ptr::from_string_literal(b"10.0.0.1").clone();
+            .to_c_string_iterator();
+            let mut __it2 = Ptr::from_string_literal(b"10.0.0.1").to_c_string_iterator();
             loop {
-                let __c1 = __p1.read();
-                let __c2 = __p2.read();
+                let __c1 = __it1.next();
+                let __c2 = __it2.next();
                 if __c1 != __c2 {
-                    break (__c1 as i32) - (__c2 as i32);
+                    break (__c1.unwrap_or(0) as i32) - (__c2.unwrap_or(0) as i32);
                 }
-                if __c1 == 0 {
+                if __c1.is_none() {
                     break 0;
                 }
-                __p1 += 1;
-                __p2 += 1;
             }
         } == 0) as i32)
             != 0)
@@ -328,8 +326,8 @@ fn main_0() -> i32 {
     (*sixteen.borrow_mut())[(15) as usize] = 1_u8;
     assert!(
         ((({
-            let mut __p1 = {
-                let __text = if 10 == libc::AF_INET {
+            let mut __it1 = {
+                let __text = if libc::AF_INET6 == libc::AF_INET {
                     let mut __b = [0u8; 4];
                     for __i in 0..4 {
                         __b[__i] = ((sixteen.as_pointer() as Ptr<u8>) as Ptr<u8>)
@@ -339,7 +337,7 @@ fn main_0() -> i32 {
                             .read();
                     }
                     Some(std::net::Ipv4Addr::from(__b).to_string())
-                } else if 10 == libc::AF_INET6 {
+                } else if libc::AF_INET6 == libc::AF_INET6 {
                     let mut __b = [0u8; 16];
                     for __i in 0..16 {
                         __b[__i] = ((sixteen.as_pointer() as Ptr<u8>) as Ptr<u8>)
@@ -367,26 +365,24 @@ fn main_0() -> i32 {
                     _ => Ptr::null(),
                 }
             }
-            .clone();
-            let mut __p2 = Ptr::from_string_literal(b"::1").clone();
+            .to_c_string_iterator();
+            let mut __it2 = Ptr::from_string_literal(b"::1").to_c_string_iterator();
             loop {
-                let __c1 = __p1.read();
-                let __c2 = __p2.read();
+                let __c1 = __it1.next();
+                let __c2 = __it2.next();
                 if __c1 != __c2 {
-                    break (__c1 as i32) - (__c2 as i32);
+                    break (__c1.unwrap_or(0) as i32) - (__c2.unwrap_or(0) as i32);
                 }
-                if __c1 == 0 {
+                if __c1.is_none() {
                     break 0;
                 }
-                __p1 += 1;
-                __p2 += 1;
             }
         } == 0) as i32)
             != 0)
     );
     assert!(
         (((({
-            let __text = if 2 == libc::AF_INET {
+            let __text = if libc::AF_INET == libc::AF_INET {
                 let mut __b = [0u8; 4];
                 for __i in 0..4 {
                     __b[__i] = ((four.as_pointer() as Ptr<u8>) as Ptr<u8>)
@@ -396,7 +392,7 @@ fn main_0() -> i32 {
                         .read();
                 }
                 Some(std::net::Ipv4Addr::from(__b).to_string())
-            } else if 2 == libc::AF_INET6 {
+            } else if libc::AF_INET == libc::AF_INET6 {
                 let mut __b = [0u8; 16];
                 for __i in 0..16 {
                     __b[__i] = ((four.as_pointer() as Ptr<u8>) as Ptr<u8>)

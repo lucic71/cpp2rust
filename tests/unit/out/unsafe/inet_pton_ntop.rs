@@ -19,7 +19,7 @@ unsafe fn main_0() -> i32 {
                 fn inet_pton(af: i32, src: *const libc::c_char, dst: *mut ::libc::c_void) -> i32;
             }
             inet_pton(
-                2,
+                libc::AF_INET,
                 (c"1.2.3.4".as_ptr().cast_mut()).cast_const(),
                 (buf.as_mut_ptr() as *mut u8 as *mut ::libc::c_void),
             )
@@ -41,7 +41,7 @@ unsafe fn main_0() -> i32 {
                 fn inet_pton(af: i32, src: *const libc::c_char, dst: *mut ::libc::c_void) -> i32;
             }
             inet_pton(
-                2,
+                libc::AF_INET,
                 (c"999.1.1.1".as_ptr().cast_mut()).cast_const(),
                 (buf.as_mut_ptr() as *mut u8 as *mut ::libc::c_void),
             )
@@ -54,7 +54,7 @@ unsafe fn main_0() -> i32 {
                 fn inet_pton(af: i32, src: *const libc::c_char, dst: *mut ::libc::c_void) -> i32;
             }
             inet_pton(
-                2,
+                libc::AF_INET,
                 (c"not an ip".as_ptr().cast_mut()).cast_const(),
                 (buf.as_mut_ptr() as *mut u8 as *mut ::libc::c_void),
             )
@@ -67,7 +67,7 @@ unsafe fn main_0() -> i32 {
                 fn inet_pton(af: i32, src: *const libc::c_char, dst: *mut ::libc::c_void) -> i32;
             }
             inet_pton(
-                10,
+                libc::AF_INET6,
                 (c"::1".as_ptr().cast_mut()).cast_const(),
                 (buf.as_mut_ptr() as *mut u8 as *mut ::libc::c_void),
             )
@@ -85,7 +85,7 @@ unsafe fn main_0() -> i32 {
                 fn inet_pton(af: i32, src: *const libc::c_char, dst: *mut ::libc::c_void) -> i32;
             }
             inet_pton(
-                10,
+                libc::AF_INET6,
                 (c"2001:db8::5".as_ptr().cast_mut()).cast_const(),
                 (buf.as_mut_ptr() as *mut u8 as *mut ::libc::c_void),
             )
@@ -113,7 +113,7 @@ unsafe fn main_0() -> i32 {
                     ) -> *const libc::c_char;
                 }
                 inet_ntop(
-                    2,
+                    libc::AF_INET,
                     (four.as_mut_ptr() as *const u8 as *const ::libc::c_void),
                     text.as_mut_ptr(),
                     (::std::mem::size_of::<[libc::c_char; 64]>() as u32),
@@ -140,7 +140,7 @@ unsafe fn main_0() -> i32 {
                     ) -> *const libc::c_char;
                 }
                 inet_ntop(
-                    10,
+                    libc::AF_INET6,
                     (sixteen.as_mut_ptr() as *const u8 as *const ::libc::c_void),
                     text.as_mut_ptr(),
                     (::std::mem::size_of::<[libc::c_char; 64]>() as u32),
@@ -161,7 +161,7 @@ unsafe fn main_0() -> i32 {
                 ) -> *const libc::c_char;
             }
             inet_ntop(
-                2,
+                libc::AF_INET,
                 (four.as_mut_ptr() as *const u8 as *const ::libc::c_void),
                 text.as_mut_ptr(),
                 4_u32,
