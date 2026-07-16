@@ -156,8 +156,7 @@ fn f17(a0: Ptr<u8>, a1: i32, a2: Ptr<::std::fs::File>) -> Ptr<u8> {
                 }
                 Err(__e) => {
                     if __e.kind() != ::std::io::ErrorKind::Interrupted {
-                        libcc2rs::cpp2rust_errno()
-                            .write(__e.raw_os_error().unwrap_or(::libc::EIO));
+                        libcc2rs::cpp2rust_errno().write(__e.raw_os_error().unwrap_or(::libc::EIO));
                         __failed = true;
                         break;
                     }
