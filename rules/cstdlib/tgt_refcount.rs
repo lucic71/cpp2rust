@@ -19,6 +19,17 @@ fn f5(a0: usize, a1: usize) -> AnyPtr {
     libcc2rs::calloc_refcount(a0, a1)
 }
 
+fn f6(a0: Ptr<u8>) -> Ptr<u8> {
+    match ::std::env::var(a0.to_rust_string()) {
+        Ok(__val) => {
+            let mut __bytes = __val.into_bytes();
+            __bytes.push(0);
+            Ptr::alloc_array(__bytes.into_boxed_slice())
+        }
+        Err(_) => Ptr::null(),
+    }
+}
+
 fn f8(a0: AnyPtr, a1: AnyPtr, a2: usize, a3: usize, a4: fn(AnyPtr, AnyPtr) -> i32) -> AnyPtr {
     let __base = a1.reinterpret_cast::<u8>();
     let mut __lo: isize = 0;

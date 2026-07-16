@@ -84,6 +84,8 @@ pub mod ip_tgt_refcount;
 pub mod ip_tgt_unsafe;
 #[path = r#"../limits/tgt_unsafe.rs"#]
 pub mod limits_tgt_unsafe;
+#[path = r#"../locale/tgt_refcount.rs"#]
+pub mod locale_tgt_refcount;
 #[path = r#"../locale/tgt_unsafe.rs"#]
 pub mod locale_tgt_unsafe;
 #[path = r#"../map/tgt_refcount.rs"#]
