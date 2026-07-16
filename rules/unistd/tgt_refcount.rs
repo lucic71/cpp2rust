@@ -4,11 +4,7 @@
 use libcc2rs::*;
 
 fn f4(a0: Ptr<u8>) -> i32 {
-    match nix::unistd::unlink(
-        ::std::ffi::CString::new(a0.to_c_string_iterator().collect::<Vec<u8>>())
-            .unwrap()
-            .as_c_str(),
-    ) {
+    match nix::unistd::unlink(a0.to_rust_string().as_str()) {
         Ok(()) => 0,
         Err(__e) => {
             libcc2rs::cpp2rust_errno().write(__e as i32);
