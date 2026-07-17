@@ -71,16 +71,7 @@ fn main_0() -> i32 {
             } else {
                 __d.pos.set(__i + 1);
                 let __e = &__d.entries[__i];
-                let __de = Dirent::default();
-                *__de.d_ino.borrow_mut() = __e.0;
-                *__de.d_type.borrow_mut() = __e.2;
-                {
-                    let mut __nm = __de.d_name.borrow_mut();
-                    let __n = __e.1.len().min(__nm.len() - 1);
-                    __nm[..__n].copy_from_slice(&__e.1[..__n]);
-                    __nm[__n] = 0;
-                }
-                Ptr::alloc(__de)
+                Ptr::alloc(Dirent::from_entry(__e.0, &__e.1, __e.2))
             }
         }),
     ));

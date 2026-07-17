@@ -25,6 +25,21 @@ impl Default for Dirent {
     }
 }
 
+impl Dirent {
+    pub fn from_entry(ino: u64, name: &[u8], d_type: u8) -> Self {
+        let de = Dirent::default();
+        *de.d_ino.borrow_mut() = ino;
+        *de.d_type.borrow_mut() = d_type;
+        {
+            let mut nm = de.d_name.borrow_mut();
+            let n = name.len().min(nm.len() - 1);
+            nm[..n].copy_from_slice(&name[..n]);
+            nm[n] = 0;
+        }
+        de
+    }
+}
+
 impl Clone for Dirent {
     fn clone(&self) -> Self {
         Self {
