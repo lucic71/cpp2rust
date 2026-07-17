@@ -55,7 +55,7 @@ fn main_0() -> i32 {
             .deref())
         .sa_family
         .borrow()) as i32)
-            != 2) as i32)
+            != libc::AF_INET) as i32)
             != 0)
         {
             let __rhs = (*(*(*ifa.borrow()).upgrade().deref()).ifa_next.borrow()).clone();

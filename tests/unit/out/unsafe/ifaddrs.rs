@@ -24,7 +24,7 @@ unsafe fn main_0() -> i32 {
             ifa = (*ifa).ifa_next;
             continue 'loop_;
         }
-        if (((((*(*ifa).ifa_addr).sa_family as i32) != (2)) as i32) != 0) {
+        if (((((*(*ifa).ifa_addr).sa_family as i32) != (libc::AF_INET)) as i32) != 0) {
             ifa = (*ifa).ifa_next;
             continue 'loop_;
         }

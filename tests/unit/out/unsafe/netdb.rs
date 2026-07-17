@@ -17,7 +17,7 @@ pub unsafe fn test_ipv4_literal_0() {
         ai_canonname: std::ptr::null_mut(),
         ai_next: std::ptr::null_mut(),
     };
-    hints.ai_family = 2;
+    hints.ai_family = libc::AF_INET;
     hints.ai_socktype = libc::SOCK_STREAM;
     let mut res: *mut ::libc::addrinfo = std::ptr::null_mut();
     assert!(
@@ -30,7 +30,7 @@ pub unsafe fn test_ipv4_literal_0() {
             != 0)
     );
     assert!((((!((res).is_null())) as i32) != 0));
-    assert!((((((*res).ai_family) == (2)) as i32) != 0));
+    assert!((((((*res).ai_family) == (libc::AF_INET)) as i32) != 0));
     assert!((((((*res).ai_socktype) == (libc::SOCK_STREAM)) as i32) != 0));
     assert!(
         (((((*res).ai_addrlen as usize) == (::std::mem::size_of::<::libc::sockaddr_in>())) as i32)
@@ -38,7 +38,7 @@ pub unsafe fn test_ipv4_literal_0() {
     );
     assert!((((!(((*res).ai_addr).is_null())) as i32) != 0));
     let mut sin: *mut ::libc::sockaddr_in = ((*res).ai_addr as *mut ::libc::sockaddr_in);
-    assert!((((((*sin).sin_family as i32) == (2)) as i32) != 0));
+    assert!((((((*sin).sin_family as i32) == (libc::AF_INET)) as i32) != 0));
     let mut port_be: [u8; 2] = [(((8080) / (256)) as u8), (((8080) % (256)) as u8)];
     assert!(
         (((({
@@ -98,7 +98,7 @@ pub unsafe fn test_ipv6_literal_1() {
         ai_canonname: std::ptr::null_mut(),
         ai_next: std::ptr::null_mut(),
     };
-    hints.ai_family = 10;
+    hints.ai_family = libc::AF_INET6;
     hints.ai_socktype = libc::SOCK_STREAM;
     let mut res: *mut ::libc::addrinfo = std::ptr::null_mut();
     assert!(
@@ -111,7 +111,7 @@ pub unsafe fn test_ipv6_literal_1() {
             != 0)
     );
     assert!((((!((res).is_null())) as i32) != 0));
-    assert!((((((*res).ai_family) == (10)) as i32) != 0));
+    assert!((((((*res).ai_family) == (libc::AF_INET6)) as i32) != 0));
     assert!(
         (((((*res).ai_addrlen as usize) == (::std::mem::size_of::<::libc::sockaddr_in6>()))
             as i32)
@@ -119,7 +119,7 @@ pub unsafe fn test_ipv6_literal_1() {
     );
     assert!((((!(((*res).ai_addr).is_null())) as i32) != 0));
     let mut sin6: *mut ::libc::sockaddr_in6 = ((*res).ai_addr as *mut ::libc::sockaddr_in6);
-    assert!((((((*sin6).sin6_family as i32) == (10)) as i32) != 0));
+    assert!((((((*sin6).sin6_family as i32) == (libc::AF_INET6)) as i32) != 0));
     let mut port_be: [u8; 2] = [(((443) / (256)) as u8), (((443) % (256)) as u8)];
     assert!(
         (((({
@@ -182,7 +182,7 @@ pub unsafe fn test_family_mismatch_2() {
         ai_canonname: std::ptr::null_mut(),
         ai_next: std::ptr::null_mut(),
     };
-    hints.ai_family = 10;
+    hints.ai_family = libc::AF_INET6;
     hints.ai_socktype = libc::SOCK_STREAM;
     let mut res: *mut ::libc::addrinfo = std::ptr::null_mut();
     assert!(
@@ -207,7 +207,7 @@ pub unsafe fn test_null_hints_3() {
             != 0)
     );
     assert!((((!((res).is_null())) as i32) != 0));
-    assert!((((((*res).ai_family) == (2)) as i32) != 0));
+    assert!((((((*res).ai_family) == (libc::AF_INET)) as i32) != 0));
     let mut sin: *mut ::libc::sockaddr_in = ((*res).ai_addr as *mut ::libc::sockaddr_in);
     let mut addr_be: [u8; 4] = [127_u8, 0_u8, 0_u8, 1_u8];
     assert!(

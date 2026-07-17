@@ -17,7 +17,7 @@ pub fn test_ipv4_literal_0() {
         ai_canonname: Rc::new(RefCell::new(Ptr::<u8>::null())),
         ai_next: Rc::new(RefCell::new(Ptr::<libcc2rs::Addrinfo>::null())),
     }));
-    (*(*hints.borrow()).ai_family.borrow_mut()) = 2;
+    (*(*hints.borrow()).ai_family.borrow_mut()) = libc::AF_INET;
     (*(*hints.borrow()).ai_socktype.borrow_mut()) = libc::SOCK_STREAM;
     let res: Value<Ptr<libcc2rs::Addrinfo>> =
         Rc::new(RefCell::new(Ptr::<libcc2rs::Addrinfo>::null()));
@@ -114,7 +114,10 @@ pub fn test_ipv4_literal_0() {
             != 0)
     );
     assert!((((!((*res.borrow()).is_null())) as i32) != 0));
-    assert!(((((*(*(*res.borrow()).upgrade().deref()).ai_family.borrow()) == 2) as i32) != 0));
+    assert!(
+        ((((*(*(*res.borrow()).upgrade().deref()).ai_family.borrow()) == libc::AF_INET) as i32)
+            != 0)
+    );
     assert!(
         ((({
             let _lhs = (*(*(*res.borrow()).upgrade().deref()).ai_socktype.borrow());
@@ -135,7 +138,9 @@ pub fn test_ipv4_literal_0() {
             .reinterpret_cast::<libcc2rs::SockaddrIn>(),
     ));
     assert!(
-        (((((*(*(*sin.borrow()).upgrade().deref()).sin_family.borrow()) as i32) == 2) as i32) != 0)
+        (((((*(*(*sin.borrow()).upgrade().deref()).sin_family.borrow()) as i32) == libc::AF_INET)
+            as i32)
+            != 0)
     );
     let port_be: Value<Box<[u8]>> = Rc::new(RefCell::new(Box::new([
         ((8080 / 256) as u8),
@@ -188,7 +193,7 @@ pub fn test_ipv6_literal_1() {
         ai_canonname: Rc::new(RefCell::new(Ptr::<u8>::null())),
         ai_next: Rc::new(RefCell::new(Ptr::<libcc2rs::Addrinfo>::null())),
     }));
-    (*(*hints.borrow()).ai_family.borrow_mut()) = 10;
+    (*(*hints.borrow()).ai_family.borrow_mut()) = libc::AF_INET6;
     (*(*hints.borrow()).ai_socktype.borrow_mut()) = libc::SOCK_STREAM;
     let res: Value<Ptr<libcc2rs::Addrinfo>> =
         Rc::new(RefCell::new(Ptr::<libcc2rs::Addrinfo>::null()));
@@ -285,7 +290,10 @@ pub fn test_ipv6_literal_1() {
             != 0)
     );
     assert!((((!((*res.borrow()).is_null())) as i32) != 0));
-    assert!(((((*(*(*res.borrow()).upgrade().deref()).ai_family.borrow()) == 10) as i32) != 0));
+    assert!(
+        ((((*(*(*res.borrow()).upgrade().deref()).ai_family.borrow()) == libc::AF_INET6) as i32)
+            != 0)
+    );
     assert!(
         (((((*(*(*res.borrow()).upgrade().deref()).ai_addrlen.borrow()) as usize) == 28usize)
             as i32)
@@ -299,7 +307,8 @@ pub fn test_ipv6_literal_1() {
             .reinterpret_cast::<libcc2rs::SockaddrIn6>(),
     ));
     assert!(
-        (((((*(*(*sin6.borrow()).upgrade().deref()).sin6_family.borrow()) as i32) == 10) as i32)
+        (((((*(*(*sin6.borrow()).upgrade().deref()).sin6_family.borrow()) as i32) == libc::AF_INET6)
+            as i32)
             != 0)
     );
     let port_be: Value<Box<[u8]>> = Rc::new(RefCell::new(Box::new([
@@ -357,7 +366,7 @@ pub fn test_family_mismatch_2() {
         ai_canonname: Rc::new(RefCell::new(Ptr::<u8>::null())),
         ai_next: Rc::new(RefCell::new(Ptr::<libcc2rs::Addrinfo>::null())),
     }));
-    (*(*hints.borrow()).ai_family.borrow_mut()) = 10;
+    (*(*hints.borrow()).ai_family.borrow_mut()) = libc::AF_INET6;
     (*(*hints.borrow()).ai_socktype.borrow_mut()) = libc::SOCK_STREAM;
     let res: Value<Ptr<libcc2rs::Addrinfo>> =
         Rc::new(RefCell::new(Ptr::<libcc2rs::Addrinfo>::null()));
@@ -550,7 +559,10 @@ pub fn test_null_hints_3() {
             != 0)
     );
     assert!((((!((*res.borrow()).is_null())) as i32) != 0));
-    assert!(((((*(*(*res.borrow()).upgrade().deref()).ai_family.borrow()) == 2) as i32) != 0));
+    assert!(
+        ((((*(*(*res.borrow()).upgrade().deref()).ai_family.borrow()) == libc::AF_INET) as i32)
+            != 0)
+    );
     let sin: Value<Ptr<libcc2rs::SockaddrIn>> = Rc::new(RefCell::new(
         (*(*(*res.borrow()).upgrade().deref()).ai_addr.borrow())
             .reinterpret_cast::<libcc2rs::SockaddrIn>(),
