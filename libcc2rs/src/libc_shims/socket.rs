@@ -77,7 +77,6 @@ impl SockaddrIn {
             sin_zero,
         }
     }
-
 }
 
 impl SockaddrIn6 {
@@ -120,7 +119,6 @@ impl SockaddrIn6 {
             sin6_scope_id: *self.sin6_scope_id.borrow(),
         }
     }
-
 }
 
 impl Default for Sockaddr {
