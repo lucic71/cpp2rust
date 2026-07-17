@@ -30,35 +30,7 @@ fn main_0() -> i32 {
             nix::fcntl::OFlag::O_RDONLY,
             nix::sys::stat::Mode::empty(),
         ) {
-            Ok(__dir) => {
-                let mut __entries: Vec<(u64, Vec<u8>, u8)> = Vec::new();
-                for __e in __dir {
-                    match __e {
-                        Ok(__ent) => {
-                            let __ty = match __ent.file_type() {
-                                Some(nix::dir::Type::Fifo) => ::libc::DT_FIFO,
-                                Some(nix::dir::Type::CharacterDevice) => ::libc::DT_CHR,
-                                Some(nix::dir::Type::Directory) => ::libc::DT_DIR,
-                                Some(nix::dir::Type::BlockDevice) => ::libc::DT_BLK,
-                                Some(nix::dir::Type::File) => ::libc::DT_REG,
-                                Some(nix::dir::Type::Symlink) => ::libc::DT_LNK,
-                                Some(nix::dir::Type::Socket) => ::libc::DT_SOCK,
-                                None => ::libc::DT_UNKNOWN,
-                            };
-                            __entries.push((
-                                __ent.ino(),
-                                __ent.file_name().to_bytes().to_vec(),
-                                __ty,
-                            ));
-                        }
-                        Err(_) => {}
-                    }
-                }
-                Ptr::alloc(CDir {
-                    entries: __entries,
-                    pos: ::std::cell::Cell::new(0),
-                })
-            }
+            Ok(__dir) => Ptr::alloc(CDir::from_dir(__dir)),
             Err(__e) => {
                 libcc2rs::cpp2rust_errno().write(__e as i32);
                 Ptr::null()

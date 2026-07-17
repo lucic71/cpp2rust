@@ -59,6 +59,29 @@ pub struct CDir {
     pub pos: Cell<usize>,
 }
 
+impl CDir {
+    pub fn from_dir(dir: nix::dir::Dir) -> Self {
+        let mut entries: Vec<(u64, Vec<u8>, u8)> = Vec::new();
+        for ent in dir.into_iter().flatten() {
+            let ty = match ent.file_type() {
+                Some(nix::dir::Type::Fifo) => ::libc::DT_FIFO,
+                Some(nix::dir::Type::CharacterDevice) => ::libc::DT_CHR,
+                Some(nix::dir::Type::Directory) => ::libc::DT_DIR,
+                Some(nix::dir::Type::BlockDevice) => ::libc::DT_BLK,
+                Some(nix::dir::Type::File) => ::libc::DT_REG,
+                Some(nix::dir::Type::Symlink) => ::libc::DT_LNK,
+                Some(nix::dir::Type::Socket) => ::libc::DT_SOCK,
+                None => ::libc::DT_UNKNOWN,
+            };
+            entries.push((ent.ino(), ent.file_name().to_bytes().to_vec(), ty));
+        }
+        Self {
+            entries,
+            pos: Cell::new(0),
+        }
+    }
+}
+
 impl ByteRepr for CDir {}
 
 impl ByteRepr for ::libc::dirent {}
