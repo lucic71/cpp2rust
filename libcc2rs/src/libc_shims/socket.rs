@@ -77,6 +77,21 @@ impl SockaddrIn {
             sin_zero,
         }
     }
+
+    #[cfg(target_os = "macos")]
+    pub fn to_libc(&self) -> ::libc::sockaddr_in {
+        let mut sin_zero = [0u8; 8];
+        sin_zero.copy_from_slice(&self.sin_zero.borrow());
+        ::libc::sockaddr_in {
+            sin_len: ::std::mem::size_of::<::libc::sockaddr_in>() as u8,
+            sin_family: *self.sin_family.borrow() as u8,
+            sin_port: *self.sin_port.borrow(),
+            sin_addr: ::libc::in_addr {
+                s_addr: *self.sin_addr.borrow().s_addr.borrow(),
+            },
+            sin_zero,
+        }
+    }
 }
 
 impl SockaddrIn6 {
@@ -113,6 +128,20 @@ impl SockaddrIn6 {
         s6_addr.copy_from_slice(&self.sin6_addr.borrow().s6_addr.borrow());
         ::libc::sockaddr_in6 {
             sin6_family: *self.sin6_family.borrow(),
+            sin6_port: *self.sin6_port.borrow(),
+            sin6_flowinfo: *self.sin6_flowinfo.borrow(),
+            sin6_addr: ::libc::in6_addr { s6_addr },
+            sin6_scope_id: *self.sin6_scope_id.borrow(),
+        }
+    }
+
+    #[cfg(target_os = "macos")]
+    pub fn to_libc(&self) -> ::libc::sockaddr_in6 {
+        let mut s6_addr = [0u8; 16];
+        s6_addr.copy_from_slice(&self.sin6_addr.borrow().s6_addr.borrow());
+        ::libc::sockaddr_in6 {
+            sin6_len: ::std::mem::size_of::<::libc::sockaddr_in6>() as u8,
+            sin6_family: *self.sin6_family.borrow() as u8,
             sin6_port: *self.sin6_port.borrow(),
             sin6_flowinfo: *self.sin6_flowinfo.borrow(),
             sin6_addr: ::libc::in6_addr { s6_addr },
