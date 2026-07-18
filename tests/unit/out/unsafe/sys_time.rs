@@ -54,7 +54,42 @@ pub unsafe fn test_gmtime_r_2() {
     (unsafe { print_tm_1(1721126096_i64) });
     (unsafe { print_tm_1(4102444800_i64) });
 }
-pub unsafe fn test_strftime_3() {
+pub unsafe fn print_local_tm_3(mut t: i64) {
+    let mut tm: ::libc::tm = unsafe { std::mem::zeroed() };
+    assert!(
+        (((!((libc::localtime_r(
+            (&mut t as *mut i64).cast_const(),
+            (&mut tm as *mut ::libc::tm)
+        ))
+        .is_null())) as i32)
+            != 0)
+    );
+    printf(
+        (c"%d-%d-%d %d:%d:%d wday=%d yday=%d %s gmtoff=%ld isdst=%d\n"
+            .as_ptr()
+            .cast_mut())
+        .cast_const() as *const i8,
+        tm.tm_year,
+        tm.tm_mon,
+        tm.tm_mday,
+        tm.tm_hour,
+        tm.tm_min,
+        tm.tm_sec,
+        tm.tm_wday,
+        tm.tm_yday,
+        tm.tm_zone,
+        tm.tm_gmtoff,
+        tm.tm_isdst,
+    );
+}
+pub unsafe fn test_localtime_r_4() {
+    (unsafe { print_local_tm_3(0_i64) });
+    (unsafe { print_local_tm_3(951782400_i64) });
+    (unsafe { print_local_tm_3(1704067199_i64) });
+    (unsafe { print_local_tm_3(1721126096_i64) });
+    (unsafe { print_local_tm_3(1735689600_i64) });
+}
+pub unsafe fn test_strftime_5() {
     let mut t: i64 = 1721126096_i64;
     let mut tm: ::libc::tm = unsafe { std::mem::zeroed() };
     assert!(
@@ -137,6 +172,7 @@ pub fn main() {
 unsafe fn main_0() -> i32 {
     (unsafe { test_time_0() });
     (unsafe { test_gmtime_r_2() });
-    (unsafe { test_strftime_3() });
+    (unsafe { test_localtime_r_4() });
+    (unsafe { test_strftime_5() });
     return 0;
 }

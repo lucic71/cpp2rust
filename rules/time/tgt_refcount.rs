@@ -63,6 +63,28 @@ fn f4(a0: Ptr<::libc::time_t>, a1: Ptr<Tm>) -> Ptr<Tm> {
     }
 }
 
+fn f5(a0: Ptr<::libc::time_t>, a1: Ptr<Tm>) -> Ptr<Tm> {
+    let __res = a1.clone();
+    match jiff::Timestamp::from_second(a0.read()) {
+        Ok(__ts) => {
+            let __dt = __ts.to_zoned(jiff::tz::TimeZone::system());
+            let __info = __dt.time_zone().to_offset_info(__ts);
+            let __zone: Vec<u8> = __info.abbreviation().bytes().chain([0]).collect();
+            let __isdst = if __info.dst().is_dst() { 1 } else { 0 };
+            __res.with_mut(|__tm| {
+                *__tm = Tm::from_zoned(&__dt);
+                *__tm.tm_isdst.borrow_mut() = __isdst;
+                *__tm.tm_zone.borrow_mut() = Ptr::alloc_array(__zone.into_boxed_slice());
+            });
+            __res
+        }
+        Err(_) => {
+            libcc2rs::cpp2rust_errno().write(::libc::EOVERFLOW);
+            Ptr::null()
+        }
+    }
+}
+
 fn f6(a0: Ptr<u8>, a1: usize, a2: Ptr<u8>, a3: Ptr<Tm>) -> usize {
     let __dt = a3.with(|__tm| __tm.to_civil());
     let __text = match __dt {

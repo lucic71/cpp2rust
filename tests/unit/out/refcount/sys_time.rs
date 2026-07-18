@@ -92,7 +92,57 @@ pub fn test_gmtime_r_2() {
     ({ print_tm_1(1721126096_i64) });
     ({ print_tm_1(4102444800_i64) });
 }
-pub fn test_strftime_3() {
+pub fn print_local_tm_3(t: i64) {
+    let t: Value<i64> = Rc::new(RefCell::new(t));
+    let tm: Value<libcc2rs::Tm> = Rc::new(RefCell::new(Default::default()));
+    assert!(
+        (((!(({
+            let __res = (tm.as_pointer()).clone();
+            match jiff::Timestamp::from_second((t.as_pointer()).read()) {
+                Ok(__ts) => {
+                    let __dt = __ts.to_zoned(jiff::tz::TimeZone::system());
+                    let __info = __dt.time_zone().to_offset_info(__ts);
+                    let __zone: Vec<u8> = __info.abbreviation().bytes().chain([0]).collect();
+                    let __isdst = if __info.dst().is_dst() { 1 } else { 0 };
+                    __res.with_mut(|__tm| {
+                        *__tm = Tm::from_zoned(&__dt);
+                        *__tm.tm_isdst.borrow_mut() = __isdst;
+                        *__tm.tm_zone.borrow_mut() = Ptr::alloc_array(__zone.into_boxed_slice());
+                    });
+                    __res
+                }
+                Err(_) => {
+                    libcc2rs::cpp2rust_errno().write(::libc::EOVERFLOW);
+                    Ptr::null()
+                }
+            }
+        })
+        .is_null())) as i32)
+            != 0)
+    );
+    println!(
+        "{}-{}-{} {}:{}:{} wday={} yday={} {} gmtoff={} isdst={}",
+        (*(*tm.borrow()).tm_year.borrow()),
+        (*(*tm.borrow()).tm_mon.borrow()),
+        (*(*tm.borrow()).tm_mday.borrow()),
+        (*(*tm.borrow()).tm_hour.borrow()),
+        (*(*tm.borrow()).tm_min.borrow()),
+        (*(*tm.borrow()).tm_sec.borrow()),
+        (*(*tm.borrow()).tm_wday.borrow()),
+        (*(*tm.borrow()).tm_yday.borrow()),
+        (*(*tm.borrow()).tm_zone.borrow()),
+        (*(*tm.borrow()).tm_gmtoff.borrow()),
+        (*(*tm.borrow()).tm_isdst.borrow())
+    );
+}
+pub fn test_localtime_r_4() {
+    ({ print_local_tm_3(0_i64) });
+    ({ print_local_tm_3(951782400_i64) });
+    ({ print_local_tm_3(1704067199_i64) });
+    ({ print_local_tm_3(1721126096_i64) });
+    ({ print_local_tm_3(1735689600_i64) });
+}
+pub fn test_strftime_5() {
     let t: Value<i64> = Rc::new(RefCell::new(1721126096_i64));
     let tm: Value<libcc2rs::Tm> = Rc::new(RefCell::new(Default::default()));
     assert!(
@@ -263,6 +313,7 @@ pub fn main() {
 fn main_0() -> i32 {
     ({ test_time_0() });
     ({ test_gmtime_r_2() });
-    ({ test_strftime_3() });
+    ({ test_localtime_r_4() });
+    ({ test_strftime_5() });
     return 0;
 }
