@@ -82,7 +82,6 @@ pub fn test_getpwuid_r_2() {
                     let __needed: usize = __strs.iter().map(|__s| __s.len() + 1).sum();
                     if __needed > __buflen {
                         __out.write(Ptr::null());
-                        libcc2rs::cpp2rust_errno().write(::libc::ERANGE);
                         ::libc::ERANGE
                     } else {
                         let mut __ptrs: Vec<Ptr<u8>> = Vec::new();
@@ -107,7 +106,6 @@ pub fn test_getpwuid_r_2() {
                 }
                 Err(__e) => {
                     __out.write(Ptr::null());
-                    libcc2rs::cpp2rust_errno().write(__e as i32);
                     __e as i32
                 }
             }
@@ -169,7 +167,6 @@ pub fn test_getpwuid_r_erange_3() {
     ));
     let result: Value<Ptr<libcc2rs::Passwd>> =
         Rc::new(RefCell::new(Ptr::<libcc2rs::Passwd>::null()));
-    libcc2rs::cpp2rust_errno().write(0);
     assert!(
         ((({
             let __pwbuf = (pw.as_pointer()).clone();
@@ -190,7 +187,6 @@ pub fn test_getpwuid_r_erange_3() {
                     let __needed: usize = __strs.iter().map(|__s| __s.len() + 1).sum();
                     if __needed > __buflen {
                         __out.write(Ptr::null());
-                        libcc2rs::cpp2rust_errno().write(::libc::ERANGE);
                         ::libc::ERANGE
                     } else {
                         let mut __ptrs: Vec<Ptr<u8>> = Vec::new();
@@ -215,7 +211,6 @@ pub fn test_getpwuid_r_erange_3() {
                 }
                 Err(__e) => {
                     __out.write(Ptr::null());
-                    libcc2rs::cpp2rust_errno().write(__e as i32);
                     __e as i32
                 }
             }
@@ -223,7 +218,6 @@ pub fn test_getpwuid_r_erange_3() {
             != 0)
     );
     assert!(((((*result.borrow()).is_null()) as i32) != 0));
-    assert!(((((libcc2rs::cpp2rust_errno().read()) == 34) as i32) != 0));
 }
 pub fn main() {
     std::process::exit(main_0());
