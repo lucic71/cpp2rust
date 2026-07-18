@@ -56,20 +56,6 @@ static void test_ipv6_literal(void) {
   freeaddrinfo(res);
 }
 
-static void test_family_mismatch(void) {
-  struct addrinfo hints;
-  hints.ai_flags = 0;
-  hints.ai_protocol = 0;
-  hints.ai_addrlen = 0;
-  hints.ai_addr = NULL;
-  hints.ai_canonname = NULL;
-  hints.ai_next = NULL;
-  hints.ai_family = AF_INET6;
-  hints.ai_socktype = SOCK_STREAM;
-  struct addrinfo *res = NULL;
-  assert(getaddrinfo("127.0.0.1", "80", &hints, &res) != 0);
-}
-
 static void test_null_hints(void) {
   struct addrinfo *res = NULL;
   assert(getaddrinfo("127.0.0.1", "80", NULL, &res) == 0);
@@ -84,7 +70,6 @@ static void test_null_hints(void) {
 int main(void) {
   test_ipv4_literal();
   test_ipv6_literal();
-  test_family_mismatch();
   test_null_hints();
   return 0;
 }

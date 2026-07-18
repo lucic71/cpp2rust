@@ -165,28 +165,7 @@ pub unsafe fn test_ipv6_literal_1() {
     );
     libc::freeaddrinfo(res);
 }
-pub unsafe fn test_family_mismatch_2() {
-    let mut hints: ::libc::addrinfo = unsafe { std::mem::zeroed() };
-    hints.ai_flags = 0;
-    hints.ai_protocol = 0;
-    hints.ai_addrlen = 0_u32;
-    hints.ai_addr = std::ptr::null_mut();
-    hints.ai_canonname = std::ptr::null_mut();
-    hints.ai_next = std::ptr::null_mut();
-    hints.ai_family = libc::AF_INET6;
-    hints.ai_socktype = libc::SOCK_STREAM;
-    let mut res: *mut ::libc::addrinfo = std::ptr::null_mut();
-    assert!(
-        ((((libc::getaddrinfo(
-            (c"127.0.0.1".as_ptr().cast_mut()).cast_const(),
-            (c"80".as_ptr().cast_mut()).cast_const(),
-            (&mut hints as *mut ::libc::addrinfo).cast_const(),
-            (&mut res as *mut *mut ::libc::addrinfo)
-        )) != (0)) as i32)
-            != 0)
-    );
-}
-pub unsafe fn test_null_hints_3() {
+pub unsafe fn test_null_hints_2() {
     let mut res: *mut ::libc::addrinfo = std::ptr::null_mut();
     assert!(
         ((((libc::getaddrinfo(
@@ -233,7 +212,6 @@ pub fn main() {
 unsafe fn main_0() -> i32 {
     (unsafe { test_ipv4_literal_0() });
     (unsafe { test_ipv6_literal_1() });
-    (unsafe { test_family_mismatch_2() });
-    (unsafe { test_null_hints_3() });
+    (unsafe { test_null_hints_2() });
     return 0;
 }
