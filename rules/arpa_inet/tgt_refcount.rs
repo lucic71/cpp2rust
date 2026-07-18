@@ -27,6 +27,7 @@ fn f5(a0: i32, a1: Ptr<u8>, a2: AnyPtr) -> i32 {
             Err(_) => 0,
         }
     } else {
+        libcc2rs::cpp2rust_errno().write(::libc::EAFNOSUPPORT);
         -1
     }
 }
@@ -55,6 +56,13 @@ fn f6(a0: i32, a1: AnyPtr, a2: Ptr<u8>, a3: u32) -> Ptr<u8> {
             a2.offset(__s.len()).write(0);
             a2.clone()
         }
-        _ => Ptr::null(),
+        Some(_) => {
+            libcc2rs::cpp2rust_errno().write(::libc::ENOSPC);
+            Ptr::null()
+        }
+        None => {
+            libcc2rs::cpp2rust_errno().write(::libc::EAFNOSUPPORT);
+            Ptr::null()
+        }
     }
 }

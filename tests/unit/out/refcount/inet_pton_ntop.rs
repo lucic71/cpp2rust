@@ -51,6 +51,7 @@ fn main_0() -> i32 {
                 Err(_) => 0,
             }
         } else {
+            libcc2rs::cpp2rust_errno().write(::libc::EAFNOSUPPORT);
             -1
         } == 1) as i32)
             != 0)
@@ -103,6 +104,7 @@ fn main_0() -> i32 {
                 Err(_) => 0,
             }
         } else {
+            libcc2rs::cpp2rust_errno().write(::libc::EAFNOSUPPORT);
             -1
         } == 0) as i32)
             != 0)
@@ -145,6 +147,7 @@ fn main_0() -> i32 {
                 Err(_) => 0,
             }
         } else {
+            libcc2rs::cpp2rust_errno().write(::libc::EAFNOSUPPORT);
             -1
         } == 0) as i32)
             != 0)
@@ -187,6 +190,7 @@ fn main_0() -> i32 {
                 Err(_) => 0,
             }
         } else {
+            libcc2rs::cpp2rust_errno().write(::libc::EAFNOSUPPORT);
             -1
         } == 1) as i32)
             != 0)
@@ -234,6 +238,7 @@ fn main_0() -> i32 {
                 Err(_) => 0,
             }
         } else {
+            libcc2rs::cpp2rust_errno().write(::libc::EAFNOSUPPORT);
             -1
         } == 1) as i32)
             != 0)
@@ -287,7 +292,14 @@ fn main_0() -> i32 {
                         (text.as_pointer() as Ptr<u8>).offset(__s.len()).write(0);
                         (text.as_pointer() as Ptr<u8>).clone()
                     }
-                    _ => Ptr::null(),
+                    Some(_) => {
+                        libcc2rs::cpp2rust_errno().write(::libc::ENOSPC);
+                        Ptr::null()
+                    }
+                    None => {
+                        libcc2rs::cpp2rust_errno().write(::libc::EAFNOSUPPORT);
+                        Ptr::null()
+                    }
                 }
             }
             .to_c_string_iterator();
@@ -362,7 +374,14 @@ fn main_0() -> i32 {
                         (text.as_pointer() as Ptr<u8>).offset(__s.len()).write(0);
                         (text.as_pointer() as Ptr<u8>).clone()
                     }
-                    _ => Ptr::null(),
+                    Some(_) => {
+                        libcc2rs::cpp2rust_errno().write(::libc::ENOSPC);
+                        Ptr::null()
+                    }
+                    None => {
+                        libcc2rs::cpp2rust_errno().write(::libc::EAFNOSUPPORT);
+                        Ptr::null()
+                    }
                 }
             }
             .to_c_string_iterator();
@@ -415,7 +434,14 @@ fn main_0() -> i32 {
                     (text.as_pointer() as Ptr<u8>).offset(__s.len()).write(0);
                     (text.as_pointer() as Ptr<u8>).clone()
                 }
-                _ => Ptr::null(),
+                Some(_) => {
+                    libcc2rs::cpp2rust_errno().write(::libc::ENOSPC);
+                    Ptr::null()
+                }
+                None => {
+                    libcc2rs::cpp2rust_errno().write(::libc::EAFNOSUPPORT);
+                    Ptr::null()
+                }
             }
         })
         .is_null()) as i32)
