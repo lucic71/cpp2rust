@@ -358,10 +358,8 @@ fn main_0() -> i32 {
             .offset((*idx.borrow()) as isize)),
     ));
     assert!(
-        ((({
-            let _lhs = ((*(*(*pe.borrow()).upgrade().deref()).opt.borrow()) as u32).clone();
-            _lhs == ((Option::OPT_A as i32) as u32)
-        }) as i32)
+        (((((*(*(*pe.borrow()).upgrade().deref()).opt.borrow()) as u32)
+            == ((Option::OPT_A as i32) as u32)) as i32)
             != 0)
     );
     return 0;

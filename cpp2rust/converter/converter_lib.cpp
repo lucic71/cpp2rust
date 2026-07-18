@@ -687,7 +687,9 @@ static void GetAllVarsImpl(const clang::Stmt *stmt,
   }
 
   if (auto *decl_ref = clang::dyn_cast<clang::DeclRefExpr>(stmt)) {
-    vars.insert(decl_ref->getDecl());
+    if (!clang::isa<clang::EnumConstantDecl>(decl_ref->getDecl())) {
+      vars.insert(decl_ref->getDecl());
+    }
   } else if (auto *member = clang::dyn_cast<clang::MemberExpr>(stmt)) {
     vars.insert(member->getMemberDecl());
     GetAllVarsImpl(member->getBase(), vars);

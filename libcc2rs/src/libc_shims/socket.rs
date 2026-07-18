@@ -37,6 +37,90 @@ pub struct SockaddrStorage {
     pub __pad: Value<Box<[u8]>>,
 }
 
+impl SockaddrIn {
+    #[allow(clippy::unnecessary_cast)]
+    pub fn from_libc(l: &::libc::sockaddr_in) -> Self {
+        Self {
+            sin_family: Rc::new(RefCell::new(l.sin_family as u16)),
+            sin_port: Rc::new(RefCell::new(l.sin_port)),
+            sin_addr: Rc::new(RefCell::new(InAddr {
+                s_addr: Rc::new(RefCell::new(l.sin_addr.s_addr)),
+            })),
+            sin_zero: Rc::new(RefCell::new(
+                l.sin_zero
+                    .iter()
+                    .map(|&b| b as u8)
+                    .collect::<Vec<u8>>()
+                    .into_boxed_slice(),
+            )),
+        }
+    }
+
+    pub fn from_ipv4(addr: &::std::net::Ipv4Addr, port: u16) -> Self {
+        let s = Self::default();
+        *s.sin_family.borrow_mut() = ::libc::AF_INET as u16;
+        *s.sin_port.borrow_mut() = port.to_be();
+        *s.sin_addr.borrow().s_addr.borrow_mut() = u32::from(*addr).to_be();
+        s
+    }
+
+    #[cfg(target_os = "linux")]
+    pub fn to_libc(&self) -> ::libc::sockaddr_in {
+        let mut sin_zero = [0u8; 8];
+        sin_zero.copy_from_slice(&self.sin_zero.borrow());
+        ::libc::sockaddr_in {
+            sin_family: *self.sin_family.borrow(),
+            sin_port: *self.sin_port.borrow(),
+            sin_addr: ::libc::in_addr {
+                s_addr: *self.sin_addr.borrow().s_addr.borrow(),
+            },
+            sin_zero,
+        }
+    }
+}
+
+impl SockaddrIn6 {
+    #[allow(clippy::unnecessary_cast)]
+    pub fn from_libc(l: &::libc::sockaddr_in6) -> Self {
+        Self {
+            sin6_family: Rc::new(RefCell::new(l.sin6_family as u16)),
+            sin6_port: Rc::new(RefCell::new(l.sin6_port)),
+            sin6_flowinfo: Rc::new(RefCell::new(l.sin6_flowinfo)),
+            sin6_addr: Rc::new(RefCell::new(In6Addr {
+                s6_addr: Rc::new(RefCell::new(
+                    l.sin6_addr.s6_addr.to_vec().into_boxed_slice(),
+                )),
+            })),
+            sin6_scope_id: Rc::new(RefCell::new(l.sin6_scope_id)),
+        }
+    }
+
+    pub fn from_ipv6(addr: &::std::net::Ipv6Addr, port: u16) -> Self {
+        let s = Self::default();
+        *s.sin6_family.borrow_mut() = ::libc::AF_INET6 as u16;
+        *s.sin6_port.borrow_mut() = port.to_be();
+        s.sin6_addr
+            .borrow()
+            .s6_addr
+            .borrow_mut()
+            .copy_from_slice(&addr.octets());
+        s
+    }
+
+    #[cfg(target_os = "linux")]
+    pub fn to_libc(&self) -> ::libc::sockaddr_in6 {
+        let mut s6_addr = [0u8; 16];
+        s6_addr.copy_from_slice(&self.sin6_addr.borrow().s6_addr.borrow());
+        ::libc::sockaddr_in6 {
+            sin6_family: *self.sin6_family.borrow(),
+            sin6_port: *self.sin6_port.borrow(),
+            sin6_flowinfo: *self.sin6_flowinfo.borrow(),
+            sin6_addr: ::libc::in6_addr { s6_addr },
+            sin6_scope_id: *self.sin6_scope_id.borrow(),
+        }
+    }
+}
+
 impl Default for Sockaddr {
     fn default() -> Self {
         Self {
