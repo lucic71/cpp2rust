@@ -33,6 +33,18 @@ impl Passwd {
             pw_shell: mk(u.shell.as_os_str().as_encoded_bytes()),
         }
     }
+
+    pub fn from_user_in(u: &nix::unistd::User, strings: &[Ptr<u8>]) -> Self {
+        Self {
+            pw_name: Rc::new(RefCell::new(strings[0].clone())),
+            pw_passwd: Rc::new(RefCell::new(strings[1].clone())),
+            pw_uid: Rc::new(RefCell::new(u.uid.as_raw())),
+            pw_gid: Rc::new(RefCell::new(u.gid.as_raw())),
+            pw_gecos: Rc::new(RefCell::new(strings[2].clone())),
+            pw_dir: Rc::new(RefCell::new(strings[3].clone())),
+            pw_shell: Rc::new(RefCell::new(strings[4].clone())),
+        }
+    }
 }
 
 impl Clone for Passwd {
