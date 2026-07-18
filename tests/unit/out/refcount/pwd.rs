@@ -89,13 +89,12 @@ pub fn test_getpwuid_r_2() {
                         let mut __off: usize = 0;
                         for __s in &__strs {
                             __ptrs.push(__buf.offset(__off));
-                            let mut __dst = __buf.offset(__off);
-                            for __b in __s.iter() {
-                                __dst.write(*__b);
-                                __dst += 1;
-                            }
-                            __dst.write(0);
-                            __off += __s.len() + 1;
+                            let __end = __s.len();
+                            __buf.offset(__off).with_slice_mut(__end + 1, |__sl| {
+                                __sl[..__end].copy_from_slice(__s);
+                                __sl[__end] = 0;
+                            });
+                            __off += __end + 1;
                         }
                         __pwbuf.with_mut(|__pw| *__pw = Passwd::from_user_in(&__u, &__ptrs));
                         __out.write(__pwbuf.clone());
@@ -170,6 +169,7 @@ pub fn test_getpwuid_r_erange_3() {
     ));
     let result: Value<Ptr<libcc2rs::Passwd>> =
         Rc::new(RefCell::new(Ptr::<libcc2rs::Passwd>::null()));
+    libcc2rs::cpp2rust_errno().write(0);
     assert!(
         ((({
             let __pwbuf = (pw.as_pointer()).clone();
@@ -197,13 +197,12 @@ pub fn test_getpwuid_r_erange_3() {
                         let mut __off: usize = 0;
                         for __s in &__strs {
                             __ptrs.push(__buf.offset(__off));
-                            let mut __dst = __buf.offset(__off);
-                            for __b in __s.iter() {
-                                __dst.write(*__b);
-                                __dst += 1;
-                            }
-                            __dst.write(0);
-                            __off += __s.len() + 1;
+                            let __end = __s.len();
+                            __buf.offset(__off).with_slice_mut(__end + 1, |__sl| {
+                                __sl[..__end].copy_from_slice(__s);
+                                __sl[__end] = 0;
+                            });
+                            __off += __end + 1;
                         }
                         __pwbuf.with_mut(|__pw| *__pw = Passwd::from_user_in(&__u, &__ptrs));
                         __out.write(__pwbuf.clone());
@@ -224,6 +223,7 @@ pub fn test_getpwuid_r_erange_3() {
             != 0)
     );
     assert!(((((*result.borrow()).is_null()) as i32) != 0));
+    assert!(((((libcc2rs::cpp2rust_errno().read()) == 34) as i32) != 0));
 }
 pub fn main() {
     std::process::exit(main_0());

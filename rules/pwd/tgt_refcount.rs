@@ -31,13 +31,12 @@ fn f2(a0: u32, a1: Ptr<Passwd>, a2: Ptr<u8>, a3: usize, a4: Ptr<Ptr<Passwd>>) ->
                 let mut __off: usize = 0;
                 for __s in &__strs {
                     __ptrs.push(__buf.offset(__off));
-                    let mut __dst = __buf.offset(__off);
-                    for __b in __s.iter() {
-                        __dst.write(*__b);
-                        __dst += 1;
-                    }
-                    __dst.write(0);
-                    __off += __s.len() + 1;
+                    let __end = __s.len();
+                    __buf.offset(__off).with_slice_mut(__end + 1, |__sl| {
+                        __sl[..__end].copy_from_slice(__s);
+                        __sl[__end] = 0;
+                    });
+                    __off += __end + 1;
                 }
                 __pwbuf.with_mut(|__pw| *__pw = Passwd::from_user_in(&__u, &__ptrs));
                 __out.write(__pwbuf.clone());
