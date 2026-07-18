@@ -15,7 +15,11 @@ fn main_0() -> i32 {
             nix::unistd::geteuid().as_raw(),
         )) {
             Ok(Some(__u)) => Ptr::alloc(Passwd::from_user(&__u)),
-            _ => Ptr::null(),
+            Ok(None) => Ptr::null(),
+            Err(__e) => {
+                libcc2rs::cpp2rust_errno().write(__e as i32);
+                Ptr::null()
+            }
         },
     ));
     if !!(*pw.borrow()).is_null() {
