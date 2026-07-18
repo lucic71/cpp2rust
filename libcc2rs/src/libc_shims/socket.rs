@@ -80,8 +80,10 @@ impl SockaddrIn {
 
     #[cfg(target_os = "macos")]
     pub fn to_libc(&self) -> ::libc::sockaddr_in {
-        let mut sin_zero = [0u8; 8];
-        sin_zero.copy_from_slice(&self.sin_zero.borrow());
+        let mut sin_zero = [0i8; 8];
+        for (dst, src) in sin_zero.iter_mut().zip(self.sin_zero.borrow().iter()) {
+            *dst = *src as i8;
+        }
         ::libc::sockaddr_in {
             sin_len: ::std::mem::size_of::<::libc::sockaddr_in>() as u8,
             sin_family: *self.sin_family.borrow() as u8,
