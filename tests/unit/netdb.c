@@ -6,7 +6,13 @@
 #include <sys/types.h>
 
 static void test_ipv4_literal(void) {
-  struct addrinfo hints = {0};
+  struct addrinfo hints;
+  hints.ai_flags = 0;
+  hints.ai_protocol = 0;
+  hints.ai_addrlen = 0;
+  hints.ai_addr = NULL;
+  hints.ai_canonname = NULL;
+  hints.ai_next = NULL;
   hints.ai_family = AF_INET;
   hints.ai_socktype = SOCK_STREAM;
   struct addrinfo *res = NULL;
@@ -26,7 +32,13 @@ static void test_ipv4_literal(void) {
 }
 
 static void test_ipv6_literal(void) {
-  struct addrinfo hints = {0};
+  struct addrinfo hints;
+  hints.ai_flags = 0;
+  hints.ai_protocol = 0;
+  hints.ai_addrlen = 0;
+  hints.ai_addr = NULL;
+  hints.ai_canonname = NULL;
+  hints.ai_next = NULL;
   hints.ai_family = AF_INET6;
   hints.ai_socktype = SOCK_STREAM;
   struct addrinfo *res = NULL;
@@ -45,7 +57,13 @@ static void test_ipv6_literal(void) {
 }
 
 static void test_family_mismatch(void) {
-  struct addrinfo hints = {0};
+  struct addrinfo hints;
+  hints.ai_flags = 0;
+  hints.ai_protocol = 0;
+  hints.ai_addrlen = 0;
+  hints.ai_addr = NULL;
+  hints.ai_canonname = NULL;
+  hints.ai_next = NULL;
   hints.ai_family = AF_INET6;
   hints.ai_socktype = SOCK_STREAM;
   struct addrinfo *res = NULL;

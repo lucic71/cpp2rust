@@ -7,16 +7,13 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 pub unsafe fn test_ipv4_literal_0() {
-    let mut hints: ::libc::addrinfo = ::libc::addrinfo {
-        ai_flags: 0,
-        ai_family: 0_i32,
-        ai_socktype: 0_i32,
-        ai_protocol: 0_i32,
-        ai_addrlen: 0_u32,
-        ai_addr: std::ptr::null_mut(),
-        ai_canonname: std::ptr::null_mut(),
-        ai_next: std::ptr::null_mut(),
-    };
+    let mut hints: ::libc::addrinfo = unsafe { std::mem::zeroed() };
+    hints.ai_flags = 0;
+    hints.ai_protocol = 0;
+    hints.ai_addrlen = 0_u32;
+    hints.ai_addr = std::ptr::null_mut();
+    hints.ai_canonname = std::ptr::null_mut();
+    hints.ai_next = std::ptr::null_mut();
     hints.ai_family = libc::AF_INET;
     hints.ai_socktype = libc::SOCK_STREAM;
     let mut res: *mut ::libc::addrinfo = std::ptr::null_mut();
@@ -88,16 +85,13 @@ pub unsafe fn test_ipv4_literal_0() {
     libc::freeaddrinfo(res);
 }
 pub unsafe fn test_ipv6_literal_1() {
-    let mut hints: ::libc::addrinfo = ::libc::addrinfo {
-        ai_flags: 0,
-        ai_family: 0_i32,
-        ai_socktype: 0_i32,
-        ai_protocol: 0_i32,
-        ai_addrlen: 0_u32,
-        ai_addr: std::ptr::null_mut(),
-        ai_canonname: std::ptr::null_mut(),
-        ai_next: std::ptr::null_mut(),
-    };
+    let mut hints: ::libc::addrinfo = unsafe { std::mem::zeroed() };
+    hints.ai_flags = 0;
+    hints.ai_protocol = 0;
+    hints.ai_addrlen = 0_u32;
+    hints.ai_addr = std::ptr::null_mut();
+    hints.ai_canonname = std::ptr::null_mut();
+    hints.ai_next = std::ptr::null_mut();
     hints.ai_family = libc::AF_INET6;
     hints.ai_socktype = libc::SOCK_STREAM;
     let mut res: *mut ::libc::addrinfo = std::ptr::null_mut();
@@ -172,16 +166,13 @@ pub unsafe fn test_ipv6_literal_1() {
     libc::freeaddrinfo(res);
 }
 pub unsafe fn test_family_mismatch_2() {
-    let mut hints: ::libc::addrinfo = ::libc::addrinfo {
-        ai_flags: 0,
-        ai_family: 0_i32,
-        ai_socktype: 0_i32,
-        ai_protocol: 0_i32,
-        ai_addrlen: 0_u32,
-        ai_addr: std::ptr::null_mut(),
-        ai_canonname: std::ptr::null_mut(),
-        ai_next: std::ptr::null_mut(),
-    };
+    let mut hints: ::libc::addrinfo = unsafe { std::mem::zeroed() };
+    hints.ai_flags = 0;
+    hints.ai_protocol = 0;
+    hints.ai_addrlen = 0_u32;
+    hints.ai_addr = std::ptr::null_mut();
+    hints.ai_canonname = std::ptr::null_mut();
+    hints.ai_next = std::ptr::null_mut();
     hints.ai_family = libc::AF_INET6;
     hints.ai_socktype = libc::SOCK_STREAM;
     let mut res: *mut ::libc::addrinfo = std::ptr::null_mut();

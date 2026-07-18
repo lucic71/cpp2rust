@@ -7,16 +7,13 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
 pub fn test_ipv4_literal_0() {
-    let hints: Value<libcc2rs::Addrinfo> = Rc::new(RefCell::new(libcc2rs::Addrinfo {
-        ai_flags: Rc::new(RefCell::new(0)),
-        ai_family: Rc::new(RefCell::new(<i32>::default())),
-        ai_socktype: Rc::new(RefCell::new(<i32>::default())),
-        ai_protocol: Rc::new(RefCell::new(<i32>::default())),
-        ai_addrlen: Rc::new(RefCell::new(<u32>::default())),
-        ai_addr: Rc::new(RefCell::new(Ptr::<libcc2rs::Sockaddr>::null())),
-        ai_canonname: Rc::new(RefCell::new(Ptr::<u8>::null())),
-        ai_next: Rc::new(RefCell::new(Ptr::<libcc2rs::Addrinfo>::null())),
-    }));
+    let hints: Value<libcc2rs::Addrinfo> = Rc::new(RefCell::new(Default::default()));
+    (*(*hints.borrow()).ai_flags.borrow_mut()) = 0;
+    (*(*hints.borrow()).ai_protocol.borrow_mut()) = 0;
+    (*(*hints.borrow()).ai_addrlen.borrow_mut()) = 0_u32;
+    (*(*hints.borrow()).ai_addr.borrow_mut()) = Ptr::<libcc2rs::Sockaddr>::null();
+    (*(*hints.borrow()).ai_canonname.borrow_mut()) = Ptr::<u8>::null();
+    (*(*hints.borrow()).ai_next.borrow_mut()) = Ptr::<libcc2rs::Addrinfo>::null();
     (*(*hints.borrow()).ai_family.borrow_mut()) = libc::AF_INET;
     (*(*hints.borrow()).ai_socktype.borrow_mut()) = libc::SOCK_STREAM;
     let res: Value<Ptr<libcc2rs::Addrinfo>> =
@@ -183,16 +180,13 @@ pub fn test_ipv4_literal_0() {
     };
 }
 pub fn test_ipv6_literal_1() {
-    let hints: Value<libcc2rs::Addrinfo> = Rc::new(RefCell::new(libcc2rs::Addrinfo {
-        ai_flags: Rc::new(RefCell::new(0)),
-        ai_family: Rc::new(RefCell::new(<i32>::default())),
-        ai_socktype: Rc::new(RefCell::new(<i32>::default())),
-        ai_protocol: Rc::new(RefCell::new(<i32>::default())),
-        ai_addrlen: Rc::new(RefCell::new(<u32>::default())),
-        ai_addr: Rc::new(RefCell::new(Ptr::<libcc2rs::Sockaddr>::null())),
-        ai_canonname: Rc::new(RefCell::new(Ptr::<u8>::null())),
-        ai_next: Rc::new(RefCell::new(Ptr::<libcc2rs::Addrinfo>::null())),
-    }));
+    let hints: Value<libcc2rs::Addrinfo> = Rc::new(RefCell::new(Default::default()));
+    (*(*hints.borrow()).ai_flags.borrow_mut()) = 0;
+    (*(*hints.borrow()).ai_protocol.borrow_mut()) = 0;
+    (*(*hints.borrow()).ai_addrlen.borrow_mut()) = 0_u32;
+    (*(*hints.borrow()).ai_addr.borrow_mut()) = Ptr::<libcc2rs::Sockaddr>::null();
+    (*(*hints.borrow()).ai_canonname.borrow_mut()) = Ptr::<u8>::null();
+    (*(*hints.borrow()).ai_next.borrow_mut()) = Ptr::<libcc2rs::Addrinfo>::null();
     (*(*hints.borrow()).ai_family.borrow_mut()) = libc::AF_INET6;
     (*(*hints.borrow()).ai_socktype.borrow_mut()) = libc::SOCK_STREAM;
     let res: Value<Ptr<libcc2rs::Addrinfo>> =
@@ -356,16 +350,13 @@ pub fn test_ipv6_literal_1() {
     };
 }
 pub fn test_family_mismatch_2() {
-    let hints: Value<libcc2rs::Addrinfo> = Rc::new(RefCell::new(libcc2rs::Addrinfo {
-        ai_flags: Rc::new(RefCell::new(0)),
-        ai_family: Rc::new(RefCell::new(<i32>::default())),
-        ai_socktype: Rc::new(RefCell::new(<i32>::default())),
-        ai_protocol: Rc::new(RefCell::new(<i32>::default())),
-        ai_addrlen: Rc::new(RefCell::new(<u32>::default())),
-        ai_addr: Rc::new(RefCell::new(Ptr::<libcc2rs::Sockaddr>::null())),
-        ai_canonname: Rc::new(RefCell::new(Ptr::<u8>::null())),
-        ai_next: Rc::new(RefCell::new(Ptr::<libcc2rs::Addrinfo>::null())),
-    }));
+    let hints: Value<libcc2rs::Addrinfo> = Rc::new(RefCell::new(Default::default()));
+    (*(*hints.borrow()).ai_flags.borrow_mut()) = 0;
+    (*(*hints.borrow()).ai_protocol.borrow_mut()) = 0;
+    (*(*hints.borrow()).ai_addrlen.borrow_mut()) = 0_u32;
+    (*(*hints.borrow()).ai_addr.borrow_mut()) = Ptr::<libcc2rs::Sockaddr>::null();
+    (*(*hints.borrow()).ai_canonname.borrow_mut()) = Ptr::<u8>::null();
+    (*(*hints.borrow()).ai_next.borrow_mut()) = Ptr::<libcc2rs::Addrinfo>::null();
     (*(*hints.borrow()).ai_family.borrow_mut()) = libc::AF_INET6;
     (*(*hints.borrow()).ai_socktype.borrow_mut()) = libc::SOCK_STREAM;
     let res: Value<Ptr<libcc2rs::Addrinfo>> =
