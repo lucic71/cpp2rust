@@ -3,6 +3,8 @@
 
 #include <pwd.h>
 
+typedef struct passwd t1;
+
 struct passwd *f1(uid_t uid) { return getpwuid(uid); }
 
 int f2(uid_t uid, struct passwd *pwd, char *buf, size_t buflen,

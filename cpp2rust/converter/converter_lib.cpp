@@ -687,7 +687,9 @@ static void GetAllVarsImpl(const clang::Stmt *stmt,
   }
 
   if (auto *decl_ref = clang::dyn_cast<clang::DeclRefExpr>(stmt)) {
-    vars.insert(decl_ref->getDecl());
+    if (!clang::isa<clang::EnumConstantDecl>(decl_ref->getDecl())) {
+      vars.insert(decl_ref->getDecl());
+    }
   } else if (auto *member = clang::dyn_cast<clang::MemberExpr>(stmt)) {
     vars.insert(member->getMemberDecl());
     GetAllVarsImpl(member->getBase(), vars);
@@ -764,6 +766,15 @@ BuildUnifiedArgs(clang::Expr *expr, clang::Expr **args, unsigned num_args) {
     all_args.push_back(args[i]);
   }
   return all_args;
+}
+
+clang::Expr *GetCallee(clang::CallExpr *expr) {
+  if (auto op_call = clang::dyn_cast<clang::CXXOperatorCallExpr>(expr)) {
+    if (op_call->getOperator() == clang::OO_Call) {
+      return op_call->getArg(0);
+    }
+  }
+  return expr->getCallee();
 }
 
 clang::Expr *GetCalleeOrExpr(clang::Expr *expr) {

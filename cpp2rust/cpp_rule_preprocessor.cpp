@@ -544,6 +544,10 @@ private:
       if (const auto *ttp =
               llvm::dyn_cast<clang::TemplateTypeParmDecl>(param)) {
         clang::QualType type;
+        if (param->isTemplateParameterPack()) {
+          out.emplace_back(clang::TemplateArgument::getEmptyPack());
+          continue;
+        }
         if (ttp->hasDefaultArgument()) {
           clang::QualType hint = getDefaultArg(decl, ttp, out);
           assert(!hint.isNull() && "Failed retrieving type hint");
@@ -613,7 +617,14 @@ private:
                          clang::OverloadCandidateSet &candidates) {
     clang::LookupResult decls(*sema_, name, loc_,
                               clang::Sema::LookupOrdinaryName);
-    sema_->LookupQualifiedName(decls, sema_->getStdNamespace());
+    if (clang::NamespaceDecl *std_ns = sema_->getStdNamespace()) {
+      sema_->LookupQualifiedName(decls, std_ns);
+    }
+    if (decls.empty()) {
+      decls.clear();
+      sema_->LookupQualifiedName(decls,
+                                 sema_->Context.getTranslationUnitDecl());
+    }
     for (auto *ndecl : decls) {
       if (auto *candidate = createCandidate(ndecl, callArgs, explicitTArgs)) {
         sema_->AddOverloadCandidate(
@@ -780,6 +791,7 @@ private:
       cxxConstructorNameLookup(rule->getReturnType(), callArgs, candidates);
       break;
     case LookupKind::ADL:
+      regularNameLookup(callArgs, &explicitTArgs, name, candidates);
       adlLookup(callArgs, name, candidates);
       break;
     }

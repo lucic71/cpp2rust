@@ -1593,6 +1593,11 @@ bool Converter::VisitCallExpr(clang::CallExpr *expr) {
   }
 
   if (Mapper::Contains(expr->getCallee())) {
+    if (Mapper::IsLibcPassthrough(GetCalleeOrExpr(expr))) {
+      ConvertGenericCallExpr(expr);
+      return false;
+    }
+
     auto **args = expr->getArgs();
     auto num_args = expr->getNumArgs();
     auto ctx = CollectRefBindingTempArgs(expr);
@@ -1667,20 +1672,20 @@ Converter::CallInfo Converter::CollectCallInfo(clang::CallExpr *expr) {
   using Kind = CallArg::Kind;
 
   CallInfo info;
-  info.callee = expr->getCallee();
+  info.expr = expr;
+  auto callee = GetCallee(expr);
   unsigned arg_begin = 0;
   if (auto op_call = llvm::dyn_cast<clang::CXXOperatorCallExpr>(expr)) {
     if (op_call->getOperator() == clang::OO_Call) {
-      info.callee = op_call->getArg(0);
       arg_begin = 1;
     }
   }
 
-  const auto *function =
-      expr->getCalleeDecl() ? expr->getCalleeDecl()->getAsFunction() : nullptr;
+  auto decl = expr->getCalleeDecl();
+  const auto *function = decl ? decl->getAsFunction() : nullptr;
   const clang::FunctionProtoType *proto = nullptr;
   if (!function) {
-    auto callee_ty = info.callee->getType().getDesugaredType(ctx_);
+    auto callee_ty = callee->getType().getDesugaredType(ctx_);
     if (auto ptr_ty = callee_ty->getAs<clang::PointerType>()) {
       proto = ptr_ty->getPointeeType()->getAs<clang::FunctionProtoType>();
     }
@@ -1693,6 +1698,7 @@ Converter::CallInfo Converter::CollectCallInfo(clang::CallExpr *expr) {
       function ? function->getNumParams() : proto->getNumParams();
   info.is_variadic = function ? function->isVariadic() : proto->isVariadic();
   info.is_fn_ptr_call = !function;
+  info.is_libc_passthrough = Mapper::IsLibcPassthrough(GetCalleeOrExpr(expr));
 
   for (unsigned i = 0; i < num_named_params && i < num_args; ++i) {
     auto *arg = expr->getArg(i + arg_begin);
@@ -1704,7 +1710,8 @@ Converter::CallInfo Converter::CollectCallInfo(clang::CallExpr *expr) {
                                : proto->getParamType(i),
         .expr = arg,
         .has_default = function && function->getParamDecl(i)->hasDefaultArg(),
-        .kind = IsLiteral(arg) ? Kind::Inline : Kind::Hoisted,
+        .kind = (IsLiteral(arg) || info.is_libc_passthrough) ? Kind::Inline
+                                                             : Kind::Hoisted,
     };
     bool is_materialize = clang::isa<clang::MaterializeTemporaryExpr>(arg);
     if (is_materialize && ca.param_type->isLValueReferenceType()) {
@@ -1778,7 +1785,9 @@ void Converter::EmitArgList(const CallInfo &info) {
   using Kind = CallArg::Kind;
   PushParen call_args(*this);
 
-  for (const auto &ca : info.args) {
+  for (unsigned i = 0; i < info.args.size(); i++) {
+    const auto &ca = info.args[i];
+
     if (ca.has_default) {
       StrCat("Some");
     }
@@ -1794,6 +1803,10 @@ void Converter::EmitArgList(const CallInfo &info) {
         break;
       case Kind::Inline:
         ConvertParamTy(ca.param_type, ca.expr);
+        if (info.is_libc_passthrough) {
+          StrCat(std::format(
+              "as {}", Mapper::GetParamType(GetCalleeOrExpr(info.expr), i)));
+        }
         break;
       }
     }
@@ -1802,14 +1815,19 @@ void Converter::EmitArgList(const CallInfo &info) {
   }
 
   if (info.is_variadic) {
-    StrCat(token::kRef);
-    PushBracket push(*this);
+    if (!info.is_libc_passthrough) {
+      StrCat(token::kRef);
+    }
+    PushBracket push(*this, !info.is_libc_passthrough);
     for (auto *arg : info.variadic_args) {
       {
         PushParen p(*this);
         ConvertVariadicArg(arg);
       }
-      StrCat(".into()", token::kComma);
+      if (!info.is_libc_passthrough) {
+        StrCat(".into()");
+      }
+      StrCat(token::kComma);
     }
   }
 }
@@ -1818,10 +1836,14 @@ void Converter::EmitCall(CallInfo &&info) {
   EmitHoistedArgs(info);
 
   if (info.is_fn_ptr_call) {
-    EmitFnPtrCall(info.callee);
+    EmitFnPtrCall(GetCallee(info.expr));
+  } else if (info.is_libc_passthrough) {
+    auto *direct_callee = info.expr->getDirectCallee();
+    assert(direct_callee);
+    StrCat("libc::", direct_callee->getName());
   } else {
     PushExprKind push(*this, ExprKind::Callee);
-    Convert(info.callee);
+    Convert(GetCallee(info.expr));
   }
 
   EmitArgList(info);
@@ -4256,6 +4278,8 @@ std::string Converter::ConvertIRFragment(
           .is_index_base = ph->is_index_base,
       };
       result += ConvertPlaceholder(expr, arg, ph_ctx);
+    } else if (std::get_if<TranslationRule::VaArgsFragment>(&frag)) {
+      result += ConvertVariadicTail(expr, all_args);
     } else if (auto *mc =
                    std::get_if<std::unique_ptr<MethodCallFragment>>(&frag)) {
       result += ConvertMappedMethodCall(expr, **mc, args, num_args, ctx);
@@ -4263,6 +4287,25 @@ std::string Converter::ConvertIRFragment(
   }
 
   return result;
+}
+
+std::string
+Converter::ConvertVariadicTail(clang::Expr *expr,
+                               const std::vector<clang::Expr *> &all_args) {
+  const auto *tgt_ir = Mapper::GetExprRule(GetCalleeOrExpr(expr));
+  unsigned fixed = tgt_ir ? tgt_ir->params.size() : 0;
+
+  Buffer buf(*this);
+  StrCat("&[");
+  for (unsigned i = fixed; i < all_args.size(); ++i) {
+    {
+      PushParen p(*this);
+      ConvertVariadicArg(all_args[i]);
+    }
+    StrCat(".into()", token::kComma);
+  }
+  StrCat("]");
+  return std::move(buf).str();
 }
 
 std::string Converter::AccessLValueObject(clang::MemberExpr *member) {

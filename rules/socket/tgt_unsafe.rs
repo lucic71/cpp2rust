@@ -2,6 +2,14 @@ fn t1() -> libc::sockaddr {
     unsafe { std::mem::zeroed() }
 }
 
+fn t2() -> libc::sockaddr_storage {
+    unsafe { std::mem::zeroed() }
+}
+
+fn t3() -> libc::sockaddr_un {
+    unsafe { std::mem::zeroed() }
+}
+
 unsafe fn f1() -> i32 {
     libc::MSG_NOSIGNAL
 }

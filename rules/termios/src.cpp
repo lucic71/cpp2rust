@@ -2,6 +2,10 @@
 // Distributed under the MIT license that can be found in the LICENSE file.
 
 #include <termios.h>
+#include <sys/ioctl.h>
+
+typedef struct termios t1;
+typedef struct winsize t2;
 
 int f1(int fd, int optional_actions, const struct termios *termios_p) {
   return tcsetattr(fd, optional_actions, termios_p);

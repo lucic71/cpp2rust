@@ -249,9 +249,10 @@ public:
   struct CallInfo {
     std::vector<CallArg> args;
     std::vector<clang::Expr *> variadic_args;
-    clang::Expr *callee;
+    clang::CallExpr *expr;
     bool is_variadic;
     bool is_fn_ptr_call;
+    bool is_libc_passthrough;
   };
 
   CallInfo CollectCallInfo(clang::CallExpr *expr);
@@ -585,6 +586,9 @@ protected:
 
   std::string ConvertPlaceholder(clang::Expr *expr, clang::Expr *arg,
                                  const PlaceholderCtx &ph_ctx);
+
+  std::string ConvertVariadicTail(clang::Expr *expr,
+                                  const std::vector<clang::Expr *> &all_args);
 
   virtual std::string ConvertMappedMethodCall(
       clang::Expr *expr, const TranslationRule::MethodCallFragment &mc,

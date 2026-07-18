@@ -1,6 +1,18 @@
 // Copyright (c) 2022-present INESC-ID.
 // Distributed under the MIT license that can be found in the LICENSE file.
 
+fn t1() -> ::libc::tm {
+    unsafe { std::mem::zeroed() }
+}
+
+fn t2() -> ::libc::timeval {
+    unsafe { std::mem::zeroed() }
+}
+
+fn t3() -> ::libc::timespec {
+    unsafe { std::mem::zeroed() }
+}
+
 unsafe fn f1(a0: *mut ::libc::time_t) -> ::libc::time_t {
     libc::time(a0)
 }
@@ -38,4 +50,8 @@ unsafe fn f8(a0: *mut libc::timeval, a1: *mut libc::timezone) -> i32 {
 #[cfg(target_os = "macos")]
 unsafe fn f8(a0: *mut libc::timeval, a1: *mut libc::c_void) -> i32 {
     libc::gettimeofday(a0, a1)
+}
+
+unsafe fn f9() -> libc::clockid_t {
+    libc::CLOCK_REALTIME
 }

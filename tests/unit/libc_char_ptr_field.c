@@ -1,4 +1,3 @@
-// no-compile: refcount
 #include <dirent.h>
 #include <pwd.h>
 #include <unistd.h>

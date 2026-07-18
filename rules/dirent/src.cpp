@@ -4,6 +4,7 @@
 #include <dirent.h>
 
 using t1 = DIR *;
+using t2 = struct dirent;
 
 DIR *f1(const char *name) { return opendir(name); }
 
