@@ -16,6 +16,25 @@ pub struct Passwd {
     pub pw_shell: Value<Ptr<u8>>,
 }
 
+impl Passwd {
+    pub fn from_user(u: &nix::unistd::User) -> Self {
+        let mk = |s: &[u8]| -> Value<Ptr<u8>> {
+            let mut v = s.to_vec();
+            v.push(0);
+            Rc::new(RefCell::new(Ptr::alloc_array(v.into_boxed_slice())))
+        };
+        Self {
+            pw_name: mk(u.name.as_bytes()),
+            pw_passwd: mk(u.passwd.as_bytes()),
+            pw_uid: Rc::new(RefCell::new(u.uid.as_raw())),
+            pw_gid: Rc::new(RefCell::new(u.gid.as_raw())),
+            pw_gecos: mk(u.gecos.as_bytes()),
+            pw_dir: mk(u.dir.as_os_str().as_encoded_bytes()),
+            pw_shell: mk(u.shell.as_os_str().as_encoded_bytes()),
+        }
+    }
+}
+
 impl Clone for Passwd {
     fn clone(&self) -> Self {
         Self {
