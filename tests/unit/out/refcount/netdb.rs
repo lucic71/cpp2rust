@@ -116,10 +116,8 @@ pub fn test_ipv4_literal_0() {
             != 0)
     );
     assert!(
-        ((({
-            let _lhs = (*(*(*res.borrow()).upgrade().deref()).ai_socktype.borrow());
-            _lhs == libc::SOCK_STREAM
-        }) as i32)
+        ((((*(*(*res.borrow()).upgrade().deref()).ai_socktype.borrow()) == libc::SOCK_STREAM)
+            as i32)
             != 0)
     );
     assert!(
