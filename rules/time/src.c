@@ -45,3 +45,9 @@ int f8(struct timeval *tv, void *tz) {
 clockid_t f9() {
   return CLOCK_REALTIME;
 }
+
+clockid_t f10() { return CLOCK_MONOTONIC; }
+
+#ifdef __linux__
+clockid_t f11() { return CLOCK_MONOTONIC_RAW; }
+#endif

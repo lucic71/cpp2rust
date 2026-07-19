@@ -80,7 +80,57 @@ pub fn print_tm_1(t: i64) {
         (*(*tm.borrow()).tm_isdst.borrow())
     );
 }
-pub fn test_gmtime_r_2() {
+pub fn test_clock_gettime_2() {
+    let ts: Value<libcc2rs::Timespec> = Rc::new(RefCell::new(Default::default()));
+    assert!(
+        (((match nix::time::clock_gettime(nix::time::ClockId::CLOCK_REALTIME) {
+            Ok(__ts) => {
+                (ts.as_pointer()).with_mut(|__t| {
+                    *__t.tv_sec.borrow_mut() = __ts.tv_sec() as i64;
+                    *__t.tv_nsec.borrow_mut() = __ts.tv_nsec() as i64;
+                });
+                0
+            }
+            Err(__e) => {
+                libcc2rs::cpp2rust_errno().write(__e as i32);
+                -1
+            }
+        } == 0) as i32)
+            != 0)
+    );
+    assert!(((((*(*ts.borrow()).tv_sec.borrow()) > 1500000000_i64) as i32) != 0));
+    assert!(
+        (((((((*(*ts.borrow()).tv_nsec.borrow()) >= 0_i64) as i32) != 0)
+            && ((((*(*ts.borrow()).tv_nsec.borrow()) < 1000000000_i64) as i32) != 0))
+            as i32)
+            != 0)
+    );
+    let mono: Value<libcc2rs::Timespec> = Rc::new(RefCell::new(Default::default()));
+    assert!(
+        (((match nix::time::clock_gettime(nix::time::ClockId::CLOCK_MONOTONIC) {
+            Ok(__ts) => {
+                (mono.as_pointer()).with_mut(|__t| {
+                    *__t.tv_sec.borrow_mut() = __ts.tv_sec() as i64;
+                    *__t.tv_nsec.borrow_mut() = __ts.tv_nsec() as i64;
+                });
+                0
+            }
+            Err(__e) => {
+                libcc2rs::cpp2rust_errno().write(__e as i32);
+                -1
+            }
+        } == 0) as i32)
+            != 0)
+    );
+    assert!(((((*(*mono.borrow()).tv_sec.borrow()) >= 0_i64) as i32) != 0));
+    assert!(
+        (((((((*(*mono.borrow()).tv_nsec.borrow()) >= 0_i64) as i32) != 0)
+            && ((((*(*mono.borrow()).tv_nsec.borrow()) < 1000000000_i64) as i32) != 0))
+            as i32)
+            != 0)
+    );
+}
+pub fn test_gmtime_r_3() {
     ({ print_tm_1(0_i64) });
     ({ print_tm_1(1_i64) });
     ({ print_tm_1(86399_i64) });
@@ -92,7 +142,7 @@ pub fn test_gmtime_r_2() {
     ({ print_tm_1(1721126096_i64) });
     ({ print_tm_1(4102444800_i64) });
 }
-pub fn print_local_tm_3(t: i64) {
+pub fn print_local_tm_4(t: i64) {
     let t: Value<i64> = Rc::new(RefCell::new(t));
     let tm: Value<libcc2rs::Tm> = Rc::new(RefCell::new(Default::default()));
     assert!(
@@ -135,14 +185,14 @@ pub fn print_local_tm_3(t: i64) {
         (*(*tm.borrow()).tm_isdst.borrow())
     );
 }
-pub fn test_localtime_r_4() {
-    ({ print_local_tm_3(0_i64) });
-    ({ print_local_tm_3(951782400_i64) });
-    ({ print_local_tm_3(1704067199_i64) });
-    ({ print_local_tm_3(1721126096_i64) });
-    ({ print_local_tm_3(1735689600_i64) });
+pub fn test_localtime_r_5() {
+    ({ print_local_tm_4(0_i64) });
+    ({ print_local_tm_4(951782400_i64) });
+    ({ print_local_tm_4(1704067199_i64) });
+    ({ print_local_tm_4(1721126096_i64) });
+    ({ print_local_tm_4(1735689600_i64) });
 }
-pub fn test_strftime_5() {
+pub fn test_strftime_6() {
     let t: Value<i64> = Rc::new(RefCell::new(1721126096_i64));
     let tm: Value<libcc2rs::Tm> = Rc::new(RefCell::new(Default::default()));
     assert!(
@@ -302,8 +352,9 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     ({ test_time_0() });
-    ({ test_gmtime_r_2() });
-    ({ test_localtime_r_4() });
-    ({ test_strftime_5() });
+    ({ test_clock_gettime_2() });
+    ({ test_gmtime_r_3() });
+    ({ test_localtime_r_5() });
+    ({ test_strftime_6() });
     return 0;
 }
