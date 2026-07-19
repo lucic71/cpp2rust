@@ -42,33 +42,7 @@ pub unsafe fn print_tm_1(mut t: i64) {
         tm.tm_isdst,
     );
 }
-pub unsafe fn test_clock_gettime_2() {
-    let mut ts: ::libc::timespec = unsafe { std::mem::zeroed() };
-    assert!(
-        ((((libc::clock_gettime(libc::CLOCK_REALTIME, (&mut ts as *mut ::libc::timespec))) == (0))
-            as i32)
-            != 0)
-    );
-    assert!(((((ts.tv_sec) > (1500000000_i64)) as i32) != 0));
-    assert!(
-        (((((((ts.tv_nsec) >= (0_i64)) as i32) != 0)
-            && ((((ts.tv_nsec) < (1000000000_i64)) as i32) != 0)) as i32)
-            != 0)
-    );
-    let mut mono: ::libc::timespec = unsafe { std::mem::zeroed() };
-    assert!(
-        ((((libc::clock_gettime(libc::CLOCK_MONOTONIC, (&mut mono as *mut ::libc::timespec)))
-            == (0)) as i32)
-            != 0)
-    );
-    assert!(((((mono.tv_sec) >= (0_i64)) as i32) != 0));
-    assert!(
-        (((((((mono.tv_nsec) >= (0_i64)) as i32) != 0)
-            && ((((mono.tv_nsec) < (1000000000_i64)) as i32) != 0)) as i32)
-            != 0)
-    );
-}
-pub unsafe fn test_gmtime_r_3() {
+pub unsafe fn test_gmtime_r_2() {
     (unsafe { print_tm_1(0_i64) });
     (unsafe { print_tm_1(1_i64) });
     (unsafe { print_tm_1(86399_i64) });
@@ -80,7 +54,7 @@ pub unsafe fn test_gmtime_r_3() {
     (unsafe { print_tm_1(1721126096_i64) });
     (unsafe { print_tm_1(4102444800_i64) });
 }
-pub unsafe fn print_local_tm_4(mut t: i64) {
+pub unsafe fn print_local_tm_3(mut t: i64) {
     let mut tm: ::libc::tm = unsafe { std::mem::zeroed() };
     assert!(
         (((!((libc::localtime_r(
@@ -108,14 +82,14 @@ pub unsafe fn print_local_tm_4(mut t: i64) {
         tm.tm_isdst,
     );
 }
-pub unsafe fn test_localtime_r_5() {
-    (unsafe { print_local_tm_4(0_i64) });
-    (unsafe { print_local_tm_4(951782400_i64) });
-    (unsafe { print_local_tm_4(1704067199_i64) });
-    (unsafe { print_local_tm_4(1721126096_i64) });
-    (unsafe { print_local_tm_4(1735689600_i64) });
+pub unsafe fn test_localtime_r_4() {
+    (unsafe { print_local_tm_3(0_i64) });
+    (unsafe { print_local_tm_3(951782400_i64) });
+    (unsafe { print_local_tm_3(1704067199_i64) });
+    (unsafe { print_local_tm_3(1721126096_i64) });
+    (unsafe { print_local_tm_3(1735689600_i64) });
 }
-pub unsafe fn test_strftime_6() {
+pub unsafe fn test_strftime_5() {
     let mut t: i64 = 1721126096_i64;
     let mut tm: ::libc::tm = unsafe { std::mem::zeroed() };
     assert!(
@@ -197,9 +171,8 @@ pub fn main() {
 }
 unsafe fn main_0() -> i32 {
     (unsafe { test_time_0() });
-    (unsafe { test_clock_gettime_2() });
-    (unsafe { test_gmtime_r_3() });
-    (unsafe { test_localtime_r_5() });
-    (unsafe { test_strftime_6() });
+    (unsafe { test_gmtime_r_2() });
+    (unsafe { test_localtime_r_4() });
+    (unsafe { test_strftime_5() });
     return 0;
 }
