@@ -214,7 +214,7 @@ pub fn test_getpwuid_r_erange_3() {
                     __e as i32
                 }
             }
-        } == 34) as i32)
+        } == libc::ERANGE) as i32)
             != 0)
     );
     assert!(((((*result.borrow()).is_null()) as i32) != 0));

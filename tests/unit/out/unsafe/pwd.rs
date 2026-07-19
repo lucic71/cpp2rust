@@ -63,7 +63,7 @@ pub unsafe fn test_getpwuid_r_erange_3() {
             tiny.as_mut_ptr(),
             ::std::mem::size_of::<[libc::c_char; 1]>(),
             (&mut result as *mut *mut ::libc::passwd)
-        )) == (34)) as i32)
+        )) == (libc::ERANGE)) as i32)
             != 0)
     );
     assert!(((((result).is_null()) as i32) != 0));
