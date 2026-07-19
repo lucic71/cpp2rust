@@ -2,7 +2,7 @@
 // Distributed under the MIT license that can be found in the LICENSE file.
 
 use super::{In6Addr, InAddr};
-use crate::{ByteRepr, Value};
+use crate::{ByteRepr, Ptr, Value};
 use std::cell::RefCell;
 use std::rc::Rc;
 
@@ -77,6 +77,23 @@ impl SockaddrIn {
             sin_zero,
         }
     }
+
+    #[cfg(target_os = "macos")]
+    pub fn to_libc(&self) -> ::libc::sockaddr_in {
+        let mut sin_zero = [0i8; 8];
+        for (dst, src) in sin_zero.iter_mut().zip(self.sin_zero.borrow().iter()) {
+            *dst = *src as i8;
+        }
+        ::libc::sockaddr_in {
+            sin_len: ::std::mem::size_of::<::libc::sockaddr_in>() as u8,
+            sin_family: *self.sin_family.borrow() as u8,
+            sin_port: *self.sin_port.borrow(),
+            sin_addr: ::libc::in_addr {
+                s_addr: *self.sin_addr.borrow().s_addr.borrow(),
+            },
+            sin_zero,
+        }
+    }
 }
 
 impl SockaddrIn6 {
@@ -113,6 +130,20 @@ impl SockaddrIn6 {
         s6_addr.copy_from_slice(&self.sin6_addr.borrow().s6_addr.borrow());
         ::libc::sockaddr_in6 {
             sin6_family: *self.sin6_family.borrow(),
+            sin6_port: *self.sin6_port.borrow(),
+            sin6_flowinfo: *self.sin6_flowinfo.borrow(),
+            sin6_addr: ::libc::in6_addr { s6_addr },
+            sin6_scope_id: *self.sin6_scope_id.borrow(),
+        }
+    }
+
+    #[cfg(target_os = "macos")]
+    pub fn to_libc(&self) -> ::libc::sockaddr_in6 {
+        let mut s6_addr = [0u8; 16];
+        s6_addr.copy_from_slice(&self.sin6_addr.borrow().s6_addr.borrow());
+        ::libc::sockaddr_in6 {
+            sin6_len: ::std::mem::size_of::<::libc::sockaddr_in6>() as u8,
+            sin6_family: *self.sin6_family.borrow() as u8,
             sin6_port: *self.sin6_port.borrow(),
             sin6_flowinfo: *self.sin6_flowinfo.borrow(),
             sin6_addr: ::libc::in6_addr { s6_addr },
@@ -304,3 +335,46 @@ impl ByteRepr for ::libc::sockaddr_in {}
 impl ByteRepr for ::libc::sockaddr_in6 {}
 impl ByteRepr for ::libc::sockaddr_un {}
 impl ByteRepr for ::libc::sockaddr_storage {}
+
+impl Sockaddr {
+    pub fn decode(
+        addr: &Ptr<Sockaddr>,
+        _len: u32,
+    ) -> Option<Box<dyn nix::sys::socket::SockaddrLike>> {
+        let family = addr.reinterpret_cast::<u16>().read();
+        if family == ::libc::AF_INET as u16 {
+            let m = addr.reinterpret_cast::<SockaddrIn>().read();
+            Some(Box::new(nix::sys::socket::SockaddrIn::from(m.to_libc())))
+        } else if family == ::libc::AF_INET6 as u16 {
+            let m = addr.reinterpret_cast::<SockaddrIn6>().read();
+            Some(Box::new(nix::sys::socket::SockaddrIn6::from(m.to_libc())))
+        } else if family == ::libc::AF_UNIX as u16 {
+            let m = addr.reinterpret_cast::<SockaddrUn>().read();
+            let path = m.sun_path.borrow();
+            let end = path.iter().position(|&c| c == 0).unwrap_or(path.len());
+            nix::sys::socket::UnixAddr::new(&path[..end])
+                .ok()
+                .map(|u| Box::new(u) as Box<dyn nix::sys::socket::SockaddrLike>)
+        } else {
+            None
+        }
+    }
+
+    pub fn encode(ss: &nix::sys::socket::SockaddrStorage, out: &Ptr<Sockaddr>, out_len: &Ptr<u32>) {
+        use nix::sys::socket::{AddressFamily, SockaddrLike};
+        match ss.family() {
+            Some(AddressFamily::Inet) => {
+                let l = ::libc::sockaddr_in::from(*ss.as_sockaddr_in().unwrap());
+                out.reinterpret_cast::<SockaddrIn>()
+                    .write(SockaddrIn::from_libc(&l));
+            }
+            Some(AddressFamily::Inet6) => {
+                let l = ::libc::sockaddr_in6::from(*ss.as_sockaddr_in6().unwrap());
+                out.reinterpret_cast::<SockaddrIn6>()
+                    .write(SockaddrIn6::from_libc(&l));
+            }
+            _ => {}
+        }
+        out_len.write(ss.len());
+    }
+}
