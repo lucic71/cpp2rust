@@ -70,7 +70,7 @@ pub unsafe fn test_realpath_1() {
         .is_null()) as i32)
             != 0)
     );
-    assert!(((((*libcc2rs::cpp2rust_errno_unsafe()) == (2)) as i32) != 0));
+    assert!(((((*libcc2rs::cpp2rust_errno_unsafe()) == (libc::ENOENT)) as i32) != 0));
 }
 pub fn main() {
     unsafe {
