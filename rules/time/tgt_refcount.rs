@@ -170,3 +170,12 @@ fn f8(a0: Ptr<Timeval>, a1: AnyPtr) -> i32 {
 unsafe fn f9() -> nix::time::ClockId {
     nix::time::ClockId::CLOCK_REALTIME
 }
+
+unsafe fn f10() -> nix::time::ClockId {
+    nix::time::ClockId::CLOCK_MONOTONIC
+}
+
+#[cfg(target_os = "linux")]
+unsafe fn f11() -> nix::time::ClockId {
+    nix::time::ClockId::CLOCK_MONOTONIC_RAW
+}

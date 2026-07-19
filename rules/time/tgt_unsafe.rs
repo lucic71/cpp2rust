@@ -55,3 +55,12 @@ unsafe fn f8(a0: *mut libc::timeval, a1: *mut libc::c_void) -> i32 {
 unsafe fn f9() -> libc::clockid_t {
     libc::CLOCK_REALTIME
 }
+
+unsafe fn f10() -> libc::clockid_t {
+    libc::CLOCK_MONOTONIC
+}
+
+#[cfg(target_os = "linux")]
+unsafe fn f11() -> libc::clockid_t {
+    libc::CLOCK_MONOTONIC_RAW
+}
