@@ -82,8 +82,6 @@ public:
 
   void ConvertPrintf(clang::CallExpr *expr) override;
 
-  void ConvertSnprintf(clang::CallExpr *expr);
-
   void EmitFnPtrCall(clang::Expr *callee) override;
 
   void

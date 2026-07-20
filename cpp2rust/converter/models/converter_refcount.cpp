@@ -1048,47 +1048,9 @@ void ConverterRefCount::ConvertPrintf(clang::CallExpr *expr) {
   StrCat(')');
 }
 
-void ConverterRefCount::ConvertSnprintf(clang::CallExpr *expr) {
-  std::string format;
-  if (auto *str = clang::dyn_cast<clang::StringLiteral>(
-          expr->getArg(2)->IgnoreImplicit())) {
-    format = GetEscapedStringLiteral(str);
-  } else {
-    llvm::errs() << "Unknown snprintf format: ";
-    expr->getArg(2)->dump();
-    llvm::errs() << '\n';
-    exit(1);
-  }
-  auto types = printf2fmt(format);
-
-  StrCat("({ let __s = format!(", format);
-  unsigned j = 0;
-  for (unsigned i = 3, e = expr->getNumArgs(); i < e; ++i) {
-    StrCat(token::kComma);
-    Convert(expr->getArg(i));
-    if (types[j]) {
-      StrCat(keyword::kAs, types[j]);
-    }
-    ++j;
-  }
-  StrCat("); let __b = __s.as_bytes(); let __size = (");
-  Convert(expr->getArg(1));
-  StrCat(") as usize; if __size > 0 {",
-         "let __n = ::std::cmp::min(__b.len(), __size - 1); (");
-  Convert(expr->getArg(0));
-  StrCat(").with_slice_mut(__n + 1, |__dst| {",
-         "__dst[..__n].copy_from_slice(&__b[..__n]); __dst[__n] = 0; }); }",
-         "__b.len() as i32 })");
-}
-
 bool ConverterRefCount::VisitCallExpr(clang::CallExpr *expr) {
   if (IsBuiltinVaStart(expr) || IsBuiltinVaEnd(expr) || IsBuiltinVaCopy(expr)) {
     ConvertVAArgCall(expr);
-    return false;
-  }
-
-  if (Mapper::ToString(expr->getCallee()).starts_with("int snprintf")) {
-    ConvertSnprintf(expr);
     return false;
   }
 
