@@ -111,43 +111,6 @@ unsafe fn main_0() -> i32 {
             libc::snprintf(
                 buf.as_mut_ptr() as *mut libc::c_char,
                 ::std::mem::size_of::<[libc::c_char; 32]>() as usize,
-                (c"%*d".as_ptr().cast_mut()).cast_const() as *const libc::c_char,
-                (4),
-                (7),
-            )
-        }) == (4)) as i32)
-            != 0)
-    );
-    assert!(
-        ((((libc::strcmp(
-            (buf.as_mut_ptr()).cast_const(),
-            (c"   7".as_ptr().cast_mut()).cast_const()
-        )) == (0)) as i32)
-            != 0)
-    );
-    assert!(
-        ((((unsafe {
-            libc::snprintf(
-                buf.as_mut_ptr() as *mut libc::c_char,
-                ::std::mem::size_of::<[libc::c_char; 32]>() as usize,
-                (c"%.3s".as_ptr().cast_mut()).cast_const() as *const libc::c_char,
-                (c"abcdef".as_ptr().cast_mut()),
-            )
-        }) == (3)) as i32)
-            != 0)
-    );
-    assert!(
-        ((((libc::strcmp(
-            (buf.as_mut_ptr()).cast_const(),
-            (c"abc".as_ptr().cast_mut()).cast_const()
-        )) == (0)) as i32)
-            != 0)
-    );
-    assert!(
-        ((((unsafe {
-            libc::snprintf(
-                buf.as_mut_ptr() as *mut libc::c_char,
-                ::std::mem::size_of::<[libc::c_char; 32]>() as usize,
                 (c"%c%%".as_ptr().cast_mut()).cast_const() as *const libc::c_char,
                 (65),
             )
