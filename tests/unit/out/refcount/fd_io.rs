@@ -20,7 +20,9 @@ fn main_0() -> i32 {
         };
         match nix::fcntl::open(
             (*path.borrow()).to_rust_string().as_str(),
-            nix::fcntl::OFlag::from_bits_retain(((1 | 64) | 512)),
+            nix::fcntl::OFlag::from_bits_retain(
+                ((::libc::O_WRONLY | ::libc::O_CREAT) | ::libc::O_TRUNC),
+            ),
             __mode,
         ) {
             Ok(__ofd) => FdRegistry::register(__ofd),
@@ -54,7 +56,7 @@ fn main_0() -> i32 {
         };
         match nix::fcntl::open(
             (*path.borrow()).to_rust_string().as_str(),
-            nix::fcntl::OFlag::from_bits_retain(0),
+            nix::fcntl::OFlag::from_bits_retain(::libc::O_RDONLY),
             __mode,
         ) {
             Ok(__ofd) => FdRegistry::register(__ofd),

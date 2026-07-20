@@ -15,7 +15,7 @@ unsafe fn main_0() -> i32 {
     let mut fd: i32 = (unsafe {
         libc::open(
             (c"/dev/null".as_ptr().cast_mut()).cast_const() as *const i8,
-            0 as i32,
+            ::libc::O_RDONLY as i32,
         )
     });
     libc::close(fd);

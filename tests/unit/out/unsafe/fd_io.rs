@@ -14,8 +14,13 @@ pub fn main() {
 unsafe fn main_0() -> i32 {
     let mut path: *const libc::c_char =
         (c"/tmp/cpp2rust_fd_io_test.tmp".as_ptr().cast_mut()).cast_const();
-    let mut fd: i32 =
-        (unsafe { libc::open(path as *const i8, (((1) | (64)) | (512)) as i32, (420)) });
+    let mut fd: i32 = (unsafe {
+        libc::open(
+            path as *const i8,
+            (((::libc::O_WRONLY) | (::libc::O_CREAT)) | (::libc::O_TRUNC)) as i32,
+            (420),
+        )
+    });
     assert!(((((fd) >= (0)) as i32) != 0));
     assert!(
         ((((libc::write(
@@ -26,7 +31,7 @@ unsafe fn main_0() -> i32 {
             != 0)
     );
     assert!(((((libc::close(fd)) == (0)) as i32) != 0));
-    fd = (unsafe { libc::open(path as *const i8, 0 as i32) });
+    fd = (unsafe { libc::open(path as *const i8, ::libc::O_RDONLY as i32) });
     assert!(((((fd) >= (0)) as i32) != 0));
     let mut buf: [libc::c_char; 16] = [(0 as libc::c_char); 16];
     {

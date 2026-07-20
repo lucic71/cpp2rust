@@ -19,7 +19,7 @@ fn main_0() -> i32 {
             Ptr::from_string_literal(b"/dev/null")
                 .to_rust_string()
                 .as_str(),
-            nix::fcntl::OFlag::from_bits_retain(0),
+            nix::fcntl::OFlag::from_bits_retain(::libc::O_RDONLY),
             __mode,
         ) {
             Ok(__ofd) => FdRegistry::register(__ofd),
