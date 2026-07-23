@@ -64,7 +64,7 @@ fn main_0() -> i32 {
             let mut __idx = Vec::new();
             let mut __wanted = Vec::new();
             let mut __events = Vec::new();
-            for __i in 0..(2_u64 as usize) {
+            for __i in 0..((2 as ::libc::nfds_t) as usize) {
                 let (__fd, __ev) = __p
                     .offset(__i)
                     .with(|__e| (*__e.fd.borrow(), *__e.events.borrow()));
