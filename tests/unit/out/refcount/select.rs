@@ -32,8 +32,15 @@ fn main_0() -> i32 {
     (rset.as_pointer()).with_mut(|__s| __s.zero());
     (rset.as_pointer()).with_mut(|__s| __s.set((*fds.borrow())[(0) as usize]));
     let tv: Value<libcc2rs::Timeval> = Rc::new(RefCell::new(Default::default()));
+    {
+        ((tv.as_pointer()) as Ptr<libcc2rs::Timeval>)
+            .to_any()
+            .memset((0) as u8, 16usize as usize);
+        ((tv.as_pointer()) as Ptr<libcc2rs::Timeval>)
+            .to_any()
+            .clone()
+    };
     (*(*tv.borrow()).tv_sec.borrow_mut()) = 0_i64;
-    (*(*tv.borrow()).tv_usec.borrow_mut()) = 0_i64;
     assert!(
         ((({
             let __rp = (rset.as_pointer()).clone();
@@ -183,7 +190,6 @@ fn main_0() -> i32 {
     (rset.as_pointer()).with_mut(|__s| __s.zero());
     (rset.as_pointer()).with_mut(|__s| __s.set((*fds.borrow())[(0) as usize]));
     (*(*tv.borrow()).tv_sec.borrow_mut()) = 1_i64;
-    (*(*tv.borrow()).tv_usec.borrow_mut()) = 0_i64;
     assert!(
         ((({
             let __rp = (rset.as_pointer()).clone();
