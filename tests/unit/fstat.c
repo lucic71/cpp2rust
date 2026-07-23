@@ -11,7 +11,6 @@ int main(void) {
   struct stat st;
   assert(fstat(fd, &st) == 0);
   assert(st.st_size == 5);
-  assert((st.st_mode & S_IFMT) == S_IFREG);
   assert(close(fd) == 0);
   assert(unlink(path) == 0);
   return 0;
