@@ -39,7 +39,17 @@ unsafe fn main_0() -> i32 {
             != 0)
     );
     assert!(
+        (((((unsafe { libc::fcntl(fds[(0) as usize] as i32, 1 as i32, (0),) }) & (1)) == (0))
+            as i32)
+            != 0)
+    );
+    assert!(
         ((((unsafe { libc::fcntl(fds[(0) as usize] as i32, 2 as i32, (1),) }) == (0)) as i32) != 0)
+    );
+    assert!(
+        (((((unsafe { libc::fcntl(fds[(0) as usize] as i32, 1 as i32, (0),) }) & (1)) != (0))
+            as i32)
+            != 0)
     );
     assert!(((((libc::close(fds[(0) as usize])) == (0)) as i32) != 0));
     assert!(((((libc::close(fds[(1) as usize])) == (0)) as i32) != 0));
