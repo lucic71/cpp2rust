@@ -5,9 +5,9 @@ use crate::{AsPointer, ByteRepr, Ptr, Value};
 use std::cell::RefCell;
 use std::rc::Rc;
 
-#[derive(Default)]
+#[derive(Default, Clone)]
 pub struct InAddr {
-    pub s_addr: Value<u32>,
+    pub s_addr: u32,
 }
 
 pub struct In6Addr {
@@ -28,14 +28,6 @@ impl Default for In6Addr {
     }
 }
 
-impl Clone for InAddr {
-    fn clone(&self) -> Self {
-        Self {
-            s_addr: Rc::new(RefCell::new(*self.s_addr.borrow())),
-        }
-    }
-}
-
 impl Clone for In6Addr {
     fn clone(&self) -> Self {
         Self {
@@ -49,11 +41,11 @@ impl ByteRepr for InAddr {
         4
     }
     fn to_bytes(&self, buf: &mut [u8]) {
-        (*self.s_addr.borrow()).to_bytes(&mut buf[0..4]);
+        self.s_addr.to_bytes(&mut buf[0..4]);
     }
     fn from_bytes(buf: &[u8]) -> Self {
         Self {
-            s_addr: Rc::new(RefCell::new(<u32>::from_bytes(&buf[0..4]))),
+            s_addr: <u32>::from_bytes(&buf[0..4]),
         }
     }
 }

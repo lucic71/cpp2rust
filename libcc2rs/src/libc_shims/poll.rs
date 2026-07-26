@@ -1,25 +1,13 @@
 // Copyright (c) 2022-present INESC-ID.
 // Distributed under the MIT license that can be found in the LICENSE file.
 
-use crate::{ByteRepr, Value};
-use std::cell::RefCell;
-use std::rc::Rc;
+use crate::ByteRepr;
 
-#[derive(Default)]
+#[derive(Default, Clone)]
 pub struct Pollfd {
-    pub fd: Value<i32>,
-    pub events: Value<i16>,
-    pub revents: Value<i16>,
-}
-
-impl Clone for Pollfd {
-    fn clone(&self) -> Self {
-        Self {
-            fd: Rc::new(RefCell::new(*self.fd.borrow())),
-            events: Rc::new(RefCell::new(*self.events.borrow())),
-            revents: Rc::new(RefCell::new(*self.revents.borrow())),
-        }
-    }
+    pub fd: i32,
+    pub events: i16,
+    pub revents: i16,
 }
 
 impl ByteRepr for Pollfd {}
