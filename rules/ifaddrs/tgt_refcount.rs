@@ -14,8 +14,8 @@ fn f1(a0: Ptr<Ptr<Ifaddrs>>) -> i32 {
             let __list: Vec<nix::ifaddrs::InterfaceAddress> = __ifas.collect();
             let mut __next = Ptr::<Ifaddrs>::null();
             for __ifa in __list.iter().rev() {
-                let __node = Ifaddrs::from_interface_address(__ifa);
-                *__node.ifa_next.borrow_mut() = __next.clone();
+                let mut __node = Ifaddrs::from_interface_address(__ifa);
+                __node.ifa_next = __next.clone();
                 __next = Ptr::alloc(__node);
             }
             __out.write(__next);
@@ -32,19 +32,19 @@ fn f2(a0: Ptr<Ifaddrs>) {
     let mut __cur = a0.clone();
     while !__cur.is_null() {
         let __next = __cur.with(|__i| {
-            let __name = __i.ifa_name.borrow();
+            let __name = &__i.ifa_name;
             if !__name.is_null() {
                 __name.delete_array();
             }
-            let __addr = __i.ifa_addr.borrow();
+            let __addr = &__i.ifa_addr;
             if !__addr.is_null() {
                 __addr.delete();
             }
-            let __mask = __i.ifa_netmask.borrow();
+            let __mask = &__i.ifa_netmask;
             if !__mask.is_null() {
                 __mask.delete();
             }
-            (*__i.ifa_next.borrow()).clone()
+            __i.ifa_next.clone()
         });
         __cur.delete();
         __cur = __next;

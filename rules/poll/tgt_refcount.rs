@@ -19,9 +19,9 @@ fn f1(a0: Ptr<Pollfd>, a1: u64, a2: i32) -> i32 {
     for __i in 0..(a1 as usize) {
         let (__fd, __ev) = __p
             .offset(__i)
-            .with(|__e| (*__e.fd.borrow(), *__e.events.borrow()));
+            .with(|__e| (__e.fd, __e.events));
         __p.offset(__i)
-            .with_mut(|__e| *__e.revents.borrow_mut() = 0);
+            .with_mut(|__e| __e.revents = 0);
         if __fd >= 0 {
             __idx.push(__i);
             __wanted.push(__fd);
@@ -44,7 +44,7 @@ fn f1(a0: Ptr<Pollfd>, a1: u64, a2: i32) -> i32 {
                         None => 0,
                     };
                     __p.offset(__i)
-                        .with_mut(|__e| *__e.revents.borrow_mut() = __rev);
+                        .with_mut(|__e| __e.revents = __rev);
                 }
                 __count
             }
