@@ -23,6 +23,37 @@ struct ReinterpretedView {
     elem_byte_size: usize,
 }
 
+struct FieldView<P, F> {
+    parent: Ptr<P>,
+    field_byte_offset: usize,
+    get: fn(&P) -> &F,
+    get_mut: fn(&mut P) -> &mut F,
+}
+
+trait FieldAccess<F> {
+    fn address(&self) -> usize;
+    fn with_dyn(&self, f: &mut dyn FnMut(&F));
+    fn with_mut_dyn(&self, f: &mut dyn FnMut(&mut F));
+}
+
+impl<P: ByteRepr, F> FieldAccess<F> for FieldView<P, F> {
+    fn address(&self) -> usize {
+        self.parent
+            .kind
+            .address()
+            .wrapping_add(self.parent.byte_offset())
+            .wrapping_add(self.field_byte_offset)
+    }
+
+    fn with_dyn(&self, f: &mut dyn FnMut(&F)) {
+        self.parent.with(|p| f((self.get)(p)));
+    }
+
+    fn with_mut_dyn(&self, f: &mut dyn FnMut(&mut F)) {
+        self.parent.with_mut(|p| f((self.get_mut)(p)));
+    }
+}
+
 #[derive(Default)]
 enum PtrKind<T> {
     #[default]
@@ -33,6 +64,7 @@ enum PtrKind<T> {
     HeapArray(Weak<RefCell<Box<[T]>>>),
     Vec(Weak<RefCell<Vec<T>>>),
     Reinterpreted(Rc<ReinterpretedView>),
+    FieldPtr(Rc<dyn FieldAccess<T>>),
 }
 
 pub enum StrongPtr<T> {
@@ -87,6 +119,7 @@ impl<T> fmt::Debug for PtrKind<T> {
             PtrKind::Reinterpreted(data) => {
                 write!(f, "Reinterpreted(0x{:x})", data.alloc.address())
             }
+            PtrKind::FieldPtr(view) => write!(f, "FieldPtr(0x{:x})", view.address()),
         }
     }
 }
@@ -101,6 +134,7 @@ impl<T> Clone for PtrKind<T> {
             PtrKind::StackArray(weak) => PtrKind::StackArray(weak.clone()),
             PtrKind::HeapArray(weak) => PtrKind::HeapArray(weak.clone()),
             PtrKind::Reinterpreted(data) => PtrKind::Reinterpreted(Rc::clone(data)),
+            PtrKind::FieldPtr(view) => PtrKind::FieldPtr(Rc::clone(view)),
         }
     }
 }
@@ -113,6 +147,7 @@ impl<T> PtrKind<T> {
             PtrKind::Vec(w) => w.as_ptr() as usize,
             PtrKind::StackArray(w) | PtrKind::HeapArray(w) => w.as_ptr() as usize,
             PtrKind::Reinterpreted(data) => data.alloc.address(),
+            PtrKind::FieldPtr(view) => view.address(),
         }
     }
 }
@@ -279,6 +314,7 @@ impl<T> Ptr<T> {
                 weak.upgrade().expect("ub: dangling pointer").borrow().len()
             }
             PtrKind::Reinterpreted(data) => data.alloc.total_byte_len() / data.elem_byte_size,
+            PtrKind::FieldPtr(_) => 1,
         }
     }
 
@@ -298,6 +334,7 @@ impl<T> Ptr<T> {
                 .borrow()
                 .is_empty(),
             PtrKind::Reinterpreted(data) => self.offset >= data.alloc.total_byte_len(),
+            PtrKind::FieldPtr(_) => false,
         }
     }
 
@@ -361,6 +398,7 @@ impl<T> Ptr<T> {
                 byte_offset: self.offset,
                 cell: RefCell::new(None),
             },
+            PtrKind::FieldPtr(_) => panic!("upgrade not supported for field pointers"),
         }
     }
 
@@ -413,6 +451,7 @@ impl<T> Ptr<T> {
                 src_byte_off,
             ),
             PtrKind::Reinterpreted(data) => (Rc::clone(&data.alloc), self.offset),
+            PtrKind::FieldPtr(_) => panic!("reinterpret_cast not supported for field pointers"),
         };
 
         Ptr {
@@ -475,6 +514,13 @@ impl<T> Ptr<T> {
                 data.alloc.write_bytes(self.offset, &buf);
                 ret
             }
+            PtrKind::FieldPtr(view) => {
+                assert_eq!(self.offset, 0, "ub: invalid offset");
+                let mut f = Some(f);
+                let mut ret = None;
+                view.with_mut_dyn(&mut |v| ret = Some(f.take().expect("ub: invalid access")(v)));
+                ret.expect("ub: invalid access")
+            }
         }
     }
 
@@ -506,6 +552,32 @@ impl<T> Ptr<T> {
                 let val = T::from_bytes(&buf);
                 f(&val)
             }
+            PtrKind::FieldPtr(view) => {
+                assert_eq!(self.offset, 0, "ub: invalid offset");
+                let mut f = Some(f);
+                let mut ret = None;
+                view.with_dyn(&mut |v| ret = Some(f.take().expect("ub: invalid access")(v)));
+                ret.expect("ub: invalid access")
+            }
+        }
+    }
+}
+
+impl<T: ByteRepr> Ptr<T> {
+    pub fn field_ptr<F: 'static>(
+        &self,
+        field_byte_offset: usize,
+        get: fn(&T) -> &F,
+        get_mut: fn(&mut T) -> &mut F,
+    ) -> Ptr<F> {
+        Ptr {
+            offset: 0,
+            kind: PtrKind::FieldPtr(Rc::new(FieldView {
+                parent: self.clone(),
+                field_byte_offset,
+                get,
+                get_mut,
+            })),
         }
     }
 }
@@ -541,8 +613,8 @@ impl<T: std::cmp::Ord> Ptr<T> {
                 let strong = weak.upgrade().expect("ub: dangling pointer");
                 (*strong.borrow_mut())[self.get_offset()..last].sort();
             }
-            PtrKind::Reinterpreted(_) => {
-                panic!("sorting not supported for reinterpreted pointers")
+            PtrKind::Reinterpreted(_) | PtrKind::FieldPtr(_) => {
+                panic!("sorting not supported for this pointer kind")
             }
         }
     }
@@ -586,8 +658,8 @@ impl<T: Clone> Ptr<T> {
                 let mut borrow = strong.borrow_mut();
                 sort(&mut borrow, self.get_offset(), last, &mut cmp);
             }
-            PtrKind::Reinterpreted(_) => {
-                panic!("sorting not supported for reinterpreted pointers")
+            PtrKind::Reinterpreted(_) | PtrKind::FieldPtr(_) => {
+                panic!("sorting not supported for this pointer kind")
             }
         }
     }
@@ -863,6 +935,7 @@ impl<T> ToOwnedOption<T, T> for Ptr<T> {
             PtrKind::Vec(_) => panic!("Can't own a vector"),
             PtrKind::HeapArray(_) => panic!("Can't own an array variable as single"),
             PtrKind::Reinterpreted(_) => panic!("Can't own a reinterpreted pointer"),
+            PtrKind::FieldPtr(_) => panic!("Can't own a field pointer"),
         }
     }
 }
@@ -889,6 +962,7 @@ impl<T> ToOwnedOption<T, Box<[T]>> for Ptr<T> {
             PtrKind::Vec(_) => panic!("Can't own a vector"),
             PtrKind::HeapSingle(_) => panic!("Can't own a single variable as an array"),
             PtrKind::Reinterpreted(_) => panic!("Can't own a reinterpreted pointer"),
+            PtrKind::FieldPtr(_) => panic!("Can't own a field pointer"),
         }
     }
 }
@@ -905,6 +979,7 @@ impl<T> fmt::Debug for Ptr<T> {
             }
             PtrKind::Vec(w) => (Weak::as_ptr(w) as usize).wrapping_add(self.byte_offset()),
             PtrKind::Reinterpreted(data) => data.alloc.address().wrapping_add(self.byte_offset()),
+            PtrKind::FieldPtr(view) => view.address().wrapping_add(self.byte_offset()),
         };
         write!(f, "0x{:x}", addr)
     }
@@ -962,6 +1037,7 @@ impl Ptr<u8> {
                 data.alloc.write_bytes(off, &buf);
                 r
             }
+            PtrKind::FieldPtr(_) => panic!("with_slice_mut not supported for field pointers"),
         }
     }
 
@@ -990,6 +1066,7 @@ impl Ptr<u8> {
                 data.alloc.read_bytes(off, &mut buf);
                 f(&buf)
             }
+            PtrKind::FieldPtr(_) => panic!("with_slice not supported for field pointers"),
         }
     }
 
@@ -1073,6 +1150,7 @@ impl Ptr<u8> {
                 data.alloc.read_bytes(start, &mut buf);
                 buf
             }
+            PtrKind::FieldPtr(_) => panic!("slice_until not supported for field pointers"),
         }
     }
 
