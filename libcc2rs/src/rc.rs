@@ -1317,9 +1317,24 @@ impl RangeAllocator {
     }
 }
 
+#[derive(Clone)]
+pub(crate) enum Registered {
+    Data(AnyPtr),
+    Fn(Rc<dyn crate::fn_ptr::ErasedFn>),
+}
+
+impl Registered {
+    fn is_dangling(&self) -> bool {
+        match self {
+            Registered::Data(any) => any.ptr.is_dangling(),
+            Registered::Fn(_) => false,
+        }
+    }
+}
+
 struct PtrRegistry {
     ranges: RangeAllocator,
-    entries: BTreeMap<SyntheticAddr, (AnyPtr, ByteLen)>,
+    entries: BTreeMap<SyntheticAddr, (Registered, ByteLen)>,
     evicted_len: usize,
 }
 
@@ -1332,25 +1347,25 @@ impl PtrRegistry {
         }
     }
 
-    fn put(&mut self, real_addr: RealAddr, byte_len: ByteLen, ptr: AnyPtr) -> SyntheticAddr {
+    fn put(&mut self, real_addr: RealAddr, byte_len: ByteLen, ptr: Registered) -> SyntheticAddr {
         self.evict_dead();
         let base = self.ranges.get_synthetic_addr(real_addr, byte_len);
         self.entries.insert(base, (ptr, byte_len));
         base
     }
 
-    fn get(&self, addr: SyntheticAddr) -> Option<(SyntheticAddr, AnyPtr, ByteLen)> {
+    fn get(&self, addr: SyntheticAddr) -> Option<(SyntheticAddr, Registered, ByteLen)> {
         self.entries
             .range(..=addr)
             .next_back()
-            .map(|(base, (any, len))| (*base, any.clone(), *len))
+            .map(|(base, (entry, len))| (*base, entry.clone(), *len))
     }
 
     fn evict_dead(&mut self) {
         if self.entries.len() < 16.max(2 * self.evicted_len) {
             return;
         }
-        self.entries.retain(|_, (any, _)| !any.ptr.is_dangling());
+        self.entries.retain(|_, (entry, _)| !entry.is_dangling());
         let entries = &self.entries;
         self.ranges
             .bases
@@ -1363,6 +1378,18 @@ thread_local! {
     static PTR_REGISTRY: RefCell<PtrRegistry> = RefCell::new(PtrRegistry::new());
 }
 
+pub(crate) fn register_ptr(
+    real_addr: RealAddr,
+    byte_len: ByteLen,
+    ptr: Registered,
+) -> SyntheticAddr {
+    PTR_REGISTRY.with(|r| r.borrow_mut().put(real_addr, byte_len, ptr))
+}
+
+pub(crate) fn lookup_ptr(addr: SyntheticAddr) -> Option<(SyntheticAddr, Registered, ByteLen)> {
+    PTR_REGISTRY.with(|r| r.borrow().get(addr))
+}
+
 impl<T: ByteRepr> ByteRepr for Ptr<T> {
     fn byte_size() -> usize {
         std::mem::size_of::<usize>()
@@ -1373,17 +1400,17 @@ impl<T: ByteRepr> ByteRepr for Ptr<T> {
             0usize.to_bytes(buf);
             return;
         }
-        let base = PTR_REGISTRY.with(|r| {
-            r.borrow_mut().put(
-                self.kind.address(),
-                self.c_byte_len(),
+        let base = register_ptr(
+            self.kind.address(),
+            self.c_byte_len(),
+            Registered::Data(
                 Ptr {
                     offset: 0,
                     kind: self.kind.clone(),
                 }
                 .to_any(),
-            )
-        });
+            ),
+        );
         base.wrapping_add(self.c_byte_offset()).to_bytes(buf);
     }
 
@@ -1392,8 +1419,8 @@ impl<T: ByteRepr> ByteRepr for Ptr<T> {
         if addr == 0 {
             return Ptr::null();
         }
-        let entry = PTR_REGISTRY.with(|r| r.borrow().get(addr));
-        let Some((base, any, byte_len)) = entry else {
+        let entry = lookup_ptr(addr);
+        let Some((base, Registered::Data(any), byte_len)) = entry else {
             panic!("ub: cast of invalid address 0x{addr:x} to pointer");
         };
         let delta = addr - base;

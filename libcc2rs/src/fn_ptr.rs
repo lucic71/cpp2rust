@@ -31,7 +31,7 @@ macro_rules! impl_fn_addr {
 }
 impl_fn_addr!();
 
-trait ErasedFn: Any {
+pub(crate) trait ErasedFn: Any {
     fn addr(&self) -> usize;
 }
 
@@ -143,7 +143,48 @@ impl<T> PartialEq for FnPtr<T> {
 
 impl<T> Eq for FnPtr<T> {}
 
-impl<T: 'static> ByteRepr for FnPtr<T> {}
+impl<T: 'static> ByteRepr for FnPtr<T> {
+    fn byte_size() -> usize {
+        std::mem::size_of::<usize>()
+    }
+
+    fn to_bytes(&self, buf: &mut [u8]) {
+        match &self.original {
+            None => 0usize.to_bytes(buf),
+            Some(original) => crate::rc::register_ptr(
+                original.addr(),
+                1,
+                crate::rc::Registered::Fn(original.clone()),
+            )
+            .to_bytes(buf),
+        }
+    }
+
+    fn from_bytes(buf: &[u8]) -> Self {
+        let addr = usize::from_bytes(buf);
+        if addr == 0 {
+            return Self::null();
+        }
+        let Some((base, entry, _)) = crate::rc::lookup_ptr(addr) else {
+            panic!("ub: cast of invalid address 0x{addr:x} to fn pointer");
+        };
+        let crate::rc::Registered::Fn(original) = entry else {
+            panic!("ub: cast of data address 0x{addr:x} to fn pointer");
+        };
+        if base != addr {
+            panic!("ub: cast of interior address 0x{addr:x} to fn pointer");
+        }
+        let current_cast = match Any::type_id(&*original) == TypeId::of::<T>() {
+            true => Some(original.clone()),
+            false => None,
+        };
+        FnPtr {
+            original: Some(original),
+            current_cast,
+            _marker: PhantomData,
+        }
+    }
+}
 
 impl<T: 'static> ErasedPtr for FnPtr<T> {
     fn as_bytes(&self) -> Ptr<u8> {
