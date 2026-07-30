@@ -118,6 +118,17 @@ pub struct Winsize {
     pub ws_ypixel: Value<u16>,
 }
 
+impl Winsize {
+    pub fn from_fd(fd: std::os::fd::BorrowedFd<'_>) -> Option<Self> {
+        terminal_size::terminal_size_of(fd).map(|(cols, rows)| Self {
+            ws_row: Rc::new(RefCell::new(rows.0)),
+            ws_col: Rc::new(RefCell::new(cols.0)),
+            ws_xpixel: Rc::new(RefCell::new(0)),
+            ws_ypixel: Rc::new(RefCell::new(0)),
+        })
+    }
+}
+
 impl Clone for Winsize {
     fn clone(&self) -> Self {
         Self {

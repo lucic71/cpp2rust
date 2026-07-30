@@ -606,12 +606,19 @@ pub fn test_fcntl_7() {
 pub fn test_ioctl_8() {
     let arg: Value<i32> = Rc::new(RefCell::new(0));
     assert!(
-        ((({
-            panic!(
-                "ioctl is not supported in the refcount model (fd={}, request={})",
-                0, 0_u64
-            );
-            0
+        (((match 0_u64 as ::libc::c_ulong {
+            ::libc::TIOCGWINSZ => match FdRegistry::with_fd(0, Winsize::from_fd) {
+                Some(__ws) => {
+                    Ptr::<Winsize>::get(&&[(arg.as_pointer()).into()][0])
+                        .with_mut(|__dst| *__dst = __ws);
+                    0
+                }
+                None => {
+                    libcc2rs::cpp2rust_errno().write(::libc::ENOTTY);
+                    -1
+                }
+            },
+            __request => panic!("ioctl: unsupported request {}", __request),
         } >= -1_i32) as i32)
             != 0)
     );
