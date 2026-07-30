@@ -113,6 +113,12 @@ RsExpr *Converter::Convert(clang::QualType qual_type) {
   if (auto *using_type = clang::dyn_cast<clang::UsingType>(type)) {
     return VisitUsingType(using_type);
   }
+  if (type->isFunctionType()) {
+    return Convert(ctx_.getPointerType(qual_type));
+  }
+  llvm::errs() << "Convert: unhandled type class " << type->getTypeClassName()
+               << '\n';
+  assert(false && "type class not handled by Convert dispatch");
   return Text("");
 }
 
