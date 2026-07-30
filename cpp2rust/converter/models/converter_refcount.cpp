@@ -50,7 +50,7 @@ static bool IsPointerType(clang::QualType type) {
          GetStrongestIteratorCategory(type) == IteratorCategory::Contiguous;
 }
 
-bool ConverterRefCount::PendingDeref::compute_inner_boxed(clang::Expr *expr) {
+bool ConverterRefCount::PointeeIsBoxed(const clang::Expr *expr) {
   if (!expr) {
     return false;
   }
@@ -59,25 +59,17 @@ bool ConverterRefCount::PendingDeref::compute_inner_boxed(clang::Expr *expr) {
   }
   if (auto *ase = clang::dyn_cast<clang::ArraySubscriptExpr>(expr)) {
     auto base_type = ase->getBase()->IgnoreCasts()->getType();
-    if (base_type->isPointerType())
+    if (base_type->isPointerType()) {
       return IsBoxedType(base_type->getPointeeType());
+    }
     return IsBoxedType(base_type.getNonReferenceType());
   }
   if (auto *oce = clang::dyn_cast<clang::CXXOperatorCallExpr>(expr)) {
-    return IsBoxedType(oce->getArg(0)->getType().getNonReferenceType());
+    if (oce->getOperator() == clang::OverloadedOperatorKind::OO_Subscript) {
+      return IsBoxedType(oce->getArg(0)->getType().getNonReferenceType());
+    }
   }
   return false;
-}
-
-void ConverterRefCount::PendingDeref::set(RsExpr *node, clang::Expr *expr) {
-  assert_consumed();
-  set_unchecked(node, expr);
-}
-
-void ConverterRefCount::PendingDeref::set_unchecked(RsExpr *node,
-                                                    clang::Expr *expr) {
-  value = node;
-  pointee_is_boxed = compute_inner_boxed(expr);
 }
 
 std::string ConverterRefCount::GetInnerType(clang::QualType type) {
@@ -383,10 +375,9 @@ ConverterRefCount::VisitArraySubscriptExpr(clang::ArraySubscriptExpr *expr) {
   }
   if (!base->IgnoreCasts()->getType()->isArrayType()) {
     if (isLValue()) {
-      pending_deref_.assert_consumed();
-      pending_deref_.set_unchecked(
-          ConvertArraySubscript(base, expr->getIdx(), expr->getType()), expr);
-      return Text("");
+      return arena_.New<Unary>(
+          Unary::Op::Deref,
+          ConvertArraySubscript(base, expr->getIdx(), expr->getType()));
     }
     auto *subscript =
         ConvertArraySubscript(base, expr->getIdx(), expr->getType());
@@ -785,15 +776,43 @@ RsExpr *ConverterRefCount::ConvertIncAndDec(clang::UnaryOperator *expr) {
   }
 
   auto *node = ConvertLValue(sub_expr);
-  RsExpr *result = nullptr;
-  if (!pending_deref_.empty()) {
-    result = Cat(pending_deref_.take(),
-                 Text(std::format(".with_mut(|__v| __v.{}())", method)));
-  } else {
-    result = Cat(node, Text(std::format(".{}()", method)));
-  }
+  auto *result = arena_.New<MethodCall>(node, method, std::vector<RsExpr *>{});
   SetFreshType(expr->getType());
   return result;
+}
+
+RsExpr *ConverterRefCount::LowerPtrUse(RsExpr *node) {
+  if (auto *assign = clang::dyn_cast<Assign>(node)) {
+    auto *ptr = assign->left->Pointer();
+    if (!ptr) {
+      return nullptr;
+    }
+    return Cat(ptr, Text(".write("), assign->right, Text(')'));
+  }
+
+  if (auto *assign = clang::dyn_cast<CompoundAssign>(node)) {
+    auto *ptr = assign->left->Pointer();
+    if (!ptr) {
+      return nullptr;
+    }
+    std::string_view op = assign->op;
+    op.remove_suffix(1); // remove '='
+    return Braces(Cat(Text(keyword::kLet), Text("_ptr"), Text(token::kAssign),
+                      ptr, Text(".clone()"), Text(token::kSemiColon),
+                      Text("_ptr.write(_ptr.read()"), Text(std::string(op)),
+                      assign->right, Text(')')));
+  }
+
+  if (auto *call = clang::dyn_cast<MethodCall>(node)) {
+    auto *ptr = call->receiver->Pointer();
+    if (!ptr) {
+      return nullptr;
+    }
+    auto *inner = arena_.New<MethodCall>(Text("__v"), call->method, call->args);
+    return Cat(ptr, Text(".with_mut(|__v|"), inner, Text(')'));
+  }
+
+  return nullptr;
 }
 
 RsExpr *
@@ -864,8 +883,7 @@ RsExpr *ConverterRefCount::VisitDeclRefExpr(clang::DeclRefExpr *expr) {
       return node;
     }
     if (isLValue()) {
-      pending_deref_.set(node);
-      return Text("");
+      return arena_.New<Unary>(Unary::Op::Deref, node);
     }
     auto *deref = DerefPtrExpr(node, ref->getPointeeType());
     SetValueFreshness(expr->getType());
@@ -1093,8 +1111,7 @@ RsExpr *ConverterRefCount::VisitCallExpr(clang::CallExpr *expr) {
 
   if (ref && !isAddrOf() && !isVoid()) {
     if (isLValue()) {
-      pending_deref_.set(wrap_bindings(call));
-      return Text("");
+      return arena_.New<Unary>(Unary::Op::Deref, wrap_bindings(call));
     }
     // Apply deref before block wrapping so temporaries are still alive.
     auto *node = wrap_bindings(DerefPtrExpr(call, ref->getPointeeType()));
@@ -1453,7 +1470,7 @@ RsExpr *ConverterRefCount::ConvertBinaryOperator(clang::BinaryOperator *expr) {
     } else {
       value = Cat(value, CastTo(lhs_type));
     }
-    auto *assign_node = EmitSetOrAssign(lhs, Text("rhs_0"));
+    auto *assign_node = arena_.New<Assign>(ConvertLValue(lhs), Text("rhs_0"));
     return Braces(Cat(Text(keyword::kLet), Text("rhs_0"), Text(token::kAssign),
                       value, Text(token::kSemiColon), assign_node));
   }
@@ -1467,7 +1484,7 @@ RsExpr *ConverterRefCount::ConvertBinaryOperator(clang::BinaryOperator *expr) {
     }
     auto *arith = ConvertUnsignedArithBinaryOperator(expr, rhs);
     if (expr->isCompoundAssignmentOp()) {
-      auto *assign_node = EmitSetOrAssign(lhs, Text("rhs_0"));
+      auto *assign_node = arena_.New<Assign>(ConvertLValue(lhs), Text("rhs_0"));
       return Braces(Cat(Text(keyword::kLet), Text("rhs_0"),
                         Text(token::kAssign), operand, arith,
                         Text(token::kSemiColon), assign_node));
@@ -1586,8 +1603,7 @@ RsExpr *ConverterRefCount::ConvertUnionMemberAccessor(clang::MemberExpr *expr) {
   }
 
   if (isLValue()) {
-    pending_deref_.set(accessor);
-    return Text("");
+    return arena_.New<Unary>(Unary::Op::Deref, accessor);
   }
   auto *node = DerefPtrExpr(accessor, member->getType());
   SetValueFreshness(member->getType());
@@ -1640,8 +1656,7 @@ RsExpr *ConverterRefCount::VisitMemberExpr(clang::MemberExpr *expr) {
 
   if (member->getType()->isReferenceType()) {
     if (isLValue()) {
-      pending_deref_.set(node);
-      return Text("");
+      return arena_.New<Unary>(Unary::Op::Deref, node);
     }
     node = DerefPtrExpr(node, member->getType().getNonReferenceType());
   } else if (isRValue()) {
@@ -2004,15 +2019,6 @@ RsExpr *ConverterRefCount::ConvertVarInit(clang::QualType qual_type,
   return BoxValue(ConvertVarInitValue(qual_type, expr));
 }
 
-RsExpr *ConverterRefCount::EmitSetOrAssign(clang::Expr *lhs, RsExpr *rhs) {
-  auto *lhs_node = ConvertLValue(lhs);
-  if (!pending_deref_.empty()) {
-    auto *ptr = pending_deref_.take();
-    return Cat(ptr, Text(".write("), rhs, Text(')'));
-  }
-  return Cat(lhs_node, Text(token::kAssign), rhs);
-}
-
 RsExpr *ConverterRefCount::ConvertAssignment(clang::Expr *lhs, clang::Expr *rhs,
                                              std::string_view assign_operator) {
   auto *rhs_node = ConvertFreshRValue(rhs, lhs->getType());
@@ -2025,22 +2031,12 @@ RsExpr *ConverterRefCount::ConvertAssignment(clang::Expr *lhs, clang::Expr *rhs,
     rhs_node = Text("__rhs");
   }
 
+  auto *lhs_node = ConvertLValue(lhs);
   if (assign_operator == "=") {
-    parts.push_back(EmitSetOrAssign(lhs, rhs_node));
+    parts.push_back(arena_.New<Assign>(lhs_node, rhs_node));
   } else {
-    auto *lhs_node = ConvertLValue(lhs);
-    if (!pending_deref_.empty()) {
-      auto *ptr = pending_deref_.take();
-      auto op = assign_operator;
-      op.remove_suffix(1); // remove '='
-      parts.push_back(
-          Braces(Cat(Text("let _ptr ="), ptr, Text(".clone()"),
-                     Text(token::kSemiColon), Text("_ptr.write(_ptr.read()"),
-                     Text(std::string(op)), rhs_node, Text(')'))));
-    } else {
-      parts.push_back(
-          Cat(lhs_node, Text(std::string(assign_operator)), rhs_node));
-    }
+    parts.push_back(arena_.New<CompoundAssign>(
+        lhs_node, std::string(assign_operator), rhs_node));
   }
 
   if (isRValue()) {
@@ -2122,8 +2118,7 @@ RsExpr *ConverterRefCount::ConvertCXXOperatorCallExpr(
     }
 
     if (isLValue()) {
-      pending_deref_.set(ConvertExpr(expr->getArg(0)));
-      return Text("");
+      return arena_.New<Unary>(Unary::Op::Deref, ConvertExpr(expr->getArg(0)));
     }
 
     if (GetStrongestIteratorCategory(expr->getArg(0)->getType()) ==
@@ -2166,10 +2161,9 @@ RsExpr *ConverterRefCount::ConvertCXXOperatorCallExpr(
       auto *object = ConvertObject(expr->getArg(0));
       auto *ptr_type = ConvertPtrType(expr->getArg(0)->getType());
       auto *idx = ConvertSubscriptIndex(expr->getArg(1));
-      pending_deref_.set(Cat(Text('('), object, Text(keyword::kAs), ptr_type,
-                             Text(").offset("), idx, Text(')')),
-                         expr);
-      return Text("");
+      return arena_.New<Unary>(
+          Unary::Op::Deref, Cat(Text('('), object, Text(keyword::kAs), ptr_type,
+                                Text(").offset("), idx, Text(')')));
     }
 
     bool deref = !isAddrOf();
@@ -2287,9 +2281,7 @@ ConverterRefCount::ConvertPointerSubscript(clang::ArraySubscriptExpr *expr) {
   auto *idx = expr->getIdx();
 
   if (isLValue()) {
-    pending_deref_.assert_consumed();
-    pending_deref_.set_unchecked(ConvertPointerOffset(base, idx), expr);
-    return Text("");
+    return arena_.New<Unary>(Unary::Op::Deref, ConvertPointerOffset(base, idx));
   }
 
   if (isAddrOf()) {
@@ -2334,8 +2326,7 @@ RsExpr *ConverterRefCount::ConvertDeref(clang::Expr *expr) {
   auto pointee_type = expr->getType()->getPointeeType();
 
   if (isLValue()) {
-    pending_deref_.set(ConvertExpr(expr));
-    return Text("");
+    return arena_.New<Unary>(Unary::Op::Deref, ConvertExpr(expr));
   }
 
   RsExpr *node = nullptr;
@@ -2477,21 +2468,21 @@ RsExpr *ConverterRefCount::ConvertMappedMethodCall(
                body, Text(')'));
   }
 
-  ConvertIRFragment(mc.receiver, expr, args, num_args, ctx);
-  assert(!pending_deref_.empty());
-
-  bool is_boxed = pending_deref_.is_boxed();
-  auto *ptr = pending_deref_.take();
+  auto *receiver =
+      ConvertIRFragment(mc.receiver, expr, args, num_args, ctx)->IgnoreParens();
+  auto *receiver_ptr = receiver->Pointer();
+  assert(receiver_ptr && "receiver is not a dereference");
   auto *body = ConvertIRFragment(mc.body, expr, args, num_args, ctx);
 
-  if (is_boxed) {
-    auto *type_node = Convert(arg->getType());
-    return Cat(ptr, Text(".with_mut(|__v: &mut Value<"), type_node,
-               Text(">| (*__v.borrow_mut())"), body, Text(')'));
+  if (PointeeIsBoxed(receiver->expr)) {
+    return Cat(receiver_ptr, Text(".with_mut(|__v: &mut Value<"),
+               Convert(arg->getType()), Text(">| (*__v.borrow_mut())"), body,
+               Text(')'));
   }
 
-  return Cat(ptr, Text(std::format(".with_mut(|__v: {}| __v", param_type)),
-             body, Text(')'));
+  return Cat(receiver_ptr,
+             Text(std::format(".with_mut(|__v: {}| __v", param_type)), body,
+             Text(')'));
 }
 
 RsExpr *ConverterRefCount::ConvertPointeeType(clang::QualType ptr_type) {

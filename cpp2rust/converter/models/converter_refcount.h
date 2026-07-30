@@ -83,6 +83,8 @@ public:
 
   RsExpr *ConvertIncAndDec(clang::UnaryOperator *expr) override;
 
+  RsExpr *LowerPtrUse(RsExpr *node) override;
+
   RsExpr *VisitConditionalOperator(clang::ConditionalOperator *expr) override;
 
   RsExpr *ConvertPrintf(clang::CallExpr *expr) override;
@@ -218,8 +220,6 @@ private:
                          const clang::FunctionProtoType *src_proto,
                          const clang::FunctionProtoType *target_proto);
 
-  RsExpr *EmitSetOrAssign(clang::Expr *lhs, RsExpr *rhs);
-
   // Wraps a pointer expression with deref prefix/suffix: e.g.
   // "(*ptr.upgrade().deref())" or "(ptr.read())"
   RsExpr *DerefPtrExpr(RsExpr *ptr, clang::QualType pointee_type);
@@ -305,30 +305,6 @@ private:
 
   std::vector<ConversionKind> conversion_kind_;
 
-  // Set by pointer-related visit methods (ConvertDeref,
-  // ConvertPointerSubscript, etc.) when converting an LValue that goes through
-  // a Ptr. Contains the ptr expression node. Consumed by EmitSetOrAssign to
-  // emit ptr.write(rhs), or by ConvertMappedMethodCall to emit
-  // ptr.with_mut(...).
-  struct PendingDeref {
-    void set(RsExpr *node, clang::Expr *expr = nullptr);
-    void set_unchecked(RsExpr *node, clang::Expr *expr = nullptr);
-    RsExpr *take() {
-      auto *result = value;
-      value = nullptr;
-      pointee_is_boxed = false;
-      return result;
-    }
-    bool empty() const { return value == nullptr; }
-    bool is_boxed() const { return pointee_is_boxed; }
-    void assert_consumed() const {
-      assert(value == nullptr && "pending_deref_ not consumed");
-    }
-
-  private:
-    static bool compute_inner_boxed(clang::Expr *expr);
-    RsExpr *value = nullptr;
-    bool pointee_is_boxed = false;
-  } pending_deref_;
+  static bool PointeeIsBoxed(const clang::Expr *expr);
 };
 } // namespace cpp2rust
