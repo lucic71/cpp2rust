@@ -202,18 +202,17 @@ class TestContext:
 
         parent = Path(__file__).resolve().parent.parent.parent.parent.parent
         cc2rs_dir = parent / "libcc2rs" / "target" / "release"
-        libc_dep_deps = parent / "libc-dep" / "target" / "release" / "deps"
-        # pick the most recently compiled libc
+        cc2rs_deps = cc2rs_dir / "deps"
         libc_rlib = max(
-            libc_dep_deps.glob("liblibc-*.rlib"),
+            cc2rs_deps.glob("liblibc-*.rlib"),
             key=lambda p: p.stat().st_mtime,
         )
         nix_rlib = max(
-            libc_dep_deps.glob("libnix-*.rlib"),
+            cc2rs_deps.glob("libnix-*.rlib"),
             key=lambda p: p.stat().st_mtime,
         )
         jiff_rlib = max(
-            libc_dep_deps.glob("libjiff-*.rlib"),
+            cc2rs_deps.glob("libjiff-*.rlib"),
             key=lambda p: p.stat().st_mtime,
         )
         cmd = [
@@ -235,9 +234,7 @@ class TestContext:
             "--out-dir",
             str(self.tmp_dir),
             "-L",
-            f"dependency={cc2rs_dir / 'deps'}",
-            "-L",
-            f"dependency={libc_dep_deps}",
+            f"dependency={cc2rs_deps}",
             "--extern",
             f"libcc2rs={cc2rs_dir / 'liblibcc2rs.rlib'}",
             "--extern",
