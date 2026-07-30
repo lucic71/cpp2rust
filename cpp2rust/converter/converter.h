@@ -279,6 +279,8 @@ public:
   virtual RsExpr *
   ConvertFunctionToFunctionPointer(const clang::FunctionDecl *fn_decl);
 
+  virtual RsExpr *ConvertFunctionPointerPlaceholder(clang::Expr *arg);
+
   // Option<fn> implements Copy
   virtual bool FunctionPointerImplementsCopy() const { return true; }
 

@@ -1278,6 +1278,10 @@ RsExpr *ConverterRefCount::EmitFnPtrCall(clang::Expr *callee) {
   return Cat(Text("(*"), ConvertExpr(callee), Text(')'));
 }
 
+RsExpr *ConverterRefCount::ConvertFunctionPointerPlaceholder(clang::Expr *arg) {
+  return ConvertRValue(arg);
+}
+
 RsExpr *ConverterRefCount::ConvertFunctionToFunctionPointer(
     const clang::FunctionDecl *fn_decl) {
   computed_expr_type_ = ComputedExprType::FreshPointer;
