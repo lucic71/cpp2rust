@@ -565,6 +565,59 @@ RsExpr *ConverterRefCount::AddDropTrait(const clang::CXXRecordDecl *decl) {
              Text('}'));
 }
 
+RsExpr *
+ConverterRefCount::EmitBitFieldToBytes(const clang::FieldDecl *field,
+                                       const clang::ASTRecordLayout &layout) {
+  assert(!field->isUnnamedBitField());
+  auto bit_off = layout.getFieldOffset(field->getFieldIndex());
+  auto width = field->getBitWidthValue();
+
+  std::string stmts = std::format("{{ let __v = (*self.{}.borrow()) as u64;",
+                                  GetNamedDeclAsString(field));
+  for (auto byte = bit_off / 8; byte <= (bit_off + width - 1) / 8; ++byte) {
+    auto lo = std::max(bit_off, byte * 8);
+    auto hi = std::min(bit_off + width, byte * 8 + 8);
+    auto mask = ((1U << (hi - lo)) - 1) << (lo - byte * 8);
+    stmts += std::format(
+        "buf[{0}] = (buf[{0}] & !{1:#04x}u8) | ((((__v >> {2}) as u8) << {3}) "
+        "& {1:#04x}u8);",
+        byte, mask, lo - bit_off, lo - byte * 8);
+  }
+  return Text(stmts + '}');
+}
+
+RsExpr *
+ConverterRefCount::EmitBitFieldFromBytes(const clang::FieldDecl *field,
+                                         const clang::ASTRecordLayout &layout,
+                                         const std::string &storage_ty) {
+  assert(!field->isUnnamedBitField());
+  auto bit_off = layout.getFieldOffset(field->getFieldIndex());
+  auto width = field->getBitWidthValue();
+
+  std::string raw;
+  for (auto byte = bit_off / 8; byte <= (bit_off + width - 1) / 8; ++byte) {
+    auto lo = std::max(bit_off, byte * 8);
+    auto hi = std::min(bit_off + width, byte * 8 + 8);
+    if (!raw.empty()) {
+      raw += " | ";
+    }
+    raw += std::format("(((buf[{}] as u64 >> {}) & {:#x}) << {})", byte,
+                       lo - byte * 8, (1U << (hi - lo)) - 1, lo - bit_off);
+  }
+
+  std::string value;
+  if (field->getType()->isSignedIntegerType()) {
+    value = std::format("(((({0}) << {1}) as i64) >> {1}) as {2}", raw,
+                        64 - width, storage_ty);
+  } else {
+    assert(field->getType()->isUnsignedIntegerType());
+    value = std::format("({}) as {}", raw, storage_ty);
+  }
+
+  return Text(std::format("{}: Rc::new(RefCell::new({})),",
+                          GetNamedDeclAsString(field), value));
+}
+
 RsExpr *ConverterRefCount::AddByteReprTrait(const clang::RecordDecl *decl) {
   auto struct_name = GetRecordName(decl);
 
@@ -596,35 +649,35 @@ RsExpr *ConverterRefCount::AddByteReprTrait(const clang::RecordDecl *decl) {
                        ctx_.getTypeSize(ctx_.getCanonicalTagType(decl)) / 8)));
 
   std::vector<RsExpr *> to_bytes;
-  {
-    unsigned idx = 0;
-    for (auto *field : decl->fields()) {
-      auto byte_off = layout.getFieldOffset(idx) / 8;
-      auto byte_size = ctx_.getTypeSize(field->getType()) / 8;
-      to_bytes.push_back(Text(std::format(
-          "(*self.{}.borrow()).to_bytes(&mut buf[{}..{}]);",
-          GetNamedDeclAsString(field), byte_off, byte_off + byte_size)));
-      ++idx;
+  for (auto *field : decl->fields()) {
+    if (field->isBitField()) {
+      to_bytes.push_back(EmitBitFieldToBytes(field, layout));
+      continue;
     }
+    auto byte_off = layout.getFieldOffset(field->getFieldIndex()) / 8;
+    auto byte_size = ctx_.getTypeSize(field->getType()) / 8;
+    to_bytes.push_back(Text(std::format(
+        "(*self.{}.borrow()).to_bytes(&mut buf[{}..{}]);",
+        GetNamedDeclAsString(field), byte_off, byte_off + byte_size)));
   }
   body.push_back(Text("fn to_bytes(&self, buf: &mut [u8])"));
   body.push_back(Braces(arena_.New<Concat>(std::move(to_bytes))));
 
   std::vector<RsExpr *> from_bytes;
-  {
-    unsigned idx = 0;
-    for (auto *field : decl->fields()) {
-      auto byte_off = layout.getFieldOffset(idx) / 8;
-      auto byte_size = ctx_.getTypeSize(field->getType()) / 8;
-      PushConversionKind push(*this, ConversionKind::FullRefCount);
-      std::string storage_ty = RenderType(field->getType());
-      Unwrap(storage_ty, "Value<", ">");
-      from_bytes.push_back(Text(std::format(
-          "{}: Rc::new(RefCell::new(<{}>::from_bytes(&buf[{}..{}]))),",
-          GetNamedDeclAsString(field), storage_ty, byte_off,
-          byte_off + byte_size)));
-      ++idx;
+  for (auto *field : decl->fields()) {
+    PushConversionKind push(*this, ConversionKind::FullRefCount);
+    std::string storage_ty = RenderType(field->getType());
+    Unwrap(storage_ty, "Value<", ">");
+    if (field->isBitField()) {
+      from_bytes.push_back(EmitBitFieldFromBytes(field, layout, storage_ty));
+      continue;
     }
+    auto byte_off = layout.getFieldOffset(field->getFieldIndex()) / 8;
+    auto byte_size = ctx_.getTypeSize(field->getType()) / 8;
+    from_bytes.push_back(Text(std::format(
+        "{}: Rc::new(RefCell::new(<{}>::from_bytes(&buf[{}..{}]))),",
+        GetNamedDeclAsString(field), storage_ty, byte_off,
+        byte_off + byte_size)));
   }
   body.push_back(Text("fn from_bytes(buf: &[u8]) -> Self"));
   body.push_back(Braces(

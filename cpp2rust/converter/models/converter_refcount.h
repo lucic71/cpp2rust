@@ -51,6 +51,13 @@ public:
 
   RsExpr *AddByteReprTrait(const clang::EnumDecl *decl) override;
 
+  RsExpr *EmitBitFieldToBytes(const clang::FieldDecl *field,
+                              const clang::ASTRecordLayout &layout);
+
+  RsExpr *EmitBitFieldFromBytes(const clang::FieldDecl *field,
+                                const clang::ASTRecordLayout &layout,
+                                const std::string &storage_ty);
+
   RsExpr *
   VisitUnaryExprOrTypeTraitExpr(clang::UnaryExprOrTypeTraitExpr *expr) override;
 
