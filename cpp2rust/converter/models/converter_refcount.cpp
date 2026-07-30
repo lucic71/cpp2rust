@@ -1964,7 +1964,10 @@ RsExpr *ConverterRefCount::GetDefaultAsString(clang::QualType qual_type) {
   if (qual_type->isPointerType()) {
     auto pointee_type = qual_type->getPointeeType();
     if (pointee_type->isFunctionType()) {
-      ret = Text("FnPtr::null()");
+      auto *proto = pointee_type->getAs<clang::FunctionProtoType>();
+      assert(proto && "Function pointer default without a prototype");
+      ret = Cat(Text("FnPtr::<"), ConvertFunctionPointerType(proto),
+                Text(">::null()"));
     } else {
       if (pointee_type->isVoidType()) {
         ret = Text("AnyPtr::default()");

@@ -10,7 +10,7 @@ pub fn double_it_0(x: Ptr<i32>) {
     let x: Value<Ptr<i32>> = Rc::new(RefCell::new(x));
     {
         let _ptr = (*x.borrow()).clone();
-        _ptr.write((_ptr.read()) * 2)
+        _ptr.write(_ptr.read() * 2)
     };
 }
 pub fn maybe_call_1(cb: FnPtr<fn(Ptr<i32>)>, x: Ptr<i32>) {
@@ -28,9 +28,9 @@ fn main_0() -> i32 {
     ({ maybe_call_1(FnPtr::<fn(Ptr<i32>)>::new(double_it_0), (a.as_pointer())) });
     assert!(((*a.borrow()) == 10));
     let b: Value<i32> = Rc::new(RefCell::new(5));
-    ({ maybe_call_1(FnPtr::null(), (b.as_pointer())) });
+    ({ maybe_call_1(FnPtr::<fn(Ptr<i32>)>::null(), (b.as_pointer())) });
     assert!(((*b.borrow()) == 5));
-    let fn_: Value<FnPtr<fn(Ptr<i32>)>> = Rc::new(RefCell::new(FnPtr::null()));
+    let fn_: Value<FnPtr<fn(Ptr<i32>)>> = Rc::new(RefCell::new(FnPtr::<fn(Ptr<i32>)>::null()));
     if !!(*fn_.borrow()).is_null() {
         (*fn_.borrow_mut()) = FnPtr::<fn(Ptr<i32>)>::new(double_it_0);
     }
