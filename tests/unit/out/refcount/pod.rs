@@ -40,9 +40,9 @@ impl ByteRepr for POD {
     }
 }
 pub fn PODIncrement_0(pod: Ptr<POD>) {
-    (*(*pod.upgrade().deref()).x1.borrow_mut()) += 1;
-    (*(*pod.upgrade().deref()).x2.borrow_mut()) += 2;
-    (*(*pod.upgrade().deref()).x3.borrow_mut()) += 3;
+    pod.with_mut(|__v| (*__v.x1.borrow_mut()) += 1);
+    pod.with_mut(|__v| (*__v.x2.borrow_mut()) += 2);
+    pod.with_mut(|__v| (*__v.x3.borrow_mut()) += 3);
 }
 pub fn main() {
     std::process::exit(main_0());

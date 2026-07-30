@@ -26,7 +26,7 @@ fn main_0() -> i32 {
     'loop_: for mut x in v1.as_pointer() as Ptr<i32> {
         {
             let _ptr = x.clone();
-            _ptr.write(_ptr.read() + 10)
+            _ptr.write((_ptr.read()) + 10)
         };
     }
     'loop_: for mut x in v1.as_pointer() as Ptr<i32> {
@@ -41,7 +41,7 @@ fn main_0() -> i32 {
         let p: Value<Ptr<i32>> = Rc::new(RefCell::new(p.read().clone()));
         {
             let _ptr = (*p.borrow()).clone();
-            _ptr.write(_ptr.read() + 5)
+            _ptr.write((_ptr.read()) + 5)
         };
     }
     'loop_: for p in v2.as_pointer() as Ptr<Ptr<i32>> {
@@ -53,7 +53,7 @@ fn main_0() -> i32 {
         let p: Value<Ptr<i32>> = Rc::new(RefCell::new(p.read().clone()));
         {
             let _ptr = (*p.borrow()).clone();
-            _ptr.write(_ptr.read() + 5)
+            _ptr.write((_ptr.read()) + 5)
         };
     }
     'loop_: for mut p in v2.as_pointer() as Ptr<Ptr<i32>> {

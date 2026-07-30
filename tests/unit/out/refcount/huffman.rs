@@ -272,8 +272,8 @@ pub fn Huffman_2(
                 })
             }),
         ));
-        (*(*(*top.borrow()).upgrade().deref()).left.borrow_mut()) = (*left.borrow()).clone();
-        (*(*(*top.borrow()).upgrade().deref()).right.borrow_mut()) = (*right.borrow()).clone();
+        (*top.borrow()).with_mut(|__v| (*__v.left.borrow_mut()) = (*left.borrow()).clone());
+        (*top.borrow()).with_mut(|__v| (*__v.right.borrow_mut()) = (*right.borrow()).clone());
         ({ (*(*minHeap.borrow()).as_ref().unwrap().borrow()).Insert((*top.borrow()).clone()) });
     }
     return (*minHeap.borrow_mut()).take();

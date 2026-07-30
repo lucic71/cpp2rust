@@ -87,7 +87,7 @@ fn main_0() -> i32 {
         )
         .reinterpret_cast::<node>(),
     ));
-    (*(*(*n.borrow()).upgrade().deref()).len.borrow_mut()) = (*tail_size.borrow());
+    (*n.borrow()).with_mut(|__v| (*__v.len.borrow_mut()) = (*tail_size.borrow()));
     let i: Value<usize> = Rc::new(RefCell::new(0_usize));
     'loop_: while ((((*i.borrow()) < (*tail_size.borrow())) as i32) != 0) {
         let __rhs = (((*i.borrow()) & 255_usize) as u8);
@@ -130,7 +130,7 @@ fn main_0() -> i32 {
             == 170) as i32)
             != 0)
     );
-    (*(*(*n.borrow()).upgrade().deref()).pos.borrow_mut()) = 20_usize;
+    (*n.borrow()).with_mut(|__v| (*__v.pos.borrow_mut()) = 20_usize);
     let q: Value<Ptr<u8>> = Rc::new(RefCell::new(
         (((*(*(*n.borrow()).upgrade().deref()).x.borrow())
             .bytes()

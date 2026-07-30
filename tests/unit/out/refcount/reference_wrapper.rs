@@ -55,7 +55,7 @@ fn main_0() -> i32 {
     let i2: Ptr<i32> = (*ref_1.borrow()).clone();
     {
         let _ptr = i2.clone();
-        _ptr.write(_ptr.read() + 5)
+        _ptr.write((_ptr.read()) + 5)
     };
     write!(libcc2rs::cout(), "{:}\n", (*i1.borrow()),);
     let i3: Value<i32> = Rc::new(RefCell::new(1));
@@ -82,12 +82,12 @@ fn main_0() -> i32 {
         y: Rc::new(RefCell::new(4)),
     }));
     let point_ref: Value<Ptr<Point>> = Rc::new(RefCell::new(point.as_pointer()));
-    (*(*(*point_ref.borrow()).clone().upgrade().deref())
-        .x
-        .borrow_mut()) = 30;
-    (*(*(*point_ref.borrow()).clone().upgrade().deref())
-        .y
-        .borrow_mut()) = 40;
+    (*point_ref.borrow())
+        .clone()
+        .with_mut(|__v| (*__v.x.borrow_mut()) = 30);
+    (*point_ref.borrow())
+        .clone()
+        .with_mut(|__v| (*__v.y.borrow_mut()) = 40);
     write!(
         libcc2rs::cout(),
         "{:} {:}\n",

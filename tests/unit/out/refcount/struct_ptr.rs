@@ -37,7 +37,7 @@ pub fn main() {
 fn main_0() -> i32 {
     let obj: Value<XX> = Rc::new(RefCell::new(<XX>::default()));
     let ptr: Value<Ptr<XX>> = Rc::new(RefCell::new((obj.as_pointer())));
-    (*(*(*ptr.borrow()).upgrade().deref()).x.borrow_mut()) = 2;
+    (*ptr.borrow()).with_mut(|__v| (*__v.x.borrow_mut()) = 2);
     let c: Value<bool> = Rc::new(RefCell::new(false));
     let r: Value<i32> = Rc::new(RefCell::new(if (*c.borrow()) {
         (*(*obj.borrow()).x.borrow())

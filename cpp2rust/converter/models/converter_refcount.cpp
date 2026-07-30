@@ -783,33 +783,41 @@ RsExpr *ConverterRefCount::ConvertIncAndDec(clang::UnaryOperator *expr) {
 
 RsExpr *ConverterRefCount::LowerPtrUse(RsExpr *node) {
   if (auto *assign = clang::dyn_cast<Assign>(node)) {
-    auto *ptr = DerefOperand(assign->left);
-    if (!ptr) {
-      return nullptr;
+    if (auto *ptr = assign->left->Pointer()) {
+      return arena_.New<PtrWrite>(ptr, assign->right);
     }
-    return Cat(ptr, Text(".write("), assign->right, Text(')'));
+    if (auto *ptr = assign->left->TakePtr(Text("__v"))) {
+      return arena_.New<PtrWith>(ptr, true, node);
+    }
+    return nullptr;
   }
 
   if (auto *assign = clang::dyn_cast<CompoundAssign>(node)) {
-    auto *ptr = DerefOperand(assign->left);
-    if (!ptr) {
-      return nullptr;
+    if (auto *ptr = assign->left->Pointer()) {
+      std::string_view op = assign->op;
+      op.remove_suffix(1); // remove '='
+      auto *value = Cat(arena_.New<PtrRead>(Text("_ptr")),
+                        Text(std::string(op)), assign->right);
+      return Braces(Cat(Text(keyword::kLet), Text("_ptr"), Text(token::kAssign),
+                        ptr, Text(".clone()"), Text(token::kSemiColon),
+                        arena_.New<PtrWrite>(Text("_ptr"), value)));
     }
-    std::string_view op = assign->op;
-    op.remove_suffix(1); // remove '='
-    return Braces(Cat(Text(keyword::kLet), Text("_ptr"), Text(token::kAssign),
-                      ptr, Text(".clone()"), Text(token::kSemiColon),
-                      Text("_ptr.write(_ptr.read()"), Text(std::string(op)),
-                      assign->right, Text(')')));
+    if (auto *ptr = assign->left->TakePtr(Text("__v"))) {
+      return arena_.New<PtrWith>(ptr, true, node);
+    }
+    return nullptr;
   }
 
   if (auto *call = clang::dyn_cast<MethodCall>(node)) {
-    auto *ptr = DerefOperand(call->receiver);
-    if (!ptr) {
-      return nullptr;
+    if (auto *ptr = call->object->Pointer()) {
+      auto *inner =
+          arena_.New<MethodCall>(Text("__v"), call->method, call->args);
+      return arena_.New<PtrWith>(ptr, true, inner);
     }
-    auto *inner = arena_.New<MethodCall>(Text("__v"), call->method, call->args);
-    return Cat(ptr, Text(".with_mut(|__v|"), inner, Text(')'));
+    if (auto *ptr = call->object->TakePtr(Text("__v"))) {
+      return arena_.New<PtrWith>(ptr, true, node);
+    }
+    return nullptr;
   }
 
   return nullptr;
@@ -1660,9 +1668,9 @@ RsExpr *ConverterRefCount::VisitMemberExpr(clang::MemberExpr *expr) {
     }
     node = DerefPtrExpr(node, member->getType().getNonReferenceType());
   } else if (isRValue()) {
-    node = Cat(Text("(*"), node, Text(".borrow())"));
+    node = arena_.New<BorrowRead>(node);
   } else {
-    node = Cat(Text("(*"), node, Text(".borrow_mut())"));
+    node = arena_.New<BorrowWrite>(node);
   }
   SetValueFreshness(expr->getType());
   return node;
@@ -2429,8 +2437,10 @@ ConverterRefCount::GetPointerDerefPrefix(clang::QualType pointee_type) {
 
 RsExpr *ConverterRefCount::DerefPtrExpr(RsExpr *ptr,
                                         clang::QualType pointee_type) {
-  return Parens(Cat(Text(GetPointerDerefPrefix(pointee_type)), ptr,
-                    Text(GetPointerDerefSuffix(pointee_type))));
+  if (pointee_type.isPODType(ctx_) && !pointee_type->isRecordType()) {
+    return arena_.New<PtrRead>(ptr);
+  }
+  return arena_.New<PtrDeref>(ptr);
 }
 
 bool ConverterRefCount::IsReferenceType(const clang::Expr *expr) const {
@@ -2470,7 +2480,7 @@ RsExpr *ConverterRefCount::ConvertMappedMethodCall(
 
   auto *receiver =
       ConvertIRFragment(mc.receiver, expr, args, num_args, ctx)->IgnoreParens();
-  auto *receiver_ptr = DerefOperand(receiver);
+  auto *receiver_ptr = receiver->Pointer();
   assert(receiver_ptr && "receiver is not a dereference");
   auto *body = ConvertIRFragment(mc.body, expr, args, num_args, ctx);
 

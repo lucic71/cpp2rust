@@ -13,7 +13,7 @@ pub struct Item {
 impl Item {
     pub fn foo(&self, other: Ptr<Item>) {
         let other: Value<Ptr<Item>> = Rc::new(RefCell::new(other));
-        (*(*(*other.borrow()).upgrade().deref()).value.borrow_mut()) = 10;
+        (*other.borrow()).with_mut(|__v| (*__v.value.borrow_mut()) = 10);
     }
 }
 impl Clone for Item {

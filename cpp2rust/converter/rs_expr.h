@@ -26,7 +26,14 @@ struct RsExpr {
     Unary,
     Assign,
     CompoundAssign,
+    Field,
+    BorrowRead,
+    BorrowWrite,
     MethodCall,
+    PtrRead,
+    PtrDeref,
+    PtrWrite,
+    PtrWith,
   };
 
   explicit RsExpr(Kind kind) : kind(kind) {}
@@ -37,6 +44,10 @@ struct RsExpr {
   virtual void ForEachChild(llvm::function_ref<void(RsExpr *&)>) {}
 
   RsExpr *IgnoreParens();
+
+  virtual RsExpr *Pointer() { return nullptr; }
+
+  virtual RsExpr *TakePtr(RsExpr *) { return nullptr; }
 
   Kind kind;
   const clang::Expr *expr = nullptr;
@@ -99,6 +110,12 @@ struct Delim : RsExpr {
     fn(inner);
   }
 
+  RsExpr *Pointer() override { return inner->Pointer(); }
+
+  RsExpr *TakePtr(RsExpr *replacement) override {
+    return inner->TakePtr(replacement);
+  }
+
   char open;
   char close;
   RsExpr *inner;
@@ -132,8 +149,139 @@ struct Unary : RsExpr {
     fn(operand);
   }
 
+  RsExpr *Pointer() override { return op == Op::Deref ? operand : nullptr; }
+
   Op op;
   RsExpr *operand;
+};
+
+struct Accessor : RsExpr {
+  Accessor(Kind kind, RsExpr *object) : RsExpr(kind), object(object) {}
+
+  static bool classof(const RsExpr *expr) {
+    return expr->kind >= Kind::Field && expr->kind <= Kind::PtrWith;
+  }
+
+  void ForEachChild(llvm::function_ref<void(RsExpr *&)> fn) override {
+    fn(object);
+  }
+
+  RsExpr *TakePtr(RsExpr *replacement) override {
+    if (auto *ptr = object->Pointer()) {
+      object = replacement;
+      return ptr;
+    }
+    return object->TakePtr(replacement);
+  }
+
+  RsExpr *object;
+};
+
+struct Field : Accessor {
+  Field(RsExpr *object, std::string member)
+      : Accessor(Kind::Field, object), member(std::move(member)) {}
+
+  static bool classof(const RsExpr *expr) { return expr->kind == Kind::Field; }
+
+  std::string print() const override {
+    return object->print() + '.' + member + ' ';
+  }
+
+  std::string member;
+};
+
+struct BorrowRead : Accessor {
+  explicit BorrowRead(RsExpr *object) : Accessor(Kind::BorrowRead, object) {}
+
+  static bool classof(const RsExpr *expr) {
+    return expr->kind == Kind::BorrowRead;
+  }
+
+  std::string print() const override {
+    return "(*" + object->print() + ".borrow()) ";
+  }
+};
+
+struct BorrowWrite : Accessor {
+  explicit BorrowWrite(RsExpr *object) : Accessor(Kind::BorrowWrite, object) {}
+
+  static bool classof(const RsExpr *expr) {
+    return expr->kind == Kind::BorrowWrite;
+  }
+
+  std::string print() const override {
+    return "(*" + object->print() + ".borrow_mut()) ";
+  }
+};
+
+struct PtrRead : Accessor {
+  explicit PtrRead(RsExpr *object) : Accessor(Kind::PtrRead, object) {}
+
+  static bool classof(const RsExpr *expr) {
+    return expr->kind == Kind::PtrRead;
+  }
+
+  std::string print() const override {
+    return '(' + object->print() + ".read()) ";
+  }
+
+  RsExpr *Pointer() override { return object; }
+};
+
+struct PtrDeref : Accessor {
+  explicit PtrDeref(RsExpr *object) : Accessor(Kind::PtrDeref, object) {}
+
+  static bool classof(const RsExpr *expr) {
+    return expr->kind == Kind::PtrDeref;
+  }
+
+  std::string print() const override {
+    return "(*" + object->print() + ".upgrade().deref()) ";
+  }
+
+  RsExpr *Pointer() override { return object; }
+};
+
+struct PtrWrite : Accessor {
+  PtrWrite(RsExpr *object, RsExpr *value)
+      : Accessor(Kind::PtrWrite, object), value(value) {}
+
+  static bool classof(const RsExpr *expr) {
+    return expr->kind == Kind::PtrWrite;
+  }
+
+  std::string print() const override {
+    return object->print() + ".write(" + value->print() + ") ";
+  }
+
+  void ForEachChild(llvm::function_ref<void(RsExpr *&)> fn) override {
+    fn(object);
+    fn(value);
+  }
+
+  RsExpr *value;
+};
+
+struct PtrWith : Accessor {
+  PtrWith(RsExpr *object, bool is_mut, RsExpr *body)
+      : Accessor(Kind::PtrWith, object), is_mut(is_mut), body(body) {}
+
+  static bool classof(const RsExpr *expr) {
+    return expr->kind == Kind::PtrWith;
+  }
+
+  std::string print() const override {
+    return object->print() + (is_mut ? ".with_mut(|__v| " : ".with(|__v| ") +
+           body->print() + ") ";
+  }
+
+  void ForEachChild(llvm::function_ref<void(RsExpr *&)> fn) override {
+    fn(object);
+    fn(body);
+  }
+
+  bool is_mut;
+  RsExpr *body;
 };
 
 struct Assign : RsExpr {
@@ -178,9 +326,9 @@ struct CompoundAssign : RsExpr {
   RsExpr *right;
 };
 
-struct MethodCall : RsExpr {
-  MethodCall(RsExpr *receiver, std::string method, std::vector<RsExpr *> args)
-      : RsExpr(Kind::MethodCall), receiver(receiver), method(std::move(method)),
+struct MethodCall : Accessor {
+  MethodCall(RsExpr *object, std::string method, std::vector<RsExpr *> args)
+      : Accessor(Kind::MethodCall, object), method(std::move(method)),
         args(std::move(args)) {}
 
   static bool classof(const RsExpr *expr) {
@@ -188,7 +336,7 @@ struct MethodCall : RsExpr {
   }
 
   std::string print() const override {
-    std::string result = receiver->print();
+    std::string result = object->print();
     result += '.';
     result += method;
     result += '(';
@@ -203,13 +351,12 @@ struct MethodCall : RsExpr {
   }
 
   void ForEachChild(llvm::function_ref<void(RsExpr *&)> fn) override {
-    fn(receiver);
+    fn(object);
     for (auto *&arg : args) {
       fn(arg);
     }
   }
 
-  RsExpr *receiver;
   std::string method;
   std::vector<RsExpr *> args;
 };
@@ -228,7 +375,5 @@ public:
 private:
   std::vector<std::unique_ptr<RsExpr>> pool_;
 };
-
-RsExpr *DerefOperand(RsExpr *node);
 
 } // namespace cpp2rust

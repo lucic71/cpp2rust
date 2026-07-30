@@ -72,10 +72,10 @@ fn main_0() -> i32 {
     let t2: Value<Ptr<Test>> = Rc::new(RefCell::new(({ Update_0((t1.as_pointer())) })));
     let t3: Value<Ptr<Test>> = Rc::new(RefCell::new(Ptr::<Test>::null()));
     (*t3.borrow_mut()) = (*t2.borrow()).clone();
-    (*(*(*t3.borrow()).upgrade().deref()).x.borrow_mut()) = 15;
+    (*t3.borrow()).with_mut(|__v| (*__v.x.borrow_mut()) = 15);
     {
         let _ptr = ({ (*(*t3.borrow()).upgrade().deref()).as_ptr() }).clone();
-        _ptr.write(_ptr.read() + 10)
+        _ptr.write((_ptr.read()) + 10)
     };
     return {
         let _lhs = {

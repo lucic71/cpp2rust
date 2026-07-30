@@ -17,7 +17,7 @@ pub fn fatorial_by_ref_1(n: Ptr<i32>) {
     if ((n.read()) == 1) {
         {
             let _ptr = n.clone();
-            _ptr.write(_ptr.read() * 1)
+            _ptr.write((_ptr.read()) * 1)
         };
         return;
     }
@@ -26,7 +26,7 @@ pub fn fatorial_by_ref_1(n: Ptr<i32>) {
     let __rhs = (*n_1.borrow());
     {
         let _ptr = n.clone();
-        _ptr.write(_ptr.read() * __rhs)
+        _ptr.write((_ptr.read()) * __rhs)
     };
 }
 pub fn fatorial_by_ptr_2(n: Ptr<i32>) {
@@ -34,7 +34,7 @@ pub fn fatorial_by_ptr_2(n: Ptr<i32>) {
     if (((*n.borrow()).read()) == 1) {
         {
             let _ptr = (*n.borrow()).clone();
-            _ptr.write(_ptr.read() * 1)
+            _ptr.write((_ptr.read()) * 1)
         };
         return;
     }
@@ -43,7 +43,7 @@ pub fn fatorial_by_ptr_2(n: Ptr<i32>) {
     let __rhs = (*n_1.borrow());
     {
         let _ptr = (*n.borrow()).clone();
-        _ptr.write(_ptr.read() * __rhs)
+        _ptr.write((_ptr.read()) * __rhs)
     };
 }
 pub fn main() {
