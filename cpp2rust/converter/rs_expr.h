@@ -108,6 +108,7 @@ struct Unary : RsExpr {
     case Op::Neg:
       return "-" + operand->print();
     }
+    std::unreachable();
   }
 
   Op op;
