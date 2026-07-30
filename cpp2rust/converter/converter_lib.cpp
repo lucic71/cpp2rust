@@ -224,6 +224,43 @@ bool TypeImplementsByteRepr(clang::QualType qt) {
   return false;
 }
 
+bool TypeImplementsClone(clang::QualType qt) {
+  if (qt->isIntegerType() || qt->isFloatingType() || qt->isEnumeralType()) {
+    return true;
+  }
+  if (qt->isPointerType()) {
+    return true;
+  }
+  if (const auto *arr = qt->getAsArrayTypeUnsafe()) {
+    return TypeImplementsClone(arr->getElementType());
+  }
+  if (const auto *rd = qt->getAsRecordDecl()) {
+    if (rd->getASTContext().getSourceManager().isInSystemHeader(
+            rd->getLocation())) {
+      return true;
+    }
+    if (rd->isUnion()) {
+      return true;
+    }
+    const auto *def = rd->getDefinition();
+    if (!def) {
+      return false;
+    }
+    if (const auto *cxx = clang::dyn_cast<clang::CXXRecordDecl>(def)) {
+      if (cxx->defaultedCopyConstructorIsDeleted()) {
+        return false;
+      }
+    }
+    for (const auto *field : def->fields()) {
+      if (!TypeImplementsClone(field->getType())) {
+        return false;
+      }
+    }
+    return true;
+  }
+  return false;
+}
+
 bool RustSizeDivergesFromC(clang::QualType qt) {
   qt = qt.getCanonicalType();
   // Records have Rc<RefCell<>> fields that diverge from the C size

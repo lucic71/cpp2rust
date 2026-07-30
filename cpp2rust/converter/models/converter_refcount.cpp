@@ -457,16 +457,7 @@ RsExpr *ConverterRefCount::AddCloneTrait(const clang::RecordDecl *decl) {
 
   auto *cxx = clang::dyn_cast<clang::CXXRecordDecl>(decl);
   if (!cxx) {
-    std::vector<RsExpr *> fields;
-    for (auto *field : decl->fields()) {
-      auto name = GetNamedDeclAsString(field);
-      fields.push_back(Text(std::format(
-          "{0}: Rc::new(RefCell::new((*self.{0}.borrow()).clone())),", name)));
-    }
-    return Cat(Text(keyword::kImpl), Text("Clone for"), Text(record_name),
-               Braces(Cat(Text("fn clone(&self) -> Self"),
-                          Braces(Cat(Text("Self"), Braces(arena_.New<Concat>(
-                                                       std::move(fields))))))));
+    return Text("");
   }
 
   if (cxx->defaultedCopyConstructorIsDeleted()) {
@@ -2057,6 +2048,11 @@ ConverterRefCount::GetStructAttributes(const clang::RecordDecl *decl) {
 
   if (decl->isUnion()) {
     return attrs;
+  }
+
+  if (!clang::isa<clang::CXXRecordDecl>(decl) &&
+      TypeImplementsClone(ctx_.getCanonicalTagType(decl))) {
+    attrs.emplace_back("Clone");
   }
 
   if (RecordDerivesDefault(decl)) {

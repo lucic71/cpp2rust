@@ -54,6 +54,8 @@ bool IsMut(clang::QualType qual_type);
 
 bool TypeImplementsByteRepr(clang::QualType qt);
 
+bool TypeImplementsClone(clang::QualType qt);
+
 bool RustSizeDivergesFromC(clang::QualType qt);
 
 bool IsMutatingCall(const clang::CallExpr *expr);
