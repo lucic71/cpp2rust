@@ -422,6 +422,10 @@ protected:
 
   RsExpr *ConvertDecl(clang::Decl *decl);
 
+  void LowerNodes(RsExpr *&node);
+
+  virtual RsExpr *LowerPtrUse([[maybe_unused]] RsExpr *node) { return nullptr; }
+
   RsArena arena_;
 
   RsExpr *Text(std::string text) {

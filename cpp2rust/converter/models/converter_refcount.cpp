@@ -776,10 +776,43 @@ RsExpr *ConverterRefCount::ConvertIncAndDec(clang::UnaryOperator *expr) {
   }
 
   auto *node = ConvertLValue(sub_expr);
-  auto *result = MakeMethodCall(arena_, node, nullptr, WithReceiver::Direct,
-                                Text(std::format(".{}()", method)));
+  auto *result = arena_.New<MethodCall>(node, method, std::vector<RsExpr *>{});
   SetFreshType(expr->getType());
   return result;
+}
+
+RsExpr *ConverterRefCount::LowerPtrUse(RsExpr *node) {
+  if (auto *assign = clang::dyn_cast<Assign>(node)) {
+    auto *ptr = DerefOperand(assign->left);
+    if (!ptr) {
+      return nullptr;
+    }
+    return Cat(ptr, Text(".write("), assign->right, Text(')'));
+  }
+
+  if (auto *assign = clang::dyn_cast<CompoundAssign>(node)) {
+    auto *ptr = DerefOperand(assign->left);
+    if (!ptr) {
+      return nullptr;
+    }
+    std::string_view op = assign->op;
+    op.remove_suffix(1); // remove '='
+    return Braces(Cat(Text(keyword::kLet), Text("_ptr"), Text(token::kAssign),
+                      ptr, Text(".clone()"), Text(token::kSemiColon),
+                      Text("_ptr.write(_ptr.read()"), Text(std::string(op)),
+                      assign->right, Text(')')));
+  }
+
+  if (auto *call = clang::dyn_cast<MethodCall>(node)) {
+    auto *ptr = DerefOperand(call->receiver);
+    if (!ptr) {
+      return nullptr;
+    }
+    auto *inner = arena_.New<MethodCall>(Text("__v"), call->method, call->args);
+    return Cat(ptr, Text(".with_mut(|__v|"), inner, Text(')'));
+  }
+
+  return nullptr;
 }
 
 RsExpr *
@@ -1437,7 +1470,7 @@ RsExpr *ConverterRefCount::ConvertBinaryOperator(clang::BinaryOperator *expr) {
     } else {
       value = Cat(value, CastTo(lhs_type));
     }
-    auto *assign_node = MakeAssign(arena_, ConvertLValue(lhs), Text("rhs_0"));
+    auto *assign_node = arena_.New<Assign>(ConvertLValue(lhs), Text("rhs_0"));
     return Braces(Cat(Text(keyword::kLet), Text("rhs_0"), Text(token::kAssign),
                       value, Text(token::kSemiColon), assign_node));
   }
@@ -1451,7 +1484,7 @@ RsExpr *ConverterRefCount::ConvertBinaryOperator(clang::BinaryOperator *expr) {
     }
     auto *arith = ConvertUnsignedArithBinaryOperator(expr, rhs);
     if (expr->isCompoundAssignmentOp()) {
-      auto *assign_node = MakeAssign(arena_, ConvertLValue(lhs), Text("rhs_0"));
+      auto *assign_node = arena_.New<Assign>(ConvertLValue(lhs), Text("rhs_0"));
       return Braces(Cat(Text(keyword::kLet), Text("rhs_0"),
                         Text(token::kAssign), operand, arith,
                         Text(token::kSemiColon), assign_node));
@@ -2000,10 +2033,10 @@ RsExpr *ConverterRefCount::ConvertAssignment(clang::Expr *lhs, clang::Expr *rhs,
 
   auto *lhs_node = ConvertLValue(lhs);
   if (assign_operator == "=") {
-    parts.push_back(MakeAssign(arena_, lhs_node, rhs_node));
+    parts.push_back(arena_.New<Assign>(lhs_node, rhs_node));
   } else {
-    parts.push_back(
-        MakeCompoundAssign(arena_, lhs_node, assign_operator, rhs_node));
+    parts.push_back(arena_.New<CompoundAssign>(
+        lhs_node, std::string(assign_operator), rhs_node));
   }
 
   if (isRValue()) {
@@ -2437,16 +2470,19 @@ RsExpr *ConverterRefCount::ConvertMappedMethodCall(
 
   auto *receiver =
       ConvertIRFragment(mc.receiver, expr, args, num_args, ctx)->IgnoreParens();
-  assert(clang::isa<Unary>(receiver) && "receiver is not a place");
+  auto *receiver_ptr = DerefOperand(receiver);
+  assert(receiver_ptr && "receiver is not a dereference");
   auto *body = ConvertIRFragment(mc.body, expr, args, num_args, ctx);
 
   if (PointeeIsBoxed(receiver->expr)) {
-    auto *param = Cat(Text("&mut Value<"), Convert(arg->getType()), Text('>'));
-    return MakeMethodCall(arena_, receiver, param, WithReceiver::Borrow, body);
+    return Cat(receiver_ptr, Text(".with_mut(|__v: &mut Value<"),
+               Convert(arg->getType()), Text(">| (*__v.borrow_mut())"), body,
+               Text(')'));
   }
 
-  return MakeMethodCall(arena_, receiver, Text(param_type),
-                        WithReceiver::Direct, body);
+  return Cat(receiver_ptr,
+             Text(std::format(".with_mut(|__v: {}| __v", param_type)), body,
+             Text(')'));
 }
 
 RsExpr *ConverterRefCount::ConvertPointeeType(clang::QualType ptr_type) {

@@ -83,6 +83,8 @@ public:
 
   RsExpr *ConvertIncAndDec(clang::UnaryOperator *expr) override;
 
+  RsExpr *LowerPtrUse(RsExpr *node) override;
+
   RsExpr *VisitConditionalOperator(clang::ConditionalOperator *expr) override;
 
   RsExpr *ConvertPrintf(clang::CallExpr *expr) override;

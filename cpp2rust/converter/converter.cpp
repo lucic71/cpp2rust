@@ -269,8 +269,17 @@ bool Converter::Convert(clang::Decl *decl) {
   if (decl == nullptr) {
     return true;
   }
-  *rs_code_ += ConvertDecl(decl)->print();
+  auto *node = ConvertDecl(decl);
+  LowerNodes(node);
+  *rs_code_ += node->print();
   return false;
+}
+
+void Converter::LowerNodes(RsExpr *&node) {
+  node->ForEachChild([this](RsExpr *&child) { LowerNodes(child); });
+  if (auto *lowered = LowerPtrUse(node)) {
+    node = lowered;
+  }
 }
 
 RsExpr *Converter::ConvertDecl(clang::Decl *decl) {

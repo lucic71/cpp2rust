@@ -3,6 +3,8 @@
 // Copyright (c) 2022-present INESC-ID.
 // Distributed under the MIT license that can be found in the LICENSE file.
 
+#include <llvm/ADT/STLFunctionalExtras.h>
+
 #include <cstdint>
 #include <memory>
 #include <string>
@@ -22,12 +24,17 @@ struct RsExpr {
     Concat,
     Delim,
     Unary,
+    Assign,
+    CompoundAssign,
+    MethodCall,
   };
 
   explicit RsExpr(Kind kind) : kind(kind) {}
   virtual ~RsExpr() = default;
 
   virtual std::string print() const = 0;
+
+  virtual void ForEachChild(llvm::function_ref<void(RsExpr *&)>) {}
 
   RsExpr *IgnoreParens();
 
@@ -63,6 +70,12 @@ struct Concat : RsExpr {
     return result;
   }
 
+  void ForEachChild(llvm::function_ref<void(RsExpr *&)> fn) override {
+    for (auto *&part : parts) {
+      fn(part);
+    }
+  }
+
   std::vector<RsExpr *> parts;
 };
 
@@ -80,6 +93,10 @@ struct Delim : RsExpr {
     result += close;
     result += ' ';
     return result;
+  }
+
+  void ForEachChild(llvm::function_ref<void(RsExpr *&)> fn) override {
+    fn(inner);
   }
 
   char open;
@@ -111,18 +128,95 @@ struct Unary : RsExpr {
     std::unreachable();
   }
 
+  void ForEachChild(llvm::function_ref<void(RsExpr *&)> fn) override {
+    fn(operand);
+  }
+
   Op op;
   RsExpr *operand;
+};
+
+struct Assign : RsExpr {
+  Assign(RsExpr *left, RsExpr *right)
+      : RsExpr(Kind::Assign), left(left), right(right) {}
+
+  static bool classof(const RsExpr *expr) { return expr->kind == Kind::Assign; }
+
+  std::string print() const override {
+    return left->print() + " = " + right->print() + ' ';
+  }
+
+  void ForEachChild(llvm::function_ref<void(RsExpr *&)> fn) override {
+    fn(left);
+    fn(right);
+  }
+
+  RsExpr *left;
+  RsExpr *right;
+};
+
+struct CompoundAssign : RsExpr {
+  CompoundAssign(RsExpr *left, std::string op, RsExpr *right)
+      : RsExpr(Kind::CompoundAssign), left(left), op(std::move(op)),
+        right(right) {}
+
+  static bool classof(const RsExpr *expr) {
+    return expr->kind == Kind::CompoundAssign;
+  }
+
+  std::string print() const override {
+    return left->print() + ' ' + op + ' ' + right->print() + ' ';
+  }
+
+  void ForEachChild(llvm::function_ref<void(RsExpr *&)> fn) override {
+    fn(left);
+    fn(right);
+  }
+
+  RsExpr *left;
+  std::string op;
+  RsExpr *right;
+};
+
+struct MethodCall : RsExpr {
+  MethodCall(RsExpr *receiver, std::string method, std::vector<RsExpr *> args)
+      : RsExpr(Kind::MethodCall), receiver(receiver), method(std::move(method)),
+        args(std::move(args)) {}
+
+  static bool classof(const RsExpr *expr) {
+    return expr->kind == Kind::MethodCall;
+  }
+
+  std::string print() const override {
+    std::string result = receiver->print();
+    result += '.';
+    result += method;
+    result += '(';
+    for (size_t i = 0; i < args.size(); ++i) {
+      if (i > 0) {
+        result += ',';
+      }
+      result += args[i]->print();
+    }
+    result += ") ";
+    return result;
+  }
+
+  void ForEachChild(llvm::function_ref<void(RsExpr *&)> fn) override {
+    fn(receiver);
+    for (auto *&arg : args) {
+      fn(arg);
+    }
+  }
+
+  RsExpr *receiver;
+  std::string method;
+  std::vector<RsExpr *> args;
 };
 
 inline bool SameRendered(const RsExpr *lhs, const RsExpr *rhs) {
   return lhs->print() == rhs->print();
 }
-
-enum class WithReceiver : uint8_t {
-  Direct,
-  Borrow,
-};
 
 class RsArena {
 public:
@@ -135,12 +229,6 @@ private:
   std::vector<std::unique_ptr<RsExpr>> pool_;
 };
 
-RsExpr *MakeAssign(RsArena &arena, RsExpr *lhs, RsExpr *rhs);
-
-RsExpr *MakeCompoundAssign(RsArena &arena, RsExpr *lhs, std::string_view op,
-                           RsExpr *rhs);
-
-RsExpr *MakeMethodCall(RsArena &arena, RsExpr *lhs, RsExpr *param_type,
-                       WithReceiver receiver, RsExpr *call);
+RsExpr *DerefOperand(RsExpr *node);
 
 } // namespace cpp2rust
