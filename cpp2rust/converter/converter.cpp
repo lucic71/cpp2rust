@@ -1195,6 +1195,7 @@ RsExpr *Converter::ConvertStmt(clang::Stmt *stmt) {
   case clang::Stmt::AttributedStmtClass:
     return ConvertStmt(clang::cast<clang::AttributedStmt>(stmt)->getSubStmt());
   case clang::Stmt::NullStmtClass:
+  case clang::Stmt::GCCAsmStmtClass:
     return arena_.New<Verbatim>("");
   default:
     llvm::errs() << "ConvertStmt: unhandled statement class "
