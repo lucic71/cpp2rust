@@ -2331,6 +2331,12 @@ pub fn main() {{
 
 RsExpr *ConverterRefCount::ConvertAddrOf(clang::Expr *expr,
                                          clang::QualType pointer_type) {
+  if (const auto *arr = ctx_.getAsArrayType(expr->getType())) {
+    PushConversionKind push(*this, ConversionKind::Unboxed);
+    auto *node = ConvertPointer(expr);
+    return Parens(Cat(node, Text(keyword::kAs), Text("Ptr<"),
+                      Convert(arr->getElementType()), Text('>')));
+  }
   return ConvertPointer(expr);
 }
 

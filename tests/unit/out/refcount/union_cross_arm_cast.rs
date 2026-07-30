@@ -177,15 +177,18 @@ fn main_0() -> i32 {
             .memset((0) as u8, 68usize as usize);
         ((c.as_pointer()) as Ptr<Container>).to_any().clone()
     };
-    (*(*c.borrow()).u.borrow())
-        .a()
-        .with_mut(|__v| (*__v.code.borrow_mut()) = 10_u16);
+    (*(*(*(*c.borrow()).u.borrow()).a().upgrade().deref())
+        .code
+        .borrow_mut()) = 10_u16;
     (*(*c.borrow()).len.borrow_mut()) = (28usize as u32);
-    (((*(*c.borrow()).u.borrow()).a())
+    (*(*(((*(*c.borrow()).u.borrow()).a())
         .clone()
         .to_any()
         .reinterpret_cast::<shape_b>())
-    .with_mut(|__v| (*__v.tail.borrow_mut()) = 3735928559_u32);
+    .upgrade()
+    .deref())
+    .tail
+    .borrow_mut()) = 3735928559_u32;
     assert!(
         ((((*(*(*(*c.borrow()).u.borrow()).b().upgrade().deref())
             .tail
@@ -200,11 +203,11 @@ fn main_0() -> i32 {
             == 10) as i32)
             != 0)
     );
-    (*(*c.borrow()).u.borrow())
-        .b()
-        .with_mut(|__v| (*__v.lo.borrow_mut()) = 8080_u16);
+    (*(*(*(*c.borrow()).u.borrow()).b().upgrade().deref())
+        .lo
+        .borrow_mut()) = 8080_u16;
     assert!(
-        ((((((((*(*c.borrow()).u.borrow()).raw_().reinterpret_cast::<u8>())
+        ((((((((*(*c.borrow()).u.borrow()).raw_().reinterpret_cast::<u8>() as Ptr<u8>)
             .reinterpret_cast::<u8>())
         .offset((2) as isize)
         .read()) as i32)
@@ -212,7 +215,7 @@ fn main_0() -> i32 {
             != 0)
     );
     assert!(
-        ((((((((*(*c.borrow()).u.borrow()).raw_().reinterpret_cast::<u8>())
+        ((((((((*(*c.borrow()).u.borrow()).raw_().reinterpret_cast::<u8>() as Ptr<u8>)
             .reinterpret_cast::<u8>())
         .offset((3) as isize)
         .read()) as i32)
