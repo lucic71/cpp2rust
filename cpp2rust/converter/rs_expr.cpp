@@ -18,12 +18,4 @@ RsExpr *RsExpr::IgnoreParens() {
   return node;
 }
 
-RsExpr *DerefOperand(RsExpr *node) {
-  auto *deref = llvm::dyn_cast<Unary>(node->IgnoreParens());
-  if (!deref || deref->op != Unary::Op::Deref) {
-    return nullptr;
-  }
-  return deref->operand;
-}
-
 } // namespace cpp2rust

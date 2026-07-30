@@ -783,7 +783,7 @@ RsExpr *ConverterRefCount::ConvertIncAndDec(clang::UnaryOperator *expr) {
 
 RsExpr *ConverterRefCount::LowerPtrUse(RsExpr *node) {
   if (auto *assign = clang::dyn_cast<Assign>(node)) {
-    auto *ptr = DerefOperand(assign->left);
+    auto *ptr = assign->left->Pointer();
     if (!ptr) {
       return nullptr;
     }
@@ -791,7 +791,7 @@ RsExpr *ConverterRefCount::LowerPtrUse(RsExpr *node) {
   }
 
   if (auto *assign = clang::dyn_cast<CompoundAssign>(node)) {
-    auto *ptr = DerefOperand(assign->left);
+    auto *ptr = assign->left->Pointer();
     if (!ptr) {
       return nullptr;
     }
@@ -804,7 +804,7 @@ RsExpr *ConverterRefCount::LowerPtrUse(RsExpr *node) {
   }
 
   if (auto *call = clang::dyn_cast<MethodCall>(node)) {
-    auto *ptr = DerefOperand(call->receiver);
+    auto *ptr = call->receiver->Pointer();
     if (!ptr) {
       return nullptr;
     }
@@ -2470,7 +2470,7 @@ RsExpr *ConverterRefCount::ConvertMappedMethodCall(
 
   auto *receiver =
       ConvertIRFragment(mc.receiver, expr, args, num_args, ctx)->IgnoreParens();
-  auto *receiver_ptr = DerefOperand(receiver);
+  auto *receiver_ptr = receiver->Pointer();
   assert(receiver_ptr && "receiver is not a dereference");
   auto *body = ConvertIRFragment(mc.body, expr, args, num_args, ctx);
 

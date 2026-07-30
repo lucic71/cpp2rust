@@ -38,6 +38,8 @@ struct RsExpr {
 
   RsExpr *IgnoreParens();
 
+  virtual RsExpr *Pointer() { return nullptr; }
+
   Kind kind;
   const clang::Expr *expr = nullptr;
 };
@@ -99,6 +101,8 @@ struct Delim : RsExpr {
     fn(inner);
   }
 
+  RsExpr *Pointer() override { return inner->Pointer(); }
+
   char open;
   char close;
   RsExpr *inner;
@@ -131,6 +135,8 @@ struct Unary : RsExpr {
   void ForEachChild(llvm::function_ref<void(RsExpr *&)> fn) override {
     fn(operand);
   }
+
+  RsExpr *Pointer() override { return op == Op::Deref ? operand : nullptr; }
 
   Op op;
   RsExpr *operand;
@@ -228,7 +234,5 @@ public:
 private:
   std::vector<std::unique_ptr<RsExpr>> pool_;
 };
-
-RsExpr *DerefOperand(RsExpr *node);
 
 } // namespace cpp2rust
