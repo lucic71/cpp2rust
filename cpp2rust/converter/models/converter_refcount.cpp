@@ -111,6 +111,7 @@ ConverterRefCount::GetSafeTypeAsString(clang::QualType qual_type) const {
 RsExpr *ConverterRefCount::BoxType(RsExpr *node) {
   switch (getConversionKind()) {
   case ConversionKind::Unboxed:
+  case ConversionKind::UnboxedField:
   case ConversionKind::Ptr:
     return node;
   case ConversionKind::FullRefCount:
@@ -122,6 +123,7 @@ RsExpr *ConverterRefCount::BoxType(RsExpr *node) {
 RsExpr *ConverterRefCount::BoxValue(RsExpr *node) {
   switch (getConversionKind()) {
   case ConversionKind::Unboxed:
+  case ConversionKind::UnboxedField:
   case ConversionKind::Ptr:
     return node;
   case ConversionKind::FullRefCount:
@@ -277,6 +279,7 @@ RsExpr *ConverterRefCount::VisitConstantArrayType(
         Text(std::format("; {}]", GetNumAsString(type->getSize()).c_str())));
   case ConversionKind::Ptr:
     return Convert(type->getElementType());
+  case ConversionKind::UnboxedField:
   case ConversionKind::FullRefCount:
     return Cat(Text("Box<["), Convert(type->getElementType()), Text("]>"));
   }
@@ -473,7 +476,7 @@ RsExpr *ConverterRefCount::AddCloneTrait(const clang::RecordDecl *decl) {
   RsExpr *body = Text("");
   for (auto ctor : cxx->ctors()) {
     if (ctor->isCopyConstructor()) {
-      PushConversionKind push(*this, ConversionKind::FullRefCount);
+      PushConversionKind push(*this, ConversionKind::UnboxedField);
       body = ConvertCXXConstructorBody(ctor);
       break;
     }
@@ -485,7 +488,7 @@ RsExpr *ConverterRefCount::AddCloneTrait(const clang::RecordDecl *decl) {
 }
 
 RsExpr *ConverterRefCount::AddDefaultTrait(const clang::RecordDecl *decl) {
-  PushConversionKind push(*this, ConversionKind::FullRefCount);
+  PushConversionKind push(*this, ConversionKind::UnboxedField);
   return Converter::AddDefaultTrait(decl);
 }
 
@@ -705,12 +708,12 @@ ConverterRefCount::GetSelfMaybeWithMut(const clang::CXXMethodDecl *decl) {
 
 RsExpr *
 ConverterRefCount::VisitCXXConstructorDecl(clang::CXXConstructorDecl *decl) {
-  PushConversionKind push(*this, ConversionKind::FullRefCount);
+  PushConversionKind push(*this, ConversionKind::UnboxedField);
   return Converter::VisitCXXConstructorDecl(decl);
 }
 
 RsExpr *ConverterRefCount::VisitFieldDecl(clang::FieldDecl *decl) {
-  PushConversionKind push(*this, ConversionKind::FullRefCount);
+  PushConversionKind push(*this, ConversionKind::UnboxedField);
   return Converter::VisitFieldDecl(decl);
 }
 
@@ -1606,7 +1609,7 @@ RsExpr *ConverterRefCount::VisitInitListExpr(clang::InitListExpr *expr) {
     std::vector<RsExpr *> fields;
     {
       int i = 0;
-      PushConversionKind push(*this, ConversionKind::FullRefCount);
+      PushConversionKind push(*this, ConversionKind::UnboxedField);
       for (const auto *field : record->fields()) {
         fields.push_back(Text(GetNamedDeclAsString(field)));
         fields.push_back(Text(token::kColon));
@@ -1637,6 +1640,7 @@ RsExpr *ConverterRefCount::VisitInitListExpr(clang::InitListExpr *expr) {
   case ConversionKind::Ptr:
     node = Converter::VisitInitListExpr(expr);
     break;
+  case ConversionKind::UnboxedField:
   case ConversionKind::FullRefCount:
     node =
         Cat(Text("Box::new("), Converter::VisitInitListExpr(expr), Text(')'));
