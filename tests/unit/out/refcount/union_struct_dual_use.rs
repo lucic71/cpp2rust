@@ -118,12 +118,12 @@ fn main_0() -> i32 {
             .memset((0) as u8, 16usize as usize);
         ((outer.as_pointer()) as Ptr<Outer>).to_any().clone()
     };
-    (*(*(*(*outer.borrow()).u.borrow()).inner().upgrade().deref())
-        .a
-        .borrow_mut()) = 3;
-    (*(*(*(*outer.borrow()).u.borrow()).inner().upgrade().deref())
-        .b
-        .borrow_mut()) = 4;
+    (*(*outer.borrow()).u.borrow())
+        .inner()
+        .with_mut(|__v| (*__v.a.borrow_mut()) = 3);
+    (*(*outer.borrow()).u.borrow())
+        .inner()
+        .with_mut(|__v| (*__v.b.borrow_mut()) = 4);
     assert!(
         (((({ sum_inner_0(((*(*outer.borrow()).u.borrow()).inner()).clone(),) }) == 7) as i32)
             != 0)

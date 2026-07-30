@@ -101,12 +101,12 @@ pub fn Delete_3(head: Ptr<Node>, val: i32) -> Ptr<Node> {
                 (*(*(*curr.borrow()).upgrade().deref()).next.borrow()).clone(),
             ));
             if !((*prev.borrow()).is_null()) {
-                (*(*(*prev.borrow()).upgrade().deref()).next.borrow_mut()) =
-                    (*next.borrow()).clone();
+                (*prev.borrow())
+                    .with_mut(|__v| (*__v.next.borrow_mut()) = (*next.borrow()).clone());
             }
             if !((*next.borrow()).is_null()) {
-                (*(*(*next.borrow()).upgrade().deref()).prev.borrow_mut()) =
-                    (*prev.borrow()).clone();
+                (*next.borrow())
+                    .with_mut(|__v| (*__v.prev.borrow_mut()) = (*prev.borrow()).clone());
             }
             if !((*prev.borrow()).is_null()) {
                 return (*head.borrow()).clone();
@@ -350,13 +350,10 @@ fn main_0() -> i32 {
         .borrow())
             == 3)
     );
-    (*(*(*(*({ Find_0((*head.borrow()).clone(), 0) }).upgrade().deref())
+    (*(*({ Find_0((*head.borrow()).clone(), 0) }).upgrade().deref())
         .next
         .borrow())
-    .upgrade()
-    .deref())
-    .val
-    .borrow_mut()) = 30;
+    .with_mut(|__v| (*__v.val.borrow_mut()) = 30);
     assert!(
         ((*(*({ Find_0((*head.borrow()).clone(), 1,) }).upgrade().deref())
             .val
@@ -369,13 +366,10 @@ fn main_0() -> i32 {
         + (*(*({ Find_0((*head.borrow()).clone(), 3) }).upgrade().deref())
             .val
             .borrow()));
-    (*(*(*(*({ Find_0((*head.borrow()).clone(), 1) }).upgrade().deref())
+    (*(*({ Find_0((*head.borrow()).clone(), 1) }).upgrade().deref())
         .next
         .borrow())
-    .upgrade()
-    .deref())
-    .val
-    .borrow_mut()) = __rhs;
+    .with_mut(|__v| (*__v.val.borrow_mut()) = __rhs);
     assert!(
         ((*(*({ Find_0((*head.borrow()).clone(), 2,) }).upgrade().deref())
             .val

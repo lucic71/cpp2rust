@@ -88,7 +88,7 @@ pub fn insert_1(node: Ptr<node_t>, new_node: Ptr<node_t>) -> Ptr<node_t> {
                 (*new_node.borrow()).clone(),
             )
         });
-        (*(*(*node.borrow()).upgrade().deref()).left.borrow_mut()) = __rhs;
+        (*node.borrow()).with_mut(|__v| (*__v.left.borrow_mut()) = __rhs);
     } else if {
         let _lhs = (*(*(*new_node.borrow()).upgrade().deref()).value.borrow());
         _lhs > (*(*(*node.borrow()).upgrade().deref()).value.borrow())
@@ -99,7 +99,7 @@ pub fn insert_1(node: Ptr<node_t>, new_node: Ptr<node_t>) -> Ptr<node_t> {
                 (*new_node.borrow()).clone(),
             )
         });
-        (*(*(*node.borrow()).upgrade().deref()).right.borrow_mut()) = __rhs;
+        (*node.borrow()).with_mut(|__v| (*__v.right.borrow_mut()) = __rhs);
     }
     return (*node.borrow()).clone();
 }

@@ -132,8 +132,9 @@ fn main_0() -> i32 {
         name: Rc::new(RefCell::new(Ptr::<u8>::null())),
     }));
     let r: Value<Ptr<record>> = Rc::new(RefCell::new((rec.as_pointer())));
-    (*(*(*r.borrow()).upgrade().deref()).name.borrow_mut()) =
-        libcc2rs::strdup_refcount((*p.borrow()).clone());
+    (*r.borrow()).with_mut(|__v| {
+        (*__v.name.borrow_mut()) = libcc2rs::strdup_refcount((*p.borrow()).clone())
+    });
     assert!((((!((*(*(*r.borrow()).upgrade().deref()).name.borrow()).is_null())) as i32) != 0));
     assert!(
         ((({

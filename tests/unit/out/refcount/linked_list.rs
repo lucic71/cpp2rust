@@ -73,7 +73,7 @@ pub fn Delete_2(head: Ptr<Node>, val: i32) -> Ptr<Node> {
         } {
             if !((*prev.borrow()).is_null()) {
                 let __rhs = (*(*(*curr.borrow()).upgrade().deref()).next.borrow()).clone();
-                (*(*(*prev.borrow()).upgrade().deref()).next.borrow_mut()) = __rhs;
+                (*prev.borrow()).with_mut(|__v| (*__v.next.borrow_mut()) = __rhs);
                 return (*head.borrow()).clone();
             } else {
                 return (*(*(*curr.borrow()).upgrade().deref()).next.borrow()).clone();

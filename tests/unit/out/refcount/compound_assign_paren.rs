@@ -42,18 +42,18 @@ fn main_0() -> i32 {
     ({
         let rhs_0 =
             (((*(*(*ptr.borrow()).upgrade().deref()).flags.borrow()) as i32) | (1 << 0)) as u8;
-        (*(*(*ptr.borrow()).upgrade().deref()).flags.borrow_mut()) = rhs_0
+        (*ptr.borrow()).with_mut(|__v| (*__v.flags.borrow_mut()) = rhs_0)
     });
     ({
         let rhs_0 =
             (((*(*(*ptr.borrow()).upgrade().deref()).flags.borrow()) as i32) | (1 << 1)) as u8;
-        (*(*(*ptr.borrow()).upgrade().deref()).flags.borrow_mut()) = rhs_0
+        (*ptr.borrow()).with_mut(|__v| (*__v.flags.borrow_mut()) = rhs_0)
     });
     assert!((((*(*(*ptr.borrow()).upgrade().deref()).flags.borrow()) as i32) == 3));
     ({
         let rhs_0 = (((*(*(*ptr.borrow()).upgrade().deref()).flags.borrow()) as i32)
             & ((!(1 << 0) as u8) as i32)) as u8;
-        (*(*(*ptr.borrow()).upgrade().deref()).flags.borrow_mut()) = rhs_0
+        (*ptr.borrow()).with_mut(|__v| (*__v.flags.borrow_mut()) = rhs_0)
     });
     assert!((((*(*(*ptr.borrow()).upgrade().deref()).flags.borrow()) as i32) == 2));
     let bits: Value<Box<[u8]>> = Rc::new(RefCell::new(Box::new([
@@ -79,7 +79,7 @@ fn main_0() -> i32 {
         ({
             let rhs_0 = (((*(*(*ptr.borrow()).upgrade().deref()).flags.borrow()) as i32)
                 & ((!(1 << 1) as u8) as i32)) as u8;
-            (*(*(*ptr.borrow()).upgrade().deref()).flags.borrow_mut()) = rhs_0
+            (*ptr.borrow()).with_mut(|__v| (*__v.flags.borrow_mut()) = rhs_0)
         });
     }
     assert!((((*(*(*ptr.borrow()).upgrade().deref()).flags.borrow()) as i32) == 0));

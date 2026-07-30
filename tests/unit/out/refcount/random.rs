@@ -286,16 +286,11 @@ fn main_0() -> i32 {
     (*x1.borrow_mut()).postfix_inc();
     (*x1.borrow_mut()).prefix_inc();
     (*(*y1.borrow()).x.borrow_mut()).postfix_inc();
+    (*(*y1.borrow()).pair.borrow()).with_mut(|__v| (*__v.pair.borrow_mut()) = (y2.as_pointer()));
     (*(*(*(*y1.borrow()).pair.borrow()).upgrade().deref())
         .pair
-        .borrow_mut()) = (y2.as_pointer());
-    (*(*(*(*(*(*y1.borrow()).pair.borrow()).upgrade().deref())
-        .pair
         .borrow())
-    .upgrade()
-    .deref())
-    .x
-    .borrow_mut()) = 10;
+    .with_mut(|__v| (*__v.x.borrow_mut()) = 10);
     ({ (*y1.borrow()).method() });
     (*(*y1.borrow()).pair.borrow_mut()) = (y2.as_pointer());
     (*(*y2.borrow()).pair.borrow_mut()) = (y3.as_pointer());

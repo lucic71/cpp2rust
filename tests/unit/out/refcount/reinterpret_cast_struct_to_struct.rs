@@ -76,7 +76,7 @@ fn main_0() -> i32 {
         Rc::new(RefCell::new((pt.as_pointer()).reinterpret_cast::<Pair>()));
     assert!(((*(*(*pair.borrow()).upgrade().deref()).first.borrow()) == 10_u32));
     assert!(((*(*(*pair.borrow()).upgrade().deref()).second.borrow()) == 20_u32));
-    (*(*(*pair.borrow()).upgrade().deref()).first.borrow_mut()) = 42_u32;
+    (*pair.borrow()).with_mut(|__v| (*__v.first.borrow_mut()) = 42_u32);
     assert!(((*(*pt.borrow()).x.borrow()) == 42_u32));
     return 0;
 }

@@ -68,13 +68,13 @@ pub fn registry_update_0(r: Ptr<registry>, field: field, __args: &[VaArg]) -> i3
         let __match_cond = ((*field.borrow()) as u32);
         match __match_cond {
             __v if __v == ((field::FIELD_SLOT as i32) as u32) => {
-                (*(*(*r.borrow()).upgrade().deref()).slot.borrow_mut()) =
-                    (*ap.borrow_mut()).arg::<AnyPtr>();
+                (*r.borrow())
+                    .with_mut(|__v| (*__v.slot.borrow_mut()) = (*ap.borrow_mut()).arg::<AnyPtr>());
                 break 'switch;
             }
             __v if __v == ((field::FIELD_LEVEL as i32) as u32) => {
-                (*(*(*r.borrow()).upgrade().deref()).level.borrow_mut()) =
-                    (*ap.borrow_mut()).arg::<i64>();
+                (*r.borrow())
+                    .with_mut(|__v| (*__v.level.borrow_mut()) = (*ap.borrow_mut()).arg::<i64>());
                 break 'switch;
             }
             _ => {

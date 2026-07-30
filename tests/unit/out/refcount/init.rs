@@ -48,7 +48,7 @@ fn main_0() -> i32 {
     (*(*xx.borrow()).x.borrow_mut()) = 1;
     (*q.borrow_mut()) = ((*xx.borrow()).x.as_pointer());
     (*q.borrow_mut()) = ((*(*zz.borrow()).upgrade().deref()).x.as_pointer());
-    (*(*(*zz.borrow()).upgrade().deref()).x.borrow_mut()) = 2;
+    (*zz.borrow()).with_mut(|__v| (*__v.x.borrow_mut()) = 2);
     let ww: Value<X> = Rc::new(RefCell::new((*xx.borrow()).clone()));
     (*ww.borrow_mut()) = (*xx.borrow()).clone();
     let aa: Value<i32> = Rc::new(RefCell::new(({ func_0() })));

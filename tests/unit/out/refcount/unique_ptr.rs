@@ -73,7 +73,7 @@ pub fn DoStuffWithSafePointer_0(safe_ptr: Ptr<Option<Value<SafePointer>>>) {
     let raw_ptr2: Value<Ptr<i32>> = Rc::new(RefCell::new(((*x4.borrow()).as_pointer())));
     {
         let _ptr = (*raw_ptr2.borrow()).clone();
-        _ptr.write(_ptr.read() + 1)
+        _ptr.write((_ptr.read()) + 1)
     };
     let pair: Value<Option<Value<Pair>>> =
         Rc::new(RefCell::new(Some(Rc::new(RefCell::new(Pair {

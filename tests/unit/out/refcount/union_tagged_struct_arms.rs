@@ -227,15 +227,15 @@ fn main_0() -> i32 {
     let p_list: Value<Branch> = <Value<Branch>>::default();
     (*(*p_list.borrow()).choice.borrow_mut()) = Choice_enum::C_LIST;
     (*(*p_list.borrow()).index.borrow_mut()) = 0;
-    (*(*(*(*p_list.borrow()).v.borrow()).list().upgrade().deref())
-        .items
-        .borrow_mut()) = (items_4.with(Value::clone).as_pointer() as Ptr<Ptr<u8>>);
-    (*(*(*(*p_list.borrow()).v.borrow()).list().upgrade().deref())
-        .count
-        .borrow_mut()) = 3_i64;
-    (*(*(*(*p_list.borrow()).v.borrow()).list().upgrade().deref())
-        .cursor
-        .borrow_mut()) = 1_i64;
+    (*(*p_list.borrow()).v.borrow()).list().with_mut(|__v| {
+        (*__v.items.borrow_mut()) = (items_4.with(Value::clone).as_pointer() as Ptr<Ptr<u8>>)
+    });
+    (*(*p_list.borrow()).v.borrow())
+        .list()
+        .with_mut(|__v| (*__v.count.borrow_mut()) = 3_i64);
+    (*(*p_list.borrow()).v.borrow())
+        .list()
+        .with_mut(|__v| (*__v.cursor.borrow_mut()) = 1_i64);
     assert!(
         ((((*(*(*(*p_list.borrow()).v.borrow()).list().upgrade().deref())
             .count
@@ -257,30 +257,18 @@ fn main_0() -> i32 {
     let p_letters: Value<Branch> = <Value<Branch>>::default();
     (*(*p_letters.borrow()).choice.borrow_mut()) = Choice_enum::C_LETTERS;
     (*(*p_letters.borrow()).index.borrow_mut()) = 1;
-    (*(*(*(*p_letters.borrow()).v.borrow())
+    (*(*p_letters.borrow()).v.borrow())
         .letters()
-        .upgrade()
-        .deref())
-    .lo
-    .borrow_mut()) = ('a' as i32);
-    (*(*(*(*p_letters.borrow()).v.borrow())
+        .with_mut(|__v| (*__v.lo.borrow_mut()) = ('a' as i32));
+    (*(*p_letters.borrow()).v.borrow())
         .letters()
-        .upgrade()
-        .deref())
-    .hi
-    .borrow_mut()) = ('z' as i32);
-    (*(*(*(*p_letters.borrow()).v.borrow())
+        .with_mut(|__v| (*__v.hi.borrow_mut()) = ('z' as i32));
+    (*(*p_letters.borrow()).v.borrow())
         .letters()
-        .upgrade()
-        .deref())
-    .curr
-    .borrow_mut()) = ('m' as i32);
-    (*(*(*(*p_letters.borrow()).v.borrow())
+        .with_mut(|__v| (*__v.curr.borrow_mut()) = ('m' as i32));
+    (*(*p_letters.borrow()).v.borrow())
         .letters()
-        .upgrade()
-        .deref())
-    .step
-    .borrow_mut()) = 1_u8;
+        .with_mut(|__v| (*__v.step.borrow_mut()) = 1_u8);
     assert!(
         (((((*(*(*(*p_letters.borrow()).v.borrow())
             .letters()
@@ -300,36 +288,21 @@ fn main_0() -> i32 {
     let p_integers: Value<Branch> = <Value<Branch>>::default();
     (*(*p_integers.borrow()).choice.borrow_mut()) = Choice_enum::C_INTEGERS;
     (*(*p_integers.borrow()).index.borrow_mut()) = 2;
-    (*(*(*(*p_integers.borrow()).v.borrow())
+    (*(*p_integers.borrow()).v.borrow())
         .integers()
-        .upgrade()
-        .deref())
-    .lo
-    .borrow_mut()) = 1_i64;
-    (*(*(*(*p_integers.borrow()).v.borrow())
+        .with_mut(|__v| (*__v.lo.borrow_mut()) = 1_i64);
+    (*(*p_integers.borrow()).v.borrow())
         .integers()
-        .upgrade()
-        .deref())
-    .hi
-    .borrow_mut()) = 100_i64;
-    (*(*(*(*p_integers.borrow()).v.borrow())
+        .with_mut(|__v| (*__v.hi.borrow_mut()) = 100_i64);
+    (*(*p_integers.borrow()).v.borrow())
         .integers()
-        .upgrade()
-        .deref())
-    .curr
-    .borrow_mut()) = 1_i64;
-    (*(*(*(*p_integers.borrow()).v.borrow())
+        .with_mut(|__v| (*__v.curr.borrow_mut()) = 1_i64);
+    (*(*p_integers.borrow()).v.borrow())
         .integers()
-        .upgrade()
-        .deref())
-    .step
-    .borrow_mut()) = 1_i64;
-    (*(*(*(*p_integers.borrow()).v.borrow())
+        .with_mut(|__v| (*__v.step.borrow_mut()) = 1_i64);
+    (*(*p_integers.borrow()).v.borrow())
         .integers()
-        .upgrade()
-        .deref())
-    .width
-    .borrow_mut()) = 3;
+        .with_mut(|__v| (*__v.width.borrow_mut()) = 3);
     assert!(
         ((((*(*(*(*p_integers.borrow()).v.borrow())
             .integers()

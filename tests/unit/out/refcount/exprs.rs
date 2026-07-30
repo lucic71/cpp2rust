@@ -115,21 +115,11 @@ fn main_0() -> i32 {
         p: Rc::new(RefCell::new((x.as_pointer()))),
     }));
     (*(*(*y.borrow()).x.borrow()).x.borrow_mut()) = 5;
-    (*(*({ (*y.borrow()).foo() }).upgrade().deref())
-        .x
-        .borrow_mut()) = 1;
-    (*(*(*(*y.borrow()).p.borrow()).upgrade().deref())
-        .x
-        .borrow_mut()) = 10;
+    ({ (*y.borrow()).foo() }).with_mut(|__v| (*__v.x.borrow_mut()) = 1);
+    (*(*y.borrow()).p.borrow()).with_mut(|__v| (*__v.x.borrow_mut()) = 10);
     let p3: Value<Ptr<Y>> = Rc::new(RefCell::new((y.as_pointer())));
-    (*(*(*(*(*p3.borrow()).upgrade().deref()).p.borrow())
-        .upgrade()
-        .deref())
-    .x
-    .borrow_mut()) = 100;
-    (*(*({ (*y.borrow()).ptr() }).upgrade().deref())
-        .x
-        .borrow_mut()) = 1;
+    (*(*(*p3.borrow()).upgrade().deref()).p.borrow()).with_mut(|__v| (*__v.x.borrow_mut()) = 100);
+    ({ (*y.borrow()).ptr() }).with_mut(|__v| (*__v.x.borrow_mut()) = 1);
     (*(*({ (*y.borrow()).ptr() }).upgrade().deref())
         .x
         .borrow_mut()) = 50;

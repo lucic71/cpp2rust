@@ -276,10 +276,10 @@ bool Converter::Convert(clang::Decl *decl) {
 }
 
 void Converter::LowerNodes(RsExpr *&node) {
-  node->ForEachChild([this](RsExpr *&child) { LowerNodes(child); });
   if (auto *lowered = LowerPtrUse(node)) {
     node = lowered;
   }
+  node->ForEachChild([this](RsExpr *&child) { LowerNodes(child); });
 }
 
 RsExpr *Converter::ConvertDecl(clang::Decl *decl) {
@@ -2953,9 +2953,12 @@ RsExpr *Converter::ConvertMemberExpr(clang::MemberExpr *expr) {
                Text(GetOverloadedFunctionName(method)));
   }
   if (!name_override.empty()) {
-    return Cat(base_node, Text(token::kDot), Text(std::move(name_override)));
+    return arena_.New<Field>(base_node, std::move(name_override));
   }
   if (member->getDeclName().isIdentifier()) {
+    if (clang::isa<clang::FieldDecl>(member)) {
+      return arena_.New<Field>(base_node, GetNamedDeclAsString(member));
+    }
     return Cat(base_node, Text(token::kDot),
                Text(GetNamedDeclAsString(member)));
   }

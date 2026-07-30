@@ -199,9 +199,9 @@ fn main_0() -> i32 {
     (*(*ex.borrow()).level.borrow_mut()) = 1;
     (*(*ex.borrow()).variant.borrow_mut()) = 6;
     (*(*ex.borrow()).len.borrow_mut()) = (16usize as u32);
-    (*(*(*(*ex.borrow()).body.borrow()).h().upgrade().deref())
-        .code
-        .borrow_mut()) = 2_u16;
+    (*(*ex.borrow()).body.borrow())
+        .h()
+        .with_mut(|__v| (*__v.code.borrow_mut()) = 2_u16);
     (*(*(*(*ex.borrow()).body.borrow()).h().upgrade().deref())
         .pad
         .borrow_mut())[(0) as usize] = (('X' as i32) as u8);
