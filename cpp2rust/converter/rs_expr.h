@@ -6,6 +6,7 @@
 #include <cstdint>
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -27,6 +28,8 @@ struct RsExpr {
   virtual ~RsExpr() = default;
 
   virtual std::string print() const = 0;
+
+  RsExpr *IgnoreParens();
 
   Kind kind;
   const clang::Expr *expr = nullptr;
@@ -115,6 +118,11 @@ inline bool SameRendered(const RsExpr *lhs, const RsExpr *rhs) {
   return lhs->print() == rhs->print();
 }
 
+enum class WithReceiver : uint8_t {
+  Direct,
+  Borrow,
+};
+
 class RsArena {
 public:
   template <typename T, typename... Args> T *New(Args &&...args) {
@@ -125,5 +133,13 @@ public:
 private:
   std::vector<std::unique_ptr<RsExpr>> pool_;
 };
+
+RsExpr *MakeAssign(RsArena &arena, RsExpr *lhs, RsExpr *rhs);
+
+RsExpr *MakeCompoundAssign(RsArena &arena, RsExpr *lhs, std::string_view op,
+                           RsExpr *rhs);
+
+RsExpr *MakeMethodCall(RsArena &arena, RsExpr *lhs, RsExpr *param_type,
+                       WithReceiver receiver, RsExpr *call);
 
 } // namespace cpp2rust
