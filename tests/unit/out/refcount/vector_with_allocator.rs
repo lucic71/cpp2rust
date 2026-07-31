@@ -6,6 +6,7 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
+#[repr(C)]
 #[derive(Default)]
 pub struct TestAllocator_int_ {}
 pub trait TestAllocator_int_Methods {
@@ -41,6 +42,7 @@ impl ByteRepr for TestAllocator_int_ {
         Self {}
     }
 }
+#[repr(C)]
 #[derive(Default)]
 pub struct TestAllocator_double_ {}
 pub trait TestAllocator_double_Methods {

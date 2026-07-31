@@ -646,10 +646,8 @@ pub fn test_gethostname_11() {
         (((match nix::unistd::gethostname() {
             Ok(__name) => {
                 let __bytes = __name.as_encoded_bytes();
-                let __n = __bytes
-                    .len()
-                    .min(::std::mem::size_of::<[u8; 256]>().saturating_sub(1));
-                if ::std::mem::size_of::<[u8; 256]>() > 0 {
+                let __n = __bytes.len().min(256usize.saturating_sub(1));
+                if 256usize > 0 {
                     (name.as_pointer() as Ptr<u8>).with_slice_mut(__n + 1, |__s| {
                         __s[..__n].copy_from_slice(&__bytes[..__n]);
                         __s[__n] = 0;

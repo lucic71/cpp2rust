@@ -3212,13 +3212,16 @@ RsExpr *Converter::VisitCXXConstructExpr(clang::CXXConstructExpr *expr) {
 RsExpr *Converter::VisitUnaryExprOrTypeTraitExpr(
     clang::UnaryExprOrTypeTraitExpr *expr) {
   switch (expr->getKind()) {
-  case clang::UnaryExprOrTypeTrait::UETT_SizeOf:
+  case clang::UnaryExprOrTypeTrait::UETT_SizeOf: {
+    auto ty = expr->isArgumentType() ? expr->getArgumentType()
+                                     : expr->getArgumentExpr()->getType();
     computed_expr_type_ = ComputedExprType::FreshValue;
-    return Text(std::format(
-        "::std::mem::size_of::<{}>()",
-        GetUnsafeTypeAsString(expr->isArgumentType()
-                                  ? expr->getArgumentType()
-                                  : expr->getArgumentExpr()->getType())));
+    if (!RustSizeofMatchesCSizeof(ty)) {
+      return Text(std::format("{}usize", ctx_.getTypeSize(ty) / 8));
+    }
+    return Text(
+        std::format("::std::mem::size_of::<{}>()", GetUnsafeTypeAsString(ty)));
+  }
   default:
     // FIXME: improve error handling
     log() << "unsupported unary expr or type trait expr\n";

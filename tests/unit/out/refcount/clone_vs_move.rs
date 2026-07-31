@@ -6,6 +6,7 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
+#[repr(C)]
 #[derive(Default)]
 pub struct Bar {
     pub w: i32,
@@ -29,6 +30,7 @@ impl ByteRepr for Bar {
         }
     }
 }
+#[repr(C)]
 #[derive()]
 pub struct Foo {
     pub x: i32,

@@ -64,7 +64,7 @@ pub fn test_getpwuid_r_2() {
         ((({
             let __pwbuf = (pw.as_pointer()).clone();
             let __buf = (buf.as_pointer() as Ptr<u8>).clone();
-            let __buflen = ::std::mem::size_of::<[u8; 4096]>();
+            let __buflen = 4096usize;
             let __out = (result.as_pointer()).clone();
             match nix::unistd::User::from_uid(nix::unistd::Uid::from_raw(
                 nix::unistd::geteuid().as_raw(),
@@ -164,7 +164,7 @@ pub fn test_getpwuid_r_erange_3() {
         ((({
             let __pwbuf = (pw.as_pointer()).clone();
             let __buf = (tiny.as_pointer() as Ptr<u8>).clone();
-            let __buflen = ::std::mem::size_of::<[u8; 1]>();
+            let __buflen = 1usize;
             let __out = (result.as_pointer()).clone();
             match nix::unistd::User::from_uid(nix::unistd::Uid::from_raw(
                 nix::unistd::geteuid().as_raw(),

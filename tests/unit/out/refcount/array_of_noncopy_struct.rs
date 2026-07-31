@@ -6,6 +6,7 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
+#[repr(C)]
 #[derive(Default)]
 pub struct NonCopy {
     pub data: Vec<i32>,

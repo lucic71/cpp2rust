@@ -44,6 +44,7 @@ impl ByteRepr for anon_0 {
         }
     }
 }
+#[repr(C)]
 #[derive(Clone, Default)]
 pub struct node {
     pub len: usize,

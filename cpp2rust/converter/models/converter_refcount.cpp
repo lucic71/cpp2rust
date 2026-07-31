@@ -1578,17 +1578,25 @@ ConverterRefCount::VisitExplicitCastExpr(clang::ExplicitCastExpr *expr) {
   }
 }
 
-RsExpr *ConverterRefCount::VisitUnaryExprOrTypeTraitExpr(
-    clang::UnaryExprOrTypeTraitExpr *expr) {
-  if (expr->getKind() == clang::UnaryExprOrTypeTrait::UETT_SizeOf) {
-    auto arg_type = expr->isArgumentType() ? expr->getArgumentType()
-                                           : expr->getArgumentExpr()->getType();
-    if (RustSizeDivergesFromC(arg_type)) {
-      computed_expr_type_ = ComputedExprType::FreshValue;
-      return Text(std::format("{}usize", ctx_.getTypeSize(arg_type) / 8));
-    }
+bool ConverterRefCount::RustSizeofMatchesCSizeof(clang::QualType ty) const {
+  ty = ty.getCanonicalType();
+  if (ty->isArrayType() || ty->isPointerType() || ty->isReferenceType() ||
+      ty->isMemberPointerType()) {
+    return false;
   }
-  return Converter::VisitUnaryExprOrTypeTraitExpr(expr);
+  if (auto *record = ty->getAsRecordDecl()) {
+    auto *def = record->getDefinition();
+    if (!def) {
+      return false;
+    }
+    for (const auto *field : def->fields()) {
+      if (!RustSizeofMatchesCSizeof(field->getType())) {
+        return false;
+      }
+    }
+    return true;
+  }
+  return true;
 }
 
 RsExpr *ConverterRefCount::VisitStmtExpr(clang::StmtExpr *expr) {

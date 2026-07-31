@@ -6,6 +6,7 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
+#[repr(C)]
 #[derive(Clone, Default)]
 pub struct header {
     pub tag: i32,
@@ -26,6 +27,7 @@ impl ByteRepr for header {
         }
     }
 }
+#[repr(C)]
 #[derive(Clone, Default)]
 pub struct view {
     pub tag: i32,
@@ -43,6 +45,7 @@ impl ByteRepr for view {
         }
     }
 }
+#[repr(C)]
 #[derive(Clone, Default)]
 pub struct entry {
     pub id: i32,

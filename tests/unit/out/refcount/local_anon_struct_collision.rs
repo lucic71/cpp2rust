@@ -7,6 +7,7 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
 pub fn first_0() -> i32 {
+    #[repr(C)]
     #[derive(Clone, Default)]
     pub struct anon_1 {
         pub x: i32,
@@ -33,6 +34,7 @@ pub fn first_0() -> i32 {
     return ((*p.borrow()).x + (*p.borrow()).y);
 }
 pub fn second_2() -> i32 {
+    #[repr(C)]
     #[derive(Clone, Default)]
     pub struct anon_3 {
         pub a: i64,

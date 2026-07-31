@@ -6,6 +6,7 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
+#[repr(C)]
 #[derive(Default)]
 pub struct MinHeapNode {
     pub data: u8,
@@ -74,6 +75,7 @@ pub fn Swap_0(a: Ptr<MinHeapNode>, b: Ptr<MinHeapNode>) {
     };
     b.write(__rhs);
 }
+#[repr(C)]
 #[derive(Default)]
 pub struct MinHeap {
     pub size: i32,

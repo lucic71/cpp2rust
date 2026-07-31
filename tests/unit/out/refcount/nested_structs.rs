@@ -6,6 +6,7 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
+#[repr(C)]
 #[derive(Default)]
 pub struct Level0_Level1_1_Level2_1_Level3_1 {
     pub x1: i32,
@@ -29,6 +30,7 @@ impl ByteRepr for Level0_Level1_1_Level2_1_Level3_1 {
         }
     }
 }
+#[repr(C)]
 #[derive(Default)]
 pub struct Level0_Level1_1_Level2_1_Level3_2 {
     pub x1: i32,
@@ -58,6 +60,7 @@ impl ByteRepr for Level0_Level1_1_Level2_1_Level3_2 {
         }
     }
 }
+#[repr(C)]
 #[derive(Default)]
 pub struct Level0_Level1_1_Level2_1 {
     pub x1: i32,
@@ -81,6 +84,7 @@ impl ByteRepr for Level0_Level1_1_Level2_1 {
         }
     }
 }
+#[repr(C)]
 #[derive(Default)]
 pub struct Level0_Level1_1 {
     pub x1: i32,
@@ -104,6 +108,7 @@ impl ByteRepr for Level0_Level1_1 {
         }
     }
 }
+#[repr(C)]
 #[derive(Default)]
 pub struct Level0_Level1_2 {
     pub x1: i32,
@@ -133,6 +138,7 @@ impl ByteRepr for Level0_Level1_2 {
         }
     }
 }
+#[repr(C)]
 #[derive(Default)]
 pub struct Level0 {}
 impl Clone for Level0 {

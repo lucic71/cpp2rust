@@ -6,6 +6,7 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
+#[repr(C)]
 #[derive(Clone)]
 pub struct record {
     pub code: u16,
@@ -72,6 +73,7 @@ impl ByteRepr for anon_0 {
         }
     }
 }
+#[repr(C)]
 #[derive(Clone, Default)]
 pub struct inner {
     pub view: anon_0,
@@ -127,6 +129,7 @@ impl ByteRepr for anon_1 {
         }
     }
 }
+#[repr(C)]
 #[derive(Clone, Default)]
 pub struct Outer {
     pub kind: i32,

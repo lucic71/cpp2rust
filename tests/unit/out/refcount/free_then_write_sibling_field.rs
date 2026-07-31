@@ -6,6 +6,7 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
+#[repr(C)]
 #[derive(Clone, Default)]
 pub struct payload {
     pub value: i32,
@@ -23,6 +24,7 @@ impl ByteRepr for payload {
         }
     }
 }
+#[repr(C)]
 #[derive(Clone, Default)]
 pub struct holder {
     pub first: Ptr<payload>,
@@ -55,10 +57,12 @@ fn main_0() -> i32 {
     ));
     assert!((((!((*h.borrow()).is_null())) as i32) != 0));
     (*h.borrow()).with_mut(|__v| {
-        __v.first = libcc2rs::malloc_refcount(4usize).reinterpret_cast::<payload>()
+        __v.first = libcc2rs::malloc_refcount(::std::mem::size_of::<payload>())
+            .reinterpret_cast::<payload>()
     });
     (*h.borrow()).with_mut(|__v| {
-        __v.second = libcc2rs::malloc_refcount(4usize).reinterpret_cast::<payload>()
+        __v.second = libcc2rs::malloc_refcount(::std::mem::size_of::<payload>())
+            .reinterpret_cast::<payload>()
     });
     assert!((((!(((*h.borrow()).with(|__v| (*__v).first.clone())).is_null())) as i32) != 0));
     assert!((((!(((*h.borrow()).with(|__v| (*__v).second.clone())).is_null())) as i32) != 0));

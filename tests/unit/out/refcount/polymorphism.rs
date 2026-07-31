@@ -9,6 +9,7 @@ use std::rc::{Rc, Weak};
 pub trait Animal {
     fn bark(&self) -> bool;
 }
+#[repr(C)]
 #[derive(Default)]
 pub struct Dog {}
 impl Animal for Dog {
@@ -31,6 +32,7 @@ impl ByteRepr for Dog {
         Self {}
     }
 }
+#[repr(C)]
 #[derive(Default)]
 pub struct Cat {}
 pub trait CatMethods {

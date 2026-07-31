@@ -35,7 +35,10 @@ fn main_0() -> i32 {
     {
         ((tv.as_pointer()) as Ptr<libcc2rs::Timeval>)
             .to_any()
-            .memset((0) as u8, 16usize as usize);
+            .memset(
+                (0) as u8,
+                ::std::mem::size_of::<libcc2rs::Timeval>() as usize,
+            );
         ((tv.as_pointer()) as Ptr<libcc2rs::Timeval>)
             .to_any()
             .clone()

@@ -9,6 +9,7 @@ use std::rc::{Rc, Weak};
 thread_local!(
     static inner_const_0: Value<i32> = Rc::new(RefCell::new(1));
 );
+#[repr(C)]
 #[derive(Default)]
 pub struct C {}
 pub trait CMethods {
@@ -37,6 +38,7 @@ impl ByteRepr for C {
 thread_local!(
     pub static inner_const_1: Value<i32> = Rc::new(RefCell::new(2));
 );
+#[repr(C)]
 #[derive(Default)]
 pub struct S {}
 impl Clone for S {

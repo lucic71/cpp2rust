@@ -6,6 +6,7 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
+#[repr(C)]
 #[derive(Default)]
 pub struct Chunk {
     pub data: i32,
@@ -29,6 +30,7 @@ impl ByteRepr for Chunk {
         }
     }
 }
+#[repr(C)]
 #[derive(Default)]
 pub struct Writer {
     pub output: Ptr<Vec<Chunk>>,
@@ -58,6 +60,7 @@ impl ByteRepr for Writer {
         }
     }
 }
+#[repr(C)]
 #[derive(Default)]
 pub struct JPEGData {
     pub com_data: Vec<Value<Vec<u8>>>,

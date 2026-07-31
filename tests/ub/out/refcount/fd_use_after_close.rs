@@ -38,9 +38,7 @@ fn main_0() -> i32 {
             ((buf.as_pointer() as Ptr<u8>) as Ptr<u8>)
                 .to_any()
                 .reinterpret_cast::<u8>()
-                .with_slice_mut(::std::mem::size_of::<[u8; 4]>(), |__buf| {
-                    nix::unistd::read(__fd, __buf)
-                })
+                .with_slice_mut(4usize, |__buf| nix::unistd::read(__fd, __buf))
         }) {
             Ok(__n) => __n as isize,
             Err(__e) => {

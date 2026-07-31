@@ -6,6 +6,7 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
+#[repr(C)]
 #[derive(Clone)]
 pub struct shape_a {
     pub code: u16,
@@ -34,6 +35,7 @@ impl ByteRepr for shape_a {
         }
     }
 }
+#[repr(C)]
 #[derive(Clone)]
 pub struct shape_b {
     pub code: u16,
@@ -111,6 +113,7 @@ impl ByteRepr for anon_0 {
         }
     }
 }
+#[repr(C)]
 #[derive(Clone, Default)]
 pub struct Container {
     pub view: anon_0,
@@ -181,7 +184,7 @@ fn main_0() -> i32 {
     (*src.borrow_mut())[(6) as usize] = 0_u8;
     (*src.borrow_mut())[(7) as usize] = 1_u8;
     let len: Value<usize> = Rc::new(RefCell::new(16_usize));
-    assert!(((((*len.borrow()) <= ::std::mem::size_of::<[u8; 256]>()) as i32) != 0));
+    assert!(((((*len.borrow()) <= 256usize) as i32) != 0));
     {
         (((*c.borrow()).view.raw_().reinterpret_cast::<u8>() as Ptr<u8>) as Ptr<u8>)
             .to_any()

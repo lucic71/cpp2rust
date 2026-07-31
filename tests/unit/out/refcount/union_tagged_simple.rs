@@ -68,6 +68,7 @@ impl ByteRepr for anon_0 {
         }
     }
 }
+#[repr(C)]
 #[derive(Clone, Default)]
 pub struct Event {
     pub kind: Kind_enum,

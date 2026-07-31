@@ -6,6 +6,7 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
+#[repr(C)]
 #[derive(Clone, Default)]
 pub struct Point {
     pub x: i32,
@@ -26,6 +27,7 @@ impl ByteRepr for Point {
         }
     }
 }
+#[repr(C)]
 #[derive(Clone, Default)]
 pub struct Line {
     pub start: Point,
@@ -46,6 +48,7 @@ impl ByteRepr for Line {
         }
     }
 }
+#[repr(C)]
 #[derive(Clone, Default)]
 pub struct Node {
     pub value: i32,
@@ -92,6 +95,7 @@ impl ByteRepr for Color {
         <Color>::from(i32::from_bytes(buf))
     }
 }
+#[repr(C)]
 #[derive(Clone, Default)]
 pub struct Inner {
     pub a: i32,
@@ -112,6 +116,7 @@ impl ByteRepr for Inner {
         }
     }
 }
+#[repr(C)]
 #[derive(Clone, Default)]
 pub struct Container {
     pub inner: Inner,

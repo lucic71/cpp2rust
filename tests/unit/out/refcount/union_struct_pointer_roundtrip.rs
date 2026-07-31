@@ -6,6 +6,7 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
+#[repr(C)]
 #[derive(Clone, Default)]
 pub struct pair {
     pub x: i32,
@@ -88,9 +89,11 @@ fn main_0() -> i32 {
             != 0)
     );
     {
-        let rhs_0 = (*u.borrow())
-            .bits()
-            .with(|__v| (*__v).wrapping_add((8usize as u64)).clone());
+        let rhs_0 = (*u.borrow()).bits().with(|__v| {
+            (*__v)
+                .wrapping_add((::std::mem::size_of::<pair>() as u64))
+                .clone()
+        });
         (*u.borrow_mut()).bits().write(rhs_0)
     };
     assert!((((((*u.borrow()).p().read()).with(|__v| (*__v).x) == 30) as i32) != 0));
@@ -104,7 +107,9 @@ fn main_0() -> i32 {
     {
         let rhs_0 = (*u.borrow()).bits().with(|__v| {
             (*__v)
-                .wrapping_sub(((2_usize).wrapping_mul((8usize as usize)) as u64))
+                .wrapping_sub(
+                    ((2_usize).wrapping_mul((::std::mem::size_of::<pair>() as usize)) as u64),
+                )
                 .clone()
         });
         (*u.borrow_mut()).bits().write(rhs_0)

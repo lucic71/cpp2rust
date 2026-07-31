@@ -29,15 +29,9 @@ fn main_0() -> i32 {
     assert!((((((*exact_buf.borrow())[(0) as usize] as i32) == ('h' as i32)) as i32) != 0));
     assert!((((((*exact_buf.borrow())[(4) as usize] as i32) == ('o' as i32)) as i32) != 0));
     assert!((((((*exact_buf.borrow())[(5) as usize] as i32) == ('\0' as i32)) as i32) != 0));
-    assert!((((::std::mem::size_of::<[u8; 6]>() == 6_usize) as i32) != 0));
-    assert!(
-        ((((::std::mem::size_of::<[u8; 6]>() as usize).wrapping_sub(1_usize) == 5_usize) as i32)
-            != 0)
-    );
-    assert!((((::std::mem::size_of::<[u8; 1]>() == 1_usize) as i32) != 0));
-    assert!(
-        ((((::std::mem::size_of::<[u8; 16]>() as usize).wrapping_sub(1_usize) == 15_usize) as i32)
-            != 0)
-    );
+    assert!((((6usize == 6_usize) as i32) != 0));
+    assert!(((((6usize as usize).wrapping_sub(1_usize) == 5_usize) as i32) != 0));
+    assert!((((1usize == 1_usize) as i32) != 0));
+    assert!(((((16usize as usize).wrapping_sub(1_usize) == 15_usize) as i32) != 0));
     return 0;
 }

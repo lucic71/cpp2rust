@@ -32,6 +32,7 @@ impl ByteRepr for Mode {
         <Mode>::from(i32::from_bytes(buf))
     }
 }
+#[repr(C)]
 #[derive(Clone, Default)]
 pub struct Config {
     pub count: i32,

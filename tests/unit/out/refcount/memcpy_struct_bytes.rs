@@ -6,6 +6,7 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
+#[repr(C)]
 #[derive(Clone, Default)]
 pub struct point {
     pub x: i32,
@@ -37,7 +38,7 @@ fn main_0() -> i32 {
     {
         ((buf.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any().memcpy(
             &((src.as_pointer()) as Ptr<point>).to_any(),
-            ::std::mem::size_of::<[u8; 8]>() as usize,
+            8usize as usize,
         );
         ((buf.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any().clone()
     };
@@ -45,7 +46,7 @@ fn main_0() -> i32 {
     {
         ((dst.as_pointer()) as Ptr<point>).to_any().memcpy(
             &((buf.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any(),
-            8usize as usize,
+            ::std::mem::size_of::<point>() as usize,
         );
         ((dst.as_pointer()) as Ptr<point>).to_any().clone()
     };

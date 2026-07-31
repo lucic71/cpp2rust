@@ -77,6 +77,7 @@ pub fn from_switch_2(n: i32) -> i32 {
     });
     panic!("ub: non-void function does not return a value")
 }
+#[repr(C)]
 #[derive(Clone, Default)]
 pub struct wrapper {
     pub item: Ptr<i32>,

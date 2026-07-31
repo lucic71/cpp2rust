@@ -54,6 +54,7 @@ impl ByteRepr for anon_1 {
         <anon_1>::from(i32::from_bytes(buf))
     }
 }
+#[repr(C)]
 #[derive(Clone, Default)]
 pub struct S {
     pub a: i32,
@@ -119,6 +120,7 @@ impl ByteRepr for anon_2 {
         <anon_2>::from(i32::from_bytes(buf))
     }
 }
+#[repr(C)]
 #[derive(Clone, Default)]
 pub struct WithAnonField {
     pub a: i32,

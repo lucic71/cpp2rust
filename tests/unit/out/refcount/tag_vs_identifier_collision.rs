@@ -32,6 +32,7 @@ impl ByteRepr for widget_enum {
         <widget_enum>::from(i32::from_bytes(buf))
     }
 }
+#[repr(C)]
 #[derive(Clone, Default)]
 pub struct widget {
     pub id: i32,
@@ -52,6 +53,7 @@ impl ByteRepr for widget {
         }
     }
 }
+#[repr(C)]
 #[derive(Clone, Default)]
 pub struct point_struct {
     pub x: i32,
@@ -172,6 +174,7 @@ impl ByteRepr for slot {
         <slot>::from(i32::from_bytes(buf))
     }
 }
+#[repr(C)]
 #[derive(Clone, Default)]
 pub struct Inner {
     pub tag_field: i32,
@@ -189,6 +192,7 @@ impl ByteRepr for Inner {
         }
     }
 }
+#[repr(C)]
 #[derive(Clone, Default)]
 pub struct Outer {
     pub field: Inner,
@@ -206,6 +210,7 @@ impl ByteRepr for Outer {
         }
     }
 }
+#[repr(C)]
 #[derive(Clone, Default)]
 pub struct Inner_struct {
     pub typedef_field: i32,

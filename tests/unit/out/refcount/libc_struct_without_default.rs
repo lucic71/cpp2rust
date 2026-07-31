@@ -6,6 +6,7 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
+#[repr(C)]
 #[derive()]
 pub struct UserDefined {
     pub a: Vec<i32>,
@@ -29,6 +30,7 @@ impl Default for UserDefined {
     }
 }
 impl ByteRepr for UserDefined {}
+#[repr(C)]
 #[derive()]
 pub struct FieldIsLibcType {
     pub addr: libcc2rs::Sockaddr,

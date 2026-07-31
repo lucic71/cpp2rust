@@ -77,10 +77,9 @@ fn main_0() -> i32 {
             (0..16).map(|_| <u8>::default()).collect::<Box<[u8]>>(),
         ));
         {
-            ((buf.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any().memset(
-                (('X' as u8) as i32) as u8,
-                ::std::mem::size_of::<[u8; 16]>() as usize,
-            );
+            ((buf.as_pointer() as Ptr<u8>) as Ptr<u8>)
+                .to_any()
+                .memset((('X' as u8) as i32) as u8, 16usize as usize);
             ((buf.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any().clone()
         };
         let n: Value<usize> = Rc::new(RefCell::new({
@@ -124,10 +123,9 @@ fn main_0() -> i32 {
             (0..16).map(|_| <u8>::default()).collect::<Box<[u8]>>(),
         ));
         {
-            ((buf.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any().memset(
-                (('X' as u8) as i32) as u8,
-                ::std::mem::size_of::<[u8; 16]>() as usize,
-            );
+            ((buf.as_pointer() as Ptr<u8>) as Ptr<u8>)
+                .to_any()
+                .memset((('X' as u8) as i32) as u8, 16usize as usize);
             ((buf.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any().clone()
         };
         let n: Value<usize> = Rc::new(RefCell::new(
@@ -209,10 +207,9 @@ fn main_0() -> i32 {
             (0..10).map(|_| <u8>::default()).collect::<Box<[u8]>>(),
         ));
         {
-            ((buf.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any().memset(
-                (('Y' as u8) as i32) as u8,
-                ::std::mem::size_of::<[u8; 10]>() as usize,
-            );
+            ((buf.as_pointer() as Ptr<u8>) as Ptr<u8>)
+                .to_any()
+                .memset((('Y' as u8) as i32) as u8, 10usize as usize);
             ((buf.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any().clone()
         };
         let n: Value<usize> = Rc::new(RefCell::new({
@@ -246,10 +243,9 @@ fn main_0() -> i32 {
             (0..10).map(|_| <u8>::default()).collect::<Box<[u8]>>(),
         ));
         {
-            ((buf.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any().memset(
-                (('Y' as u8) as i32) as u8,
-                ::std::mem::size_of::<[u8; 10]>() as usize,
-            );
+            ((buf.as_pointer() as Ptr<u8>) as Ptr<u8>)
+                .to_any()
+                .memset((('Y' as u8) as i32) as u8, 10usize as usize);
             ((buf.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any().clone()
         };
         let n: Value<usize> = Rc::new(RefCell::new(

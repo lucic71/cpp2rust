@@ -34,6 +34,7 @@ impl ByteRepr for Choice_enum {
         <Choice_enum>::from(i32::from_bytes(buf))
     }
 }
+#[repr(C)]
 #[derive(Clone, Default)]
 pub struct anon_1 {
     pub items: Ptr<Ptr<u8>>,
@@ -57,6 +58,7 @@ impl ByteRepr for anon_1 {
         }
     }
 }
+#[repr(C)]
 #[derive(Clone, Default)]
 pub struct anon_2 {
     pub lo: i32,
@@ -83,6 +85,7 @@ impl ByteRepr for anon_2 {
         }
     }
 }
+#[repr(C)]
 #[derive(Clone, Default)]
 pub struct anon_3 {
     pub lo: i64,
@@ -153,6 +156,7 @@ impl ByteRepr for anon_0 {
         }
     }
 }
+#[repr(C)]
 #[derive(Clone, Default)]
 pub struct Branch {
     pub choice: Choice_enum,

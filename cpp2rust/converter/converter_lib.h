@@ -56,8 +56,6 @@ bool TypeImplementsByteRepr(clang::QualType qt);
 
 bool TypeImplementsClone(clang::QualType qt);
 
-bool RustSizeDivergesFromC(clang::QualType qt);
-
 bool IsMutatingCall(const clang::CallExpr *expr);
 
 bool IsOverloadedFunction(const clang::FunctionDecl *decl);

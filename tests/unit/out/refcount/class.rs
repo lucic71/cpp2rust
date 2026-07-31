@@ -6,6 +6,7 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
+#[repr(C)]
 #[derive(Default)]
 pub struct Pair {
     pub first: i32,
@@ -84,6 +85,7 @@ impl ByteRepr for Pair {
         }
     }
 }
+#[repr(C)]
 #[derive(Default)]
 pub struct Route {
     pub path: Pair,

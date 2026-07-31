@@ -6,6 +6,7 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
+#[repr(C)]
 #[derive(Default)]
 pub struct SafePointer {
     pub ptr: Option<Value<i32>>,
@@ -24,6 +25,7 @@ impl SafePointerMethods for Ptr<SafePointer> {
     }
 }
 impl ByteRepr for SafePointer {}
+#[repr(C)]
 #[derive(Default)]
 pub struct Pair {
     pub x: i32,

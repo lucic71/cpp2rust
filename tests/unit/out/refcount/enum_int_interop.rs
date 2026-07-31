@@ -86,6 +86,7 @@ impl ByteRepr for Tag {
         <Tag>::from(i32::from_bytes(buf))
     }
 }
+#[repr(C)]
 #[derive(Default)]
 pub struct Entry {
     pub name: Ptr<u8>,

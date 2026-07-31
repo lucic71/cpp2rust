@@ -130,8 +130,7 @@ fn main_0() -> i32 {
         (0..8).map(|_| <i32>::default()).collect::<Box<[i32]>>(),
     ));
     let count: Value<usize> = Rc::new(RefCell::new(
-        (::std::mem::size_of::<[i32; 8]>() as usize)
-            .wrapping_div((::std::mem::size_of::<i32>() as usize)),
+        (32usize as usize).wrapping_div((::std::mem::size_of::<i32>() as usize)),
     ));
     let i: Value<usize> = Rc::new(RefCell::new(0_usize));
     'loop_: while ((*i.borrow()) < (*count.borrow())) {

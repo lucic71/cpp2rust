@@ -6,6 +6,7 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
+#[repr(C)]
 #[derive(Clone, Default)]
 pub struct node_a {
     pub n: i32,
@@ -23,6 +24,7 @@ impl ByteRepr for node_a {
         }
     }
 }
+#[repr(C)]
 #[derive(Clone, Default)]
 pub struct node_b {
     pub data: AnyPtr,

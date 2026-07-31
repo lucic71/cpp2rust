@@ -41,6 +41,7 @@ pub fn test_double_cast_2() {
         _lhs == (*fn_.borrow()).clone()
     });
 }
+#[repr(C)]
 #[derive(Default)]
 pub struct Command {
     pub data: AnyPtr,

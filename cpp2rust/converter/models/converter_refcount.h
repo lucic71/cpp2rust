@@ -36,7 +36,6 @@ public:
 
   RsExpr *EmitRustUnion(clang::RecordDecl *decl) override;
 
-  bool EmitsReprCForRecords() const override { return false; }
 
   const char *CharRustType() const override { return "u8"; }
 
@@ -58,8 +57,7 @@ public:
                                 const clang::ASTRecordLayout &layout,
                                 const std::string &storage_ty);
 
-  RsExpr *
-  VisitUnaryExprOrTypeTraitExpr(clang::UnaryExprOrTypeTraitExpr *expr) override;
+  bool RustSizeofMatchesCSizeof(clang::QualType ty) const override;
 
   RsExpr *AddDefaultTrait(const clang::RecordDecl *decl) override;
 

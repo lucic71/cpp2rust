@@ -17,6 +17,7 @@ pub fn ptr_1(x: Ptr<i32>) -> Ptr<i32> {
 pub fn bar_2(x: Ptr<i32>) -> Ptr<i32> {
     return (x).clone();
 }
+#[repr(C)]
 #[derive(Default)]
 pub struct X1 {
     pub v: i32,
@@ -40,6 +41,7 @@ impl ByteRepr for X1 {
         }
     }
 }
+#[repr(C)]
 #[derive(Default)]
 pub struct X2 {
     pub v: Ptr<X1>,
@@ -61,6 +63,7 @@ impl Clone for X2 {
     }
 }
 impl ByteRepr for X2 {}
+#[repr(C)]
 #[derive(Default)]
 pub struct X3 {
     pub v: Ptr<X2>,
@@ -94,6 +97,7 @@ impl ByteRepr for X3 {
         }
     }
 }
+#[repr(C)]
 #[derive(Default)]
 pub struct X4 {
     pub v: X3,

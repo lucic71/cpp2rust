@@ -73,7 +73,7 @@ fn main_0() -> i32 {
     {
         ((buf.as_pointer() as Ptr<u8>) as Ptr<u8>)
             .to_any()
-            .memset((0) as u8, ::std::mem::size_of::<[u8; 16]>() as usize);
+            .memset((0) as u8, 16usize as usize);
         ((buf.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any().clone()
     };
     assert!(
@@ -81,9 +81,7 @@ fn main_0() -> i32 {
             ((buf.as_pointer() as Ptr<u8>) as Ptr<u8>)
                 .to_any()
                 .reinterpret_cast::<u8>()
-                .with_slice_mut(::std::mem::size_of::<[u8; 16]>(), |__buf| {
-                    nix::unistd::read(__fd, __buf)
-                })
+                .with_slice_mut(16usize, |__buf| nix::unistd::read(__fd, __buf))
         }) {
             Ok(__n) => __n as isize,
             Err(__e) => {
@@ -115,9 +113,7 @@ fn main_0() -> i32 {
             ((buf.as_pointer() as Ptr<u8>) as Ptr<u8>)
                 .to_any()
                 .reinterpret_cast::<u8>()
-                .with_slice_mut(::std::mem::size_of::<[u8; 16]>(), |__buf| {
-                    nix::unistd::read(__fd, __buf)
-                })
+                .with_slice_mut(16usize, |__buf| nix::unistd::read(__fd, __buf))
         }) {
             Ok(__n) => __n as isize,
             Err(__e) => {

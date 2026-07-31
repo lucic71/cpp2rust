@@ -6,6 +6,7 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
+#[repr(C)]
 #[derive(Clone, Default)]
 pub struct Named {
     pub a: i32,
@@ -26,6 +27,7 @@ impl ByteRepr for Named {
         }
     }
 }
+#[repr(C)]
 #[derive(Clone, Default)]
 pub struct anon_0 {
     pub c: i32,
@@ -46,6 +48,7 @@ impl ByteRepr for anon_0 {
         }
     }
 }
+#[repr(C)]
 #[derive(Clone, Default)]
 pub struct anon_1 {
     pub g: i32,
@@ -66,6 +69,7 @@ impl ByteRepr for anon_1 {
         }
     }
 }
+#[repr(C)]
 #[derive(Clone, Default)]
 pub struct anon_2 {
     pub e: i32,
@@ -86,6 +90,7 @@ impl ByteRepr for anon_2 {
         }
     }
 }
+#[repr(C)]
 #[derive(Clone, Default)]
 pub struct anon_4 {
     pub j: i32,
@@ -103,6 +108,7 @@ impl ByteRepr for anon_4 {
         }
     }
 }
+#[repr(C)]
 #[derive(Clone, Default)]
 pub struct anon_5 {
     pub k: i32,
@@ -120,6 +126,7 @@ impl ByteRepr for anon_5 {
         }
     }
 }
+#[repr(C)]
 #[derive(Clone, Default)]
 pub struct anon_3 {
     pub i: i32,
@@ -143,6 +150,7 @@ impl ByteRepr for anon_3 {
         }
     }
 }
+#[repr(C)]
 #[derive(Clone, Default)]
 pub struct Outer {
     pub named: Named,
@@ -208,6 +216,7 @@ fn main_0() -> i32 {
     assert!(((((*o.borrow()).anon_3.i == 9) as i32) != 0));
     assert!(((((*o.borrow()).anon_3.inner_named.j == 10) as i32) != 0));
     assert!(((((*o.borrow()).anon_3.anon_5.k == 11) as i32) != 0));
+    #[repr(C)]
     #[derive(Clone, Default)]
     pub struct anon_6 {
         pub x: i32,

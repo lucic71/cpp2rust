@@ -6,6 +6,7 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
+#[repr(C)]
 #[derive()]
 pub struct Pair {
     pub x: i32,
@@ -83,6 +84,7 @@ impl ByteRepr for Pair {}
 pub fn zero_0() -> i32 {
     return 0;
 }
+#[repr(C)]
 #[derive(Default)]
 pub struct X1 {}
 impl Clone for X1 {

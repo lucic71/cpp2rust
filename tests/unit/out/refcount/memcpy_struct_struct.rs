@@ -6,6 +6,7 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
+#[repr(C)]
 #[derive(Default)]
 pub struct Entry {
     pub bits: u8,
@@ -79,7 +80,9 @@ fn main_0() -> i32 {
             .to_any()
             .memcpy(
                 &(((table.as_pointer() as Ptr<Entry>).offset(0)) as Ptr<Entry>).to_any(),
-                (((*table_size.borrow()) as u64).wrapping_mul((4usize as u64)) as usize) as usize,
+                (((*table_size.borrow()) as u64)
+                    .wrapping_mul((::std::mem::size_of::<Entry>() as u64))
+                    as usize) as usize,
             );
         (((table.as_pointer() as Ptr<Entry>).offset((*table_size.borrow()))) as Ptr<Entry>)
             .to_any()

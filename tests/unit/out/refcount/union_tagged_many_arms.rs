@@ -83,6 +83,7 @@ impl ByteRepr for anon_0 {
         }
     }
 }
+#[repr(C)]
 #[derive(Clone, Default)]
 pub struct Slot {
     pub tag: Tag_enum,

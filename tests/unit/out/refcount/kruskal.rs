@@ -6,6 +6,7 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
+#[repr(C)]
 #[derive(Default)]
 pub struct Edge {
     pub u: i32,
@@ -152,6 +153,7 @@ pub fn quicksort_1(arr: Ptr<Option<Value<Box<[Edge]>>>>, start: i32, end: i32) {
         quicksort_1(_arr, _start, _end)
     });
 }
+#[repr(C)]
 #[derive(Default)]
 pub struct DisjointSet {
     pub rank: Option<Value<Box<[i32]>>>,
@@ -271,6 +273,7 @@ impl DisjointSetMethods for Ptr<DisjointSet> {
     }
 }
 impl ByteRepr for DisjointSet {}
+#[repr(C)]
 #[derive(Default)]
 pub struct Graph {
     pub edges: Option<Value<Box<[Edge]>>>,

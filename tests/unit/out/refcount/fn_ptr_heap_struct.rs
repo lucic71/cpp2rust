@@ -18,6 +18,7 @@ pub fn reset_2(ignored: i32) {
     (*ignored.borrow());
     (*total_0.with(Value::clone).borrow_mut()) = 0;
 }
+#[repr(C)]
 #[derive(Clone)]
 pub struct handlers {
     pub cb: FnPtr<fn(i32)>,

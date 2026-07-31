@@ -6,6 +6,7 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
+#[repr(C)]
 #[derive(Default)]
 pub struct MyContainer_int_ {
     vec_: Vec<i32>,
@@ -61,6 +62,7 @@ impl Clone for MyContainer_int_ {
     }
 }
 impl ByteRepr for MyContainer_int_ {}
+#[repr(C)]
 #[derive(Default)]
 pub struct MyContainer_char_ {
     vec_: Vec<u8>,
@@ -116,6 +118,7 @@ impl Clone for MyContainer_char_ {
     }
 }
 impl ByteRepr for MyContainer_char_ {}
+#[repr(C)]
 #[derive(Default)]
 pub struct MyContainer_float_ {
     vec_: Vec<f32>,

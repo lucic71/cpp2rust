@@ -36,6 +36,7 @@ pub fn foo_3(x: Ptr<i32>, y: Ptr<i32>, z: Ptr<i32>) -> i32 {
 pub fn bar_4(x: Ptr<i32>) -> i32 {
     return (x.read());
 }
+#[repr(C)]
 #[derive(Default)]
 pub struct Foo {}
 pub trait FooMethods {

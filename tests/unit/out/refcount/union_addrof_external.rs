@@ -6,6 +6,7 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
+#[repr(C)]
 #[derive(Clone)]
 pub struct record {
     pub code: u16,
@@ -80,6 +81,7 @@ impl ByteRepr for anon_0 {
         }
     }
 }
+#[repr(C)]
 #[derive(Clone, Default)]
 pub struct Container {
     pub view: anon_0,
@@ -127,8 +129,8 @@ pub fn fill_1(out: AnyPtr, cap: usize) {
     (*src.borrow_mut())[(6) as usize] = 0_u8;
     (*src.borrow_mut())[(7) as usize] = 1_u8;
     let n: Value<usize> = Rc::new(RefCell::new(
-        (if (((::std::mem::size_of::<[u8; 16]>() < (*cap.borrow())) as i32) != 0) {
-            (::std::mem::size_of::<[u8; 16]>() as u64)
+        (if (((16usize < (*cap.borrow())) as i32) != 0) {
+            (16usize as u64)
         } else {
             ((*cap.borrow()) as u64)
         } as usize),

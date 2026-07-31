@@ -6,6 +6,7 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
+#[repr(C)]
 #[derive(Clone)]
 pub struct shape_a {
     pub code: u16,
@@ -34,6 +35,7 @@ impl ByteRepr for shape_a {
         }
     }
 }
+#[repr(C)]
 #[derive(Clone)]
 pub struct shape_b {
     pub code: u16,
@@ -115,6 +117,7 @@ impl ByteRepr for anon_0 {
         }
     }
 }
+#[repr(C)]
 #[derive(Clone, Default)]
 pub struct Container {
     pub len: u32,

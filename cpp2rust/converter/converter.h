@@ -308,6 +308,10 @@ public:
     return false;
   }
 
+  virtual bool RustSizeofMatchesCSizeof(clang::QualType ty) const {
+    return true;
+  }
+
   bool ExprIsCopyable(const clang::Expr *expr) const {
     if (auto *member = llvm::dyn_cast<clang::MemberExpr>(expr)) {
       return TypeIsCopyable(member->getMemberDecl()->getType());

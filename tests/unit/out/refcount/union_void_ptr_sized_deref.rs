@@ -76,6 +76,7 @@ impl ByteRepr for anon_0 {
         }
     }
 }
+#[repr(C)]
 #[derive(Clone, Default)]
 pub struct Sink {
     pub width: Width_enum,

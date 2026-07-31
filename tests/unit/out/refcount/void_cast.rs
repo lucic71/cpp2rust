@@ -10,6 +10,7 @@ pub fn unused_param_0(x: i32) {
     let x: Value<i32> = Rc::new(RefCell::new(x));
     (*x.borrow_mut());
 }
+#[repr(C)]
 #[derive(Default)]
 pub struct NonTrivial {
     pub data: Vec<i32>,
@@ -37,6 +38,7 @@ pub fn bump_and_return_4() -> i32 {
     (*side_effect_counter_3.with(Value::clone).borrow_mut()).prefix_inc();
     return (*side_effect_counter_3.with(Value::clone).borrow());
 }
+#[repr(C)]
 #[derive(Default)]
 pub struct Holder {
     pub field: i32,
