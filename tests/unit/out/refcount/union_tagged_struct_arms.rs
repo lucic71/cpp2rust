@@ -202,14 +202,12 @@ fn main_0() -> i32 {
         .with_mut(|__v| __v.cursor = 1_i64);
     assert!(((((*p_list.borrow()).v.list().with(|__v| (*__v).count) == 3_i64) as i32) != 0));
     assert!(
-        (((((*p_list.borrow())
+        ((((*p_list.borrow())
             .v
             .list()
-            .with(|__v| (*__v).items.clone())
-            .offset(((1) as isize))
-            .read())
-        .offset(((0) as isize))
-        .with(|__v| ((*__v) as i32))
+            .with(|__v| (*__v).items.offset(((1) as isize)).clone())
+            .with(|__v| (*__v).offset(((0) as isize)).clone())
+            .with(|__v| ((*__v) as i32))
             == ('b' as i32)) as i32)
             != 0)
     );

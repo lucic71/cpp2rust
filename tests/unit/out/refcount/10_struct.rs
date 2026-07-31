@@ -50,24 +50,20 @@ impl GraphMethods for Ptr<Graph> {
         let __rhs = Ptr::alloc(GraphNode {
             dst: (*dst.borrow()),
             next: (self
-                .with(|__v| (*__v).adj.clone())
-                .offset(((*src.borrow()) as isize))
+                .with(|__v| (*__v).adj.offset(((*src.borrow()) as isize)).clone())
                 .read())
             .clone(),
         });
-        self.with(|__v| (*__v).adj.clone())
-            .offset(((*src.borrow()) as isize))
+        self.with(|__v| (*__v).adj.offset(((*src.borrow()) as isize)).clone())
             .write(__rhs);
         let __rhs = Ptr::alloc(GraphNode {
             dst: (*src.borrow()),
             next: (self
-                .with(|__v| (*__v).adj.clone())
-                .offset(((*dst.borrow()) as isize))
+                .with(|__v| (*__v).adj.offset(((*dst.borrow()) as isize)).clone())
                 .read())
             .clone(),
         });
-        self.with(|__v| (*__v).adj.clone())
-            .offset(((*dst.borrow()) as isize))
+        self.with(|__v| (*__v).adj.offset(((*dst.borrow()) as isize)).clone())
             .write(__rhs);
     }
 }

@@ -328,8 +328,7 @@ fn main_0() -> i32 {
     ));
     assert!(
         ((((*pp.borrow())
-            .with(|__v| (*__v).clone())
-            .offset(((0) as isize))
+            .with(|__v| (*__v).offset(((0) as isize)).clone())
             .with(|__v| ((*__v) as i32))
             == ('g' as i32)) as i32)
             != 0)

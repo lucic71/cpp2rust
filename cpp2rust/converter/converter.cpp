@@ -3773,10 +3773,12 @@ RsExpr *Converter::ConvertPointerOffset(clang::Expr *base, clang::Expr *idx,
   }
   RsExpr *offset = arena_.New<Cast>(Parens(idx_node), Text("isize"));
   if (!is_addition) {
-    offset = Cat(Text(token::kMinus), Parens(offset));
+    offset = arena_.New<Unary>(Unary::Op::Neg, Parens(offset));
   }
   computed_expr_type_ = ComputedExprType::FreshPointer;
-  return Cat(base_node, Text(token::kDot), Text("offset"), Parens(offset));
+  return arena_.New<MethodCall>(base_node, "offset",
+                                std::vector<RsExpr *>{offset},
+                                /*is_mut=*/false);
 }
 
 static bool IsFlexibleArrayMemberAccess(clang::ASTContext &ctx,

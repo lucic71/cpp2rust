@@ -2334,7 +2334,12 @@ RsExpr *ConverterRefCount::ConvertCXXOperatorCallExpr(
       auto *node = Cat(base, Text(".as_ref().unwrap()"));
       if (isAddrOf()) {
         auto *idx = ConvertRValue(expr->getArg(1));
-        node = Cat(node, Text(".as_pointer().offset(("), idx, Text("))"));
+        auto *ptr = arena_.New<MethodCall>(node, "as_pointer",
+                                           std::vector<RsExpr *>{},
+                                           /*is_mut=*/false);
+        node = arena_.New<MethodCall>(ptr, "offset",
+                                      std::vector<RsExpr *>{Parens(idx)},
+                                      /*is_mut=*/false);
       } else {
         auto *idx = ConvertRValue(expr->getArg(1));
         node = arena_.New<Index>(
@@ -2357,8 +2362,9 @@ RsExpr *ConverterRefCount::ConvertCXXOperatorCallExpr(
       auto *idx = ConvertSubscriptIndex(expr->getArg(1));
       return arena_.New<Unary>(
           Unary::Op::Deref,
-          Cat(arena_.New<Cast>(object, ptr_type), Text(".offset("), idx,
-              Text(')')));
+          arena_.New<MethodCall>(arena_.New<Cast>(object, ptr_type), "offset",
+                                 std::vector<RsExpr *>{idx},
+                                 /*is_mut=*/false));
     }
 
     RsExpr *offset = nullptr;
@@ -2367,8 +2373,9 @@ RsExpr *ConverterRefCount::ConvertCXXOperatorCallExpr(
       auto *object = ConvertObject(expr->getArg(0));
       auto *ptr_type = ConvertPtrType(expr->getArg(0)->getType());
       auto *idx = ConvertSubscriptIndex(expr->getArg(1));
-      offset = Cat(arena_.New<Cast>(object, ptr_type), Text(".offset("), idx,
-                   Text(')'));
+      offset = arena_.New<MethodCall>(arena_.New<Cast>(object, ptr_type),
+                                      "offset", std::vector<RsExpr *>{idx},
+                                      /*is_mut=*/false);
     }
 
     auto *node = offset;
@@ -2429,14 +2436,18 @@ RsExpr *ConverterRefCount::ConvertArraySubscript(clang::Expr *base,
     if (IsStringLiteralExpr(base)) {
       auto *base_node = ConvertExpr(base->IgnoreParens()->IgnoreImplicit());
       auto *idx_node = ConvertSubscriptIndex(idx);
-      node = Cat(Text("Ptr::from_string_literal("), base_node,
-                 Text(").offset("), idx_node, Text(')'));
+      auto *literal = arena_.New<Call>(Text("Ptr::from_string_literal"),
+                                       std::vector<RsExpr *>{base_node});
+      node = arena_.New<MethodCall>(literal, "offset",
+                                    std::vector<RsExpr *>{idx_node},
+                                    /*is_mut=*/false);
     } else {
       auto *base_node = ConvertExpr(base->IgnoreImplicit());
       auto *ptr_type = ConvertPtrType(base->IgnoreImplicit()->getType());
       auto *idx_node = ConvertSubscriptIndex(idx);
-      node = Cat(arena_.New<Cast>(base_node, ptr_type), Text(".offset("),
-                 idx_node, Text(')'));
+      node = arena_.New<MethodCall>(arena_.New<Cast>(base_node, ptr_type),
+                                    "offset", std::vector<RsExpr *>{idx_node},
+                                    /*is_mut=*/false);
     }
 
     if (is_inner_boxed) {

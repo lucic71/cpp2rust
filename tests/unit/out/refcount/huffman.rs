@@ -113,7 +113,7 @@ impl MinHeapMethods for Ptr<MinHeap> {
             .as_ref()
             .unwrap()
             .as_pointer()
-            .offset((self.with(|__v| ((*__v).next.postfix_inc() as usize)))))
+            .offset(self.with(|__v| ((*__v).next.postfix_inc() as usize).clone())))
         .clone();
     }
     fn Heapify(&self, idx: i32) {

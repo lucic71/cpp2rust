@@ -27,6 +27,7 @@ struct RsExpr {
     Delim,
     Unary,
     Cast,
+    Call,
     Closure,
     Assign,
     CompoundAssign,
@@ -193,6 +194,35 @@ struct Cast : RsExpr {
 
   RsExpr *expr;
   RsExpr *type;
+};
+
+struct Call : RsExpr {
+  Call(RsExpr *callee, std::vector<RsExpr *> args)
+      : RsExpr(Kind::Call), callee(callee), args(std::move(args)) {}
+
+  static bool classof(const RsExpr *e) { return e->kind == Kind::Call; }
+
+  std::string print() const override {
+    std::string result = callee->print();
+    result += '(';
+    for (size_t i = 0; i < args.size(); ++i) {
+      if (i > 0) {
+        result += ',';
+      }
+      result += args[i]->print();
+    }
+    return result + ") ";
+  }
+
+  void ForEachChild(llvm::function_ref<void(RsExpr *&)> fn) override {
+    fn(callee);
+    for (auto *&arg : args) {
+      fn(arg);
+    }
+  }
+
+  RsExpr *callee;
+  std::vector<RsExpr *> args;
 };
 
 struct Closure : RsExpr {

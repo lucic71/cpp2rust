@@ -126,8 +126,7 @@ fn main_0() -> i32 {
         (((*n.borrow())
             .with(|__v| (*__v).x.bytes().clone())
             .reinterpret_cast::<u8>() as Ptr<u8>)
-            .offset(*n.borrow())
-            .with(|__v| (((*__v).pos) as isize).clone())),
+            .offset((*n.borrow()).with(|__v| (((*__v).pos) as isize).clone()))),
     ));
     assert!(((((*q.borrow()).with(|__v| ((*__v) as i32)) == 20) as i32) != 0));
     (*q.borrow()).write(187_u8);
