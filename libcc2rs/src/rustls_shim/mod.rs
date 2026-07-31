@@ -1,9 +1,7 @@
 // Copyright (c) 2022-present INESC-ID.
 // Distributed under the MIT license that can be found in the LICENSE file.
 
-use std::cell::RefCell;
 use std::io::{ErrorKind, Read, Write};
-use std::rc::Rc;
 use std::sync::Arc;
 
 use rustls::DigitallySignedStruct;
@@ -24,18 +22,18 @@ use rustls::server::VerifierBuilderError;
 use rustls::sign::CertifiedKey;
 use rustls::{ClientConfig, KeyLog, ProtocolVersion, SignatureScheme, SupportedProtocolVersion};
 
-use crate::{AnyPtr, ByteRepr, FnPtr, Ptr, Value};
+use crate::{AnyPtr, ByteRepr, FnPtr, Ptr};
 
 pub struct RustlsStr {
-    pub data: Value<Ptr<u8>>,
-    pub len: Value<usize>,
+    pub data: Ptr<u8>,
+    pub len: usize,
 }
 
 impl Default for RustlsStr {
     fn default() -> Self {
         RustlsStr {
-            data: Rc::new(RefCell::new(Ptr::null())),
-            len: Rc::new(RefCell::new(0)),
+            data: Ptr::null(),
+            len: 0,
         }
     }
 }
@@ -47,22 +45,22 @@ impl RustlsStr {
         let mut bytes = s.as_bytes().to_vec();
         bytes.push(0);
         RustlsStr {
-            data: Rc::new(RefCell::new(Ptr::alloc_array(bytes.into_boxed_slice()))),
-            len: Rc::new(RefCell::new(s.len())),
+            data: Ptr::alloc_array(bytes.into_boxed_slice()),
+            len: s.len(),
         }
     }
 }
 
 pub struct RustlsSliceBytes {
-    pub data: Value<Ptr<u8>>,
-    pub len: Value<usize>,
+    pub data: Ptr<u8>,
+    pub len: usize,
 }
 
 impl Default for RustlsSliceBytes {
     fn default() -> Self {
         RustlsSliceBytes {
-            data: Rc::new(RefCell::new(Ptr::null())),
-            len: Rc::new(RefCell::new(0)),
+            data: Ptr::null(),
+            len: 0,
         }
     }
 }
@@ -71,8 +69,7 @@ impl ByteRepr for RustlsSliceBytes {}
 
 impl RustlsSliceBytes {
     pub fn to_vec(&self) -> Vec<u8> {
-        let len = *self.len.borrow();
-        self.data.borrow().with_slice(len, |s| s.to_vec())
+        self.data.with_slice(self.len, |s| s.to_vec())
     }
 }
 
