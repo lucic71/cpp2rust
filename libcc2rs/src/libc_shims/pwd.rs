@@ -45,6 +45,32 @@ impl Passwd {
     }
 }
 
-impl ByteRepr for Passwd {}
+impl ByteRepr for Passwd {
+    fn byte_size() -> usize {
+        48
+    }
+
+    fn to_bytes(&self, buf: &mut [u8]) {
+        self.pw_name.to_bytes(&mut buf[0..8]);
+        self.pw_passwd.to_bytes(&mut buf[8..16]);
+        self.pw_uid.to_bytes(&mut buf[16..20]);
+        self.pw_gid.to_bytes(&mut buf[20..24]);
+        self.pw_gecos.to_bytes(&mut buf[24..32]);
+        self.pw_dir.to_bytes(&mut buf[32..40]);
+        self.pw_shell.to_bytes(&mut buf[40..48]);
+    }
+
+    fn from_bytes(buf: &[u8]) -> Self {
+        Self {
+            pw_name: <Ptr<u8>>::from_bytes(&buf[0..8]),
+            pw_passwd: <Ptr<u8>>::from_bytes(&buf[8..16]),
+            pw_uid: u32::from_bytes(&buf[16..20]),
+            pw_gid: u32::from_bytes(&buf[20..24]),
+            pw_gecos: <Ptr<u8>>::from_bytes(&buf[24..32]),
+            pw_dir: <Ptr<u8>>::from_bytes(&buf[32..40]),
+            pw_shell: <Ptr<u8>>::from_bytes(&buf[40..48]),
+        }
+    }
+}
 
 impl ByteRepr for ::libc::passwd {}

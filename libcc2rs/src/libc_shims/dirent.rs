@@ -40,7 +40,29 @@ impl Dirent {
     }
 }
 
-impl ByteRepr for Dirent {}
+impl ByteRepr for Dirent {
+    fn byte_size() -> usize {
+        280
+    }
+
+    fn to_bytes(&self, buf: &mut [u8]) {
+        self.d_ino.to_bytes(&mut buf[0..8]);
+        self.d_off.to_bytes(&mut buf[8..16]);
+        self.d_reclen.to_bytes(&mut buf[16..18]);
+        self.d_type.to_bytes(&mut buf[18..19]);
+        buf[19..275].copy_from_slice(&self.d_name);
+    }
+
+    fn from_bytes(buf: &[u8]) -> Self {
+        Self {
+            d_ino: u64::from_bytes(&buf[0..8]),
+            d_off: i64::from_bytes(&buf[8..16]),
+            d_reclen: u16::from_bytes(&buf[16..18]),
+            d_type: u8::from_bytes(&buf[18..19]),
+            d_name: buf[19..275].to_vec().into_boxed_slice(),
+        }
+    }
+}
 
 pub struct CDir {
     pub entries: Vec<(u64, Vec<u8>, u8)>,
@@ -70,6 +92,10 @@ impl CDir {
     }
 }
 
-impl ByteRepr for CDir {}
+impl ByteRepr for CDir {
+    fn byte_size() -> usize {
+        0
+    }
+}
 
 impl ByteRepr for ::libc::dirent {}

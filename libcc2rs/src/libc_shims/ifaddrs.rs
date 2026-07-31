@@ -48,6 +48,28 @@ impl Ifaddrs {
     }
 }
 
-impl ByteRepr for Ifaddrs {}
+impl ByteRepr for Ifaddrs {
+    fn byte_size() -> usize {
+        56
+    }
+
+    fn to_bytes(&self, buf: &mut [u8]) {
+        self.ifa_next.to_bytes(&mut buf[0..8]);
+        self.ifa_name.to_bytes(&mut buf[8..16]);
+        self.ifa_flags.to_bytes(&mut buf[16..20]);
+        self.ifa_addr.to_bytes(&mut buf[24..32]);
+        self.ifa_netmask.to_bytes(&mut buf[32..40]);
+    }
+
+    fn from_bytes(buf: &[u8]) -> Self {
+        Self {
+            ifa_next: <Ptr<Ifaddrs>>::from_bytes(&buf[0..8]),
+            ifa_name: <Ptr<u8>>::from_bytes(&buf[8..16]),
+            ifa_flags: u32::from_bytes(&buf[16..20]),
+            ifa_addr: <Ptr<Sockaddr>>::from_bytes(&buf[24..32]),
+            ifa_netmask: <Ptr<Sockaddr>>::from_bytes(&buf[32..40]),
+        }
+    }
+}
 
 impl ByteRepr for ::libc::ifaddrs {}

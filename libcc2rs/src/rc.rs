@@ -1507,6 +1507,10 @@ impl<T: ByteRepr> ByteRepr for Ptr<T> {
             panic!("ub: cast of invalid address 0x{addr:x} to pointer");
         }
         let elem_size = T::byte_size();
+        if elem_size == 0 {
+            assert_eq!(delta, 0, "ub: misaligned pointer");
+            return any.reinterpret_cast::<T>();
+        }
         assert_eq!(delta % elem_size, 0, "ub: misaligned pointer");
         any.reinterpret_cast::<T>().offset(delta / elem_size)
     }

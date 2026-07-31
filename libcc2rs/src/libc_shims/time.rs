@@ -52,7 +52,41 @@ impl Tm {
     }
 }
 
-impl ByteRepr for Tm {}
+impl ByteRepr for Tm {
+    fn byte_size() -> usize {
+        56
+    }
+
+    fn to_bytes(&self, buf: &mut [u8]) {
+        self.tm_sec.to_bytes(&mut buf[0..4]);
+        self.tm_min.to_bytes(&mut buf[4..8]);
+        self.tm_hour.to_bytes(&mut buf[8..12]);
+        self.tm_mday.to_bytes(&mut buf[12..16]);
+        self.tm_mon.to_bytes(&mut buf[16..20]);
+        self.tm_year.to_bytes(&mut buf[20..24]);
+        self.tm_wday.to_bytes(&mut buf[24..28]);
+        self.tm_yday.to_bytes(&mut buf[28..32]);
+        self.tm_isdst.to_bytes(&mut buf[32..36]);
+        self.tm_gmtoff.to_bytes(&mut buf[40..48]);
+        self.tm_zone.to_bytes(&mut buf[48..56]);
+    }
+
+    fn from_bytes(buf: &[u8]) -> Self {
+        Self {
+            tm_sec: i32::from_bytes(&buf[0..4]),
+            tm_min: i32::from_bytes(&buf[4..8]),
+            tm_hour: i32::from_bytes(&buf[8..12]),
+            tm_mday: i32::from_bytes(&buf[12..16]),
+            tm_mon: i32::from_bytes(&buf[16..20]),
+            tm_year: i32::from_bytes(&buf[20..24]),
+            tm_wday: i32::from_bytes(&buf[24..28]),
+            tm_yday: i32::from_bytes(&buf[28..32]),
+            tm_isdst: i32::from_bytes(&buf[32..36]),
+            tm_gmtoff: i64::from_bytes(&buf[40..48]),
+            tm_zone: <Ptr<u8>>::from_bytes(&buf[48..56]),
+        }
+    }
+}
 
 #[derive(Default, Clone)]
 pub struct Timeval {
@@ -84,7 +118,23 @@ pub struct Timespec {
     pub tv_nsec: i64,
 }
 
-impl ByteRepr for Timespec {}
+impl ByteRepr for Timespec {
+    fn byte_size() -> usize {
+        16
+    }
+
+    fn to_bytes(&self, buf: &mut [u8]) {
+        self.tv_sec.to_bytes(&mut buf[0..8]);
+        self.tv_nsec.to_bytes(&mut buf[8..16]);
+    }
+
+    fn from_bytes(buf: &[u8]) -> Self {
+        Self {
+            tv_sec: i64::from_bytes(&buf[0..8]),
+            tv_nsec: i64::from_bytes(&buf[8..16]),
+        }
+    }
+}
 
 impl ByteRepr for ::libc::tm {}
 impl ByteRepr for ::libc::timeval {}

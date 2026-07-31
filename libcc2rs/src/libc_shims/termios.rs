@@ -30,7 +30,35 @@ impl Default for Termios {
     }
 }
 
-impl ByteRepr for Termios {}
+impl ByteRepr for Termios {
+    fn byte_size() -> usize {
+        60
+    }
+
+    fn to_bytes(&self, buf: &mut [u8]) {
+        self.c_iflag.to_bytes(&mut buf[0..4]);
+        self.c_oflag.to_bytes(&mut buf[4..8]);
+        self.c_cflag.to_bytes(&mut buf[8..12]);
+        self.c_lflag.to_bytes(&mut buf[12..16]);
+        self.c_line.to_bytes(&mut buf[16..17]);
+        buf[17..49].copy_from_slice(&self.c_cc);
+        self.c_ispeed.to_bytes(&mut buf[52..56]);
+        self.c_ospeed.to_bytes(&mut buf[56..60]);
+    }
+
+    fn from_bytes(buf: &[u8]) -> Self {
+        Self {
+            c_iflag: u32::from_bytes(&buf[0..4]),
+            c_oflag: u32::from_bytes(&buf[4..8]),
+            c_cflag: u32::from_bytes(&buf[8..12]),
+            c_lflag: u32::from_bytes(&buf[12..16]),
+            c_line: u8::from_bytes(&buf[16..17]),
+            c_cc: buf[17..49].to_vec().into_boxed_slice(),
+            c_ispeed: u32::from_bytes(&buf[52..56]),
+            c_ospeed: u32::from_bytes(&buf[56..60]),
+        }
+    }
+}
 
 impl Termios {
     #[allow(clippy::unnecessary_cast)]
@@ -114,4 +142,24 @@ impl Winsize {
 }
 
 
-impl ByteRepr for Winsize {}
+impl ByteRepr for Winsize {
+    fn byte_size() -> usize {
+        8
+    }
+
+    fn to_bytes(&self, buf: &mut [u8]) {
+        self.ws_row.to_bytes(&mut buf[0..2]);
+        self.ws_col.to_bytes(&mut buf[2..4]);
+        self.ws_xpixel.to_bytes(&mut buf[4..6]);
+        self.ws_ypixel.to_bytes(&mut buf[6..8]);
+    }
+
+    fn from_bytes(buf: &[u8]) -> Self {
+        Self {
+            ws_row: u16::from_bytes(&buf[0..2]),
+            ws_col: u16::from_bytes(&buf[2..4]),
+            ws_xpixel: u16::from_bytes(&buf[4..6]),
+            ws_ypixel: u16::from_bytes(&buf[6..8]),
+        }
+    }
+}

@@ -8,7 +8,11 @@ pub struct CFdSet {
     fds: BTreeSet<i32>,
 }
 
-impl crate::ByteRepr for CFdSet {}
+impl crate::ByteRepr for CFdSet {
+    fn byte_size() -> usize {
+        0
+    }
+}
 
 impl CFdSet {
     pub fn zero(&mut self) {

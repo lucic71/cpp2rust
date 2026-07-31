@@ -119,4 +119,8 @@ impl CFile {
     }
 }
 
-impl crate::ByteRepr for CFile {}
+impl crate::ByteRepr for CFile {
+    fn byte_size() -> usize {
+        0
+    }
+}
