@@ -1735,7 +1735,10 @@ RsExpr *ConverterRefCount::ConvertUnionMemberAccessor(clang::MemberExpr *expr) {
   RsExpr *accessor = nullptr;
   {
     PushExprKind push(*this, isLValue() ? ExprKind::LValue : ExprKind::RValue);
-    accessor = Cat(Converter::ConvertMemberExpr(expr), Text("()"));
+    auto *field = clang::cast<Field>(Converter::ConvertMemberExpr(expr));
+    accessor = arena_.New<MethodCall>(field->object, field->member,
+                                      std::vector<RsExpr *>{},
+                                      /*is_mut=*/false);
   }
 
   if (isAddrOf()) {
