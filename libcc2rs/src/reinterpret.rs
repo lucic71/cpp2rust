@@ -122,7 +122,7 @@ pub trait OriginalAlloc {
 
 // Read bytes starting at `byte_offset` from a slice of S elements into `buf`.
 // Only serializes the overlapping elements, not the whole slice.
-fn slice_read_bytes<S: ByteRepr>(slice: &[S], byte_offset: usize, buf: &mut [u8]) {
+pub(crate) fn slice_read_bytes<S: ByteRepr>(slice: &[S], byte_offset: usize, buf: &mut [u8]) {
     let len = buf.len();
     let elem_size = S::byte_size();
     let first_elem = byte_offset / elem_size;
@@ -138,7 +138,7 @@ fn slice_read_bytes<S: ByteRepr>(slice: &[S], byte_offset: usize, buf: &mut [u8]
 
 // Write `data` at `byte_offset` into a slice of S elements.
 // Only deserializes/reserializes the overlapping elements.
-fn slice_write_bytes<S: ByteRepr>(slice: &mut [S], byte_offset: usize, data: &[u8]) {
+pub(crate) fn slice_write_bytes<S: ByteRepr>(slice: &mut [S], byte_offset: usize, data: &[u8]) {
     let elem_size = S::byte_size();
     let mut elem_buf = vec![0u8; elem_size];
     let first_elem = byte_offset / elem_size;

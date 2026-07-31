@@ -12,7 +12,10 @@ use std::{
     rc::{Rc, Weak},
 };
 
-use crate::reinterpret::{ByteRepr, OriginalAlloc, SingleOriginalAlloc, SliceOriginalAlloc};
+use crate::reinterpret::{
+    slice_read_bytes, slice_write_bytes, ByteRepr, OriginalAlloc, SingleOriginalAlloc,
+    SliceOriginalAlloc,
+};
 
 pub type Value<T> = Rc<RefCell<T>>;
 
@@ -35,9 +38,12 @@ trait FieldAccess<F> {
     fn is_dangling(&self) -> bool;
     fn with_dyn(&self, index: usize, f: &mut dyn FnMut(&F));
     fn with_mut_dyn(&self, index: usize, f: &mut dyn FnMut(&mut F));
+    fn read_bytes_dyn(&self, byte_offset: usize, buf: &mut [u8]);
+    fn write_bytes_dyn(&self, byte_offset: usize, data: &[u8]);
+    fn total_byte_len_dyn(&self) -> usize;
 }
 
-impl<P: ByteRepr, F> FieldAccess<F> for FieldView<P, F> {
+impl<P: ByteRepr, F: ByteRepr> FieldAccess<F> for FieldView<P, F> {
     fn address(&self) -> usize {
         self.parent
             .kind
@@ -56,6 +62,50 @@ impl<P: ByteRepr, F> FieldAccess<F> for FieldView<P, F> {
 
     fn with_mut_dyn(&self, index: usize, f: &mut dyn FnMut(&mut F)) {
         self.parent.with_mut(|p| f(&mut (self.get_mut)(p)[index]));
+    }
+
+    fn read_bytes_dyn(&self, byte_offset: usize, buf: &mut [u8]) {
+        self.parent
+            .with(|p| slice_read_bytes((self.get)(p), byte_offset, buf));
+    }
+
+    fn write_bytes_dyn(&self, byte_offset: usize, data: &[u8]) {
+        self.parent
+            .with_mut(|p| slice_write_bytes((self.get_mut)(p), byte_offset, data));
+    }
+
+    fn total_byte_len_dyn(&self) -> usize {
+        self.parent.with(|p| (self.get)(p).len()) * F::byte_size()
+    }
+}
+
+struct FieldOriginalAlloc<F> {
+    view: Rc<dyn FieldAccess<F>>,
+}
+
+impl<F: ByteRepr> OriginalAlloc for FieldOriginalAlloc<F> {
+    fn read_bytes(&self, byte_offset: usize, buf: &mut [u8]) {
+        self.view.read_bytes_dyn(byte_offset, buf);
+    }
+
+    fn write_bytes(&self, byte_offset: usize, data: &[u8]) {
+        self.view.write_bytes_dyn(byte_offset, data);
+    }
+
+    fn total_byte_len(&self) -> usize {
+        self.view.total_byte_len_dyn()
+    }
+
+    fn address(&self) -> usize {
+        self.view.address()
+    }
+
+    fn delete(&self) {
+        panic!("ub: cannot delete a field pointer");
+    }
+
+    fn is_dangling(&self) -> bool {
+        self.view.is_dangling()
     }
 }
 
@@ -403,7 +453,12 @@ impl<T> Ptr<T> {
                 src_byte_off,
             ),
             PtrKind::Reinterpreted(data) => (Rc::clone(&data.alloc), self.offset),
-            PtrKind::FieldPtr(_) => panic!("reinterpret_cast not supported for field pointers"),
+            PtrKind::FieldPtr(view) => (
+                Rc::new(FieldOriginalAlloc {
+                    view: Rc::clone(view),
+                }),
+                src_byte_off,
+            ),
         };
 
         Ptr {
@@ -518,7 +573,7 @@ impl<T> Ptr<T> {
 }
 
 impl<T: ByteRepr> Ptr<T> {
-    pub fn field_ptr<F: 'static>(
+    pub fn field_ptr<F: ByteRepr>(
         &self,
         field_byte_offset: usize,
         get: fn(&T) -> &[F],
