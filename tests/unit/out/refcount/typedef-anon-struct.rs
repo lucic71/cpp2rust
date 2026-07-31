@@ -62,7 +62,11 @@ fn main_0() -> i32 {
     };
     assert!(((*o.borrow()).runs.len() == 1_usize));
     assert!(
-        ((*((*o.borrow()).runs.as_pointer() as Ptr<Outer_RunInfo>)
+        ((*(o.as_pointer().field_ptr(
+            0,
+            |__v: &Outer| ::std::slice::from_ref(&__v.runs),
+            |__v: &mut Outer| ::std::slice::from_mut(&mut __v.runs)
+        ) as Ptr<Outer_RunInfo>)
             .offset(0_usize)
             .upgrade()
             .deref())
@@ -70,7 +74,11 @@ fn main_0() -> i32 {
             == 1)
     );
     assert!(
-        ((*((*o.borrow()).runs.as_pointer() as Ptr<Outer_RunInfo>)
+        ((*(o.as_pointer().field_ptr(
+            0,
+            |__v: &Outer| ::std::slice::from_ref(&__v.runs),
+            |__v: &mut Outer| ::std::slice::from_mut(&mut __v.runs)
+        ) as Ptr<Outer_RunInfo>)
             .offset(0_usize)
             .upgrade()
             .deref())

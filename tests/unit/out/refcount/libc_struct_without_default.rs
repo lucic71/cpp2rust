@@ -75,7 +75,11 @@ fn main_0() -> i32 {
     assert!(((*st.borrow()).st_size == 1024_i64));
     let ud: Value<UserDefined> = Rc::new(RefCell::new(<UserDefined>::default()));
     assert!(
-        ((((*ud.borrow()).a.as_pointer() as Ptr<i32>)
+        (((ud.as_pointer().field_ptr(
+            0,
+            |__v: &UserDefined| ::std::slice::from_ref(&__v.a),
+            |__v: &mut UserDefined| ::std::slice::from_mut(&mut __v.a)
+        ) as Ptr<i32>)
             .offset(0_usize)
             .read())
             == 0)

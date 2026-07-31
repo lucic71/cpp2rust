@@ -24,10 +24,18 @@ impl StructWithCtor {
         this
     }
     pub fn x1(&self) -> Ptr<i32> {
-        return self.x1_.as_pointer();
+        return self.field_ptr(
+            0,
+            |__v: &StructWithCtor| ::std::slice::from_ref(&__v.x1_),
+            |__v: &mut StructWithCtor| ::std::slice::from_mut(&mut __v.x1_),
+        );
     }
     pub fn x2(&self) -> Ptr<i32> {
-        return self.x2_.as_pointer();
+        return self.field_ptr(
+            4,
+            |__v: &StructWithCtor| ::std::slice::from_ref(&__v.x2_),
+            |__v: &mut StructWithCtor| ::std::slice::from_mut(&mut __v.x2_),
+        );
     }
 }
 impl Clone for StructWithCtor {

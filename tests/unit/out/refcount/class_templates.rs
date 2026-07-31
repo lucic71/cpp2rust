@@ -18,10 +18,20 @@ impl MyContainer_int_ {
         return self.vec_.len();
     }
     pub fn back_const(&self) -> Ptr<i32> {
-        return (self.vec_.as_pointer() as Ptr<i32>).to_last();
+        return (self.field_ptr(
+            0,
+            |__v: &MyContainer_int_| ::std::slice::from_ref(&__v.vec_),
+            |__v: &mut MyContainer_int_| ::std::slice::from_mut(&mut __v.vec_),
+        ) as Ptr<i32>)
+            .to_last();
     }
     pub fn back(&self) -> Ptr<i32> {
-        return (self.vec_.as_pointer() as Ptr<i32>).to_last();
+        return (self.field_ptr(
+            0,
+            |__v: &MyContainer_int_| ::std::slice::from_ref(&__v.vec_),
+            |__v: &mut MyContainer_int_| ::std::slice::from_mut(&mut __v.vec_),
+        ) as Ptr<i32>)
+            .to_last();
     }
     pub fn pop_back(&self) {
         self.vec_.pop();
@@ -55,10 +65,20 @@ impl MyContainer_char_ {
         return self.vec_.len();
     }
     pub fn back_const(&self) -> Ptr<u8> {
-        return (self.vec_.as_pointer() as Ptr<u8>).to_last();
+        return (self.field_ptr(
+            0,
+            |__v: &MyContainer_char_| ::std::slice::from_ref(&__v.vec_),
+            |__v: &mut MyContainer_char_| ::std::slice::from_mut(&mut __v.vec_),
+        ) as Ptr<u8>)
+            .to_last();
     }
     pub fn back(&self) -> Ptr<u8> {
-        return (self.vec_.as_pointer() as Ptr<u8>).to_last();
+        return (self.field_ptr(
+            0,
+            |__v: &MyContainer_char_| ::std::slice::from_ref(&__v.vec_),
+            |__v: &mut MyContainer_char_| ::std::slice::from_mut(&mut __v.vec_),
+        ) as Ptr<u8>)
+            .to_last();
     }
     pub fn pop_back(&self) {
         self.vec_.pop();
@@ -92,10 +112,20 @@ impl MyContainer_float_ {
         return self.vec_.len();
     }
     pub fn back_const(&self) -> Ptr<f32> {
-        return (self.vec_.as_pointer() as Ptr<f32>).to_last();
+        return (self.field_ptr(
+            0,
+            |__v: &MyContainer_float_| ::std::slice::from_ref(&__v.vec_),
+            |__v: &mut MyContainer_float_| ::std::slice::from_mut(&mut __v.vec_),
+        ) as Ptr<f32>)
+            .to_last();
     }
     pub fn back(&self) -> Ptr<f32> {
-        return (self.vec_.as_pointer() as Ptr<f32>).to_last();
+        return (self.field_ptr(
+            0,
+            |__v: &MyContainer_float_| ::std::slice::from_ref(&__v.vec_),
+            |__v: &mut MyContainer_float_| ::std::slice::from_mut(&mut __v.vec_),
+        ) as Ptr<f32>)
+            .to_last();
     }
     pub fn pop_back(&self) {
         self.vec_.pop();

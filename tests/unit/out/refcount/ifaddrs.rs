@@ -65,8 +65,11 @@ fn main_0() -> i32 {
                 .reinterpret_cast::<libcc2rs::SockaddrIn>(),
         ));
         let lo_be: Value<Box<[u8]>> = Rc::new(RefCell::new(Box::new([127_u8, 0_u8, 0_u8, 1_u8])));
-        if ((((((*(*sin.borrow()).upgrade().deref()).sin_addr.as_pointer())
-            as Ptr<libcc2rs::InAddr>)
+        if ((((((*sin.borrow()).field_ptr(
+            4,
+            |__v: &libcc2rs::SockaddrIn| ::std::slice::from_ref(&__v.sin_addr),
+            |__v: &mut libcc2rs::SockaddrIn| ::std::slice::from_mut(&mut __v.sin_addr),
+        )) as Ptr<libcc2rs::InAddr>)
             .to_any()
             .memcmp(
                 &((lo_be.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any(),
@@ -88,8 +91,11 @@ fn main_0() -> i32 {
             let mask_be: Value<Box<[u8]>> =
                 Rc::new(RefCell::new(Box::new([255_u8, 0_u8, 0_u8, 0_u8])));
             assert!(
-                ((((((*(*mask.borrow()).upgrade().deref()).sin_addr.as_pointer())
-                    as Ptr<libcc2rs::InAddr>)
+                ((((((*mask.borrow()).field_ptr(
+                    4,
+                    |__v: &libcc2rs::SockaddrIn| ::std::slice::from_ref(&__v.sin_addr),
+                    |__v: &mut libcc2rs::SockaddrIn| ::std::slice::from_mut(&mut __v.sin_addr)
+                )) as Ptr<libcc2rs::InAddr>)
                     .to_any()
                     .memcmp(
                         &((mask_be.as_pointer() as Ptr::<u8>) as Ptr::<u8>).to_any(),

@@ -44,7 +44,11 @@ fn main_0() -> i32 {
         Foo { x1: 3, x2: 4 },
     ])));
     let p1: Value<Ptr<i32>> = Rc::new(RefCell::new(
-        ((*arr.borrow())[(1) as usize].x1.as_pointer()),
+        ((arr.as_pointer() as Ptr<Foo>).offset(1).field_ptr(
+            0,
+            |__v: &Foo| ::std::slice::from_ref(&__v.x1),
+            |__v: &mut Foo| ::std::slice::from_mut(&mut __v.x1),
+        )),
     ));
     let a: Value<i32> = Rc::new(RefCell::new(((*p1.borrow()).read())));
     let p2: Value<Ptr<Foo>> = Rc::new(RefCell::new(((arr.as_pointer() as Ptr<Foo>).offset(0))));

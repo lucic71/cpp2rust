@@ -31,7 +31,11 @@ impl Pair {
         let new_first: Value<i32> = Rc::new(RefCell::new(new_first));
         return (({ self.GetFirst() })
             + ({
-                let _field: Ptr<i32> = self.first.as_pointer();
+                let _field: Ptr<i32> = self.field_ptr(
+                    0,
+                    |__v: &Pair| ::std::slice::from_ref(&__v.first),
+                    |__v: &mut Pair| ::std::slice::from_mut(&mut __v.first),
+                );
                 self.Set(_field, (*new_first.borrow()))
             }));
     }
@@ -39,7 +43,11 @@ impl Pair {
         let new_second: Value<i32> = Rc::new(RefCell::new(new_second));
         return (({ self.GetSecond() })
             + ({
-                let _field: Ptr<i32> = self.second.as_pointer();
+                let _field: Ptr<i32> = self.field_ptr(
+                    4,
+                    |__v: &Pair| ::std::slice::from_ref(&__v.second),
+                    |__v: &mut Pair| ::std::slice::from_mut(&mut __v.second),
+                );
                 self.Set(_field, (*new_second.borrow()))
             }));
     }

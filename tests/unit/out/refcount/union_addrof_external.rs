@@ -153,22 +153,35 @@ fn main_0() -> i32 {
         ((c.as_pointer()) as Ptr<Container>).to_any().clone()
     };
     ({
-        let _out: AnyPtr = ((*c.borrow()).view.as_pointer()).to_any();
+        let _out: AnyPtr = (c.as_pointer().field_ptr(
+            0,
+            |__v: &Container| ::std::slice::from_ref(&__v.view),
+            |__v: &mut Container| ::std::slice::from_mut(&mut __v.view),
+        ))
+        .to_any();
         let _cap: usize = 128usize;
         fill_1(_out, _cap)
     });
     assert!((((((*(*c.borrow()).view.h().upgrade().deref()).code as i32) == 2) as i32) != 0));
     assert!(
-        ((((((((*(*c.borrow()).view.h().upgrade().deref()).lo.as_pointer())
-            .reinterpret_cast::<u8>())
+        ((((((((*c.borrow()).view.h().field_ptr(
+            2,
+            |__v: &record| ::std::slice::from_ref(&__v.lo),
+            |__v: &mut record| ::std::slice::from_mut(&mut __v.lo)
+        ))
+        .reinterpret_cast::<u8>())
         .offset((0) as isize)
         .read()) as i32)
             == 0) as i32)
             != 0)
     );
     assert!(
-        ((((((((*(*c.borrow()).view.h().upgrade().deref()).lo.as_pointer())
-            .reinterpret_cast::<u8>())
+        ((((((((*c.borrow()).view.h().field_ptr(
+            2,
+            |__v: &record| ::std::slice::from_ref(&__v.lo),
+            |__v: &mut record| ::std::slice::from_mut(&mut __v.lo)
+        ))
+        .reinterpret_cast::<u8>())
         .offset((1) as isize)
         .read()) as i32)
             == 80) as i32)

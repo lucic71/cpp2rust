@@ -94,7 +94,11 @@ pub struct X4 {
 }
 impl X4 {
     pub fn get(&self) -> Ptr<X3> {
-        return self.v.as_pointer();
+        return self.field_ptr(
+            0,
+            |__v: &X4| ::std::slice::from_ref(&__v.v),
+            |__v: &mut X4| ::std::slice::from_mut(&mut __v.v),
+        );
     }
 }
 impl Clone for X4 {
@@ -171,16 +175,17 @@ fn main_0() -> i32 {
     })
     .with_mut(|__v| __v.v = 0);
     (*d.borrow_mut()).v.v = (b.as_pointer());
-    let r4: Ptr<i32> = (*({
+    let r4: Ptr<i32> = ({
         (*({ (*({ (*d.borrow()).get() }).upgrade().deref()).get() })
             .upgrade()
             .deref())
         .get()
     })
-    .upgrade()
-    .deref())
-    .v
-    .as_pointer();
+    .field_ptr(
+        0,
+        |__v: &X1| ::std::slice::from_ref(&__v.v),
+        |__v: &mut X1| ::std::slice::from_mut(&mut __v.v),
+    );
     let r5: Ptr<X1> = ({
         (*({ (*({ (*d.borrow()).get() }).upgrade().deref()).get() })
             .upgrade()
@@ -191,12 +196,16 @@ fn main_0() -> i32 {
         ({ (*({ (*d.borrow()).get() }).upgrade().deref()).get() }),
     ));
     let r6: Ptr<X3> = ({ (*d.borrow()).get() });
-    let r7: Ptr<X3> = (*d.borrow()).v.as_pointer();
-    let r8: Ptr<i32> = (*({ (*({ (*d.borrow()).v.get() }).upgrade().deref()).get() })
-        .upgrade()
-        .deref())
-    .v
-    .as_pointer();
+    let r7: Ptr<X3> = d.as_pointer().field_ptr(
+        0,
+        |__v: &X4| ::std::slice::from_ref(&__v.v),
+        |__v: &mut X4| ::std::slice::from_mut(&mut __v.v),
+    );
+    let r8: Ptr<i32> = ({ (*({ (*d.borrow()).v.get() }).upgrade().deref()).get() }).field_ptr(
+        0,
+        |__v: &X1| ::std::slice::from_ref(&__v.v),
+        |__v: &mut X1| ::std::slice::from_mut(&mut __v.v),
+    );
     let x5: Value<i32> = Rc::new(RefCell::new(
         (*({
             (*({ (*({ (*d.borrow()).get() }).upgrade().deref()).get() })
@@ -216,16 +225,17 @@ fn main_0() -> i32 {
     let bar_out: Value<i32> = Rc::new(RefCell::new(
         (({
             bar_2(
-                (*({
+                ({
                     (*({ (*({ (*d.borrow()).get() }).upgrade().deref()).get() })
                         .upgrade()
                         .deref())
                     .get()
                 })
-                .upgrade()
-                .deref())
-                .v
-                .as_pointer(),
+                .field_ptr(
+                    0,
+                    |__v: &X1| ::std::slice::from_ref(&__v.v),
+                    |__v: &mut X1| ::std::slice::from_mut(&mut __v.v),
+                ),
             )
         })
         .read()),
@@ -239,16 +249,17 @@ fn main_0() -> i32 {
     {
         let _ptr = ({
             bar_2(
-                (*({
+                ({
                     (*({ (*({ (*d.borrow()).get() }).upgrade().deref()).get() })
                         .upgrade()
                         .deref())
                     .get()
                 })
-                .upgrade()
-                .deref())
-                .v
-                .as_pointer(),
+                .field_ptr(
+                    0,
+                    |__v: &X1| ::std::slice::from_ref(&__v.v),
+                    |__v: &mut X1| ::std::slice::from_mut(&mut __v.v),
+                ),
             )
         })
         .clone();
@@ -256,48 +267,51 @@ fn main_0() -> i32 {
     };
     ({
         bar_2(
-            (*({
+            ({
                 (*({ (*({ (*d.borrow()).get() }).upgrade().deref()).get() })
                     .upgrade()
                     .deref())
                 .get()
             })
-            .upgrade()
-            .deref())
-            .v
-            .as_pointer(),
+            .field_ptr(
+                0,
+                |__v: &X1| ::std::slice::from_ref(&__v.v),
+                |__v: &mut X1| ::std::slice::from_mut(&mut __v.v),
+            ),
         )
     })
     .with_mut(|__v| __v.postfix_inc());
     let bar_inc2: Value<i32> = Rc::new(RefCell::new(
         ({
             bar_2(
-                (*({
+                ({
                     (*({ (*({ (*d.borrow()).get() }).upgrade().deref()).get() })
                         .upgrade()
                         .deref())
                     .get()
                 })
-                .upgrade()
-                .deref())
-                .v
-                .as_pointer(),
+                .field_ptr(
+                    0,
+                    |__v: &X1| ::std::slice::from_ref(&__v.v),
+                    |__v: &mut X1| ::std::slice::from_mut(&mut __v.v),
+                ),
             )
         })
         .with_mut(|__v| __v.prefix_inc()),
     ));
     (*bar_inc2.borrow_mut()) = ({
         bar_2(
-            (*({
+            ({
                 (*({ (*({ (*d.borrow()).get() }).upgrade().deref()).get() })
                     .upgrade()
                     .deref())
                 .get()
             })
-            .upgrade()
-            .deref())
-            .v
-            .as_pointer(),
+            .field_ptr(
+                0,
+                |__v: &X1| ::std::slice::from_ref(&__v.v),
+                |__v: &mut X1| ::std::slice::from_mut(&mut __v.v),
+            ),
         )
     })
     .with_mut(|__v| __v.postfix_inc());
@@ -308,32 +322,34 @@ fn main_0() -> i32 {
     };
     ({
         ptr_1(
-            ((*({
+            (({
                 (*({ (*({ (*d.borrow()).get() }).upgrade().deref()).get() })
                     .upgrade()
                     .deref())
                 .get()
             })
-            .upgrade()
-            .deref())
-            .v
-            .as_pointer()),
+            .field_ptr(
+                0,
+                |__v: &X1| ::std::slice::from_ref(&__v.v),
+                |__v: &mut X1| ::std::slice::from_mut(&mut __v.v),
+            )),
         )
     })
     .with_mut(|__v| __v.prefix_inc());
     {
         let _ptr = ({
             ptr_1(
-                ((*({
+                (({
                     (*({ (*({ (*d.borrow()).get() }).upgrade().deref()).get() })
                         .upgrade()
                         .deref())
                     .get()
                 })
-                .upgrade()
-                .deref())
-                .v
-                .as_pointer()),
+                .field_ptr(
+                    0,
+                    |__v: &X1| ::std::slice::from_ref(&__v.v),
+                    |__v: &mut X1| ::std::slice::from_mut(&mut __v.v),
+                )),
             )
         })
         .clone();
@@ -342,16 +358,17 @@ fn main_0() -> i32 {
     {
         let _ptr = ({
             ptr_1(
-                ((*({
+                (({
                     (*({ (*({ (*d.borrow()).get() }).upgrade().deref()).get() })
                         .upgrade()
                         .deref())
                     .get()
                 })
-                .upgrade()
-                .deref())
-                .v
-                .as_pointer()),
+                .field_ptr(
+                    0,
+                    |__v: &X1| ::std::slice::from_ref(&__v.v),
+                    |__v: &mut X1| ::std::slice::from_mut(&mut __v.v),
+                )),
             )
         })
         .clone();
@@ -360,63 +377,67 @@ fn main_0() -> i32 {
     let ptr1: Value<i32> = Rc::new(RefCell::new(
         ({
             ptr_1(
-                ((*({
+                (({
                     (*({ (*({ (*d.borrow()).get() }).upgrade().deref()).get() })
                         .upgrade()
                         .deref())
                     .get()
                 })
-                .upgrade()
-                .deref())
-                .v
-                .as_pointer()),
+                .field_ptr(
+                    0,
+                    |__v: &X1| ::std::slice::from_ref(&__v.v),
+                    |__v: &mut X1| ::std::slice::from_mut(&mut __v.v),
+                )),
             )
         })
         .with_mut(|__v| __v.postfix_inc()),
     ));
     let ptr2: Ptr<i32> = ({
         ptr_1(
-            ((*({
+            (({
                 (*({ (*({ (*d.borrow()).get() }).upgrade().deref()).get() })
                     .upgrade()
                     .deref())
                 .get()
             })
-            .upgrade()
-            .deref())
-            .v
-            .as_pointer()),
+            .field_ptr(
+                0,
+                |__v: &X1| ::std::slice::from_ref(&__v.v),
+                |__v: &mut X1| ::std::slice::from_mut(&mut __v.v),
+            )),
         )
     });
     let ptr3: Value<Ptr<i32>> = Rc::new(RefCell::new(
         ({
             ptr_1(
-                ((*({
+                (({
                     (*({ (*({ (*d.borrow()).get() }).upgrade().deref()).get() })
                         .upgrade()
                         .deref())
                     .get()
                 })
-                .upgrade()
-                .deref())
-                .v
-                .as_pointer()),
+                .field_ptr(
+                    0,
+                    |__v: &X1| ::std::slice::from_ref(&__v.v),
+                    |__v: &mut X1| ::std::slice::from_mut(&mut __v.v),
+                )),
             )
         }),
     ));
     let vptr: Value<i32> = Rc::new(RefCell::new(
         (({
             ptr_1(
-                ((*({
+                (({
                     (*({ (*({ (*d.borrow()).get() }).upgrade().deref()).get() })
                         .upgrade()
                         .deref())
                     .get()
                 })
-                .upgrade()
-                .deref())
-                .v
-                .as_pointer()),
+                .field_ptr(
+                    0,
+                    |__v: &X1| ::std::slice::from_ref(&__v.v),
+                    |__v: &mut X1| ::std::slice::from_mut(&mut __v.v),
+                )),
             )
         })
         .read()),
@@ -424,61 +445,65 @@ fn main_0() -> i32 {
     let pref: Value<Ptr<i32>> = Rc::new(RefCell::new(
         ({
             bar_2(
-                (*({
+                ({
                     (*({ (*({ (*d.borrow()).get() }).upgrade().deref()).get() })
                         .upgrade()
                         .deref())
                     .get()
                 })
-                .upgrade()
-                .deref())
-                .v
-                .as_pointer(),
+                .field_ptr(
+                    0,
+                    |__v: &X1| ::std::slice::from_ref(&__v.v),
+                    |__v: &mut X1| ::std::slice::from_mut(&mut __v.v),
+                ),
             )
         }),
     ));
     ({
         bar_2(
-            (*({
+            ({
                 (*({ (*({ (*d.borrow()).get() }).upgrade().deref()).get() })
                     .upgrade()
                     .deref())
                 .get()
             })
-            .upgrade()
-            .deref())
-            .v
-            .as_pointer(),
+            .field_ptr(
+                0,
+                |__v: &X1| ::std::slice::from_ref(&__v.v),
+                |__v: &mut X1| ::std::slice::from_mut(&mut __v.v),
+            ),
         )
     })
     .with_mut(|__v| __v.postfix_inc());
     return (((({
         ptr_1(
-            ((*({
+            (({
                 (*({ (*({ (*d.borrow()).get() }).upgrade().deref()).get() })
                     .upgrade()
                     .deref())
                 .get()
             })
-            .upgrade()
-            .deref())
-            .v
-            .as_pointer()),
+            .field_ptr(
+                0,
+                |__v: &X1| ::std::slice::from_ref(&__v.v),
+                |__v: &mut X1| ::std::slice::from_mut(&mut __v.v),
+            )),
         )
     })
     .read())
         + (({
             bar_2(
-                (*({
+                ({
                     (*({ (*({ (*d.borrow()).get() }).upgrade().deref()).get() })
                         .upgrade()
                         .deref())
                     .get()
                 })
-                .upgrade()
-                .deref())
-                .v
-                .as_pointer(),
+                .field_ptr(
+                    0,
+                    |__v: &X1| ::std::slice::from_ref(&__v.v),
+                    |__v: &mut X1| ::std::slice::from_mut(&mut __v.v),
+                ),
             )
         })
         .read()))

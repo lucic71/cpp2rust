@@ -44,11 +44,19 @@ fn main_0() -> i32 {
     (*h.borrow_mut()).v.push(50);
     let hp: Value<Ptr<Holder>> = Rc::new(RefCell::new((h.as_pointer())));
     let b: Value<i32> = Rc::new(RefCell::new(
-        (((*(*hp.borrow()).upgrade().deref()).v.as_pointer() as Ptr<i32>)
+        (((*hp.borrow()).field_ptr(
+            0,
+            |__v: &Holder| ::std::slice::from_ref(&__v.v),
+            |__v: &mut Holder| ::std::slice::from_mut(&mut __v.v),
+        ) as Ptr<i32>)
             .offset(0_usize)
             .read()),
     ));
-    ((*(*hp.borrow()).upgrade().deref()).v.as_pointer() as Ptr<i32>)
+    ((*hp.borrow()).field_ptr(
+        0,
+        |__v: &Holder| ::std::slice::from_ref(&__v.v),
+        |__v: &mut Holder| ::std::slice::from_mut(&mut __v.v),
+    ) as Ptr<i32>)
         .offset(1_usize)
         .write(60);
     assert!(((*a.borrow()) == 10));
@@ -60,7 +68,11 @@ fn main_0() -> i32 {
     );
     assert!(((*b.borrow()) == 40));
     assert!(
-        ((((*(*hp.borrow()).upgrade().deref()).v.as_pointer() as Ptr<i32>)
+        ((((*hp.borrow()).field_ptr(
+            0,
+            |__v: &Holder| ::std::slice::from_ref(&__v.v),
+            |__v: &mut Holder| ::std::slice::from_mut(&mut __v.v)
+        ) as Ptr<i32>)
             .offset(1_usize)
             .read())
             == 60)

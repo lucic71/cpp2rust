@@ -52,7 +52,11 @@ fn main_0() -> i32 {
         }),
     ));
     let dname: Value<Ptr<u8>> = Rc::new(RefCell::new(
-        ((*(*d.borrow()).upgrade().deref()).d_name.as_pointer() as Ptr<u8>),
+        ((*d.borrow()).field_ptr(
+            19,
+            |__v: &libcc2rs::Dirent| &__v.d_name[..],
+            |__v: &mut libcc2rs::Dirent| &mut __v.d_name[..],
+        ) as Ptr<u8>),
     ));
     return 0;
 }

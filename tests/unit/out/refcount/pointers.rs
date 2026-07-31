@@ -18,7 +18,11 @@ impl Test {
         self.x.postfix_dec();
     }
     pub fn as_ptr(&self) -> Ptr<i32> {
-        return (self.x.as_pointer());
+        return (self.field_ptr(
+            0,
+            |__v: &Test| ::std::slice::from_ref(&__v.x),
+            |__v: &mut Test| ::std::slice::from_mut(&mut __v.x),
+        ));
     }
     pub fn update(&self, x: i32, y: i32) {
         let x: Value<i32> = Rc::new(RefCell::new(x));

@@ -195,8 +195,12 @@ fn main_0() -> i32 {
     };
     assert!((((((*(*c.borrow()).view.b().upgrade().deref()).code as i32) == 2) as i32) != 0));
     assert!(
-        ((((((((*(*c.borrow()).view.b().upgrade().deref()).lo.as_pointer())
-            .reinterpret_cast::<u8>())
+        ((((((((*c.borrow()).view.b().field_ptr(
+            2,
+            |__v: &shape_b| ::std::slice::from_ref(&__v.lo),
+            |__v: &mut shape_b| ::std::slice::from_mut(&mut __v.lo)
+        ))
+        .reinterpret_cast::<u8>())
         .offset((0) as isize)
         .read()) as i32)
             == 80) as i32)

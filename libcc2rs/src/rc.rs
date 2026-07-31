@@ -26,15 +26,15 @@ struct ReinterpretedView {
 struct FieldView<P, F> {
     parent: Ptr<P>,
     field_byte_offset: usize,
-    get: fn(&P) -> &F,
-    get_mut: fn(&mut P) -> &mut F,
+    get: fn(&P) -> &[F],
+    get_mut: fn(&mut P) -> &mut [F],
 }
 
 trait FieldAccess<F> {
     fn address(&self) -> usize;
     fn is_dangling(&self) -> bool;
-    fn with_dyn(&self, f: &mut dyn FnMut(&F));
-    fn with_mut_dyn(&self, f: &mut dyn FnMut(&mut F));
+    fn with_dyn(&self, index: usize, f: &mut dyn FnMut(&F));
+    fn with_mut_dyn(&self, index: usize, f: &mut dyn FnMut(&mut F));
 }
 
 impl<P: ByteRepr, F> FieldAccess<F> for FieldView<P, F> {
@@ -50,12 +50,12 @@ impl<P: ByteRepr, F> FieldAccess<F> for FieldView<P, F> {
         self.parent.kind.is_dangling()
     }
 
-    fn with_dyn(&self, f: &mut dyn FnMut(&F)) {
-        self.parent.with(|p| f((self.get)(p)));
+    fn with_dyn(&self, index: usize, f: &mut dyn FnMut(&F)) {
+        self.parent.with(|p| f(&(self.get)(p)[index]));
     }
 
-    fn with_mut_dyn(&self, f: &mut dyn FnMut(&mut F)) {
-        self.parent.with_mut(|p| f((self.get_mut)(p)));
+    fn with_mut_dyn(&self, index: usize, f: &mut dyn FnMut(&mut F)) {
+        self.parent.with_mut(|p| f(&mut (self.get_mut)(p)[index]));
     }
 }
 
@@ -531,10 +531,11 @@ impl<T> Ptr<T> {
                 ret
             }
             PtrKind::FieldPtr(view) => {
-                assert_eq!(self.offset, 0, "ub: invalid offset");
                 let mut f = Some(f);
                 let mut ret = None;
-                view.with_mut_dyn(&mut |v| ret = Some(f.take().expect("ub: invalid access")(v)));
+                view.with_mut_dyn(self.offset, &mut |v| {
+                    ret = Some(f.take().expect("ub: invalid access")(v))
+                });
                 ret.expect("ub: invalid access")
             }
         }
@@ -569,10 +570,11 @@ impl<T> Ptr<T> {
                 f(&val)
             }
             PtrKind::FieldPtr(view) => {
-                assert_eq!(self.offset, 0, "ub: invalid offset");
                 let mut f = Some(f);
                 let mut ret = None;
-                view.with_dyn(&mut |v| ret = Some(f.take().expect("ub: invalid access")(v)));
+                view.with_dyn(self.offset, &mut |v| {
+                    ret = Some(f.take().expect("ub: invalid access")(v))
+                });
                 ret.expect("ub: invalid access")
             }
         }
@@ -583,8 +585,8 @@ impl<T: ByteRepr> Ptr<T> {
     pub fn field_ptr<F: 'static>(
         &self,
         field_byte_offset: usize,
-        get: fn(&T) -> &F,
-        get_mut: fn(&mut T) -> &mut F,
+        get: fn(&T) -> &[F],
+        get_mut: fn(&mut T) -> &mut [F],
     ) -> Ptr<F> {
         Ptr {
             offset: 0,

@@ -130,7 +130,11 @@ pub fn test_ipv4_literal_0() {
         ((8080 % 256) as u8),
     ])));
     assert!(
-        ((((((*(*sin.borrow()).upgrade().deref()).sin_port.as_pointer()) as Ptr::<u16>)
+        ((((((*sin.borrow()).field_ptr(
+            2,
+            |__v: &libcc2rs::SockaddrIn| ::std::slice::from_ref(&__v.sin_port),
+            |__v: &mut libcc2rs::SockaddrIn| ::std::slice::from_mut(&mut __v.sin_port)
+        )) as Ptr::<u16>)
             .to_any()
             .memcmp(
                 &((port_be.as_pointer() as Ptr::<u8>) as Ptr::<u8>).to_any(),
@@ -141,7 +145,11 @@ pub fn test_ipv4_literal_0() {
     );
     let addr_be: Value<Box<[u8]>> = Rc::new(RefCell::new(Box::new([127_u8, 0_u8, 0_u8, 1_u8])));
     assert!(
-        ((((((*(*sin.borrow()).upgrade().deref()).sin_addr.as_pointer()) as Ptr<libcc2rs::InAddr>)
+        ((((((*sin.borrow()).field_ptr(
+            4,
+            |__v: &libcc2rs::SockaddrIn| ::std::slice::from_ref(&__v.sin_addr),
+            |__v: &mut libcc2rs::SockaddrIn| ::std::slice::from_mut(&mut __v.sin_addr)
+        )) as Ptr<libcc2rs::InAddr>)
             .to_any()
             .memcmp(
                 &((addr_be.as_pointer() as Ptr::<u8>) as Ptr::<u8>).to_any(),
@@ -287,7 +295,11 @@ pub fn test_ipv6_literal_1() {
         ((443 % 256) as u8),
     ])));
     assert!(
-        ((((((*(*sin6.borrow()).upgrade().deref()).sin6_port.as_pointer()) as Ptr::<u16>)
+        ((((((*sin6.borrow()).field_ptr(
+            2,
+            |__v: &libcc2rs::SockaddrIn6| ::std::slice::from_ref(&__v.sin6_port),
+            |__v: &mut libcc2rs::SockaddrIn6| ::std::slice::from_mut(&mut __v.sin6_port)
+        )) as Ptr::<u16>)
             .to_any()
             .memcmp(
                 &((port_be.as_pointer() as Ptr::<u8>) as Ptr::<u8>).to_any(),
@@ -301,8 +313,11 @@ pub fn test_ipv6_literal_1() {
         1_u8,
     ])));
     assert!(
-        ((((((*(*sin6.borrow()).upgrade().deref()).sin6_addr.as_pointer())
-            as Ptr<libcc2rs::In6Addr>)
+        ((((((*sin6.borrow()).field_ptr(
+            8,
+            |__v: &libcc2rs::SockaddrIn6| ::std::slice::from_ref(&__v.sin6_addr),
+            |__v: &mut libcc2rs::SockaddrIn6| ::std::slice::from_mut(&mut __v.sin6_addr)
+        )) as Ptr<libcc2rs::In6Addr>)
             .to_any()
             .memcmp(
                 &((addr_be.as_pointer() as Ptr::<u8>) as Ptr::<u8>).to_any(),
@@ -428,7 +443,11 @@ pub fn test_null_hints_2() {
     ));
     let addr_be: Value<Box<[u8]>> = Rc::new(RefCell::new(Box::new([127_u8, 0_u8, 0_u8, 1_u8])));
     assert!(
-        ((((((*(*sin.borrow()).upgrade().deref()).sin_addr.as_pointer()) as Ptr<libcc2rs::InAddr>)
+        ((((((*sin.borrow()).field_ptr(
+            4,
+            |__v: &libcc2rs::SockaddrIn| ::std::slice::from_ref(&__v.sin_addr),
+            |__v: &mut libcc2rs::SockaddrIn| ::std::slice::from_mut(&mut __v.sin_addr)
+        )) as Ptr<libcc2rs::InAddr>)
             .to_any()
             .memcmp(
                 &((addr_be.as_pointer() as Ptr::<u8>) as Ptr::<u8>).to_any(),

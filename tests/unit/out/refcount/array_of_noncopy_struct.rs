@@ -35,7 +35,11 @@ fn main_0() -> i32 {
     assert!(((*arr.borrow())[(0) as usize].tag == 7));
     assert!(((*arr.borrow())[(1) as usize].data.len() == 1_usize));
     assert!(
-        ((((*arr.borrow())[(1) as usize].data.as_pointer() as Ptr<i32>)
+        ((((arr.as_pointer() as Ptr<NonCopy>).offset(1).field_ptr(
+            0,
+            |__v: &NonCopy| ::std::slice::from_ref(&__v.data),
+            |__v: &mut NonCopy| ::std::slice::from_mut(&mut __v.data)
+        ) as Ptr<i32>)
             .offset(0_usize)
             .read())
             == 42)

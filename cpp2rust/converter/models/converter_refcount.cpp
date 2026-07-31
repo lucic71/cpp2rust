@@ -1670,6 +1670,39 @@ RsExpr *ConverterRefCount::ConvertUnionMemberAccessor(clang::MemberExpr *expr) {
   return node;
 }
 
+RsExpr *ConverterRefCount::ConvertFieldPtr(clang::MemberExpr *expr,
+                                           const clang::FieldDecl *field) {
+  auto *base = expr->getBase();
+  auto base_type = expr->isArrow() ? base->getType()->getPointeeType()
+                                   : base->getType().getNonReferenceType();
+
+  auto *parent = ConvertPointer(base);
+
+  PushConversionKind push(*this, ConversionKind::Unboxed);
+  auto base_type_name = RenderType(base_type);
+
+  const auto &layout = ctx_.getASTRecordLayout(field->getParent());
+  auto byte_off = layout.getFieldOffset(field->getFieldIndex()) / 8;
+  auto name = GetNamedDeclAsString(field);
+
+  std::string get;
+  std::string get_mut;
+  if (field->getType()->isArrayType()) {
+    get = std::format("|__v: &{}| &__v.{}[..]", base_type_name, name);
+    get_mut =
+        std::format("|__v: &mut {}| &mut __v.{}[..]", base_type_name, name);
+  } else {
+    get = std::format("|__v: &{}| ::std::slice::from_ref(&__v.{})",
+                      base_type_name, name);
+    get_mut = std::format("|__v: &mut {}| ::std::slice::from_mut(&mut __v.{})",
+                          base_type_name, name);
+  }
+
+  computed_expr_type_ = ComputedExprType::FreshPointer;
+  return Cat(parent, Text(std::format(".field_ptr({}, {}, {})", byte_off, get,
+                                      get_mut)));
+}
+
 RsExpr *ConverterRefCount::VisitMemberExpr(clang::MemberExpr *expr) {
   auto *member = expr->getMemberDecl();
   bool known = Mapper::Contains(expr);
@@ -1692,6 +1725,11 @@ RsExpr *ConverterRefCount::VisitMemberExpr(clang::MemberExpr *expr) {
           clang::dyn_cast<clang::RecordDecl>(member->getDeclContext());
       parent && parent->isUnion() && clang::isa<clang::FieldDecl>(member)) {
     return ConvertUnionMemberAccessor(expr);
+  }
+
+  if (auto *field = clang::dyn_cast<clang::FieldDecl>(member);
+      field && isAddrOf() && !known && !field->getType()->isReferenceType()) {
+    return ConvertFieldPtr(expr, field);
   }
 
   RsExpr *node = nullptr;

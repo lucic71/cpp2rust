@@ -242,7 +242,11 @@ pub struct Graph {
 impl ByteRepr for Graph {}
 pub fn MSTKruskal_2(graph: Ptr<Graph>) -> f64 {
     ({
-        let _arr: Ptr<Option<Value<Box<[Edge]>>>> = (*graph.upgrade().deref()).edges.as_pointer();
+        let _arr: Ptr<Option<Value<Box<[Edge]>>>> = graph.field_ptr(
+            0,
+            |__v: &Graph| ::std::slice::from_ref(&__v.edges),
+            |__v: &mut Graph| ::std::slice::from_mut(&mut __v.edges),
+        );
         let _end: i32 = ((*graph.upgrade().deref()).E - 1);
         quicksort_1(_arr, 0, _end)
     });

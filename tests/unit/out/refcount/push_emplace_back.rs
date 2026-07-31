@@ -94,9 +94,17 @@ pub fn push_local_from_field_1(jpg: Ptr<JPEGData>, cond: bool) {
     let dest: Value<Ptr<Vec<Value<Vec<u8>>>>> =
         Rc::new(RefCell::new(Ptr::<Vec<Value<Vec<u8>>>>::null()));
     if (*cond.borrow()) {
-        (*dest.borrow_mut()) = ((*(*jpg.borrow()).upgrade().deref()).com_data.as_pointer());
+        (*dest.borrow_mut()) = ((*jpg.borrow()).field_ptr(
+            0,
+            |__v: &JPEGData| ::std::slice::from_ref(&__v.com_data),
+            |__v: &mut JPEGData| ::std::slice::from_mut(&mut __v.com_data),
+        ));
     } else {
-        (*dest.borrow_mut()) = ((*(*jpg.borrow()).upgrade().deref()).app_data.as_pointer());
+        (*dest.borrow_mut()) = ((*jpg.borrow()).field_ptr(
+            24,
+            |__v: &JPEGData| ::std::slice::from_ref(&__v.app_data),
+            |__v: &mut JPEGData| ::std::slice::from_mut(&mut __v.app_data),
+        ));
     }
     ((*dest.borrow()).to_strong().as_pointer() as Ptr<Vec<Value<Vec<u8>>>>).with_mut(
         |__v: &mut Vec<Value<Vec<u8>>>| {
@@ -136,9 +144,17 @@ pub fn emplace_local_from_field_4(jpg: Ptr<JPEGData>, cond: bool) {
     let dest: Value<Ptr<Vec<Value<Vec<u8>>>>> =
         Rc::new(RefCell::new(Ptr::<Vec<Value<Vec<u8>>>>::null()));
     if (*cond.borrow()) {
-        (*dest.borrow_mut()) = ((*(*jpg.borrow()).upgrade().deref()).com_data.as_pointer());
+        (*dest.borrow_mut()) = ((*jpg.borrow()).field_ptr(
+            0,
+            |__v: &JPEGData| ::std::slice::from_ref(&__v.com_data),
+            |__v: &mut JPEGData| ::std::slice::from_mut(&mut __v.com_data),
+        ));
     } else {
-        (*dest.borrow_mut()) = ((*(*jpg.borrow()).upgrade().deref()).app_data.as_pointer());
+        (*dest.borrow_mut()) = ((*jpg.borrow()).field_ptr(
+            24,
+            |__v: &JPEGData| ::std::slice::from_ref(&__v.app_data),
+            |__v: &mut JPEGData| ::std::slice::from_mut(&mut __v.app_data),
+        ));
     }
     (*dest.borrow())
         .to_strong()
@@ -198,7 +214,11 @@ fn main_0() -> i32 {
     ({ push_local_from_field_1((jpg.as_pointer()), true) });
     assert!(((*jpg.borrow()).com_data.len() == 1_usize));
     assert!(
-        ((*(((*jpg.borrow()).com_data.as_pointer() as Ptr<Value<Vec<u8>>>)
+        ((*((jpg.as_pointer().field_ptr(
+            0,
+            |__v: &JPEGData| ::std::slice::from_ref(&__v.com_data),
+            |__v: &mut JPEGData| ::std::slice::from_mut(&mut __v.com_data)
+        ) as Ptr<Value<Vec<u8>>>)
             .offset(0_usize)
             .upgrade()
             .deref()
@@ -209,7 +229,11 @@ fn main_0() -> i32 {
             == 3_usize)
     );
     assert!(
-        ((((((*jpg.borrow()).com_data.as_pointer() as Ptr<Value<Vec<u8>>>)
+        (((((jpg.as_pointer().field_ptr(
+            0,
+            |__v: &JPEGData| ::std::slice::from_ref(&__v.com_data),
+            |__v: &mut JPEGData| ::std::slice::from_mut(&mut __v.com_data)
+        ) as Ptr<Value<Vec<u8>>>)
             .offset(0_usize)
             .upgrade()
             .deref()
@@ -219,7 +243,11 @@ fn main_0() -> i32 {
             == 1)
     );
     assert!(
-        ((((((*jpg.borrow()).com_data.as_pointer() as Ptr<Value<Vec<u8>>>)
+        (((((jpg.as_pointer().field_ptr(
+            0,
+            |__v: &JPEGData| ::std::slice::from_ref(&__v.com_data),
+            |__v: &mut JPEGData| ::std::slice::from_mut(&mut __v.com_data)
+        ) as Ptr<Value<Vec<u8>>>)
             .offset(0_usize)
             .upgrade()
             .deref()
@@ -229,7 +257,11 @@ fn main_0() -> i32 {
             == 2)
     );
     assert!(
-        ((((((*jpg.borrow()).com_data.as_pointer() as Ptr<Value<Vec<u8>>>)
+        (((((jpg.as_pointer().field_ptr(
+            0,
+            |__v: &JPEGData| ::std::slice::from_ref(&__v.com_data),
+            |__v: &mut JPEGData| ::std::slice::from_mut(&mut __v.com_data)
+        ) as Ptr<Value<Vec<u8>>>)
             .offset(0_usize)
             .upgrade()
             .deref()
@@ -258,7 +290,11 @@ fn main_0() -> i32 {
     ({ emplace_local_from_field_4((jpg.as_pointer()), false) });
     assert!(((*jpg.borrow()).app_data.len() == 1_usize));
     assert!(
-        ((*(((*jpg.borrow()).app_data.as_pointer() as Ptr<Value<Vec<u8>>>)
+        ((*((jpg.as_pointer().field_ptr(
+            24,
+            |__v: &JPEGData| ::std::slice::from_ref(&__v.app_data),
+            |__v: &mut JPEGData| ::std::slice::from_mut(&mut __v.app_data)
+        ) as Ptr<Value<Vec<u8>>>)
             .offset(0_usize)
             .upgrade()
             .deref()
@@ -269,7 +305,11 @@ fn main_0() -> i32 {
             == 3_usize)
     );
     assert!(
-        ((((((*jpg.borrow()).app_data.as_pointer() as Ptr<Value<Vec<u8>>>)
+        (((((jpg.as_pointer().field_ptr(
+            24,
+            |__v: &JPEGData| ::std::slice::from_ref(&__v.app_data),
+            |__v: &mut JPEGData| ::std::slice::from_mut(&mut __v.app_data)
+        ) as Ptr<Value<Vec<u8>>>)
             .offset(0_usize)
             .upgrade()
             .deref()
@@ -279,7 +319,11 @@ fn main_0() -> i32 {
             == 1)
     );
     assert!(
-        ((((((*jpg.borrow()).app_data.as_pointer() as Ptr<Value<Vec<u8>>>)
+        (((((jpg.as_pointer().field_ptr(
+            24,
+            |__v: &JPEGData| ::std::slice::from_ref(&__v.app_data),
+            |__v: &mut JPEGData| ::std::slice::from_mut(&mut __v.app_data)
+        ) as Ptr<Value<Vec<u8>>>)
             .offset(0_usize)
             .upgrade()
             .deref()

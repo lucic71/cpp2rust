@@ -36,10 +36,18 @@ pub struct Y {
 }
 impl Y {
     pub fn foo(&self) -> Ptr<X> {
-        return self.x.as_pointer();
+        return self.field_ptr(
+            0,
+            |__v: &Y| ::std::slice::from_ref(&__v.x),
+            |__v: &mut Y| ::std::slice::from_mut(&mut __v.x),
+        );
     }
     pub fn ptr(&self) -> Ptr<X> {
-        return (self.x.as_pointer());
+        return (self.field_ptr(
+            0,
+            |__v: &Y| ::std::slice::from_ref(&__v.x),
+            |__v: &mut Y| ::std::slice::from_mut(&mut __v.x),
+        ));
     }
 }
 impl Clone for Y {

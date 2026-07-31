@@ -40,8 +40,16 @@ pub fn main() {
 fn main_0() -> i32 {
     let s: Value<pair> = <Value<pair>>::default();
     assert!(
-        (((((*s.borrow()).a.as_pointer() as Ptr::<i32>).offset((4) as isize)
-            == ((*s.borrow()).b.as_pointer() as Ptr::<i32>)) as i32)
+        ((((s
+            .as_pointer()
+            .field_ptr(0, |__v: &pair| &__v.a[..], |__v: &mut pair| &mut __v.a[..])
+            as Ptr::<i32>)
+            .offset((4) as isize)
+            == (s.as_pointer().field_ptr(
+                16,
+                |__v: &pair| &__v.b[..],
+                |__v: &mut pair| &mut __v.b[..]
+            ) as Ptr::<i32>)) as i32)
             != 0)
     );
     return 0;

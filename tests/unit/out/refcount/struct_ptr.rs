@@ -42,7 +42,13 @@ fn main_0() -> i32 {
     } else {
         (*(*ptr.borrow()).upgrade().deref()).x
     }));
-    let p: Value<Ptr<i32>> = Rc::new(RefCell::new(((*obj.borrow()).x.as_pointer())));
+    let p: Value<Ptr<i32>> = Rc::new(RefCell::new(
+        (obj.as_pointer().field_ptr(
+            0,
+            |__v: &XX| ::std::slice::from_ref(&__v.x),
+            |__v: &mut XX| ::std::slice::from_mut(&mut __v.x),
+        )),
+    ));
     return {
         let _lhs = ((*p.borrow()).read());
         _lhs + (*r.borrow())
