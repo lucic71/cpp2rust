@@ -25,7 +25,7 @@ impl Default for Vtable {
 pub static mut storage_0: i32 = unsafe { 0_i32 };
 pub unsafe fn int_create_1(mut val: i32) -> *mut ::libc::c_void {
     storage_0 = val;
-    return ((&raw mut storage_0 as *mut i32) as *mut i32 as *mut ::libc::c_void);
+    return (((&raw mut storage_0 as *mut i32) as *mut i32) as *mut ::libc::c_void);
 }
 pub unsafe fn int_get_2(mut p: *mut ::libc::c_void) -> i32 {
     return (*(p as *mut i32));

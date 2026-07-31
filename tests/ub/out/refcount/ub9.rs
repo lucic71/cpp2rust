@@ -15,7 +15,9 @@ fn main_0() -> i32 {
             .map(|_| <i32>::default())
             .collect::<Box<[i32]>>(),
     )));
-    let out: Value<i32> = Rc::new(RefCell::new(((*arr.borrow()).offset((10) as isize).read())));
+    let out: Value<i32> = Rc::new(RefCell::new(
+        ((*arr.borrow()).offset(((10) as isize)).read()),
+    ));
     (*arr.borrow()).delete_array();
     return (*out.borrow());
 }

@@ -8,8 +8,12 @@ use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
 #[derive(Default)]
 pub struct TestAllocator_int_ {}
-impl TestAllocator_int_ {
-    pub fn allocate(&self, n: usize) -> Ptr<i32> {
+pub trait TestAllocator_int_Methods {
+    fn allocate(&self, n: usize) -> Ptr<i32>;
+    fn deallocate(&self, p: Ptr<i32>, _: usize);
+}
+impl TestAllocator_int_Methods for Ptr<TestAllocator_int_> {
+    fn allocate(&self, n: usize) -> Ptr<i32> {
         let n: Value<usize> = Rc::new(RefCell::new(n));
         return Ptr::alloc_array(
             (0..(*n.borrow()))
@@ -17,7 +21,7 @@ impl TestAllocator_int_ {
                 .collect::<Box<[i32]>>(),
         );
     }
-    pub fn deallocate(&self, p: Ptr<i32>, _: usize) {
+    fn deallocate(&self, p: Ptr<i32>, _: usize) {
         let p: Value<Ptr<i32>> = Rc::new(RefCell::new(p));
         (*p.borrow()).delete_array();
     }
@@ -39,8 +43,12 @@ impl ByteRepr for TestAllocator_int_ {
 }
 #[derive(Default)]
 pub struct TestAllocator_double_ {}
-impl TestAllocator_double_ {
-    pub fn allocate(&self, n: usize) -> Ptr<f64> {
+pub trait TestAllocator_double_Methods {
+    fn allocate(&self, n: usize) -> Ptr<f64>;
+    fn deallocate(&self, p: Ptr<f64>, _: usize);
+}
+impl TestAllocator_double_Methods for Ptr<TestAllocator_double_> {
+    fn allocate(&self, n: usize) -> Ptr<f64> {
         let n: Value<usize> = Rc::new(RefCell::new(n));
         return Ptr::alloc_array(
             (0..(*n.borrow()))
@@ -48,7 +56,7 @@ impl TestAllocator_double_ {
                 .collect::<Box<[f64]>>(),
         );
     }
-    pub fn deallocate(&self, p: Ptr<f64>, _: usize) {
+    fn deallocate(&self, p: Ptr<f64>, _: usize) {
         let p: Value<Ptr<f64>> = Rc::new(RefCell::new(p));
         (*p.borrow()).delete_array();
     }
@@ -285,7 +293,7 @@ fn main_0() -> i32 {
     let src: Value<Box<[u32]>> = Rc::new(RefCell::new(Box::new([1_u32, 2_u32, 3_u32])));
     let v9: Value<Vec<u32>> = Rc::new(RefCell::new({
         let __count = (src.as_pointer() as Ptr<u32>)
-            .offset((3) as isize)
+            .offset(((3) as isize))
             .get_offset()
             - (src.as_pointer() as Ptr<u32>).get_offset();
         PtrValueIter::new(&(src.as_pointer() as Ptr<u32>), __count)
@@ -300,7 +308,7 @@ fn main_0() -> i32 {
     );
     let v10: Value<Vec<u64>> = Rc::new(RefCell::new({
         let __count = (src.as_pointer() as Ptr<u32>)
-            .offset((3) as isize)
+            .offset(((3) as isize))
             .get_offset()
             - (src.as_pointer() as Ptr<u32>).get_offset();
         PtrValueIter::new(&(src.as_pointer() as Ptr<u32>), __count)
@@ -315,7 +323,7 @@ fn main_0() -> i32 {
     );
     let v11: Value<Vec<i32>> = Rc::new(RefCell::new({
         let __count = (src.as_pointer() as Ptr<u32>)
-            .offset((3) as isize)
+            .offset(((3) as isize))
             .get_offset()
             - (src.as_pointer() as Ptr<u32>).get_offset();
         PtrValueIter::new(&(src.as_pointer() as Ptr<u32>), __count)
@@ -346,7 +354,7 @@ fn main_0() -> i32 {
     let len: Value<usize> = Rc::new(RefCell::new(5_usize));
     let v13: Value<Vec<u8>> = Rc::new(RefCell::new({
         let __count = (*start.borrow())
-            .offset((*len.borrow()) as isize)
+            .offset(((*len.borrow()) as isize))
             .get_offset()
             - (*start.borrow()).get_offset();
         PtrValueIter::new(&(*start.borrow()), __count).collect::<Vec<_>>()

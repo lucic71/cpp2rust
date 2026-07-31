@@ -13,7 +13,7 @@ fn main_0() -> i32 {
     let src: Value<Box<[u32]>> = Rc::new(RefCell::new(Box::new([1_u32, 2_u32, 3_u32])));
     let v1: Value<Vec<u32>> = Rc::new(RefCell::new({
         let __count = (src.as_pointer() as Ptr<u32>)
-            .offset((3) as isize)
+            .offset(((3) as isize))
             .get_offset()
             - (src.as_pointer() as Ptr<u32>).get_offset();
         PtrValueIter::new(&(src.as_pointer() as Ptr<u32>), __count)
@@ -28,7 +28,7 @@ fn main_0() -> i32 {
     );
     let v2: Value<Vec<u64>> = Rc::new(RefCell::new({
         let __count = (src.as_pointer() as Ptr<u32>)
-            .offset((3) as isize)
+            .offset(((3) as isize))
             .get_offset()
             - (src.as_pointer() as Ptr<u32>).get_offset();
         PtrValueIter::new(&(src.as_pointer() as Ptr<u32>), __count)
@@ -43,7 +43,7 @@ fn main_0() -> i32 {
     );
     let v3: Value<Vec<i32>> = Rc::new(RefCell::new({
         let __count = (src.as_pointer() as Ptr<u32>)
-            .offset((3) as isize)
+            .offset(((3) as isize))
             .get_offset()
             - (src.as_pointer() as Ptr<u32>).get_offset();
         PtrValueIter::new(&(src.as_pointer() as Ptr<u32>), __count)
@@ -74,7 +74,7 @@ fn main_0() -> i32 {
     let len: Value<usize> = Rc::new(RefCell::new(5_usize));
     let v5: Value<Vec<u8>> = Rc::new(RefCell::new({
         let __count = (*start.borrow())
-            .offset((*len.borrow()) as isize)
+            .offset(((*len.borrow()) as isize))
             .get_offset()
             - (*start.borrow()).get_offset();
         PtrValueIter::new(&(*start.borrow()), __count).collect::<Vec<_>>()

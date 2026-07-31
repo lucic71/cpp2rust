@@ -47,8 +47,8 @@ fn main_0() -> i32 {
     );
     let acc: Value<usize> = Rc::new(RefCell::new(100_usize));
     {
-        let rhs_0 =
-            (((*acc.borrow()) as u64).wrapping_add((::std::mem::size_of::<f64>() as u64))) as usize;
+        let rhs_0 = ((((*acc.borrow()) as u64).wrapping_add((::std::mem::size_of::<f64>() as u64)))
+            as usize);
         (*acc.borrow_mut()) = rhs_0
     };
     {
@@ -56,7 +56,7 @@ fn main_0() -> i32 {
         (*acc.borrow_mut()) = rhs_0
     };
     {
-        let rhs_0 = (((*acc.borrow()) as u64).wrapping_sub((*ul.borrow()))) as usize;
+        let rhs_0 = ((((*acc.borrow()) as u64).wrapping_sub((*ul.borrow()))) as usize);
         (*acc.borrow_mut()) = rhs_0
     };
     assert!(

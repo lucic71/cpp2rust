@@ -8,7 +8,7 @@ use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 pub unsafe fn strlen_0(mut s: *const libc::c_char, mut n: i32) -> i32 {
     return if ((*s) != 0) {
-        (unsafe { strlen_0(s.offset((1) as isize), ((n) + (1))) })
+        (unsafe { strlen_0(s.offset(((1) as isize)), ((n) + (1))) })
     } else {
         n
     };
@@ -25,5 +25,5 @@ unsafe fn main_0() -> i32 {
         ('r' as libc::c_char),
         ('\0' as libc::c_char),
     ];
-    return (unsafe { strlen_0((&s[(0) as usize] as *const libc::c_char), 0) });
+    return (unsafe { strlen_0((&s[((0) as usize)] as *const libc::c_char), 0) });
 }

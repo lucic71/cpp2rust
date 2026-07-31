@@ -1107,11 +1107,11 @@ RsExpr *ConverterRefCount::ConvertPrintf(clang::CallExpr *expr) {
   unsigned j = 0;
   for (unsigned i = is_fprintf + 1, e = expr->getNumArgs(); i < e; ++i) {
     parts.push_back(Text(token::kComma));
-    parts.push_back(ConvertExpr(expr->getArg(i)));
+    auto *arg = ConvertExpr(expr->getArg(i));
     if (types[j]) {
-      parts.push_back(Text(keyword::kAs));
-      parts.push_back(Text(types[j++]));
+      arg = arena_.New<Cast>(arg, Text(types[j++]));
     }
+    parts.push_back(arg);
   }
   parts.push_back(Text(')'));
   return arena_.New<Concat>(std::move(parts));
@@ -1257,8 +1257,7 @@ ConverterRefCount::VisitImplicitCastExpr(clang::ImplicitCastExpr *expr) {
       } else {
         auto *ptr = ConvertFreshPointer(sub_expr);
         auto *type_node = Convert(sub_expr->getType());
-        node = Cat(Text('('), ptr, Text(keyword::kAs), type_node,
-                   Text(").to_any()"));
+        node = Cat(arena_.New<Cast>(ptr, type_node), Text(".to_any()"));
       }
       computed_expr_type_ = ComputedExprType::FreshPointer;
       return node;
@@ -1305,7 +1304,7 @@ ConverterRefCount::VisitImplicitCastExpr(clang::ImplicitCastExpr *expr) {
     PushConversionKind push(*this, ConversionKind::Unboxed);
     auto *ptr = ConvertPointer(sub_expr);
     auto *type_node = Convert(expr->getType());
-    return Parens(Cat(ptr, Text(keyword::kAs), type_node));
+    return arena_.New<Cast>(ptr, type_node);
   }
 
   if (expr->getCastKind() == clang::CastKind::CK_NullToPointer) {
@@ -1515,19 +1514,19 @@ RsExpr *ConverterRefCount::ConvertBinaryOperator(clang::BinaryOperator *expr) {
       auto *lhs_node = ConvertRValue(lhs);
       auto *arith = ConvertUnsignedArithBinaryOperator(expr, rhs);
       value = Parens(
-          Cat(Parens(Cat(lhs_node, CastTo(computation_result_type))), arith));
+          Cat(Parens(CastTo(lhs_node, computation_result_type)), arith));
     } else {
       auto *lhs_node = ConvertRValue(lhs);
       auto op = opcode_as_string;
       op.remove_suffix(1); // remove '=' from operator
       auto *rhs_node = ConvertExpr(rhs);
-      value = Parens(Cat(Parens(Cat(lhs_node, CastTo(computation_result_type))),
+      value = Parens(Cat(Parens(CastTo(lhs_node, computation_result_type)),
                          Text(std::string(op)), rhs_node));
     }
     if (lhs_type->isBooleanType()) {
       value = Cat(value, Text(token::kDiff), Text(token::kZero));
     } else {
-      value = Cat(value, CastTo(lhs_type));
+      value = CastTo(value, lhs_type);
     }
     auto *assign_node = arena_.New<Assign>(ConvertLValue(lhs), Text("rhs_0"));
     return Braces(Cat(Text(keyword::kLet), Text("rhs_0"), Text(token::kAssign),
@@ -1559,9 +1558,9 @@ RsExpr *ConverterRefCount::ConvertBinaryOperator(clang::BinaryOperator *expr) {
     auto *lhs_node = ConvertFreshPointer(lhs);
     auto *rhs_node = ConvertFreshPointer(rhs);
     computed_expr_type_ = ComputedExprType::FreshValue;
-    return Cat(Parens(Cat(lhs_node, Text(std::string(expr->getOpcodeStr())),
-                          rhs_node)),
-               CastTo(expr->getType()));
+    return CastTo(Parens(Cat(lhs_node, Text(std::string(expr->getOpcodeStr())),
+                             rhs_node)),
+                  expr->getType());
   }
 
   if (expr->isAssignmentOp()) {
@@ -1683,24 +1682,12 @@ RsExpr *ConverterRefCount::ConvertFieldPtr(clang::MemberExpr *expr,
 
   const auto &layout = ctx_.getASTRecordLayout(field->getParent());
   auto byte_off = layout.getFieldOffset(field->getFieldIndex()) / 8;
-  auto name = GetNamedDeclAsString(field);
-
-  std::string get;
-  std::string get_mut;
-  if (field->getType()->isArrayType() || IsBoxedType(field->getType())) {
-    get = std::format("|__v: &{}| &__v.{}[..]", base_type_name, name);
-    get_mut =
-        std::format("|__v: &mut {}| &mut __v.{}[..]", base_type_name, name);
-  } else {
-    get = std::format("|__v: &{}| ::std::slice::from_ref(&__v.{})",
-                      base_type_name, name);
-    get_mut = std::format("|__v: &mut {}| ::std::slice::from_mut(&mut __v.{})",
-                          base_type_name, name);
-  }
+  bool container =
+      field->getType()->isArrayType() || IsBoxedType(field->getType());
 
   computed_expr_type_ = ComputedExprType::FreshPointer;
-  return Cat(parent, Text(std::format(".field_ptr({}, {}, {})", byte_off, get,
-                                      get_mut)));
+  return arena_.New<FieldPtr>(parent, byte_off, std::move(base_type_name),
+                              GetNamedDeclAsString(field), container);
 }
 
 RsExpr *ConverterRefCount::VisitMemberExpr(clang::MemberExpr *expr) {
@@ -1889,8 +1876,8 @@ ConverterRefCount::VisitCXXForRangeStmtVector(clang::CXXForRangeStmt *stmt) {
   return Cat(
       Text("'loop_:"), Text(keyword::kFor),
       Text(stmt->getLoopVariable()->getType().isConstQualified() ? "" : "mut"),
-      Text(loop_var_name), Text(keyword::kIn), range_init, Text(keyword::kAs),
-      ptr_type, Braces(Cat(shadow, body)));
+      Text(loop_var_name), Text(keyword::kIn),
+      arena_.New<Cast>(range_init, ptr_type), Braces(Cat(shadow, body)));
 }
 
 RsExpr *
@@ -2274,8 +2261,9 @@ RsExpr *ConverterRefCount::ConvertCXXOperatorCallExpr(
       auto *ptr_type = ConvertPtrType(expr->getArg(0)->getType());
       auto *idx = ConvertSubscriptIndex(expr->getArg(1));
       return arena_.New<Unary>(
-          Unary::Op::Deref, Cat(Text('('), object, Text(keyword::kAs), ptr_type,
-                                Text(").offset("), idx, Text(')')));
+          Unary::Op::Deref,
+          Cat(arena_.New<Cast>(object, ptr_type), Text(".offset("), idx,
+              Text(')')));
     }
 
     bool deref = !isAddrOf();
@@ -2285,20 +2273,17 @@ RsExpr *ConverterRefCount::ConvertCXXOperatorCallExpr(
       auto *object = ConvertObject(expr->getArg(0));
       auto *ptr_type = ConvertPtrType(expr->getArg(0)->getType());
       auto *idx = ConvertSubscriptIndex(expr->getArg(1));
-      offset = Cat(Text('('), object, Text(keyword::kAs), ptr_type,
-                   Text(").offset("), idx, Text(')'));
+      offset = Cat(arena_.New<Cast>(object, ptr_type), Text(".offset("), idx,
+                   Text(')'));
     }
 
     auto *node = offset;
     if (is_inner_boxed) {
-      if (!isObject()) {
-        node = Cat(Text('('), node);
-      }
       node = Cat(node, Text(GetPointerDerefSuffix(expr->getType())),
                  Text(".as_pointer()"));
       if (!isObject()) {
-        node = Cat(node, Text(keyword::kAs), Text("Ptr<"),
-                   Convert(expr->getType()), Text('>'), Text(')'));
+        node = arena_.New<Cast>(
+            node, Cat(Text("Ptr<"), Convert(expr->getType()), Text('>')));
       }
     }
 
@@ -2358,8 +2343,8 @@ RsExpr *ConverterRefCount::ConvertArraySubscript(clang::Expr *base,
       auto *base_node = ConvertExpr(base->IgnoreImplicit());
       auto *ptr_type = ConvertPtrType(base->IgnoreImplicit()->getType());
       auto *idx_node = ConvertSubscriptIndex(idx);
-      node = Cat(Text('('), base_node, Text(keyword::kAs), ptr_type,
-                 Text(").offset("), idx_node, Text(')'));
+      node = Cat(arena_.New<Cast>(base_node, ptr_type), Text(".offset("),
+                 idx_node, Text(')'));
     }
 
     if (is_inner_boxed) {
@@ -2435,8 +2420,8 @@ RsExpr *ConverterRefCount::ConvertAddrOf(clang::Expr *expr,
   if (const auto *arr = ctx_.getAsArrayType(expr->getType())) {
     PushConversionKind push(*this, ConversionKind::Unboxed);
     auto *node = ConvertPointer(expr);
-    return Parens(Cat(node, Text(keyword::kAs), Text("Ptr<"),
-                      Convert(arr->getElementType()), Text('>')));
+    return arena_.New<Cast>(
+        node, Cat(Text("Ptr<"), Convert(arr->getElementType()), Text('>')));
   }
   return ConvertPointer(expr);
 }

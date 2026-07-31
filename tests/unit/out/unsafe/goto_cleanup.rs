@@ -110,10 +110,10 @@ pub unsafe fn via_arrays_4(mut fail: i32) -> i32 {
                 ret = -1_i32;
                 goto!('out);
             }
-            remain[(1) as usize] = 9_u8;
-            ret = ((((remain[(0) as usize] as i32) + (remain[(1) as usize] as i32))
-                + (((name[(0) as usize] as i32) == ('w' as i32)) as i32))
-                + (((name[(4) as usize] as i32) == ('\0' as i32)) as i32));
+            remain[((1) as usize)] = 9_u8;
+            ret = ((((remain[((0) as usize)] as i32) + (remain[((1) as usize)] as i32))
+                + (((name[((0) as usize)] as i32) == ('w' as i32)) as i32))
+                + (((name[((4) as usize)] as i32) == ('\0' as i32)) as i32));
         }
         'out: {
             return ret;

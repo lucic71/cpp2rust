@@ -80,9 +80,9 @@ impl MinHeap {
         if ((smallest) != (idx)) {
             (unsafe {
                 let _a: *mut MinHeapNode =
-                    &mut (*self.arr.as_mut().unwrap()[(smallest as usize)]) as *mut MinHeapNode;
+                    (&mut (*self.arr.as_mut().unwrap()[(smallest as usize)]) as *mut MinHeapNode);
                 let _b: *mut MinHeapNode =
-                    &mut (*self.arr.as_mut().unwrap()[(idx as usize)]) as *mut MinHeapNode;
+                    (&mut (*self.arr.as_mut().unwrap()[(idx as usize)]) as *mut MinHeapNode);
                 Swap_0(_a, _b)
             });
             (unsafe { self.Heapify(smallest) });
@@ -259,10 +259,10 @@ pub unsafe fn HuffmanCodes_5(
     (unsafe {
         CollectCodes_4(
             root,
-            &mut arr as *mut Option<Box<[i32]>>,
+            (&mut arr as *mut Option<Box<[i32]>>),
             top,
-            &mut out as *mut Option<Box<[i32]>>,
-            &mut next as *mut i32,
+            (&mut out as *mut Option<Box<[i32]>>),
+            (&mut next as *mut i32),
         )
     });
     return out;
@@ -295,14 +295,14 @@ unsafe fn main_0() -> i32 {
     );
     let mut i: i32 = 0;
     'loop_: while ((i) < (size)) {
-        data.as_mut().unwrap()[(i as usize)] = arr1[(i) as usize];
-        freq.as_mut().unwrap()[(i as usize)] = arr2[(i) as usize];
+        data.as_mut().unwrap()[(i as usize)] = arr1[((i) as usize)];
+        freq.as_mut().unwrap()[(i as usize)] = arr2[((i) as usize)];
         i.prefix_inc();
     }
     let mut out: Option<Box<[i32]>> = (unsafe {
         HuffmanCodes_5(
-            &mut data as *mut Option<Box<[libc::c_char]>>,
-            &mut freq as *mut Option<Box<[i32]>>,
+            (&mut data as *mut Option<Box<[libc::c_char]>>),
+            (&mut freq as *mut Option<Box<[i32]>>),
             size,
         )
     });

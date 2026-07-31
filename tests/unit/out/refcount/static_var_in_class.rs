@@ -11,8 +11,11 @@ thread_local!(
 );
 #[derive(Default)]
 pub struct C {}
-impl C {
-    pub fn get(&self) -> i32 {
+pub trait CMethods {
+    fn get(&self) -> i32;
+}
+impl CMethods for Ptr<C> {
+    fn get(&self) -> i32 {
         return (*inner_const_0.with(Value::clone).borrow());
     }
 }
@@ -56,7 +59,7 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     let c: Value<C> = Rc::new(RefCell::new(<C>::default()));
-    assert!((({ (*c.borrow()).get() }) == 1));
+    assert!((({ c.as_pointer().get() }) == 1));
     assert!(((*inner_const_1.with(Value::clone).borrow()) == 2));
     return 0;
 }

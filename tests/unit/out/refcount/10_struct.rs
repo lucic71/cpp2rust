@@ -40,20 +40,37 @@ pub struct Graph {
     pub V: u32,
     pub adj: Ptr<Ptr<GraphNode>>,
 }
-impl Graph {
-    pub fn push(&self, src: u32, dst: u32) {
+pub trait GraphMethods {
+    fn push(&self, src: u32, dst: u32);
+}
+impl GraphMethods for Ptr<Graph> {
+    fn push(&self, src: u32, dst: u32) {
         let src: Value<u32> = Rc::new(RefCell::new(src));
         let dst: Value<u32> = Rc::new(RefCell::new(dst));
         let __rhs = Ptr::alloc(GraphNode {
             dst: (*dst.borrow()),
-            next: (self.adj.offset((*src.borrow()) as isize).read()).clone(),
+            next: ((*self.upgrade().deref())
+                .adj
+                .offset(((*src.borrow()) as isize))
+                .read())
+            .clone(),
         });
-        self.adj.offset((*src.borrow()) as isize).write(__rhs);
+        (*self.upgrade().deref())
+            .adj
+            .offset(((*src.borrow()) as isize))
+            .write(__rhs);
         let __rhs = Ptr::alloc(GraphNode {
             dst: (*src.borrow()),
-            next: (self.adj.offset((*dst.borrow()) as isize).read()).clone(),
+            next: ((*self.upgrade().deref())
+                .adj
+                .offset(((*dst.borrow()) as isize))
+                .read())
+            .clone(),
         });
-        self.adj.offset((*dst.borrow()) as isize).write(__rhs);
+        (*self.upgrade().deref())
+            .adj
+            .offset(((*dst.borrow()) as isize))
+            .write(__rhs);
     }
 }
 impl Clone for Graph {

@@ -1,4 +1,3 @@
-// panic: refcount
 struct Item {
   int value;
 

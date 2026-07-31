@@ -44,9 +44,9 @@ unsafe fn main_0() -> i32 {
     v.b = 3735928559_u32;
     let mut base: *mut u8 = ((&mut v as *mut Layout) as *mut u8);
     let mut bp: *mut u32 =
-        ((base.offset((::std::mem::offset_of!(Layout, b)) as isize)) as *mut u32);
+        ((base.offset(((::std::mem::offset_of!(Layout, b)) as isize))) as *mut u32);
     assert!(((*bp) == (3735928559_u32)));
-    (*((base.offset((::std::mem::offset_of!(Layout, b)) as isize)) as *mut u32)) = 305419896_u32;
+    (*((base.offset(((::std::mem::offset_of!(Layout, b)) as isize))) as *mut u32)) = 305419896_u32;
     assert!(((v.b) == (305419896_u32)));
     let mut text: *const libc::c_char = c"example-body".as_ptr();
     let mut len: usize = (libc::strlen(text)).wrapping_add(1_usize);

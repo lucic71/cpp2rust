@@ -17,13 +17,13 @@ unsafe fn main_0() -> i32 {
         Box::leak((0..(N as usize)).map(|_| 0_u32).collect::<Box<[u32]>>()).as_mut_ptr();
     let mut i: i32 = 0;
     'loop_: while ((i) < (N)) {
-        (*arr.offset((i) as isize)) = 0_u32;
+        (*arr.offset(((i) as isize))) = 0_u32;
         i.postfix_inc();
     }
-    (*arr.offset(((N) - (1)) as isize)) = 3148519816_u32;
+    (*arr.offset((((N) - (1)) as isize))) = 3148519816_u32;
     let mut words: *mut u16 = (arr as *mut u16);
-    assert!((((*words.offset((((N) * (2)) - (1)) as isize)) as i32) == (48042)));
-    assert!((((*words.offset((((N) * (2)) - (2)) as isize)) as i32) == (39304)));
+    assert!((((*words.offset(((((N) * (2)) - (1)) as isize))) as i32) == (48042)));
+    assert!((((*words.offset(((((N) * (2)) - (2)) as isize))) as i32) == (39304)));
     ::std::mem::drop(Box::from_raw(::std::slice::from_raw_parts_mut(
         arr,
         libcc2rs::malloc_usable_size(arr as *mut ::libc::c_void) / ::std::mem::size_of::<u32>(),

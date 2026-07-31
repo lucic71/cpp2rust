@@ -101,19 +101,19 @@ pub fn test_memmove_3() {
         ('\0' as u8),
     ])));
     let r: Value<AnyPtr> = Rc::new(RefCell::new({
-        ((buf.as_pointer() as Ptr<u8>).offset((1) as isize) as Ptr<u8>)
+        ((buf.as_pointer() as Ptr<u8>).offset(((1) as isize)) as Ptr<u8>)
             .to_any()
             .memcpy(
                 &((buf.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any(),
                 4_usize as usize,
             );
-        ((buf.as_pointer() as Ptr<u8>).offset((1) as isize) as Ptr<u8>)
+        ((buf.as_pointer() as Ptr<u8>).offset(((1) as isize)) as Ptr<u8>)
             .to_any()
             .clone()
     }));
     assert!({
         let _lhs = (*r.borrow()).clone();
-        _lhs == ((buf.as_pointer() as Ptr<u8>).offset((1) as isize) as Ptr<u8>).to_any()
+        _lhs == ((buf.as_pointer() as Ptr<u8>).offset(((1) as isize)) as Ptr<u8>).to_any()
     });
     assert!(
         ((((*buf.borrow())[(0) as usize] as i32) == (('a' as u8) as i32))
@@ -501,7 +501,7 @@ pub fn test_strrchr_9() {
     assert!(((((*r.borrow()).read()) as i32) == (('l' as u8) as i32)));
     assert!({
         let _lhs = (*r.borrow()).clone();
-        _lhs == (*s.borrow()).offset((9) as isize)
+        _lhs == (*s.borrow()).offset(((9) as isize))
     });
     assert!(
         ({
@@ -727,7 +727,7 @@ pub fn test_strstr_13() {
     assert!(!((*r.borrow()).is_null()));
     assert!({
         let _lhs = (*r.borrow()).clone();
-        _lhs == (*h.borrow()).offset((6) as isize)
+        _lhs == (*h.borrow()).offset(((6) as isize))
     });
     assert!(
         ({
@@ -793,7 +793,7 @@ pub fn test_strpbrk_14() {
     assert!(!((*r.borrow()).is_null()));
     assert!({
         let _lhs = (*r.borrow()).clone();
-        _lhs == (*s.borrow()).offset((4) as isize)
+        _lhs == (*s.borrow()).offset(((4) as isize))
     });
     assert!(
         ({

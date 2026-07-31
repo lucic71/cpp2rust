@@ -49,6 +49,6 @@ unsafe fn main_0() -> i32 {
     assert!((((((*h).n) == (7)) as i32) != 0));
     ((*h).cb) = None;
     assert!((((((*h).cb).is_none()) as i32) != 0));
-    libcc2rs::free_unsafe((h as *mut handlers as *mut ::libc::c_void));
+    libcc2rs::free_unsafe(((h as *mut handlers) as *mut ::libc::c_void));
     return 0;
 }

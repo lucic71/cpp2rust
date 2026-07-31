@@ -22,9 +22,9 @@ unsafe fn main_0() -> i32 {
     p.x = 67305985;
     p.y = 134678021;
     let mut bytes: *mut u8 = ((&mut p as *mut Point) as *mut u8);
-    assert!((((*bytes.offset((0) as isize)) as i32) == (1)));
-    assert!((((*bytes.offset((3) as isize)) as i32) == (4)));
-    assert!((((*bytes.offset((4) as isize)) as i32) == (5)));
-    assert!((((*bytes.offset((7) as isize)) as i32) == (8)));
+    assert!((((*bytes.offset(((0) as isize))) as i32) == (1)));
+    assert!((((*bytes.offset(((3) as isize))) as i32) == (4)));
+    assert!((((*bytes.offset(((4) as isize))) as i32) == (5)));
+    assert!((((*bytes.offset(((7) as isize))) as i32) == (8)));
     return 0;
 }

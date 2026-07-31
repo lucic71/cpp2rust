@@ -19,7 +19,7 @@ unsafe fn main_0() -> i32 {
     let mut g_ptr: *mut i32 = g
         .as_deref_mut()
         .map_or(::std::ptr::null_mut(), |s| s.as_mut_ptr());
-    (*g_ptr.offset((0) as isize)) = 13;
-    (*g_ptr.offset((1) as isize)) = 14;
+    (*g_ptr.offset(((0) as isize))) = 13;
+    (*g_ptr.offset(((1) as isize))) = 14;
     return ((g.as_mut().unwrap()[(0_usize)]) + (g.as_mut().unwrap()[(1_usize)]));
 }

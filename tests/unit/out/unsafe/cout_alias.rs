@@ -19,7 +19,7 @@ unsafe fn main_0() -> i32 {
         libcc2rs::cerr_unsafe()
     };
     write!((*os1), "hello\n",);
-    let os2: *mut std::fs::File = &mut if cond {
+    let os2: *mut std::fs::File = (&mut if cond {
         std::fs::File::from_raw_fd(
             std::io::stdout()
                 .as_fd()
@@ -35,7 +35,7 @@ unsafe fn main_0() -> i32 {
                 .unwrap()
                 .into_raw_fd(),
         )
-    } as *mut std::fs::File;
+    } as *mut std::fs::File);
     write!((*os2), "hello\n",);
     return 0;
 }

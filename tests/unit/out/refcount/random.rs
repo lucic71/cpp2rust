@@ -16,27 +16,33 @@ pub struct Pair {
     pub pair: Ptr<Pair>,
     pub ap: Box<[Ptr<i32>]>,
 }
-impl Pair {
-    pub fn method(&self) {
-        self.x.postfix_inc();
-        self.y.prefix_inc();
-        self.a[(4) as usize] = 1;
-        self.r.write(1);
-        self.p = Ptr::<i32>::null();
-        self.pair = Ptr::<Pair>::null();
-        self.ap[(0) as usize] = Ptr::<i32>::null();
+pub trait PairMethods {
+    fn method(&self);
+    fn as_val(&self) -> i32;
+    fn as_ref(&self) -> Ptr<i32>;
+    fn as_ptr(&self) -> Ptr<i32>;
+}
+impl PairMethods for Ptr<Pair> {
+    fn method(&self) {
+        self.with_mut(|__v| __v.x.postfix_inc());
+        self.with_mut(|__v| __v.y.prefix_inc());
+        self.with_mut(|__v| __v.a[(4) as usize] = 1);
+        (*self.upgrade().deref()).r.write(1);
+        self.with_mut(|__v| __v.p = Ptr::<i32>::null());
+        self.with_mut(|__v| __v.pair = Ptr::<Pair>::null());
+        self.with_mut(|__v| __v.ap[(0) as usize] = Ptr::<i32>::null());
     }
-    pub fn as_val(&self) -> i32 {
-        return self.x;
+    fn as_val(&self) -> i32 {
+        return (*self.upgrade().deref()).x;
     }
-    pub fn as_ref(&self) -> Ptr<i32> {
+    fn as_ref(&self) -> Ptr<i32> {
         return self.field_ptr(
             0,
             |__v: &Pair| ::std::slice::from_ref(&__v.x),
             |__v: &mut Pair| ::std::slice::from_mut(&mut __v.x),
         );
     }
-    pub fn as_ptr(&self) -> Ptr<i32> {
+    fn as_ptr(&self) -> Ptr<i32> {
         return (self.field_ptr(
             0,
             |__v: &Pair| ::std::slice::from_ref(&__v.x),
@@ -274,16 +280,10 @@ fn main_0() -> i32 {
     (*(*y1.borrow()).pair.upgrade().deref())
         .pair
         .with_mut(|__v| __v.x = 10);
-    ({ (*y1.borrow()).method() });
+    ({ y1.as_pointer().method() });
     (*y1.borrow_mut()).pair = (y2.as_pointer());
     (*y2.borrow_mut()).pair = (y3.as_pointer());
-    ({
-        (*(*(*y1.borrow()).pair.upgrade().deref())
-            .pair
-            .upgrade()
-            .deref())
-        .method()
-    });
+    ({ (*(*y1.borrow()).pair.upgrade().deref()).pair.method() });
     let x: Value<X1> = Rc::new(RefCell::new(X1 {}));
     let y: Value<X1> = Rc::new(RefCell::new(X1 {}));
     (*x1.borrow_mut()) = (({ zero_0() }) + (*y1.borrow()).x);

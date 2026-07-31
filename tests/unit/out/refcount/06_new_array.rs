@@ -15,8 +15,8 @@ fn main_0() -> i32 {
             .map(|_| <i32>::default())
             .collect::<Box<[i32]>>(),
     )));
-    (*e.borrow()).offset((0) as isize).write(6);
-    (*e.borrow()).offset((1) as isize).write(7);
+    (*e.borrow()).offset(((0) as isize)).write(6);
+    (*e.borrow()).offset(((1) as isize)).write(7);
     (*e.borrow()).delete_array();
     return 0;
 }

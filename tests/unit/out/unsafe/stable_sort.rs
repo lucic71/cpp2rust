@@ -16,7 +16,7 @@ unsafe fn main_0() -> i32 {
     {
         let len = arr1
             .as_mut_ptr()
-            .offset((5) as isize)
+            .offset(((5) as isize))
             .offset_from(arr1.as_mut_ptr()) as usize;
         ::std::slice::from_raw_parts_mut(arr1.as_mut_ptr(), len).sort_by(|x, y| {
             if (|x: i32, y: i32| {

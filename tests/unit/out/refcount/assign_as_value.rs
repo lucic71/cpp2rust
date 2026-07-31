@@ -22,7 +22,7 @@ fn main_0() -> i32 {
     assert!(
         ((({
             let _lhs = (*q.borrow()).clone();
-            _lhs == (buf.as_pointer() as Ptr<u8>).offset((1) as isize)
+            _lhs == (buf.as_pointer() as Ptr<u8>).offset(((1) as isize))
         }) as i32)
             != 0)
     );

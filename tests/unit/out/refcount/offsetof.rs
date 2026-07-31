@@ -91,10 +91,10 @@ fn main_0() -> i32 {
     (*v.borrow_mut()).b = 3735928559_u32;
     let base: Value<Ptr<u8>> = Rc::new(RefCell::new((v.as_pointer()).reinterpret_cast::<u8>()));
     let bp: Value<Ptr<u32>> = Rc::new(RefCell::new(
-        ((*base.borrow()).offset((4_usize) as isize)).reinterpret_cast::<u32>(),
+        ((*base.borrow()).offset(((4_usize) as isize))).reinterpret_cast::<u32>(),
     ));
     assert!((((*bp.borrow()).read()) == 3735928559_u32));
-    ((*base.borrow()).offset((4_usize) as isize))
+    ((*base.borrow()).offset(((4_usize) as isize)))
         .reinterpret_cast::<u32>()
         .write(305419896_u32);
     assert!(((*v.borrow()).b == 305419896_u32));

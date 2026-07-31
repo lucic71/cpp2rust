@@ -16,7 +16,7 @@ fn main_0() -> i32 {
     ));
     {
         let count = (input.as_pointer() as Ptr<i32>)
-            .offset((3) as isize)
+            .offset(((3) as isize))
             .get_offset()
             - (input.as_pointer() as Ptr<i32>).get_offset();
         let mut outptr = (output.as_pointer() as Ptr<i32>).clone();

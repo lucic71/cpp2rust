@@ -109,56 +109,56 @@ fn main_0() -> i32 {
         .with_mut(|__v| __v.tail = 287454020_u32);
     assert!(
         (((((((*v.borrow()).raw_().reinterpret_cast::<u8>() as Ptr::<u8>)
-            .offset((0) as isize)
+            .offset(((0) as isize))
             .read()) as i32)
             == 235) as i32)
             != 0)
     );
     assert!(
         (((((((*v.borrow()).raw_().reinterpret_cast::<u8>() as Ptr::<u8>)
-            .offset((1) as isize)
+            .offset(((1) as isize))
             .read()) as i32)
             == 205) as i32)
             != 0)
     );
     assert!(
         (((((((*v.borrow()).raw_().reinterpret_cast::<u8>() as Ptr::<u8>)
-            .offset((2) as isize)
+            .offset(((2) as isize))
             .read()) as i32)
             == 171) as i32)
             != 0)
     );
     assert!(
         (((((((*v.borrow()).raw_().reinterpret_cast::<u8>() as Ptr::<u8>)
-            .offset((3) as isize)
+            .offset(((3) as isize))
             .read()) as i32)
             == 13) as i32)
             != 0)
     );
     assert!(
         (((((((*v.borrow()).raw_().reinterpret_cast::<u8>() as Ptr::<u8>)
-            .offset((4) as isize)
+            .offset(((4) as isize))
             .read()) as i32)
             == 68) as i32)
             != 0)
     );
     assert!(
         (((((((*v.borrow()).raw_().reinterpret_cast::<u8>() as Ptr::<u8>)
-            .offset((5) as isize)
+            .offset(((5) as isize))
             .read()) as i32)
             == 51) as i32)
             != 0)
     );
     assert!(
         (((((((*v.borrow()).raw_().reinterpret_cast::<u8>() as Ptr::<u8>)
-            .offset((6) as isize)
+            .offset(((6) as isize))
             .read()) as i32)
             == 34) as i32)
             != 0)
     );
     assert!(
         (((((((*v.borrow()).raw_().reinterpret_cast::<u8>() as Ptr::<u8>)
-            .offset((7) as isize)
+            .offset(((7) as isize))
             .read()) as i32)
             == 17) as i32)
             != 0)
@@ -166,7 +166,7 @@ fn main_0() -> i32 {
     (*v.borrow_mut()).f().with_mut(|__v| __v.b = 2_u32);
     assert!(
         (((((((*v.borrow()).raw_().reinterpret_cast::<u8>() as Ptr::<u8>)
-            .offset((0) as isize)
+            .offset(((0) as isize))
             .read()) as i32)
             == 229) as i32)
             != 0)
@@ -182,16 +182,16 @@ fn main_0() -> i32 {
         ((v.as_pointer()) as Ptr<view>).to_any().clone()
     };
     ((*v.borrow()).raw_().reinterpret_cast::<u8>() as Ptr<u8>)
-        .offset((0) as isize)
+        .offset(((0) as isize))
         .write(60_u8);
     ((*v.borrow()).raw_().reinterpret_cast::<u8>() as Ptr<u8>)
-        .offset((1) as isize)
+        .offset(((1) as isize))
         .write(18_u8);
     ((*v.borrow()).raw_().reinterpret_cast::<u8>() as Ptr<u8>)
-        .offset((2) as isize)
+        .offset(((2) as isize))
         .write(0_u8);
     ((*v.borrow()).raw_().reinterpret_cast::<u8>() as Ptr<u8>)
-        .offset((3) as isize)
+        .offset(((3) as isize))
         .write(15_u8);
     assert!((((((*(*v.borrow()).f().upgrade().deref()).a as i32) == 0) as i32) != 0));
     assert!((((((*(*v.borrow()).f().upgrade().deref()).b as i32) == 6) as i32) != 0));

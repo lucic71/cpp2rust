@@ -6,6 +6,7 @@
 #include <llvm/ADT/STLFunctionalExtras.h>
 
 #include <cstdint>
+#include <format>
 #include <memory>
 #include <string>
 #include <string_view>
@@ -24,10 +25,12 @@ struct RsExpr {
     Concat,
     Delim,
     Unary,
+    Cast,
     Assign,
     CompoundAssign,
     Field,
     Index,
+    FieldPtr,
     BorrowRead,
     BorrowWrite,
     MethodCall,
@@ -156,6 +159,30 @@ struct Unary : RsExpr {
   RsExpr *operand;
 };
 
+struct Cast : RsExpr {
+  Cast(RsExpr *expr, RsExpr *type) : RsExpr(Kind::Cast), expr(expr), type(type) {}
+
+  static bool classof(const RsExpr *e) { return e->kind == Kind::Cast; }
+
+  std::string print() const override {
+    return '(' + expr->print() + " as " + type->print() + ')';
+  }
+
+  void ForEachChild(llvm::function_ref<void(RsExpr *&)> fn) override {
+    fn(expr);
+    fn(type);
+  }
+
+  RsExpr *Pointer() override { return expr->Pointer(); }
+
+  RsExpr *TakePtr(RsExpr *replacement) override {
+    return expr->TakePtr(replacement);
+  }
+
+  RsExpr *expr;
+  RsExpr *type;
+};
+
 struct Accessor : RsExpr {
   Accessor(Kind kind, RsExpr *object) : RsExpr(kind), object(object) {}
 
@@ -207,6 +234,38 @@ struct Index : Accessor {
   }
 
   RsExpr *index;
+};
+
+struct FieldPtr : Accessor {
+  FieldPtr(RsExpr *object, size_t offset, std::string type_name,
+           std::string field, bool container)
+      : Accessor(Kind::FieldPtr, object), offset(offset),
+        type_name(std::move(type_name)), field(std::move(field)),
+        container(container) {}
+
+  static bool classof(const RsExpr *expr) {
+    return expr->kind == Kind::FieldPtr;
+  }
+
+  std::string print() const override {
+    auto get =
+        container
+            ? std::format("|__v: &{}| &__v.{}[..]", type_name, field)
+            : std::format("|__v: &{}| ::std::slice::from_ref(&__v.{})",
+                          type_name, field);
+    auto get_mut =
+        container
+            ? std::format("|__v: &mut {}| &mut __v.{}[..]", type_name, field)
+            : std::format("|__v: &mut {}| ::std::slice::from_mut(&mut __v.{})",
+                          type_name, field);
+    return object->print() +
+           std::format(".field_ptr({}, {}, {})", offset, get, get_mut);
+  }
+
+  size_t offset;
+  std::string type_name;
+  std::string field;
+  bool container;
 };
 
 struct BorrowRead : Accessor {

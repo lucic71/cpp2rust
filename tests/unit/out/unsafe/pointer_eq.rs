@@ -22,8 +22,8 @@ unsafe fn main_0() -> i32 {
     let mut arr: [i32; 3] = [1, 2, 3];
     let mut p: *mut i32 = arr.as_mut_ptr();
     assert!(((p) == (arr.as_mut_ptr())));
-    assert!(((p.offset((1) as isize)) == (&mut arr[(1) as usize] as *mut i32)));
-    assert!(((p.offset((2) as isize)) == (&mut arr[(2) as usize] as *mut i32)));
+    assert!(((p.offset(((1) as isize))) == (&mut arr[((1) as usize)] as *mut i32)));
+    assert!(((p.offset(((2) as isize))) == (&mut arr[((2) as usize)] as *mut i32)));
     let mut val: i32 = 42;
     let mut orig: *mut i32 = (&mut val as *mut i32);
     let mut as_bytes: *mut u8 = (orig as *mut u8);
@@ -32,6 +32,6 @@ unsafe fn main_0() -> i32 {
     let mut arr_bytes: *mut u8 = (arr.as_mut_ptr() as *mut u8);
     let mut arr_back: *mut i32 = (arr_bytes as *mut i32);
     assert!(((arr_back) == (arr.as_mut_ptr())));
-    assert!(((arr_back.offset((1) as isize)) == (&mut arr[(1) as usize] as *mut i32)));
+    assert!(((arr_back.offset(((1) as isize))) == (&mut arr[((1) as usize)] as *mut i32)));
     return 0;
 }

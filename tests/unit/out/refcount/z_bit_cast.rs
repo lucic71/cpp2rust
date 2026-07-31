@@ -31,7 +31,7 @@ fn main_0() -> i32 {
     });
     assert!({
         let _lhs = (((*ptr.borrow()).reinterpret_cast::<u32>())
-            .offset((0) as isize)
+            .offset(((0) as isize))
             .read());
         _lhs == (*a1.borrow())[(0) as usize]
     });

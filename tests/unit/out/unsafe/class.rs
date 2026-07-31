@@ -29,14 +29,14 @@ impl Pair {
     pub unsafe fn SetFirst(&mut self, mut new_first: i32) -> i32 {
         return ((unsafe { self.GetFirst() })
             + (unsafe {
-                let _field: *mut i32 = &mut self.first as *mut i32;
+                let _field: *mut i32 = (&mut self.first as *mut i32);
                 self.Set(_field, new_first)
             }));
     }
     pub unsafe fn SetSecond(&mut self, mut new_second: i32) -> i32 {
         return ((unsafe { self.GetSecond() })
             + (unsafe {
-                let _field: *mut i32 = &mut self.second as *mut i32;
+                let _field: *mut i32 = (&mut self.second as *mut i32);
                 self.Set(_field, new_second)
             }));
     }
@@ -89,7 +89,7 @@ unsafe fn main_0() -> i32 {
         cost: 10_f64,
     };
     let mut old_cost: f64 = (unsafe { route1.SetCost((unsafe { route2.SetCost(15_f64) })) });
-    return (((((unsafe { RandomRoute_0(&mut route1 as *mut Route) })
-        + (unsafe { RandomRoute_0(&mut route2 as *mut Route) })) as f64)
+    return (((((unsafe { RandomRoute_0((&mut route1 as *mut Route)) })
+        + (unsafe { RandomRoute_0((&mut route2 as *mut Route)) })) as f64)
         + (old_cost)) as i32);
 }

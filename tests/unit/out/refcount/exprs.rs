@@ -34,15 +34,19 @@ pub struct Y {
     pub x: X,
     pub p: Ptr<X>,
 }
-impl Y {
-    pub fn foo(&self) -> Ptr<X> {
+pub trait YMethods {
+    fn foo(&self) -> Ptr<X>;
+    fn ptr(&self) -> Ptr<X>;
+}
+impl YMethods for Ptr<Y> {
+    fn foo(&self) -> Ptr<X> {
         return self.field_ptr(
             0,
             |__v: &Y| ::std::slice::from_ref(&__v.x),
             |__v: &mut Y| ::std::slice::from_mut(&mut __v.x),
         );
     }
-    pub fn ptr(&self) -> Ptr<X> {
+    fn ptr(&self) -> Ptr<X> {
         return (self.field_ptr(
             0,
             |__v: &Y| ::std::slice::from_ref(&__v.x),
@@ -117,13 +121,13 @@ fn main_0() -> i32 {
         p: (x.as_pointer()),
     }));
     (*y.borrow_mut()).x.x = 5;
-    ({ (*y.borrow()).foo() }).with_mut(|__v| __v.x = 1);
+    ({ y.as_pointer().foo() }).with_mut(|__v| __v.x = 1);
     (*y.borrow()).p.with_mut(|__v| __v.x = 10);
     let p3: Value<Ptr<Y>> = Rc::new(RefCell::new((y.as_pointer())));
     (*(*p3.borrow()).upgrade().deref())
         .p
         .with_mut(|__v| __v.x = 100);
-    ({ (*y.borrow()).ptr() }).with_mut(|__v| __v.x = 1);
-    ({ (*y.borrow()).ptr() }).with_mut(|__v| __v.x = 50);
+    ({ y.as_pointer().ptr() }).with_mut(|__v| __v.x = 1);
+    ({ y.as_pointer().ptr() }).with_mut(|__v| __v.x = 50);
     return (*x.borrow()).x;
 }

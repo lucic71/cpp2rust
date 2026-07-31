@@ -41,11 +41,11 @@ fn main_0() -> i32 {
             .eq(Ptr::from_string_literal(b"hello").to_c_string_iterator())
     );
     let p1: Value<Ptr<u8>> = Rc::new(RefCell::new((s1.as_pointer() as Ptr<u8>)));
-    assert!(((((*p1.borrow()).offset((0) as isize).read()) as i32) == (('h' as u8) as i32)));
-    assert!(((((*p1.borrow()).offset((1) as isize).read()) as i32) == (('e' as u8) as i32)));
-    assert!(((((*p1.borrow()).offset((2) as isize).read()) as i32) == (('l' as u8) as i32)));
-    assert!(((((*p1.borrow()).offset((3) as isize).read()) as i32) == (('l' as u8) as i32)));
-    assert!(((((*p1.borrow()).offset((4) as isize).read()) as i32) == (('o' as u8) as i32)));
+    assert!(((((*p1.borrow()).offset(((0) as isize)).read()) as i32) == (('h' as u8) as i32)));
+    assert!(((((*p1.borrow()).offset(((1) as isize)).read()) as i32) == (('e' as u8) as i32)));
+    assert!(((((*p1.borrow()).offset(((2) as isize)).read()) as i32) == (('l' as u8) as i32)));
+    assert!(((((*p1.borrow()).offset(((3) as isize)).read()) as i32) == (('l' as u8) as i32)));
+    assert!(((((*p1.borrow()).offset(((4) as isize)).read()) as i32) == (('o' as u8) as i32)));
     let s2: Value<Vec<u8>> = Rc::new(RefCell::new(
         vec![('a' as u8); (10_usize) as usize]
             .iter()
@@ -57,7 +57,7 @@ fn main_0() -> i32 {
     let i: Value<u32> = Rc::new(RefCell::new(0_u32));
     'loop_: while (((*i.borrow()) as usize) < ((*s2.borrow()).len() - 1)) {
         assert!(
-            ((((*p2.borrow()).offset((*i.borrow()) as isize).read()) as i32)
+            ((((*p2.borrow()).offset(((*i.borrow()) as isize)).read()) as i32)
                 == (('a' as u8) as i32))
                 && ((((s2.as_pointer() as Ptr<u8>)
                     .offset(((*i.borrow()) as usize))
@@ -83,7 +83,7 @@ fn main_0() -> i32 {
     let i: Value<u32> = Rc::new(RefCell::new(2_u32));
     'loop_: while (((*i.borrow()) as usize) < ((*s2.borrow()).len() - 1)) {
         assert!(
-            ((((*p2.borrow()).offset((*i.borrow()) as isize).read()) as i32)
+            ((((*p2.borrow()).offset(((*i.borrow()) as isize)).read()) as i32)
                 == (('a' as u8) as i32))
                 && ((((s2.as_pointer() as Ptr<u8>)
                     .offset(((*i.borrow()) as usize))
@@ -108,7 +108,7 @@ fn main_0() -> i32 {
     let i: Value<u32> = Rc::new(RefCell::new(0_u32));
     'loop_: while (((*i.borrow()) as usize) < ((*s3.borrow()).len() - 1)) {
         assert!({
-            let _lhs = (((*p3.borrow()).offset((*i.borrow()) as isize).read()) as i32);
+            let _lhs = (((*p3.borrow()).offset(((*i.borrow()) as isize)).read()) as i32);
             _lhs == (((s3.as_pointer() as Ptr<u8>)
                 .offset(((*i.borrow()) as usize))
                 .read()) as i32)
@@ -140,7 +140,7 @@ fn main_0() -> i32 {
     let i: Value<u32> = Rc::new(RefCell::new(0_u32));
     'loop_: while (((*i.borrow()) as usize) < ((*s4.borrow()).len() - 1)) {
         assert!({
-            let _lhs = (((*p4.borrow()).offset((*i.borrow()) as isize).read()) as i32);
+            let _lhs = (((*p4.borrow()).offset(((*i.borrow()) as isize)).read()) as i32);
             _lhs == (((s4.as_pointer() as Ptr<u8>)
                 .offset(((*i.borrow()) as usize))
                 .read()) as i32)
@@ -160,7 +160,7 @@ fn main_0() -> i32 {
     let i: Value<u32> = Rc::new(RefCell::new(0_u32));
     'loop_: while (((*i.borrow()) as usize) < ((*s5.borrow()).len() - 1)) {
         assert!({
-            let _lhs = (((*p5.borrow()).offset((*i.borrow()) as isize).read()) as i32);
+            let _lhs = (((*p5.borrow()).offset(((*i.borrow()) as isize)).read()) as i32);
             _lhs == (((s5.as_pointer() as Ptr<u8>)
                 .offset(((*i.borrow()) as usize))
                 .read()) as i32)
@@ -466,13 +466,13 @@ fn main_0() -> i32 {
     ));
     assert!(((((*output_data.borrow()).read()) as i32) == (('c' as u8) as i32)));
     assert!(
-        ((((*output_data.borrow()).offset((1) as isize).read()) as i32) == (('a' as u8) as i32))
+        ((((*output_data.borrow()).offset(((1) as isize)).read()) as i32) == (('a' as u8) as i32))
     );
     assert!(
-        ((((*output_data.borrow()).offset((2) as isize).read()) as i32) == (('s' as u8) as i32))
+        ((((*output_data.borrow()).offset(((2) as isize)).read()) as i32) == (('s' as u8) as i32))
     );
     assert!(
-        ((((*output_data.borrow()).offset((3) as isize).read()) as i32) == (('t' as u8) as i32))
+        ((((*output_data.borrow()).offset(((3) as isize)).read()) as i32) == (('t' as u8) as i32))
     );
     let t0: Value<usize> = Rc::new(RefCell::new(((*s1.borrow()).len() - 1)));
     let t1: Value<usize> = Rc::new(RefCell::new(

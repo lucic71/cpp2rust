@@ -11,15 +11,23 @@ pub struct Pair {
     pub first: i32,
     pub second: i32,
 }
-impl Pair {
-    pub fn NOP(&self) {}
-    pub fn GetFirst(&self) -> i32 {
-        return self.first;
+pub trait PairMethods {
+    fn NOP(&self);
+    fn GetFirst(&self) -> i32;
+    fn GetSecond(&self) -> i32;
+    fn Set(&self, field: Ptr<i32>, new_val: i32) -> i32;
+    fn SetFirst(&self, new_first: i32) -> i32;
+    fn SetSecond(&self, new_second: i32) -> i32;
+}
+impl PairMethods for Ptr<Pair> {
+    fn NOP(&self) {}
+    fn GetFirst(&self) -> i32 {
+        return (*self.upgrade().deref()).first;
     }
-    pub fn GetSecond(&self) -> i32 {
-        return self.second;
+    fn GetSecond(&self) -> i32 {
+        return (*self.upgrade().deref()).second;
     }
-    pub fn Set(&self, field: Ptr<i32>, new_val: i32) -> i32 {
+    fn Set(&self, field: Ptr<i32>, new_val: i32) -> i32 {
         let new_val: Value<i32> = Rc::new(RefCell::new(new_val));
         ({ self.NOP() });
         let old_val: Value<i32> = Rc::new(RefCell::new((field.read())));
@@ -27,7 +35,7 @@ impl Pair {
         field.write(__rhs);
         return (*old_val.borrow());
     }
-    pub fn SetFirst(&self, new_first: i32) -> i32 {
+    fn SetFirst(&self, new_first: i32) -> i32 {
         let new_first: Value<i32> = Rc::new(RefCell::new(new_first));
         return (({ self.GetFirst() })
             + ({
@@ -39,7 +47,7 @@ impl Pair {
                 self.Set(_field, (*new_first.borrow()))
             }));
     }
-    pub fn SetSecond(&self, new_second: i32) -> i32 {
+    fn SetSecond(&self, new_second: i32) -> i32 {
         let new_second: Value<i32> = Rc::new(RefCell::new(new_second));
         return (({ self.GetSecond() })
             + ({
@@ -81,11 +89,14 @@ pub struct Route {
     pub path: Pair,
     pub cost: f64,
 }
-impl Route {
-    pub fn SetCost(&self, new_cost: f64) -> f64 {
+pub trait RouteMethods {
+    fn SetCost(&self, new_cost: f64) -> f64;
+}
+impl RouteMethods for Ptr<Route> {
+    fn SetCost(&self, new_cost: f64) -> f64 {
         let new_cost: Value<f64> = Rc::new(RefCell::new(new_cost));
-        let old_cost: Value<f64> = Rc::new(RefCell::new(self.cost));
-        self.cost = (*new_cost.borrow());
+        let old_cost: Value<f64> = Rc::new(RefCell::new((*self.upgrade().deref()).cost));
+        self.with_mut(|__v| __v.cost = (*new_cost.borrow()));
         return (*old_cost.borrow());
     }
 }
@@ -116,13 +127,41 @@ impl ByteRepr for Route {
 pub fn RandomRoute_0(route: Ptr<Route>) -> i32 {
     if (((*route.upgrade().deref()).path.first % 2) != 0) {
         return ({
-            let _new_first: i32 = ({ (*route.upgrade().deref()).path.SetSecond(10) });
-            (*route.upgrade().deref()).path.SetFirst(_new_first)
+            let _new_first: i32 = ({
+                route
+                    .field_ptr(
+                        0,
+                        |__v: &Route| ::std::slice::from_ref(&__v.path),
+                        |__v: &mut Route| ::std::slice::from_mut(&mut __v.path),
+                    )
+                    .SetSecond(10)
+            });
+            route
+                .field_ptr(
+                    0,
+                    |__v: &Route| ::std::slice::from_ref(&__v.path),
+                    |__v: &mut Route| ::std::slice::from_mut(&mut __v.path),
+                )
+                .SetFirst(_new_first)
         });
     } else {
         return ({
-            let _new_second: i32 = ({ (*route.upgrade().deref()).path.SetFirst(-10_i32) });
-            (*route.upgrade().deref()).path.SetSecond(_new_second)
+            let _new_second: i32 = ({
+                route
+                    .field_ptr(
+                        0,
+                        |__v: &Route| ::std::slice::from_ref(&__v.path),
+                        |__v: &mut Route| ::std::slice::from_mut(&mut __v.path),
+                    )
+                    .SetFirst(-10_i32)
+            });
+            route
+                .field_ptr(
+                    0,
+                    |__v: &Route| ::std::slice::from_ref(&__v.path),
+                    |__v: &mut Route| ::std::slice::from_mut(&mut __v.path),
+                )
+                .SetSecond(_new_second)
         });
     }
     panic!("ub: non-void function does not return a value")
@@ -146,7 +185,11 @@ fn main_0() -> i32 {
         cost: 10_f64,
     }));
     let old_cost: Value<f64> = Rc::new(RefCell::new(
-        ({ (*route1.borrow()).SetCost(({ (*route2.borrow()).SetCost(15_f64) })) }),
+        ({
+            route1
+                .as_pointer()
+                .SetCost(({ route2.as_pointer().SetCost(15_f64) }))
+        }),
     ));
     return ((((({ RandomRoute_0(route1.as_pointer()) }) + ({ RandomRoute_0(route2.as_pointer()) }))
         as f64)

@@ -8,7 +8,7 @@ use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
 pub fn foo_0(p: Ptr<i32>) -> Ptr<i32> {
     let p: Value<Ptr<i32>> = Rc::new(RefCell::new(p));
-    return ((*p.borrow()).offset((5) as isize));
+    return ((*p.borrow()).offset(((5) as isize)));
 }
 pub fn main() {
     std::process::exit(main_0());
@@ -22,12 +22,12 @@ fn main_0() -> i32 {
     let i: Value<u32> = Rc::new(RefCell::new(0_u32));
     'loop_: while ((*i.borrow()) < 10_u32) {
         let __rhs = ((*i.borrow()) as i32);
-        (*p1.borrow()).offset((*i.borrow()) as isize).write(__rhs);
+        (*p1.borrow()).offset(((*i.borrow()) as isize)).write(__rhs);
         (*i.borrow_mut()).prefix_inc();
     }
     let out: Value<i32> = Rc::new(RefCell::new(
-        (({ foo_0(((*p1.borrow()).offset((1) as isize))) })
-            .offset((3) as isize)
+        (({ foo_0(((*p1.borrow()).offset(((1) as isize)))) })
+            .offset(((3) as isize))
             .read()),
     ));
     (*p1.borrow()).delete_array();

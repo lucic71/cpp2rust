@@ -44,7 +44,7 @@ fn main_0() -> i32 {
             .as_pointer()
             .field_ptr(0, |__v: &pair| &__v.a[..], |__v: &mut pair| &mut __v.a[..])
             as Ptr::<i32>)
-            .offset((4) as isize)
+            .offset(((4) as isize))
             == (s.as_pointer().field_ptr(
                 16,
                 |__v: &pair| &__v.b[..],

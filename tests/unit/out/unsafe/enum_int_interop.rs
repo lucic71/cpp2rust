@@ -201,11 +201,11 @@ unsafe fn main_0() -> i32 {
     assert!(((global_color_0 as i32) == (Color::GREEN as i32)));
     assert!(((global_opt_1 as i32) == (Option::OPT_B as i32)));
     assert!(((global_tag_2 as i32) == (Tag::TAG_TWO as i32)));
-    assert!(((entries_3[(0) as usize].color as i32) == (Color::RED as i32)));
-    assert!(((entries_3[(0) as usize].opt as i32) == (Option::OPT_NONE as i32)));
-    assert!(((entries_3[(1) as usize].color as i32) == (Color::GREEN as i32)));
-    assert!(((entries_3[(1) as usize].opt as i32) == (Option::OPT_A as i32)));
-    assert!(((entries_3[(2) as usize].color as i32) == (Color::BLUE as i32)));
-    assert!(((entries_3[(2) as usize].opt as i32) == (Option::OPT_C as i32)));
+    assert!(((entries_3[((0) as usize)].color as i32) == (Color::RED as i32)));
+    assert!(((entries_3[((0) as usize)].opt as i32) == (Option::OPT_NONE as i32)));
+    assert!(((entries_3[((1) as usize)].color as i32) == (Color::GREEN as i32)));
+    assert!(((entries_3[((1) as usize)].opt as i32) == (Option::OPT_A as i32)));
+    assert!(((entries_3[((2) as usize)].color as i32) == (Color::BLUE as i32)));
+    assert!(((entries_3[((2) as usize)].opt as i32) == (Option::OPT_C as i32)));
     return 0;
 }

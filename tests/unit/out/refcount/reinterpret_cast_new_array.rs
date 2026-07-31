@@ -15,16 +15,16 @@ fn main_0() -> i32 {
             .map(|_| <u32>::default())
             .collect::<Box<[u32]>>(),
     )));
-    (*arr.borrow()).offset((0) as isize).write(67305985_u32);
-    (*arr.borrow()).offset((1) as isize).write(134678021_u32);
+    (*arr.borrow()).offset(((0) as isize)).write(67305985_u32);
+    (*arr.borrow()).offset(((1) as isize)).write(134678021_u32);
     let bytes: Value<Ptr<u8>> = Rc::new(RefCell::new((*arr.borrow()).reinterpret_cast::<u8>()));
-    assert!(((((*bytes.borrow()).offset((0) as isize).read()) as i32) == 1));
-    assert!(((((*bytes.borrow()).offset((4) as isize).read()) as i32) == 5));
-    assert!(((((*bytes.borrow()).offset((7) as isize).read()) as i32) == 8));
-    (*bytes.borrow()).offset((0) as isize).write(170_u8);
-    assert!((((*arr.borrow()).offset((0) as isize).read()) == 67306154_u32));
-    (*bytes.borrow()).offset((5) as isize).write(187_u8);
-    assert!((((*arr.borrow()).offset((1) as isize).read()) == 134724357_u32));
+    assert!(((((*bytes.borrow()).offset(((0) as isize)).read()) as i32) == 1));
+    assert!(((((*bytes.borrow()).offset(((4) as isize)).read()) as i32) == 5));
+    assert!(((((*bytes.borrow()).offset(((7) as isize)).read()) as i32) == 8));
+    (*bytes.borrow()).offset(((0) as isize)).write(170_u8);
+    assert!((((*arr.borrow()).offset(((0) as isize)).read()) == 67306154_u32));
+    (*bytes.borrow()).offset(((5) as isize)).write(187_u8);
+    assert!((((*arr.borrow()).offset(((1) as isize)).read()) == 134724357_u32));
     (*arr.borrow()).delete_array();
     return 0;
 }

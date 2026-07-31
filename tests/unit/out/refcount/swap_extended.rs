@@ -55,22 +55,22 @@ fn main_0() -> i32 {
     write!(
         libcc2rs::cout(),
         "{:} {:}\n",
-        ((*i.borrow()).offset((0) as isize).read()),
-        ((*i.borrow()).offset((1) as isize).read()),
+        ((*i.borrow()).offset(((0) as isize)).read()),
+        ((*i.borrow()).offset(((1) as isize)).read()),
     );
     (*i.borrow()).delete_array();
     ({ swap_by_ptr_1(Ptr::alloc(7), Ptr::alloc(8)) });
     ({
         swap_by_ptr_1(
-            Ptr::alloc(7).offset((0) as isize),
-            Ptr::alloc(8).offset((0) as isize),
+            Ptr::alloc(7).offset(((0) as isize)),
+            Ptr::alloc(8).offset(((0) as isize)),
         )
     });
     ({ swap_by_ref_2(Ptr::alloc(9), Ptr::alloc(10)) });
     ({
         swap_by_ref_2(
-            (Ptr::alloc(9)).offset((0) as isize),
-            (Ptr::alloc(10)).offset((0) as isize),
+            (Ptr::alloc(9)).offset(((0) as isize)),
+            (Ptr::alloc(10)).offset(((0) as isize)),
         )
     });
     let j: Value<Option<Value<i32>>> = Rc::new(RefCell::new(Ptr::alloc(11).to_owned_opt()));

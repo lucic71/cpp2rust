@@ -28,14 +28,14 @@ unsafe fn main_0() -> i32 {
             .collect::<Box<[Item]>>(),
     )
     .as_mut_ptr();
-    (*arr.offset((0) as isize)).value = 1;
-    (*arr.offset((1) as isize)).value = 2;
+    (*arr.offset(((0) as isize))).value = 1;
+    (*arr.offset(((1) as isize))).value = 2;
     (unsafe {
-        let _other: *mut Item = (&mut (*arr.offset((1) as isize)) as *mut Item);
-        (*arr.offset((0) as isize)).foo(_other)
+        let _other: *mut Item = (&mut (*arr.offset(((1) as isize))) as *mut Item);
+        (*arr.offset(((0) as isize))).foo(_other)
     });
     let mut result: i32 =
-        (((*arr.offset((0) as isize)).value) + ((*arr.offset((1) as isize)).value));
+        (((*arr.offset(((0) as isize))).value) + ((*arr.offset(((1) as isize))).value));
     ::std::mem::drop(Box::from_raw(::std::slice::from_raw_parts_mut(
         arr,
         libcc2rs::malloc_usable_size(arr as *mut ::libc::c_void) / ::std::mem::size_of::<Item>(),

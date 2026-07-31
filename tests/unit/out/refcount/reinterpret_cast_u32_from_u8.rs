@@ -16,7 +16,7 @@ fn main_0() -> i32 {
     let dwords: Value<Ptr<u32>> = Rc::new(RefCell::new(
         (arr.as_pointer() as Ptr<u8>).reinterpret_cast::<u32>(),
     ));
-    assert!((((*dwords.borrow()).offset((0) as isize).read()) == 305419896_u32));
-    assert!((((*dwords.borrow()).offset((1) as isize).read()) == 2427178479_u32));
+    assert!((((*dwords.borrow()).offset(((0) as isize)).read()) == 305419896_u32));
+    assert!((((*dwords.borrow()).offset(((1) as isize)).read()) == 2427178479_u32));
     return 0;
 }

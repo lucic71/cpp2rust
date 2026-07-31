@@ -86,7 +86,7 @@ fn main_0() -> i32 {
             .x
             .bytes()
             .reinterpret_cast::<u8>() as Ptr<u8>)
-            .offset((*i.borrow()) as isize)
+            .offset(((*i.borrow()) as isize))
             .write(__rhs);
         (*i.borrow_mut()).postfix_inc();
     }
@@ -98,7 +98,7 @@ fn main_0() -> i32 {
                     .x
                     .bytes()
                     .reinterpret_cast::<u8>() as Ptr<u8>)
-                    .offset((*i.borrow()) as isize)
+                    .offset(((*i.borrow()) as isize))
                     .read()) as i32);
                 _lhs == ((((*i.borrow()) & 255_usize) as u8) as i32)
             }) as i32)
@@ -111,7 +111,7 @@ fn main_0() -> i32 {
             .x
             .bytes()
             .reinterpret_cast::<u8>() as Ptr<u8>)
-            .offset((10) as isize)),
+            .offset(((10) as isize))),
     ));
     assert!(((((((*p.borrow()).read()) as i32) == 10) as i32) != 0));
     (*p.borrow()).write(170_u8);
@@ -120,7 +120,7 @@ fn main_0() -> i32 {
             .x
             .bytes()
             .reinterpret_cast::<u8>() as Ptr::<u8>)
-            .offset((10) as isize)
+            .offset(((10) as isize))
             .read()) as i32)
             == 170) as i32)
             != 0)
@@ -131,7 +131,7 @@ fn main_0() -> i32 {
             .x
             .bytes()
             .reinterpret_cast::<u8>() as Ptr<u8>)
-            .offset(((*(*n.borrow()).upgrade().deref()).pos) as isize)),
+            .offset((((*(*n.borrow()).upgrade().deref()).pos) as isize))),
     ));
     assert!(((((((*q.borrow()).read()) as i32) == 20) as i32) != 0));
     (*q.borrow()).write(187_u8);

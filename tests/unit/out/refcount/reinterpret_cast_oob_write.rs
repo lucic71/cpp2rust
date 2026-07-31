@@ -12,6 +12,6 @@ pub fn main() {
 fn main_0() -> i32 {
     let val: Value<u32> = Rc::new(RefCell::new(67305985_u32));
     let bytes: Value<Ptr<u8>> = Rc::new(RefCell::new((val.as_pointer()).reinterpret_cast::<u8>()));
-    (*bytes.borrow()).offset((4) as isize).write(255_u8);
+    (*bytes.borrow()).offset(((4) as isize)).write(255_u8);
     return 0;
 }

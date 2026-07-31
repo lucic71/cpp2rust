@@ -16,8 +16,8 @@ fn main_0() -> i32 {
     (*(*g.borrow()).as_ref().unwrap().borrow_mut())[(0_usize) as usize] = 11;
     (*(*g.borrow()).as_ref().unwrap().borrow_mut())[(1_usize) as usize] = 12;
     let g_ptr: Value<Ptr<i32>> = Rc::new(RefCell::new((*g.borrow()).as_pointer()));
-    (*g_ptr.borrow()).offset((0) as isize).write(13);
-    (*g_ptr.borrow()).offset((1) as isize).write(14);
+    (*g_ptr.borrow()).offset(((0) as isize)).write(13);
+    (*g_ptr.borrow()).offset(((1) as isize)).write(14);
     return ((*(*g.borrow()).as_ref().unwrap().borrow())[(0_usize) as usize]
         + (*(*g.borrow()).as_ref().unwrap().borrow())[(1_usize) as usize]);
 }

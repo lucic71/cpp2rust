@@ -10,8 +10,11 @@ use std::rc::{Rc, Weak};
 pub struct Item {
     pub value: i32,
 }
-impl Item {
-    pub fn foo(&self, other: Ptr<Item>) {
+pub trait ItemMethods {
+    fn foo(&self, other: Ptr<Item>);
+}
+impl ItemMethods for Ptr<Item> {
+    fn foo(&self, other: Ptr<Item>) {
         let other: Value<Ptr<Item>> = Rc::new(RefCell::new(other));
         (*other.borrow()).with_mut(|__v| __v.value = 10);
     }
@@ -45,18 +48,18 @@ fn main_0() -> i32 {
             .collect::<Box<[Item]>>(),
     )));
     (*arr.borrow())
-        .offset((0) as isize)
+        .offset(((0) as isize))
         .with_mut(|__v| __v.value = 1);
     (*arr.borrow())
-        .offset((1) as isize)
+        .offset(((1) as isize))
         .with_mut(|__v| __v.value = 2);
     ({
-        let _other: Ptr<Item> = ((*arr.borrow()).offset((1) as isize));
-        (*(*arr.borrow()).offset((0) as isize).upgrade().deref()).foo(_other)
+        let _other: Ptr<Item> = ((*arr.borrow()).offset(((1) as isize)));
+        (*arr.borrow()).offset(((0) as isize)).foo(_other)
     });
     let result: Value<i32> = Rc::new(RefCell::new(
-        ((*(*arr.borrow()).offset((0) as isize).upgrade().deref()).value
-            + (*(*arr.borrow()).offset((1) as isize).upgrade().deref()).value),
+        ((*(*arr.borrow()).offset(((0) as isize)).upgrade().deref()).value
+            + (*(*arr.borrow()).offset(((1) as isize)).upgrade().deref()).value),
     ));
     (*arr.borrow()).delete_array();
     return (*result.borrow());

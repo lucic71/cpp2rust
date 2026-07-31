@@ -12,14 +12,14 @@ pub fn main() {
 fn main_0() -> i32 {
     let arr: Value<Box<[i32]>> = Rc::new(RefCell::new(Box::new([10, 11, 12, 13, 14, 15, 16, 17])));
     let p: Value<Ptr<i32>> = Rc::new(RefCell::new((arr.as_pointer() as Ptr<i32>)));
-    let q: Value<Ptr<i32>> = Rc::new(RefCell::new((*p.borrow()).offset((1) as isize)));
+    let q: Value<Ptr<i32>> = Rc::new(RefCell::new((*p.borrow()).offset(((1) as isize))));
     assert!((((*q.borrow()).read()) == 11));
-    let r: Value<Ptr<i32>> = Rc::new(RefCell::new((*p.borrow()).offset((3) as isize)));
+    let r: Value<Ptr<i32>> = Rc::new(RefCell::new((*p.borrow()).offset(((3) as isize))));
     assert!((((*r.borrow()).read()) == 13));
     let s: Value<Ptr<i32>> = Rc::new(RefCell::new((*r.borrow()).offset(-((2) as isize))));
     assert!((((*s.borrow()).read()) == 11));
     let diff: Value<i64> = Rc::new(RefCell::new(
-        ((*r.borrow()).clone() - (*p.borrow()).clone()) as i64,
+        (((*r.borrow()).clone() - (*p.borrow()).clone()) as i64),
     ));
     assert!(((*diff.borrow()) == 3_i64));
     let idx: Value<usize> = Rc::new(RefCell::new(
@@ -46,17 +46,19 @@ fn main_0() -> i32 {
     assert!((((*q3.borrow()).read()) == 12));
     let step: Value<usize> = Rc::new(RefCell::new(2_usize));
     let q4: Value<Ptr<i32>> = Rc::new(RefCell::new(
-        (*p.borrow()).offset((*step.borrow()) as isize),
+        (*p.borrow()).offset(((*step.borrow()) as isize)),
     ));
     assert!((((*q4.borrow()).read()) == 12));
-    let v: Value<i32> = Rc::new(RefCell::new(((*p.borrow()).offset((3) as isize).read())));
+    let v: Value<i32> = Rc::new(RefCell::new(((*p.borrow()).offset(((3) as isize)).read())));
     assert!(((*v.borrow()) == 13));
-    let v2: Value<i32> = Rc::new(RefCell::new((((*p.borrow()).offset((4) as isize)).read())));
+    let v2: Value<i32> = Rc::new(RefCell::new(
+        (((*p.borrow()).offset(((4) as isize))).read()),
+    ));
     assert!(((*v2.borrow()) == 14));
-    ((*p.borrow()).offset((5) as isize)).write(99);
-    assert!((((*p.borrow()).offset((5) as isize).read()) == 99));
+    ((*p.borrow()).offset(((5) as isize))).write(99);
+    assert!((((*p.borrow()).offset(((5) as isize)).read()) == 99));
     assert!(((*arr.borrow())[(5) as usize] == 99));
-    let end: Value<Ptr<i32>> = Rc::new(RefCell::new((*p.borrow()).offset((8) as isize)));
+    let end: Value<Ptr<i32>> = Rc::new(RefCell::new((*p.borrow()).offset(((8) as isize))));
     let sum: Value<i32> = Rc::new(RefCell::new(0));
     let it: Value<Ptr<i32>> = Rc::new(RefCell::new((*p.borrow()).clone()));
     'loop_: while {
@@ -72,22 +74,22 @@ fn main_0() -> i32 {
         0_u8, 1_u8, 2_u8, 3_u8, 4_u8, 5_u8, 6_u8, 7_u8,
     ])));
     let bp: Value<Ptr<u8>> = Rc::new(RefCell::new((bytes.as_pointer() as Ptr<u8>)));
-    let bq: Value<Ptr<u8>> = Rc::new(RefCell::new((*bp.borrow()).offset((4) as isize)));
+    let bq: Value<Ptr<u8>> = Rc::new(RefCell::new((*bp.borrow()).offset(((4) as isize))));
     assert!(((((*bq.borrow()).read()) as i32) == 4));
     let bdiff: Value<i64> = Rc::new(RefCell::new(
-        ((*bq.borrow()).clone() - (*bp.borrow()).clone()) as i64,
+        (((*bq.borrow()).clone() - (*bp.borrow()).clone()) as i64),
     ));
     assert!(((*bdiff.borrow()) == 4_i64));
     let cp: Value<Ptr<i32>> = Rc::new(RefCell::new((arr.as_pointer() as Ptr<i32>)));
-    let cq: Value<Ptr<i32>> = Rc::new(RefCell::new((*cp.borrow()).offset((2) as isize)));
+    let cq: Value<Ptr<i32>> = Rc::new(RefCell::new((*cp.borrow()).offset(((2) as isize))));
     assert!((((*cq.borrow()).read()) == 12));
     let cdiff: Value<i64> = Rc::new(RefCell::new(
-        ((*cq.borrow()).clone() - (*cp.borrow()).clone()) as i64,
+        (((*cq.borrow()).clone() - (*cp.borrow()).clone()) as i64),
     ));
     assert!(((*cdiff.borrow()) == 2_i64));
     let n: Value<usize> = Rc::new(RefCell::new(3_usize));
     let q5: Value<Ptr<i32>> = Rc::new(RefCell::new(
-        (arr.as_pointer() as Ptr<i32>).offset((*n.borrow()) as isize),
+        (arr.as_pointer() as Ptr<i32>).offset(((*n.borrow()) as isize)),
     ));
     assert!((((*q5.borrow()).read()) == 13));
     let q6: Value<Ptr<i32>> = Rc::new(RefCell::new(
@@ -109,7 +111,7 @@ fn main_0() -> i32 {
             .as_pointer()) as Ptr<i32>)
             .offset(0)),
     ));
-    assert!((((*row1.borrow()).offset((2) as isize).read()) == 6));
+    assert!((((*row1.borrow()).offset(((2) as isize)).read()) == 6));
     let back: Value<Ptr<i32>> = Rc::new(RefCell::new((*end.borrow()).offset(-((1) as isize))));
     assert!((((*back.borrow()).read()) == 17));
     return 0;

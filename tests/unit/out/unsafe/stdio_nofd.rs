@@ -38,7 +38,7 @@ pub unsafe fn test_fputc_fputs_0() {
     ];
     assert!(
         ((((libcc2rs::fread_unsafe(
-            (buf.as_mut_ptr() as *mut libc::c_char as *mut ::libc::c_void),
+            ((buf.as_mut_ptr() as *mut libc::c_char) as *mut ::libc::c_void),
             1_usize,
             16_usize,
             fp
@@ -48,11 +48,11 @@ pub unsafe fn test_fputc_fputs_0() {
     assert!(
         (((({
             let sa = core::slice::from_raw_parts(
-                (buf.as_mut_ptr() as *const libc::c_char as *const ::libc::c_void) as *const u8,
+                ((buf.as_mut_ptr() as *const libc::c_char) as *const ::libc::c_void) as *const u8,
                 5_usize as usize,
             );
             let sb = core::slice::from_raw_parts(
-                (c"ABCD\n".as_ptr().cast_mut() as *const libc::c_char as *const ::libc::c_void)
+                ((c"ABCD\n".as_ptr().cast_mut() as *const libc::c_char) as *const ::libc::c_void)
                     as *const u8,
                 5_usize as usize,
             );
@@ -93,11 +93,11 @@ pub unsafe fn test_fgets_getc_2() {
     assert!(
         (((({
             let sa = core::slice::from_raw_parts(
-                (buf.as_mut_ptr() as *const libc::c_char as *const ::libc::c_void) as *const u8,
+                ((buf.as_mut_ptr() as *const libc::c_char) as *const ::libc::c_void) as *const u8,
                 7_usize as usize,
             );
             let sb = core::slice::from_raw_parts(
-                (c"line1\n".as_ptr().cast_mut() as *const libc::c_char as *const ::libc::c_void)
+                ((c"line1\n".as_ptr().cast_mut() as *const libc::c_char) as *const ::libc::c_void)
                     as *const u8,
                 7_usize as usize,
             );
@@ -117,11 +117,11 @@ pub unsafe fn test_fgets_getc_2() {
     assert!(
         (((({
             let sa = core::slice::from_raw_parts(
-                (buf.as_mut_ptr() as *const libc::c_char as *const ::libc::c_void) as *const u8,
+                ((buf.as_mut_ptr() as *const libc::c_char) as *const ::libc::c_void) as *const u8,
                 4_usize as usize,
             );
             let sb = core::slice::from_raw_parts(
-                (c"ine".as_ptr().cast_mut() as *const libc::c_char as *const ::libc::c_void)
+                ((c"ine".as_ptr().cast_mut() as *const libc::c_char) as *const ::libc::c_void)
                     as *const u8,
                 4_usize as usize,
             );
@@ -140,11 +140,11 @@ pub unsafe fn test_fgets_getc_2() {
     assert!(
         (((({
             let sa = core::slice::from_raw_parts(
-                (buf.as_mut_ptr() as *const libc::c_char as *const ::libc::c_void) as *const u8,
+                ((buf.as_mut_ptr() as *const libc::c_char) as *const ::libc::c_void) as *const u8,
                 3_usize as usize,
             );
             let sb = core::slice::from_raw_parts(
-                (c"2\n".as_ptr().cast_mut() as *const libc::c_char as *const ::libc::c_void)
+                ((c"2\n".as_ptr().cast_mut() as *const libc::c_char) as *const ::libc::c_void)
                     as *const u8,
                 3_usize as usize,
             );
@@ -187,7 +187,7 @@ pub unsafe fn test_freopen_3() {
     ];
     assert!(
         ((((libcc2rs::fread_unsafe(
-            (buf.as_mut_ptr() as *mut libc::c_char as *mut ::libc::c_void),
+            ((buf.as_mut_ptr() as *mut libc::c_char) as *mut ::libc::c_void),
             1_usize,
             8_usize,
             fp2
@@ -197,11 +197,11 @@ pub unsafe fn test_freopen_3() {
     assert!(
         (((({
             let sa = core::slice::from_raw_parts(
-                (buf.as_mut_ptr() as *const libc::c_char as *const ::libc::c_void) as *const u8,
+                ((buf.as_mut_ptr() as *const libc::c_char) as *const ::libc::c_void) as *const u8,
                 5_usize as usize,
             );
             let sb = core::slice::from_raw_parts(
-                (c"hello".as_ptr().cast_mut() as *const libc::c_char as *const ::libc::c_void)
+                ((c"hello".as_ptr().cast_mut() as *const libc::c_char) as *const ::libc::c_void)
                     as *const u8,
                 5_usize as usize,
             );
@@ -244,7 +244,7 @@ pub unsafe fn test_fseeko_4() {
     ];
     assert!(
         ((((libcc2rs::fread_unsafe(
-            (buf.as_mut_ptr() as *mut libc::c_char as *mut ::libc::c_void),
+            ((buf.as_mut_ptr() as *mut libc::c_char) as *mut ::libc::c_void),
             1_usize,
             5_usize,
             fp
@@ -254,11 +254,11 @@ pub unsafe fn test_fseeko_4() {
     assert!(
         (((({
             let sa = core::slice::from_raw_parts(
-                (buf.as_mut_ptr() as *const libc::c_char as *const ::libc::c_void) as *const u8,
+                ((buf.as_mut_ptr() as *const libc::c_char) as *const ::libc::c_void) as *const u8,
                 5_usize as usize,
             );
             let sb = core::slice::from_raw_parts(
-                (c"world".as_ptr().cast_mut() as *const libc::c_char as *const ::libc::c_void)
+                ((c"world".as_ptr().cast_mut() as *const libc::c_char) as *const ::libc::c_void)
                     as *const u8,
                 5_usize as usize,
             );

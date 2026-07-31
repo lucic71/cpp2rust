@@ -199,7 +199,7 @@ unsafe fn main_0() -> i32 {
         )) == (0)) as i32)
             != 0)
     );
-    buf[(0) as usize] = (('Z' as i32) as libc::c_char);
+    buf[((0) as usize)] = (('Z' as i32) as libc::c_char);
     assert!(
         ((((unsafe {
             libc::snprintf(
@@ -211,14 +211,14 @@ unsafe fn main_0() -> i32 {
         }) == (3)) as i32)
             != 0)
     );
-    assert!(((((buf[(0) as usize] as i32) == ('Z' as i32)) as i32) != 0));
+    assert!(((((buf[((0) as usize)] as i32) == ('Z' as i32)) as i32) != 0));
     let mut fmt: [libc::c_char; 8] = [(0 as libc::c_char); 8];
-    fmt[(0) as usize] = (('%' as i32) as libc::c_char);
-    fmt[(1) as usize] = (('5' as i32) as libc::c_char);
-    fmt[(2) as usize] = (('.' as i32) as libc::c_char);
-    fmt[(3) as usize] = (('1' as i32) as libc::c_char);
-    fmt[(4) as usize] = (('f' as i32) as libc::c_char);
-    fmt[(5) as usize] = (0 as libc::c_char);
+    fmt[((0) as usize)] = (('%' as i32) as libc::c_char);
+    fmt[((1) as usize)] = (('5' as i32) as libc::c_char);
+    fmt[((2) as usize)] = (('.' as i32) as libc::c_char);
+    fmt[((3) as usize)] = (('1' as i32) as libc::c_char);
+    fmt[((4) as usize)] = (('f' as i32) as libc::c_char);
+    fmt[((5) as usize)] = (0 as libc::c_char);
     assert!(
         ((((unsafe {
             libc::snprintf(

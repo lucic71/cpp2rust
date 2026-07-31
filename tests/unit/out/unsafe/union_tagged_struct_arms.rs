@@ -88,7 +88,7 @@ unsafe fn main_0() -> i32 {
     p_list.v.list.cursor = 1_i64;
     assert!(((((p_list.v.list.count) == (3_i64)) as i32) != 0));
     assert!(
-        (((((*(*p_list.v.list.items.offset((1) as isize)).offset((0) as isize)) as i32)
+        (((((*(*p_list.v.list.items.offset(((1) as isize))).offset(((0) as isize))) as i32)
             == ('b' as i32)) as i32)
             != 0)
     );

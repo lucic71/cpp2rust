@@ -11,7 +11,7 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     let element: Value<Ptr<i32>> = Rc::new(RefCell::new(Ptr::alloc(10)));
-    let ptr: Value<Ptr<i32>> = Rc::new(RefCell::new((*element.borrow()).offset((1) as isize)));
+    let ptr: Value<Ptr<i32>> = Rc::new(RefCell::new((*element.borrow()).offset(((1) as isize))));
     let out: Value<i32> = Rc::new(RefCell::new(((*ptr.borrow()).read())));
     (*element.borrow()).delete();
     return (*out.borrow());

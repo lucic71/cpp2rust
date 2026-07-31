@@ -108,14 +108,14 @@ fn main_0() -> i32 {
     assert!((((({ sum_inner_0(((*outer.borrow()).u.inner()).clone(),) }) == 7) as i32) != 0));
     assert!(
         ((((((((*outer.borrow()).u.raw_().reinterpret_cast::<u8>() as Ptr::<u8>)
-            .offset((0) as isize)
+            .offset(((0) as isize))
             .read()) as u8) as i32)
             == 3) as i32)
             != 0)
     );
     assert!(
         ((((((((*outer.borrow()).u.raw_().reinterpret_cast::<u8>() as Ptr::<u8>)
-            .offset((4) as isize)
+            .offset(((4) as isize))
             .read()) as u8) as i32)
             == 4) as i32)
             != 0)

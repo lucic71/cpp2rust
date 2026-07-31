@@ -28,11 +28,13 @@ fn main_0() -> i32 {
         let i: Value<i32> = Rc::new(RefCell::new(0));
         'loop_: while ((((*i.borrow()) < 4) as i32) != 0) {
             let __rhs = ((*i.borrow()) * 10);
-            (*arr.borrow()).offset((*i.borrow()) as isize).write(__rhs);
+            (*arr.borrow())
+                .offset(((*i.borrow()) as isize))
+                .write(__rhs);
             (*i.borrow_mut()).postfix_inc();
         }
-        assert!((((((*arr.borrow()).offset((0) as isize).read()) == 0) as i32) != 0));
-        assert!((((((*arr.borrow()).offset((3) as isize).read()) == 30) as i32) != 0));
+        assert!((((((*arr.borrow()).offset(((0) as isize)).read()) == 0) as i32) != 0));
+        assert!((((((*arr.borrow()).offset(((3) as isize)).read()) == 30) as i32) != 0));
         libcc2rs::free_refcount(((*arr.borrow()).clone() as Ptr<i32>).to_any());
         let grow: Value<Ptr<i32>> = Rc::new(RefCell::new(
             libcc2rs::malloc_refcount(
@@ -40,20 +42,20 @@ fn main_0() -> i32 {
             )
             .reinterpret_cast::<i32>(),
         ));
-        (*grow.borrow()).offset((0) as isize).write(1);
-        (*grow.borrow()).offset((1) as isize).write(2);
+        (*grow.borrow()).offset(((0) as isize)).write(1);
+        (*grow.borrow()).offset(((1) as isize)).write(2);
         let __rhs = libcc2rs::realloc_refcount(
             ((*grow.borrow()).clone() as Ptr<i32>).to_any(),
             (4_usize).wrapping_mul((::std::mem::size_of::<i32>() as usize)),
         )
         .reinterpret_cast::<i32>();
         (*grow.borrow_mut()) = __rhs;
-        (*grow.borrow()).offset((2) as isize).write(3);
-        (*grow.borrow()).offset((3) as isize).write(4);
-        assert!((((((*grow.borrow()).offset((0) as isize).read()) == 1) as i32) != 0));
-        assert!((((((*grow.borrow()).offset((1) as isize).read()) == 2) as i32) != 0));
-        assert!((((((*grow.borrow()).offset((2) as isize).read()) == 3) as i32) != 0));
-        assert!((((((*grow.borrow()).offset((3) as isize).read()) == 4) as i32) != 0));
+        (*grow.borrow()).offset(((2) as isize)).write(3);
+        (*grow.borrow()).offset(((3) as isize)).write(4);
+        assert!((((((*grow.borrow()).offset(((0) as isize)).read()) == 1) as i32) != 0));
+        assert!((((((*grow.borrow()).offset(((1) as isize)).read()) == 2) as i32) != 0));
+        assert!((((((*grow.borrow()).offset(((2) as isize)).read()) == 3) as i32) != 0));
+        assert!((((((*grow.borrow()).offset(((3) as isize)).read()) == 4) as i32) != 0));
         libcc2rs::free_refcount(((*grow.borrow()).clone() as Ptr<i32>).to_any());
         let zeros: Value<Ptr<i32>> = Rc::new(RefCell::new(
             libcc2rs::calloc_refcount(4_usize, ::std::mem::size_of::<i32>())
@@ -62,7 +64,7 @@ fn main_0() -> i32 {
         let i: Value<i32> = Rc::new(RefCell::new(0));
         'loop_: while ((((*i.borrow()) < 4) as i32) != 0) {
             assert!(
-                (((((*zeros.borrow()).offset((*i.borrow()) as isize).read()) == 0) as i32) != 0)
+                (((((*zeros.borrow()).offset(((*i.borrow()) as isize)).read()) == 0) as i32) != 0)
             );
             (*i.borrow_mut()).postfix_inc();
         }
@@ -103,11 +105,13 @@ fn main_0() -> i32 {
         let i: Value<i32> = Rc::new(RefCell::new(0));
         'loop_: while ((((*i.borrow()) < 4) as i32) != 0) {
             let __rhs = ((*i.borrow()) * 10);
-            (*arr.borrow()).offset((*i.borrow()) as isize).write(__rhs);
+            (*arr.borrow())
+                .offset(((*i.borrow()) as isize))
+                .write(__rhs);
             (*i.borrow_mut()).postfix_inc();
         }
-        assert!((((((*arr.borrow()).offset((0) as isize).read()) == 0) as i32) != 0));
-        assert!((((((*arr.borrow()).offset((3) as isize).read()) == 30) as i32) != 0));
+        assert!((((((*arr.borrow()).offset(((0) as isize)).read()) == 0) as i32) != 0));
+        assert!((((((*arr.borrow()).offset(((3) as isize)).read()) == 30) as i32) != 0));
         ({ (*(*pfree.borrow()))(((*arr.borrow()).clone() as Ptr<i32>).to_any()) });
         let grow: Value<Ptr<i32>> = Rc::new(RefCell::new(
             ({
@@ -117,8 +121,8 @@ fn main_0() -> i32 {
             })
             .reinterpret_cast::<i32>(),
         ));
-        (*grow.borrow()).offset((0) as isize).write(1);
-        (*grow.borrow()).offset((1) as isize).write(2);
+        (*grow.borrow()).offset(((0) as isize)).write(1);
+        (*grow.borrow()).offset(((1) as isize)).write(2);
         let __rhs = ({
             (*(*prealloc.borrow()))(
                 ((*grow.borrow()).clone() as Ptr<i32>).to_any(),
@@ -127,12 +131,12 @@ fn main_0() -> i32 {
         })
         .reinterpret_cast::<i32>();
         (*grow.borrow_mut()) = __rhs;
-        (*grow.borrow()).offset((2) as isize).write(3);
-        (*grow.borrow()).offset((3) as isize).write(4);
-        assert!((((((*grow.borrow()).offset((0) as isize).read()) == 1) as i32) != 0));
-        assert!((((((*grow.borrow()).offset((1) as isize).read()) == 2) as i32) != 0));
-        assert!((((((*grow.borrow()).offset((2) as isize).read()) == 3) as i32) != 0));
-        assert!((((((*grow.borrow()).offset((3) as isize).read()) == 4) as i32) != 0));
+        (*grow.borrow()).offset(((2) as isize)).write(3);
+        (*grow.borrow()).offset(((3) as isize)).write(4);
+        assert!((((((*grow.borrow()).offset(((0) as isize)).read()) == 1) as i32) != 0));
+        assert!((((((*grow.borrow()).offset(((1) as isize)).read()) == 2) as i32) != 0));
+        assert!((((((*grow.borrow()).offset(((2) as isize)).read()) == 3) as i32) != 0));
+        assert!((((((*grow.borrow()).offset(((3) as isize)).read()) == 4) as i32) != 0));
         ({ (*(*pfree.borrow()))(((*grow.borrow()).clone() as Ptr<i32>).to_any()) });
         let zeros: Value<Ptr<i32>> = Rc::new(RefCell::new(
             ({ (*(*pcalloc.borrow()))(4_usize, ::std::mem::size_of::<i32>()) })
@@ -141,7 +145,7 @@ fn main_0() -> i32 {
         let i: Value<i32> = Rc::new(RefCell::new(0));
         'loop_: while ((((*i.borrow()) < 4) as i32) != 0) {
             assert!(
-                (((((*zeros.borrow()).offset((*i.borrow()) as isize).read()) == 0) as i32) != 0)
+                (((((*zeros.borrow()).offset(((*i.borrow()) as isize)).read()) == 0) as i32) != 0)
             );
             (*i.borrow_mut()).postfix_inc();
         }

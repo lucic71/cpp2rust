@@ -64,20 +64,20 @@ pub fn main() {
 unsafe fn main_0() -> i32 {
     let mut ex: Outer = <Outer>::default();
     {
-        let byte_0 = ((&mut ex as *mut Outer) as *mut Outer as *mut ::libc::c_void) as *mut u8;
+        let byte_0 = (((&mut ex as *mut Outer) as *mut Outer) as *mut ::libc::c_void) as *mut u8;
         for offset in 0..::std::mem::size_of::<Outer>() {
             *byte_0.offset(offset as isize) = 0 as u8;
         }
-        ((&mut ex as *mut Outer) as *mut Outer as *mut ::libc::c_void)
+        (((&mut ex as *mut Outer) as *mut Outer) as *mut ::libc::c_void)
     };
     ex.kind = 2;
     ex.level = 1;
     ex.variant = 6;
     ex.len = (::std::mem::size_of::<record>() as u32);
     ex.body.h.code = 2_u16;
-    ex.body.h.pad[(0) as usize] = (('X' as i32) as libc::c_char);
+    ex.body.h.pad[((0) as usize)] = (('X' as i32) as libc::c_char);
     assert!(((((ex.body.h.code as i32) == (2)) as i32) != 0));
-    assert!(((((ex.body.h.pad[(0) as usize] as i32) == ('X' as i32)) as i32) != 0));
+    assert!(((((ex.body.h.pad[((0) as usize)] as i32) == ('X' as i32)) as i32) != 0));
     assert!(((((ex.body.nested.view.h.code as i32) == (2)) as i32) != 0));
     return 0;
 }

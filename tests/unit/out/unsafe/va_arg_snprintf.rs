@@ -15,7 +15,7 @@ pub unsafe fn extract_first_0(
     let mut ap: VaList = VaList::default();
     ap = VaList::new(__args);
     let mut n: i32 = ap.arg::<i32>();
-    (*buf.offset((0) as isize)) = (n as libc::c_char);
+    (*buf.offset(((0) as isize))) = (n as libc::c_char);
     return n;
 }
 pub fn main() {
@@ -36,7 +36,7 @@ unsafe fn main_0() -> i32 {
         }) == (42)) as i32)
             != 0)
     );
-    assert!(((((buf[(0) as usize] as i32) == (42)) as i32) != 0));
+    assert!(((((buf[((0) as usize)] as i32) == (42)) as i32) != 0));
     assert!(
         ((((unsafe {
             extract_first_0(
@@ -48,6 +48,6 @@ unsafe fn main_0() -> i32 {
         }) == (65)) as i32)
             != 0)
     );
-    assert!(((((buf[(0) as usize] as i32) == ('A' as i32)) as i32) != 0));
+    assert!(((((buf[((0) as usize)] as i32) == ('A' as i32)) as i32) != 0));
     return 0;
 }

@@ -25,18 +25,18 @@ pub fn main() {
 }
 unsafe fn main_0() -> i32 {
     let mut a: *const libc::c_char = (unsafe { get_greeting_0() });
-    assert!((((*a.offset((0) as isize)) as i32) == (('h' as libc::c_char) as i32)));
-    assert!((((*a.offset((4) as isize)) as i32) == (('o' as libc::c_char) as i32)));
-    assert!((((*a.offset((5) as isize)) as i32) == (('\0' as libc::c_char) as i32)));
+    assert!((((*a.offset(((0) as isize))) as i32) == (('h' as libc::c_char) as i32)));
+    assert!((((*a.offset(((4) as isize))) as i32) == (('o' as libc::c_char) as i32)));
+    assert!((((*a.offset(((5) as isize))) as i32) == (('\0' as libc::c_char) as i32)));
     let mut b: *const libc::c_char = (unsafe { get_empty_1() });
-    assert!((((*b.offset((0) as isize)) as i32) == (('\0' as libc::c_char) as i32)));
+    assert!((((*b.offset(((0) as isize))) as i32) == (('\0' as libc::c_char) as i32)));
     let mut c: *const libc::c_char = (unsafe { get_branch_2(1) });
-    assert!((((*c.offset((0) as isize)) as i32) == (('p' as libc::c_char) as i32)));
-    assert!((((*c.offset((7) as isize)) as i32) == (('e' as libc::c_char) as i32)));
-    assert!((((*c.offset((8) as isize)) as i32) == (('\0' as libc::c_char) as i32)));
+    assert!((((*c.offset(((0) as isize))) as i32) == (('p' as libc::c_char) as i32)));
+    assert!((((*c.offset(((7) as isize))) as i32) == (('e' as libc::c_char) as i32)));
+    assert!((((*c.offset(((8) as isize))) as i32) == (('\0' as libc::c_char) as i32)));
     let mut d: *const libc::c_char = (unsafe { get_branch_2(-1_i32) });
-    assert!((((*d.offset((0) as isize)) as i32) == (('n' as libc::c_char) as i32)));
-    assert!((((*d.offset((11) as isize)) as i32) == (('e' as libc::c_char) as i32)));
-    assert!((((*d.offset((12) as isize)) as i32) == (('\0' as libc::c_char) as i32)));
+    assert!((((*d.offset(((0) as isize))) as i32) == (('n' as libc::c_char) as i32)));
+    assert!((((*d.offset(((11) as isize))) as i32) == (('e' as libc::c_char) as i32)));
+    assert!((((*d.offset(((12) as isize))) as i32) == (('\0' as libc::c_char) as i32)));
     return 0;
 }

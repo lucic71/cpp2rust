@@ -47,7 +47,7 @@ unsafe fn main_0() -> i32 {
     x4.prefix_inc();
     assert!(((x3) == (3.0E+0)));
     assert!(((x4) == (4.0E+0)));
-    let reference: *mut i32 = &mut x1 as *mut i32;
+    let reference: *mut i32 = (&mut x1 as *mut i32);
     let mut x5: i32 = (*reference);
     x5.prefix_inc();
     assert!(((*reference) == (1)));
@@ -63,7 +63,7 @@ unsafe fn main_0() -> i32 {
     assert!(((*other_pointer) == (*pointer)));
     let mut f1: Foo = Foo {
         x: 1,
-        y: &mut x1 as *mut i32,
+        y: (&mut x1 as *mut i32),
         z: (&mut x1 as *mut i32),
         a: [0, 1, 2],
         bar: Bar { w: 10 },
@@ -86,15 +86,15 @@ unsafe fn main_0() -> i32 {
     assert!(((*f1.y) == (4)));
     assert!(((f1.z) == (&mut x1 as *mut i32)));
     assert!(((*f1.z) == (4)));
-    f2.a[(0) as usize].prefix_inc();
-    f2.a[(1) as usize].prefix_inc();
-    f2.a[(2) as usize].prefix_inc();
-    assert!(((f2.a[(0) as usize]) == (1)));
-    assert!(((f2.a[(1) as usize]) == (2)));
-    assert!(((f2.a[(2) as usize]) == (3)));
-    assert!(((f1.a[(0) as usize]) == (0)));
-    assert!(((f1.a[(1) as usize]) == (1)));
-    assert!(((f1.a[(2) as usize]) == (2)));
+    f2.a[((0) as usize)].prefix_inc();
+    f2.a[((1) as usize)].prefix_inc();
+    f2.a[((2) as usize)].prefix_inc();
+    assert!(((f2.a[((0) as usize)]) == (1)));
+    assert!(((f2.a[((1) as usize)]) == (2)));
+    assert!(((f2.a[((2) as usize)]) == (3)));
+    assert!(((f1.a[((0) as usize)]) == (0)));
+    assert!(((f1.a[((1) as usize)]) == (1)));
+    assert!(((f1.a[((2) as usize)]) == (2)));
     f2.bar.w = 20;
     assert!(((f2.bar.w) == (20)));
     assert!(((f1.bar.w) == (10)));

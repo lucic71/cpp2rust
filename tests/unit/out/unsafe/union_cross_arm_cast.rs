@@ -67,11 +67,11 @@ unsafe fn main_0() -> i32 {
     let mut c: Container = <Container>::default();
     {
         let byte_0 =
-            ((&mut c as *mut Container) as *mut Container as *mut ::libc::c_void) as *mut u8;
+            (((&mut c as *mut Container) as *mut Container) as *mut ::libc::c_void) as *mut u8;
         for offset in 0..::std::mem::size_of::<Container>() {
             *byte_0.offset(offset as isize) = 0 as u8;
         }
-        ((&mut c as *mut Container) as *mut Container as *mut ::libc::c_void)
+        (((&mut c as *mut Container) as *mut Container) as *mut ::libc::c_void)
     };
     c.u.a.code = 10_u16;
     c.len = (::std::mem::size_of::<shape_b>() as u32);
@@ -81,12 +81,14 @@ unsafe fn main_0() -> i32 {
     assert!(((((c.u.b.code as i32) == (10)) as i32) != 0));
     c.u.b.lo = 8080_u16;
     assert!(
-        (((((*((&mut c.u.raw_ as *mut [libc::c_char; 64]) as *mut u8).offset((2) as isize)) as i32)
+        (((((*((&mut c.u.raw_ as *mut [libc::c_char; 64]) as *mut u8).offset(((2) as isize)))
+            as i32)
             == (144)) as i32)
             != 0)
     );
     assert!(
-        (((((*((&mut c.u.raw_ as *mut [libc::c_char; 64]) as *mut u8).offset((3) as isize)) as i32)
+        (((((*((&mut c.u.raw_ as *mut [libc::c_char; 64]) as *mut u8).offset(((3) as isize)))
+            as i32)
             == (31)) as i32)
             != 0)
     );

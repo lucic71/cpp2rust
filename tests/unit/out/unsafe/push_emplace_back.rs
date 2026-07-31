@@ -37,7 +37,7 @@ pub unsafe fn push_local_from_field_1(mut jpg: *mut JPEGData, mut cond: bool) {
     (*dest).push(
         core::slice::from_raw_parts(
             head.as_mut_ptr(),
-            (head.as_mut_ptr().offset((3) as isize)).offset_from(head.as_mut_ptr()) as usize,
+            (head.as_mut_ptr().offset(((3) as isize))).offset_from(head.as_mut_ptr()) as usize,
         )
         .iter()
         .map(|x| u8::try_from(x.clone()).ok().unwrap())
@@ -61,7 +61,7 @@ pub unsafe fn emplace_local_from_field_4(mut jpg: *mut JPEGData, mut cond: bool)
     (*dest).push(
         core::slice::from_raw_parts(
             head.as_mut_ptr(),
-            (head.as_mut_ptr().offset((3) as isize)).offset_from(head.as_mut_ptr()) as usize,
+            (head.as_mut_ptr().offset(((3) as isize))).offset_from(head.as_mut_ptr()) as usize,
         )
         .iter()
         .map(|x| u8::try_from(x.clone()).ok().unwrap())

@@ -92,9 +92,9 @@ unsafe fn main_0() -> i32 {
     assert!(
         ((((unsafe {
             let _ctx: *mut ::libc::c_void =
-                ((&mut dummy as *mut i32) as *mut i32 as *mut ::libc::c_void);
+                (((&mut dummy as *mut i32) as *mut i32) as *mut ::libc::c_void);
             let _extra: *mut ::libc::c_void =
-                ((&mut dummy as *mut i32) as *mut i32 as *mut ::libc::c_void);
+                (((&mut dummy as *mut i32) as *mut i32) as *mut ::libc::c_void);
             not_supported_5(_ctx, Some(square_0), _extra)
         }) == (-3_i32)) as i32)
             != 0)

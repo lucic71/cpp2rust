@@ -14,10 +14,10 @@ pub fn main() {
 unsafe fn main_0() -> i32 {
     let mut val: u32 = 0_u32;
     let mut bytes: *mut u8 = ((&mut val as *mut u32) as *mut u8);
-    (*bytes.offset((0) as isize)) = 239_u8;
-    (*bytes.offset((1) as isize)) = 190_u8;
-    (*bytes.offset((2) as isize)) = 173_u8;
-    (*bytes.offset((3) as isize)) = 222_u8;
+    (*bytes.offset(((0) as isize))) = 239_u8;
+    (*bytes.offset(((1) as isize))) = 190_u8;
+    (*bytes.offset(((2) as isize))) = 173_u8;
+    (*bytes.offset(((3) as isize))) = 222_u8;
     assert!(((val) == (3735928559_u32)));
     return 0;
 }

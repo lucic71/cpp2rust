@@ -123,7 +123,7 @@ fn main_0() -> i32 {
         .write(Ptr::from_string_literal(b"hello"));
     assert!(
         (((((((*c.borrow()).payload.text().read())
-            .offset((0) as isize)
+            .offset(((0) as isize))
             .read()) as i32)
             == ('h' as i32)) as i32)
             != 0)

@@ -17,7 +17,7 @@ unsafe fn main_0() -> i32 {
     {
         let mut outptr = output.as_mut_ptr().clone();
         let mut curr = input.as_mut_ptr().clone();
-        while curr < input.as_mut_ptr().offset((3) as isize) {
+        while curr < input.as_mut_ptr().offset(((3) as isize)) {
             *outptr = (*curr).clone().into();
             curr = curr.offset(1);
             outptr = outptr.offset(1);

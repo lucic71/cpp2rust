@@ -17,12 +17,12 @@ unsafe fn main_0() -> i32 {
     (*p) += 1;
     if ((x) == (2)) {
         let mut a: [i32; 2] = [1, 2];
-        p = (&mut a[(1) as usize] as *mut i32);
+        p = (&mut a[((1) as usize)] as *mut i32);
         (*p) += 1;
-        if ((a[(0) as usize]) == (1)) && ((a[(1) as usize]) == (3)) {
+        if ((a[((0) as usize)]) == (1)) && ((a[((1) as usize)]) == (3)) {
             p.prefix_dec();
             (*p) += 1;
-            if ((a[(0) as usize]) == (2)) && ((a[(1) as usize]) == (3)) {
+            if ((a[((0) as usize)]) == (2)) && ((a[((1) as usize)]) == (3)) {
                 p = (&mut x as *mut i32);
                 (*p) += 1;
                 if ((x) == (3)) {

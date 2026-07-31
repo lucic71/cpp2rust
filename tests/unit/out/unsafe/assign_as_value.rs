@@ -19,7 +19,7 @@ unsafe fn main_0() -> i32 {
         p = (p).wrapping_add((1 as i32) as usize);
         p
     };
-    assert!(((((q) == (buf.as_mut_ptr().offset((1) as isize))) as i32) != 0));
+    assert!(((((q) == (buf.as_mut_ptr().offset(((1) as isize)))) as i32) != 0));
     let mut out: libc::c_char = (0 as libc::c_char);
     'switch: {
         let __match_cond = (({

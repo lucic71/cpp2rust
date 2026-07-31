@@ -40,13 +40,13 @@ fn main_0() -> i32 {
     'loop_: while (((*ptr.borrow()).read()) != 0) {
         let __rhs = ((*ptr.borrow()).read());
         (*out.borrow_mut()) += __rhs;
-        let __rhs = (*ptr.borrow()).offset((1) as isize);
+        let __rhs = (*ptr.borrow()).offset(((1) as isize));
         (*ptr.borrow_mut()) = __rhs;
     }
     let ptr: Value<Ptr<i32>> = Rc::new(RefCell::new(((arr.as_pointer() as Ptr<i32>).offset(0))));
     let i: Value<i32> = Rc::new(RefCell::new(0));
     'loop_: while ((*i.borrow()) < 5) {
-        let __rhs = ((*ptr.borrow()).offset((*i.borrow()) as isize).read());
+        let __rhs = ((*ptr.borrow()).offset(((*i.borrow()) as isize)).read());
         (*out.borrow_mut()) += __rhs;
         (*i.borrow_mut()).prefix_inc();
     }

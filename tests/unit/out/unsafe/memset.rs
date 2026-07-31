@@ -16,16 +16,16 @@ unsafe fn main_0() -> i32 {
     let mut arr: *mut i32 =
         Box::leak((0..(N as usize)).map(|_| 0_i32).collect::<Box<[i32]>>()).as_mut_ptr();
     {
-        let byte_0 = (arr as *mut i32 as *mut ::libc::c_void) as *mut u8;
+        let byte_0 = ((arr as *mut i32) as *mut ::libc::c_void) as *mut u8;
         for offset in 0..(::std::mem::size_of::<i32>() as usize).wrapping_mul((N as usize)) {
             *byte_0.offset(offset as isize) = 1 as u8;
         }
-        (arr as *mut i32 as *mut ::libc::c_void)
+        ((arr as *mut i32) as *mut ::libc::c_void)
     };
     let mut sum: i32 = 0;
     let mut i: i32 = 0;
     'loop_: while ((i) < (N)) {
-        sum += (*arr.offset((i) as isize));
+        sum += (*arr.offset(((i) as isize)));
         i.prefix_inc();
     }
     ::std::mem::drop(Box::from_raw(::std::slice::from_raw_parts_mut(

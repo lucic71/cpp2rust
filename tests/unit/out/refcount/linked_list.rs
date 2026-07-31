@@ -11,10 +11,13 @@ pub struct Node {
     pub val: i32,
     pub next: Ptr<Node>,
 }
-impl Node {
-    pub fn SetNext(&self, next: Ptr<Node>) {
+pub trait NodeMethods {
+    fn SetNext(&self, next: Ptr<Node>);
+}
+impl NodeMethods for Ptr<Node> {
+    fn SetNext(&self, next: Ptr<Node>) {
         let next: Value<Ptr<Node>> = Rc::new(RefCell::new(next));
-        self.next = (*next.borrow()).clone();
+        self.with_mut(|__v| __v.next = (*next.borrow()).clone());
     }
 }
 impl Clone for Node {
@@ -59,7 +62,7 @@ pub fn Append_1(head: Ptr<Node>, new_node: Ptr<Node>) {
         let __rhs = ((*(*curr.borrow()).upgrade().deref()).next).clone();
         (*curr.borrow_mut()) = __rhs;
     }
-    ({ (*(*curr.borrow()).upgrade().deref()).SetNext((new_node).clone()) });
+    ({ (*curr.borrow()).SetNext((new_node).clone()) });
 }
 pub fn Delete_2(head: Ptr<Node>, val: i32) -> Ptr<Node> {
     let head: Value<Ptr<Node>> = Rc::new(RefCell::new(head));

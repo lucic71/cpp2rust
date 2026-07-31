@@ -31,11 +31,11 @@ unsafe fn main_0() -> i32 {
         }
     );
     let mut p1: *const libc::c_char = (s1.as_mut_ptr()).cast_const();
-    assert!((((*p1.offset((0) as isize)) as i32) == (('h' as libc::c_char) as i32)));
-    assert!((((*p1.offset((1) as isize)) as i32) == (('e' as libc::c_char) as i32)));
-    assert!((((*p1.offset((2) as isize)) as i32) == (('l' as libc::c_char) as i32)));
-    assert!((((*p1.offset((3) as isize)) as i32) == (('l' as libc::c_char) as i32)));
-    assert!((((*p1.offset((4) as isize)) as i32) == (('o' as libc::c_char) as i32)));
+    assert!((((*p1.offset(((0) as isize))) as i32) == (('h' as libc::c_char) as i32)));
+    assert!((((*p1.offset(((1) as isize))) as i32) == (('e' as libc::c_char) as i32)));
+    assert!((((*p1.offset(((2) as isize))) as i32) == (('l' as libc::c_char) as i32)));
+    assert!((((*p1.offset(((3) as isize))) as i32) == (('l' as libc::c_char) as i32)));
+    assert!((((*p1.offset(((4) as isize))) as i32) == (('o' as libc::c_char) as i32)));
     let mut s2: Vec<libc::c_char> = vec![('a' as libc::c_char); (10_usize) as usize]
         .iter()
         .cloned()
@@ -45,7 +45,7 @@ unsafe fn main_0() -> i32 {
     let mut i: u32 = 0_u32;
     'loop_: while ((i as usize) < (s2.len() - 1)) {
         assert!(
-            (((*p2.offset((i) as isize)) as i32) == (('a' as libc::c_char) as i32))
+            (((*p2.offset(((i) as isize))) as i32) == (('a' as libc::c_char) as i32))
                 && ((s2[(i as usize)] as i32) == (('a' as libc::c_char) as i32))
         );
         i.prefix_inc();
@@ -59,7 +59,7 @@ unsafe fn main_0() -> i32 {
     let mut i: u32 = 2_u32;
     'loop_: while ((i as usize) < (s2.len() - 1)) {
         assert!(
-            (((*p2.offset((i) as isize)) as i32) == (('a' as libc::c_char) as i32))
+            (((*p2.offset(((i) as isize))) as i32) == (('a' as libc::c_char) as i32))
                 && ((s2[(i as usize)] as i32) == (('a' as libc::c_char) as i32))
         );
         i.prefix_inc();
@@ -76,7 +76,7 @@ unsafe fn main_0() -> i32 {
     let mut p3: *const libc::c_char = (s3.as_mut_ptr()).cast_const();
     let mut i: u32 = 0_u32;
     'loop_: while ((i as usize) < (s3.len() - 1)) {
-        assert!((((*p3.offset((i) as isize)) as i32) == (s3[(i as usize)] as i32)));
+        assert!((((*p3.offset(((i) as isize))) as i32) == (s3[(i as usize)] as i32)));
         i.prefix_inc();
     }
     let mut s4: Vec<libc::c_char> = {
@@ -103,7 +103,7 @@ unsafe fn main_0() -> i32 {
     let mut p4: *const libc::c_char = (s4.as_mut_ptr()).cast_const();
     let mut i: u32 = 0_u32;
     'loop_: while ((i as usize) < (s4.len() - 1)) {
-        assert!((((*p4.offset((i) as isize)) as i32) == (s4[(i as usize)] as i32)));
+        assert!((((*p4.offset(((i) as isize))) as i32) == (s4[(i as usize)] as i32)));
         i.prefix_inc();
     }
     let mut s5: Vec<libc::c_char> = {
@@ -122,7 +122,7 @@ unsafe fn main_0() -> i32 {
     let mut p5: *const libc::c_char = (s5.as_mut_ptr()).cast_const();
     let mut i: u32 = 0_u32;
     'loop_: while ((i as usize) < (s5.len() - 1)) {
-        assert!((((*p5.offset((i) as isize)) as i32) == (s5[(i as usize)] as i32)));
+        assert!((((*p5.offset(((i) as isize))) as i32) == (s5[(i as usize)] as i32)));
         i.prefix_inc();
     }
     let mut arr: [libc::c_char; 7] = [
@@ -300,11 +300,11 @@ unsafe fn main_0() -> i32 {
         std::slice::from_raw_parts(s, (0..).take_while(|&i| *s.add(i) != 0).count() + 1).to_vec()
     };
     let mut output_data: *mut u8 =
-        ((&mut string_to_cast[(0_usize)] as *mut libc::c_char) as *mut libc::c_char as *mut u8);
+        (((&mut string_to_cast[(0_usize)] as *mut libc::c_char) as *mut libc::c_char) as *mut u8);
     assert!((((*output_data) as i32) == (('c' as libc::c_char) as i32)));
-    assert!((((*output_data.offset((1) as isize)) as i32) == (('a' as libc::c_char) as i32)));
-    assert!((((*output_data.offset((2) as isize)) as i32) == (('s' as libc::c_char) as i32)));
-    assert!((((*output_data.offset((3) as isize)) as i32) == (('t' as libc::c_char) as i32)));
+    assert!((((*output_data.offset(((1) as isize))) as i32) == (('a' as libc::c_char) as i32)));
+    assert!((((*output_data.offset(((2) as isize))) as i32) == (('s' as libc::c_char) as i32)));
+    assert!((((*output_data.offset(((3) as isize))) as i32) == (('t' as libc::c_char) as i32)));
     let mut t0: usize = (s1.len() - 1);
     let mut t1: usize = (t0).wrapping_add(((*p1) as usize));
     let mut t2: usize = (t1).wrapping_add((s2.len() - 1));

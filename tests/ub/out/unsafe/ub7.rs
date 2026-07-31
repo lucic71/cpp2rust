@@ -11,7 +11,7 @@ pub unsafe fn strlen_0(mut s: *const libc::c_char) -> usize {
     'loop_: while ((*s) != 0) {
         s.prefix_inc();
     }
-    return ((((s as usize - begin as usize) / ::std::mem::size_of::<libc::c_char>()) as i64)
+    return (((((s as usize) - (begin as usize)) / ::std::mem::size_of::<libc::c_char>()) as i64)
         as usize);
 }
 pub fn main() {
@@ -28,5 +28,5 @@ unsafe fn main_0() -> i32 {
         ('n' as libc::c_char),
         ('g' as libc::c_char),
     ];
-    return ((unsafe { strlen_0((&s[(0) as usize] as *const libc::c_char)) }) as i32);
+    return ((unsafe { strlen_0((&s[((0) as usize)] as *const libc::c_char)) }) as i32);
 }

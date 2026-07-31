@@ -82,11 +82,11 @@ fn main_0() -> i32 {
     assert!(((((((*u.borrow()).p().read()).read()) == 10) as i32) != 0));
     (*u.borrow_mut())
         .p()
-        .write((arr.as_pointer() as Ptr<i32>).offset((4) as isize));
+        .write((arr.as_pointer() as Ptr<i32>).offset(((4) as isize)));
     assert!(
         ((({
             let _lhs = ((*u.borrow()).p().read()).clone();
-            _lhs == (arr.as_pointer() as Ptr<i32>).offset((4) as isize)
+            _lhs == (arr.as_pointer() as Ptr<i32>).offset(((4) as isize))
         }) as i32)
             != 0)
     );

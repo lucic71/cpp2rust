@@ -185,11 +185,11 @@ unsafe fn main_0() -> i32 {
     v7.push(6);
     v8.push(8);
     v8.push(9);
-    (unsafe { fn_1(&mut v7 as *mut Vec<i32>, v8.clone()) });
+    (unsafe { fn_1((&mut v7 as *mut Vec<i32>), v8.clone()) });
     let mut src: [u32; 3] = [1_u32, 2_u32, 3_u32];
     let mut v9: Vec<u32> = core::slice::from_raw_parts(
         src.as_mut_ptr(),
-        (src.as_mut_ptr().offset((3) as isize)).offset_from(src.as_mut_ptr()) as usize,
+        (src.as_mut_ptr().offset(((3) as isize))).offset_from(src.as_mut_ptr()) as usize,
     )
     .iter()
     .map(|x| u32::try_from(x.clone()).ok().unwrap())
@@ -201,7 +201,7 @@ unsafe fn main_0() -> i32 {
     );
     let mut v10: Vec<u64> = core::slice::from_raw_parts(
         src.as_mut_ptr(),
-        (src.as_mut_ptr().offset((3) as isize)).offset_from(src.as_mut_ptr()) as usize,
+        (src.as_mut_ptr().offset(((3) as isize))).offset_from(src.as_mut_ptr()) as usize,
     )
     .iter()
     .map(|x| u64::try_from(x.clone()).ok().unwrap())
@@ -213,7 +213,7 @@ unsafe fn main_0() -> i32 {
     );
     let mut v11: Vec<i32> = core::slice::from_raw_parts(
         src.as_mut_ptr(),
-        (src.as_mut_ptr().offset((3) as isize)).offset_from(src.as_mut_ptr()) as usize,
+        (src.as_mut_ptr().offset(((3) as isize))).offset_from(src.as_mut_ptr()) as usize,
     )
     .iter()
     .map(|x| i32::try_from(x.clone()).ok().unwrap())
@@ -236,7 +236,7 @@ unsafe fn main_0() -> i32 {
     let mut len: usize = 5_usize;
     let mut v13: Vec<u8> = core::slice::from_raw_parts(
         start,
-        (start.offset((len) as isize)).offset_from(start) as usize,
+        (start.offset(((len) as isize))).offset_from(start) as usize,
     )
     .to_vec();
     assert!(((v13.len()) == (5_usize)));

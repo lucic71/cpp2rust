@@ -1427,7 +1427,7 @@ RsExpr *Converter::ConvertExpr(clang::Expr *expr,
   node->expr = expr;
   if (ict && NeedsImplicitScalarCast(expr->IgnoreImplicit()->getType(), *ict)) {
     node = Parens(
-        Cat(node, Text(keyword::kAs), Text(GetUnsafeTypeAsString(*ict))));
+        arena_.New<Cast>(node, Text(GetUnsafeTypeAsString(*ict))));
     computed_expr_type_ = ComputedExprType::FreshValue;
   }
   return node;
@@ -2139,8 +2139,8 @@ RsExpr *Converter::VisitCharacterLiteral(clang::CharacterLiteral *expr) {
   std::string ch = GetEscapedCharLiteral(expr->getValue());
   ch = (uc > 0x7F ? "b'" : "'") + std::move(ch) + '\'';
   computed_expr_type_ = ComputedExprType::FreshValue;
-  return Parens(Cat(Text(std::move(ch)), Text(keyword::kAs),
-                    Converter::Convert(expr->getType())));
+  return arena_.New<Cast>(Text(std::move(ch)),
+                          Converter::Convert(expr->getType()));
 }
 
 std::string Converter::GetEscapedCharLiteral(char character) const {
@@ -2246,7 +2246,7 @@ RsExpr *Converter::ConvertIntegerToEnumeralCast(clang::Expr *to,
   auto *from_node = ConvertExpr(from);
   RsExpr *inner = from_node;
   if (!from->getType()->isSpecificBuiltinType(clang::BuiltinType::Int)) {
-    inner = Cat(from_node, Text(keyword::kAs), Text("i32"));
+    inner = arena_.New<Cast>(from_node, Text("i32"));
   }
   return Cat(Text(GetUnsafeTypeAsString(to->getType()) + "::from"),
              Parens(inner));
@@ -2312,12 +2312,13 @@ RsExpr *Converter::VisitImplicitCastExpr(clang::ImplicitCastExpr *expr) {
   case clang::CastKind::CK_BitCast: {
     auto *inner = ConvertExpr(sub_expr);
     if (type->isVoidPointerType()) {
-      inner = Cat(
-          inner, Text(keyword::kAs),
-          Text(type->getPointeeType().isConstQualified() ? "*const" : "*mut"),
-          ConvertPointeeType(sub_expr->getType()));
+      inner = arena_.New<Cast>(
+          inner,
+          Cat(Text(type->getPointeeType().isConstQualified() ? "*const"
+                                                             : "*mut"),
+              ConvertPointeeType(sub_expr->getType())));
     }
-    return Parens(Cat(inner, CastTo(type)));
+    return Parens(CastTo(inner, type));
   }
   case clang::CastKind::CK_NoOp: {
     const char *suffix = nullptr;
@@ -2374,9 +2375,9 @@ RsExpr *Converter::VisitImplicitCastExpr(clang::ImplicitCastExpr *expr) {
       return ConvertIntegerToEnumeralCast(expr, sub_expr);
     }
     if (clang::isa<clang::BinaryOperator>(sub_expr)) {
-      return Parens(Cat(Parens(ConvertExpr(sub_expr)), CastTo(type)));
+      return Parens(CastTo(Parens(ConvertExpr(sub_expr)), type));
     }
-    return Parens(Parens(Cat(ConvertExpr(sub_expr), CastTo(type))));
+    return Parens(Parens(CastTo(ConvertExpr(sub_expr), type)));
   }
 }
 
@@ -2415,9 +2416,9 @@ RsExpr *Converter::VisitExplicitCastExpr(clang::ExplicitCastExpr *expr) {
         unary_oper && unary_oper->getOpcode() == clang::UO_AddrOf &&
         (clang::isa<clang::ArraySubscriptExpr>(unary_oper->getSubExpr()) ||
          clang::isa<clang::CXXOperatorCallExpr>(unary_oper->getSubExpr()))) {
-      inner = Cat(inner, CastTo(sub_expr->getType()));
+      inner = CastTo(inner, sub_expr->getType());
     }
-    return Parens(Cat(inner, CastTo(type)));
+    return Parens(CastTo(inner, type));
   }
   default:
     return ConvertExpr(sub_expr);
@@ -2430,7 +2431,7 @@ RsExpr *Converter::VisitBinaryOperator(clang::BinaryOperator *expr) {
                     !expr->getType()->isBooleanType();
   auto *node = ConvertBinaryOperator(expr);
   if (needs_cast) {
-    return Parens(Cat(Parens(node), CastTo(expr->getType())));
+    return Parens(CastTo(Parens(node), expr->getType()));
   }
   return node;
 }
@@ -2456,7 +2457,7 @@ RsExpr *Converter::ConvertBinaryOperator(clang::BinaryOperator *expr) {
       auto *arith = ConvertUnsignedArithBinaryOperator(expr, rhs);
       node = Cat(
           lhs_node, Text(token::kAssign),
-          Parens(Cat(Parens(Cat(lhs_again, CastTo(computation_result_type))),
+          Parens(Cat(Parens(CastTo(lhs_again, computation_result_type)),
                      arith)));
     } else {
       auto *lhs_node = ConvertExpr(lhs);
@@ -2466,13 +2467,13 @@ RsExpr *Converter::ConvertBinaryOperator(clang::BinaryOperator *expr) {
       auto *rhs_node = ConvertExpr(rhs, computation_result_type);
       node = Cat(
           lhs_node, Text(token::kAssign),
-          Parens(Cat(Parens(Cat(lhs_again, CastTo(computation_result_type))),
+          Parens(Cat(Parens(CastTo(lhs_again, computation_result_type)),
                      Text(std::string(op)), rhs_node)));
     }
     if (lhs_type->isBooleanType()) {
       return Cat(node, Text(token::kDiff), Text(token::kZero));
     }
-    return Cat(node, CastTo(lhs_type));
+    return CastTo(node, lhs_type);
   }
   if (expr->isCommaOp()) {
     RsExpr *lhs_node = nullptr;
@@ -2531,12 +2532,12 @@ RsExpr *Converter::ConvertBinaryOperator(clang::BinaryOperator *expr) {
     auto *pointee_type_node = ConvertPointeeType(lhs_type);
     auto *size_of_node =
         Cat(Text("::std::mem::size_of::<"), pointee_type_node, Text(">()"));
-    auto *diff = Parens(Cat(lhs_node, Text(keyword::kAs), Text("usize"),
-                            Text(token::kMinus), rhs_node, Text(keyword::kAs),
-                            Text("usize")));
+    auto *diff = Parens(Cat(arena_.New<Cast>(lhs_node, Text("usize")),
+                            Text(token::kMinus),
+                            arena_.New<Cast>(rhs_node, Text("usize"))));
     auto *node = Parens(Cat(diff, Text(token::kDiv), size_of_node));
     computed_expr_type_ = ComputedExprType::FreshValue;
-    return Cat(node, CastTo(expr->getType()));
+    return CastTo(node, expr->getType());
   }
   if (expr->isLogicalOp()) {
     auto *lhs_node = Parens(ConvertCondition(expr->getLHS()));
@@ -2633,7 +2634,7 @@ RsExpr *Converter::VisitUnaryOperator(clang::UnaryOperator *expr) {
     computed_expr_type_ = ComputedExprType::FreshValue;
     auto *node = Cat(Text(token::kNot), cond);
     if (needs_int_cast) {
-      return Parens(Cat(node, CastTo(expr->getType())));
+      return Parens(CastTo(node, expr->getType()));
     }
     return node;
   }
@@ -3739,8 +3740,8 @@ RsExpr *Converter::ConvertVarInit(clang::QualType qual_type,
     parts.push_back(ConvertExpr(expr, qual_type));
   }
   if (qual_type->isReferenceType() && !IsReferenceType(expr)) {
-    parts.push_back(Text(keyword::kAs));
-    parts.push_back(Convert(qual_type));
+    auto *value = arena_.New<Concat>(std::move(parts));
+    return arena_.New<Cast>(value, Convert(qual_type));
   }
   return arena_.New<Concat>(std::move(parts));
 }
@@ -3752,7 +3753,7 @@ RsExpr *Converter::ConvertUnsignedArithOperand(clang::Expr *expr,
                     Mapper::Map(expr->getType()) != Mapper::Map(type);
   auto *node = ConvertExpr(expr);
   if (needs_cast) {
-    return Parens(Cat(node, CastTo(type)));
+    return Parens(CastTo(node, type));
   }
   return node;
 }
@@ -3784,7 +3785,7 @@ RsExpr *Converter::ConvertPointerOffset(clang::Expr *base, clang::Expr *idx,
     PushExprKind push(*this, ExprKind::RValue);
     idx_node = ConvertExpr(idx);
   }
-  RsExpr *offset = Cat(Parens(idx_node), Text(keyword::kAs), Text("isize"));
+  RsExpr *offset = arena_.New<Cast>(Parens(idx_node), Text("isize"));
   if (!is_addition) {
     offset = Cat(Text(token::kMinus), Parens(offset));
   }
@@ -3809,7 +3810,7 @@ RsExpr *Converter::EmitFlexibleArrayElementPtr(clang::Expr *array,
   auto *idx_node = ConvertExpr(idx);
   return Cat(array_node, Text(is_mut ? ".as_mut_ptr()" : ".as_ptr()"),
              Text(".add"),
-             Parens(Cat(Parens(idx_node), Text(keyword::kAs), Text("usize"))));
+             arena_.New<Cast>(Parens(idx_node), Text("usize")));
 }
 
 RsExpr *Converter::ConvertArraySubscript(clang::Expr *base, clang::Expr *idx,
@@ -3833,7 +3834,7 @@ RsExpr *Converter::ConvertArraySubscript(clang::Expr *base, clang::Expr *idx,
   PushExplicitAutoref no_autoref(*this, std::nullopt);
   auto *idx_node = Parens(ConvertExpr(idx));
   if (Mapper::Map(idx->getType()) != "usize") {
-    idx_node = Cat(idx_node, Text(keyword::kAs), Text("usize"));
+    idx_node = arena_.New<Cast>(idx_node, Text("usize"));
   }
   return Cat(base_node, Brackets(idx_node));
 }
@@ -4171,18 +4172,19 @@ RsExpr *Converter::ConvertAddrOf(clang::Expr *expr,
   }
   if (IsGlobalVar(expr)) {
     auto *node = ConvertExpr(expr);
-    return Cat(Text("&raw"),
-               Text(pointer_type->getPointeeType().isConstQualified()
-                        ? keyword::kConst
-                        : keyword_mut_),
-               node, CastTo(pointer_type));
+    return CastTo(Cat(Text("&raw"),
+                      Text(pointer_type->getPointeeType().isConstQualified()
+                               ? keyword::kConst
+                               : keyword_mut_),
+                      node),
+                  pointer_type);
   }
   auto *node = ConvertExpr(expr);
   if (!pointer_type->getPointeeType().isConstQualified()) {
-    return Cat(Text(token::kRef), Text(keyword_mut_), node,
-               CastTo(pointer_type));
+    return CastTo(Cat(Text(token::kRef), Text(keyword_mut_), node),
+                  pointer_type);
   }
-  return Cat(Text(token::kRef), node, CastTo(pointer_type));
+  return CastTo(Cat(Text(token::kRef), node), pointer_type);
 }
 
 RsExpr *Converter::EmitDeref(RsExpr *inner, clang::QualType pointee_type) {
@@ -4261,7 +4263,7 @@ RsExpr *Converter::ConvertPlaceholder(clang::Expr *expr, clang::Expr *arg,
 
   if (ph_ctx.declared_in_rule_as_rust_ptr && arg->getType()->isArrayType()) {
     auto *node = ConvertFreshPointer(arg);
-    return Parens(Cat(node, Text(keyword::kAs), Text(ph_ctx.param_type)));
+    return arena_.New<Cast>(node, Text(ph_ctx.param_type));
   }
 
   if (ph_ctx.needs_materialization()) {
@@ -4277,7 +4279,7 @@ RsExpr *Converter::ConvertPlaceholder(clang::Expr *expr, clang::Expr *arg,
 
   if (ph_ctx.needs_pointer_receiver()) {
     auto *node = ConvertFreshObject(arg);
-    return Parens(Cat(node, Text(keyword::kAs), Text(ph_ctx.param_type)));
+    return arena_.New<Cast>(node, Text(ph_ctx.param_type));
   }
 
   if (ph_ctx.needs_object_receiver()) {

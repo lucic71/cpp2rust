@@ -12,14 +12,18 @@ pub struct Node {
     pub next: Ptr<Node>,
     pub prev: Ptr<Node>,
 }
-impl Node {
-    pub fn SetNext(&self, n: Ptr<Node>) {
+pub trait NodeMethods {
+    fn SetNext(&self, n: Ptr<Node>);
+    fn SetPrev(&self, p: Ptr<Node>);
+}
+impl NodeMethods for Ptr<Node> {
+    fn SetNext(&self, n: Ptr<Node>) {
         let n: Value<Ptr<Node>> = Rc::new(RefCell::new(n));
-        self.next = (*n.borrow()).clone();
+        self.with_mut(|__v| __v.next = (*n.borrow()).clone());
     }
-    pub fn SetPrev(&self, p: Ptr<Node>) {
+    fn SetPrev(&self, p: Ptr<Node>) {
         let p: Value<Ptr<Node>> = Rc::new(RefCell::new(p));
-        self.prev = (*p.borrow()).clone();
+        self.with_mut(|__v| __v.prev = (*p.borrow()).clone());
     }
 }
 impl Clone for Node {
@@ -79,10 +83,10 @@ pub fn Append_2(head: Ptr<Node>, new_node: Ptr<Node>) {
         let __rhs = ((*(*curr.borrow()).upgrade().deref()).next).clone();
         (*curr.borrow_mut()) = __rhs;
     }
-    ({ (*(*curr.borrow()).upgrade().deref()).SetNext((new_node).clone()) });
+    ({ (*curr.borrow()).SetNext((new_node).clone()) });
     ({
         let _p: Ptr<Node> = (*curr.borrow()).clone();
-        (*new_node.upgrade().deref()).SetPrev(_p)
+        new_node.SetPrev(_p)
     });
 }
 pub fn Delete_3(head: Ptr<Node>, val: i32) -> Ptr<Node> {

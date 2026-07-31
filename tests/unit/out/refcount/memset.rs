@@ -26,7 +26,7 @@ fn main_0() -> i32 {
     let sum: Value<i32> = Rc::new(RefCell::new(0));
     let i: Value<i32> = Rc::new(RefCell::new(0));
     'loop_: while ((*i.borrow()) < (*N.borrow())) {
-        let __rhs = ((*arr.borrow()).offset((*i.borrow()) as isize).read());
+        let __rhs = ((*arr.borrow()).offset(((*i.borrow()) as isize)).read());
         (*sum.borrow_mut()) += __rhs;
         (*i.borrow_mut()).prefix_inc();
     }

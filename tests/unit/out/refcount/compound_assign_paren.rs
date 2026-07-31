@@ -36,17 +36,17 @@ fn main_0() -> i32 {
     let item: Value<Item> = Rc::new(RefCell::new(Item { flags: 0_u8 }));
     let ptr: Value<Ptr<Item>> = Rc::new(RefCell::new((item.as_pointer())));
     ({
-        let rhs_0 = (((*(*ptr.borrow()).upgrade().deref()).flags as i32) | (1 << 0)) as u8;
+        let rhs_0 = ((((*(*ptr.borrow()).upgrade().deref()).flags as i32) | (1 << 0)) as u8);
         (*ptr.borrow()).with_mut(|__v| __v.flags = rhs_0)
     });
     ({
-        let rhs_0 = (((*(*ptr.borrow()).upgrade().deref()).flags as i32) | (1 << 1)) as u8;
+        let rhs_0 = ((((*(*ptr.borrow()).upgrade().deref()).flags as i32) | (1 << 1)) as u8);
         (*ptr.borrow()).with_mut(|__v| __v.flags = rhs_0)
     });
     assert!((((*(*ptr.borrow()).upgrade().deref()).flags as i32) == 3));
     ({
-        let rhs_0 = (((*(*ptr.borrow()).upgrade().deref()).flags as i32)
-            & ((!(1 << 0) as u8) as i32)) as u8;
+        let rhs_0 = ((((*(*ptr.borrow()).upgrade().deref()).flags as i32)
+            & ((!(1 << 0) as u8) as i32)) as u8);
         (*ptr.borrow()).with_mut(|__v| __v.flags = rhs_0)
     });
     assert!((((*(*ptr.borrow()).upgrade().deref()).flags as i32) == 2));
@@ -57,13 +57,13 @@ fn main_0() -> i32 {
         <u8>::default(),
     ])));
     ({
-        let rhs_0 = (((*bits.borrow())[((5) / 8) as usize] as i32)
-            | (((1 << ((5) & 7)) as u8) as i32)) as u8;
+        let rhs_0 = ((((*bits.borrow())[((5) / 8) as usize] as i32)
+            | (((1 << ((5) & 7)) as u8) as i32)) as u8);
         (*bits.borrow_mut())[((5) / 8) as usize] = rhs_0
     });
     ({
-        let rhs_0 = (((*bits.borrow())[((13) / 8) as usize] as i32)
-            | (((1 << ((13) & 7)) as u8) as i32)) as u8;
+        let rhs_0 = ((((*bits.borrow())[((13) / 8) as usize] as i32)
+            | (((1 << ((13) & 7)) as u8) as i32)) as u8);
         (*bits.borrow_mut())[((13) / 8) as usize] = rhs_0
     });
     assert!((((*bits.borrow())[(0) as usize] as i32) == 32));
@@ -71,8 +71,8 @@ fn main_0() -> i32 {
     assert!((((*bits.borrow())[(2) as usize] as i32) == 0));
     if (((*(*ptr.borrow()).upgrade().deref()).flags as i32) != 0) {
         ({
-            let rhs_0 = (((*(*ptr.borrow()).upgrade().deref()).flags as i32)
-                & ((!(1 << 1) as u8) as i32)) as u8;
+            let rhs_0 = ((((*(*ptr.borrow()).upgrade().deref()).flags as i32)
+                & ((!(1 << 1) as u8) as i32)) as u8);
             (*ptr.borrow()).with_mut(|__v| __v.flags = rhs_0)
         });
     }

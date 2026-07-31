@@ -10,7 +10,7 @@ pub unsafe fn sum_bytes_0(mut buf: *const libc::c_char, mut len: u32) -> i32 {
     let mut sum: i32 = 0;
     let mut i: u32 = 0_u32;
     'loop_: while ((i) < (len)) {
-        sum += (((*buf.offset((i) as isize)) as u8) as i32);
+        sum += (((*buf.offset(((i) as isize))) as u8) as i32);
         i.postfix_inc();
     }
     return sum;
@@ -43,11 +43,11 @@ unsafe fn main_0() -> i32 {
     let mut b: i32 = (unsafe { sum_bytes_0(g_packet_1, 2_u32) });
     assert!(((a) == (b)));
     assert!(((a) == (1)));
-    let mut c: i32 = (((*c"\r\n.\r\n".as_ptr().offset((0) as isize)) as i32)
-        + ((*c"\r\n.\r\n".as_ptr().offset((3) as isize)) as i32));
+    let mut c: i32 = (((*c"\r\n.\r\n".as_ptr().offset(((0) as isize))) as i32)
+        + ((*c"\r\n.\r\n".as_ptr().offset(((3) as isize))) as i32));
     assert!(((c) == ((('\r' as libc::c_char) as i32) + (('\r' as libc::c_char) as i32))));
     let mut idx: i32 = 1;
-    let mut d: i32 = ((*c"abcd".as_ptr().offset((idx) as isize)) as i32);
+    let mut d: i32 = ((*c"abcd".as_ptr().offset(((idx) as isize))) as i32);
     assert!(((d) == (('b' as libc::c_char) as i32)));
     return 0;
 }

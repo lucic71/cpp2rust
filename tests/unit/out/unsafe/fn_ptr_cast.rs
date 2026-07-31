@@ -54,7 +54,7 @@ pub unsafe fn test_call_through_cast_5() {
     let mut val: i32 = 100;
     let mut result: i32 = (unsafe {
         (gfn).unwrap()(
-            ((&mut val as *mut i32) as *mut i32 as *mut ::libc::c_void),
+            (((&mut val as *mut i32) as *mut i32) as *mut ::libc::c_void),
             42,
         )
     });

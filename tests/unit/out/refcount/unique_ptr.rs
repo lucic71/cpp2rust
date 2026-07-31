@@ -10,9 +10,12 @@ use std::rc::{Rc, Weak};
 pub struct SafePointer {
     pub ptr: Option<Value<i32>>,
 }
-impl SafePointer {
-    pub fn inc(&self) {
-        (*self.ptr.as_ref().unwrap().borrow_mut()).prefix_inc();
+pub trait SafePointerMethods {
+    fn inc(&self);
+}
+impl SafePointerMethods for Ptr<SafePointer> {
+    fn inc(&self) {
+        (*(*self.upgrade().deref()).ptr.as_ref().unwrap().borrow_mut()).prefix_inc();
     }
 }
 impl ByteRepr for SafePointer {}
@@ -20,6 +23,9 @@ impl ByteRepr for SafePointer {}
 pub struct Pair {
     pub x: i32,
     pub y: i32,
+}
+pub trait PairMethods {
+    fn inc(&self, k: i32);
 }
 impl Clone for Pair {
     fn clone(&self) -> Self {
@@ -45,11 +51,11 @@ impl ByteRepr for Pair {
         }
     }
 }
-impl Pair {
-    pub fn inc(&self, k: i32) {
+impl PairMethods for Ptr<Pair> {
+    fn inc(&self, k: i32) {
         let k: Value<i32> = Rc::new(RefCell::new(k));
-        self.x += (*k.borrow());
-        self.y += (*k.borrow());
+        self.with_mut(|__v| __v.x += (*k.borrow()));
+        self.with_mut(|__v| __v.y += (*k.borrow()));
     }
 }
 pub fn DoStuffWithSafePointer_0(safe_ptr: Ptr<Option<Value<SafePointer>>>) {
@@ -60,8 +66,8 @@ pub fn DoStuffWithSafePointer_0(safe_ptr: Ptr<Option<Value<SafePointer>>>) {
     let raw_ptr1: Value<Ptr<i32>> = Rc::new(RefCell::new(((*x1.borrow()).as_pointer())));
     (*raw_ptr1.borrow()).with_mut(|__v| __v.prefix_inc());
     (**safe_ptr.as_ref().unwrap().borrow_mut()).ptr = (*x1.borrow_mut()).take();
-    ({ (*(*safe_ptr.upgrade().deref()).as_ref().unwrap().borrow()).inc() });
-    ({ (*(*safe_ptr.upgrade().deref()).as_ref().unwrap().borrow()).inc() });
+    ({ ((*safe_ptr.upgrade().deref()).as_pointer()).inc() });
+    ({ ((*safe_ptr.upgrade().deref()).as_pointer()).inc() });
     let x3: Value<Option<Value<i32>>> = Rc::new(RefCell::new(Some(Rc::new(RefCell::new(10)))));
     let x4: Value<Option<Value<i32>>> = Rc::new(RefCell::new(Some(Rc::new(RefCell::new(20)))));
     let __rhs = ((*(*x3.borrow()).as_ref().unwrap().borrow())
@@ -78,7 +84,7 @@ pub fn DoStuffWithSafePointer_0(safe_ptr: Ptr<Option<Value<SafePointer>>>) {
             x: ((*raw_ptr2.borrow()).read()),
             y: 5,
         })))));
-    ({ (*(*pair.borrow()).as_ref().unwrap().borrow()).inc(10) });
+    ({ ((*pair.borrow()).as_pointer()).inc(10) });
     let __rhs = {
         let _lhs = {
             let _lhs = (*(*(*safe_ptr.upgrade().deref()).as_ref().unwrap().borrow())
@@ -138,7 +144,7 @@ pub fn RndStuff_2() {
     let p2: Value<Ptr<i32>> = Rc::new(RefCell::new((*x2.borrow()).as_pointer()));
     let i: Value<i32> = Rc::new(RefCell::new(0));
     'loop_: while ((*i.borrow()) < 200) {
-        assert!((((*p2.borrow()).offset((*i.borrow()) as isize).read()) == 2));
+        assert!((((*p2.borrow()).offset(((*i.borrow()) as isize)).read()) == 2));
         (*i.borrow_mut()).prefix_inc();
     }
     let x3: Value<Option<Value<Box<[Pair]>>>> = Rc::new(RefCell::new(Some(Rc::new(RefCell::new(
@@ -157,31 +163,36 @@ pub fn RndStuff_2() {
     'loop_: while ((*i.borrow()) < 10) {
         assert!(
             ((*(*p3_0.borrow())
-                .offset((*i.borrow()) as isize)
+                .offset(((*i.borrow()) as isize))
                 .upgrade()
                 .deref())
             .x == 1)
         );
         assert!(
             ((*(*p3_0.borrow())
-                .offset((*i.borrow()) as isize)
+                .offset(((*i.borrow()) as isize))
                 .upgrade()
                 .deref())
             .y == 2)
         );
         ({
-            (*(*x3.borrow()).as_ref().unwrap().borrow())[((*i.borrow()) as usize) as usize].inc(10)
+            (*x3.borrow())
+                .as_ref()
+                .unwrap()
+                .as_pointer()
+                .offset(((*i.borrow()) as usize))
+                .inc(10)
         });
         assert!(
             ((*(*p3_0.borrow())
-                .offset((*i.borrow()) as isize)
+                .offset(((*i.borrow()) as isize))
                 .upgrade()
                 .deref())
             .x == 11)
         );
         assert!(
             ((*(*p3_0.borrow())
-                .offset((*i.borrow()) as isize)
+                .offset(((*i.borrow()) as isize))
                 .upgrade()
                 .deref())
             .y == 12)
@@ -212,32 +223,36 @@ pub fn RndStuff_2() {
     'loop_: while ((*i.borrow()) < 50) {
         assert!(
             ((*(*p3_1.borrow())
-                .offset((*i.borrow()) as isize)
+                .offset(((*i.borrow()) as isize))
                 .upgrade()
                 .deref())
             .x == -1_i32)
         );
         assert!(
             ((*(*p3_1.borrow())
-                .offset((*i.borrow()) as isize)
+                .offset(((*i.borrow()) as isize))
                 .upgrade()
                 .deref())
             .y == -2_i32)
         );
         ({
-            (*(*x3.borrow()).as_ref().unwrap().borrow())[((*i.borrow()) as usize) as usize]
+            (*x3.borrow())
+                .as_ref()
+                .unwrap()
+                .as_pointer()
+                .offset(((*i.borrow()) as usize))
                 .inc(-10_i32)
         });
         assert!(
             ((*(*p3_1.borrow())
-                .offset((*i.borrow()) as isize)
+                .offset(((*i.borrow()) as isize))
                 .upgrade()
                 .deref())
             .x == -11_i32)
         );
         assert!(
             ((*(*p3_1.borrow())
-                .offset((*i.borrow()) as isize)
+                .offset(((*i.borrow()) as isize))
                 .upgrade()
                 .deref())
             .y == -12_i32)

@@ -111,7 +111,7 @@ pub fn push_local_from_field_1(jpg: Ptr<JPEGData>, cond: bool) {
             __v.push(Rc::new(RefCell::new(
                 {
                     let __count = (head.as_pointer() as Ptr<u8>)
-                        .offset((3) as isize)
+                        .offset(((3) as isize))
                         .get_offset()
                         - (head.as_pointer() as Ptr<u8>).get_offset();
                     PtrValueIter::new(&(head.as_pointer() as Ptr<u8>), __count)
@@ -162,7 +162,7 @@ pub fn emplace_local_from_field_4(jpg: Ptr<JPEGData>, cond: bool) {
         .with_mut(|__v: &mut Vec<Value<Vec<u8>>>| {
             __v.push(Rc::new(RefCell::new({
                 let __count = (head.as_pointer() as Ptr<u8>)
-                    .offset((3) as isize)
+                    .offset(((3) as isize))
                     .get_offset()
                     - (head.as_pointer() as Ptr<u8>).get_offset();
                 PtrValueIter::new(&(head.as_pointer() as Ptr<u8>), __count)

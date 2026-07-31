@@ -38,20 +38,28 @@ pub fn bar_4(x: Ptr<i32>) -> i32 {
 }
 #[derive(Default)]
 pub struct Foo {}
-impl Foo {
-    pub fn foo_const(&self) {}
-    pub fn foo(&self) {}
-    pub fn method_i32(&self, x: i32) {
+pub trait FooMethods {
+    fn foo_const(&self);
+    fn foo(&self);
+    fn method_i32(&self, x: i32);
+    fn method_i32_const(&self, x: i32);
+    fn method2_i32_i32_const(&self, x: i32, y: i32);
+    fn method2_f64_f64_const(&self, x: f64, y: f64);
+}
+impl FooMethods for Ptr<Foo> {
+    fn foo_const(&self) {}
+    fn foo(&self) {}
+    fn method_i32(&self, x: i32) {
         let x: Value<i32> = Rc::new(RefCell::new(x));
     }
-    pub fn method_i32_const(&self, x: i32) {
+    fn method_i32_const(&self, x: i32) {
         let x: Value<i32> = Rc::new(RefCell::new(x));
     }
-    pub fn method2_i32_i32_const(&self, x: i32, y: i32) {
+    fn method2_i32_i32_const(&self, x: i32, y: i32) {
         let x: Value<i32> = Rc::new(RefCell::new(x));
         let y: Value<i32> = Rc::new(RefCell::new(y));
     }
-    pub fn method2_f64_f64_const(&self, x: f64, y: f64) {
+    fn method2_f64_f64_const(&self, x: f64, y: f64) {
         let x: Value<f64> = Rc::new(RefCell::new(x));
         let y: Value<f64> = Rc::new(RefCell::new(y));
     }
@@ -103,9 +111,9 @@ fn main_0() -> i32 {
     (*out.borrow_mut()) += (((*bar.borrow()) + ({ foo_0(0) })) + ({ foo_1((x.as_pointer())) }));
     let foo1: Value<Foo> = Rc::new(RefCell::new(Foo {}));
     let foo2: Value<Foo> = Rc::new(RefCell::new(Foo {}));
-    ({ (*foo1.borrow()).foo() });
-    ({ (*foo1.borrow()).method_i32(1) });
-    ({ (*foo2.borrow()).foo_const() });
-    ({ (*foo2.borrow()).method_i32_const(2) });
+    ({ foo1.as_pointer().foo() });
+    ({ foo1.as_pointer().method_i32(1) });
+    ({ foo2.as_pointer().foo_const() });
+    ({ foo2.as_pointer().method_i32_const(2) });
     return (*out.borrow());
 }

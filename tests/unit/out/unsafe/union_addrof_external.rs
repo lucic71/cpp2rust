@@ -45,14 +45,14 @@ pub unsafe fn fill_1(mut out: *mut ::libc::c_void, mut cap: usize) {
         0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8,
         0_u8,
     ];
-    src[(0) as usize] = 2_u8;
-    src[(1) as usize] = 0_u8;
-    src[(2) as usize] = 0_u8;
-    src[(3) as usize] = 80_u8;
-    src[(4) as usize] = 127_u8;
-    src[(5) as usize] = 0_u8;
-    src[(6) as usize] = 0_u8;
-    src[(7) as usize] = 1_u8;
+    src[((0) as usize)] = 2_u8;
+    src[((1) as usize)] = 0_u8;
+    src[((2) as usize)] = 0_u8;
+    src[((3) as usize)] = 80_u8;
+    src[((4) as usize)] = 127_u8;
+    src[((5) as usize)] = 0_u8;
+    src[((6) as usize)] = 0_u8;
+    src[((7) as usize)] = 1_u8;
     let mut n: usize = (if ((((::std::mem::size_of::<[u8; 16]>()) < (cap)) as i32) != 0) {
         (::std::mem::size_of::<[u8; 16]>() as u64)
     } else {
@@ -61,7 +61,7 @@ pub unsafe fn fill_1(mut out: *mut ::libc::c_void, mut cap: usize) {
     {
         if n != 0 {
             ::std::ptr::copy_nonoverlapping(
-                (src.as_mut_ptr() as *const u8 as *const ::libc::c_void),
+                ((src.as_mut_ptr() as *const u8) as *const ::libc::c_void),
                 out,
                 n as usize,
             )
@@ -78,11 +78,11 @@ unsafe fn main_0() -> i32 {
     let mut c: Container = <Container>::default();
     {
         let byte_0 =
-            ((&mut c as *mut Container) as *mut Container as *mut ::libc::c_void) as *mut u8;
+            (((&mut c as *mut Container) as *mut Container) as *mut ::libc::c_void) as *mut u8;
         for offset in 0..::std::mem::size_of::<Container>() {
             *byte_0.offset(offset as isize) = 0 as u8;
         }
-        ((&mut c as *mut Container) as *mut Container as *mut ::libc::c_void)
+        (((&mut c as *mut Container) as *mut Container) as *mut ::libc::c_void)
     };
     (unsafe {
         let _out: *mut ::libc::c_void = ((&mut c.view as *mut anon_0) as *mut ::libc::c_void);
@@ -91,16 +91,16 @@ unsafe fn main_0() -> i32 {
     });
     assert!(((((c.view.h.code as i32) == (2)) as i32) != 0));
     assert!(
-        (((((*((&mut c.view.h.lo as *mut u16) as *mut u8).offset((0) as isize)) as i32) == (0))
+        (((((*((&mut c.view.h.lo as *mut u16) as *mut u8).offset(((0) as isize))) as i32) == (0))
             as i32)
             != 0)
     );
     assert!(
-        (((((*((&mut c.view.h.lo as *mut u16) as *mut u8).offset((1) as isize)) as i32) == (80))
+        (((((*((&mut c.view.h.lo as *mut u16) as *mut u8).offset(((1) as isize))) as i32) == (80))
             as i32)
             != 0)
     );
-    assert!(((((c.view.raw_[(0) as usize] as i32) == (2)) as i32) != 0));
-    assert!((((((c.view.raw_[(3) as usize] as u8) as i32) == (80)) as i32) != 0));
+    assert!(((((c.view.raw_[((0) as usize)] as i32) == (2)) as i32) != 0));
+    assert!((((((c.view.raw_[((3) as usize)] as u8) as i32) == (80)) as i32) != 0));
     return 0;
 }

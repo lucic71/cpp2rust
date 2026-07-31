@@ -204,9 +204,9 @@ fn main_0() -> i32 {
     assert!(
         (((((((*(*p_list.borrow()).v.list().upgrade().deref())
             .items
-            .offset((1) as isize)
+            .offset(((1) as isize))
             .read())
-        .offset((0) as isize)
+        .offset(((0) as isize))
         .read()) as i32)
             == ('b' as i32)) as i32)
             != 0)

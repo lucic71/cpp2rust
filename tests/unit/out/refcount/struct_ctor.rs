@@ -23,14 +23,20 @@ impl StructWithCtor {
         this.x2_.prefix_dec();
         this
     }
-    pub fn x1(&self) -> Ptr<i32> {
+}
+pub trait StructWithCtorMethods {
+    fn x1(&self) -> Ptr<i32>;
+    fn x2(&self) -> Ptr<i32>;
+}
+impl StructWithCtorMethods for Ptr<StructWithCtor> {
+    fn x1(&self) -> Ptr<i32> {
         return self.field_ptr(
             0,
             |__v: &StructWithCtor| ::std::slice::from_ref(&__v.x1_),
             |__v: &mut StructWithCtor| ::std::slice::from_mut(&mut __v.x1_),
         );
     }
-    pub fn x2(&self) -> Ptr<i32> {
+    fn x2(&self) -> Ptr<i32> {
         return self.field_ptr(
             4,
             |__v: &StructWithCtor| ::std::slice::from_ref(&__v.x2_),
@@ -73,6 +79,6 @@ fn main_0() -> i32 {
         Rc::new(RefCell::new(StructWithCtor::StructWithCtor(1, 2)));
     let x: Value<i32> = Rc::new(RefCell::new(3));
     return (((((({ foo_0(x.as_pointer()) }).read()) == 3)
-        && ((({ (*struct_with_ctor.borrow()).x1() }).read()) == 2))
-        && ((({ (*struct_with_ctor.borrow()).x2() }).read()) == 1)) as i32);
+        && ((({ struct_with_ctor.as_pointer().x1() }).read()) == 2))
+        && ((({ struct_with_ctor.as_pointer().x2() }).read()) == 1)) as i32);
 }

@@ -62,7 +62,7 @@ fn main_0() -> i32 {
     assert!(
         ((((((*table_1.with(Value::clone).borrow())[(0) as usize]
             .name
-            .offset((0) as isize)
+            .offset(((0) as isize))
             .read()) as i32)
             == ('f' as i32)) as i32)
             != 0)
@@ -70,7 +70,7 @@ fn main_0() -> i32 {
     assert!(
         ((((((*table_1.with(Value::clone).borrow())[(0) as usize]
             .name
-            .offset((4) as isize)
+            .offset(((4) as isize))
             .read()) as i32)
             == ('t' as i32)) as i32)
             != 0)
@@ -82,7 +82,7 @@ fn main_0() -> i32 {
     assert!(
         ((((((*table_1.with(Value::clone).borrow())[(1) as usize]
             .name
-            .offset((0) as isize)
+            .offset(((0) as isize))
             .read()) as i32)
             == ('s' as i32)) as i32)
             != 0)
@@ -95,13 +95,13 @@ fn main_0() -> i32 {
     let tail: Value<Ptr<u8>> =
         Rc::new(RefCell::new((Ptr::from_string_literal(b"ab.cd").offset(2))));
     assert!(
-        ((((((*tail.borrow()).offset((0) as isize).read()) as i32) == ('.' as i32)) as i32) != 0)
+        ((((((*tail.borrow()).offset(((0) as isize)).read()) as i32) == ('.' as i32)) as i32) != 0)
     );
     assert!(
-        ((((((*tail.borrow()).offset((1) as isize).read()) as i32) == ('c' as i32)) as i32) != 0)
+        ((((((*tail.borrow()).offset(((1) as isize)).read()) as i32) == ('c' as i32)) as i32) != 0)
     );
     assert!(
-        ((((((*tail.borrow()).offset((2) as isize).read()) as i32) == ('d' as i32)) as i32) != 0)
+        ((((((*tail.borrow()).offset(((2) as isize)).read()) as i32) == ('d' as i32)) as i32) != 0)
     );
     let have: Value<i32> = Rc::new(RefCell::new(0));
     let p: Value<AnyPtr> = Rc::new(RefCell::new(if ((*have.borrow()) != 0) {
@@ -113,7 +113,7 @@ fn main_0() -> i32 {
     }));
     assert!(
         (((((((*p.borrow()).reinterpret_cast::<u8>())
-            .offset((0) as isize)
+            .offset(((0) as isize))
             .read()) as i32)
             == ('\0' as i32)) as i32)
             != 0)
@@ -128,7 +128,7 @@ fn main_0() -> i32 {
     };
     assert!(
         (((((((*p.borrow()).reinterpret_cast::<u8>())
-            .offset((0) as isize)
+            .offset(((0) as isize))
             .read()) as i32)
             == ('f' as i32)) as i32)
             != 0)

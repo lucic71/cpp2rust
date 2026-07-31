@@ -452,8 +452,8 @@ protected:
     return enabled ? arena_.New<Delim>('[', ']', inner) : inner;
   }
 
-  RsExpr *CastTo(clang::QualType qual_type) {
-    return Cat(Text(keyword::kAs), Text(GetUnsafeTypeAsString(qual_type)));
+  RsExpr *CastTo(RsExpr *expr, clang::QualType qual_type) {
+    return arena_.New<Cast>(expr, Text(GetUnsafeTypeAsString(qual_type)));
   }
 
   // Renders a type in the current conversion state. Only for textual queries

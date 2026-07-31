@@ -159,7 +159,7 @@ fn main_0() -> i32 {
     assert!(
         ((((((((*c.borrow()).u.raw_().reinterpret_cast::<u8>() as Ptr<u8>)
             .reinterpret_cast::<u8>())
-        .offset((2) as isize)
+        .offset(((2) as isize))
         .read()) as i32)
             == 144) as i32)
             != 0)
@@ -167,7 +167,7 @@ fn main_0() -> i32 {
     assert!(
         ((((((((*c.borrow()).u.raw_().reinterpret_cast::<u8>() as Ptr<u8>)
             .reinterpret_cast::<u8>())
-        .offset((3) as isize)
+        .offset(((3) as isize))
         .read()) as i32)
             == 31) as i32)
             != 0)

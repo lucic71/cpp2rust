@@ -26,7 +26,7 @@ fn main_0(argc: i32, argv: Ptr<Ptr<u8>>) -> i32 {
     let argc: Value<i32> = Rc::new(RefCell::new(argc));
     let argv: Value<Ptr<Ptr<u8>>> = Rc::new(RefCell::new(argv));
     let s: Value<Vec<u8>> = Rc::new(RefCell::new(
-        ((*argv.borrow()).offset((0) as isize).read())
+        ((*argv.borrow()).offset(((0) as isize)).read())
             .to_c_string_iterator()
             .chain(std::iter::once(0))
             .collect::<Vec<u8>>(),

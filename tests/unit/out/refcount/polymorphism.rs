@@ -33,7 +33,10 @@ impl ByteRepr for Dog {
 }
 #[derive(Default)]
 pub struct Cat {}
-impl Cat {
+pub trait CatMethods {
+    fn meow(&self) -> bool;
+}
+impl CatMethods for Ptr<Cat> {
     fn meow(&self) -> bool {
         return true;
     }

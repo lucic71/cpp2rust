@@ -83,9 +83,9 @@ pub unsafe fn fft_3(a: *mut Option<Box<[Complex]>>, mut N: i32) -> Option<Box<[C
         i.postfix_inc();
     }
     let mut y0: Option<Box<[Complex]>> =
-        (unsafe { fft_3(&mut A0 as *mut Option<Box<[Complex]>>, ((N) / (2))) });
+        (unsafe { fft_3((&mut A0 as *mut Option<Box<[Complex]>>), ((N) / (2))) });
     let mut y1: Option<Box<[Complex]>> =
-        (unsafe { fft_3(&mut A1 as *mut Option<Box<[Complex]>>, ((N) / (2))) });
+        (unsafe { fft_3((&mut A1 as *mut Option<Box<[Complex]>>), ((N) / (2))) });
     let mut k: i32 = 0;
     'loop_: while ((k) < ((N) / (2))) {
         let mut yk: Complex = (unsafe {
@@ -143,7 +143,7 @@ unsafe fn main_0() -> i32 {
         i.postfix_inc();
     }
     let mut b: Option<Box<[Complex]>> =
-        (unsafe { fft_3(&mut a as *mut Option<Box<[Complex]>>, N) });
+        (unsafe { fft_3((&mut a as *mut Option<Box<[Complex]>>), N) });
     let mut reals: Option<Box<[i32]>> = Some(
         (0..(N as usize))
             .map(|_| <i32>::default())

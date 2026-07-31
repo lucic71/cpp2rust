@@ -20,13 +20,13 @@ pub struct Graph {
 }
 impl Graph {
     pub unsafe fn push(&self, mut src: u32, mut dst: u32) {
-        (*self.adj.offset((src) as isize)) = (Box::leak(Box::new(GraphNode {
+        (*self.adj.offset(((src) as isize))) = (Box::leak(Box::new(GraphNode {
             dst: dst,
-            next: (*self.adj.offset((src) as isize)),
+            next: (*self.adj.offset(((src) as isize))),
         })) as *mut GraphNode);
-        (*self.adj.offset((dst) as isize)) = (Box::leak(Box::new(GraphNode {
+        (*self.adj.offset(((dst) as isize))) = (Box::leak(Box::new(GraphNode {
             dst: src,
-            next: (*self.adj.offset((dst) as isize)),
+            next: (*self.adj.offset(((dst) as isize))),
         })) as *mut GraphNode);
     }
 }

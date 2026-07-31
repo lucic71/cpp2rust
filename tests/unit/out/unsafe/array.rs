@@ -17,13 +17,13 @@ unsafe fn main_0() -> i32 {
     let arr2: [i32; 5] = [1, 1, 1, 1, 1];
     let mut i: i32 = 0;
     'loop_: while ((i) < (N)) {
-        arr1[(i) as usize] = ((i) + (arr2[(i) as usize]));
+        arr1[((i) as usize)] = ((i) + (arr2[((i) as usize)]));
         i.prefix_inc();
     }
     let mut fatorial: i32 = 1;
     let mut i: i32 = 0;
     'loop_: while ((i) < (N)) {
-        fatorial *= arr1[(i) as usize];
+        fatorial *= arr1[((i) as usize)];
         i.prefix_inc();
     }
     return fatorial;

@@ -20,7 +20,7 @@ unsafe fn main_0() -> i32 {
             s,
             libc::SOL_SOCKET,
             libc::SO_KEEPALIVE,
-            ((&mut on as *mut i32) as *const i32 as *const ::libc::c_void),
+            (((&mut on as *mut i32) as *const i32) as *const ::libc::c_void),
             (::std::mem::size_of::<i32>() as u32)
         )) == (0)) as i32)
             != 0)
@@ -30,7 +30,7 @@ unsafe fn main_0() -> i32 {
             s,
             libc::IPPROTO_TCP,
             libc::TCP_NODELAY,
-            ((&mut on as *mut i32) as *const i32 as *const ::libc::c_void),
+            (((&mut on as *mut i32) as *const i32) as *const ::libc::c_void),
             (::std::mem::size_of::<i32>() as u32)
         )) == (0)) as i32)
             != 0)
@@ -42,7 +42,7 @@ unsafe fn main_0() -> i32 {
             s,
             libc::SOL_SOCKET,
             libc::SO_ERROR,
-            ((&mut err as *mut i32) as *mut i32 as *mut ::libc::c_void),
+            (((&mut err as *mut i32) as *mut i32) as *mut ::libc::c_void),
             (&mut len as *mut u32)
         )) == (0)) as i32)
             != 0)

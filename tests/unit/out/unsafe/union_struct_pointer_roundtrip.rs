@@ -19,9 +19,9 @@ pub fn main() {
 }
 unsafe fn main_0() -> i32 {
     let mut arr: [pair; 3] = [<pair>::default(); 3];
-    arr[(0) as usize].x = 10;
-    arr[(1) as usize].x = 20;
-    arr[(2) as usize].x = 30;
+    arr[((0) as usize)].x = 10;
+    arr[((1) as usize)].x = 20;
+    arr[((2) as usize)].x = 30;
     #[repr(C)]
     #[derive(Copy, Clone)]
     pub union anon_0 {
@@ -34,16 +34,16 @@ unsafe fn main_0() -> i32 {
         }
     };
     let mut u: anon_0 = <anon_0>::default();
-    u.p = (&mut arr[(1) as usize] as *mut pair);
+    u.p = (&mut arr[((1) as usize)] as *mut pair);
     let mut q: *mut pair = u.p;
     assert!((((((*q).x) == (20)) as i32) != 0));
-    assert!(((((q) == (&mut arr[(1) as usize] as *mut pair)) as i32) != 0));
+    assert!(((((q) == (&mut arr[((1) as usize)] as *mut pair)) as i32) != 0));
     u.bits = (u.bits).wrapping_add((::std::mem::size_of::<pair>() as u64));
     assert!((((((*u.p).x) == (30)) as i32) != 0));
-    assert!(((((u.p) == (&mut arr[(2) as usize] as *mut pair)) as i32) != 0));
+    assert!(((((u.p) == (&mut arr[((2) as usize)] as *mut pair)) as i32) != 0));
     u.bits = (u.bits)
         .wrapping_sub(((2_usize).wrapping_mul((::std::mem::size_of::<pair>() as usize)) as u64));
     assert!((((((*u.p).x) == (10)) as i32) != 0));
-    assert!(((((u.p) == (&mut arr[(0) as usize] as *mut pair)) as i32) != 0));
+    assert!(((((u.p) == (&mut arr[((0) as usize)] as *mut pair)) as i32) != 0));
     return 0;
 }

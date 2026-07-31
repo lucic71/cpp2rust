@@ -30,11 +30,11 @@ fn main_0() -> i32 {
         _lhs == (arr.as_pointer() as Ptr<i32>)
     });
     assert!({
-        let _lhs = (*p.borrow()).offset((1) as isize);
+        let _lhs = (*p.borrow()).offset(((1) as isize));
         _lhs == ((arr.as_pointer() as Ptr<i32>).offset(1))
     });
     assert!({
-        let _lhs = (*p.borrow()).offset((2) as isize);
+        let _lhs = (*p.borrow()).offset(((2) as isize));
         _lhs == ((arr.as_pointer() as Ptr<i32>).offset(2))
     });
     let val: Value<i32> = Rc::new(RefCell::new(42));
@@ -57,7 +57,7 @@ fn main_0() -> i32 {
         _lhs == (arr.as_pointer() as Ptr<i32>)
     });
     assert!({
-        let _lhs = (*arr_back.borrow()).offset((1) as isize);
+        let _lhs = (*arr_back.borrow()).offset(((1) as isize));
         _lhs == ((arr.as_pointer() as Ptr<i32>).offset(1))
     });
     return 0;
