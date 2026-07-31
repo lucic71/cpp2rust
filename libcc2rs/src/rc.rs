@@ -72,46 +72,6 @@ enum PtrKind<T> {
     FieldPtr(Rc<dyn FieldAccess<T>>),
 }
 
-pub enum StrongPtr<T> {
-    StackSingle(Rc<RefCell<T>>),
-    Vec {
-        rc: Rc<RefCell<Vec<T>>>,
-        offset: usize,
-    },
-    StackArray {
-        rc: Rc<RefCell<Box<[T]>>>,
-        offset: usize,
-    },
-    Reinterpreted {
-        alloc: Rc<dyn OriginalAlloc>,
-        byte_offset: usize,
-        // Local buffer for deref(). None until first access.
-        // Read-through: refreshed from alloc on every deref() call.
-        cell: RefCell<Option<T>>,
-    },
-}
-
-impl<T: ByteRepr> StrongPtr<T> {
-    pub fn deref(&self) -> Ref<'_, T> {
-        match self {
-            StrongPtr::StackSingle(rc) => rc.borrow(),
-            StrongPtr::Vec { rc, offset } => Ref::map(rc.borrow(), |v| &v[*offset]),
-            StrongPtr::StackArray { rc, offset } => Ref::map(rc.borrow(), |a| &a[*offset]),
-            StrongPtr::Reinterpreted {
-                alloc,
-                byte_offset,
-                cell,
-            } => {
-                // Read-through: always re-read from the original allocation.
-                let mut buf = vec![0u8; T::byte_size()];
-                alloc.read_bytes(*byte_offset, &mut buf);
-                *cell.borrow_mut() = Some(T::from_bytes(&buf));
-                Ref::map(cell.borrow(), |opt| opt.as_ref().unwrap())
-            }
-        }
-    }
-}
-
 impl<T> fmt::Debug for PtrKind<T> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
@@ -392,30 +352,6 @@ impl<T> Ptr<T> {
 
     pub fn to_string_iterator(&self) -> StringIterator<T> {
         StringIterator { ptr: self.clone() }
-    }
-
-    pub fn upgrade(&self) -> StrongPtr<T> {
-        match &self.kind {
-            PtrKind::Null => panic!("ub: null pointer"),
-            PtrKind::StackSingle(weak) | PtrKind::HeapSingle(weak) => {
-                assert_eq!(self.offset, 0, "ub: invalid offset");
-                StrongPtr::StackSingle(weak.upgrade().expect("ub: dangling pointer"))
-            }
-            PtrKind::Vec(weak) => StrongPtr::Vec {
-                rc: weak.upgrade().expect("ub: dangling pointer"),
-                offset: self.offset,
-            },
-            PtrKind::StackArray(weak) | PtrKind::HeapArray(weak) => StrongPtr::StackArray {
-                rc: weak.upgrade().expect("ub: dangling pointer"),
-                offset: self.offset,
-            },
-            PtrKind::Reinterpreted(data) => StrongPtr::Reinterpreted {
-                alloc: Rc::clone(&data.alloc),
-                byte_offset: self.offset,
-                cell: RefCell::new(None),
-            },
-            PtrKind::FieldPtr(_) => panic!("upgrade not supported for field pointers"),
-        }
     }
 
     pub fn write(&self, value: T)

@@ -70,7 +70,7 @@ fn f14(a0: Ptr<Vec<u8>>, a1: usize, a2: usize, a3: Ptr<u8>, a4: usize) -> Ptr<Ve
     let pos = a1 as usize;
     let end = std::cmp::min(
         pos + a2 as usize,
-        (*a0.upgrade().deref()).len().saturating_sub(1),
+        a0.with(|__v: &Vec<u8>| __v.len().saturating_sub(1)),
     );
     a0.with_mut(|__v: &mut Vec<u8>| {
         __v.splice(pos..end, a3.map(|c| c.read()).take((a4) as usize));
@@ -119,7 +119,7 @@ fn f21(a0: &mut Vec<u8>, a1: usize, a2: u8) -> Vec<u8> {
 }
 
 fn f26(a0: Ptr<Vec<u8>>, a1: usize) -> Ptr<u8> {
-    if a1 as usize >= (*a0.upgrade().deref()).len().saturating_sub(1) {
+    if a1 as usize >= a0.with(|__v: &Vec<u8>| __v.len().saturating_sub(1)) {
         panic!("out of bounds access")
     } else {
         (a0.to_strong().as_pointer() as Ptr<u8>).offset(a1 as isize)

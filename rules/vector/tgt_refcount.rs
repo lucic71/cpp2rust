@@ -166,7 +166,7 @@ fn f44<T1>(a0: Ptr<T1>) -> Ptr<T1> {
 }
 
 fn f50<T1: ByteRepr>(a0: Ptr<Vec<T1>>, a1: usize) -> Ptr<Vec<T1>> {
-    if a1 as usize >= (*a0.upgrade().deref()).len() {
+    if a1 as usize >= a0.with(|__v: &Vec<T1>| __v.len()) {
         panic!("out of bounds access")
     } else {
         a0.offset(a1 as isize)
