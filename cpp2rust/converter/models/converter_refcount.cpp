@@ -1700,6 +1700,8 @@ RsExpr *ConverterRefCount::VisitMemberExpr(clang::MemberExpr *expr) {
     if (!node) {
       node = Text("");
     }
+  } else if (isLValue()) {
+    node = Converter::ConvertMemberExpr(expr);
   } else {
     PushExprKind push(*this, ExprKind::RValue);
     node = Converter::ConvertMemberExpr(expr);
@@ -1723,7 +1725,7 @@ RsExpr *ConverterRefCount::VisitMemberExpr(clang::MemberExpr *expr) {
     if (known) {
       node = arena_.New<BorrowRead>(node);
     }
-  } else {
+  } else if (known) {
     node = arena_.New<BorrowWrite>(node);
   }
   SetValueFreshness(expr->getType());
