@@ -108,11 +108,11 @@ impl MinHeapMethods for Ptr<MinHeap> {
             left: Ptr::<MinHeapNode>::null(),
             right: Ptr::<MinHeapNode>::null(),
         };
-        return (self
+        return ((self
             .with(|__v| (*__v).alloc.clone())
             .as_ref()
             .unwrap()
-            .as_pointer()
+            .as_pointer() as Ptr<MinHeapNode>)
             .offset((self.with_mut(|__v| __v.next.postfix_inc()) as usize)))
         .clone();
     }

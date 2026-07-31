@@ -179,10 +179,7 @@ pub fn RndStuff_2() {
                 == 2)
         );
         ({
-            (*x3.borrow())
-                .as_ref()
-                .unwrap()
-                .as_pointer()
+            ((*x3.borrow()).as_ref().unwrap().as_pointer() as Ptr<Pair>)
                 .offset(((*i.borrow()) as usize))
                 .inc(10)
         });
@@ -235,10 +232,7 @@ pub fn RndStuff_2() {
                 == -2_i32)
         );
         ({
-            (*x3.borrow())
-                .as_ref()
-                .unwrap()
-                .as_pointer()
+            ((*x3.borrow()).as_ref().unwrap().as_pointer() as Ptr<Pair>)
                 .offset(((*i.borrow()) as usize))
                 .inc(-10_i32)
         });

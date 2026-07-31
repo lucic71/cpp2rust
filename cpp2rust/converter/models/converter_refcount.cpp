@@ -2348,8 +2348,11 @@ RsExpr *ConverterRefCount::ConvertCXXOperatorCallExpr(
       auto *node = Cat(base, Text(".as_ref().unwrap()"));
       if (isAddrOf()) {
         auto *idx = ConvertRValue(expr->getArg(1));
-        auto *ptr = MethodCall(node, "as_pointer", std::vector<RsExpr *>{},
-                               /*is_mut=*/false);
+        PushConversionKind push(*this, ConversionKind::Unboxed);
+        auto *ptr = arena_.New<Cast>(
+            MethodCall(node, "as_pointer", std::vector<RsExpr *>{},
+                       /*is_mut=*/false),
+            Cat(Text("Ptr<"), Convert(expr->getType()), Text('>')));
         node = MethodCall(ptr, "offset", std::vector<RsExpr *>{Parens(idx)},
                           /*is_mut=*/false);
       } else {

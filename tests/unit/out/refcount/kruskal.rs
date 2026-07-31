@@ -42,10 +42,7 @@ impl ByteRepr for Edge {
 pub fn partition_0(arr: Ptr<Option<Value<Box<[Edge]>>>>, start: i32, end: i32) -> i32 {
     let start: Value<i32> = Rc::new(RefCell::new(start));
     let end: Value<i32> = Rc::new(RefCell::new(end));
-    let pivot: Ptr<Edge> = ((arr.read())
-        .as_ref()
-        .unwrap()
-        .as_pointer()
+    let pivot: Ptr<Edge> = (((arr.read()).as_ref().unwrap().as_pointer() as Ptr<Edge>)
         .offset(((*start.borrow()) as usize)))
     .clone();
     let count: Value<i32> = Rc::new(RefCell::new(0));
