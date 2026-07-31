@@ -1724,10 +1724,15 @@ RsExpr *ConverterRefCount::VisitInitListExpr(clang::InitListExpr *expr) {
   }
 
   auto conv = getConversionKind();
-  // 2D arrays are FullRefCount'ed on the second level as well.
-  PushConversionKind push(
-      *this, ConversionKind::Unboxed,
-      !(expr->getNumInits() > 0 && expr->getInit(0)->getType()->isArrayType()));
+  bool nested_array =
+      expr->getNumInits() > 0 && expr->getInit(0)->getType()->isArrayType();
+  // 2D arrays are FullRefCount'ed on the second level as well, including the
+  // ones held by an unboxed field.
+  PushConversionKind push(*this,
+                          nested_array ? ConversionKind::FullRefCount
+                                       : ConversionKind::Unboxed,
+                          !nested_array ||
+                              conv == ConversionKind::UnboxedField);
 
   RsExpr *node = nullptr;
   switch (conv) {
