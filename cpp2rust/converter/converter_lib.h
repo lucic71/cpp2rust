@@ -229,4 +229,6 @@ enum class ConstCastType {
 
 ConstCastType GetConstCastType(clang::QualType to, clang::QualType from);
 
+bool HasZeroEnumerator(const clang::EnumDecl *decl);
+
 } // namespace cpp2rust

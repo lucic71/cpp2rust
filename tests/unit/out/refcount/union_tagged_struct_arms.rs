@@ -9,6 +9,7 @@ use std::rc::{Rc, Weak};
 #[derive(Clone, Copy, PartialEq, Debug, Default)]
 enum Choice_enum {
     #[default]
+    _ZERO_ = 0,
     C_LIST = 1,
     C_LETTERS = 2,
     C_INTEGERS = 3,
@@ -16,6 +17,7 @@ enum Choice_enum {
 impl From<i32> for Choice_enum {
     fn from(n: i32) -> Choice_enum {
         match n {
+            0 => Choice_enum::_ZERO_,
             1 => Choice_enum::C_LIST,
             2 => Choice_enum::C_LETTERS,
             3 => Choice_enum::C_INTEGERS,

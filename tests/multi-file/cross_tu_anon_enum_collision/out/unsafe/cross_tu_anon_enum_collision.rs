@@ -9,11 +9,13 @@ use std::rc::Rc;
 #[derive(Clone, Copy, PartialEq, Debug, Default)]
 enum anon_0 {
     #[default]
+    _ZERO_ = 0,
     ALPHA = 7,
 }
 impl From<i32> for anon_0 {
     fn from(n: i32) -> anon_0 {
         match n {
+            0 => anon_0::_ZERO_,
             7 => anon_0::ALPHA,
             _ => panic!("invalid anon_0 value: {}", n),
         }
@@ -38,11 +40,13 @@ unsafe fn main_0() -> i32 {
 #[derive(Clone, Copy, PartialEq, Debug, Default)]
 enum anon_3 {
     #[default]
+    _ZERO_ = 0,
     BETA = 9,
 }
 impl From<i32> for anon_3 {
     fn from(n: i32) -> anon_3 {
         match n {
+            0 => anon_3::_ZERO_,
             9 => anon_3::BETA,
             _ => panic!("invalid anon_3 value: {}", n),
         }

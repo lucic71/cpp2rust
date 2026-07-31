@@ -3250,7 +3250,10 @@ RsExpr *Converter::VisitOffsetOfExpr(clang::OffsetOfExpr *expr) {
                   member_path));
 }
 
+static constexpr const char *kZeroEnumerator = "_ZERO_";
+
 RsExpr *Converter::VisitEnumDecl(clang::EnumDecl *decl) {
+
   ENSURE(decl_ids_.insert(GetID(decl)).second);
   if (Mapper::Contains(ctx_.getCanonicalTagType(decl))) {
     return arena_.New<Verbatim>("");
@@ -3262,13 +3265,15 @@ RsExpr *Converter::VisitEnumDecl(clang::EnumDecl *decl) {
   parts.push_back(Text("#[derive(Clone, Copy, PartialEq, Debug, Default)]"));
   parts.push_back(Text(std::format("enum {}", GetRecordName(decl))));
   std::vector<RsExpr *> enumerators;
-  bool first_enumerator = true;
+  if (!HasZeroEnumerator(decl)) {
+    enumerators.push_back(Text("#[default]"));
+    enumerators.push_back(Text(std::format("{} = 0,", kZeroEnumerator)));
+  }
   for (auto e : decl->enumerators()) {
     llvm::SmallVector<char, 32> init;
     e->getInitVal().toString(init, 10);
-    if (first_enumerator) {
+    if (enumerators.empty()) {
       enumerators.push_back(Text("#[default]"));
-      first_enumerator = false;
     }
     enumerators.push_back(
         Text(std::format("{} = {},", std::string_view(e->getName()),
@@ -3285,6 +3290,9 @@ RsExpr *Converter::VisitEnumDecl(clang::EnumDecl *decl) {
 RsExpr *Converter::AddFromImpl(clang::EnumDecl *decl) {
   auto name = GetRecordName(decl);
   std::vector<RsExpr *> arms;
+  if (!HasZeroEnumerator(decl)) {
+    arms.push_back(Text(std::format("0 => {}::{},", name, kZeroEnumerator)));
+  }
   for (auto e : decl->enumerators()) {
     llvm::SmallVector<char, 32> init;
     e->getInitVal().toString(init, 10);

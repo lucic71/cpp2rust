@@ -1158,4 +1158,13 @@ ConstCastType GetConstCastType(clang::QualType to, clang::QualType from) {
   }
 }
 
+bool HasZeroEnumerator(const clang::EnumDecl *decl) {
+  for (auto e : decl->enumerators()) {
+    if (e->getInitVal().isZero()) {
+      return true;
+    }
+  }
+  return false;
+}
+
 } // namespace cpp2rust
