@@ -494,6 +494,16 @@ impl<T> Ptr<T> {
     where
         T: ByteRepr,
     {
+        let mut f = Some(f);
+        let mut ret = None;
+        self.with_mut_dyn(&mut |v| ret = Some(f.take().expect("ub: invalid access")(v)));
+        ret.expect("ub: invalid access")
+    }
+
+    fn with_mut_dyn(&self, f: &mut dyn FnMut(&mut T))
+    where
+        T: ByteRepr,
+    {
         match &self.kind {
             PtrKind::Null => panic!("ub: null pointer"),
             PtrKind::StackSingle(weak) | PtrKind::HeapSingle(weak) => {
@@ -516,23 +526,25 @@ impl<T> Ptr<T> {
                 let mut buf = vec![0u8; T::byte_size()];
                 data.alloc.read_bytes(self.offset, &mut buf);
                 let mut val = T::from_bytes(&buf);
-                let ret = f(&mut val);
+                f(&mut val);
                 val.to_bytes(&mut buf);
                 data.alloc.write_bytes(self.offset, &buf);
-                ret
             }
-            PtrKind::FieldPtr(view) => {
-                let mut f = Some(f);
-                let mut ret = None;
-                view.with_mut_dyn(self.offset, &mut |v| {
-                    ret = Some(f.take().expect("ub: invalid access")(v))
-                });
-                ret.expect("ub: invalid access")
-            }
+            PtrKind::FieldPtr(view) => view.with_mut_dyn(self.offset, f),
         }
     }
 
     pub fn with<R>(&self, f: impl FnOnce(&T) -> R) -> R
+    where
+        T: ByteRepr,
+    {
+        let mut f = Some(f);
+        let mut ret = None;
+        self.with_dyn(&mut |v| ret = Some(f.take().expect("ub: invalid access")(v)));
+        ret.expect("ub: invalid access")
+    }
+
+    fn with_dyn(&self, f: &mut dyn FnMut(&T))
     where
         T: ByteRepr,
     {
@@ -542,7 +554,7 @@ impl<T> Ptr<T> {
                 assert_eq!(self.offset, 0, "ub: invalid offset");
                 let rc = weak.upgrade().expect("ub: dangling pointer");
                 let borrow = rc.borrow();
-                f(&*borrow)
+                f(&borrow)
             }
             PtrKind::Vec(weak) => {
                 let rc = weak.upgrade().expect("ub: dangling pointer");
@@ -560,14 +572,7 @@ impl<T> Ptr<T> {
                 let val = T::from_bytes(&buf);
                 f(&val)
             }
-            PtrKind::FieldPtr(view) => {
-                let mut f = Some(f);
-                let mut ret = None;
-                view.with_dyn(self.offset, &mut |v| {
-                    ret = Some(f.take().expect("ub: invalid access")(v))
-                });
-                ret.expect("ub: invalid access")
-            }
+            PtrKind::FieldPtr(view) => view.with_dyn(self.offset, f),
         }
     }
 }
