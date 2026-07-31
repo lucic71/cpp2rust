@@ -1720,7 +1720,9 @@ RsExpr *ConverterRefCount::VisitMemberExpr(clang::MemberExpr *expr) {
     }
     node = DerefPtrExpr(node, member->getType().getNonReferenceType());
   } else if (isRValue()) {
-    node = arena_.New<BorrowRead>(node);
+    if (known) {
+      node = arena_.New<BorrowRead>(node);
+    }
   } else {
     node = arena_.New<BorrowWrite>(node);
   }
