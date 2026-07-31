@@ -41,25 +41,29 @@ fn main_0() -> i32 {
         (*i.borrow_mut()).postfix_inc();
     }
     assert!(
-        (((((*grid.borrow())[(0) as usize].borrow()[(0) as usize] as i32) == ('a' as i32)) as i32)
-            != 0)
-    );
-    assert!(
-        (((((*grid.borrow())[(1) as usize].borrow()[(0) as usize] as i32) == ('b' as i32)) as i32)
-            != 0)
-    );
-    assert!(
-        (((((*grid.borrow())[(2) as usize].borrow()[(0) as usize] as i32) == ('c' as i32)) as i32)
-            != 0)
-    );
-    assert!(
-        (((((*grid.borrow())[(1) as usize].borrow()[(1) as usize] as i32) == ('\0' as i32))
+        (((((*(*grid.borrow())[(0) as usize].borrow())[(0) as usize] as i32) == ('a' as i32))
             as i32)
             != 0)
     );
-    (*grid.borrow())[(2) as usize].borrow_mut()[(5) as usize] = (('z' as i32) as u8);
     assert!(
-        (((((*grid.borrow())[(2) as usize].borrow()[(5) as usize] as i32) == ('z' as i32)) as i32)
+        (((((*(*grid.borrow())[(1) as usize].borrow())[(0) as usize] as i32) == ('b' as i32))
+            as i32)
+            != 0)
+    );
+    assert!(
+        (((((*(*grid.borrow())[(2) as usize].borrow())[(0) as usize] as i32) == ('c' as i32))
+            as i32)
+            != 0)
+    );
+    assert!(
+        (((((*(*grid.borrow())[(1) as usize].borrow())[(1) as usize] as i32) == ('\0' as i32))
+            as i32)
+            != 0)
+    );
+    (*(*grid.borrow())[(2) as usize].borrow_mut())[(5) as usize] = (('z' as i32) as u8);
+    assert!(
+        (((((*(*grid.borrow())[(2) as usize].borrow())[(5) as usize] as i32) == ('z' as i32))
+            as i32)
             != 0)
     );
     return 0;

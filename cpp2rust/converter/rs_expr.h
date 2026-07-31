@@ -27,6 +27,7 @@ struct RsExpr {
     Assign,
     CompoundAssign,
     Field,
+    Index,
     BorrowRead,
     BorrowWrite,
     MethodCall,
@@ -188,6 +189,24 @@ struct Field : Accessor {
   }
 
   std::string member;
+};
+
+struct Index : Accessor {
+  Index(RsExpr *object, RsExpr *index)
+      : Accessor(Kind::Index, object), index(index) {}
+
+  static bool classof(const RsExpr *expr) { return expr->kind == Kind::Index; }
+
+  std::string print() const override {
+    return object->print() + "[(" + index->print() + ") as usize]";
+  }
+
+  void ForEachChild(llvm::function_ref<void(RsExpr *&)> fn) override {
+    fn(object);
+    fn(index);
+  }
+
+  RsExpr *index;
 };
 
 struct BorrowRead : Accessor {

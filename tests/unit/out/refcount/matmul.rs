@@ -18,7 +18,7 @@ pub fn matalloc_0(n: i32, p: i32, e: i32) -> Option<Value<Box<[Option<Value<Box<
         )))));
     let i: Value<i32> = Rc::new(RefCell::new(0));
     'loop_: while ((*i.borrow()) < (*n.borrow())) {
-        (*m.borrow()).as_ref().unwrap().borrow_mut()[((*i.borrow()) as usize) as usize] =
+        (*(*m.borrow()).as_ref().unwrap().borrow_mut())[((*i.borrow()) as usize) as usize] =
             Some(Rc::new(RefCell::new(
                 (0..((*p.borrow()) as usize))
                     .map(|_| <i32>::default())
@@ -26,10 +26,10 @@ pub fn matalloc_0(n: i32, p: i32, e: i32) -> Option<Value<Box<[Option<Value<Box<
             )));
         let j: Value<i32> = Rc::new(RefCell::new(0));
         'loop_: while ((*j.borrow()) < (*p.borrow())) {
-            (*m.borrow()).as_ref().unwrap().borrow()[((*i.borrow()) as usize) as usize]
+            (*(*(*m.borrow()).as_ref().unwrap().borrow())[((*i.borrow()) as usize) as usize]
                 .as_ref()
                 .unwrap()
-                .borrow_mut()[((*j.borrow()) as usize) as usize] = (*e.borrow());
+                .borrow_mut())[((*j.borrow()) as usize) as usize] = (*e.borrow());
             (*j.borrow_mut()).prefix_inc();
         }
         (*i.borrow_mut()).prefix_inc();
@@ -60,21 +60,22 @@ pub fn matmul_1(
         'loop_: while ((*j.borrow()) < (*p2.borrow())) {
             let k: Value<i32> = Rc::new(RefCell::new(0));
             'loop_: while ((*k.borrow()) < (*p1.borrow())) {
-                (*sum.borrow_mut()) += ((*m1.borrow()).as_ref().unwrap().borrow()
+                (*sum.borrow_mut()) += ((*(*(*m1.borrow()).as_ref().unwrap().borrow())
                     [((*i.borrow()) as usize) as usize]
                     .as_ref()
                     .unwrap()
-                    .borrow()[((*k.borrow()) as usize) as usize]
-                    * (*m2.borrow()).as_ref().unwrap().borrow()[((*k.borrow()) as usize) as usize]
+                    .borrow())[((*k.borrow()) as usize) as usize]
+                    * (*(*(*m2.borrow()).as_ref().unwrap().borrow())
+                        [((*k.borrow()) as usize) as usize]
                         .as_ref()
                         .unwrap()
-                        .borrow()[((*j.borrow()) as usize) as usize]);
+                        .borrow())[((*j.borrow()) as usize) as usize]);
                 (*k.borrow_mut()).prefix_inc();
             }
-            (*m3.borrow()).as_ref().unwrap().borrow()[((*i.borrow()) as usize) as usize]
+            (*(*(*m3.borrow()).as_ref().unwrap().borrow())[((*i.borrow()) as usize) as usize]
                 .as_ref()
                 .unwrap()
-                .borrow_mut()[((*j.borrow()) as usize) as usize] = (*sum.borrow());
+                .borrow_mut())[((*j.borrow()) as usize) as usize] = (*sum.borrow());
             (*j.borrow_mut()).prefix_inc();
         }
         (*i.borrow_mut()).prefix_inc();
@@ -104,8 +105,8 @@ fn main_0() -> i32 {
             matmul_1(_m1, _n1, _p1, _m2, _n2, _p2)
         }),
     ));
-    return (*m3.borrow()).as_ref().unwrap().borrow()[(0_usize) as usize]
+    return (*(*(*m3.borrow()).as_ref().unwrap().borrow())[(0_usize) as usize]
         .as_ref()
         .unwrap()
-        .borrow()[(0_usize) as usize];
+        .borrow())[(0_usize) as usize];
 }

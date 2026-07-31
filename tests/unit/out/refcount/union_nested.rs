@@ -172,7 +172,10 @@ fn main_0() -> i32 {
     (*ex.borrow_mut()).variant = 6;
     (*ex.borrow_mut()).len = (16usize as u32);
     (*ex.borrow_mut()).body.h().with_mut(|__v| __v.code = 2_u16);
-    *(*ex.borrow_mut()).body.h().pad[(0) as usize] = (('X' as i32) as u8);
+    (*ex.borrow_mut())
+        .body
+        .h()
+        .with_mut(|__v| __v.pad[(0) as usize] = (('X' as i32) as u8));
     assert!((((((*(*ex.borrow()).body.h().upgrade().deref()).code as i32) == 2) as i32) != 0));
     assert!(
         (((((*(*ex.borrow()).body.h().upgrade().deref()).pad[(0) as usize] as i32) == ('X' as i32))

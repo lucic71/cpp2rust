@@ -2255,8 +2255,10 @@ RsExpr *ConverterRefCount::ConvertCXXOperatorCallExpr(
         node = Cat(node, Text(".as_pointer().offset(("), idx, Text("))"));
       } else {
         auto *idx = ConvertRValue(expr->getArg(1));
-        node = Cat(node, Text(isRValue() ? ".borrow()" : ".borrow_mut()"),
-                   Text("[("), idx, Text(") as usize]"));
+        node = arena_.New<Index>(
+            isRValue() ? static_cast<RsExpr *>(arena_.New<BorrowRead>(node))
+                       : arena_.New<BorrowWrite>(node),
+            idx);
       }
       SetValueFreshness(expr->getType());
       return node;
@@ -2377,12 +2379,13 @@ RsExpr *ConverterRefCount::ConvertArraySubscript(clang::Expr *base,
     base_node = ConvertExpr(base->IgnoreImplicit());
   }
   if (clang::isa<clang::ArraySubscriptExpr>(base->IgnoreImplicit())) {
-    base_node =
-        Cat(base_node, Text(isRValue() ? ".borrow()" : ".borrow_mut()"));
+    base_node = isRValue()
+                    ? static_cast<RsExpr *>(arena_.New<BorrowRead>(base_node))
+                    : arena_.New<BorrowWrite>(base_node);
   }
   auto *idx_node = ConvertRValue(idx);
   SetValueFreshness(type);
-  return Cat(base_node, Text("[("), idx_node, Text(") as usize]"));
+  return arena_.New<Index>(base_node, idx_node);
 }
 
 RsExpr *

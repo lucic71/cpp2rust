@@ -121,7 +121,7 @@ pub fn RndStuff_2() {
     ));
     let i: Value<i32> = Rc::new(RefCell::new(0));
     'loop_: while ((*i.borrow()) < 100) {
-        (*x2.borrow()).as_ref().unwrap().borrow_mut()[((*i.borrow()) as usize) as usize] = 1;
+        (*(*x2.borrow()).as_ref().unwrap().borrow_mut())[((*i.borrow()) as usize) as usize] = 1;
         (*i.borrow_mut()).prefix_inc();
     }
     (*x2.borrow_mut()) = Ptr::alloc_array(
@@ -132,7 +132,7 @@ pub fn RndStuff_2() {
     .to_owned_opt();
     let i: Value<i32> = Rc::new(RefCell::new(0));
     'loop_: while ((*i.borrow()) < 200) {
-        (*x2.borrow()).as_ref().unwrap().borrow_mut()[((*i.borrow()) as usize) as usize] = 2;
+        (*(*x2.borrow()).as_ref().unwrap().borrow_mut())[((*i.borrow()) as usize) as usize] = 2;
         (*i.borrow_mut()).prefix_inc();
     }
     let p2: Value<Ptr<i32>> = Rc::new(RefCell::new((*x2.borrow()).as_pointer()));
@@ -148,7 +148,7 @@ pub fn RndStuff_2() {
     )))));
     let i: Value<i32> = Rc::new(RefCell::new(0));
     'loop_: while ((*i.borrow()) < 10) {
-        (*x3.borrow()).as_ref().unwrap().borrow_mut()[((*i.borrow()) as usize) as usize] =
+        (*(*x3.borrow()).as_ref().unwrap().borrow_mut())[((*i.borrow()) as usize) as usize] =
             Pair { x: 1, y: 2 };
         (*i.borrow_mut()).prefix_inc();
     }
@@ -169,7 +169,9 @@ pub fn RndStuff_2() {
                 .deref())
             .y == 2)
         );
-        ({ (*x3.borrow()).as_ref().unwrap().borrow()[((*i.borrow()) as usize) as usize].inc(10) });
+        ({
+            (*(*x3.borrow()).as_ref().unwrap().borrow())[((*i.borrow()) as usize) as usize].inc(10)
+        });
         assert!(
             ((*(*p3_0.borrow())
                 .offset((*i.borrow()) as isize)
@@ -194,10 +196,11 @@ pub fn RndStuff_2() {
     .to_owned_opt();
     let i: Value<i32> = Rc::new(RefCell::new(0));
     'loop_: while ((*i.borrow()) < 50) {
-        (*x3.borrow()).as_ref().unwrap().borrow_mut()[((*i.borrow()) as usize) as usize] = Pair {
-            x: -1_i32,
-            y: -2_i32,
-        };
+        (*(*x3.borrow()).as_ref().unwrap().borrow_mut())[((*i.borrow()) as usize) as usize] =
+            Pair {
+                x: -1_i32,
+                y: -2_i32,
+            };
         (*i.borrow_mut()).prefix_inc();
     }
     let p3_1: Value<Ptr<Pair>> = Rc::new(RefCell::new((*x3.borrow()).as_pointer()));
@@ -222,7 +225,7 @@ pub fn RndStuff_2() {
             .y == -2_i32)
         );
         ({
-            (*x3.borrow()).as_ref().unwrap().borrow()[((*i.borrow()) as usize) as usize]
+            (*(*x3.borrow()).as_ref().unwrap().borrow())[((*i.borrow()) as usize) as usize]
                 .inc(-10_i32)
         });
         assert!(

@@ -82,7 +82,7 @@ impl MinHeap {
     pub fn Alloc(&self, data: u8, freq: i32) -> Ptr<MinHeapNode> {
         let data: Value<u8> = Rc::new(RefCell::new(data));
         let freq: Value<i32> = Rc::new(RefCell::new(freq));
-        self.alloc.as_ref().unwrap().borrow_mut()[(self.next as usize) as usize] = MinHeapNode {
+        (*self.alloc.as_ref().unwrap().borrow_mut())[(self.next as usize) as usize] = MinHeapNode {
             data: (*data.borrow()),
             freq: (*freq.borrow()),
             left: Ptr::<MinHeapNode>::null(),
@@ -102,11 +102,12 @@ impl MinHeap {
         let left: Value<i32> = Rc::new(RefCell::new(((2 * (*idx.borrow())) + 1)));
         let right: Value<i32> = Rc::new(RefCell::new(((2 * (*idx.borrow())) + 2)));
         if ((*left.borrow()) < self.size)
-            && ((*self.arr.as_ref().unwrap().borrow()[((*left.borrow()) as usize) as usize]
+            && ((*(*self.arr.as_ref().unwrap().borrow())[((*left.borrow()) as usize) as usize]
                 .upgrade()
                 .deref())
             .freq
-                < (*self.arr.as_ref().unwrap().borrow()[((*smallest.borrow()) as usize) as usize]
+                < (*(*self.arr.as_ref().unwrap().borrow())
+                    [((*smallest.borrow()) as usize) as usize]
                     .upgrade()
                     .deref())
                 .freq)
@@ -114,11 +115,12 @@ impl MinHeap {
             (*smallest.borrow_mut()) = (*left.borrow());
         }
         if ((*right.borrow()) < self.size)
-            && ((*self.arr.as_ref().unwrap().borrow()[((*right.borrow()) as usize) as usize]
+            && ((*(*self.arr.as_ref().unwrap().borrow())[((*right.borrow()) as usize) as usize]
                 .upgrade()
                 .deref())
             .freq
-                < (*self.arr.as_ref().unwrap().borrow()[((*smallest.borrow()) as usize) as usize]
+                < (*(*self.arr.as_ref().unwrap().borrow())
+                    [((*smallest.borrow()) as usize) as usize]
                     .upgrade()
                     .deref())
                 .freq)
@@ -127,10 +129,10 @@ impl MinHeap {
         }
         if ((*smallest.borrow()) != (*idx.borrow())) {
             ({
-                let _a: Ptr<MinHeapNode> = (self.arr.as_ref().unwrap().borrow()
+                let _a: Ptr<MinHeapNode> = ((*self.arr.as_ref().unwrap().borrow())
                     [((*smallest.borrow()) as usize) as usize])
                     .clone();
-                let _b: Ptr<MinHeapNode> = (self.arr.as_ref().unwrap().borrow()
+                let _b: Ptr<MinHeapNode> = ((*self.arr.as_ref().unwrap().borrow())
                     [((*idx.borrow()) as usize) as usize])
                     .clone();
                 Swap_0(_a, _b)
@@ -140,11 +142,11 @@ impl MinHeap {
     }
     pub fn ExtractMin(&self) -> Ptr<MinHeapNode> {
         let out: Value<Ptr<MinHeapNode>> = Rc::new(RefCell::new(
-            (self.arr.as_ref().unwrap().borrow()[(0_usize) as usize]).clone(),
+            ((*self.arr.as_ref().unwrap().borrow())[(0_usize) as usize]).clone(),
         ));
         self.size.prefix_dec();
-        let __rhs = (self.arr.as_ref().unwrap().borrow()[(self.size as usize) as usize]).clone();
-        self.arr.as_ref().unwrap().borrow_mut()[(0_usize) as usize] = __rhs;
+        let __rhs = ((*self.arr.as_ref().unwrap().borrow())[(self.size as usize) as usize]).clone();
+        (*self.arr.as_ref().unwrap().borrow_mut())[(0_usize) as usize] = __rhs;
         ({ self.Heapify(0) });
         return (*out.borrow()).clone();
     }
@@ -155,21 +157,21 @@ impl MinHeap {
         'loop_: while ((*i.borrow()) != 0)
             && ({
                 let _lhs = (*(*node.borrow()).upgrade().deref()).freq;
-                _lhs < (*self.arr.as_ref().unwrap().borrow()
+                _lhs < (*(*self.arr.as_ref().unwrap().borrow())
                     [((((*i.borrow()) - 1) / 2) as usize) as usize]
                     .upgrade()
                     .deref())
                 .freq
             })
         {
-            let __rhs = (self.arr.as_ref().unwrap().borrow()
+            let __rhs = ((*self.arr.as_ref().unwrap().borrow())
                 [((((*i.borrow()) - 1) / 2) as usize) as usize])
                 .clone();
-            self.arr.as_ref().unwrap().borrow_mut()[((*i.borrow()) as usize) as usize] = __rhs;
+            (*self.arr.as_ref().unwrap().borrow_mut())[((*i.borrow()) as usize) as usize] = __rhs;
             let __rhs = (((*i.borrow()) - 1) / 2);
             (*i.borrow_mut()) = __rhs;
         }
-        self.arr.as_ref().unwrap().borrow_mut()[((*i.borrow()) as usize) as usize] =
+        (*self.arr.as_ref().unwrap().borrow_mut())[((*i.borrow()) as usize) as usize] =
             (*node.borrow()).clone();
     }
     pub fn Build(
@@ -181,14 +183,14 @@ impl MinHeap {
         let n: Value<i32> = Rc::new(RefCell::new(n));
         let i: Value<i32> = Rc::new(RefCell::new(0));
         'loop_: while ((*i.borrow()) < (*n.borrow())) {
-            self.arr.as_ref().unwrap().borrow_mut()[(self.size.postfix_inc() as usize) as usize] =
-                ({
-                    let _data: u8 = (*data.upgrade().deref()).as_ref().unwrap().borrow()
-                        [((*i.borrow()) as usize) as usize];
-                    let _freq: i32 = (*freq.upgrade().deref()).as_ref().unwrap().borrow()
-                        [((*i.borrow()) as usize) as usize];
-                    self.Alloc(_data, _freq)
-                });
+            (*self.arr.as_ref().unwrap().borrow_mut())
+                [(self.size.postfix_inc() as usize) as usize] = ({
+                let _data: u8 = (*(*data.upgrade().deref()).as_ref().unwrap().borrow())
+                    [((*i.borrow()) as usize) as usize];
+                let _freq: i32 = (*(*freq.upgrade().deref()).as_ref().unwrap().borrow())
+                    [((*i.borrow()) as usize) as usize];
+                self.Alloc(_data, _freq)
+            });
             (*i.borrow_mut()).prefix_inc();
         }
         let i: Value<i32> = Rc::new(RefCell::new(((self.size - 2) / 2)));
@@ -261,21 +263,22 @@ pub fn CollectCode_3(
     next: Ptr<i32>,
 ) {
     let top: Value<i32> = Rc::new(RefCell::new(top));
-    (*out.upgrade().deref()).as_ref().unwrap().borrow_mut()[((next.read()) as usize) as usize] = 0;
+    (*(*out.upgrade().deref()).as_ref().unwrap().borrow_mut())[((next.read()) as usize) as usize] =
+        0;
     let i: Value<i32> = Rc::new(RefCell::new(0));
     'loop_: while ((*i.borrow()) < (*top.borrow())) {
-        let __rhs = ((*out.upgrade().deref()).as_ref().unwrap().borrow()
+        let __rhs = ((*(*out.upgrade().deref()).as_ref().unwrap().borrow())
             [((next.read()) as usize) as usize]
             * 10);
-        (*out.upgrade().deref()).as_ref().unwrap().borrow_mut()
+        (*(*out.upgrade().deref()).as_ref().unwrap().borrow_mut())
             [((next.read()) as usize) as usize] = __rhs;
         let __rhs = {
-            let _lhs = (*out.upgrade().deref()).as_ref().unwrap().borrow()
+            let _lhs = (*(*out.upgrade().deref()).as_ref().unwrap().borrow())
                 [((next.read()) as usize) as usize];
-            _lhs + (*arr.upgrade().deref()).as_ref().unwrap().borrow()
+            _lhs + (*(*arr.upgrade().deref()).as_ref().unwrap().borrow())
                 [((*i.borrow()) as usize) as usize]
         };
-        (*out.upgrade().deref()).as_ref().unwrap().borrow_mut()
+        (*(*out.upgrade().deref()).as_ref().unwrap().borrow_mut())
             [((next.read()) as usize) as usize] = __rhs;
         (*i.borrow_mut()).prefix_inc();
     }
@@ -291,7 +294,7 @@ pub fn CollectCodes_4(
     let root: Value<Ptr<MinHeapNode>> = Rc::new(RefCell::new(root));
     let top: Value<i32> = Rc::new(RefCell::new(top));
     if !(((*(*root.borrow()).upgrade().deref()).left).is_null()) {
-        (*arr.upgrade().deref()).as_ref().unwrap().borrow_mut()
+        (*(*arr.upgrade().deref()).as_ref().unwrap().borrow_mut())
             [((*top.borrow()) as usize) as usize] = 0;
         ({
             let _root: Ptr<MinHeapNode> = ((*(*root.borrow()).upgrade().deref()).left).clone();
@@ -303,7 +306,7 @@ pub fn CollectCodes_4(
         });
     }
     if !(((*(*root.borrow()).upgrade().deref()).right).is_null()) {
-        (*arr.upgrade().deref()).as_ref().unwrap().borrow_mut()
+        (*(*arr.upgrade().deref()).as_ref().unwrap().borrow_mut())
             [((*top.borrow()) as usize) as usize] = 1;
         ({
             let _root: Ptr<MinHeapNode> = ((*(*root.borrow()).upgrade().deref()).right).clone();
@@ -392,19 +395,21 @@ fn main_0() -> i32 {
     let i: Value<i32> = Rc::new(RefCell::new(0));
     'loop_: while ((*i.borrow()) < (*size.borrow())) {
         let __rhs = (*arr1.borrow())[(*i.borrow()) as usize];
-        (*data.borrow()).as_ref().unwrap().borrow_mut()[((*i.borrow()) as usize) as usize] = __rhs;
+        (*(*data.borrow()).as_ref().unwrap().borrow_mut())[((*i.borrow()) as usize) as usize] =
+            __rhs;
         let __rhs = (*arr2.borrow())[(*i.borrow()) as usize];
-        (*freq.borrow()).as_ref().unwrap().borrow_mut()[((*i.borrow()) as usize) as usize] = __rhs;
+        (*(*freq.borrow()).as_ref().unwrap().borrow_mut())[((*i.borrow()) as usize) as usize] =
+            __rhs;
         (*i.borrow_mut()).prefix_inc();
     }
     let out: Value<Option<Value<Box<[i32]>>>> = Rc::new(RefCell::new(
         ({ HuffmanCodes_5(data.as_pointer(), freq.as_pointer(), (*size.borrow())) }),
     ));
-    return ((((((((*out.borrow()).as_ref().unwrap().borrow()[(0_usize) as usize] == 0)
-        && ((*out.borrow()).as_ref().unwrap().borrow()[(1_usize) as usize] == 100))
-        && ((*out.borrow()).as_ref().unwrap().borrow()[(2_usize) as usize] == 101))
-        && ((*out.borrow()).as_ref().unwrap().borrow()[(3_usize) as usize] == 1100))
-        && ((*out.borrow()).as_ref().unwrap().borrow()[(4_usize) as usize] == 1101))
-        && ((*out.borrow()).as_ref().unwrap().borrow()[(5_usize) as usize] == 111))
+    return ((((((((*(*out.borrow()).as_ref().unwrap().borrow())[(0_usize) as usize] == 0)
+        && ((*(*out.borrow()).as_ref().unwrap().borrow())[(1_usize) as usize] == 100))
+        && ((*(*out.borrow()).as_ref().unwrap().borrow())[(2_usize) as usize] == 101))
+        && ((*(*out.borrow()).as_ref().unwrap().borrow())[(3_usize) as usize] == 1100))
+        && ((*(*out.borrow()).as_ref().unwrap().borrow())[(4_usize) as usize] == 1101))
+        && ((*(*out.borrow()).as_ref().unwrap().borrow())[(5_usize) as usize] == 111))
         as i32);
 }
