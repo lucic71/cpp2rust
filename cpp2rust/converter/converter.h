@@ -125,7 +125,18 @@ public:
   virtual const char *CharRustType() const { return "libc::c_char"; }
 
   virtual RsExpr *VisitCXXMethodDecl(clang::CXXMethodDecl *decl);
-  virtual std::string GetSelfMaybeWithMut(const clang::CXXMethodDecl *decl);
+  RsExpr *ConvertMethodItem(clang::CXXMethodDecl *decl, bool with_qualifiers,
+                            bool with_body);
+  virtual RsExpr *ConvertRecordMethods(clang::CXXRecordDecl *decl);
+  RsExpr *ConvertVirtualMethods(clang::CXXRecordDecl *decl);
+  static bool IsTranslatableMethod(clang::CXXMethodDecl *method);
+  static bool IsMethodOnRecord(clang::CXXMethodDecl *method);
+  virtual bool MethodHasVisibility(clang::CXXMethodDecl *decl) { return true; }
+  virtual RsExpr *EmitOutOfLineMethod(clang::CXXMethodDecl *decl,
+                                      RsExpr *inner);
+  virtual Fn::Receiver GetMethodReceiver(const clang::CXXMethodDecl *decl);
+
+  virtual bool ThisIsValue() const { return true; }
 
   RsExpr *ConvertCXXConstructorBody(clang::CXXConstructorDecl *decl);
 
@@ -504,9 +515,9 @@ protected:
   virtual RsExpr *ConvertAssignment(clang::Expr *lhs, clang::Expr *rhs,
                                     std::string_view assign_operator);
 
-  virtual RsExpr *ConvertFunctionParameters(clang::FunctionDecl *decl);
+  virtual std::vector<RsExpr *>
+  ConvertFunctionParameters(clang::FunctionDecl *decl);
 
-  virtual RsExpr *ConvertFunctionQualifiers(clang::FunctionDecl *decl);
 
   virtual RsExpr *ConvertFunctionReturnType(clang::FunctionDecl *decl);
 
@@ -516,9 +527,9 @@ protected:
 
   virtual RsExpr *ConvertAbstractClass(clang::CXXRecordDecl *decl);
 
-  RsExpr *ConvertCXXMethodDecls(const clang::CXXRecordDecl *decl,
-                                const std::string_view signature,
-                                bool (*predicate)(clang::CXXMethodDecl *));
+  std::vector<RsExpr *>
+  CollectCXXMethodDecls(const clang::CXXRecordDecl *decl,
+                        bool (*predicate)(clang::CXXMethodDecl *));
 
   virtual RsExpr *AddOrdTrait(const clang::CXXRecordDecl *decl);
 

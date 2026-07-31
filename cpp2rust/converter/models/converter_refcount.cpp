@@ -692,9 +692,83 @@ RsExpr *ConverterRefCount::AddByteReprTrait(const clang::EnumDecl *decl) {
                                   name)))));
 }
 
-std::string
-ConverterRefCount::GetSelfMaybeWithMut(const clang::CXXMethodDecl *decl) {
-  return "&self";
+bool ConverterRefCount::IsMethodOnPtr(clang::CXXMethodDecl *method) {
+  return IsTranslatableMethod(method) && !method->isStatic() &&
+         !clang::isa<clang::CXXConstructorDecl>(method) &&
+         !method->isOverloadedOperator();
+}
+
+bool ConverterRefCount::MethodHasVisibility(clang::CXXMethodDecl *decl) {
+  return !IsMethodOnPtr(decl);
+}
+
+RsExpr *ConverterRefCount::EmitOutOfLineMethod(clang::CXXMethodDecl *decl,
+                                               RsExpr *inner) {
+  if (!IsMethodOnPtr(decl)) {
+    return Converter::EmitOutOfLineMethod(decl, inner);
+  }
+  auto *record = decl->getParent();
+  return arena_.New<Impl>(
+      std::vector<RsExpr *>{}, std::format("{}Methods", GetRecordName(record)),
+      Convert(ctx_.getPointerType(ctx_.getCanonicalTagType(record))),
+      std::vector<RsExpr *>{inner});
+}
+
+bool ConverterRefCount::ThisIsValue() const {
+  auto *method = clang::dyn_cast_or_null<clang::CXXMethodDecl>(curr_function_);
+  return !method || !IsMethodOnPtr(method);
+}
+
+RsExpr *ConverterRefCount::ConvertRecordMethods(clang::CXXRecordDecl *decl) {
+  std::vector<RsExpr *> parts;
+  auto struct_name = GetRecordName(decl);
+
+  auto record_methods = CollectCXXMethodDecls(decl, [](auto *method) {
+    return IsMethodOnRecord(method) && !IsMethodOnPtr(method);
+  });
+  if (!record_methods.empty()) {
+    parts.push_back(arena_.New<Impl>(std::vector<RsExpr *>{}, "",
+                                     Text(struct_name),
+                                     std::move(record_methods)));
+  }
+
+  std::vector<clang::CXXMethodDecl *> ptr_methods;
+  for (auto *method : decl->methods()) {
+    if (IsMethodOnPtr(method)) {
+      ptr_methods.push_back(method);
+    }
+  }
+
+  if (!ptr_methods.empty()) {
+    auto trait_name = std::format("{}Methods", struct_name);
+
+    std::vector<RsExpr *> declarations;
+    std::vector<RsExpr *> definitions;
+    for (auto *method : ptr_methods) {
+      declarations.push_back(ConvertMethodItem(method, false, false));
+      if (method->isThisDeclarationADefinition()) {
+        definitions.push_back(ConvertMethodItem(method, false, true));
+      }
+    }
+
+    parts.push_back(
+        arena_.New<Trait>(std::vector<RsExpr *>{Text(keyword::kPub)},
+                          trait_name, std::move(declarations)));
+    if (!definitions.empty()) {
+      parts.push_back(arena_.New<Impl>(
+          std::vector<RsExpr *>{}, trait_name,
+          Convert(ctx_.getPointerType(ctx_.getCanonicalTagType(decl))),
+          std::move(definitions)));
+    }
+  }
+
+  parts.push_back(ConvertVirtualMethods(decl));
+  return arena_.New<Concat>(std::move(parts));
+}
+
+Fn::Receiver
+ConverterRefCount::GetMethodReceiver(const clang::CXXMethodDecl *decl) {
+  return Fn::Receiver::Ref;
 }
 
 RsExpr *
@@ -834,7 +908,8 @@ RsExpr *ConverterRefCount::LowerPtrUse(RsExpr *node) {
       return arena_.New<PtrWrite>(ptr, assign->right);
     }
     if (auto *ptr = assign->left->TakePtr(Text("__v"))) {
-      return arena_.New<PtrWith>(ptr, true, node);
+      return arena_.New<PtrWith>(
+          ptr, true, arena_.New<Closure>("__v", nullptr, node));
     }
     return nullptr;
   }
@@ -850,7 +925,8 @@ RsExpr *ConverterRefCount::LowerPtrUse(RsExpr *node) {
                         arena_.New<PtrWrite>(Text("_ptr"), value)));
     }
     if (auto *ptr = assign->left->TakePtr(Text("__v"))) {
-      return arena_.New<PtrWith>(ptr, true, node);
+      return arena_.New<PtrWith>(
+          ptr, true, arena_.New<Closure>("__v", nullptr, node));
     }
     return nullptr;
   }
@@ -859,10 +935,12 @@ RsExpr *ConverterRefCount::LowerPtrUse(RsExpr *node) {
     if (auto *ptr = call->object->Pointer()) {
       auto *inner =
           arena_.New<MethodCall>(Text("__v"), call->method, call->args);
-      return arena_.New<PtrWith>(ptr, true, inner);
+      return arena_.New<PtrWith>(
+          ptr, true, arena_.New<Closure>("__v", nullptr, inner));
     }
     if (auto *ptr = call->object->TakePtr(Text("__v"))) {
-      return arena_.New<PtrWith>(ptr, true, node);
+      return arena_.New<PtrWith>(
+          ptr, true, arena_.New<Closure>("__v", nullptr, node));
     }
     return nullptr;
   }
@@ -1703,6 +1781,12 @@ RsExpr *ConverterRefCount::VisitMemberExpr(clang::MemberExpr *expr) {
     if (base_type->isPointerType()) {
       base_type = base_type->getPointeeType();
     }
+    if (IsMethodOnPtr(method)) {
+      auto *receiver = ConvertPointer(expr->getBase());
+      auto name = IsOverloadedMethod(method) ? GetOverloadedFunctionName(method)
+                                             : GetNamedDeclAsString(method);
+      return Cat(receiver, Text(token::kDot), Text(std::move(name)));
+    }
     bool needs_mut = NeedsMutAccess(method, base_type);
     PushExprKind push(*this, needs_mut ? ExprKind::LValue : ExprKind::RValue);
     return Converter::ConvertMemberExpr(expr);
@@ -2303,13 +2387,14 @@ RsExpr *ConverterRefCount::ConvertCXXOperatorCallExpr(
   }
 }
 
-RsExpr *
+std::vector<RsExpr *>
 ConverterRefCount::ConvertFunctionParameters(clang::FunctionDecl *decl) {
   PushConversionKind push(*this, ConversionKind::Unboxed);
   if (decl->isMain() && (decl->getNumParams() != 0U)) {
-    return Text(std::format("{}: i32, {}: Ptr<Ptr<u8>>",
-                            GetNamedDeclAsString(decl->getParamDecl(0)),
-                            GetNamedDeclAsString(decl->getParamDecl(1))));
+    return {Text(std::format("{}: i32",
+                             GetNamedDeclAsString(decl->getParamDecl(0)))),
+            Text(std::format("{}: Ptr<Ptr<u8>>",
+                             GetNamedDeclAsString(decl->getParamDecl(1))))};
   }
   return Converter::ConvertFunctionParameters(decl);
 }
@@ -2506,8 +2591,9 @@ ConverterRefCount::emplace_back_emit_push_open(clang::CXXMemberCallExpr *call) {
   }
   auto *object = ConvertObject(obj);
   auto *type_node = Convert(obj_type.getNonReferenceType());
-  return Cat(object, Text(".with_mut(|__v: &mut"), type_node,
-             Text("| __v.push("));
+  return Cat(object, Text(".with_mut("),
+             arena_.New<Closure>("__v", Cat(Text("&mut"), type_node),
+                                 Text("__v.push(")));
 }
 
 RsExpr *ConverterRefCount::emplace_back_emit_push_close(
@@ -2562,7 +2648,15 @@ RsExpr *ConverterRefCount::ConvertMappedMethodCall(
   auto *arg = BuildUnifiedArgs(expr, args, num_args)[arg_idx];
 
   if (!arg->getType()->isPointerType() && !IsReferenceType(arg)) {
-    return Converter::ConvertMappedMethodCall(expr, mc, args, num_args, ctx);
+    PushExprKind push(*this, ExprKind::LValue);
+    auto *receiver = ConvertIRFragment(mc.receiver, expr, args, num_args, ctx);
+    auto *body = ConvertIRFragment(mc.body, expr, args, num_args, ctx);
+    auto *node = Cat(receiver, body);
+    if (auto *ptr = receiver->TakePtr(Text("__v"))) {
+      return arena_.New<PtrWith>(
+          ptr, true, arena_.New<Closure>("__v", nullptr, node));
+    }
+    return node;
   }
 
   auto param_type = Mapper::GetParamType(GetCalleeOrExpr(expr), arg_idx);
@@ -2570,8 +2664,10 @@ RsExpr *ConverterRefCount::ConvertMappedMethodCall(
   if (arg->getType()->isPointerType()) {
     auto *ptr = ConvertPointer(arg);
     auto *body = ConvertIRFragment(mc.body, expr, args, num_args, ctx);
-    return Cat(ptr, Text(std::format(".with_mut(|__v: {}| __v", param_type)),
-               body, Text(')'));
+    return arena_.New<PtrWith>(
+        ptr, true,
+        arena_.New<Closure>("__v", Text(param_type),
+                            Cat(Text("__v"), body)));
   }
 
   auto *receiver =
@@ -2581,14 +2677,17 @@ RsExpr *ConverterRefCount::ConvertMappedMethodCall(
   auto *body = ConvertIRFragment(mc.body, expr, args, num_args, ctx);
 
   if (PointeeIsBoxed(receiver->expr)) {
-    return Cat(receiver_ptr, Text(".with_mut(|__v: &mut Value<"),
-               Convert(arg->getType()), Text(">| (*__v.borrow_mut())"), body,
-               Text(')'));
+    return arena_.New<PtrWith>(
+        receiver_ptr, true,
+        arena_.New<Closure>(
+            "__v", Cat(Text("&mut Value<"), Convert(arg->getType()), Text('>')),
+            Cat(arena_.New<BorrowWrite>(Text("__v")), body)));
   }
 
-  return Cat(receiver_ptr,
-             Text(std::format(".with_mut(|__v: {}| __v", param_type)), body,
-             Text(')'));
+  return arena_.New<PtrWith>(
+      receiver_ptr, true,
+      arena_.New<Closure>("__v", Text(param_type),
+                          Cat(Text("__v"), body)));
 }
 
 RsExpr *ConverterRefCount::ConvertPointeeType(clang::QualType ptr_type) {

@@ -369,21 +369,21 @@ RsExpr *Converter::VisitFunctionDecl(clang::FunctionDecl *decl) {
   } else {
     function_name = GetNamedDeclAsString(decl->getCanonicalDecl());
   }
+  std::vector<RsExpr *> qualifiers;
   // main_0 should be static
   if (!decl->isMain()) {
-    parts.push_back(ConvertFunctionQualifiers(decl));
+    qualifiers.push_back(Text(AccessSpecifierAsString(decl->getAccess())));
   }
-  parts.push_back(Text(decl->isConstexpr() ? keyword_const_fn_ : ""));
-  parts.push_back(Text(keyword_unsafe_));
-  parts.push_back(Text(keyword::kFn));
-  parts.push_back(Text(std::move(function_name)));
-  parts.push_back(Parens(ConvertFunctionParameters(decl)));
-  parts.push_back(ConvertFunctionReturnType(decl));
-  {
-    auto *preamble = EmitFunctionPreamble(decl);
-    auto *body = ConvertFunctionBody(decl);
-    parts.push_back(Braces(Cat(preamble, body)));
+  if (decl->isConstexpr()) {
+    qualifiers.push_back(Text(keyword_const_fn_));
   }
+  qualifiers.push_back(Text(keyword_unsafe_));
+
+  parts.push_back(arena_.New<Fn>(
+      std::move(qualifiers), std::move(function_name), Fn::Receiver::None,
+      ConvertFunctionParameters(decl), ConvertFunctionReturnType(decl),
+      std::vector<RsExpr *>{EmitFunctionPreamble(decl),
+                            ConvertFunctionBody(decl)}));
 
   if (decl->isOverloadedOperator()) {
     switch (decl->getOverloadedOperator()) {
@@ -835,30 +835,7 @@ RsExpr *Converter::EmitRustStructOrUnion(clang::RecordDecl *decl) {
 
   // C++ method decls
   if (auto *cxx = clang::dyn_cast<clang::CXXRecordDecl>(decl)) {
-    auto struct_name = GetRecordName(cxx);
-
-    parts.push_back(ConvertCXXMethodDecls(
-        cxx, std::format("{} {}", keyword::kImpl, struct_name),
-        [](auto *method) {
-          return !method->isImplicit() &&
-                 !(method->getDefinition() &&
-                   method->getDefinition()->isDefaulted()) &&
-                 (method->isThisDeclarationADefinition() ||
-                  clang::isa<clang::CXXConstructorDecl>(method)) &&
-                 !method->isVirtual() &&
-                 !clang::isa<clang::CXXDestructorDecl>(method);
-        }));
-
-    if (cxx->bases_begin() != cxx->bases_end()) {
-      parts.push_back(ConvertCXXMethodDecls(
-          cxx,
-          std::format("{} impl {} for {}", keyword_unsafe_,
-                      GetUnsafeTypeAsString(cxx->bases_begin()->getType()),
-                      struct_name),
-          [](auto *method) {
-            return !method->isImplicit() && method->isVirtual();
-          }));
-    }
+    parts.push_back(ConvertRecordMethods(cxx));
   }
 
   // Traits
@@ -973,54 +950,63 @@ RsExpr *Converter::VisitCXXMethodDecl(clang::CXXMethodDecl *decl) {
   if (auto *ctor = clang::dyn_cast<clang::CXXConstructorDecl>(decl)) {
     inner = VisitCXXConstructorDecl(ctor);
   } else {
-    std::vector<RsExpr *> parts;
-    if (decl->isStatic() ||
-        (!decl->isVirtual() && !decl->getParent()->isAbstract())) {
-      parts.push_back(ConvertFunctionQualifiers(decl));
-    }
-    parts.push_back(Text(keyword_unsafe_));
-    parts.push_back(Text(keyword::kFn));
-
-    std::string function_name;
-    if (decl->isOverloadedOperator()) {
-      function_name = GetOverloadedOperator(decl);
-    } else if (IsOverloadedMethod(decl)) {
-      function_name = GetOverloadedFunctionName(decl);
-    } else {
-      function_name = GetNamedDeclAsString(decl);
-    }
-    parts.push_back(Text(std::move(function_name)));
-
-    std::vector<RsExpr *> param_parts;
-    if (!decl->isStatic()) {
-      param_parts.push_back(Text(GetSelfMaybeWithMut(decl)));
-      param_parts.push_back(Text(token::kComma));
-    }
-    param_parts.push_back(ConvertFunctionParameters(decl));
-    parts.push_back(Parens(arena_.New<Concat>(std::move(param_parts))));
-    parts.push_back(ConvertFunctionReturnType(decl));
-    if (decl->isPureVirtual()) {
-      parts.push_back(Text(token::kSemiColon));
-    } else {
-      auto *preamble = EmitFunctionPreamble(decl);
-      auto *body = ConvertFunctionBody(decl);
-      parts.push_back(Braces(Cat(preamble, body)));
-    }
-    inner = arena_.New<Concat>(std::move(parts));
+    inner = ConvertMethodItem(decl, MethodHasVisibility(decl),
+                              /*with_body=*/!decl->isPureVirtual());
   }
 
   if (out_of_line) {
-    return Cat(Text(keyword::kImpl), Text(GetRecordName(decl->getParent())),
-               Braces(inner));
+    return EmitOutOfLineMethod(decl, inner);
   }
   return inner;
 }
 
-std::string Converter::GetSelfMaybeWithMut(const clang::CXXMethodDecl *decl) {
+RsExpr *Converter::EmitOutOfLineMethod(clang::CXXMethodDecl *decl,
+                                       RsExpr *inner) {
+  return arena_.New<Impl>(std::vector<RsExpr *>{}, "",
+                          Text(GetRecordName(decl->getParent())),
+                          std::vector<RsExpr *>{inner});
+}
+
+RsExpr *Converter::ConvertMethodItem(clang::CXXMethodDecl *decl,
+                                     bool with_qualifiers, bool with_body) {
+  curr_function_ = decl;
+
+  std::vector<RsExpr *> qualifiers;
+  if (with_qualifiers &&
+      (decl->isStatic() ||
+       (!decl->isVirtual() && !decl->getParent()->isAbstract()))) {
+    qualifiers.push_back(Text(AccessSpecifierAsString(decl->getAccess())));
+  }
+  qualifiers.push_back(Text(keyword_unsafe_));
+
+  std::string name;
+  if (decl->isOverloadedOperator()) {
+    name = GetOverloadedOperator(decl);
+  } else if (IsOverloadedMethod(decl)) {
+    name = GetOverloadedFunctionName(decl);
+  } else {
+    name = GetNamedDeclAsString(decl);
+  }
+
+  auto receiver = decl->isStatic() ? Fn::Receiver::None
+                                   : GetMethodReceiver(decl);
+
+  std::optional<std::vector<RsExpr *>> body;
+  if (with_body) {
+    body = std::vector<RsExpr *>{EmitFunctionPreamble(decl),
+                                 ConvertFunctionBody(decl)};
+  }
+  return arena_.New<Fn>(std::move(qualifiers), std::move(name), receiver,
+                        ConvertFunctionParameters(decl),
+                        ConvertFunctionReturnType(decl), std::move(body));
+}
+
+Fn::Receiver
+Converter::GetMethodReceiver(const clang::CXXMethodDecl *decl) {
   // This assumes that all overloaded comparison operators are declared const
   return (decl->isConst() || IsOverloadedComparisonOperator(decl))
-             ? "&self"
-             : std::format("&mut {}", keyword::kSelfValue);
+             ? Fn::Receiver::Ref
+             : Fn::Receiver::RefMut;
 }
 
 RsExpr *Converter::VisitCXXConstructorDecl(clang::CXXConstructorDecl *decl) {
@@ -1034,16 +1020,18 @@ RsExpr *Converter::VisitCXXConstructorDecl(clang::CXXConstructorDecl *decl) {
     assert(0 && "user-defined copy or move constructor are not supported");
   }
 
-  auto *qualifiers = ConvertFunctionQualifiers(decl);
   auto ctor_name = GetRecordName(decl->getParent()) +
                    (GetNumberOfConvertingCtors(decl->getParent()) != 1
                         ? std::to_string(GetCtorIndex(decl))
                         : "");
-  auto *params = ConvertFunctionParameters(decl);
+  auto params = ConvertFunctionParameters(decl);
   auto *body = ConvertCXXConstructorBody(decl);
-  return Cat(qualifiers, Text(keyword_unsafe_), Text(keyword::kFn),
-             Text(std::move(ctor_name)), Parens(params), Text(token::kArrow),
-             Text("Self"), Braces(body));
+  return arena_.New<Fn>(
+      std::vector<RsExpr *>{Text(AccessSpecifierAsString(decl->getAccess())),
+                            Text(keyword_unsafe_)},
+      std::move(ctor_name), Fn::Receiver::None, std::move(params),
+      Cat(Text(token::kArrow), Text("Self")),
+      std::vector<RsExpr *>{body});
 }
 
 RsExpr *Converter::ConvertCXXConstructorBody(clang::CXXConstructorDecl *decl) {
@@ -2950,7 +2938,8 @@ RsExpr *Converter::ConvertMemberExpr(clang::MemberExpr *expr) {
   }
 
   auto *base = expr->getBase();
-  bool base_is_this = clang::isa<clang::CXXThisExpr>(base->IgnoreCasts());
+  bool base_is_this = clang::isa<clang::CXXThisExpr>(base->IgnoreCasts()) &&
+                      ThisIsValue();
   PushExprKind push(*this, isLValue() ? ExprKind::LValue : ExprKind::RValue);
   RsExpr *base_node = nullptr;
   if (expr->isArrow() && !base_is_this) {
@@ -3855,25 +3844,20 @@ RsExpr *Converter::ConvertAssignment(clang::Expr *lhs, clang::Expr *rhs,
   return Braces(node, !isVoid());
 }
 
-RsExpr *Converter::ConvertFunctionParameters(clang::FunctionDecl *decl) {
+std::vector<RsExpr *>
+Converter::ConvertFunctionParameters(clang::FunctionDecl *decl) {
   in_function_formals_ = true;
   auto *definition =
       decl->getDefinition() != nullptr ? decl->getDefinition() : decl;
-  std::vector<RsExpr *> parts;
+  std::vector<RsExpr *> params;
   for (auto *parameter : definition->parameters()) {
-    parts.push_back(ConvertVarDeclSkipInit(parameter).first);
-    parts.push_back(Text(token::kComma));
+    params.push_back(ConvertVarDeclSkipInit(parameter).first);
   }
   if (decl->isVariadic()) {
-    parts.push_back(Text("__args: &[VaArg]"));
-    parts.push_back(Text(token::kComma));
+    params.push_back(Text("__args: &[VaArg]"));
   }
   in_function_formals_ = false;
-  return arena_.New<Concat>(std::move(parts));
-}
-
-RsExpr *Converter::ConvertFunctionQualifiers(clang::FunctionDecl *decl) {
-  return Text(AccessSpecifierAsString(decl->getAccess()));
+  return params;
 }
 
 RsExpr *Converter::ConvertFunctionReturnType(clang::FunctionDecl *decl) {
@@ -3907,20 +3891,64 @@ pub fn main() {{
 
 RsExpr *Converter::ConvertAbstractClass(clang::CXXRecordDecl *decl) {
   ENSURE(abstract_structs_.insert(GetID(decl)).second);
-  auto trait_name = GetRecordName(decl);
-  auto access_specifier_as_string = AccessSpecifierAsString(decl->getAccess());
-  auto signature = std::format("{} {} trait {}", access_specifier_as_string,
-                               keyword_unsafe_, trait_name);
-  auto predicate = [](auto *method) {
+  auto methods = CollectCXXMethodDecls(decl, [](auto *method) {
     return !method->isImplicit() &&
            !clang::isa<clang::CXXDestructorDecl>(method);
-  };
-  return ConvertCXXMethodDecls(decl, signature, predicate);
+  });
+  if (methods.empty()) {
+    return Text("");
+  }
+  return arena_.New<Trait>(
+      std::vector<RsExpr *>{Text(AccessSpecifierAsString(decl->getAccess())),
+                            Text(keyword_unsafe_)},
+      GetRecordName(decl), std::move(methods));
 }
 
-RsExpr *
-Converter::ConvertCXXMethodDecls(const clang::CXXRecordDecl *decl,
-                                 const std::string_view signature,
+bool Converter::IsTranslatableMethod(clang::CXXMethodDecl *method) {
+  return !method->isImplicit() &&
+         !(method->getDefinition() && method->getDefinition()->isDefaulted()) &&
+         !method->isVirtual() &&
+         !clang::isa<clang::CXXDestructorDecl>(method);
+}
+
+bool Converter::IsMethodOnRecord(clang::CXXMethodDecl *method) {
+  return IsTranslatableMethod(method) &&
+         (method->isThisDeclarationADefinition() ||
+          clang::isa<clang::CXXConstructorDecl>(method));
+}
+
+RsExpr *Converter::ConvertRecordMethods(clang::CXXRecordDecl *decl) {
+  std::vector<RsExpr *> parts;
+  auto struct_name = GetRecordName(decl);
+
+  auto methods = CollectCXXMethodDecls(decl, IsMethodOnRecord);
+  if (!methods.empty()) {
+    parts.push_back(arena_.New<Impl>(std::vector<RsExpr *>{}, "",
+                                     Text(struct_name), std::move(methods)));
+  }
+
+  parts.push_back(ConvertVirtualMethods(decl));
+  return arena_.New<Concat>(std::move(parts));
+}
+
+RsExpr *Converter::ConvertVirtualMethods(clang::CXXRecordDecl *decl) {
+  if (decl->bases_begin() == decl->bases_end()) {
+    return Text("");
+  }
+  auto methods = CollectCXXMethodDecls(decl, [](auto *method) {
+    return !method->isImplicit() && method->isVirtual();
+  });
+  if (methods.empty()) {
+    return Text("");
+  }
+  return arena_.New<Impl>(
+      std::vector<RsExpr *>{Text(keyword_unsafe_)},
+      GetUnsafeTypeAsString(decl->bases_begin()->getType()),
+      Text(GetRecordName(decl)), std::move(methods));
+}
+
+std::vector<RsExpr *>
+Converter::CollectCXXMethodDecls(const clang::CXXRecordDecl *decl,
                                  bool (*predicate)(clang::CXXMethodDecl *)) {
   std::vector<RsExpr *> methods;
   for (auto *method : decl->methods()) {
@@ -3928,11 +3956,7 @@ Converter::ConvertCXXMethodDecls(const clang::CXXRecordDecl *decl,
       methods.push_back(VisitCXXMethodDecl(method));
     }
   }
-  if (methods.empty()) {
-    return Text("");
-  }
-  return Cat(Text(std::string(signature)),
-             Braces(arena_.New<Concat>(std::move(methods))));
+  return methods;
 }
 
 RsExpr *Converter::ConvertOrdAndPartialOrdTraitsBase(

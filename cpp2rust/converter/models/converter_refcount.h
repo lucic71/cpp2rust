@@ -65,7 +65,19 @@ public:
 
   RsExpr *AddDefaultTraitForUnion(const clang::RecordDecl *decl) override;
 
-  std::string GetSelfMaybeWithMut(const clang::CXXMethodDecl *decl) override;
+  RsExpr *ConvertRecordMethods(clang::CXXRecordDecl *decl) override;
+
+  bool ThisIsValue() const override;
+
+  static bool IsMethodOnPtr(clang::CXXMethodDecl *method);
+
+  bool MethodHasVisibility(clang::CXXMethodDecl *decl) override;
+
+  RsExpr *EmitOutOfLineMethod(clang::CXXMethodDecl *decl,
+                              RsExpr *inner) override;
+
+  Fn::Receiver
+  GetMethodReceiver(const clang::CXXMethodDecl *decl) override;
 
   RsExpr *VisitCXXConstructorDecl(clang::CXXConstructorDecl *decl) override;
 
@@ -186,7 +198,8 @@ public:
 
   RsExpr *ConvertCXXOperatorCallExpr(clang::CXXOperatorCallExpr *expr) override;
 
-  RsExpr *ConvertFunctionParameters(clang::FunctionDecl *decl) override;
+  std::vector<RsExpr *>
+  ConvertFunctionParameters(clang::FunctionDecl *decl) override;
 
   RsExpr *ConvertArraySubscript(clang::Expr *base, clang::Expr *idx,
                                 clang::QualType type) override;

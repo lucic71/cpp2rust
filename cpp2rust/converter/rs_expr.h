@@ -8,6 +8,7 @@
 #include <cstdint>
 #include <format>
 #include <memory>
+#include <optional>
 #include <string>
 #include <string_view>
 #include <utility>
@@ -26,8 +27,12 @@ struct RsExpr {
     Delim,
     Unary,
     Cast,
+    Closure,
     Assign,
     CompoundAssign,
+    Fn,
+    Trait,
+    Impl,
     Field,
     Index,
     FieldPtr,
@@ -181,6 +186,181 @@ struct Cast : RsExpr {
 
   RsExpr *expr;
   RsExpr *type;
+};
+
+struct Closure : RsExpr {
+  Closure(std::string param, RsExpr *param_type, RsExpr *body)
+      : RsExpr(Kind::Closure), param(std::move(param)), param_type(param_type),
+        body(body) {}
+
+  static bool classof(const RsExpr *e) { return e->kind == Kind::Closure; }
+
+  std::string print() const override {
+    std::string result = '|' + param;
+    if (param_type) {
+      result += ": " + param_type->print();
+    }
+    result += "| ";
+    return result + body->print();
+  }
+
+  void ForEachChild(llvm::function_ref<void(RsExpr *&)> fn) override {
+    if (param_type) {
+      fn(param_type);
+    }
+    fn(body);
+  }
+
+  std::string param;
+  RsExpr *param_type;
+  RsExpr *body;
+};
+
+inline std::string PrintWords(const std::vector<RsExpr *> &nodes) {
+  std::string result;
+  for (auto *node : nodes) {
+    auto text = node->print();
+    if (!text.empty()) {
+      result += text + ' ';
+    }
+  }
+  return result;
+}
+
+struct Fn : RsExpr {
+  enum class Receiver : uint8_t { None, Ref, RefMut };
+
+  Fn(std::vector<RsExpr *> qualifiers, std::string name, Receiver receiver,
+     std::vector<RsExpr *> params, RsExpr *return_type,
+     std::optional<std::vector<RsExpr *>> body)
+      : RsExpr(Kind::Fn), qualifiers(std::move(qualifiers)),
+        name(std::move(name)), receiver(receiver), params(std::move(params)),
+        return_type(return_type), body(std::move(body)) {}
+
+  static bool classof(const RsExpr *e) { return e->kind == Kind::Fn; }
+
+  std::string print() const override {
+    std::string result = PrintWords(qualifiers) + "fn " + name + '(';
+    switch (receiver) {
+    case Receiver::None:
+      break;
+    case Receiver::Ref:
+      result += "&self, ";
+      break;
+    case Receiver::RefMut:
+      result += "&mut self, ";
+      break;
+    }
+    for (size_t i = 0; i < params.size(); ++i) {
+      result += params[i]->print();
+      if (i + 1 != params.size()) {
+        result += ", ";
+      }
+    }
+    result += ") ";
+    if (return_type) {
+      result += return_type->print() + ' ';
+    }
+    if (!body) {
+      return result + "; ";
+    }
+    result += '{';
+    for (auto *stmt : *body) {
+      result += stmt->print();
+    }
+    return result + "} ";
+  }
+
+  void ForEachChild(llvm::function_ref<void(RsExpr *&)> fn) override {
+    for (auto *&qualifier : qualifiers) {
+      fn(qualifier);
+    }
+    for (auto *&param : params) {
+      fn(param);
+    }
+    if (return_type) {
+      fn(return_type);
+    }
+    if (body) {
+      for (auto *&stmt : *body) {
+        fn(stmt);
+      }
+    }
+  }
+
+  std::vector<RsExpr *> qualifiers;
+  std::string name;
+  Receiver receiver;
+  std::vector<RsExpr *> params;
+  RsExpr *return_type;
+  std::optional<std::vector<RsExpr *>> body;
+};
+
+struct Trait : RsExpr {
+  Trait(std::vector<RsExpr *> qualifiers, std::string name,
+        std::vector<RsExpr *> items)
+      : RsExpr(Kind::Trait), qualifiers(std::move(qualifiers)),
+        name(std::move(name)), items(std::move(items)) {}
+
+  static bool classof(const RsExpr *e) { return e->kind == Kind::Trait; }
+
+  std::string print() const override {
+    std::string result = PrintWords(qualifiers) + "trait " + name + " {";
+    for (auto *item : items) {
+      result += item->print();
+    }
+    return result + "} ";
+  }
+
+  void ForEachChild(llvm::function_ref<void(RsExpr *&)> fn) override {
+    for (auto *&qualifier : qualifiers) {
+      fn(qualifier);
+    }
+    for (auto *&item : items) {
+      fn(item);
+    }
+  }
+
+  std::vector<RsExpr *> qualifiers;
+  std::string name;
+  std::vector<RsExpr *> items;
+};
+
+struct Impl : RsExpr {
+  Impl(std::vector<RsExpr *> qualifiers, std::string trait_name,
+       RsExpr *self_type, std::vector<RsExpr *> items)
+      : RsExpr(Kind::Impl), qualifiers(std::move(qualifiers)),
+        trait_name(std::move(trait_name)), self_type(self_type),
+        items(std::move(items)) {}
+
+  static bool classof(const RsExpr *e) { return e->kind == Kind::Impl; }
+
+  std::string print() const override {
+    std::string result = PrintWords(qualifiers) + "impl ";
+    if (!trait_name.empty()) {
+      result += trait_name + " for ";
+    }
+    result += self_type->print() + " {";
+    for (auto *item : items) {
+      result += item->print();
+    }
+    return result + "} ";
+  }
+
+  void ForEachChild(llvm::function_ref<void(RsExpr *&)> fn) override {
+    for (auto *&qualifier : qualifiers) {
+      fn(qualifier);
+    }
+    fn(self_type);
+    for (auto *&item : items) {
+      fn(item);
+    }
+  }
+
+  std::vector<RsExpr *> qualifiers;
+  std::string trait_name;
+  RsExpr *self_type;
+  std::vector<RsExpr *> items;
 };
 
 struct Accessor : RsExpr {
@@ -341,25 +521,25 @@ struct PtrWrite : Accessor {
 };
 
 struct PtrWith : Accessor {
-  PtrWith(RsExpr *object, bool is_mut, RsExpr *body)
-      : Accessor(Kind::PtrWith, object), is_mut(is_mut), body(body) {}
+  PtrWith(RsExpr *object, bool is_mut, RsExpr *closure)
+      : Accessor(Kind::PtrWith, object), is_mut(is_mut), closure(closure) {}
 
   static bool classof(const RsExpr *expr) {
     return expr->kind == Kind::PtrWith;
   }
 
   std::string print() const override {
-    return object->print() + (is_mut ? ".with_mut(|__v| " : ".with(|__v| ") +
-           body->print() + ") ";
+    return object->print() + (is_mut ? ".with_mut(" : ".with(") +
+           closure->print() + ") ";
   }
 
   void ForEachChild(llvm::function_ref<void(RsExpr *&)> fn) override {
     fn(object);
-    fn(body);
+    fn(closure);
   }
 
   bool is_mut;
-  RsExpr *body;
+  RsExpr *closure;
 };
 
 struct Assign : RsExpr {
