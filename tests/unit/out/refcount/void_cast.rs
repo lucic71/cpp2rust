@@ -28,7 +28,7 @@ pub fn unused_ref_param_1(x: Ptr<NonTrivial>) {
 }
 pub fn unused_ptr_param_2(p: Ptr<NonTrivial>) {
     let p: Value<Ptr<NonTrivial>> = Rc::new(RefCell::new(p));
-    (*p.borrow()).with(|__v| (*__v).clone()).clone();
+    ((*p.borrow()).read()).clone();
 }
 thread_local!(
     pub static side_effect_counter_3: Value<i32> = Rc::new(RefCell::new(0));
@@ -110,14 +110,14 @@ fn main_0() -> i32 {
     assert!(((*side_effect_counter_3.with(Value::clone).borrow()) == 2));
     let storage: Value<i32> = Rc::new(RefCell::new(11));
     let p: Value<Ptr<i32>> = Rc::new(RefCell::new((storage.as_pointer())));
-    (*p.borrow()).with(|__v| (*__v));
+    ((*p.borrow()).read());
     (*p.borrow_mut()).clone();
     let arr: Value<Box<[i32]>> = Rc::new(RefCell::new(Box::new([1, 2, 3])));
     ((*arr.borrow_mut())[(1) as usize]);
     let h: Value<Holder> = Rc::new(RefCell::new(Holder { field: 17 }));
     ((*h.borrow()).field);
     let hp: Value<Ptr<Holder>> = Rc::new(RefCell::new((h.as_pointer())));
-    (*hp.borrow()).with(|__v| ((*__v).field));
+    ((*hp.borrow()).with(|__v| (*__v).field));
     let nt: Value<NonTrivial> = Rc::new(RefCell::new(<NonTrivial>::default()));
     ({ unused_ref_param_1(nt.as_pointer()) });
     ({ unused_ptr_param_2((nt.as_pointer())) });

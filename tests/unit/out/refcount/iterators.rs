@@ -20,7 +20,7 @@ fn main_0() -> i32 {
         c.with_mut(|__v| __v.prefix_inc());
     }
     'loop_: for mut c in x.as_pointer().to_string_iterator() as StringIterator<u8> {
-        println!("{}", c.with(|__v| (((*__v) as i32) as u8 as char).clone()));
+        println!("{}", (((c.read()) as i32) as u8 as char));
     }
     'loop_: for mut c in x.as_pointer().to_string_iterator() as StringIterator<u8> {
         let c: Value<u8> = Rc::new(RefCell::new((c.read()).clone()));

@@ -75,7 +75,7 @@ fn main_0() -> i32 {
     ])));
     let bp: Value<Ptr<u8>> = Rc::new(RefCell::new((bytes.as_pointer() as Ptr<u8>)));
     let bq: Value<Ptr<u8>> = Rc::new(RefCell::new((*bp.borrow()).offset(((4) as isize))));
-    assert!(((*bq.borrow()).with(|__v| ((*__v) as i32)) == 4));
+    assert!(((((*bq.borrow()).read()) as i32) == 4));
     let bdiff: Value<i64> = Rc::new(RefCell::new(
         (((*bq.borrow()).clone() - (*bp.borrow()).clone()) as i64),
     ));

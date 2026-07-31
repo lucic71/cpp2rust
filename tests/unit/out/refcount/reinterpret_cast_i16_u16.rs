@@ -18,24 +18,9 @@ fn main_0() -> i32 {
     let uvals: Value<Ptr<u16>> = Rc::new(RefCell::new(
         (vals.as_pointer() as Ptr<i16>).reinterpret_cast::<u16>(),
     ));
-    assert!(
-        ((*uvals.borrow())
-            .offset(((0) as isize))
-            .with(|__v| ((*__v) as i32))
-            == 65535)
-    );
-    assert!(
-        ((*uvals.borrow())
-            .offset(((1) as isize))
-            .with(|__v| ((*__v) as i32))
-            == 256)
-    );
-    assert!(
-        ((*uvals.borrow())
-            .offset(((2) as isize))
-            .with(|__v| ((*__v) as i32))
-            == 32768)
-    );
+    assert!(((((*uvals.borrow()).offset(((0) as isize)).read()) as i32) == 65535));
+    assert!(((((*uvals.borrow()).offset(((1) as isize)).read()) as i32) == 256));
+    assert!(((((*uvals.borrow()).offset(((2) as isize)).read()) as i32) == 32768));
     (*uvals.borrow()).offset(((0) as isize)).write(42_u16);
     assert!((((*vals.borrow())[(0) as usize] as i32) == 42));
     return 0;

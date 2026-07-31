@@ -87,18 +87,10 @@ fn main_0() -> i32 {
     let cp: Value<Ptr<u8>> = Rc::new(RefCell::new((text.as_pointer() as Ptr<u8>)));
     let u: Value<Ptr<u8>> = Rc::new(RefCell::new((*cp.borrow()).reinterpret_cast::<u8>()));
     assert!(
-        ((((*u.borrow())
-            .offset(((0) as isize))
-            .with(|__v| ((*__v) as i32))
-            == ('h' as i32)) as i32)
-            != 0)
+        ((((((*u.borrow()).offset(((0) as isize)).read()) as i32) == ('h' as i32)) as i32) != 0)
     );
     assert!(
-        ((((*u.borrow())
-            .offset(((1) as isize))
-            .with(|__v| ((*__v) as i32))
-            == ('i' as i32)) as i32)
-            != 0)
+        ((((((*u.borrow()).offset(((1) as isize)).read()) as i32) == ('i' as i32)) as i32) != 0)
     );
     let h: Value<header> = Rc::new(RefCell::new(header { tag: 7, size: 32 }));
     let hp: Value<Ptr<header>> = Rc::new(RefCell::new((h.as_pointer())));
@@ -119,11 +111,7 @@ fn main_0() -> i32 {
     ));
     assert!((((!((*sel.borrow()).is_null())) as i32) != 0));
     assert!(
-        ((((*sel.borrow())
-            .offset(((0) as isize))
-            .with(|__v| ((*__v) as i32))
-            == ('h' as i32)) as i32)
-            != 0)
+        ((((((*sel.borrow()).offset(((0) as isize)).read()) as i32) == ('h' as i32)) as i32) != 0)
     );
     (*n.borrow_mut()) = 200;
     (*sel.borrow_mut()) = if ((((*n.borrow()) < 100) as i32) != 0) {

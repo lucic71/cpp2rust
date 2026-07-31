@@ -194,7 +194,7 @@ fn main_0() -> i32 {
     });
     assert!(
         (({ cmc.as_pointer().size() }) == 1_usize)
-            && (({ cmc.as_pointer().back() }).with(|__v| ((*__v) as i32)) == (('a' as u8) as i32))
+            && (((({ cmc.as_pointer().back() }).read()) as i32) == (('a' as u8) as i32))
     );
     ({ cmc.as_pointer().pop_back() });
     assert!(({ cmc.as_pointer().empty() }));
@@ -206,7 +206,7 @@ fn main_0() -> i32 {
     });
     assert!(
         (({ fmc.as_pointer().size() }) == 1_usize)
-            && (({ fmc.as_pointer().back() }).with(|__v| ((*__v) as f64)) == 1.0E+0)
+            && (((({ fmc.as_pointer().back() }).read()) as f64) == 1.0E+0)
     );
     ({ fmc.as_pointer().pop_back() });
     assert!(({ fmc.as_pointer().empty() }));

@@ -229,8 +229,8 @@ fn main_0() -> i32 {
             == 6.5E+0)
     );
     return ((((*s1.borrow()).wrapping_add((*s2.borrow()))).wrapping_add(
-        (v2.as_pointer() as Ptr<i32>)
+        (((v2.as_pointer() as Ptr<i32>)
             .offset(0_usize as isize)
-            .with(|__v| ((*__v) as usize)),
+            .read()) as usize),
     )) as i32);
 }

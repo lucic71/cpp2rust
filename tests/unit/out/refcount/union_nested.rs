@@ -176,21 +176,18 @@ fn main_0() -> i32 {
         .body
         .h()
         .with_mut(|__v| __v.pad[(0) as usize] = (('X' as i32) as u8));
-    assert!(((((*ex.borrow()).body.h().with(|__v| ((*__v).code as i32)) == 2) as i32) != 0));
+    assert!((((((*ex.borrow()).body.h().with(|__v| (*__v).code) as i32) == 2) as i32) != 0));
     assert!(
-        ((((*ex.borrow())
-            .body
-            .h()
-            .with(|__v| ((*__v).pad[(0) as usize] as i32))
-            == ('X' as i32)) as i32)
+        (((((*ex.borrow()).body.h().with(|__v| (*__v).pad[(0) as usize]) as i32) == ('X' as i32))
+            as i32)
             != 0)
     );
     assert!(
-        ((((*ex.borrow())
+        (((((*ex.borrow())
             .body
             .nested()
             .with(|__v| (*__v).view.h().clone())
-            .with(|__v| ((*__v).code as i32))
+            .with(|__v| (*__v).code) as i32)
             == 2) as i32)
             != 0)
     );

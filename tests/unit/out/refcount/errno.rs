@@ -8,10 +8,10 @@ use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
 pub fn test_errno_0() {
     libcc2rs::cpp2rust_errno().write(0);
-    assert!((((libcc2rs::cpp2rust_errno().with(|__v| (*__v)) == 0) as i32) != 0));
+    assert!(((((libcc2rs::cpp2rust_errno().read()) == 0) as i32) != 0));
     libcc2rs::cpp2rust_errno().write(42);
-    assert!((((libcc2rs::cpp2rust_errno().with(|__v| (*__v)) == 42) as i32) != 0));
-    let saved: Value<i32> = Rc::new(RefCell::new(libcc2rs::cpp2rust_errno().with(|__v| (*__v))));
+    assert!(((((libcc2rs::cpp2rust_errno().read()) == 42) as i32) != 0));
+    let saved: Value<i32> = Rc::new(RefCell::new((libcc2rs::cpp2rust_errno().read())));
     assert!(((((*saved.borrow()) == 42) as i32) != 0));
     libcc2rs::cpp2rust_errno().write(0);
 }
@@ -21,7 +21,7 @@ pub fn test_errno_preserved_across_strdup_1() {
         Ptr::from_string_literal(b"hello").clone(),
     )));
     assert!((((!((*d.borrow()).is_null())) as i32) != 0));
-    assert!((((libcc2rs::cpp2rust_errno().with(|__v| (*__v)) == 99) as i32) != 0));
+    assert!(((((libcc2rs::cpp2rust_errno().read()) == 99) as i32) != 0));
     libcc2rs::free_refcount(((*d.borrow()).clone() as Ptr<u8>).to_any());
     libcc2rs::cpp2rust_errno().write(0);
 }
@@ -34,7 +34,7 @@ pub fn test_errno_from_fseek_2() {
         },
     ));
     assert!(((((*r.borrow()) == -1_i32) as i32) != 0));
-    assert!((((libcc2rs::cpp2rust_errno().with(|__v| (*__v)) == libc::ESPIPE) as i32) != 0));
+    assert!(((((libcc2rs::cpp2rust_errno().read()) == libc::ESPIPE) as i32) != 0));
     libcc2rs::cpp2rust_errno().write(0);
 }
 pub fn main() {

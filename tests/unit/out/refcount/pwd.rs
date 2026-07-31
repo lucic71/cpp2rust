@@ -51,7 +51,7 @@ pub fn test_getpwuid_missing_1() {
         },
     ));
     assert!(((((*pw.borrow()).is_null()) as i32) != 0));
-    assert!((((libcc2rs::cpp2rust_errno().with(|__v| (*__v)) == 0) as i32) != 0));
+    assert!(((((libcc2rs::cpp2rust_errno().read()) == 0) as i32) != 0));
 }
 pub fn test_getpwuid_r_2() {
     let pw: Value<libcc2rs::Passwd> = Rc::new(RefCell::new(Default::default()));

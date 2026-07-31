@@ -405,5 +405,5 @@ fn main_0() -> i32 {
     .wrapping_add(((*x3.borrow()) as usize)))
     .wrapping_add(((*x4.borrow()) as usize)))
     .wrapping_add(((*x5.borrow()) as usize)))
-    .wrapping_add(value_0.with(|__v| ((*__v) as usize)))) as i32);
+    .wrapping_add(((value_0.read()) as usize))) as i32);
 }

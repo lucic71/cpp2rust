@@ -162,42 +162,42 @@ fn main_0() -> i32 {
         let _cap: usize = 128usize;
         fill_1(_out, _cap)
     });
-    assert!(((((*c.borrow()).view.h().with(|__v| ((*__v).code as i32)) == 2) as i32) != 0));
+    assert!((((((*c.borrow()).view.h().with(|__v| (*__v).code) as i32) == 2) as i32) != 0));
     assert!(
-        ((((((*c.borrow()).view.h().field_ptr(
+        ((((((((*c.borrow()).view.h().field_ptr(
             2,
             |__v: &record| ::std::slice::from_ref(&__v.lo),
             |__v: &mut record| ::std::slice::from_mut(&mut __v.lo)
         ))
         .reinterpret_cast::<u8>())
         .offset(((0) as isize))
-        .with(|__v| ((*__v) as i32))
+        .read()) as i32)
             == 0) as i32)
             != 0)
     );
     assert!(
-        ((((((*c.borrow()).view.h().field_ptr(
+        ((((((((*c.borrow()).view.h().field_ptr(
             2,
             |__v: &record| ::std::slice::from_ref(&__v.lo),
             |__v: &mut record| ::std::slice::from_mut(&mut __v.lo)
         ))
         .reinterpret_cast::<u8>())
         .offset(((1) as isize))
-        .with(|__v| ((*__v) as i32))
+        .read()) as i32)
             == 80) as i32)
             != 0)
     );
     assert!(
-        (((((*c.borrow()).view.raw_().reinterpret_cast::<u8>() as Ptr::<u8>)
+        (((((((*c.borrow()).view.raw_().reinterpret_cast::<u8>() as Ptr::<u8>)
             .offset(((0) as isize))
-            .with(|__v| ((*__v) as i32))
+            .read()) as i32)
             == 2) as i32)
             != 0)
     );
     assert!(
-        (((((*c.borrow()).view.raw_().reinterpret_cast::<u8>() as Ptr::<u8>)
+        ((((((((*c.borrow()).view.raw_().reinterpret_cast::<u8>() as Ptr::<u8>)
             .offset(((3) as isize))
-            .with(|__v| (((*__v) as u8) as i32))
+            .read()) as u8) as i32)
             == 80) as i32)
             != 0)
     );

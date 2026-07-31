@@ -901,6 +901,10 @@ RsExpr *ConverterRefCount::ConvertIncAndDec(clang::UnaryOperator *expr) {
 }
 
 RsExpr *ConverterRefCount::LowerPtrUse(RsExpr *node) {
+  if (clang::isa<Cast>(node) || clang::isa<Delim>(node)) {
+    return nullptr;
+  }
+
   if (auto *assign = clang::dyn_cast<Assign>(node)) {
     if (auto *ptr = assign->left->Pointer()) {
       return arena_.New<PtrWrite>(ptr, assign->right);

@@ -43,29 +43,9 @@ fn main_0() -> i32 {
     (*p.borrow_mut()).x = 67305985;
     (*p.borrow_mut()).y = 134678021;
     let bytes: Value<Ptr<u8>> = Rc::new(RefCell::new((p.as_pointer()).reinterpret_cast::<u8>()));
-    assert!(
-        ((*bytes.borrow())
-            .offset(((0) as isize))
-            .with(|__v| ((*__v) as i32))
-            == 1)
-    );
-    assert!(
-        ((*bytes.borrow())
-            .offset(((3) as isize))
-            .with(|__v| ((*__v) as i32))
-            == 4)
-    );
-    assert!(
-        ((*bytes.borrow())
-            .offset(((4) as isize))
-            .with(|__v| ((*__v) as i32))
-            == 5)
-    );
-    assert!(
-        ((*bytes.borrow())
-            .offset(((7) as isize))
-            .with(|__v| ((*__v) as i32))
-            == 8)
-    );
+    assert!(((((*bytes.borrow()).offset(((0) as isize)).read()) as i32) == 1));
+    assert!(((((*bytes.borrow()).offset(((3) as isize)).read()) as i32) == 4));
+    assert!(((((*bytes.borrow()).offset(((4) as isize)).read()) as i32) == 5));
+    assert!(((((*bytes.borrow()).offset(((7) as isize)).read()) as i32) == 8));
     return 0;
 }

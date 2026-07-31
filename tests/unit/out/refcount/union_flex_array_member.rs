@@ -93,11 +93,11 @@ fn main_0() -> i32 {
     'loop_: while ((((*i.borrow()) < (*tail_size.borrow())) as i32) != 0) {
         assert!(
             ((({
-                let _lhs = ((*n.borrow())
+                let _lhs = ((((*n.borrow())
                     .with(|__v| (*__v).x.bytes().clone())
                     .reinterpret_cast::<u8>() as Ptr<u8>)
                     .offset(((*i.borrow()) as isize))
-                    .with(|__v| ((*__v) as i32));
+                    .read()) as i32);
                 _lhs == ((((*i.borrow()) & 255_usize) as u8) as i32)
             }) as i32)
                 != 0)
@@ -110,14 +110,14 @@ fn main_0() -> i32 {
             .reinterpret_cast::<u8>() as Ptr<u8>)
             .offset(((10) as isize))),
     ));
-    assert!(((((*p.borrow()).with(|__v| ((*__v) as i32)) == 10) as i32) != 0));
+    assert!(((((((*p.borrow()).read()) as i32) == 10) as i32) != 0));
     (*p.borrow()).write(170_u8);
     assert!(
-        (((((*n.borrow())
+        (((((((*n.borrow())
             .with(|__v| (*__v).x.bytes().clone())
             .reinterpret_cast::<u8>() as Ptr::<u8>)
             .offset(((10) as isize))
-            .with(|__v| ((*__v) as i32))
+            .read()) as i32)
             == 170) as i32)
             != 0)
     );
@@ -126,11 +126,11 @@ fn main_0() -> i32 {
         (((*n.borrow())
             .with(|__v| (*__v).x.bytes().clone())
             .reinterpret_cast::<u8>() as Ptr<u8>)
-            .offset((*n.borrow()).with(|__v| (((*__v).pos) as isize).clone()))),
+            .offset((((*n.borrow()).with(|__v| (*__v).pos)) as isize))),
     ));
-    assert!(((((*q.borrow()).with(|__v| ((*__v) as i32)) == 20) as i32) != 0));
+    assert!(((((((*q.borrow()).read()) as i32) == 20) as i32) != 0));
     (*q.borrow()).write(187_u8);
-    assert!(((((*q.borrow()).with(|__v| ((*__v) as i32)) == 187) as i32) != 0));
+    assert!(((((((*q.borrow()).read()) as i32) == 187) as i32) != 0));
     libcc2rs::free_refcount(((*n.borrow()).clone() as Ptr<node>).to_any());
     return 0;
 }

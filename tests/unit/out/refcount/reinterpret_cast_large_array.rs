@@ -28,15 +28,15 @@ fn main_0() -> i32 {
         .write(3148519816_u32);
     let words: Value<Ptr<u16>> = Rc::new(RefCell::new((*arr.borrow()).reinterpret_cast::<u16>()));
     assert!(
-        ((*words.borrow())
+        ((((*words.borrow())
             .offset(((((*N.borrow()) * 2) - 1) as isize))
-            .with(|__v| ((*__v) as i32))
+            .read()) as i32)
             == 48042)
     );
     assert!(
-        ((*words.borrow())
+        ((((*words.borrow())
             .offset(((((*N.borrow()) * 2) - 2) as isize))
-            .with(|__v| ((*__v) as i32))
+            .read()) as i32)
             == 39304)
     );
     (*arr.borrow()).delete_array();

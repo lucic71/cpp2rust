@@ -16,5 +16,5 @@ fn main_0() -> i32 {
         let rhs_0 = (*p.borrow()).with(|__v| (*__v).wrapping_add(((*p.borrow()).read())).clone());
         (*p.borrow()).write(rhs_0)
     };
-    return (*p.borrow()).with(|__v| ((*__v) as i32));
+    return (((*p.borrow()).read()) as i32);
 }

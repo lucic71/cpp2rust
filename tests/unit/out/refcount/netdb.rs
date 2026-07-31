@@ -111,7 +111,7 @@ pub fn test_ipv4_literal_0() {
     assert!((((!((*res.borrow()).is_null())) as i32) != 0));
     assert!(((((*res.borrow()).with(|__v| (*__v).ai_family) == libc::AF_INET) as i32) != 0));
     assert!(((((*res.borrow()).with(|__v| (*__v).ai_socktype) == libc::SOCK_STREAM) as i32) != 0));
-    assert!(((((*res.borrow()).with(|__v| ((*__v).ai_addrlen as usize)) == 16usize) as i32) != 0));
+    assert!((((((*res.borrow()).with(|__v| (*__v).ai_addrlen) as usize) == 16usize) as i32) != 0));
     assert!((((!(((*res.borrow()).with(|__v| (*__v).ai_addr.clone())).is_null())) as i32) != 0));
     let sin: Value<Ptr<libcc2rs::SockaddrIn>> = Rc::new(RefCell::new(
         (*res.borrow())
@@ -119,7 +119,7 @@ pub fn test_ipv4_literal_0() {
             .reinterpret_cast::<libcc2rs::SockaddrIn>(),
     ));
     assert!(
-        ((((*sin.borrow()).with(|__v| ((*__v).sin_family as i32)) == libc::AF_INET) as i32) != 0)
+        (((((*sin.borrow()).with(|__v| (*__v).sin_family) as i32) == libc::AF_INET) as i32) != 0)
     );
     let port_be: Value<Box<[u8]>> = Rc::new(RefCell::new(Box::new([
         ((8080 / 256) as u8),
@@ -273,7 +273,7 @@ pub fn test_ipv6_literal_1() {
     );
     assert!((((!((*res.borrow()).is_null())) as i32) != 0));
     assert!(((((*res.borrow()).with(|__v| (*__v).ai_family) == libc::AF_INET6) as i32) != 0));
-    assert!(((((*res.borrow()).with(|__v| ((*__v).ai_addrlen as usize)) == 28usize) as i32) != 0));
+    assert!((((((*res.borrow()).with(|__v| (*__v).ai_addrlen) as usize) == 28usize) as i32) != 0));
     assert!((((!(((*res.borrow()).with(|__v| (*__v).ai_addr.clone())).is_null())) as i32) != 0));
     let sin6: Value<Ptr<libcc2rs::SockaddrIn6>> = Rc::new(RefCell::new(
         (*res.borrow())
@@ -281,7 +281,7 @@ pub fn test_ipv6_literal_1() {
             .reinterpret_cast::<libcc2rs::SockaddrIn6>(),
     ));
     assert!(
-        ((((*sin6.borrow()).with(|__v| ((*__v).sin6_family as i32)) == libc::AF_INET6) as i32)
+        (((((*sin6.borrow()).with(|__v| (*__v).sin6_family) as i32) == libc::AF_INET6) as i32)
             != 0)
     );
     let port_be: Value<Box<[u8]>> = Rc::new(RefCell::new(Box::new([

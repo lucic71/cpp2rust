@@ -143,7 +143,7 @@ pub fn test_strchr_4() {
         }
     }));
     assert!(!((*r.borrow()).is_null()));
-    assert!(((*r.borrow()).with(|__v| ((*__v) as i32)) == (('w' as u8) as i32)));
+    assert!(((((*r.borrow()).read()) as i32) == (('w' as u8) as i32)));
     assert!(
         ({
             let __s = (*s.borrow()).clone();
@@ -498,7 +498,7 @@ pub fn test_strrchr_9() {
         }
     }));
     assert!(!((*r.borrow()).is_null()));
-    assert!(((*r.borrow()).with(|__v| ((*__v) as i32)) == (('l' as u8) as i32)));
+    assert!(((((*r.borrow()).read()) as i32) == (('l' as u8) as i32)));
     assert!({
         let _lhs = (*r.borrow()).clone();
         _lhs == (*s.borrow()).offset(((9) as isize))

@@ -11,7 +11,5 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     let v: Value<Vec<bool>> = Rc::new(RefCell::new(vec![true]));
-    return (v.as_pointer() as Ptr<bool>)
-        .offset(0_usize)
-        .with(|__v| (((*__v) as bool) as i32));
+    return ((((v.as_pointer() as Ptr<bool>).offset(0_usize).read()) as bool) as i32);
 }

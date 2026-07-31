@@ -426,40 +426,22 @@ fn main_0() -> i32 {
         .offset(2_usize)
         .write(('b' as u8));
     assert!(
-        ((s2.as_pointer() as Ptr<u8>)
-            .offset(0_usize)
-            .with(|__v| ((*__v) as i32))
-            == (('b' as u8) as i32))
+        ((((s2.as_pointer() as Ptr<u8>).offset(0_usize).read()) as i32) == (('b' as u8) as i32))
     );
     assert!(
-        ((s2.as_pointer() as Ptr<u8>)
-            .offset(1_usize)
-            .with(|__v| ((*__v) as i32))
-            == (('b' as u8) as i32))
+        ((((s2.as_pointer() as Ptr<u8>).offset(1_usize).read()) as i32) == (('b' as u8) as i32))
     );
     assert!(
-        ((s2.as_pointer() as Ptr<u8>)
-            .offset(2_usize)
-            .with(|__v| ((*__v) as i32))
-            == (('b' as u8) as i32))
+        ((((s2.as_pointer() as Ptr<u8>).offset(2_usize).read()) as i32) == (('b' as u8) as i32))
     );
     assert!(
-        ((s1.as_pointer() as Ptr<u8>)
-            .offset(0_usize)
-            .with(|__v| ((*__v) as i32))
-            == (('a' as u8) as i32))
+        ((((s1.as_pointer() as Ptr<u8>).offset(0_usize).read()) as i32) == (('a' as u8) as i32))
     );
     assert!(
-        ((s1.as_pointer() as Ptr<u8>)
-            .offset(1_usize)
-            .with(|__v| ((*__v) as i32))
-            == (('a' as u8) as i32))
+        ((((s1.as_pointer() as Ptr<u8>).offset(1_usize).read()) as i32) == (('a' as u8) as i32))
     );
     assert!(
-        ((s1.as_pointer() as Ptr<u8>)
-            .offset(2_usize)
-            .with(|__v| ((*__v) as i32))
-            == (('a' as u8) as i32))
+        ((((s1.as_pointer() as Ptr<u8>).offset(2_usize).read()) as i32) == (('a' as u8) as i32))
     );
     let b1: Value<Bar> = Rc::new(RefCell::new(Bar { w: 1 }));
     let b2: Value<Bar> = Rc::new(RefCell::new(Bar { w: 2 }));

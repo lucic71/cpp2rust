@@ -222,7 +222,7 @@ fn main_0() -> i32 {
             == 3_usize)
     );
     assert!(
-        ((((jpg.as_pointer().field_ptr(
+        ((((((jpg.as_pointer().field_ptr(
             0,
             |__v: &JPEGData| &__v.com_data[..],
             |__v: &mut JPEGData| &mut __v.com_data[..]
@@ -231,11 +231,11 @@ fn main_0() -> i32 {
             .read())
         .as_pointer() as Ptr<u8>)
             .offset(0_usize)
-            .with(|__v| ((*__v) as i32))
+            .read()) as i32)
             == 1)
     );
     assert!(
-        ((((jpg.as_pointer().field_ptr(
+        ((((((jpg.as_pointer().field_ptr(
             0,
             |__v: &JPEGData| &__v.com_data[..],
             |__v: &mut JPEGData| &mut __v.com_data[..]
@@ -244,11 +244,11 @@ fn main_0() -> i32 {
             .read())
         .as_pointer() as Ptr<u8>)
             .offset(1_usize)
-            .with(|__v| ((*__v) as i32))
+            .read()) as i32)
             == 2)
     );
     assert!(
-        ((((jpg.as_pointer().field_ptr(
+        ((((((jpg.as_pointer().field_ptr(
             0,
             |__v: &JPEGData| &__v.com_data[..],
             |__v: &mut JPEGData| &mut __v.com_data[..]
@@ -257,7 +257,7 @@ fn main_0() -> i32 {
             .read())
         .as_pointer() as Ptr<u8>)
             .offset(2_usize)
-            .with(|__v| ((*__v) as i32))
+            .read()) as i32)
             == 3)
     );
     assert!((*jpg.borrow()).app_data.is_empty());
@@ -291,7 +291,7 @@ fn main_0() -> i32 {
             == 3_usize)
     );
     assert!(
-        ((((jpg.as_pointer().field_ptr(
+        ((((((jpg.as_pointer().field_ptr(
             24,
             |__v: &JPEGData| &__v.app_data[..],
             |__v: &mut JPEGData| &mut __v.app_data[..]
@@ -300,11 +300,11 @@ fn main_0() -> i32 {
             .read())
         .as_pointer() as Ptr<u8>)
             .offset(0_usize)
-            .with(|__v| ((*__v) as i32))
+            .read()) as i32)
             == 1)
     );
     assert!(
-        ((((jpg.as_pointer().field_ptr(
+        ((((((jpg.as_pointer().field_ptr(
             24,
             |__v: &JPEGData| &__v.app_data[..],
             |__v: &mut JPEGData| &mut __v.app_data[..]
@@ -313,7 +313,7 @@ fn main_0() -> i32 {
             .read())
         .as_pointer() as Ptr<u8>)
             .offset(2_usize)
-            .with(|__v| ((*__v) as i32))
+            .read()) as i32)
             == 3)
     );
     assert!(((*jpg.borrow()).com_data.len() == 1_usize));
