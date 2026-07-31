@@ -1434,10 +1434,12 @@ impl PtrRegistry {
     }
 
     fn get(&self, addr: SyntheticAddr) -> Option<(SyntheticAddr, Registered, ByteLen)> {
-        self.entries
-            .range(..=addr)
-            .next_back()
-            .map(|(base, (entry, len))| (*base, entry.clone(), *len))
+        let (base, (entry, len)) = self.entries.range(..=addr).next_back()?;
+        (addr <= base + len).then(|| (*base, entry.clone(), *len))
+    }
+
+    fn was_allocated(&self, addr: SyntheticAddr) -> bool {
+        addr < self.ranges.cursor
     }
 
     fn evict_dead(&mut self) {
@@ -1469,6 +1471,10 @@ pub(crate) fn lookup_ptr(addr: SyntheticAddr) -> Option<(SyntheticAddr, Register
     PTR_REGISTRY.with(|r| r.borrow().get(addr))
 }
 
+pub(crate) fn was_allocated(addr: SyntheticAddr) -> bool {
+    PTR_REGISTRY.with(|r| r.borrow().was_allocated(addr))
+}
+
 impl<T: ByteRepr> ByteRepr for Ptr<T> {
     fn byte_size() -> usize {
         std::mem::size_of::<usize>()
@@ -1479,9 +1485,14 @@ impl<T: ByteRepr> ByteRepr for Ptr<T> {
             0usize.to_bytes(buf);
             return;
         }
+        let byte_len = if self.kind.is_dangling() {
+            0
+        } else {
+            self.c_byte_len()
+        };
         let base = register_ptr(
             self.kind.address(),
-            self.c_byte_len(),
+            byte_len,
             Registered::Data(
                 Ptr {
                     offset: 0,
@@ -1498,14 +1509,19 @@ impl<T: ByteRepr> ByteRepr for Ptr<T> {
         if addr == 0 {
             return Ptr::null();
         }
-        let entry = lookup_ptr(addr);
-        let Some((base, Registered::Data(any), byte_len)) = entry else {
+        let Some(entry) = lookup_ptr(addr) else {
+            if was_allocated(addr) {
+                return Ptr {
+                    offset: 0,
+                    kind: PtrKind::HeapSingle(Weak::new()),
+                };
+            }
+            panic!("ub: cast of invalid address 0x{addr:x} to pointer");
+        };
+        let (base, Registered::Data(any), byte_len) = entry else {
             panic!("ub: cast of invalid address 0x{addr:x} to pointer");
         };
         let delta = addr - base;
-        if delta > byte_len {
-            panic!("ub: cast of invalid address 0x{addr:x} to pointer");
-        }
         let elem_size = T::byte_size();
         if elem_size == 0 {
             assert_eq!(delta, 0, "ub: misaligned pointer");
