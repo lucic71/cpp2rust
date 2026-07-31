@@ -14,8 +14,18 @@ fn main_0() -> i32 {
     let words: Value<Ptr<u16>> = Rc::new(RefCell::new(
         (arr.as_pointer() as Ptr<u8>).reinterpret_cast::<u16>(),
     ));
-    assert!(((((*words.borrow()).offset(((0) as isize)).read()) as i32) == 513));
-    assert!(((((*words.borrow()).offset(((1) as isize)).read()) as i32) == 1027));
+    assert!(
+        ((*words.borrow())
+            .offset(((0) as isize))
+            .with(|__v| ((*__v) as i32))
+            == 513)
+    );
+    assert!(
+        ((*words.borrow())
+            .offset(((1) as isize))
+            .with(|__v| ((*__v) as i32))
+            == 1027)
+    );
     (*words.borrow()).offset(((0) as isize)).write(48042_u16);
     assert!((((*arr.borrow())[(0) as usize] as i32) == 170));
     assert!((((*arr.borrow())[(1) as usize] as i32) == 187));
@@ -24,7 +34,12 @@ fn main_0() -> i32 {
     (*words.borrow_mut()) = (arr.as_pointer() as Ptr<u8>)
         .offset(((1) as isize))
         .reinterpret_cast::<u16>();
-    assert!(((((*words.borrow()).offset(((0) as isize)).read()) as i32) == 955));
+    assert!(
+        ((*words.borrow())
+            .offset(((0) as isize))
+            .with(|__v| ((*__v) as i32))
+            == 955)
+    );
     (*words.borrow()).offset(((0) as isize)).write(0_u16);
     assert!((((*arr.borrow())[(0) as usize] as i32) == 170));
     assert!((((*arr.borrow())[(1) as usize] as i32) == 0));

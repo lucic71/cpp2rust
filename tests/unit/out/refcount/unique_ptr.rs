@@ -15,7 +15,12 @@ pub trait SafePointerMethods {
 }
 impl SafePointerMethods for Ptr<SafePointer> {
     fn inc(&self) {
-        (*(*self.upgrade().deref()).ptr.as_ref().unwrap().borrow_mut()).prefix_inc();
+        (*self
+            .with(|__v| (*__v).ptr.clone())
+            .as_ref()
+            .unwrap()
+            .borrow_mut())
+        .prefix_inc();
     }
 }
 impl ByteRepr for SafePointer {}
@@ -65,9 +70,9 @@ pub fn DoStuffWithSafePointer_0(safe_ptr: Ptr<Option<Value<SafePointer>>>) {
     (*x1.borrow_mut()) = (*x2.borrow_mut()).take();
     let raw_ptr1: Value<Ptr<i32>> = Rc::new(RefCell::new(((*x1.borrow()).as_pointer())));
     (*raw_ptr1.borrow()).with_mut(|__v| __v.prefix_inc());
-    (**safe_ptr.as_ref().unwrap().borrow_mut()).ptr = (*x1.borrow_mut()).take();
-    ({ ((*safe_ptr.upgrade().deref()).as_pointer()).inc() });
-    ({ ((*safe_ptr.upgrade().deref()).as_pointer()).inc() });
+    (*(safe_ptr.read()).as_ref().unwrap().borrow_mut()).ptr = (*x1.borrow_mut()).take();
+    ({ ((safe_ptr.read()).as_pointer()).inc() });
+    ({ ((safe_ptr.read()).as_pointer()).inc() });
     let x3: Value<Option<Value<i32>>> = Rc::new(RefCell::new(Some(Rc::new(RefCell::new(10)))));
     let x4: Value<Option<Value<i32>>> = Rc::new(RefCell::new(Some(Rc::new(RefCell::new(20)))));
     let __rhs = ((*(*x3.borrow()).as_ref().unwrap().borrow())
@@ -87,7 +92,7 @@ pub fn DoStuffWithSafePointer_0(safe_ptr: Ptr<Option<Value<SafePointer>>>) {
     ({ ((*pair.borrow()).as_pointer()).inc(10) });
     let __rhs = {
         let _lhs = {
-            let _lhs = (*(*(*safe_ptr.upgrade().deref()).as_ref().unwrap().borrow())
+            let _lhs = (*(*(safe_ptr.read()).as_ref().unwrap().borrow())
                 .ptr
                 .as_ref()
                 .unwrap()
@@ -96,7 +101,7 @@ pub fn DoStuffWithSafePointer_0(safe_ptr: Ptr<Option<Value<SafePointer>>>) {
         };
         _lhs + (*(*pair.borrow()).as_ref().unwrap().borrow()).y
     };
-    (*(**safe_ptr.as_ref().unwrap().borrow_mut())
+    (*(*(safe_ptr.read()).as_ref().unwrap().borrow_mut())
         .ptr
         .as_ref()
         .unwrap()
@@ -162,18 +167,16 @@ pub fn RndStuff_2() {
     let i: Value<i32> = Rc::new(RefCell::new(0));
     'loop_: while ((*i.borrow()) < 10) {
         assert!(
-            ((*(*p3_0.borrow())
+            ((*p3_0.borrow())
                 .offset(((*i.borrow()) as isize))
-                .upgrade()
-                .deref())
-            .x == 1)
+                .with(|__v| (*__v).x)
+                == 1)
         );
         assert!(
-            ((*(*p3_0.borrow())
+            ((*p3_0.borrow())
                 .offset(((*i.borrow()) as isize))
-                .upgrade()
-                .deref())
-            .y == 2)
+                .with(|__v| (*__v).y)
+                == 2)
         );
         ({
             (*x3.borrow())
@@ -184,18 +187,16 @@ pub fn RndStuff_2() {
                 .inc(10)
         });
         assert!(
-            ((*(*p3_0.borrow())
+            ((*p3_0.borrow())
                 .offset(((*i.borrow()) as isize))
-                .upgrade()
-                .deref())
-            .x == 11)
+                .with(|__v| (*__v).x)
+                == 11)
         );
         assert!(
-            ((*(*p3_0.borrow())
+            ((*p3_0.borrow())
                 .offset(((*i.borrow()) as isize))
-                .upgrade()
-                .deref())
-            .y == 12)
+                .with(|__v| (*__v).y)
+                == 12)
         );
         (*i.borrow_mut()).prefix_inc();
     }
@@ -222,18 +223,16 @@ pub fn RndStuff_2() {
     let i: Value<i32> = Rc::new(RefCell::new(0));
     'loop_: while ((*i.borrow()) < 50) {
         assert!(
-            ((*(*p3_1.borrow())
+            ((*p3_1.borrow())
                 .offset(((*i.borrow()) as isize))
-                .upgrade()
-                .deref())
-            .x == -1_i32)
+                .with(|__v| (*__v).x)
+                == -1_i32)
         );
         assert!(
-            ((*(*p3_1.borrow())
+            ((*p3_1.borrow())
                 .offset(((*i.borrow()) as isize))
-                .upgrade()
-                .deref())
-            .y == -2_i32)
+                .with(|__v| (*__v).y)
+                == -2_i32)
         );
         ({
             (*x3.borrow())
@@ -244,18 +243,16 @@ pub fn RndStuff_2() {
                 .inc(-10_i32)
         });
         assert!(
-            ((*(*p3_1.borrow())
+            ((*p3_1.borrow())
                 .offset(((*i.borrow()) as isize))
-                .upgrade()
-                .deref())
-            .x == -11_i32)
+                .with(|__v| (*__v).x)
+                == -11_i32)
         );
         assert!(
-            ((*(*p3_1.borrow())
+            ((*p3_1.borrow())
                 .offset(((*i.borrow()) as isize))
-                .upgrade()
-                .deref())
-            .y == -12_i32)
+                .with(|__v| (*__v).y)
+                == -12_i32)
         );
         (*i.borrow_mut()).prefix_inc();
     }

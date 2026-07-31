@@ -22,7 +22,7 @@ fn main_0() -> i32 {
     let p: Value<Ptr<u8>> = Rc::new(RefCell::new(
         (arr.as_pointer() as Ptr<u8>).offset(((1) as isize)),
     ));
-    assert!(((((*p.borrow()).read()) as i32) == (('b' as u8) as i32)));
+    assert!(((*p.borrow()).with(|__v| ((*__v) as i32)) == (('b' as u8) as i32)));
     assert!(
         (*arr.borrow())
             .iter()

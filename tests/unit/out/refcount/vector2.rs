@@ -26,7 +26,7 @@ pub fn fn_0(v: Ptr<Vec<i32>>, v3: Vec<i32>) {
     }) as Ptr<i32>)
         .offset(0_usize)
         .write(7);
-    (v2.as_pointer() as Ptr<Vec<i32>>).write((*v.upgrade().deref()).clone());
+    (v2.as_pointer() as Ptr<Vec<i32>>).write((v.read()).clone());
     (((*v4.borrow()).to_strong().as_pointer()) as Ptr<i32>)
         .offset(1_usize)
         .write(13);

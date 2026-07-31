@@ -81,8 +81,14 @@ fn main_0() -> i32 {
     }));
     assert!(((*v5.borrow()).len() == 5_usize));
     assert!(
-        ((((v5.as_pointer() as Ptr<u8>).offset(0_usize).read()) as i32) == 10)
-            && ((((v5.as_pointer() as Ptr<u8>).offset(4_usize).read()) as i32) == 50)
+        ((v5.as_pointer() as Ptr<u8>)
+            .offset(0_usize)
+            .with(|__v| ((*__v) as i32))
+            == 10)
+            && ((v5.as_pointer() as Ptr<u8>)
+                .offset(4_usize)
+                .with(|__v| ((*__v) as i32))
+                == 50)
     );
     return 0;
 }

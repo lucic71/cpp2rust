@@ -51,7 +51,7 @@ fn main_0() -> i32 {
     let x: Value<i32> = Rc::new(RefCell::new(10));
     let y: Value<f64> = Rc::new(RefCell::new(((*x.borrow()) as f64)));
     return (((((((({ foo_0((*x.borrow())) }) as f64) + ({ foo_1((*y.borrow())) }))
-        + ((({ bar_2((x.as_pointer()), true) }).read()) as f64))
+        + ({ bar_2((x.as_pointer()), true) }).with(|__v| ((*__v) as f64)))
         + (({ bar_3((y.as_pointer()), true) }).read()))
         + (({ func_4(1, 2, 3) }) as f64))
         + (({ func_5(2.0E+0, (*x.borrow()), (*y.borrow())) }) as f64)) as i32);

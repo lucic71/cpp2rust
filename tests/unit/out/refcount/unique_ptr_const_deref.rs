@@ -13,8 +13,8 @@ pub struct Holder {
 impl ByteRepr for Holder {}
 pub fn read_val_0(h: Ptr<Holder>) -> i32 {
     let h: Value<Ptr<Holder>> = Rc::new(RefCell::new(h));
-    return (*(*(*h.borrow()).upgrade().deref())
-        .val
+    return (*(*h.borrow())
+        .with(|__v| (*__v).val.clone())
         .as_ref()
         .unwrap()
         .borrow());
@@ -22,8 +22,8 @@ pub fn read_val_0(h: Ptr<Holder>) -> i32 {
 pub fn write_val_1(h: Ptr<Holder>, v: i32) {
     let h: Value<Ptr<Holder>> = Rc::new(RefCell::new(h));
     let v: Value<i32> = Rc::new(RefCell::new(v));
-    (*(*(*h.borrow()).upgrade().deref())
-        .val
+    (*(*h.borrow())
+        .with(|__v| (*__v).val.clone())
         .as_ref()
         .unwrap()
         .borrow_mut()) = (*v.borrow());

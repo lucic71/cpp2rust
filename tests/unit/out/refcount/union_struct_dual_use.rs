@@ -29,8 +29,8 @@ impl ByteRepr for Inner {
 pub fn sum_inner_0(i: Ptr<Inner>) -> i32 {
     let i: Value<Ptr<Inner>> = Rc::new(RefCell::new(i));
     return {
-        let _lhs = (*(*i.borrow()).upgrade().deref()).a;
-        _lhs + (*(*i.borrow()).upgrade().deref()).b
+        let _lhs = (*i.borrow()).with(|__v| (*__v).a);
+        _lhs + (*i.borrow()).with(|__v| (*__v).b)
     };
 }
 pub struct anon_1 {
@@ -107,16 +107,16 @@ fn main_0() -> i32 {
     (*outer.borrow_mut()).u.inner().with_mut(|__v| __v.b = 4);
     assert!((((({ sum_inner_0(((*outer.borrow()).u.inner()).clone(),) }) == 7) as i32) != 0));
     assert!(
-        ((((((((*outer.borrow()).u.raw_().reinterpret_cast::<u8>() as Ptr::<u8>)
+        (((((*outer.borrow()).u.raw_().reinterpret_cast::<u8>() as Ptr::<u8>)
             .offset(((0) as isize))
-            .read()) as u8) as i32)
+            .with(|__v| (((*__v) as u8) as i32))
             == 3) as i32)
             != 0)
     );
     assert!(
-        ((((((((*outer.borrow()).u.raw_().reinterpret_cast::<u8>() as Ptr::<u8>)
+        (((((*outer.borrow()).u.raw_().reinterpret_cast::<u8>() as Ptr::<u8>)
             .offset(((4) as isize))
-            .read()) as u8) as i32)
+            .with(|__v| (((*__v) as u8) as i32))
             == 4) as i32)
             != 0)
     );

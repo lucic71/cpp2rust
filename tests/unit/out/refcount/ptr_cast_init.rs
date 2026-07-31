@@ -87,15 +87,23 @@ fn main_0() -> i32 {
     let cp: Value<Ptr<u8>> = Rc::new(RefCell::new((text.as_pointer() as Ptr<u8>)));
     let u: Value<Ptr<u8>> = Rc::new(RefCell::new((*cp.borrow()).reinterpret_cast::<u8>()));
     assert!(
-        ((((((*u.borrow()).offset(((0) as isize)).read()) as i32) == ('h' as i32)) as i32) != 0)
+        ((((*u.borrow())
+            .offset(((0) as isize))
+            .with(|__v| ((*__v) as i32))
+            == ('h' as i32)) as i32)
+            != 0)
     );
     assert!(
-        ((((((*u.borrow()).offset(((1) as isize)).read()) as i32) == ('i' as i32)) as i32) != 0)
+        ((((*u.borrow())
+            .offset(((1) as isize))
+            .with(|__v| ((*__v) as i32))
+            == ('i' as i32)) as i32)
+            != 0)
     );
     let h: Value<header> = Rc::new(RefCell::new(header { tag: 7, size: 32 }));
     let hp: Value<Ptr<header>> = Rc::new(RefCell::new((h.as_pointer())));
     let v: Value<Ptr<view>> = Rc::new(RefCell::new((*hp.borrow()).reinterpret_cast::<view>()));
-    assert!(((((*(*v.borrow()).upgrade().deref()).tag == 7) as i32) != 0));
+    assert!(((((*v.borrow()).with(|__v| (*__v).tag) == 7) as i32) != 0));
     let data: Value<Box<[u8]>> = Rc::new(RefCell::new(Box::from(*b"hi\0")));
     let vp: Value<AnyPtr> = Rc::new(RefCell::new(
         ((data.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any(),
@@ -111,7 +119,11 @@ fn main_0() -> i32 {
     ));
     assert!((((!((*sel.borrow()).is_null())) as i32) != 0));
     assert!(
-        ((((((*sel.borrow()).offset(((0) as isize)).read()) as i32) == ('h' as i32)) as i32) != 0)
+        ((((*sel.borrow())
+            .offset(((0) as isize))
+            .with(|__v| ((*__v) as i32))
+            == ('h' as i32)) as i32)
+            != 0)
     );
     (*n.borrow_mut()) = 200;
     (*sel.borrow_mut()) = if ((((*n.borrow()) < 100) as i32) != 0) {
@@ -125,17 +137,11 @@ fn main_0() -> i32 {
     ({ get_registry_3((avail.as_pointer())) });
     assert!((((!((*avail.borrow()).is_null())) as i32) != 0));
     assert!(
-        ((((*((*avail.borrow()).offset(((0) as isize)).read())
-            .upgrade()
-            .deref())
-        .id == 1) as i32)
+        (((((*avail.borrow()).offset(((0) as isize)).read()).with(|__v| (*__v).id) == 1) as i32)
             != 0)
     );
     assert!(
-        ((((*((*avail.borrow()).offset(((1) as isize)).read())
-            .upgrade()
-            .deref())
-        .id == 2) as i32)
+        (((((*avail.borrow()).offset(((1) as isize)).read()).with(|__v| (*__v).id) == 2) as i32)
             != 0)
     );
     assert!((((((*avail.borrow()).offset(((2) as isize)).read()).is_null()) as i32) != 0));

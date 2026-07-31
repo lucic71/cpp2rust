@@ -14,10 +14,30 @@ fn main_0() -> i32 {
     let same: Value<Ptr<u8>> = Rc::new(RefCell::new(
         (arr.as_pointer() as Ptr<u8>).reinterpret_cast::<u8>(),
     ));
-    assert!(((((*same.borrow()).offset(((0) as isize)).read()) as i32) == 10));
-    assert!(((((*same.borrow()).offset(((1) as isize)).read()) as i32) == 20));
-    assert!(((((*same.borrow()).offset(((2) as isize)).read()) as i32) == 30));
-    assert!(((((*same.borrow()).offset(((3) as isize)).read()) as i32) == 40));
+    assert!(
+        ((*same.borrow())
+            .offset(((0) as isize))
+            .with(|__v| ((*__v) as i32))
+            == 10)
+    );
+    assert!(
+        ((*same.borrow())
+            .offset(((1) as isize))
+            .with(|__v| ((*__v) as i32))
+            == 20)
+    );
+    assert!(
+        ((*same.borrow())
+            .offset(((2) as isize))
+            .with(|__v| ((*__v) as i32))
+            == 30)
+    );
+    assert!(
+        ((*same.borrow())
+            .offset(((3) as isize))
+            .with(|__v| ((*__v) as i32))
+            == 40)
+    );
     (*same.borrow()).offset(((2) as isize)).write(99_u8);
     assert!((((*arr.borrow())[(2) as usize] as i32) == 99));
     return 0;

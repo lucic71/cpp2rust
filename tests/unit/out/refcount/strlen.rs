@@ -9,7 +9,11 @@ use std::rc::{Rc, Weak};
 pub fn strlen_0(ptr: Ptr<u8>) -> u32 {
     let ptr: Value<Ptr<u8>> = Rc::new(RefCell::new(ptr));
     let count: Value<u32> = Rc::new(RefCell::new(0_u32));
-    'loop_: while ((((*ptr.borrow_mut()).postfix_inc().read()) as i32) != (('\0' as u8) as i32)) {
+    'loop_: while ((*ptr.borrow_mut())
+        .postfix_inc()
+        .with(|__v| ((*__v) as i32))
+        != (('\0' as u8) as i32))
+    {
         (*count.borrow_mut()).prefix_inc();
     }
     return (*count.borrow());

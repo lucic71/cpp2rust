@@ -52,9 +52,12 @@ fn main_0() -> i32 {
     let u: Value<anon_0> = <Value<anon_0>>::default();
     (*u.borrow_mut()).p().write((arr.as_pointer() as Ptr<i32>));
     {
-        let rhs_0 = ((*u.borrow()).bits().read()).wrapping_add(
-            ((100_usize).wrapping_mul((::std::mem::size_of::<i32>() as usize)) as u64),
-        );
+        let rhs_0 = (*u.borrow())
+            .bits()
+            .with(|__v| (*__v).clone())
+            .wrapping_add(
+                ((100_usize).wrapping_mul((::std::mem::size_of::<i32>() as usize)) as u64),
+            );
         (*u.borrow_mut()).bits().write(rhs_0)
     };
     let p: Value<Ptr<i32>> = Rc::new(RefCell::new(((*u.borrow()).p().read()).clone()));

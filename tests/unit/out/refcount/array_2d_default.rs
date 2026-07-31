@@ -31,10 +31,10 @@ fn main_0() -> i32 {
     let i: Value<i32> = Rc::new(RefCell::new(0));
     'loop_: while ((((*i.borrow()) < 3) as i32) != 0) {
         ({
-            let _row: Ptr<u8> = (((grid.as_pointer() as Ptr<Value<Box<[u8]>>>)
+            let _row: Ptr<u8> = ((((grid.as_pointer() as Ptr<Value<Box<[u8]>>>)
                 .offset((*i.borrow()))
-                .read()
-                .as_pointer()) as Ptr<u8>);
+                .read())
+            .as_pointer()) as Ptr<u8>);
             let _c: u8 = ((('a' as i32) + (*i.borrow())) as u8);
             fill_row_0(_row, _c)
         });

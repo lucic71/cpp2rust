@@ -41,7 +41,7 @@ fn main_0() -> i32 {
 }
 pub fn touch_0(c: Ptr<container>) {
     let c: Value<Ptr<container>> = Rc::new(RefCell::new(c));
-    (*(*c.borrow()).upgrade().deref()).p.clone();
+    (*c.borrow()).with(|__v| (*__v).p.clone()).clone();
 }
 pub struct opaque;
 impl ByteRepr for opaque {}

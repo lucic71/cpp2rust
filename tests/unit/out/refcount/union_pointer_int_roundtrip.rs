@@ -54,7 +54,9 @@ fn main_0() -> i32 {
         .p()
         .write(((arr.as_pointer() as Ptr<i32>).offset(1)));
     {
-        let rhs_0 = ((*u.borrow()).bits().read())
+        let rhs_0 = (*u.borrow())
+            .bits()
+            .with(|__v| (*__v).clone())
             .wrapping_add(((2_usize).wrapping_mul((::std::mem::size_of::<i32>() as usize)) as u64));
         (*u.borrow_mut()).bits().write(rhs_0)
     };
@@ -68,7 +70,9 @@ fn main_0() -> i32 {
             != 0)
     );
     {
-        let rhs_0 = ((*u.borrow()).bits().read())
+        let rhs_0 = (*u.borrow())
+            .bits()
+            .with(|__v| (*__v).clone())
             .wrapping_sub(((3_usize).wrapping_mul((::std::mem::size_of::<i32>() as usize)) as u64));
         (*u.borrow_mut()).bits().write(rhs_0)
     };

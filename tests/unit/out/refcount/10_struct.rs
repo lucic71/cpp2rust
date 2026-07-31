@@ -49,26 +49,24 @@ impl GraphMethods for Ptr<Graph> {
         let dst: Value<u32> = Rc::new(RefCell::new(dst));
         let __rhs = Ptr::alloc(GraphNode {
             dst: (*dst.borrow()),
-            next: ((*self.upgrade().deref())
-                .adj
+            next: (self
+                .with(|__v| (*__v).adj.clone())
                 .offset(((*src.borrow()) as isize))
                 .read())
             .clone(),
         });
-        (*self.upgrade().deref())
-            .adj
+        self.with(|__v| (*__v).adj.clone())
             .offset(((*src.borrow()) as isize))
             .write(__rhs);
         let __rhs = Ptr::alloc(GraphNode {
             dst: (*src.borrow()),
-            next: ((*self.upgrade().deref())
-                .adj
+            next: (self
+                .with(|__v| (*__v).adj.clone())
                 .offset(((*dst.borrow()) as isize))
                 .read())
             .clone(),
         });
-        (*self.upgrade().deref())
-            .adj
+        self.with(|__v| (*__v).adj.clone())
             .offset(((*dst.borrow()) as isize))
             .write(__rhs);
     }

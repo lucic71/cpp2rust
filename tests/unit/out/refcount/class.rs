@@ -22,10 +22,10 @@ pub trait PairMethods {
 impl PairMethods for Ptr<Pair> {
     fn NOP(&self) {}
     fn GetFirst(&self) -> i32 {
-        return (*self.upgrade().deref()).first;
+        return self.with(|__v| (*__v).first);
     }
     fn GetSecond(&self) -> i32 {
-        return (*self.upgrade().deref()).second;
+        return self.with(|__v| (*__v).second);
     }
     fn Set(&self, field: Ptr<i32>, new_val: i32) -> i32 {
         let new_val: Value<i32> = Rc::new(RefCell::new(new_val));
@@ -95,7 +95,7 @@ pub trait RouteMethods {
 impl RouteMethods for Ptr<Route> {
     fn SetCost(&self, new_cost: f64) -> f64 {
         let new_cost: Value<f64> = Rc::new(RefCell::new(new_cost));
-        let old_cost: Value<f64> = Rc::new(RefCell::new((*self.upgrade().deref()).cost));
+        let old_cost: Value<f64> = Rc::new(RefCell::new(self.with(|__v| (*__v).cost)));
         self.with_mut(|__v| __v.cost = (*new_cost.borrow()));
         return (*old_cost.borrow());
     }
@@ -125,7 +125,7 @@ impl ByteRepr for Route {
     }
 }
 pub fn RandomRoute_0(route: Ptr<Route>) -> i32 {
-    if (((*route.upgrade().deref()).path.first % 2) != 0) {
+    if ((route.with(|__v| (*__v).path.first) % 2) != 0) {
         return ({
             let _new_first: i32 = ({
                 route

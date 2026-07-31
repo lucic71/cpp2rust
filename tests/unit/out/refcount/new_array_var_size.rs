@@ -19,7 +19,7 @@ fn main_0() -> i32 {
     (*A.borrow()).delete_array();
     let N2: Ptr<i32> = N.as_pointer();
     let A2: Value<Ptr<i32>> = Rc::new(RefCell::new(Ptr::alloc_array(
-        (0..((N2.read()) as usize))
+        (0..N2.with(|__v| ((*__v) as usize)))
             .map(|_| <i32>::default())
             .collect::<Box<[i32]>>(),
     )));

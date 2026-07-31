@@ -78,7 +78,7 @@ pub fn dispatch_0(option: i32, __args: &[VaArg]) -> i32 {
             __v if __v == (opt::OPT_NODE as i32) => {
                 let n: Value<Ptr<node>> =
                     Rc::new(RefCell::new((*ap.borrow_mut()).arg::<Ptr<node>>()));
-                (*result.borrow_mut()) = (*(*n.borrow()).upgrade().deref()).data;
+                (*result.borrow_mut()) = (*n.borrow()).with(|__v| (*__v).data);
                 break 'switch;
             }
             __v if __v == (opt::OPT_NODE_OUT as i32) => {

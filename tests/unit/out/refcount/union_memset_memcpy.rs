@@ -139,19 +139,19 @@ fn main_0() -> i32 {
             .memset((0) as u8, 256usize as usize);
         ((c.as_pointer()) as Ptr<Container>).to_any().clone()
     };
-    assert!((((((*(*c.borrow()).view.a().upgrade().deref()).code as i32) == 0) as i32) != 0));
-    assert!((((((*(*c.borrow()).view.b().upgrade().deref()).lo as i32) == 0) as i32) != 0));
+    assert!(((((*c.borrow()).view.a().with(|__v| ((*__v).code as i32)) == 0) as i32) != 0));
+    assert!(((((*c.borrow()).view.b().with(|__v| ((*__v).lo as i32)) == 0) as i32) != 0));
     assert!(
-        (((((((*c.borrow()).view.raw_().reinterpret_cast::<u8>() as Ptr::<u8>)
+        (((((*c.borrow()).view.raw_().reinterpret_cast::<u8>() as Ptr::<u8>)
             .offset(((0) as isize))
-            .read()) as i32)
+            .with(|__v| ((*__v) as i32))
             == 0) as i32)
             != 0)
     );
     assert!(
-        (((((((*c.borrow()).view.raw_().reinterpret_cast::<u8>() as Ptr::<u8>)
+        (((((*c.borrow()).view.raw_().reinterpret_cast::<u8>() as Ptr::<u8>)
             .offset(((255) as isize))
-            .read()) as i32)
+            .with(|__v| ((*__v) as i32))
             == 0) as i32)
             != 0)
     );
@@ -193,16 +193,16 @@ fn main_0() -> i32 {
             .to_any()
             .clone()
     };
-    assert!((((((*(*c.borrow()).view.b().upgrade().deref()).code as i32) == 2) as i32) != 0));
+    assert!(((((*c.borrow()).view.b().with(|__v| ((*__v).code as i32)) == 2) as i32) != 0));
     assert!(
-        ((((((((*c.borrow()).view.b().field_ptr(
+        ((((((*c.borrow()).view.b().field_ptr(
             2,
             |__v: &shape_b| ::std::slice::from_ref(&__v.lo),
             |__v: &mut shape_b| ::std::slice::from_mut(&mut __v.lo)
         ))
         .reinterpret_cast::<u8>())
         .offset(((0) as isize))
-        .read()) as i32)
+        .with(|__v| ((*__v) as i32))
             == 80) as i32)
             != 0)
     );
@@ -212,6 +212,6 @@ fn main_0() -> i32 {
             .memset((0) as u8, 256usize as usize);
         ((c.as_pointer()) as Ptr<Container>).to_any().clone()
     };
-    assert!((((((*(*c.borrow()).view.b().upgrade().deref()).code as i32) == 0) as i32) != 0));
+    assert!(((((*c.borrow()).view.b().with(|__v| ((*__v).code as i32)) == 0) as i32) != 0));
     return 0;
 }

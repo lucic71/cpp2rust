@@ -75,7 +75,7 @@ fn main_0() -> i32 {
     ])));
     let bp: Value<Ptr<u8>> = Rc::new(RefCell::new((bytes.as_pointer() as Ptr<u8>)));
     let bq: Value<Ptr<u8>> = Rc::new(RefCell::new((*bp.borrow()).offset(((4) as isize))));
-    assert!(((((*bq.borrow()).read()) as i32) == 4));
+    assert!(((*bq.borrow()).with(|__v| ((*__v) as i32)) == 4));
     let bdiff: Value<i64> = Rc::new(RefCell::new(
         (((*bq.borrow()).clone() - (*bp.borrow()).clone()) as i64),
     ));
@@ -105,10 +105,10 @@ fn main_0() -> i32 {
         Rc::new(RefCell::new(Box::new([8, 9, 10, 11]))),
     ])));
     let row1: Value<Ptr<i32>> = Rc::new(RefCell::new(
-        ((((matrix.as_pointer() as Ptr<Value<Box<[i32]>>>)
+        (((((matrix.as_pointer() as Ptr<Value<Box<[i32]>>>)
             .offset(1)
-            .read()
-            .as_pointer()) as Ptr<i32>)
+            .read())
+        .as_pointer()) as Ptr<i32>)
             .offset(0)),
     ));
     assert!((((*row1.borrow()).offset(((2) as isize)).read()) == 6));

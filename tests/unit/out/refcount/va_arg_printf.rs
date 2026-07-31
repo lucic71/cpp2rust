@@ -73,14 +73,16 @@ fn main_0() -> i32 {
         (((({
             lenf_2(
                 Ptr::from_string_literal(b"%s"),
-                &[
-                    (if ((((*dummy.borrow()).offset(((0) as isize)).read()) as i32) != 0) {
-                        (*dummy.borrow()).clone()
-                    } else {
-                        Ptr::from_string_literal(b"")
-                    })
-                    .into(),
-                ],
+                &[(if ((*dummy.borrow())
+                    .offset(((0) as isize))
+                    .with(|__v| ((*__v) as i32))
+                    != 0)
+                {
+                    (*dummy.borrow()).clone()
+                } else {
+                    Ptr::from_string_literal(b"")
+                })
+                .into()],
             )
         }) == 5) as i32)
             != 0)

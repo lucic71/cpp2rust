@@ -22,24 +22,24 @@ pub fn test_getpwuid_0() {
     assert!((((!((*pw.borrow()).is_null())) as i32) != 0));
     assert!(
         ((({
-            let _lhs = (*(*pw.borrow()).upgrade().deref()).pw_uid;
+            let _lhs = (*pw.borrow()).with(|__v| (*__v).pw_uid);
             _lhs == nix::unistd::geteuid().as_raw()
         }) as i32)
             != 0)
     );
     assert!(
-        ((((*(*pw.borrow()).upgrade().deref())
-            .pw_name
+        ((((*pw.borrow())
+            .with(|__v| (*__v).pw_name.clone())
             .to_c_string_iterator()
             .count()
             > 0_usize) as i32)
             != 0)
     );
-    assert!((((!(((*(*pw.borrow()).upgrade().deref()).pw_dir).is_null())) as i32) != 0));
-    println!("{}", (*(*pw.borrow()).upgrade().deref()).pw_name);
+    assert!((((!(((*pw.borrow()).with(|__v| (*__v).pw_dir.clone())).is_null())) as i32) != 0));
+    println!("{}", (*pw.borrow()).with(|__v| (*__v).pw_name.clone()));
 }
 pub fn test_getpwuid_missing_1() {
-    libcc2rs::cpp2rust_errno().write(0);
+    libcc2rs::cpp2rust_errno().with_mut(|__v| (__v) = 0);
     let pw: Value<Ptr<libcc2rs::Passwd>> = Rc::new(RefCell::new(
         match nix::unistd::User::from_uid(nix::unistd::Uid::from_raw(2147483646_u32)) {
             Ok(Some(__u)) => Ptr::alloc(Passwd::from_user(&__u)),
@@ -51,7 +51,7 @@ pub fn test_getpwuid_missing_1() {
         },
     ));
     assert!(((((*pw.borrow()).is_null()) as i32) != 0));
-    assert!(((((libcc2rs::cpp2rust_errno().read()) == 0) as i32) != 0));
+    assert!((((libcc2rs::cpp2rust_errno().with(|__v| (*__v)) == 0) as i32) != 0));
 }
 pub fn test_getpwuid_r_2() {
     let pw: Value<libcc2rs::Passwd> = Rc::new(RefCell::new(Default::default()));
@@ -135,8 +135,8 @@ pub fn test_getpwuid_r_2() {
     assert!(
         ((({
             let mut __it1 = (*pw.borrow()).pw_name.to_c_string_iterator();
-            let mut __it2 = (*(*pw2.borrow()).upgrade().deref())
-                .pw_name
+            let mut __it2 = (*pw2.borrow())
+                .with(|__v| (*__v).pw_name.clone())
                 .to_c_string_iterator();
             loop {
                 let __c1 = __it1.next();

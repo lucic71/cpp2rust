@@ -15,13 +15,13 @@ impl Pair {
     pub fn lt(&self, other: Ptr<Pair>) -> bool {
         return ({
             let _lhs = self.x;
-            _lhs < (*other.upgrade().deref()).x
+            _lhs < other.with(|__v| (*__v).x)
         }) || (({
             let _lhs = self.x;
-            _lhs == (*other.upgrade().deref()).x
+            _lhs == other.with(|__v| (*__v).x)
         }) && ({
             let _lhs = self.y;
-            _lhs < (*other.upgrade().deref()).y
+            _lhs < other.with(|__v| (*__v).y)
         }));
     }
 }

@@ -20,10 +20,10 @@ pub trait MyContainer_int_Methods {
 }
 impl MyContainer_int_Methods for Ptr<MyContainer_int_> {
     fn empty(&self) -> bool {
-        return (*self.upgrade().deref()).vec_.is_empty();
+        return self.with(|__v| (*__v).vec_.clone()).is_empty();
     }
     fn size(&self) -> usize {
-        return (*self.upgrade().deref()).vec_.len();
+        return self.with(|__v| (*__v).vec_.clone()).len();
     }
     fn back_const(&self) -> Ptr<i32> {
         return (self.field_ptr(
@@ -75,10 +75,10 @@ pub trait MyContainer_char_Methods {
 }
 impl MyContainer_char_Methods for Ptr<MyContainer_char_> {
     fn empty(&self) -> bool {
-        return (*self.upgrade().deref()).vec_.is_empty();
+        return self.with(|__v| (*__v).vec_.clone()).is_empty();
     }
     fn size(&self) -> usize {
-        return (*self.upgrade().deref()).vec_.len();
+        return self.with(|__v| (*__v).vec_.clone()).len();
     }
     fn back_const(&self) -> Ptr<u8> {
         return (self.field_ptr(
@@ -130,10 +130,10 @@ pub trait MyContainer_float_Methods {
 }
 impl MyContainer_float_Methods for Ptr<MyContainer_float_> {
     fn empty(&self) -> bool {
-        return (*self.upgrade().deref()).vec_.is_empty();
+        return self.with(|__v| (*__v).vec_.clone()).is_empty();
     }
     fn size(&self) -> usize {
-        return (*self.upgrade().deref()).vec_.len();
+        return self.with(|__v| (*__v).vec_.clone()).len();
     }
     fn back_const(&self) -> Ptr<f32> {
         return (self.field_ptr(
@@ -194,7 +194,7 @@ fn main_0() -> i32 {
     });
     assert!(
         (({ cmc.as_pointer().size() }) == 1_usize)
-            && (((({ cmc.as_pointer().back() }).read()) as i32) == (('a' as u8) as i32))
+            && (({ cmc.as_pointer().back() }).with(|__v| ((*__v) as i32)) == (('a' as u8) as i32))
     );
     ({ cmc.as_pointer().pop_back() });
     assert!(({ cmc.as_pointer().empty() }));
@@ -206,7 +206,7 @@ fn main_0() -> i32 {
     });
     assert!(
         (({ fmc.as_pointer().size() }) == 1_usize)
-            && (((({ fmc.as_pointer().back() }).read()) as f64) == 1.0E+0)
+            && (({ fmc.as_pointer().back() }).with(|__v| ((*__v) as f64)) == 1.0E+0)
     );
     ({ fmc.as_pointer().pop_back() });
     assert!(({ fmc.as_pointer().empty() }));

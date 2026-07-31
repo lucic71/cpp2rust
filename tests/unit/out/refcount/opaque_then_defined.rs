@@ -58,7 +58,7 @@ fn main_0() -> i32 {
         head: (n.as_pointer()),
         size: 1,
     }));
-    assert!(((((*(*l.borrow()).head.upgrade().deref()).value == 42) as i32) != 0));
+    assert!(((((*l.borrow()).head.with(|__v| (*__v).value) == 42) as i32) != 0));
     assert!(((((*l.borrow()).size == 1) as i32) != 0));
     return 0;
 }

@@ -62,27 +62,23 @@ fn main_0() -> i32 {
     };
     assert!(((*o.borrow()).runs.len() == 1_usize));
     assert!(
-        ((*(o.as_pointer().field_ptr(
+        ((o.as_pointer().field_ptr(
             0,
             |__v: &Outer| &__v.runs[..],
             |__v: &mut Outer| &mut __v.runs[..]
         ) as Ptr<Outer_RunInfo>)
             .offset(0_usize)
-            .upgrade()
-            .deref())
-        .block_idx
+            .with(|__v| (*__v).block_idx)
             == 1)
     );
     assert!(
-        ((*(o.as_pointer().field_ptr(
+        ((o.as_pointer().field_ptr(
             0,
             |__v: &Outer| &__v.runs[..],
             |__v: &mut Outer| &mut __v.runs[..]
         ) as Ptr<Outer_RunInfo>)
             .offset(0_usize)
-            .upgrade()
-            .deref())
-        .num_extra_zero_runs
+            .with(|__v| (*__v).num_extra_zero_runs)
             == 2)
     );
     return 0;

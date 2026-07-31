@@ -54,33 +54,33 @@ fn main_0() -> i32 {
         libcc2rs::calloc_refcount(1_usize, 16usize).reinterpret_cast::<handlers>(),
     ));
     assert!(!(*h.borrow()).is_null());
-    assert!((((((*(*h.borrow()).upgrade().deref()).cb).is_null()) as i32) != 0));
+    assert!((((((*h.borrow()).with(|__v| (*__v).cb.clone())).is_null()) as i32) != 0));
     (*h.borrow()).with_mut(|__v| __v.cb = FnPtr::<fn(i32)>::new(bump_1));
     (*h.borrow()).with_mut(|__v| __v.n = 7);
     assert!(
         ((({
-            let _lhs = ((*(*h.borrow()).upgrade().deref()).cb).clone();
+            let _lhs = ((*h.borrow()).with(|__v| (*__v).cb.clone())).clone();
             _lhs == FnPtr::<fn(i32)>::new(bump_1)
         }) as i32)
             != 0)
     );
     assert!(
         ((({
-            let _lhs = ((*(*h.borrow()).upgrade().deref()).cb).clone();
+            let _lhs = ((*h.borrow()).with(|__v| (*__v).cb.clone())).clone();
             _lhs != FnPtr::<fn(i32)>::new(reset_2)
         }) as i32)
             != 0)
     );
-    ({ (*(*(*h.borrow()).upgrade().deref()).cb)(3) });
+    ({ (*(*h.borrow()).with(|__v| (*__v).cb.clone()))(3) });
     assert!(((((*total_0.with(Value::clone).borrow()) == 3) as i32) != 0));
-    ({ (*(*(*h.borrow()).upgrade().deref()).cb)(4) });
+    ({ (*(*h.borrow()).with(|__v| (*__v).cb.clone()))(4) });
     assert!(((((*total_0.with(Value::clone).borrow()) == 7) as i32) != 0));
     (*h.borrow()).with_mut(|__v| __v.cb = FnPtr::<fn(i32)>::new(reset_2));
-    ({ (*(*(*h.borrow()).upgrade().deref()).cb)(0) });
+    ({ (*(*h.borrow()).with(|__v| (*__v).cb.clone()))(0) });
     assert!(((((*total_0.with(Value::clone).borrow()) == 0) as i32) != 0));
-    assert!(((((*(*h.borrow()).upgrade().deref()).n == 7) as i32) != 0));
+    assert!(((((*h.borrow()).with(|__v| (*__v).n) == 7) as i32) != 0));
     (*h.borrow()).with_mut(|__v| __v.cb = FnPtr::<fn(i32)>::null());
-    assert!((((((*(*h.borrow()).upgrade().deref()).cb).is_null()) as i32) != 0));
+    assert!((((((*h.borrow()).with(|__v| (*__v).cb.clone())).is_null()) as i32) != 0));
     libcc2rs::free_refcount(((*h.borrow()).clone() as Ptr<handlers>).to_any());
     return 0;
 }

@@ -74,9 +74,9 @@ fn main_0() -> i32 {
         .offset(((0) as isize))
         .write(171_u8);
     assert!(
-        (((((((*n.borrow()).x.bytes().reinterpret_cast::<u8>() as Ptr::<u8>)
+        (((((*n.borrow()).x.bytes().reinterpret_cast::<u8>() as Ptr::<u8>)
             .offset(((0) as isize))
-            .read()) as i32)
+            .with(|__v| ((*__v) as i32))
             == 171) as i32)
             != 0)
     );

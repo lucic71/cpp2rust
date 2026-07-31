@@ -200,14 +200,16 @@ fn main_0() -> i32 {
         .v
         .list()
         .with_mut(|__v| __v.cursor = 1_i64);
-    assert!(((((*(*p_list.borrow()).v.list().upgrade().deref()).count == 3_i64) as i32) != 0));
+    assert!(((((*p_list.borrow()).v.list().with(|__v| (*__v).count) == 3_i64) as i32) != 0));
     assert!(
-        (((((((*(*p_list.borrow()).v.list().upgrade().deref())
-            .items
+        (((((*p_list.borrow())
+            .v
+            .list()
+            .with(|__v| (*__v).items.clone())
             .offset(((1) as isize))
             .read())
         .offset(((0) as isize))
-        .read()) as i32)
+        .with(|__v| ((*__v) as i32))
             == ('b' as i32)) as i32)
             != 0)
     );
@@ -231,8 +233,8 @@ fn main_0() -> i32 {
         .letters()
         .with_mut(|__v| __v.step = 1_u8);
     assert!(
-        (((((*(*p_letters.borrow()).v.letters().upgrade().deref()).hi
-            - (*(*p_letters.borrow()).v.letters().upgrade().deref()).lo)
+        (((((*p_letters.borrow()).v.letters().with(|__v| (*__v).hi)
+            - (*p_letters.borrow()).v.letters().with(|__v| (*__v).lo))
             == 25) as i32)
             != 0)
     );
@@ -259,9 +261,7 @@ fn main_0() -> i32 {
         .v
         .integers()
         .with_mut(|__v| __v.width = 3);
-    assert!(
-        ((((*(*p_integers.borrow()).v.integers().upgrade().deref()).hi == 100_i64) as i32) != 0)
-    );
-    assert!(((((*(*p_integers.borrow()).v.integers().upgrade().deref()).width == 3) as i32) != 0));
+    assert!(((((*p_integers.borrow()).v.integers().with(|__v| (*__v).hi) == 100_i64) as i32) != 0));
+    assert!(((((*p_integers.borrow()).v.integers().with(|__v| (*__v).width) == 3) as i32) != 0));
     return 0;
 }

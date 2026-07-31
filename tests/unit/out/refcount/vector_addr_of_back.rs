@@ -18,11 +18,9 @@ fn main_0() -> i32 {
     let sink: Value<Ptr<Vec<i32>>> = Rc::new(RefCell::new(
         ((*outer.borrow())[(*outer.borrow()).len() - 1].as_pointer()),
     ));
-    assert!(((*(*sink.borrow()).upgrade().deref()).len() == 0_usize));
+    assert!((((*sink.borrow()).read()).len() == 0_usize));
     let p: Value<Ptr<Vec<Value<Vec<i32>>>>> = Rc::new(RefCell::new((outer.as_pointer())));
-    (*sink.borrow_mut()) = ((*(*p.borrow()).upgrade().deref())
-        [(*(*p.borrow()).upgrade().deref()).len() - 1]
-        .as_pointer());
-    assert!(((*(*sink.borrow()).upgrade().deref()).len() == 0_usize));
+    (*sink.borrow_mut()) = (((*p.borrow()).read())[((*p.borrow()).read()).len() - 1].as_pointer());
+    assert!((((*sink.borrow()).read()).len() == 0_usize));
     return 0;
 }

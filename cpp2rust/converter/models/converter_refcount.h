@@ -238,8 +238,6 @@ private:
   RsExpr *emplace_back_emit_push_open(clang::CXXMemberCallExpr *call) override;
   RsExpr *emplace_back_emit_push_close(clang::CXXMemberCallExpr *call) override;
 
-  const char *GetPointerDerefSuffix(clang::QualType pointee_type);
-  const char *GetPointerDerefPrefix(clang::QualType pointee_type) override;
 
   RsExpr *BuildFnAdapter(const clang::FunctionDecl *src_fn,
                          const clang::FunctionProtoType *src_proto,
@@ -247,7 +245,6 @@ private:
 
   // Wraps a pointer expression with deref prefix/suffix: e.g.
   // "(*ptr.upgrade().deref())" or "(ptr.read())"
-  RsExpr *DerefPtrExpr(RsExpr *ptr, clang::QualType pointee_type);
 
   std::string GetInnerType(clang::QualType type);
 

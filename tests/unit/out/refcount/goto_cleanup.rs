@@ -102,7 +102,7 @@ pub fn via_pointer_3(w: Ptr<wrapper>, fail: i32) -> i32 {
     goto_block!({
         '__entry: {
             *ret.borrow_mut() = 0;
-            *item.borrow_mut() = ((*(*w.borrow()).upgrade().deref()).item).clone();
+            *item.borrow_mut() = ((*w.borrow()).with(|__v| (*__v).item.clone())).clone();
             if ((*fail.borrow()) != 0) {
                 (*ret.borrow_mut()) = -1_i32;
                 goto!('out);

@@ -225,7 +225,7 @@ impl ByteRepr for Inner_struct {
 }
 pub fn is_active_0(w: Ptr<widget>) -> i32 {
     let w: Value<Ptr<widget>> = Rc::new(RefCell::new(w));
-    return ((((*(*w.borrow()).upgrade().deref()).mode as u32)
+    return (((*w.borrow()).with(|__v| ((*__v).mode as u32))
         == ((widget_enum::MODE_ACTIVE as i32) as u32)) as i32);
 }
 pub fn main() {

@@ -121,17 +121,15 @@ fn main_0() -> i32 {
     let i: Value<u32> = Rc::new(RefCell::new(0_u32));
     'loop_: while ((*i.borrow()) < 200_u32) {
         assert!(
-            ((*(*(v7.as_pointer() as Ptr<(Value<Ptr::<i32>>, Value<i32>)>)
+            ((*((v7.as_pointer() as Ptr<(Value<Ptr::<i32>>, Value<i32>)>)
                 .offset(((*i.borrow()) as usize))
-                .upgrade()
-                .deref())
+                .read())
             .0
             .borrow())
             .is_null())
-                && ((*(*(v7.as_pointer() as Ptr<(Value<Ptr::<i32>>, Value<i32>)>)
+                && ((*((v7.as_pointer() as Ptr<(Value<Ptr::<i32>>, Value<i32>)>)
                     .offset(((*i.borrow()) as usize))
-                    .upgrade()
-                    .deref())
+                    .read())
                 .1
                 .borrow())
                     == 0)
@@ -230,9 +228,8 @@ fn main_0() -> i32 {
             .read())
             == 6.5E+0)
     );
-    return ((((*s1.borrow()).wrapping_add((*s2.borrow()))).wrapping_add(
-        (((v2.as_pointer() as Ptr<i32>)
-            .offset(0_usize as isize)
-            .read()) as usize),
-    )) as i32);
+    return ((((*s1.borrow()).wrapping_add((*s2.borrow())))
+        .wrapping_add(v2.as_pointer() as Ptr<i32>)
+        .offset(0_usize as isize)
+        .with(|__v| ((*__v) as usize).clone())) as i32);
 }

@@ -1824,8 +1824,7 @@ RsExpr *Converter::VisitCallExpr(clang::CallExpr *expr) {
   auto ref = clang::dyn_cast<clang::ReferenceType>(ty);
 
   if (ref && !isAddrOf() && !isVoid()) {
-    auto *node = Parens(
-        Cat(Text(GetPointerDerefPrefix(ref->getPointeeType())), call_node));
+    auto *node = arena_.New<Unary>(Unary::Op::Deref, call_node);
     SetValueFreshness(ref->getPointeeType());
     return node;
   }
@@ -4213,7 +4212,7 @@ RsExpr *Converter::ConvertAddrOf(clang::Expr *expr,
 
 RsExpr *Converter::EmitDeref(RsExpr *inner, clang::QualType pointee_type) {
   auto wrap = std::exchange(autoref_mut_, std::nullopt);
-  auto *node = Parens(Cat(Text(GetPointerDerefPrefix(pointee_type)), inner));
+  auto *node = arena_.New<Unary>(Unary::Op::Deref, inner);
   if (wrap) {
     return Parens(Cat(Text(*wrap ? "&mut" : "&"), node));
   }
@@ -4437,8 +4436,7 @@ RsExpr *Converter::AccessLValueObject(clang::MemberExpr *member) {
   }
   if (type->isPointerType() ||
       (IsReferenceType(object) && clang::isa<clang::CallExpr>(object))) {
-    return Cat(Text('('), Text(GetPointerDerefPrefix(type->getPointeeType())),
-               ConvertExpr(object), Text(')'));
+    return arena_.New<Unary>(Unary::Op::Deref, ConvertExpr(object));
   }
   return ConvertExpr(object);
 }
@@ -4574,10 +4572,6 @@ RsExpr *
 Converter::emplace_back_plugin_construct_arg(clang::QualType elem_type,
                                              clang::CXXConstructExpr *ctor) {
   return ConvertVarInit(elem_type, ctor);
-}
-
-const char *Converter::GetPointerDerefPrefix(clang::QualType pointee_type) {
-  return token::kStar;
 }
 
 } // namespace cpp2rust

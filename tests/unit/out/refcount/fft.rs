@@ -74,8 +74,8 @@ pub fn fft_3(a: Ptr<Option<Value<Box<[Complex]>>>>, N: i32) -> Option<Value<Box<
         )))));
     if ((*N.borrow()) == 1) {
         let __rhs = Complex {
-            re: (*(*a.upgrade().deref()).as_ref().unwrap().borrow())[(0_usize) as usize].re,
-            img: (*(*a.upgrade().deref()).as_ref().unwrap().borrow())[(0_usize) as usize].img,
+            re: (*(a.read()).as_ref().unwrap().borrow())[(0_usize) as usize].re,
+            img: (*(a.read()).as_ref().unwrap().borrow())[(0_usize) as usize].img,
         };
         (*(*y.borrow()).as_ref().unwrap().borrow_mut())[(0_usize) as usize] = __rhs;
         return (*y.borrow_mut()).take();
@@ -114,19 +114,17 @@ pub fn fft_3(a: Ptr<Option<Value<Box<[Complex]>>>>, N: i32) -> Option<Value<Box<
     let i: Value<i32> = Rc::new(RefCell::new(0));
     'loop_: while ((*i.borrow()) < ((*N.borrow()) / 2)) {
         let __rhs = Complex {
-            re: (*(*a.upgrade().deref()).as_ref().unwrap().borrow())
-                [(((*i.borrow()) * 2) as usize) as usize]
+            re: (*(a.read()).as_ref().unwrap().borrow())[(((*i.borrow()) * 2) as usize) as usize]
                 .re,
-            img: (*(*a.upgrade().deref()).as_ref().unwrap().borrow())
-                [(((*i.borrow()) * 2) as usize) as usize]
+            img: (*(a.read()).as_ref().unwrap().borrow())[(((*i.borrow()) * 2) as usize) as usize]
                 .img,
         };
         (*(*A0.borrow()).as_ref().unwrap().borrow_mut())[((*i.borrow()) as usize) as usize] = __rhs;
         let __rhs = Complex {
-            re: (*(*a.upgrade().deref()).as_ref().unwrap().borrow())
+            re: (*(a.read()).as_ref().unwrap().borrow())
                 [((((*i.borrow()) * 2) + 1) as usize) as usize]
                 .re,
-            img: (*(*a.upgrade().deref()).as_ref().unwrap().borrow())
+            img: (*(a.read()).as_ref().unwrap().borrow())
                 [((((*i.borrow()) * 2) + 1) as usize) as usize]
                 .img,
         };

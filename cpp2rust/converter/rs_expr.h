@@ -40,7 +40,6 @@ struct RsExpr {
     BorrowWrite,
     MethodCall,
     PtrRead,
-    PtrDeref,
     PtrWrite,
     PtrWith,
   };
@@ -119,9 +118,11 @@ struct Delim : RsExpr {
     fn(inner);
   }
 
-  RsExpr *Pointer() override { return inner->Pointer(); }
-
   RsExpr *TakePtr(RsExpr *replacement) override {
+    if (auto *ptr = inner->Pointer()) {
+      inner = replacement;
+      return ptr;
+    }
     return inner->TakePtr(replacement);
   }
 
@@ -145,7 +146,7 @@ struct Unary : RsExpr {
   std::string print() const override {
     switch (op) {
     case Op::Deref:
-      return "*" + operand->print();
+      return "(*" + operand->print() + ")";
     case Op::Not:
       return "!" + operand->print();
     case Op::Neg:
@@ -178,9 +179,11 @@ struct Cast : RsExpr {
     fn(type);
   }
 
-  RsExpr *Pointer() override { return expr->Pointer(); }
-
   RsExpr *TakePtr(RsExpr *replacement) override {
+    if (auto *ptr = expr->Pointer()) {
+      expr = replacement;
+      return ptr;
+    }
     return expr->TakePtr(replacement);
   }
 
@@ -481,20 +484,6 @@ struct PtrRead : Accessor {
 
   std::string print() const override {
     return '(' + object->print() + ".read()) ";
-  }
-
-  RsExpr *Pointer() override { return object; }
-};
-
-struct PtrDeref : Accessor {
-  explicit PtrDeref(RsExpr *object) : Accessor(Kind::PtrDeref, object) {}
-
-  static bool classof(const RsExpr *expr) {
-    return expr->kind == Kind::PtrDeref;
-  }
-
-  std::string print() const override {
-    return "(*" + object->print() + ".upgrade().deref()) ";
   }
 
   RsExpr *Pointer() override { return object; }

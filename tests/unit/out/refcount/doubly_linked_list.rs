@@ -59,7 +59,7 @@ pub fn Find_0(head: Ptr<Node>, idx: i32) -> Ptr<Node> {
     let curr: Value<Ptr<Node>> = Rc::new(RefCell::new((*head.borrow()).clone()));
     let i: Value<i32> = Rc::new(RefCell::new(0));
     'loop_: while ((*i.borrow()) < (*idx.borrow())) {
-        let __rhs = ((*(*curr.borrow()).upgrade().deref()).next).clone();
+        let __rhs = ((*curr.borrow()).with(|__v| (*__v).next.clone())).clone();
         (*curr.borrow_mut()) = __rhs;
         (*i.borrow_mut()).postfix_inc();
     }
@@ -71,7 +71,7 @@ pub fn FindBack_1(tail: Ptr<Node>, idx: i32) -> Ptr<Node> {
     let curr: Value<Ptr<Node>> = Rc::new(RefCell::new((*tail.borrow()).clone()));
     let i: Value<i32> = Rc::new(RefCell::new(0));
     'loop_: while ((*i.borrow()) < (*idx.borrow())) {
-        let __rhs = ((*(*curr.borrow()).upgrade().deref()).prev).clone();
+        let __rhs = ((*curr.borrow()).with(|__v| (*__v).prev.clone())).clone();
         (*curr.borrow_mut()) = __rhs;
         (*i.borrow_mut()).postfix_inc();
     }
@@ -79,8 +79,8 @@ pub fn FindBack_1(tail: Ptr<Node>, idx: i32) -> Ptr<Node> {
 }
 pub fn Append_2(head: Ptr<Node>, new_node: Ptr<Node>) {
     let curr: Value<Ptr<Node>> = Rc::new(RefCell::new((head).clone()));
-    'loop_: while !(((*(*curr.borrow()).upgrade().deref()).next).is_null()) {
-        let __rhs = ((*(*curr.borrow()).upgrade().deref()).next).clone();
+    'loop_: while !(((*curr.borrow()).with(|__v| (*__v).next.clone())).is_null()) {
+        let __rhs = ((*curr.borrow()).with(|__v| (*__v).next.clone())).clone();
         (*curr.borrow_mut()) = __rhs;
     }
     ({ (*curr.borrow()).SetNext((new_node).clone()) });
@@ -95,14 +95,14 @@ pub fn Delete_3(head: Ptr<Node>, val: i32) -> Ptr<Node> {
     let curr: Value<Ptr<Node>> = Rc::new(RefCell::new((*head.borrow()).clone()));
     'loop_: while !((*curr.borrow()).is_null()) {
         if {
-            let _lhs = (*(*curr.borrow()).upgrade().deref()).val;
+            let _lhs = (*curr.borrow()).with(|__v| (*__v).val);
             _lhs == (*val.borrow())
         } {
             let prev: Value<Ptr<Node>> = Rc::new(RefCell::new(
-                ((*(*curr.borrow()).upgrade().deref()).prev).clone(),
+                ((*curr.borrow()).with(|__v| (*__v).prev.clone())).clone(),
             ));
             let next: Value<Ptr<Node>> = Rc::new(RefCell::new(
-                ((*(*curr.borrow()).upgrade().deref()).next).clone(),
+                ((*curr.borrow()).with(|__v| (*__v).next.clone())).clone(),
             ));
             if !((*prev.borrow()).is_null()) {
                 (*prev.borrow()).with_mut(|__v| __v.next = (*next.borrow()).clone());
@@ -116,7 +116,7 @@ pub fn Delete_3(head: Ptr<Node>, val: i32) -> Ptr<Node> {
                 return (*next.borrow()).clone();
             }
         }
-        let __rhs = ((*(*curr.borrow()).upgrade().deref()).next).clone();
+        let __rhs = ((*curr.borrow()).with(|__v| (*__v).next.clone())).clone();
         (*curr.borrow_mut()) = __rhs;
     }
     return (*head.borrow()).clone();
@@ -124,8 +124,8 @@ pub fn Delete_3(head: Ptr<Node>, val: i32) -> Ptr<Node> {
 pub fn Tail_4(head: Ptr<Node>) -> Ptr<Node> {
     let head: Value<Ptr<Node>> = Rc::new(RefCell::new(head));
     let curr: Value<Ptr<Node>> = Rc::new(RefCell::new((*head.borrow()).clone()));
-    'loop_: while !(((*(*curr.borrow()).upgrade().deref()).next).is_null()) {
-        let __rhs = ((*(*curr.borrow()).upgrade().deref()).next).clone();
+    'loop_: while !(((*curr.borrow()).with(|__v| (*__v).next.clone())).is_null()) {
+        let __rhs = ((*curr.borrow()).with(|__v| (*__v).next.clone())).clone();
         (*curr.borrow_mut()) = __rhs;
     }
     return (*curr.borrow()).clone();
@@ -217,130 +217,81 @@ fn main_0() -> i32 {
     let __rhs = ({ Delete_3((*head.borrow()).clone(), -2_i32) });
     (*head.borrow_mut()) = __rhs;
     let tail: Value<Ptr<Node>> = Rc::new(RefCell::new(({ Tail_4((*head.borrow()).clone()) })));
-    assert!(((*({ Find_0((*head.borrow()).clone(), 0,) }).upgrade().deref()).val == 4));
-    assert!(((*({ Find_0((*head.borrow()).clone(), 1,) }).upgrade().deref()).val == 3));
-    assert!(((*({ Find_0((*head.borrow()).clone(), 2,) }).upgrade().deref()).val == 2));
-    assert!(((*({ Find_0((*head.borrow()).clone(), 3,) }).upgrade().deref()).val == 1));
-    assert!(((*({ Find_0((*head.borrow()).clone(), 4,) }).upgrade().deref()).val == -1_i32));
+    assert!((({ Find_0((*head.borrow()).clone(), 0,) }).with(|__v| (*__v).val) == 4));
+    assert!((({ Find_0((*head.borrow()).clone(), 1,) }).with(|__v| (*__v).val) == 3));
+    assert!((({ Find_0((*head.borrow()).clone(), 2,) }).with(|__v| (*__v).val) == 2));
+    assert!((({ Find_0((*head.borrow()).clone(), 3,) }).with(|__v| (*__v).val) == 1));
+    assert!((({ Find_0((*head.borrow()).clone(), 4,) }).with(|__v| (*__v).val) == -1_i32));
     assert!(({ Find_0((*head.borrow()).clone(), 5,) }).is_null());
+    assert!((({ FindBack_1((*tail.borrow()).clone(), 0,) }).with(|__v| (*__v).val) == -1_i32));
+    assert!((({ FindBack_1((*tail.borrow()).clone(), 1,) }).with(|__v| (*__v).val) == 1));
+    assert!((({ FindBack_1((*tail.borrow()).clone(), 2,) }).with(|__v| (*__v).val) == 2));
+    assert!((({ FindBack_1((*tail.borrow()).clone(), 3,) }).with(|__v| (*__v).val) == 3));
+    assert!((({ FindBack_1((*tail.borrow()).clone(), 4,) }).with(|__v| (*__v).val) == 4));
     assert!(
-        ((*({ FindBack_1((*tail.borrow()).clone(), 0,) })
-            .upgrade()
-            .deref())
-        .val == -1_i32)
+        (({ FindBack_1((*tail.borrow()).clone(), 4,) }).with(|__v| (*__v).prev.clone())).is_null()
     );
     assert!(
-        ((*({ FindBack_1((*tail.borrow()).clone(), 1,) })
-            .upgrade()
-            .deref())
-        .val == 1)
+        (({ Find_0((*head.borrow()).clone(), 0,) })
+            .with(|__v| (*__v).next.clone())
+            .with(|__v| (*__v).val)
+            == 3)
     );
     assert!(
-        ((*({ FindBack_1((*tail.borrow()).clone(), 2,) })
-            .upgrade()
-            .deref())
-        .val == 2)
+        (({ Find_0((*head.borrow()).clone(), 1,) })
+            .with(|__v| (*__v).next.clone())
+            .with(|__v| (*__v).next.clone())
+            .with(|__v| (*__v).val)
+            == 1)
     );
     assert!(
-        ((*({ FindBack_1((*tail.borrow()).clone(), 3,) })
-            .upgrade()
-            .deref())
-        .val == 3)
+        (({ Find_0((*head.borrow()).clone(), 2,) })
+            .with(|__v| (*__v).prev.clone())
+            .with(|__v| (*__v).val)
+            == 3)
     );
+    assert!((({ Find_0((*head.borrow()).clone(), 4,) }).with(|__v| (*__v).next.clone())).is_null());
     assert!(
-        ((*({ FindBack_1((*tail.borrow()).clone(), 4,) })
-            .upgrade()
-            .deref())
-        .val == 4)
+        (({ FindBack_1((*tail.borrow()).clone(), 1,) })
+            .with(|__v| (*__v).prev.clone())
+            .with(|__v| (*__v).prev.clone())
+            .with(|__v| (*__v).val)
+            == 3)
     );
-    assert!(
-        ((*({ FindBack_1((*tail.borrow()).clone(), 4,) })
-            .upgrade()
-            .deref())
-        .prev)
-            .is_null()
-    );
-    assert!(
-        ((*(*({ Find_0((*head.borrow()).clone(), 0,) }).upgrade().deref())
-            .next
-            .upgrade()
-            .deref())
-        .val == 3)
-    );
-    assert!(
-        ((*(*(*({ Find_0((*head.borrow()).clone(), 1,) }).upgrade().deref())
-            .next
-            .upgrade()
-            .deref())
-        .next
-        .upgrade()
-        .deref())
-        .val == 1)
-    );
-    assert!(
-        ((*(*({ Find_0((*head.borrow()).clone(), 2,) }).upgrade().deref())
-            .prev
-            .upgrade()
-            .deref())
-        .val == 3)
-    );
-    assert!(((*({ Find_0((*head.borrow()).clone(), 4,) }).upgrade().deref()).next).is_null());
-    assert!(
-        ((*(*(*({ FindBack_1((*tail.borrow()).clone(), 1,) })
-            .upgrade()
-            .deref())
-        .prev
-        .upgrade()
-        .deref())
-        .prev
-        .upgrade()
-        .deref())
-        .val == 3)
-    );
-    (*({ Find_0((*head.borrow()).clone(), 0) }).upgrade().deref())
-        .next
+    ({ Find_0((*head.borrow()).clone(), 0) })
+        .with(|__v| (*__v).next.clone())
         .with_mut(|__v| __v.val = 30);
-    assert!(((*({ Find_0((*head.borrow()).clone(), 1,) }).upgrade().deref()).val == 30));
-    let __rhs = ((*({ Find_0((*head.borrow()).clone(), 0) }).upgrade().deref()).val
-        + (*({ Find_0((*head.borrow()).clone(), 3) }).upgrade().deref()).val);
-    (*({ Find_0((*head.borrow()).clone(), 1) }).upgrade().deref())
-        .next
+    assert!((({ Find_0((*head.borrow()).clone(), 1,) }).with(|__v| (*__v).val) == 30));
+    let __rhs = (({ Find_0((*head.borrow()).clone(), 0) }).with(|__v| (*__v).val)
+        + ({ Find_0((*head.borrow()).clone(), 3) }).with(|__v| (*__v).val));
+    ({ Find_0((*head.borrow()).clone(), 1) })
+        .with(|__v| (*__v).next.clone())
         .with_mut(|__v| __v.val = __rhs);
-    assert!(((*({ Find_0((*head.borrow()).clone(), 2,) }).upgrade().deref()).val == (4 + 1)));
+    assert!((({ Find_0((*head.borrow()).clone(), 2,) }).with(|__v| (*__v).val) == (4 + 1)));
     let sum: Value<i32> = Rc::new(RefCell::new(
-        (((((*({ Find_0((*head.borrow()).clone(), 0) }).upgrade().deref()).val
-            + (*({ Find_0((*head.borrow()).clone(), 1) }).upgrade().deref()).val)
-            + (*({ Find_0((*head.borrow()).clone(), 2) }).upgrade().deref()).val)
-            + (*({ Find_0((*head.borrow()).clone(), 3) }).upgrade().deref()).val)
-            + (*({ Find_0((*head.borrow()).clone(), 4) }).upgrade().deref()).val),
+        ((((({ Find_0((*head.borrow()).clone(), 0) }).with(|__v| (*__v).val)
+            + ({ Find_0((*head.borrow()).clone(), 1) }).with(|__v| (*__v).val))
+            + ({ Find_0((*head.borrow()).clone(), 2) }).with(|__v| (*__v).val))
+            + ({ Find_0((*head.borrow()).clone(), 3) }).with(|__v| (*__v).val))
+            + ({ Find_0((*head.borrow()).clone(), 4) }).with(|__v| (*__v).val)),
     ));
     assert!(((*sum.borrow()) == ((((4 + 30) + 5) + 1) + -1_i32)));
     assert!(
         ({
-            let _lhs = (*({ Find_0((*head.borrow()).clone(), 0) }).upgrade().deref()).val;
-            _lhs + (*({ FindBack_1((*tail.borrow()).clone(), 0) })
-                .upgrade()
-                .deref())
-            .val
+            let _lhs = ({ Find_0((*head.borrow()).clone(), 0) }).with(|__v| (*__v).val);
+            _lhs + ({ FindBack_1((*tail.borrow()).clone(), 0) }).with(|__v| (*__v).val)
         } == (4 + -1_i32))
     );
     assert!({
-        let _lhs = (*(*({ Find_0((*head.borrow()).clone(), 2) }).upgrade().deref())
-            .next
-            .upgrade()
-            .deref())
-        .val;
-        _lhs == (*({ FindBack_1((*tail.borrow()).clone(), 1) })
-            .upgrade()
-            .deref())
-        .val
+        let _lhs = ({ Find_0((*head.borrow()).clone(), 2) })
+            .with(|__v| (*__v).next.clone())
+            .with(|__v| (*__v).val);
+        _lhs == ({ FindBack_1((*tail.borrow()).clone(), 1) }).with(|__v| (*__v).val)
     });
     assert!({
-        let _lhs = ((*({ Find_0((*head.borrow()).clone(), 0) }).upgrade().deref()).prev).clone();
-        _lhs == ((*({ FindBack_1((*tail.borrow()).clone(), 4) })
-            .upgrade()
-            .deref())
-        .prev)
+        let _lhs =
+            (({ Find_0((*head.borrow()).clone(), 0) }).with(|__v| (*__v).prev.clone())).clone();
+        _lhs == (({ FindBack_1((*tail.borrow()).clone(), 4) }).with(|__v| (*__v).prev.clone()))
             .clone()
     });
     return 0;

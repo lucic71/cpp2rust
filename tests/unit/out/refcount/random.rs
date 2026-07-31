@@ -27,13 +27,13 @@ impl PairMethods for Ptr<Pair> {
         self.with_mut(|__v| __v.x.postfix_inc());
         self.with_mut(|__v| __v.y.prefix_inc());
         self.with_mut(|__v| __v.a[(4) as usize] = 1);
-        (*self.upgrade().deref()).r.write(1);
+        self.with(|__v| (*__v).r.clone()).write(1);
         self.with_mut(|__v| __v.p = Ptr::<i32>::null());
         self.with_mut(|__v| __v.pair = Ptr::<Pair>::null());
         self.with_mut(|__v| __v.ap[(0) as usize] = Ptr::<i32>::null());
     }
     fn as_val(&self) -> i32 {
-        return (*self.upgrade().deref()).x;
+        return self.with(|__v| (*__v).x);
     }
     fn as_ref(&self) -> Ptr<i32> {
         return self.field_ptr(
@@ -151,41 +151,41 @@ fn main_0() -> i32 {
     let ry1: Ptr<Pair> = y1.as_pointer();
     let py1: Value<Ptr<Pair>> = Rc::new(RefCell::new((y1.as_pointer())));
     let y2: Value<Pair> = Rc::new(RefCell::new(Pair {
-        x: (*ry1.upgrade().deref()).x,
-        y: (*ry1.upgrade().deref()).y,
+        x: ry1.with(|__v| (*__v).x),
+        y: ry1.with(|__v| (*__v).y),
         a: Box::new([
-            (*ry1.upgrade().deref()).a[(0) as usize],
-            (*ry1.upgrade().deref()).a[(1) as usize],
-            (*ry1.upgrade().deref()).a[(2) as usize],
-            (*ry1.upgrade().deref()).a[(3) as usize],
-            (*ry1.upgrade().deref()).a[(4) as usize],
+            ry1.with(|__v| (*__v).a[(0) as usize]),
+            ry1.with(|__v| (*__v).a[(1) as usize]),
+            ry1.with(|__v| (*__v).a[(2) as usize]),
+            ry1.with(|__v| (*__v).a[(3) as usize]),
+            ry1.with(|__v| (*__v).a[(4) as usize]),
         ]),
-        r: ((*ry1.upgrade().deref()).r).clone(),
-        p: ((*ry1.upgrade().deref()).p).clone(),
-        pair: ((*ry1.upgrade().deref()).pair).clone(),
+        r: (ry1.with(|__v| (*__v).r)).clone(),
+        p: (ry1.with(|__v| (*__v).p.clone())).clone(),
+        pair: (ry1.with(|__v| (*__v).pair.clone())).clone(),
         ap: Box::new([
-            ((*ry1.upgrade().deref()).ap[(0) as usize]).clone(),
-            ((*ry1.upgrade().deref()).ap[(1) as usize]).clone(),
+            (ry1.with(|__v| (*__v).ap[(0) as usize].clone())).clone(),
+            (ry1.with(|__v| (*__v).ap[(1) as usize].clone())).clone(),
         ]),
     }));
     let ry2: Ptr<Pair> = (ry1).clone();
     let py2: Value<Ptr<Pair>> = Rc::new(RefCell::new((ry1).clone()));
     let y3: Value<Pair> = Rc::new(RefCell::new(Pair {
-        x: (*(*py1.borrow()).upgrade().deref()).x,
-        y: (*(*py1.borrow()).upgrade().deref()).y,
+        x: (*py1.borrow()).with(|__v| (*__v).x),
+        y: (*py1.borrow()).with(|__v| (*__v).y),
         a: Box::new([
-            (*(*py1.borrow()).upgrade().deref()).a[(0) as usize],
-            (*(*py1.borrow()).upgrade().deref()).a[(1) as usize],
-            (*(*py1.borrow()).upgrade().deref()).a[(2) as usize],
-            (*(*py1.borrow()).upgrade().deref()).a[(3) as usize],
-            (*(*py1.borrow()).upgrade().deref()).a[(4) as usize],
+            (*py1.borrow()).with(|__v| (*__v).a[(0) as usize]),
+            (*py1.borrow()).with(|__v| (*__v).a[(1) as usize]),
+            (*py1.borrow()).with(|__v| (*__v).a[(2) as usize]),
+            (*py1.borrow()).with(|__v| (*__v).a[(3) as usize]),
+            (*py1.borrow()).with(|__v| (*__v).a[(4) as usize]),
         ]),
-        r: ((*(*py1.borrow()).upgrade().deref()).r).clone(),
-        p: ((*(*py1.borrow()).upgrade().deref()).p).clone(),
-        pair: ((*(*py1.borrow()).upgrade().deref()).pair).clone(),
+        r: ((*py1.borrow()).with(|__v| (*__v).r)).clone(),
+        p: ((*py1.borrow()).with(|__v| (*__v).p.clone())).clone(),
+        pair: ((*py1.borrow()).with(|__v| (*__v).pair.clone())).clone(),
         ap: Box::new([
-            ((*(*py1.borrow()).upgrade().deref()).ap[(0) as usize]).clone(),
-            ((*(*py1.borrow()).upgrade().deref()).ap[(1) as usize]).clone(),
+            ((*py1.borrow()).with(|__v| (*__v).ap[(0) as usize].clone())).clone(),
+            ((*py1.borrow()).with(|__v| (*__v).ap[(1) as usize].clone())).clone(),
         ]),
     }));
     let ry3: Ptr<Pair> = (*py1.borrow()).clone();
@@ -246,13 +246,14 @@ fn main_0() -> i32 {
     (*y1.borrow_mut()).p = (*px3.borrow()).clone();
     (*px3.borrow_mut()) = (*px2.borrow()).clone();
     (*y1.borrow_mut()).pair = (y3.as_pointer());
-    (*y1.borrow()).pair.with_mut(|__v| __v.x = 100);
+    (*y1.borrow()).pair.with_mut(|__v| (__v).x = 100);
     (*y1.borrow())
         .pair
-        .with_mut(|__v| __v.pair = (y2.as_pointer()));
-    (*(*y1.borrow()).pair.upgrade().deref())
+        .with_mut(|__v| (__v).pair = (y2.as_pointer()));
+    (*y1.borrow())
         .pair
-        .with_mut(|__v| __v.x = 100);
+        .with(|__v| (*__v).pair.clone())
+        .with_mut(|__v| (__v).x = 100);
     (*y1.borrow_mut()).ap[(0) as usize] = (x1.as_pointer());
     (*y1.borrow_mut()).ap[(1) as usize] = (x2.as_pointer());
     (*y1.borrow()).ap[(0) as usize].write(0);
@@ -277,13 +278,14 @@ fn main_0() -> i32 {
     (*y1.borrow())
         .pair
         .with_mut(|__v| __v.pair = (y2.as_pointer()));
-    (*(*y1.borrow()).pair.upgrade().deref())
+    (*y1.borrow())
         .pair
+        .with(|__v| (*__v).pair.clone())
         .with_mut(|__v| __v.x = 10);
     ({ y1.as_pointer().method() });
     (*y1.borrow_mut()).pair = (y2.as_pointer());
     (*y2.borrow_mut()).pair = (y3.as_pointer());
-    ({ (*(*y1.borrow()).pair.upgrade().deref()).pair.method() });
+    ({ (*y1.borrow()).pair.with(|__v| (*__v).pair.clone()).method() });
     let x: Value<X1> = Rc::new(RefCell::new(X1 {}));
     let y: Value<X1> = Rc::new(RefCell::new(X1 {}));
     (*x1.borrow_mut()) = (({ zero_0() }) + (*y1.borrow()).x);

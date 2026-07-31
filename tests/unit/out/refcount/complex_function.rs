@@ -49,7 +49,7 @@ pub trait X2Methods {
 }
 impl X2Methods for Ptr<X2> {
     fn get(&self) -> Ptr<X1> {
-        return ((*self.upgrade().deref()).v).clone();
+        return (self.with(|__v| (*__v).v.clone())).clone();
     }
 }
 impl Clone for X2 {
@@ -70,7 +70,7 @@ pub trait X3Methods {
 }
 impl X3Methods for Ptr<X3> {
     fn get(&self) -> Ptr<X2> {
-        return ((*self.upgrade().deref()).v).clone();
+        return (self.with(|__v| (*__v).v.clone())).clone();
     }
 }
 impl Clone for X3 {
@@ -173,8 +173,10 @@ fn main_0() -> i32 {
     let d: Value<X4> = Rc::new(RefCell::new(X4 {
         v: (*c.borrow()).clone(),
     }));
-    (*(*d.borrow()).v.v.upgrade().deref())
+    (*d.borrow())
         .v
+        .v
+        .with(|__v| (*__v).v.clone())
         .with_mut(|__v| __v.v = 0);
     ({ ({ ({ d.as_pointer().get() }).get() }).get() }).with_mut(|__v| __v.v = 0);
     (*d.borrow_mut()).v.v = (b.as_pointer());
@@ -209,10 +211,7 @@ fn main_0() -> i32 {
         |__v: &mut X1| ::std::slice::from_mut(&mut __v.v),
     );
     let x5: Value<i32> = Rc::new(RefCell::new(
-        (*({ ({ ({ d.as_pointer().get() }).get() }).get() })
-            .upgrade()
-            .deref())
-        .v,
+        ({ ({ ({ d.as_pointer().get() }).get() }).get() }).with(|__v| (*__v).v),
     ));
     {
         let _ptr = ({ bar_2(x1.as_pointer()) }).clone();
@@ -333,7 +332,7 @@ fn main_0() -> i32 {
                 )),
             )
         })
-        .with_mut(|__v| __v.postfix_inc()),
+        .with_mut(|__v| (__v).postfix_inc()),
     ));
     let ptr2: Ptr<i32> = ({
         ptr_1(
@@ -387,7 +386,7 @@ fn main_0() -> i32 {
             ),
         )
     })
-    .with_mut(|__v| __v.postfix_inc());
+    .with_mut(|__v| (__v).postfix_inc());
     return (((({
         ptr_1(
             (({ ({ ({ d.as_pointer().get() }).get() }).get() }).field_ptr(
@@ -408,12 +407,5 @@ fn main_0() -> i32 {
             )
         })
         .read()))
-        + ({
-            foo_0(
-                (*({ ({ ({ d.as_pointer().get() }).get() }).get() })
-                    .upgrade()
-                    .deref())
-                .v,
-            )
-        }));
+        + ({ foo_0(({ ({ ({ d.as_pointer().get() }).get() }).get() }).with(|__v| (*__v).v)) }));
 }

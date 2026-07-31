@@ -100,22 +100,22 @@ pub fn write_count_1(s: Ptr<Sink>, count: i64) {
     let s: Value<Ptr<Sink>> = Rc::new(RefCell::new(s));
     let count: Value<i64> = Rc::new(RefCell::new(count));
     'switch: {
-        let __match_cond = ((*(*s.borrow()).upgrade().deref()).width as u32);
+        let __match_cond = (*s.borrow()).with(|__v| ((*__v).width as u32));
         match __match_cond {
             __v if __v == ((Width_enum::W_64 as i32) as u32) => {
-                ((*(*s.borrow()).upgrade().deref()).out.handle().read())
+                ((*s.borrow()).with(|__v| (*__v).out.handle.clone())().read())
                     .reinterpret_cast::<i64>()
                     .write((*count.borrow()));
                 break 'switch;
             }
             __v if __v == ((Width_enum::W_32 as i32) as u32) => {
-                ((*(*s.borrow()).upgrade().deref()).out.handle().read())
+                ((*s.borrow()).with(|__v| (*__v).out.handle.clone())().read())
                     .reinterpret_cast::<i32>()
                     .write(((*count.borrow()) as i32));
                 break 'switch;
             }
             __v if __v == ((Width_enum::W_16 as i32) as u32) => {
-                ((*(*s.borrow()).upgrade().deref()).out.handle().read())
+                ((*s.borrow()).with(|__v| (*__v).out.handle.clone())().read())
                     .reinterpret_cast::<i16>()
                     .write(((*count.borrow()) as i16));
                 break 'switch;

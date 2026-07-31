@@ -79,7 +79,7 @@ fn main_0() -> i32 {
         .p()
         .write(((arr.as_pointer() as Ptr<pair>).offset(1)));
     let q: Value<Ptr<pair>> = Rc::new(RefCell::new(((*u.borrow()).p().read()).clone()));
-    assert!(((((*(*q.borrow()).upgrade().deref()).x == 20) as i32) != 0));
+    assert!(((((*q.borrow()).with(|__v| (*__v).x) == 20) as i32) != 0));
     assert!(
         ((({
             let _lhs = (*q.borrow()).clone();
@@ -88,10 +88,13 @@ fn main_0() -> i32 {
             != 0)
     );
     {
-        let rhs_0 = ((*u.borrow()).bits().read()).wrapping_add((8usize as u64));
+        let rhs_0 = (*u.borrow())
+            .bits()
+            .with(|__v| (*__v).clone())
+            .wrapping_add((8usize as u64));
         (*u.borrow_mut()).bits().write(rhs_0)
     };
-    assert!(((((*((*u.borrow()).p().read()).upgrade().deref()).x == 30) as i32) != 0));
+    assert!((((((*u.borrow()).p().read()).with(|__v| (*__v).x) == 30) as i32) != 0));
     assert!(
         ((({
             let _lhs = ((*u.borrow()).p().read()).clone();
@@ -100,11 +103,13 @@ fn main_0() -> i32 {
             != 0)
     );
     {
-        let rhs_0 = ((*u.borrow()).bits().read())
+        let rhs_0 = (*u.borrow())
+            .bits()
+            .with(|__v| (*__v).clone())
             .wrapping_sub(((2_usize).wrapping_mul((8usize as usize)) as u64));
         (*u.borrow_mut()).bits().write(rhs_0)
     };
-    assert!(((((*((*u.borrow()).p().read()).upgrade().deref()).x == 10) as i32) != 0));
+    assert!((((((*u.borrow()).p().read()).with(|__v| (*__v).x) == 10) as i32) != 0));
     assert!(
         ((({
             let _lhs = ((*u.borrow()).p().read()).clone();

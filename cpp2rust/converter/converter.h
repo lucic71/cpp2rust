@@ -885,7 +885,6 @@ protected:
   virtual RsExpr *emplace_back_emit_push_open(clang::CXXMemberCallExpr *call);
   virtual RsExpr *emplace_back_emit_push_close(clang::CXXMemberCallExpr *call);
 
-  virtual const char *GetPointerDerefPrefix(clang::QualType pointee_type);
 
   TempMaterializationCtx CollectRefBindingTempArgs(clang::CallExpr *expr);
 

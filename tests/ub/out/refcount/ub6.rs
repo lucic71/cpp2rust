@@ -36,9 +36,9 @@ pub fn fill_1(arr: Ptr<Option<Value<Box<[Ptr<i32>]>>>>, n1: Ptr<i32>) {
             mkPair_0(_x1, _x2)
         }),
     ));
-    (*(*arr.upgrade().deref()).as_ref().unwrap().borrow_mut())[(0_usize) as usize] =
+    (*(arr.read()).as_ref().unwrap().borrow_mut())[(0_usize) as usize] =
         ((*pair.borrow()).x1).clone();
-    (*(*arr.upgrade().deref()).as_ref().unwrap().borrow_mut())[(1_usize) as usize] =
+    (*(arr.read()).as_ref().unwrap().borrow_mut())[(1_usize) as usize] =
         ((*pair.borrow()).x2).clone();
 }
 pub fn any_2(arr: Ptr<Option<Value<Box<[Ptr<i32>]>>>>, n1: Ptr<i32>) -> bool {
@@ -49,8 +49,7 @@ pub fn any_2(arr: Ptr<Option<Value<Box<[Ptr<i32>]>>>>, n1: Ptr<i32>) -> bool {
         _lhs < (n1.read())
     } {
         let __rhs = (*out.borrow())
-            || (((*(*arr.upgrade().deref()).as_ref().unwrap().borrow())
-                [((*i.borrow()) as usize) as usize]
+            || (((*(arr.read()).as_ref().unwrap().borrow())[((*i.borrow()) as usize) as usize]
                 .read())
                 == 0);
         (*out.borrow_mut()) = __rhs;

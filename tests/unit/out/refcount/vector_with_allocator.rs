@@ -361,12 +361,17 @@ fn main_0() -> i32 {
     }));
     assert!(((*v13.borrow()).len() == 5_usize));
     assert!(
-        ((((v13.as_pointer() as Ptr<u8>).offset(0_usize).read()) as i32) == 10)
-            && ((((v13.as_pointer() as Ptr<u8>).offset(4_usize).read()) as i32) == 50)
+        ((v13.as_pointer() as Ptr<u8>)
+            .offset(0_usize)
+            .with(|__v| ((*__v) as i32))
+            == 10)
+            && ((v13.as_pointer() as Ptr<u8>)
+                .offset(4_usize)
+                .with(|__v| ((*__v) as i32))
+                == 50)
     );
-    return ((((*s1.borrow()).wrapping_add((*s2.borrow()))).wrapping_add(
-        (((v2.as_pointer() as Ptr<i32>)
-            .offset(0_usize as isize)
-            .read()) as usize),
-    )) as i32);
+    return ((((*s1.borrow()).wrapping_add((*s2.borrow())))
+        .wrapping_add(v2.as_pointer() as Ptr<i32>)
+        .offset(0_usize as isize)
+        .with(|__v| ((*__v) as usize).clone())) as i32);
 }
