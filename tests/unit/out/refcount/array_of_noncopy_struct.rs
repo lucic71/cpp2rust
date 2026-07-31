@@ -37,8 +37,8 @@ fn main_0() -> i32 {
     assert!(
         ((((arr.as_pointer() as Ptr<NonCopy>).offset(1).field_ptr(
             0,
-            |__v: &NonCopy| ::std::slice::from_ref(&__v.data),
-            |__v: &mut NonCopy| ::std::slice::from_mut(&mut __v.data)
+            |__v: &NonCopy| &__v.data[..],
+            |__v: &mut NonCopy| &mut __v.data[..]
         ) as Ptr<i32>)
             .offset(0_usize)
             .read())

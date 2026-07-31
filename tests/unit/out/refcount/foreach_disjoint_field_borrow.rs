@@ -27,11 +27,9 @@ pub fn main() {
 fn main_0() -> i32 {
     let s: Value<S> = Rc::new(RefCell::new(<S>::default()));
     (*s.borrow_mut()).v.push(1);
-    'loop_: for mut e in s.as_pointer().field_ptr(
-        0,
-        |__v: &S| ::std::slice::from_ref(&__v.v),
-        |__v: &mut S| ::std::slice::from_mut(&mut __v.v),
-    ) as Ptr<i32>
+    'loop_: for mut e in
+        s.as_pointer()
+            .field_ptr(0, |__v: &S| &__v.v[..], |__v: &mut S| &mut __v.v[..]) as Ptr<i32>
     {
         let e: Value<i32> = Rc::new(RefCell::new(e.read().clone()));
         (*s.borrow_mut()).a.postfix_inc();

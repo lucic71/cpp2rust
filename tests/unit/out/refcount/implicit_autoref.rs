@@ -46,16 +46,16 @@ fn main_0() -> i32 {
     let b: Value<i32> = Rc::new(RefCell::new(
         (((*hp.borrow()).field_ptr(
             0,
-            |__v: &Holder| ::std::slice::from_ref(&__v.v),
-            |__v: &mut Holder| ::std::slice::from_mut(&mut __v.v),
+            |__v: &Holder| &__v.v[..],
+            |__v: &mut Holder| &mut __v.v[..],
         ) as Ptr<i32>)
             .offset(0_usize)
             .read()),
     ));
     ((*hp.borrow()).field_ptr(
         0,
-        |__v: &Holder| ::std::slice::from_ref(&__v.v),
-        |__v: &mut Holder| ::std::slice::from_mut(&mut __v.v),
+        |__v: &Holder| &__v.v[..],
+        |__v: &mut Holder| &mut __v.v[..],
     ) as Ptr<i32>)
         .offset(1_usize)
         .write(60);
@@ -70,8 +70,8 @@ fn main_0() -> i32 {
     assert!(
         ((((*hp.borrow()).field_ptr(
             0,
-            |__v: &Holder| ::std::slice::from_ref(&__v.v),
-            |__v: &mut Holder| ::std::slice::from_mut(&mut __v.v)
+            |__v: &Holder| &__v.v[..],
+            |__v: &mut Holder| &mut __v.v[..]
         ) as Ptr<i32>)
             .offset(1_usize)
             .read())

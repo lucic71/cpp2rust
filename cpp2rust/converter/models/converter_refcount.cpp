@@ -1687,7 +1687,7 @@ RsExpr *ConverterRefCount::ConvertFieldPtr(clang::MemberExpr *expr,
 
   std::string get;
   std::string get_mut;
-  if (field->getType()->isArrayType()) {
+  if (field->getType()->isArrayType() || IsBoxedType(field->getType())) {
     get = std::format("|__v: &{}| &__v.{}[..]", base_type_name, name);
     get_mut =
         std::format("|__v: &mut {}| &mut __v.{}[..]", base_type_name, name);
