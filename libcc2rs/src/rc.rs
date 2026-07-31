@@ -32,6 +32,7 @@ struct FieldView<P, F> {
 
 trait FieldAccess<F> {
     fn address(&self) -> usize;
+    fn is_dangling(&self) -> bool;
     fn with_dyn(&self, f: &mut dyn FnMut(&F));
     fn with_mut_dyn(&self, f: &mut dyn FnMut(&mut F));
 }
@@ -43,6 +44,10 @@ impl<P: ByteRepr, F> FieldAccess<F> for FieldView<P, F> {
             .address()
             .wrapping_add(self.parent.byte_offset())
             .wrapping_add(self.field_byte_offset)
+    }
+
+    fn is_dangling(&self) -> bool {
+        self.parent.kind.is_dangling()
     }
 
     fn with_dyn(&self, f: &mut dyn FnMut(&F)) {
@@ -148,6 +153,17 @@ impl<T> PtrKind<T> {
             PtrKind::StackArray(w) | PtrKind::HeapArray(w) => w.as_ptr() as usize,
             PtrKind::Reinterpreted(data) => data.alloc.address(),
             PtrKind::FieldPtr(view) => view.address(),
+        }
+    }
+
+    fn is_dangling(&self) -> bool {
+        match self {
+            PtrKind::Null => false,
+            PtrKind::StackSingle(w) | PtrKind::HeapSingle(w) => w.strong_count() == 0,
+            PtrKind::Vec(w) => w.strong_count() == 0,
+            PtrKind::StackArray(w) | PtrKind::HeapArray(w) => w.strong_count() == 0,
+            PtrKind::Reinterpreted(data) => data.alloc.is_dangling(),
+            PtrKind::FieldPtr(view) => view.is_dangling(),
         }
     }
 }
@@ -1221,13 +1237,7 @@ where
     }
 
     fn is_dangling(&self) -> bool {
-        match &self.kind {
-            PtrKind::Null => false,
-            PtrKind::StackSingle(w) | PtrKind::HeapSingle(w) => w.strong_count() == 0,
-            PtrKind::Vec(w) => w.strong_count() == 0,
-            PtrKind::StackArray(w) | PtrKind::HeapArray(w) => w.strong_count() == 0,
-            PtrKind::Reinterpreted(data) => data.alloc.is_dangling(),
-        }
+        self.kind.is_dangling()
     }
 }
 
