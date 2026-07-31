@@ -126,6 +126,10 @@ struct Delim : RsExpr {
     return inner->TakePtr(replacement);
   }
 
+  RsExpr *Pointer() override {
+    return open == '(' ? inner->Pointer() : nullptr;
+  }
+
   char open;
   char close;
   RsExpr *inner;
@@ -574,9 +578,10 @@ struct CompoundAssign : RsExpr {
 };
 
 struct MethodCall : Accessor {
-  MethodCall(RsExpr *object, std::string method, std::vector<RsExpr *> args)
+  MethodCall(RsExpr *object, std::string method, std::vector<RsExpr *> args,
+             bool is_mut = true)
       : Accessor(Kind::MethodCall, object), method(std::move(method)),
-        args(std::move(args)) {}
+        args(std::move(args)), is_mut(is_mut) {}
 
   static bool classof(const RsExpr *expr) {
     return expr->kind == Kind::MethodCall;
@@ -606,6 +611,7 @@ struct MethodCall : Accessor {
 
   std::string method;
   std::vector<RsExpr *> args;
+  bool is_mut;
 };
 
 inline bool SameRendered(const RsExpr *lhs, const RsExpr *rhs) {

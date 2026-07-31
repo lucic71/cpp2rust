@@ -39,7 +39,7 @@ pub fn test_getpwuid_0() {
     println!("{}", (*pw.borrow()).with(|__v| (*__v).pw_name.clone()));
 }
 pub fn test_getpwuid_missing_1() {
-    libcc2rs::cpp2rust_errno().with_mut(|__v| (__v) = 0);
+    libcc2rs::cpp2rust_errno().write(0);
     let pw: Value<Ptr<libcc2rs::Passwd>> = Rc::new(RefCell::new(
         match nix::unistd::User::from_uid(nix::unistd::Uid::from_raw(2147483646_u32)) {
             Ok(Some(__u)) => Ptr::alloc(Passwd::from_user(&__u)),

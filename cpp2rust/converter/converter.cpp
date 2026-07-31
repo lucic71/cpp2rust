@@ -2441,11 +2441,9 @@ RsExpr *Converter::ConvertBinaryOperator(clang::BinaryOperator *expr) {
     if (IsUnsignedArithOp(cmpd_assign_op)) {
       auto *lhs_node = ConvertExpr(lhs);
       auto *lhs_again = ConvertExpr(lhs);
-      auto *arith = ConvertUnsignedArithBinaryOperator(expr, rhs);
-      node = Cat(
-          lhs_node, Text(token::kAssign),
-          Parens(Cat(Parens(CastTo(lhs_again, computation_result_type)),
-                     arith)));
+      auto *receiver = Parens(CastTo(lhs_again, computation_result_type));
+      auto *arith = ConvertUnsignedArithBinaryOperator(expr, rhs, receiver);
+      node = Cat(lhs_node, Text(token::kAssign), Parens(arith));
     } else {
       auto *lhs_node = ConvertExpr(lhs);
       auto *lhs_again = ConvertExpr(lhs);
@@ -2477,14 +2475,14 @@ RsExpr *Converter::ConvertBinaryOperator(clang::BinaryOperator *expr) {
       prefix = Cat(ConvertExpr(lhs), Text(token::kAssign));
     }
     auto *operand = Parens(ConvertUnsignedArithOperand(lhs, type));
-    auto *arith = ConvertUnsignedArithBinaryOperator(expr, rhs);
+    auto *arith = ConvertUnsignedArithBinaryOperator(expr, rhs, operand);
     if (!expr->isCompoundAssignmentOp()) {
       computed_expr_type_ = ComputedExprType::FreshValue;
     }
     if (prefix) {
-      return Cat(prefix, operand, arith);
+      return Cat(prefix, arith);
     }
-    return Cat(operand, arith);
+    return arith;
   }
   if (expr->isAssignmentOp()) {
     if (expr->isCompoundAssignmentOp() &&
@@ -2492,8 +2490,8 @@ RsExpr *Converter::ConvertBinaryOperator(clang::BinaryOperator *expr) {
         expr->getRHS()->getType()->isIntegralOrEnumerationType()) {
       auto *lhs_node = ConvertExpr(lhs);
       auto *operand = Parens(ConvertUnsignedArithOperand(lhs, type));
-      auto *arith = ConvertUnsignedArithBinaryOperator(expr, rhs);
-      auto *node = Cat(lhs_node, Text(token::kAssign), operand, arith);
+      auto *arith = ConvertUnsignedArithBinaryOperator(expr, rhs, operand);
+      auto *node = Cat(lhs_node, Text(token::kAssign), arith);
       if (!isVoid()) {
         node = Cat(node, Text(token::kSemiColon), ConvertRValue(lhs));
       }
@@ -4123,7 +4121,8 @@ RsExpr *Converter::AddByteReprTrait(const clang::EnumDecl *decl) {
 }
 
 RsExpr *Converter::ConvertUnsignedArithBinaryOperator(clang::BinaryOperator *op,
-                                                      clang::Expr *expr) {
+                                                      clang::Expr *expr,
+                                                      RsExpr *object) {
   auto opcode = op->getOpcode();
   const char *method = nullptr;
   switch (opcode) {
@@ -4168,9 +4167,10 @@ RsExpr *Converter::ConvertUnsignedArithBinaryOperator(clang::BinaryOperator *op,
   }
   auto *operand = ConvertUnsignedArithOperand(expr, type);
   if (is_pointer_plus_integer_op) {
-    operand = Cat(operand, Text("as usize"));
+    operand = arena_.New<Cast>(operand, Text("usize"));
   }
-  return Cat(Text(token::kDot), Text(method), Parens(operand));
+  return arena_.New<MethodCall>(object, method, std::vector<RsExpr *>{operand},
+                                /*is_mut=*/false);
 }
 
 RsExpr *Converter::ConvertAddrOf(clang::Expr *expr,

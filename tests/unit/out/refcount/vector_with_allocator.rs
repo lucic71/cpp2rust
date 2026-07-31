@@ -370,8 +370,9 @@ fn main_0() -> i32 {
                 .with(|__v| ((*__v) as i32))
                 == 50)
     );
-    return ((((*s1.borrow()).wrapping_add((*s2.borrow())))
-        .wrapping_add(v2.as_pointer() as Ptr<i32>)
-        .offset(0_usize as isize)
-        .with(|__v| ((*__v) as usize).clone())) as i32);
+    return ((((*s1.borrow()).wrapping_add((*s2.borrow()))).wrapping_add(
+        (v2.as_pointer() as Ptr<i32>)
+            .offset(0_usize as isize)
+            .with(|__v| ((*__v) as usize)),
+    )) as i32);
 }

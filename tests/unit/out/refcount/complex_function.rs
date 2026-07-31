@@ -332,7 +332,7 @@ fn main_0() -> i32 {
                 )),
             )
         })
-        .with_mut(|__v| (__v).postfix_inc()),
+        .with_mut(|__v| __v.postfix_inc()),
     ));
     let ptr2: Ptr<i32> = ({
         ptr_1(
@@ -386,7 +386,7 @@ fn main_0() -> i32 {
             ),
         )
     })
-    .with_mut(|__v| (__v).postfix_inc());
+    .with_mut(|__v| __v.postfix_inc());
     return (((({
         ptr_1(
             (({ ({ ({ d.as_pointer().get() }).get() }).get() }).field_ptr(

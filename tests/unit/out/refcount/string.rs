@@ -641,9 +641,7 @@ fn main_0() -> i32 {
     );
     let t0: Value<usize> = Rc::new(RefCell::new(((*s1.borrow()).len() - 1)));
     let t1: Value<usize> = Rc::new(RefCell::new(
-        (*t0.borrow())
-            .wrapping_add(*p1.borrow())
-            .with(|__v| ((*__v) as usize).clone()),
+        (*t0.borrow()).wrapping_add((*p1.borrow()).with(|__v| ((*__v) as usize))),
     ));
     let t2: Value<usize> = Rc::new(RefCell::new(
         (*t1.borrow()).wrapping_add(((*s2.borrow()).len() - 1)),

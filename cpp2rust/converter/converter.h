@@ -559,7 +559,7 @@ protected:
 
   virtual RsExpr *
   ConvertUnsignedArithBinaryOperator(clang::BinaryOperator *binary_operator,
-                                     clang::Expr *expr);
+                                     clang::Expr *expr, RsExpr *object);
 
   virtual RsExpr *ConvertAddrOf(clang::Expr *expr,
                                 clang::QualType pointer_type);

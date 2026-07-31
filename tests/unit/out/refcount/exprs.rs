@@ -128,6 +128,6 @@ fn main_0() -> i32 {
         .with(|__v| (*__v).p.clone())
         .with_mut(|__v| __v.x = 100);
     ({ y.as_pointer().ptr() }).with_mut(|__v| __v.x = 1);
-    ({ y.as_pointer().ptr() }).with_mut(|__v| (__v).x = 50);
+    ({ y.as_pointer().ptr() }).with_mut(|__v| __v.x = 50);
     return (*x.borrow()).x;
 }

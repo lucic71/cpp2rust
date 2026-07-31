@@ -246,14 +246,14 @@ fn main_0() -> i32 {
     (*y1.borrow_mut()).p = (*px3.borrow()).clone();
     (*px3.borrow_mut()) = (*px2.borrow()).clone();
     (*y1.borrow_mut()).pair = (y3.as_pointer());
-    (*y1.borrow()).pair.with_mut(|__v| (__v).x = 100);
+    (*y1.borrow()).pair.with_mut(|__v| __v.x = 100);
     (*y1.borrow())
         .pair
-        .with_mut(|__v| (__v).pair = (y2.as_pointer()));
+        .with_mut(|__v| __v.pair = (y2.as_pointer()));
     (*y1.borrow())
         .pair
         .with(|__v| (*__v).pair.clone())
-        .with_mut(|__v| (__v).x = 100);
+        .with_mut(|__v| __v.x = 100);
     (*y1.borrow_mut()).ap[(0) as usize] = (x1.as_pointer());
     (*y1.borrow_mut()).ap[(1) as usize] = (x2.as_pointer());
     (*y1.borrow()).ap[(0) as usize].write(0);

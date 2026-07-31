@@ -929,7 +929,7 @@ RsExpr *ConverterRefCount::LowerPtrUse(RsExpr *node) {
     return nullptr;
   }
 
-  if (auto *call = clang::dyn_cast<MethodCall>(node)) {
+  if (auto *call = clang::dyn_cast<MethodCall>(node); call && call->is_mut) {
     if (auto *ptr = call->object->Pointer()) {
       auto *inner =
           arena_.New<MethodCall>(Text("__v"), call->method, call->args);
@@ -1602,9 +1602,9 @@ RsExpr *ConverterRefCount::ConvertBinaryOperator(clang::BinaryOperator *expr) {
     RsExpr *value = nullptr;
     if (IsUnsignedArithOp(assign)) {
       auto *lhs_node = ConvertRValue(lhs);
-      auto *arith = ConvertUnsignedArithBinaryOperator(expr, rhs);
-      value = Parens(
-          Cat(Parens(CastTo(lhs_node, computation_result_type)), arith));
+      auto *receiver = Parens(CastTo(lhs_node, computation_result_type));
+      auto *arith = ConvertUnsignedArithBinaryOperator(expr, rhs, receiver);
+      value = Parens(arith);
     } else {
       auto *lhs_node = ConvertRValue(lhs);
       auto op = opcode_as_string;
@@ -1630,15 +1630,15 @@ RsExpr *ConverterRefCount::ConvertBinaryOperator(clang::BinaryOperator *expr) {
     } else {
       operand = Parens(ConvertUnsignedArithOperand(lhs, expr->getType()));
     }
-    auto *arith = ConvertUnsignedArithBinaryOperator(expr, rhs);
+    auto *arith = ConvertUnsignedArithBinaryOperator(expr, rhs, operand);
     if (expr->isCompoundAssignmentOp()) {
       auto *assign_node = arena_.New<Assign>(ConvertLValue(lhs), Text("rhs_0"));
       return Braces(Cat(Text(keyword::kLet), Text("rhs_0"),
-                        Text(token::kAssign), operand, arith,
-                        Text(token::kSemiColon), assign_node));
+                        Text(token::kAssign), arith, Text(token::kSemiColon),
+                        assign_node));
     }
     computed_expr_type_ = ComputedExprType::FreshValue;
-    return Cat(operand, arith);
+    return arith;
   }
 
   // pointer subtraction. The Sub trait gets elements by Value, so we need
