@@ -32,8 +32,8 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    assert!((({ default_middle_0(1,) }) == 1));
-    assert!((({ default_middle_0(2,) }) == 2));
-    assert!((({ default_middle_0(99,) }) == 99));
+    assert!((({ default_middle_0(1) }) == 1));
+    assert!((({ default_middle_0(2) }) == 2));
+    assert!((({ default_middle_0(99) }) == 99));
     return 0;
 }

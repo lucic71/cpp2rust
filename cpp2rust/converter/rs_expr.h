@@ -39,7 +39,6 @@ struct RsExpr {
     FieldPtr,
     BorrowRead,
     BorrowWrite,
-    MethodCall,
     PtrRead,
     PtrWrite,
     PtrWith,
@@ -197,8 +196,9 @@ struct Cast : RsExpr {
 };
 
 struct Call : RsExpr {
-  Call(RsExpr *callee, std::vector<RsExpr *> args)
-      : RsExpr(Kind::Call), callee(callee), args(std::move(args)) {}
+  Call(RsExpr *callee, std::vector<RsExpr *> args, bool is_mut = false)
+      : RsExpr(Kind::Call), callee(callee), args(std::move(args)),
+        is_mut(is_mut) {}
 
   static bool classof(const RsExpr *e) { return e->kind == Kind::Call; }
 
@@ -221,8 +221,17 @@ struct Call : RsExpr {
     }
   }
 
+  RsExpr *TakePtr(RsExpr *replacement) override {
+    if (auto *ptr = callee->Pointer()) {
+      callee = replacement;
+      return ptr;
+    }
+    return callee->TakePtr(replacement);
+  }
+
   RsExpr *callee;
   std::vector<RsExpr *> args;
+  bool is_mut;
 };
 
 struct Closure : RsExpr {
@@ -605,43 +614,6 @@ struct CompoundAssign : RsExpr {
   RsExpr *left;
   std::string op;
   RsExpr *right;
-};
-
-struct MethodCall : Accessor {
-  MethodCall(RsExpr *object, std::string method, std::vector<RsExpr *> args,
-             bool is_mut = true)
-      : Accessor(Kind::MethodCall, object), method(std::move(method)),
-        args(std::move(args)), is_mut(is_mut) {}
-
-  static bool classof(const RsExpr *expr) {
-    return expr->kind == Kind::MethodCall;
-  }
-
-  std::string print() const override {
-    std::string result = object->print();
-    result += '.';
-    result += method;
-    result += '(';
-    for (size_t i = 0; i < args.size(); ++i) {
-      if (i > 0) {
-        result += ',';
-      }
-      result += args[i]->print();
-    }
-    result += ") ";
-    return result;
-  }
-
-  void ForEachChild(llvm::function_ref<void(RsExpr *&)> fn) override {
-    fn(object);
-    for (auto *&arg : args) {
-      fn(arg);
-    }
-  }
-
-  std::string method;
-  std::vector<RsExpr *> args;
-  bool is_mut;
 };
 
 inline bool SameRendered(const RsExpr *lhs, const RsExpr *rhs) {

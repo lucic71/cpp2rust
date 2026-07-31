@@ -32,8 +32,8 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    assert!(((unsafe { empty_case_with_break_0(1,) }) == (5)));
-    assert!(((unsafe { empty_case_with_break_0(2,) }) == (2)));
-    assert!(((unsafe { empty_case_with_break_0(9,) }) == (9)));
+    assert!(((unsafe { empty_case_with_break_0(1) }) == (5)));
+    assert!(((unsafe { empty_case_with_break_0(2) }) == (2)));
+    assert!(((unsafe { empty_case_with_break_0(9) }) == (9)));
     return 0;
 }

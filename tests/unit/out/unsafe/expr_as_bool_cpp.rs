@@ -69,11 +69,11 @@ unsafe fn main_0() -> i32 {
     let mut both: i32 = (((!(p1).is_null()) && (!(p2).is_null())) as i32);
     assert!(((either) == (1)));
     assert!(((both) == (0)));
-    assert!(((unsafe { cmp_eq_0(-1_i32,) }) == (1)));
-    assert!(((unsafe { cmp_eq_0(0,) }) == (0)));
-    assert!(((unsafe { cmp_or_ptr_1(p1, p2,) }) == (1)));
-    assert!(((unsafe { cmp_or_ptr_1(std::ptr::null(), std::ptr::null(),) }) == (0)));
-    assert!(((unsafe { both_null_2(std::ptr::null(), std::ptr::null(),) }) == (1)));
-    assert!(((unsafe { both_null_2(p1, std::ptr::null(),) }) == (0)));
+    assert!(((unsafe { cmp_eq_0(-1_i32) }) == (1)));
+    assert!(((unsafe { cmp_eq_0(0) }) == (0)));
+    assert!(((unsafe { cmp_or_ptr_1(p1, p2) }) == (1)));
+    assert!(((unsafe { cmp_or_ptr_1(std::ptr::null(), std::ptr::null()) }) == (0)));
+    assert!(((unsafe { both_null_2(std::ptr::null(), std::ptr::null()) }) == (1)));
+    assert!(((unsafe { both_null_2(p1, std::ptr::null()) }) == (0)));
     return 0;
 }

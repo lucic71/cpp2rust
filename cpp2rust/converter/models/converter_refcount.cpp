@@ -895,7 +895,8 @@ RsExpr *ConverterRefCount::ConvertIncAndDec(clang::UnaryOperator *expr) {
   }
 
   auto *node = ConvertLValue(sub_expr);
-  auto *result = arena_.New<MethodCall>(node, method, std::vector<RsExpr *>{});
+  auto *result =
+      MethodCall(node, method, std::vector<RsExpr *>{}, /*is_mut=*/true);
   SetFreshType(expr->getType());
   return result;
 }
@@ -933,14 +934,8 @@ RsExpr *ConverterRefCount::LowerPtrUse(RsExpr *node) {
     return nullptr;
   }
 
-  if (auto *call = clang::dyn_cast<MethodCall>(node); call && call->is_mut) {
-    if (auto *ptr = call->object->Pointer()) {
-      auto *inner =
-          arena_.New<MethodCall>(Text("__v"), call->method, call->args);
-      return arena_.New<PtrWith>(
-          ptr, true, arena_.New<Closure>("__v", nullptr, inner));
-    }
-    if (auto *ptr = call->object->TakePtr(Text("__v"))) {
+  if (auto *call = clang::dyn_cast<Call>(node); call && call->is_mut) {
+    if (auto *ptr = call->TakePtr(Text("__v"))) {
       return arena_.New<PtrWith>(
           ptr, true, arena_.New<Closure>("__v", nullptr, node));
     }
@@ -950,7 +945,8 @@ RsExpr *ConverterRefCount::LowerPtrUse(RsExpr *node) {
   if (auto *ptr = node->TakePtr(Text("(*__v)"))) {
     auto *body = node;
     if (!node->expr || !ExprIsCopyable(node->expr)) {
-      body = arena_.New<MethodCall>(body, "clone", std::vector<RsExpr *>{});
+      body = MethodCall(body, "clone", std::vector<RsExpr *>{},
+                        /*is_mut=*/false);
     }
     return arena_.New<PtrWith>(ptr, false,
                                arena_.New<Closure>("__v", nullptr, body));
@@ -1755,9 +1751,8 @@ RsExpr *ConverterRefCount::ConvertUnionMemberAccessor(clang::MemberExpr *expr) {
   {
     PushExprKind push(*this, isLValue() ? ExprKind::LValue : ExprKind::RValue);
     auto *field = clang::cast<Field>(Converter::ConvertMemberExpr(expr));
-    accessor = arena_.New<MethodCall>(field->object, field->member,
-                                      std::vector<RsExpr *>{},
-                                      /*is_mut=*/false);
+    accessor = MethodCall(field->object, field->member,
+                          std::vector<RsExpr *>{}, /*is_mut=*/false);
   }
 
   if (isAddrOf()) {
@@ -1819,7 +1814,7 @@ RsExpr *ConverterRefCount::VisitMemberExpr(clang::MemberExpr *expr) {
       auto *receiver = ConvertPointer(expr->getBase());
       auto name = IsOverloadedMethod(method) ? GetOverloadedFunctionName(method)
                                              : GetNamedDeclAsString(method);
-      return Cat(receiver, Text(token::kDot), Text(std::move(name)));
+      return arena_.New<Field>(receiver, std::move(name));
     }
     bool needs_mut = NeedsMutAccess(method, base_type);
     PushExprKind push(*this, needs_mut ? ExprKind::LValue : ExprKind::RValue);
@@ -2353,12 +2348,10 @@ RsExpr *ConverterRefCount::ConvertCXXOperatorCallExpr(
       auto *node = Cat(base, Text(".as_ref().unwrap()"));
       if (isAddrOf()) {
         auto *idx = ConvertRValue(expr->getArg(1));
-        auto *ptr = arena_.New<MethodCall>(node, "as_pointer",
-                                           std::vector<RsExpr *>{},
-                                           /*is_mut=*/false);
-        node = arena_.New<MethodCall>(ptr, "offset",
-                                      std::vector<RsExpr *>{Parens(idx)},
-                                      /*is_mut=*/false);
+        auto *ptr = MethodCall(node, "as_pointer", std::vector<RsExpr *>{},
+                               /*is_mut=*/false);
+        node = MethodCall(ptr, "offset", std::vector<RsExpr *>{Parens(idx)},
+                          /*is_mut=*/false);
       } else {
         auto *idx = ConvertRValue(expr->getArg(1));
         node = arena_.New<Index>(
@@ -2381,9 +2374,8 @@ RsExpr *ConverterRefCount::ConvertCXXOperatorCallExpr(
       auto *idx = ConvertSubscriptIndex(expr->getArg(1));
       return arena_.New<Unary>(
           Unary::Op::Deref,
-          arena_.New<MethodCall>(arena_.New<Cast>(object, ptr_type), "offset",
-                                 std::vector<RsExpr *>{idx},
-                                 /*is_mut=*/false));
+          MethodCall(arena_.New<Cast>(object, ptr_type), "offset",
+                     std::vector<RsExpr *>{idx}, /*is_mut=*/false));
     }
 
     RsExpr *offset = nullptr;
@@ -2392,9 +2384,8 @@ RsExpr *ConverterRefCount::ConvertCXXOperatorCallExpr(
       auto *object = ConvertObject(expr->getArg(0));
       auto *ptr_type = ConvertPtrType(expr->getArg(0)->getType());
       auto *idx = ConvertSubscriptIndex(expr->getArg(1));
-      offset = arena_.New<MethodCall>(arena_.New<Cast>(object, ptr_type),
-                                      "offset", std::vector<RsExpr *>{idx},
-                                      /*is_mut=*/false);
+      offset = MethodCall(arena_.New<Cast>(object, ptr_type), "offset",
+                          std::vector<RsExpr *>{idx}, /*is_mut=*/false);
     }
 
     auto *node = offset;
@@ -2457,16 +2448,14 @@ RsExpr *ConverterRefCount::ConvertArraySubscript(clang::Expr *base,
       auto *idx_node = ConvertSubscriptIndex(idx);
       auto *literal = arena_.New<Call>(Text("Ptr::from_string_literal"),
                                        std::vector<RsExpr *>{base_node});
-      node = arena_.New<MethodCall>(literal, "offset",
-                                    std::vector<RsExpr *>{idx_node},
-                                    /*is_mut=*/false);
+      node = MethodCall(literal, "offset", std::vector<RsExpr *>{idx_node},
+                        /*is_mut=*/false);
     } else {
       auto *base_node = ConvertExpr(base->IgnoreImplicit());
       auto *ptr_type = ConvertPtrType(base->IgnoreImplicit()->getType());
       auto *idx_node = ConvertSubscriptIndex(idx);
-      node = arena_.New<MethodCall>(arena_.New<Cast>(base_node, ptr_type),
-                                    "offset", std::vector<RsExpr *>{idx_node},
-                                    /*is_mut=*/false);
+      node = MethodCall(arena_.New<Cast>(base_node, ptr_type), "offset",
+                        std::vector<RsExpr *>{idx_node}, /*is_mut=*/false);
     }
 
     if (is_inner_boxed) {

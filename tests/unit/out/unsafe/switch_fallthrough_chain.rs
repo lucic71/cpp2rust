@@ -35,10 +35,10 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    assert!(((unsafe { fallthrough_chain_0(1,) }) == (15)));
-    assert!(((unsafe { fallthrough_chain_0(2,) }) == (14)));
-    assert!(((unsafe { fallthrough_chain_0(3,) }) == (12)));
-    assert!(((unsafe { fallthrough_chain_0(4,) }) == (8)));
-    assert!(((unsafe { fallthrough_chain_0(99,) }) == (-1_i32)));
+    assert!(((unsafe { fallthrough_chain_0(1) }) == (15)));
+    assert!(((unsafe { fallthrough_chain_0(2) }) == (14)));
+    assert!(((unsafe { fallthrough_chain_0(3) }) == (12)));
+    assert!(((unsafe { fallthrough_chain_0(4) }) == (8)));
+    assert!(((unsafe { fallthrough_chain_0(99) }) == (-1_i32)));
     return 0;
 }

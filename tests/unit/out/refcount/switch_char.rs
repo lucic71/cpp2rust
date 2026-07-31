@@ -60,10 +60,10 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    assert!((({ switch_char_0(('a' as u8),) }) == 1));
-    assert!((({ switch_char_0(('b' as u8),) }) == 2));
-    assert!((({ switch_char_0(('\n' as u8),) }) == 3));
-    assert!((({ switch_char_0(('\0' as u8),) }) == 4));
-    assert!((({ switch_char_0(('z' as u8),) }) == 0));
+    assert!((({ switch_char_0(('a' as u8)) }) == 1));
+    assert!((({ switch_char_0(('b' as u8)) }) == 2));
+    assert!((({ switch_char_0(('\n' as u8)) }) == 3));
+    assert!((({ switch_char_0(('\0' as u8)) }) == 4));
+    assert!((({ switch_char_0(('z' as u8)) }) == 0));
     return 0;
 }

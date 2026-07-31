@@ -95,7 +95,7 @@ fn main_0() -> i32 {
     let standalone: Value<Inner> = <Value<Inner>>::default();
     (*standalone.borrow_mut()).a = 3;
     (*standalone.borrow_mut()).b = 4;
-    assert!((((({ sum_inner_0((standalone.as_pointer()),) }) == 7) as i32) != 0));
+    assert!((((({ sum_inner_0((standalone.as_pointer())) }) == 7) as i32) != 0));
     let outer: Value<Outer> = <Value<Outer>>::default();
     {
         ((outer.as_pointer()) as Ptr<Outer>)
@@ -105,7 +105,7 @@ fn main_0() -> i32 {
     };
     (*outer.borrow_mut()).u.inner().with_mut(|__v| __v.a = 3);
     (*outer.borrow_mut()).u.inner().with_mut(|__v| __v.b = 4);
-    assert!((((({ sum_inner_0(((*outer.borrow()).u.inner()).clone(),) }) == 7) as i32) != 0));
+    assert!((((({ sum_inner_0(((*outer.borrow()).u.inner()).clone()) }) == 7) as i32) != 0));
     assert!(
         ((((((((*outer.borrow()).u.raw_().reinterpret_cast::<u8>() as Ptr::<u8>)
             .offset(((0) as isize))

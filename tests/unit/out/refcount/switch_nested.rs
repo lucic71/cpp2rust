@@ -50,9 +50,9 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    assert!((({ nested_0(1, 10,) }) == 12));
-    assert!((({ nested_0(1, 99,) }) == 14));
-    assert!((({ nested_0(2, 0,) }) == 2));
-    assert!((({ nested_0(3, 3,) }) == -1_i32));
+    assert!((({ nested_0(1, 10) }) == 12));
+    assert!((({ nested_0(1, 99) }) == 14));
+    assert!((({ nested_0(2, 0) }) == 2));
+    assert!((({ nested_0(3, 3) }) == -1_i32));
     return 0;
 }

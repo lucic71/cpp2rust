@@ -1238,20 +1238,6 @@ impl AnyPtr {
     }
 }
 
-pub struct StrongPtrDyn<T: ?Sized> {
-    rc: Rc<RefCell<T>>,
-}
-
-impl<T: ?Sized> StrongPtrDyn<T> {
-    pub fn deref(&self) -> Ref<'_, T> {
-        self.rc.borrow()
-    }
-
-    pub fn deref_mut(&self) -> RefMut<'_, T> {
-        self.rc.borrow_mut()
-    }
-}
-
 #[derive(Default, Debug)]
 enum PtrKindDyn<T: ?Sized> {
     #[default]
@@ -1275,14 +1261,26 @@ pub struct PtrDyn<T: ?Sized> {
 }
 
 impl<T: ?Sized> PtrDyn<T> {
-    pub fn upgrade(&self) -> StrongPtrDyn<T> {
+    pub fn with<R>(&self, f: impl FnOnce(&T) -> R) -> R {
         match &self.kind {
-            PtrKindDyn::Null => panic!("ub: dereference of null pointer"),
+            PtrKindDyn::Null => panic!("ub: null pointer"),
             PtrKindDyn::StackSingle(weak) => {
                 assert_eq!(self.offset, 0, "ub: invalid offset");
-                StrongPtrDyn {
-                    rc: weak.upgrade().expect("ub: dangling pointer"),
-                }
+                let rc = weak.upgrade().expect("ub: dangling pointer");
+                let borrow = rc.borrow();
+                f(&borrow)
+            }
+        }
+    }
+
+    pub fn with_mut<R>(&self, f: impl FnOnce(&mut T) -> R) -> R {
+        match &self.kind {
+            PtrKindDyn::Null => panic!("ub: null pointer"),
+            PtrKindDyn::StackSingle(weak) => {
+                assert_eq!(self.offset, 0, "ub: invalid offset");
+                let rc = weak.upgrade().expect("ub: dangling pointer");
+                let mut borrow = rc.borrow_mut();
+                f(&mut borrow)
             }
         }
     }

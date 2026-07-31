@@ -127,19 +127,19 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    assert!(((((unsafe { early_0(-1_i32,) }) == (-1_i32)) as i32) != 0));
-    assert!(((((unsafe { early_0(5,) }) == (100)) as i32) != 0));
-    assert!(((((unsafe { from_loop_1(2,) }) == (999)) as i32) != 0));
-    assert!(((((unsafe { from_loop_1(10,) }) == (7)) as i32) != 0));
-    assert!(((((unsafe { from_switch_2(1,) }) == (10)) as i32) != 0));
-    assert!(((((unsafe { from_switch_2(2,) }) == (999)) as i32) != 0));
+    assert!(((((unsafe { early_0(-1_i32) }) == (-1_i32)) as i32) != 0));
+    assert!(((((unsafe { early_0(5) }) == (100)) as i32) != 0));
+    assert!(((((unsafe { from_loop_1(2) }) == (999)) as i32) != 0));
+    assert!(((((unsafe { from_loop_1(10) }) == (7)) as i32) != 0));
+    assert!(((((unsafe { from_switch_2(1) }) == (10)) as i32) != 0));
+    assert!(((((unsafe { from_switch_2(2) }) == (999)) as i32) != 0));
     let mut value: i32 = 42;
     let mut w: wrapper = wrapper {
         item: (&mut value as *mut i32),
     };
-    assert!(((((unsafe { via_pointer_3((&mut w as *mut wrapper), 0,) }) == (42)) as i32) != 0));
-    assert!(((((unsafe { via_pointer_3((&mut w as *mut wrapper), 1,) }) == (-1_i32)) as i32) != 0));
-    assert!(((((unsafe { via_arrays_4(0,) }) == (11)) as i32) != 0));
-    assert!(((((unsafe { via_arrays_4(1,) }) == (-1_i32)) as i32) != 0));
+    assert!(((((unsafe { via_pointer_3((&mut w as *mut wrapper), 0) }) == (42)) as i32) != 0));
+    assert!(((((unsafe { via_pointer_3((&mut w as *mut wrapper), 1) }) == (-1_i32)) as i32) != 0));
+    assert!(((((unsafe { via_arrays_4(0) }) == (11)) as i32) != 0));
+    assert!(((((unsafe { via_arrays_4(1) }) == (-1_i32)) as i32) != 0));
     return 0;
 }

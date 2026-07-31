@@ -55,8 +55,8 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    assert!((({ switch_enum_0(Color::kRed,) }) == 10));
-    assert!((({ switch_enum_0(Color::kGreen,) }) == 20));
-    assert!((({ switch_enum_0(Color::kBlue,) }) == 30));
+    assert!((({ switch_enum_0(Color::kRed) }) == 10));
+    assert!((({ switch_enum_0(Color::kGreen) }) == 20));
+    assert!((({ switch_enum_0(Color::kBlue) }) == 30));
     return 0;
 }

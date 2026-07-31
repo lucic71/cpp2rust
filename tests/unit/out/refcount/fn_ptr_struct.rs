@@ -64,10 +64,10 @@ fn main_0() -> i32 {
         cb: FnPtr::<fn(i32) -> i32>::new(negate_1),
     }));
     assert!(!(((*h1.borrow()).cb).is_null()));
-    assert!((({ (*(*h1.borrow()).cb)(5,) }) == 10));
-    assert!((({ (*(*h2.borrow()).cb)(7,) }) == -7_i32));
+    assert!((({ (*(*h1.borrow()).cb)(5) }) == 10));
+    assert!((({ (*(*h2.borrow()).cb)(7) }) == -7_i32));
     (*h1.borrow_mut()).cb = FnPtr::<fn(i32) -> i32>::new(negate_1);
-    assert!((({ (*(*h1.borrow()).cb)(3,) }) == -3_i32));
+    assert!((({ (*(*h1.borrow()).cb)(3) }) == -3_i32));
     assert!({
         let _lhs = ((*h1.borrow()).cb).clone();
         _lhs == ((*h2.borrow()).cb).clone()

@@ -235,7 +235,7 @@ fn main_0() -> i32 {
     let w: Value<widget> = <Value<widget>>::default();
     (*w.borrow_mut()).id = 7;
     (*w.borrow_mut()).mode = widget_enum::MODE_ACTIVE;
-    assert!((({ is_active_0((w.as_pointer()),) }) != 0));
+    assert!((({ is_active_0((w.as_pointer())) }) != 0));
     (*w.borrow_mut()).mode = widget_enum::MODE_DONE;
     assert!(
         (((((*w.borrow()).mode as u32) == ((widget_enum::MODE_DONE as i32) as u32)) as i32) != 0)

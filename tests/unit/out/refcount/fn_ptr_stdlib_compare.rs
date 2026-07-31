@@ -58,7 +58,7 @@ fn main_0() -> i32 {
             )),
         ));
     assert!(
-        (({ (*(*f3.borrow()))(AnyPtr::default(), 0_usize, 0_usize, Ptr::null(),) }) == 22_usize)
+        (({ (*(*f3.borrow()))(AnyPtr::default(), 0_usize, 0_usize, Ptr::null()) }) == 22_usize)
     );
     let mut __do_while = true;
     'loop_: while __do_while || (0 != 0) {
@@ -190,7 +190,7 @@ fn main_0() -> i32 {
         )),
     ));
     assert!(
-        (({ (*(*g3.borrow()))(AnyPtr::default(), 0_usize, 0_usize, Ptr::null(),) }) == 33_usize)
+        (({ (*(*g3.borrow()))(AnyPtr::default(), 0_usize, 0_usize, Ptr::null()) }) == 33_usize)
     );
     let mut __do_while = true;
     'loop_: while __do_while || (0 != 0) {

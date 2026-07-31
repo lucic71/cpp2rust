@@ -36,7 +36,7 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    assert!((({ while_in_switch_break_0(0,) }) == 1006));
-    assert!((({ while_in_switch_break_0(99,) }) == -1_i32));
+    assert!((({ while_in_switch_break_0(0) }) == 1006));
+    assert!((({ while_in_switch_break_0(99) }) == -1_i32));
     return 0;
 }

@@ -29,8 +29,8 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    assert!((({ fallthrough_into_block_0(1,) }) == 15));
-    assert!((({ fallthrough_into_block_0(2,) }) == 5));
-    assert!((({ fallthrough_into_block_0(99,) }) == -1_i32));
+    assert!((({ fallthrough_into_block_0(1) }) == 15));
+    assert!((({ fallthrough_into_block_0(2) }) == 5));
+    assert!((({ fallthrough_into_block_0(99) }) == -1_i32));
     return 0;
 }

@@ -40,10 +40,10 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    assert!(((unsafe { (unsafe { pick_3(1,) }).unwrap()(10,) }) == (11)));
-    assert!(((unsafe { (unsafe { pick_3(-1_i32,) }).unwrap()(10,) }) == (9)));
-    assert!(((unsafe { (unsafe { pick_3(0,) }).unwrap()(10,) }) == (10)));
-    assert!(((unsafe { apply_4(Some(inc_0), 5,) }) == (6)));
-    assert!(((unsafe { apply_4(None, 5,) }) == (5)));
+    assert!(((unsafe { (unsafe { pick_3(1) }).unwrap()(10) }) == (11)));
+    assert!(((unsafe { (unsafe { pick_3(-1_i32) }).unwrap()(10) }) == (9)));
+    assert!(((unsafe { (unsafe { pick_3(0) }).unwrap()(10) }) == (10)));
+    assert!(((unsafe { apply_4(Some(inc_0), 5) }) == (6)));
+    assert!(((unsafe { apply_4(None, 5) }) == (5)));
     return 0;
 }

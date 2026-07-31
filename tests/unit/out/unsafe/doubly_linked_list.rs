@@ -165,28 +165,28 @@ unsafe fn main_0() -> i32 {
     head = (unsafe { Delete_3(head, 0) });
     head = (unsafe { Delete_3(head, -2_i32) });
     let mut tail: *mut Node = (unsafe { Tail_4(head) });
-    assert!((((*(unsafe { Find_0(head, 0,) })).val) == (4)));
-    assert!((((*(unsafe { Find_0(head, 1,) })).val) == (3)));
-    assert!((((*(unsafe { Find_0(head, 2,) })).val) == (2)));
-    assert!((((*(unsafe { Find_0(head, 3,) })).val) == (1)));
-    assert!((((*(unsafe { Find_0(head, 4,) })).val) == (-1_i32)));
-    assert!((unsafe { Find_0(head, 5,) }).is_null());
-    assert!((((*(unsafe { FindBack_1(tail, 0,) })).val) == (-1_i32)));
-    assert!((((*(unsafe { FindBack_1(tail, 1,) })).val) == (1)));
-    assert!((((*(unsafe { FindBack_1(tail, 2,) })).val) == (2)));
-    assert!((((*(unsafe { FindBack_1(tail, 3,) })).val) == (3)));
-    assert!((((*(unsafe { FindBack_1(tail, 4,) })).val) == (4)));
-    assert!(((*(unsafe { FindBack_1(tail, 4,) })).prev).is_null());
-    assert!((((*(*(unsafe { Find_0(head, 0,) })).next).val) == (3)));
-    assert!((((*(*(*(unsafe { Find_0(head, 1,) })).next).next).val) == (1)));
-    assert!((((*(*(unsafe { Find_0(head, 2,) })).prev).val) == (3)));
-    assert!(((*(unsafe { Find_0(head, 4,) })).next).is_null());
-    assert!((((*(*(*(unsafe { FindBack_1(tail, 1,) })).prev).prev).val) == (3)));
+    assert!((((*(unsafe { Find_0(head, 0) })).val) == (4)));
+    assert!((((*(unsafe { Find_0(head, 1) })).val) == (3)));
+    assert!((((*(unsafe { Find_0(head, 2) })).val) == (2)));
+    assert!((((*(unsafe { Find_0(head, 3) })).val) == (1)));
+    assert!((((*(unsafe { Find_0(head, 4) })).val) == (-1_i32)));
+    assert!((unsafe { Find_0(head, 5) }).is_null());
+    assert!((((*(unsafe { FindBack_1(tail, 0) })).val) == (-1_i32)));
+    assert!((((*(unsafe { FindBack_1(tail, 1) })).val) == (1)));
+    assert!((((*(unsafe { FindBack_1(tail, 2) })).val) == (2)));
+    assert!((((*(unsafe { FindBack_1(tail, 3) })).val) == (3)));
+    assert!((((*(unsafe { FindBack_1(tail, 4) })).val) == (4)));
+    assert!(((*(unsafe { FindBack_1(tail, 4) })).prev).is_null());
+    assert!((((*(*(unsafe { Find_0(head, 0) })).next).val) == (3)));
+    assert!((((*(*(*(unsafe { Find_0(head, 1) })).next).next).val) == (1)));
+    assert!((((*(*(unsafe { Find_0(head, 2) })).prev).val) == (3)));
+    assert!(((*(unsafe { Find_0(head, 4) })).next).is_null());
+    assert!((((*(*(*(unsafe { FindBack_1(tail, 1) })).prev).prev).val) == (3)));
     (*(*(unsafe { Find_0(head, 0) })).next).val = 30;
-    assert!((((*(unsafe { Find_0(head, 1,) })).val) == (30)));
+    assert!((((*(unsafe { Find_0(head, 1) })).val) == (30)));
     (*(*(unsafe { Find_0(head, 1) })).next).val =
         (((*(unsafe { Find_0(head, 0) })).val) + ((*(unsafe { Find_0(head, 3) })).val));
-    assert!((((*(unsafe { Find_0(head, 2,) })).val) == ((4) + (1))));
+    assert!((((*(unsafe { Find_0(head, 2) })).val) == ((4) + (1))));
     let mut sum: i32 = ((((((*(unsafe { Find_0(head, 0) })).val)
         + ((*(unsafe { Find_0(head, 1) })).val))
         + ((*(unsafe { Find_0(head, 2) })).val))
@@ -194,15 +194,13 @@ unsafe fn main_0() -> i32 {
         + ((*(unsafe { Find_0(head, 4) })).val));
     assert!(((sum) == (((((4) + (30)) + (5)) + (1)) + (-1_i32))));
     assert!(
-        ((((*(unsafe { Find_0(head, 0,) })).val) + ((*(unsafe { FindBack_1(tail, 0,) })).val))
+        ((((*(unsafe { Find_0(head, 0) })).val) + ((*(unsafe { FindBack_1(tail, 0) })).val))
             == ((4) + (-1_i32)))
     );
     assert!(
-        (((*(*(unsafe { Find_0(head, 2,) })).next).val)
-            == ((*(unsafe { FindBack_1(tail, 1,) })).val))
+        (((*(*(unsafe { Find_0(head, 2) })).next).val)
+            == ((*(unsafe { FindBack_1(tail, 1) })).val))
     );
-    assert!(
-        (((*(unsafe { Find_0(head, 0,) })).prev) == ((*(unsafe { FindBack_1(tail, 4,) })).prev))
-    );
+    assert!((((*(unsafe { Find_0(head, 0) })).prev) == ((*(unsafe { FindBack_1(tail, 4) })).prev)));
     return 0;
 }

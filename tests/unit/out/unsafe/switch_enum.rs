@@ -48,8 +48,8 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    assert!(((unsafe { switch_enum_0(Color::kRed,) }) == (10)));
-    assert!(((unsafe { switch_enum_0(Color::kGreen,) }) == (20)));
-    assert!(((unsafe { switch_enum_0(Color::kBlue,) }) == (30)));
+    assert!(((unsafe { switch_enum_0(Color::kRed) }) == (10)));
+    assert!(((unsafe { switch_enum_0(Color::kGreen) }) == (20)));
+    assert!(((unsafe { switch_enum_0(Color::kBlue) }) == (30)));
     return 0;
 }

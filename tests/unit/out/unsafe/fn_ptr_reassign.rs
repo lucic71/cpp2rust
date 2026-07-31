@@ -22,15 +22,15 @@ pub fn main() {
 }
 unsafe fn main_0() -> i32 {
     let mut fn_: Option<unsafe fn(i32, i32) -> i32> = Some(add_0);
-    assert!(((unsafe { (fn_).unwrap()(3, 4,) }) == (7)));
+    assert!(((unsafe { (fn_).unwrap()(3, 4) }) == (7)));
     fn_ = Some(sub_1);
-    assert!(((unsafe { (fn_).unwrap()(10, 3,) }) == (7)));
+    assert!(((unsafe { (fn_).unwrap()(10, 3) }) == (7)));
     fn_ = Some(mul_2);
-    assert!(((unsafe { (fn_).unwrap()(6, 7,) }) == (42)));
+    assert!(((unsafe { (fn_).unwrap()(6, 7) }) == (42)));
     fn_ = None;
     assert!((fn_).is_none());
     fn_ = Some(add_0);
     assert!(!((fn_).is_none()));
-    assert!(((unsafe { (fn_).unwrap()(1, 1,) }) == (2)));
+    assert!(((unsafe { (fn_).unwrap()(1, 1) }) == (2)));
     return 0;
 }

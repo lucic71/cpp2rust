@@ -34,6 +34,6 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    assert!(((unsafe { continue_inside_switch_0(6,) }) == ((((1) + (3)) + (5)) + ((3) * (1000)))));
+    assert!(((unsafe { continue_inside_switch_0(6) }) == ((((1) + (3)) + (5)) + ((3) * (1000)))));
     return 0;
 }

@@ -33,9 +33,9 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    assert!(((unsafe { default_then_case_0(1,) }) == (1)));
-    assert!(((unsafe { default_then_case_0(2,) }) == (77)));
-    assert!(((unsafe { default_then_case_0(3,) }) == (3)));
-    assert!(((unsafe { default_then_case_0(99,) }) == (77)));
+    assert!(((unsafe { default_then_case_0(1) }) == (1)));
+    assert!(((unsafe { default_then_case_0(2) }) == (77)));
+    assert!(((unsafe { default_then_case_0(3) }) == (3)));
+    assert!(((unsafe { default_then_case_0(99) }) == (77)));
     return 0;
 }

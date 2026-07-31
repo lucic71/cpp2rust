@@ -283,7 +283,7 @@ fn main_0() -> i32 {
     ({ y1.as_pointer().method() });
     (*y1.borrow_mut()).pair = (y2.as_pointer());
     (*y2.borrow_mut()).pair = (y3.as_pointer());
-    ({ (*y1.borrow()).pair.with(|__v| (*__v).pair.clone()).method() });
+    ({ (*y1.borrow()).pair.with_mut(|__v| __v.pair.method()) });
     let x: Value<X1> = Rc::new(RefCell::new(X1 {}));
     let y: Value<X1> = Rc::new(RefCell::new(X1 {}));
     (*x1.borrow_mut()) = (({ zero_0() }) + (*y1.borrow()).x);

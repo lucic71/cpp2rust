@@ -27,10 +27,10 @@ unsafe fn main_0() -> i32 {
     let mut f: Option<unsafe fn(i32) -> i32> = (unsafe { pick_2(1) });
     assert!(!((f).is_none()));
     assert!(((f) == (Some(inc_0))));
-    assert!(((unsafe { (f).unwrap()(10,) }) == (11)));
+    assert!(((unsafe { (f).unwrap()(10) }) == (11)));
     let mut g: Option<unsafe fn(i32) -> i32> = (unsafe { pick_2(0) });
     assert!(((g) == (Some(dec_1))));
-    assert!(((unsafe { (g).unwrap()(10,) }) == (9)));
+    assert!(((unsafe { (g).unwrap()(10) }) == (9)));
     assert!(((f) != (g)));
     return 0;
 }

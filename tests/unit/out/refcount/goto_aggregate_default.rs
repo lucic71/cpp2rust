@@ -63,7 +63,7 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    assert!((((({ agg_0(-1_i32,) }) == 0) as i32) != 0));
-    assert!((((({ agg_0(1,) }) == 1) as i32) != 0));
+    assert!((((({ agg_0(-1_i32) }) == 0) as i32) != 0));
+    assert!((((({ agg_0(1) }) == 1) as i32) != 0));
     return 0;
 }

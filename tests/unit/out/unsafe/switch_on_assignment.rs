@@ -37,8 +37,8 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    assert!(((unsafe { switch_on_assignment_0(0,) }) == (10)));
-    assert!(((unsafe { switch_on_assignment_0(1,) }) == (20)));
-    assert!(((unsafe { switch_on_assignment_0(9,) }) == (10)));
+    assert!(((unsafe { switch_on_assignment_0(0) }) == (10)));
+    assert!(((unsafe { switch_on_assignment_0(1) }) == (20)));
+    assert!(((unsafe { switch_on_assignment_0(9) }) == (10)));
     return 0;
 }

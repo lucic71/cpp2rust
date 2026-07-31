@@ -18,6 +18,6 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    assert!(((unsafe { f_0(vec![1, 2, 3,],) }) == (3_usize)));
+    assert!(((unsafe { f_0(vec![1, 2, 3,]) }) == (3_usize)));
     return 0;
 }

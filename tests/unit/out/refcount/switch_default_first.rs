@@ -32,7 +32,7 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    assert!((({ default_first_0(1,) }) == 1));
-    assert!((({ default_first_0(99,) }) == 7));
+    assert!((({ default_first_0(1) }) == 1));
+    assert!((({ default_first_0(99) }) == 7));
     return 0;
 }

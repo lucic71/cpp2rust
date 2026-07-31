@@ -23,8 +23,8 @@ fn main_0() -> i32 {
             return ({ (*inner.borrow_mut())(1) });
         }),
     ));
-    assert!((({ (*outer.borrow_mut())(20,) }) == 31));
+    assert!((({ (*outer.borrow_mut())(20) }) == 31));
     (*x.borrow_mut()) = 100;
-    assert!((({ (*outer.borrow_mut())(20,) }) == 121));
+    assert!((({ (*outer.borrow_mut())(20) }) == 121));
     return 0;
 }

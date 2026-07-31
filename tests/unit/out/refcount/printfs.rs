@@ -53,7 +53,7 @@ fn main_0() -> i32 {
     );
     println!(
         "{}",
-        (({ fn2_1(s.as_pointer(),) }).to_strong().as_pointer() as Ptr<u8>)
+        (({ fn2_1(s.as_pointer()) }).to_strong().as_pointer() as Ptr<u8>)
     );
     return 0;
 }

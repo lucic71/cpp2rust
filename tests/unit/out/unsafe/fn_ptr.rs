@@ -28,6 +28,6 @@ unsafe fn main_0() -> i32 {
     assert!(!((fn_).is_none()));
     assert!(((fn_) == (Some(my_foo_0))));
     let mut a: i32 = 10;
-    assert!(((unsafe { foo_1(fn_, (&mut a as *mut i32),) }) == (a)));
+    assert!(((unsafe { foo_1(fn_, (&mut a as *mut i32)) }) == (a)));
     return 0;
 }

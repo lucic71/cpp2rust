@@ -279,7 +279,7 @@ public:
 
   RsExpr *EmitHoistedArgs(CallInfo &info);
 
-  RsExpr *EmitArgList(const CallInfo &info);
+  std::vector<RsExpr *> CollectArgNodes(const CallInfo &info);
 
   RsExpr *EmitCall(CallInfo &&info);
 
@@ -461,6 +461,12 @@ protected:
 
   template <typename... Ts> RsExpr *Cat(Ts... parts) {
     return arena_.New<Concat>(std::vector<RsExpr *>{parts...});
+  }
+
+  RsExpr *MethodCall(RsExpr *object, std::string method,
+                     std::vector<RsExpr *> args, bool is_mut) {
+    return arena_.New<Call>(arena_.New<Field>(object, std::move(method)),
+                            std::move(args), is_mut);
   }
 
   RsExpr *Parens(RsExpr *inner, bool enabled = true) {

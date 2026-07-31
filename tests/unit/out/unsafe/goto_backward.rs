@@ -31,6 +31,6 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    assert!(((((unsafe { retry_0(4,) }) == (12)) as i32) != 0));
+    assert!(((((unsafe { retry_0(4) }) == (12)) as i32) != 0));
     return 0;
 }

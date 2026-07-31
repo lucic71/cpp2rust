@@ -36,8 +36,8 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    assert!((({ switch_on_assignment_0(0,) }) == 10));
-    assert!((({ switch_on_assignment_0(1,) }) == 20));
-    assert!((({ switch_on_assignment_0(9,) }) == 10));
+    assert!((({ switch_on_assignment_0(0) }) == 10));
+    assert!((({ switch_on_assignment_0(1) }) == 20));
+    assert!((({ switch_on_assignment_0(9) }) == 10));
     return 0;
 }

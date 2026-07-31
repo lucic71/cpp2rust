@@ -32,9 +32,9 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    assert!((({ default_then_case_0(1,) }) == 1));
-    assert!((({ default_then_case_0(2,) }) == 77));
-    assert!((({ default_then_case_0(3,) }) == 3));
-    assert!((({ default_then_case_0(99,) }) == 77));
+    assert!((({ default_then_case_0(1) }) == 1));
+    assert!((({ default_then_case_0(2) }) == 77));
+    assert!((({ default_then_case_0(3) }) == 3));
+    assert!((({ default_then_case_0(99) }) == 77));
     return 0;
 }

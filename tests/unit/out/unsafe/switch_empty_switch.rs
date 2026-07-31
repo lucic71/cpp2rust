@@ -21,6 +21,6 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    assert!(((unsafe { empty_switch_0(5,) }) == (5)));
+    assert!(((unsafe { empty_switch_0(5) }) == (5)));
     return 0;
 }

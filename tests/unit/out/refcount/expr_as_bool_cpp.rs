@@ -76,11 +76,11 @@ fn main_0() -> i32 {
     ));
     assert!(((*either.borrow()) == 1));
     assert!(((*both.borrow()) == 0));
-    assert!((({ cmp_eq_0(-1_i32,) }) == 1));
-    assert!((({ cmp_eq_0(0,) }) == 0));
-    assert!((({ cmp_or_ptr_1((*p1.borrow()).clone(), (*p2.borrow()).clone(),) }) == 1));
-    assert!((({ cmp_or_ptr_1(Ptr::<u8>::null(), Ptr::<u8>::null(),) }) == 0));
-    assert!((({ both_null_2(Ptr::<u8>::null(), Ptr::<u8>::null(),) }) == 1));
-    assert!((({ both_null_2((*p1.borrow()).clone(), Ptr::<u8>::null(),) }) == 0));
+    assert!((({ cmp_eq_0(-1_i32) }) == 1));
+    assert!((({ cmp_eq_0(0) }) == 0));
+    assert!((({ cmp_or_ptr_1((*p1.borrow()).clone(), (*p2.borrow()).clone()) }) == 1));
+    assert!((({ cmp_or_ptr_1(Ptr::<u8>::null(), Ptr::<u8>::null()) }) == 0));
+    assert!((({ both_null_2(Ptr::<u8>::null(), Ptr::<u8>::null()) }) == 1));
+    assert!((({ both_null_2((*p1.borrow()).clone(), Ptr::<u8>::null()) }) == 0));
     return 0;
 }

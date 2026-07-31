@@ -53,10 +53,10 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    assert!(((unsafe { switch_char_0(('a' as libc::c_char),) }) == (1)));
-    assert!(((unsafe { switch_char_0(('b' as libc::c_char),) }) == (2)));
-    assert!(((unsafe { switch_char_0(('\n' as libc::c_char),) }) == (3)));
-    assert!(((unsafe { switch_char_0(('\0' as libc::c_char),) }) == (4)));
-    assert!(((unsafe { switch_char_0(('z' as libc::c_char),) }) == (0)));
+    assert!(((unsafe { switch_char_0(('a' as libc::c_char)) }) == (1)));
+    assert!(((unsafe { switch_char_0(('b' as libc::c_char)) }) == (2)));
+    assert!(((unsafe { switch_char_0(('\n' as libc::c_char)) }) == (3)));
+    assert!(((unsafe { switch_char_0(('\0' as libc::c_char)) }) == (4)));
+    assert!(((unsafe { switch_char_0(('z' as libc::c_char)) }) == (0)));
     return 0;
 }

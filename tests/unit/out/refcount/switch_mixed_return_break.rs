@@ -34,9 +34,9 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    assert!((({ mixed_return_break_0(0,) }) == 100));
-    assert!((({ mixed_return_break_0(1,) }) == 10));
-    assert!((({ mixed_return_break_0(2,) }) == 200));
-    assert!((({ mixed_return_break_0(99,) }) == 99));
+    assert!((({ mixed_return_break_0(0) }) == 100));
+    assert!((({ mixed_return_break_0(1) }) == 10));
+    assert!((({ mixed_return_break_0(2) }) == 200));
+    assert!((({ mixed_return_break_0(99) }) == 99));
     return 0;
 }

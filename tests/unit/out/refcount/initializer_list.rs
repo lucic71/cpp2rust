@@ -17,6 +17,6 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    assert!((({ f_0(vec![1, 2, 3,],) }) == 3_usize));
+    assert!((({ f_0(vec![1, 2, 3,]) }) == 3_usize));
     return 0;
 }

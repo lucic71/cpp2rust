@@ -39,7 +39,7 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    assert!(((unsafe { switch_in_dowhile_0(1,) }) == (1)));
-    assert!(((unsafe { switch_in_dowhile_0(3,) }) == (((1) + (10)) + (100))));
+    assert!(((unsafe { switch_in_dowhile_0(1) }) == (1)));
+    assert!(((unsafe { switch_in_dowhile_0(3) }) == (((1) + (10)) + (100))));
     return 0;
 }

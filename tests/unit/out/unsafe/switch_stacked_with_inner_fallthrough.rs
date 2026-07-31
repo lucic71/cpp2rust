@@ -28,8 +28,8 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    assert!(((unsafe { stacked_with_inner_fallthrough_0(1, 0,) }) == (50)));
-    assert!(((unsafe { stacked_with_inner_fallthrough_0(2, 1,) }) == (999)));
-    assert!(((unsafe { stacked_with_inner_fallthrough_0(99, 0,) }) == (999)));
+    assert!(((unsafe { stacked_with_inner_fallthrough_0(1, 0) }) == (50)));
+    assert!(((unsafe { stacked_with_inner_fallthrough_0(2, 1) }) == (999)));
+    assert!(((unsafe { stacked_with_inner_fallthrough_0(99, 0) }) == (999)));
     return 0;
 }

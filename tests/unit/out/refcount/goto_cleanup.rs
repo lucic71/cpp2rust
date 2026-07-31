@@ -151,19 +151,19 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    assert!((((({ early_0(-1_i32,) }) == -1_i32) as i32) != 0));
-    assert!((((({ early_0(5,) }) == 100) as i32) != 0));
-    assert!((((({ from_loop_1(2,) }) == 999) as i32) != 0));
-    assert!((((({ from_loop_1(10,) }) == 7) as i32) != 0));
-    assert!((((({ from_switch_2(1,) }) == 10) as i32) != 0));
-    assert!((((({ from_switch_2(2,) }) == 999) as i32) != 0));
+    assert!((((({ early_0(-1_i32) }) == -1_i32) as i32) != 0));
+    assert!((((({ early_0(5) }) == 100) as i32) != 0));
+    assert!((((({ from_loop_1(2) }) == 999) as i32) != 0));
+    assert!((((({ from_loop_1(10) }) == 7) as i32) != 0));
+    assert!((((({ from_switch_2(1) }) == 10) as i32) != 0));
+    assert!((((({ from_switch_2(2) }) == 999) as i32) != 0));
     let value: Value<i32> = Rc::new(RefCell::new(42));
     let w: Value<wrapper> = Rc::new(RefCell::new(wrapper {
         item: (value.as_pointer()),
     }));
-    assert!((((({ via_pointer_3((w.as_pointer()), 0,) }) == 42) as i32) != 0));
-    assert!((((({ via_pointer_3((w.as_pointer()), 1,) }) == -1_i32) as i32) != 0));
-    assert!((((({ via_arrays_4(0,) }) == 11) as i32) != 0));
-    assert!((((({ via_arrays_4(1,) }) == -1_i32) as i32) != 0));
+    assert!((((({ via_pointer_3((w.as_pointer()), 0) }) == 42) as i32) != 0));
+    assert!((((({ via_pointer_3((w.as_pointer()), 1) }) == -1_i32) as i32) != 0));
+    assert!((((({ via_arrays_4(0) }) == 11) as i32) != 0));
+    assert!((((({ via_arrays_4(1) }) == -1_i32) as i32) != 0));
     return 0;
 }

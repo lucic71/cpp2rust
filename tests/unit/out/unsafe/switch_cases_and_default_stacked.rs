@@ -29,9 +29,9 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    assert!(((unsafe { cases_and_default_stacked_0(1,) }) == (42)));
-    assert!(((unsafe { cases_and_default_stacked_0(2,) }) == (42)));
-    assert!(((unsafe { cases_and_default_stacked_0(3,) }) == (3)));
-    assert!(((unsafe { cases_and_default_stacked_0(99,) }) == (42)));
+    assert!(((unsafe { cases_and_default_stacked_0(1) }) == (42)));
+    assert!(((unsafe { cases_and_default_stacked_0(2) }) == (42)));
+    assert!(((unsafe { cases_and_default_stacked_0(3) }) == (3)));
+    assert!(((unsafe { cases_and_default_stacked_0(99) }) == (42)));
     return 0;
 }

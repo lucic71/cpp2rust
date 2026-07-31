@@ -140,16 +140,7 @@ RsExpr *Converter::emplace_back_emit_push_open(clang::CXXMemberCallExpr *call) {
     PushExprKind push(*this, ExprKind::LValue);
     callee = ConvertExpr(call->getCallee());
   }
-  // Rewrite the trailing `emplace_back` member name to `push` in the tree.
-  if (auto *concat = clang::dyn_cast<Concat>(callee)) {
-    if (!concat->parts.empty()) {
-      if (auto *name = clang::dyn_cast<Verbatim>(concat->parts.back())) {
-        if (name->text == "emplace_back") {
-          name->text = "push";
-        }
-      }
-    }
-  }
+  clang::cast<Field>(callee)->member = "push";
   return Cat(callee, Text('('));
 }
 

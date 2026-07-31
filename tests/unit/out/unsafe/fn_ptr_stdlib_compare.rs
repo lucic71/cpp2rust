@@ -50,7 +50,7 @@ unsafe fn main_0() -> i32 {
             Option<unsafe fn(*mut ::libc::c_void, usize, usize, *mut ::libc::FILE) -> usize>,
         >(Some(my_alternative_fread_0));
     assert!(
-        ((unsafe { (f3).unwrap()(std::ptr::null_mut(), 0_usize, 0_usize, std::ptr::null_mut(),) })
+        ((unsafe { (f3).unwrap()(std::ptr::null_mut(), 0_usize, 0_usize, std::ptr::null_mut()) })
             == (22_usize))
     );
     let mut __do_while = true;
@@ -145,7 +145,7 @@ unsafe fn main_0() -> i32 {
             Option<unsafe fn(*const ::libc::c_void, usize, usize, *mut ::libc::FILE) -> usize>,
         >(Some(my_alternative_fwrite_1));
     assert!(
-        ((unsafe { (g3).unwrap()(std::ptr::null(), 0_usize, 0_usize, std::ptr::null_mut(),) })
+        ((unsafe { (g3).unwrap()(std::ptr::null(), 0_usize, 0_usize, std::ptr::null_mut()) })
             == (33_usize))
     );
     let mut __do_while = true;

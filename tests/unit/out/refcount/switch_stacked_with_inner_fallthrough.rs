@@ -28,8 +28,8 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    assert!((({ stacked_with_inner_fallthrough_0(1, 0,) }) == 50));
-    assert!((({ stacked_with_inner_fallthrough_0(2, 1,) }) == 999));
-    assert!((({ stacked_with_inner_fallthrough_0(99, 0,) }) == 999));
+    assert!((({ stacked_with_inner_fallthrough_0(1, 0) }) == 50));
+    assert!((({ stacked_with_inner_fallthrough_0(2, 1) }) == 999));
+    assert!((({ stacked_with_inner_fallthrough_0(99, 0) }) == 999));
     return 0;
 }

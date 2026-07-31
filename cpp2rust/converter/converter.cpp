@@ -1966,7 +1966,7 @@ RsExpr *Converter::EmitHoistedArgs(CallInfo &info) {
   return arena_.New<Concat>(std::move(parts));
 }
 
-RsExpr *Converter::EmitArgList(const CallInfo &info) {
+std::vector<RsExpr *> Converter::CollectArgNodes(const CallInfo &info) {
   using Kind = CallArg::Kind;
   std::vector<RsExpr *> parts;
 
@@ -1996,7 +1996,6 @@ RsExpr *Converter::EmitArgList(const CallInfo &info) {
       arg_node = Cat(Text("Some"), Parens(arg_node));
     }
     parts.push_back(arg_node);
-    parts.push_back(Text(token::kComma));
   }
 
   if (info.is_variadic) {
@@ -2017,7 +2016,7 @@ RsExpr *Converter::EmitArgList(const CallInfo &info) {
     }
   }
 
-  return Parens(arena_.New<Concat>(std::move(parts)));
+  return parts;
 }
 
 RsExpr *Converter::EmitCall(CallInfo &&info) {
@@ -2035,8 +2034,16 @@ RsExpr *Converter::EmitCall(CallInfo &&info) {
     callee_node = ConvertExpr(GetCallee(info.expr));
   }
 
-  auto *args_node = EmitArgList(info);
-  return Cat(hoisted, callee_node, args_node);
+  bool is_mut = false;
+  if (auto *member_call =
+          clang::dyn_cast<clang::CXXMemberCallExpr>(info.expr)) {
+    auto *method = member_call->getMethodDecl();
+    is_mut = method && !method->isConst();
+  }
+
+  auto *call =
+      arena_.New<Call>(callee_node, CollectArgNodes(info), is_mut);
+  return Cat(hoisted, call);
 }
 
 RsExpr *Converter::ConvertGenericCallExpr(clang::CallExpr *expr) {
@@ -2950,18 +2957,13 @@ RsExpr *Converter::ConvertMemberExpr(clang::MemberExpr *expr) {
 
   if (auto *method = clang::dyn_cast<clang::CXXMethodDecl>(member);
       method && IsOverloadedMethod(method)) {
-    return Cat(base_node, Text(token::kDot),
-               Text(GetOverloadedFunctionName(method)));
+    return arena_.New<Field>(base_node, GetOverloadedFunctionName(method));
   }
   if (!name_override.empty()) {
     return arena_.New<Field>(base_node, std::move(name_override));
   }
   if (member->getDeclName().isIdentifier()) {
-    if (clang::isa<clang::FieldDecl>(member)) {
-      return arena_.New<Field>(base_node, GetNamedDeclAsString(member));
-    }
-    return Cat(base_node, Text(token::kDot),
-               Text(GetNamedDeclAsString(member)));
+    return arena_.New<Field>(base_node, GetNamedDeclAsString(member));
   }
   return base_node;
 }
@@ -3779,9 +3781,8 @@ RsExpr *Converter::ConvertPointerOffset(clang::Expr *base, clang::Expr *idx,
     offset = arena_.New<Unary>(Unary::Op::Neg, Parens(offset));
   }
   computed_expr_type_ = ComputedExprType::FreshPointer;
-  return arena_.New<MethodCall>(base_node, "offset",
-                                std::vector<RsExpr *>{offset},
-                                /*is_mut=*/false);
+  return MethodCall(base_node, "offset", std::vector<RsExpr *>{offset},
+                    /*is_mut=*/false);
 }
 
 static bool IsFlexibleArrayMemberAccess(clang::ASTContext &ctx,
@@ -4174,8 +4175,8 @@ RsExpr *Converter::ConvertUnsignedArithBinaryOperator(clang::BinaryOperator *op,
   if (is_pointer_plus_integer_op) {
     operand = arena_.New<Cast>(operand, Text("usize"));
   }
-  return arena_.New<MethodCall>(object, method, std::vector<RsExpr *>{operand},
-                                /*is_mut=*/false);
+  return MethodCall(object, method, std::vector<RsExpr *>{operand},
+                    /*is_mut=*/false);
 }
 
 RsExpr *Converter::ConvertAddrOf(clang::Expr *expr,

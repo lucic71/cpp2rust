@@ -27,9 +27,9 @@ fn main_0() -> i32 {
             return ((*x.borrow()) + (*base.borrow()));
         }),
     ));
-    assert!((({ apply_0((*add_base.borrow()).clone(), 5,) }) == 15));
+    assert!((({ apply_0((*add_base.borrow()).clone(), 5) }) == 15));
     (*base.borrow_mut()) = 100;
-    assert!((({ apply_0((*add_base.borrow()).clone(), 5,) }) == 105));
+    assert!((({ apply_0((*add_base.borrow()).clone(), 5) }) == 105));
     let factor: Value<i32> = Rc::new(RefCell::new(3));
     let scale: Value<_> = Rc::new(RefCell::new(
         (|x: i32| {
@@ -37,6 +37,6 @@ fn main_0() -> i32 {
             return ((*x.borrow()) * (*factor.borrow()));
         }),
     ));
-    assert!((({ apply_1((*scale.borrow()).clone(), 4,) }) == 12));
+    assert!((({ apply_1((*scale.borrow()).clone(), 4) }) == 12));
     return 0;
 }

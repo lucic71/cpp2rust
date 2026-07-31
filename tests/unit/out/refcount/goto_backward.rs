@@ -30,6 +30,6 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    assert!((((({ retry_0(4,) }) == 12) as i32) != 0));
+    assert!((((({ retry_0(4) }) == 12) as i32) != 0));
     return 0;
 }

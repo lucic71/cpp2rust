@@ -32,9 +32,9 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    assert!((({ stacked_0(1,) }) == 100));
-    assert!((({ stacked_0(3,) }) == 100));
-    assert!((({ stacked_0(5,) }) == 200));
-    assert!((({ stacked_0(9,) }) == 300));
+    assert!((({ stacked_0(1) }) == 100));
+    assert!((({ stacked_0(3) }) == 100));
+    assert!((({ stacked_0(5) }) == 200));
+    assert!((({ stacked_0(9) }) == 300));
     return 0;
 }

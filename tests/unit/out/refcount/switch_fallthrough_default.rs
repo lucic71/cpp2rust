@@ -28,8 +28,8 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    assert!((({ fallthrough_default_0(7, 0,) }) == 42));
-    assert!((({ fallthrough_default_0(7, 1,) }) == 100));
-    assert!((({ fallthrough_default_0(99, 0,) }) == 42));
+    assert!((({ fallthrough_default_0(7, 0) }) == 42));
+    assert!((({ fallthrough_default_0(7, 1) }) == 100));
+    assert!((({ fallthrough_default_0(99, 0) }) == 42));
     return 0;
 }

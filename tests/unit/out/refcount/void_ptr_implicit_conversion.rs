@@ -23,7 +23,7 @@ fn main_0() -> i32 {
     let opaque: Value<AnyPtr> = Rc::new(RefCell::new(((value.as_pointer()) as Ptr<i32>).to_any()));
     let typed: Value<Ptr<i32>> =
         Rc::new(RefCell::new((*opaque.borrow()).reinterpret_cast::<i32>()));
-    assert!((((({ bump_0((*opaque.borrow()).clone(),) }) == 42) as i32) != 0));
+    assert!((((({ bump_0((*opaque.borrow()).clone()) }) == 42) as i32) != 0));
     assert!((((((*typed.borrow()).read()) == 42) as i32) != 0));
     (*typed.borrow()).write(7);
     assert!(((((*value.borrow()) == 7) as i32) != 0));

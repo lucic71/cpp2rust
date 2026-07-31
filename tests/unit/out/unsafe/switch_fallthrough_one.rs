@@ -29,8 +29,8 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    assert!(((unsafe { fallthrough_one_0(1,) }) == (30)));
-    assert!(((unsafe { fallthrough_one_0(2,) }) == (20)));
-    assert!(((unsafe { fallthrough_one_0(99,) }) == (-1_i32)));
+    assert!(((unsafe { fallthrough_one_0(1) }) == (30)));
+    assert!(((unsafe { fallthrough_one_0(2) }) == (20)));
+    assert!(((unsafe { fallthrough_one_0(99) }) == (-1_i32)));
     return 0;
 }

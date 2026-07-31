@@ -34,10 +34,10 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    assert!((({ fallthrough_chain_0(1,) }) == 15));
-    assert!((({ fallthrough_chain_0(2,) }) == 14));
-    assert!((({ fallthrough_chain_0(3,) }) == 12));
-    assert!((({ fallthrough_chain_0(4,) }) == 8));
-    assert!((({ fallthrough_chain_0(99,) }) == -1_i32));
+    assert!((({ fallthrough_chain_0(1) }) == 15));
+    assert!((({ fallthrough_chain_0(2) }) == 14));
+    assert!((({ fallthrough_chain_0(3) }) == 12));
+    assert!((({ fallthrough_chain_0(4) }) == 8));
+    assert!((({ fallthrough_chain_0(99) }) == -1_i32));
     return 0;
 }

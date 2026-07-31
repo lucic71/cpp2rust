@@ -33,9 +33,9 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    assert!(((unsafe { stacked_0(1,) }) == (100)));
-    assert!(((unsafe { stacked_0(3,) }) == (100)));
-    assert!(((unsafe { stacked_0(5,) }) == (200)));
-    assert!(((unsafe { stacked_0(9,) }) == (300)));
+    assert!(((unsafe { stacked_0(1) }) == (100)));
+    assert!(((unsafe { stacked_0(3) }) == (100)));
+    assert!(((unsafe { stacked_0(5) }) == (200)));
+    assert!(((unsafe { stacked_0(9) }) == (300)));
     return 0;
 }

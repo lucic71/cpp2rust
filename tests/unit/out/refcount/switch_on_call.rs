@@ -35,9 +35,9 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    assert!((({ switch_on_call_1(0,) }) == 100));
-    assert!((({ switch_on_call_1(1,) }) == 200));
-    assert!((({ switch_on_call_1(2,) }) == 400));
-    assert!((({ switch_on_call_1(99,) }) == -1_i32));
+    assert!((({ switch_on_call_1(0) }) == 100));
+    assert!((({ switch_on_call_1(1) }) == 200));
+    assert!((({ switch_on_call_1(2) }) == 400));
+    assert!((({ switch_on_call_1(99) }) == -1_i32));
     return 0;
 }

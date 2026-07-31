@@ -217,27 +217,27 @@ fn main_0() -> i32 {
     let __rhs = ({ Delete_3((*head.borrow()).clone(), -2_i32) });
     (*head.borrow_mut()) = __rhs;
     let tail: Value<Ptr<Node>> = Rc::new(RefCell::new(({ Tail_4((*head.borrow()).clone()) })));
-    assert!((({ Find_0((*head.borrow()).clone(), 0,) }).with(|__v| (*__v).val) == 4));
-    assert!((({ Find_0((*head.borrow()).clone(), 1,) }).with(|__v| (*__v).val) == 3));
-    assert!((({ Find_0((*head.borrow()).clone(), 2,) }).with(|__v| (*__v).val) == 2));
-    assert!((({ Find_0((*head.borrow()).clone(), 3,) }).with(|__v| (*__v).val) == 1));
-    assert!((({ Find_0((*head.borrow()).clone(), 4,) }).with(|__v| (*__v).val) == -1_i32));
-    assert!(({ Find_0((*head.borrow()).clone(), 5,) }).is_null());
-    assert!((({ FindBack_1((*tail.borrow()).clone(), 0,) }).with(|__v| (*__v).val) == -1_i32));
-    assert!((({ FindBack_1((*tail.borrow()).clone(), 1,) }).with(|__v| (*__v).val) == 1));
-    assert!((({ FindBack_1((*tail.borrow()).clone(), 2,) }).with(|__v| (*__v).val) == 2));
-    assert!((({ FindBack_1((*tail.borrow()).clone(), 3,) }).with(|__v| (*__v).val) == 3));
-    assert!((({ FindBack_1((*tail.borrow()).clone(), 4,) }).with(|__v| (*__v).val) == 4));
+    assert!((({ Find_0((*head.borrow()).clone(), 0) }).with(|__v| (*__v).val) == 4));
+    assert!((({ Find_0((*head.borrow()).clone(), 1) }).with(|__v| (*__v).val) == 3));
+    assert!((({ Find_0((*head.borrow()).clone(), 2) }).with(|__v| (*__v).val) == 2));
+    assert!((({ Find_0((*head.borrow()).clone(), 3) }).with(|__v| (*__v).val) == 1));
+    assert!((({ Find_0((*head.borrow()).clone(), 4) }).with(|__v| (*__v).val) == -1_i32));
+    assert!(({ Find_0((*head.borrow()).clone(), 5) }).is_null());
+    assert!((({ FindBack_1((*tail.borrow()).clone(), 0) }).with(|__v| (*__v).val) == -1_i32));
+    assert!((({ FindBack_1((*tail.borrow()).clone(), 1) }).with(|__v| (*__v).val) == 1));
+    assert!((({ FindBack_1((*tail.borrow()).clone(), 2) }).with(|__v| (*__v).val) == 2));
+    assert!((({ FindBack_1((*tail.borrow()).clone(), 3) }).with(|__v| (*__v).val) == 3));
+    assert!((({ FindBack_1((*tail.borrow()).clone(), 4) }).with(|__v| (*__v).val) == 4));
     assert!(
-        (({ FindBack_1((*tail.borrow()).clone(), 4,) }).with(|__v| (*__v).prev.clone())).is_null()
+        (({ FindBack_1((*tail.borrow()).clone(), 4) }).with(|__v| (*__v).prev.clone())).is_null()
     );
     assert!(
-        (({ Find_0((*head.borrow()).clone(), 0,) })
+        (({ Find_0((*head.borrow()).clone(), 0) })
             .with(|__v| (*__v).next.clone().with(|__v| (*__v).val))
             == 3)
     );
     assert!(
-        (({ Find_0((*head.borrow()).clone(), 1,) }).with(|__v| (*__v)
+        (({ Find_0((*head.borrow()).clone(), 1) }).with(|__v| (*__v)
             .next
             .clone()
             .with(|__v| (*__v).next.clone())
@@ -245,13 +245,13 @@ fn main_0() -> i32 {
             == 1)
     );
     assert!(
-        (({ Find_0((*head.borrow()).clone(), 2,) })
+        (({ Find_0((*head.borrow()).clone(), 2) })
             .with(|__v| (*__v).prev.clone().with(|__v| (*__v).val))
             == 3)
     );
-    assert!((({ Find_0((*head.borrow()).clone(), 4,) }).with(|__v| (*__v).next.clone())).is_null());
+    assert!((({ Find_0((*head.borrow()).clone(), 4) }).with(|__v| (*__v).next.clone())).is_null());
     assert!(
-        (({ FindBack_1((*tail.borrow()).clone(), 1,) }).with(|__v| (*__v)
+        (({ FindBack_1((*tail.borrow()).clone(), 1) }).with(|__v| (*__v)
             .prev
             .clone()
             .with(|__v| (*__v).prev.clone())
@@ -260,12 +260,12 @@ fn main_0() -> i32 {
     );
     ({ Find_0((*head.borrow()).clone(), 0) })
         .with(|__v| (*__v).next.clone().with_mut(|__v| __v.val = 30));
-    assert!((({ Find_0((*head.borrow()).clone(), 1,) }).with(|__v| (*__v).val) == 30));
+    assert!((({ Find_0((*head.borrow()).clone(), 1) }).with(|__v| (*__v).val) == 30));
     let __rhs = (({ Find_0((*head.borrow()).clone(), 0) }).with(|__v| (*__v).val)
         + ({ Find_0((*head.borrow()).clone(), 3) }).with(|__v| (*__v).val));
     ({ Find_0((*head.borrow()).clone(), 1) })
         .with(|__v| (*__v).next.clone().with_mut(|__v| __v.val = __rhs));
-    assert!((({ Find_0((*head.borrow()).clone(), 2,) }).with(|__v| (*__v).val) == (4 + 1)));
+    assert!((({ Find_0((*head.borrow()).clone(), 2) }).with(|__v| (*__v).val) == (4 + 1)));
     let sum: Value<i32> = Rc::new(RefCell::new(
         ((((({ Find_0((*head.borrow()).clone(), 0) }).with(|__v| (*__v).val)
             + ({ Find_0((*head.borrow()).clone(), 1) }).with(|__v| (*__v).val))

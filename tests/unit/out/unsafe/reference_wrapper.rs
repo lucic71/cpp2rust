@@ -69,7 +69,7 @@ unsafe fn main_0() -> i32 {
         ),
         "{:} {:}\n",
         i1,
-        (unsafe { read_1(ref_1.clone(),) }),
+        (unsafe { read_1(ref_1.clone()) }),
     );
     let mut point: Point = Point { x: 3, y: 4 };
     let mut point_ref: *mut Point = &mut point;

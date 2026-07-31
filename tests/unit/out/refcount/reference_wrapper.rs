@@ -75,7 +75,7 @@ fn main_0() -> i32 {
         libcc2rs::cout(),
         "{:} {:}\n",
         (*i1.borrow()),
-        ({ read_1((*ref_1.borrow()).clone(),) }),
+        ({ read_1((*ref_1.borrow()).clone()) }),
     );
     let point: Value<Point> = Rc::new(RefCell::new(Point { x: 3, y: 4 }));
     let point_ref: Value<Ptr<Point>> = Rc::new(RefCell::new(point.as_pointer()));

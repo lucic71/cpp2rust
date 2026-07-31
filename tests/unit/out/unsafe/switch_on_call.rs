@@ -35,9 +35,9 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    assert!(((unsafe { switch_on_call_1(0,) }) == (100)));
-    assert!(((unsafe { switch_on_call_1(1,) }) == (200)));
-    assert!(((unsafe { switch_on_call_1(2,) }) == (400)));
-    assert!(((unsafe { switch_on_call_1(99,) }) == (-1_i32)));
+    assert!(((unsafe { switch_on_call_1(0) }) == (100)));
+    assert!(((unsafe { switch_on_call_1(1) }) == (200)));
+    assert!(((unsafe { switch_on_call_1(2) }) == (400)));
+    assert!(((unsafe { switch_on_call_1(99) }) == (-1_i32)));
     return 0;
 }
