@@ -945,7 +945,7 @@ RsExpr *ConverterRefCount::LowerPtrUse(RsExpr *node) {
 
   if (auto *ptr = node->TakePtr(Text("(*__v)"))) {
     auto *body = node;
-    if (!node->expr || !TypeIsCopyable(node->expr->getType())) {
+    if (!node->expr || !ExprIsCopyable(node->expr)) {
       body = arena_.New<MethodCall>(body, "clone", std::vector<RsExpr *>{});
     }
     return arena_.New<PtrWith>(ptr, false,
@@ -1488,7 +1488,7 @@ ConverterRefCount::VisitExplicitCastExpr(clang::ExplicitCastExpr *expr) {
   if (expr->getTypeAsWritten()->isVoidType()) {
     PushExprKind push(*this, ExprKind::Void);
     auto *node = ConvertExpr(expr->getSubExpr());
-    if (!TypeIsCopyable(expr->getSubExpr()->getType()) && !isFresh()) {
+    if (!ExprIsCopyable(expr->getSubExpr()) && !isFresh()) {
       return Cat(node, Text(".clone()"));
     }
     return node;

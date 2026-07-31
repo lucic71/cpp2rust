@@ -308,6 +308,16 @@ public:
     return false;
   }
 
+  bool ExprIsCopyable(const clang::Expr *expr) const {
+    if (auto *member = llvm::dyn_cast<clang::MemberExpr>(expr)) {
+      return TypeIsCopyable(member->getMemberDecl()->getType());
+    }
+    if (auto *ref = llvm::dyn_cast<clang::DeclRefExpr>(expr)) {
+      return TypeIsCopyable(ref->getDecl()->getType());
+    }
+    return TypeIsCopyable(expr->getType());
+  }
+
   virtual RsExpr *ConvertPrintf(clang::CallExpr *expr);
 
   RsExpr *ConvertVAArgCall(clang::CallExpr *expr);
