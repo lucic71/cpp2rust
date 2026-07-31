@@ -186,8 +186,7 @@ fn main_0() -> i32 {
         (((((*ex.borrow())
             .body
             .nested()
-            .with(|__v| (*__v).view.h().clone())
-            .with(|__v| (*__v).code) as i32)
+            .with(|__v| (*__v).view.h().clone().with(|__v| (*__v).code)) as i32)
             == 2) as i32)
             != 0)
     );

@@ -205,8 +205,11 @@ fn main_0() -> i32 {
         ((((((*p_list.borrow())
             .v
             .list()
-            .with(|__v| (*__v).items.offset(((1) as isize)).clone())
-            .with(|__v| (*__v).offset(((0) as isize)).clone())
+            .with(|__v| (*__v)
+                .items
+                .offset(((1) as isize))
+                .clone()
+                .with(|__v| (*__v).offset(((0) as isize)).clone()))
             .read()) as i32)
             == ('b' as i32)) as i32)
             != 0)

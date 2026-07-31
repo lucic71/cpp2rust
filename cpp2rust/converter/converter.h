@@ -449,6 +449,8 @@ protected:
 
   virtual RsExpr *LowerPtrUse([[maybe_unused]] RsExpr *node) { return nullptr; }
 
+  virtual RsExpr *NestPtrUse([[maybe_unused]] RsExpr *node) { return nullptr; }
+
   RsArena arena_;
 
   RsExpr *Text(std::string text) {

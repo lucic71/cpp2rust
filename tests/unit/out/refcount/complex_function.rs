@@ -176,8 +176,7 @@ fn main_0() -> i32 {
     (*d.borrow())
         .v
         .v
-        .with(|__v| (*__v).v.clone())
-        .with_mut(|__v| __v.v = 0);
+        .with(|__v| (*__v).v.clone().with_mut(|__v| __v.v = 0));
     ({ ({ ({ d.as_pointer().get() }).get() }).get() }).with_mut(|__v| __v.v = 0);
     (*d.borrow_mut()).v.v = (b.as_pointer());
     let r4: Ptr<i32> = ({ ({ ({ d.as_pointer().get() }).get() }).get() }).field_ptr(

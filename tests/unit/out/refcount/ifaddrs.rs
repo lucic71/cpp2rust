@@ -49,9 +49,8 @@ fn main_0() -> i32 {
             (*ifa.borrow_mut()) = __rhs;
             continue 'loop_;
         }
-        if (((((*ifa.borrow())
-            .with(|__v| (*__v).ifa_addr.clone())
-            .with(|__v| (*__v).sa_family) as i32)
+        if (((((*ifa.borrow()).with(|__v| (*__v).ifa_addr.clone().with(|__v| (*__v).sa_family))
+            as i32)
             != libc::AF_INET) as i32)
             != 0)
         {

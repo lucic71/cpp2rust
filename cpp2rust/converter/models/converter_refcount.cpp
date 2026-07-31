@@ -964,6 +964,21 @@ RsExpr *ConverterRefCount::LowerPtrUse(RsExpr *node) {
   return nullptr;
 }
 
+RsExpr *ConverterRefCount::NestPtrUse(RsExpr *node) {
+  auto *with = clang::dyn_cast<PtrWith>(node);
+  if (!with) {
+    return nullptr;
+  }
+  auto *inner = clang::dyn_cast<PtrWith>(with->object);
+  if (!inner) {
+    return nullptr;
+  }
+  auto *body = clang::cast<Closure>(inner->closure)->body;
+  auto *nested = arena_.New<PtrWith>(body, with->is_mut, with->closure);
+  return arena_.New<PtrWith>(inner->object, inner->is_mut,
+                             arena_.New<Closure>("__v", nullptr, nested));
+}
+
 RsExpr *
 ConverterRefCount::VisitConditionalOperator(clang::ConditionalOperator *expr) {
   auto *cond = ConvertCondition(expr->getCond());

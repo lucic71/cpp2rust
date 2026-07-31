@@ -285,6 +285,9 @@ void Converter::LowerNodes(RsExpr *&node) {
     node = lowered;
   }
   node->ForEachChild([this](RsExpr *&child) { LowerNodes(child); });
+  if (auto *nested = NestPtrUse(node)) {
+    node = nested;
+  }
 }
 
 RsExpr *Converter::ConvertDecl(clang::Decl *decl) {
