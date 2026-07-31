@@ -6,34 +6,27 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Default)]
+#[derive(Clone, Default)]
 pub struct widget {
-    pub id: Value<i32>,
-}
-impl Clone for widget {
-    fn clone(&self) -> Self {
-        Self {
-            id: Rc::new(RefCell::new((*self.id.borrow()).clone())),
-        }
-    }
+    pub id: i32,
 }
 impl ByteRepr for widget {
     fn byte_size() -> usize {
         4
     }
     fn to_bytes(&self, buf: &mut [u8]) {
-        (*self.id.borrow()).to_bytes(&mut buf[0..4]);
+        self.id.to_bytes(&mut buf[0..4]);
     }
     fn from_bytes(buf: &[u8]) -> Self {
         Self {
-            id: Rc::new(RefCell::new(<i32>::from_bytes(&buf[0..4]))),
+            id: <i32>::from_bytes(&buf[0..4]),
         }
     }
 }
 pub fn a_value_0() -> i32 {
     let w: Value<widget> = <Value<widget>>::default();
-    (*(*w.borrow()).id.borrow_mut()) = 11;
-    return (*(*w.borrow()).id.borrow());
+    (*w.borrow_mut()).id = 11;
+    return (*w.borrow()).id;
 }
 pub fn main() {
     std::process::exit(main_0());

@@ -22,23 +22,21 @@ pub fn test_getpwuid_0() {
     assert!((((!((*pw.borrow()).is_null())) as i32) != 0));
     assert!(
         ((({
-            let _lhs = (*(*(*pw.borrow()).upgrade().deref()).pw_uid.borrow());
+            let _lhs = (*(*pw.borrow()).upgrade().deref()).pw_uid;
             _lhs == nix::unistd::geteuid().as_raw()
         }) as i32)
             != 0)
     );
     assert!(
-        ((((*(*(*pw.borrow()).upgrade().deref()).pw_name.borrow())
+        ((((*(*pw.borrow()).upgrade().deref())
+            .pw_name
             .to_c_string_iterator()
             .count()
             > 0_usize) as i32)
             != 0)
     );
-    assert!((((!((*(*(*pw.borrow()).upgrade().deref()).pw_dir.borrow()).is_null())) as i32) != 0));
-    println!(
-        "{}",
-        (*(*(*pw.borrow()).upgrade().deref()).pw_name.borrow())
-    );
+    assert!((((!(((*(*pw.borrow()).upgrade().deref()).pw_dir).is_null())) as i32) != 0));
+    println!("{}", (*(*pw.borrow()).upgrade().deref()).pw_name);
 }
 pub fn test_getpwuid_missing_1() {
     libcc2rs::cpp2rust_errno().write(0);
@@ -119,14 +117,8 @@ pub fn test_getpwuid_r_2() {
         }) as i32)
             != 0)
     );
-    assert!(((((*(*pw.borrow()).pw_uid.borrow()) == nix::unistd::geteuid().as_raw()) as i32) != 0));
-    assert!(
-        ((((*(*pw.borrow()).pw_name.borrow())
-            .to_c_string_iterator()
-            .count()
-            > 0_usize) as i32)
-            != 0)
-    );
+    assert!(((((*pw.borrow()).pw_uid == nix::unistd::geteuid().as_raw()) as i32) != 0));
+    assert!(((((*pw.borrow()).pw_name.to_c_string_iterator().count() > 0_usize) as i32) != 0));
     let pw2: Value<Ptr<libcc2rs::Passwd>> = Rc::new(RefCell::new(
         match nix::unistd::User::from_uid(nix::unistd::Uid::from_raw(
             nix::unistd::geteuid().as_raw(),
@@ -142,9 +134,10 @@ pub fn test_getpwuid_r_2() {
     assert!((((!((*pw2.borrow()).is_null())) as i32) != 0));
     assert!(
         ((({
-            let mut __it1 = (*(*pw.borrow()).pw_name.borrow()).to_c_string_iterator();
-            let mut __it2 =
-                (*(*(*pw2.borrow()).upgrade().deref()).pw_name.borrow()).to_c_string_iterator();
+            let mut __it1 = (*pw.borrow()).pw_name.to_c_string_iterator();
+            let mut __it2 = (*(*pw2.borrow()).upgrade().deref())
+                .pw_name
+                .to_c_string_iterator();
             loop {
                 let __c1 = __it1.next();
                 let __c2 = __it2.next();
@@ -158,7 +151,7 @@ pub fn test_getpwuid_r_2() {
         } == 0) as i32)
             != 0)
     );
-    println!("{}", (*(*pw.borrow()).pw_name.borrow()));
+    println!("{}", (*pw.borrow()).pw_name);
 }
 pub fn test_getpwuid_r_erange_3() {
     let pw: Value<libcc2rs::Passwd> = Rc::new(RefCell::new(Default::default()));

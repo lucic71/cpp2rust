@@ -8,14 +8,14 @@ use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
 #[derive(Default)]
 pub struct MyContainer_int_ {
-    vec_: Value<Vec<i32>>,
+    vec_: Vec<i32>,
 }
 impl MyContainer_int_ {
     pub fn empty(&self) -> bool {
-        return (*self.vec_.borrow()).is_empty();
+        return self.vec_.is_empty();
     }
     pub fn size(&self) -> usize {
-        return (*self.vec_.borrow()).len();
+        return self.vec_.len();
     }
     pub fn back_const(&self) -> Ptr<i32> {
         return (self.vec_.as_pointer() as Ptr<i32>).to_last();
@@ -24,20 +24,20 @@ impl MyContainer_int_ {
         return (self.vec_.as_pointer() as Ptr<i32>).to_last();
     }
     pub fn pop_back(&self) {
-        (*self.vec_.borrow_mut()).pop();
+        self.vec_.pop();
         return;
     }
     pub fn push_back(&self, item: Ptr<i32>) {
         {
             let a0_clone = (item.read()).clone();
-            (*self.vec_.borrow_mut()).push(a0_clone)
+            self.vec_.push(a0_clone)
         };
     }
 }
 impl Clone for MyContainer_int_ {
     fn clone(&self) -> Self {
         let mut this = Self {
-            vec_: Rc::new(RefCell::new((*self.vec_.borrow()).clone())),
+            vec_: (self.vec_).clone(),
         };
         this
     }
@@ -45,14 +45,14 @@ impl Clone for MyContainer_int_ {
 impl ByteRepr for MyContainer_int_ {}
 #[derive(Default)]
 pub struct MyContainer_char_ {
-    vec_: Value<Vec<u8>>,
+    vec_: Vec<u8>,
 }
 impl MyContainer_char_ {
     pub fn empty(&self) -> bool {
-        return (*self.vec_.borrow()).is_empty();
+        return self.vec_.is_empty();
     }
     pub fn size(&self) -> usize {
-        return (*self.vec_.borrow()).len();
+        return self.vec_.len();
     }
     pub fn back_const(&self) -> Ptr<u8> {
         return (self.vec_.as_pointer() as Ptr<u8>).to_last();
@@ -61,20 +61,20 @@ impl MyContainer_char_ {
         return (self.vec_.as_pointer() as Ptr<u8>).to_last();
     }
     pub fn pop_back(&self) {
-        (*self.vec_.borrow_mut()).pop();
+        self.vec_.pop();
         return;
     }
     pub fn push_back(&self, item: Ptr<u8>) {
         {
             let a0_clone = (item.read()).clone();
-            (*self.vec_.borrow_mut()).push(a0_clone)
+            self.vec_.push(a0_clone)
         };
     }
 }
 impl Clone for MyContainer_char_ {
     fn clone(&self) -> Self {
         let mut this = Self {
-            vec_: Rc::new(RefCell::new((*self.vec_.borrow()).clone())),
+            vec_: (self.vec_).clone(),
         };
         this
     }
@@ -82,14 +82,14 @@ impl Clone for MyContainer_char_ {
 impl ByteRepr for MyContainer_char_ {}
 #[derive(Default)]
 pub struct MyContainer_float_ {
-    vec_: Value<Vec<f32>>,
+    vec_: Vec<f32>,
 }
 impl MyContainer_float_ {
     pub fn empty(&self) -> bool {
-        return (*self.vec_.borrow()).is_empty();
+        return self.vec_.is_empty();
     }
     pub fn size(&self) -> usize {
-        return (*self.vec_.borrow()).len();
+        return self.vec_.len();
     }
     pub fn back_const(&self) -> Ptr<f32> {
         return (self.vec_.as_pointer() as Ptr<f32>).to_last();
@@ -98,20 +98,20 @@ impl MyContainer_float_ {
         return (self.vec_.as_pointer() as Ptr<f32>).to_last();
     }
     pub fn pop_back(&self) {
-        (*self.vec_.borrow_mut()).pop();
+        self.vec_.pop();
         return;
     }
     pub fn push_back(&self, item: Ptr<f32>) {
         {
             let a0_clone = (item.read()).clone();
-            (*self.vec_.borrow_mut()).push(a0_clone)
+            self.vec_.push(a0_clone)
         };
     }
 }
 impl Clone for MyContainer_float_ {
     fn clone(&self) -> Self {
         let mut this = Self {
-            vec_: Rc::new(RefCell::new((*self.vec_.borrow()).clone())),
+            vec_: (self.vec_).clone(),
         };
         this
     }

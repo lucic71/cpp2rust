@@ -8,13 +8,11 @@ use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
 #[derive(Default)]
 pub struct X {
-    pub x: Value<i32>,
+    pub x: i32,
 }
 impl Clone for X {
     fn clone(&self) -> Self {
-        let mut this = Self {
-            x: Rc::new(RefCell::new((*self.x.borrow()))),
-        };
+        let mut this = Self { x: self.x };
         this
     }
 }
@@ -23,11 +21,11 @@ impl ByteRepr for X {
         4
     }
     fn to_bytes(&self, buf: &mut [u8]) {
-        (*self.x.borrow()).to_bytes(&mut buf[0..4]);
+        self.x.to_bytes(&mut buf[0..4]);
     }
     fn from_bytes(buf: &[u8]) -> Self {
         Self {
-            x: Rc::new(RefCell::new(<i32>::from_bytes(&buf[0..4]))),
+            x: <i32>::from_bytes(&buf[0..4]),
         }
     }
 }
@@ -45,10 +43,10 @@ fn main_0() -> i32 {
     let z: Value<Ptr<i32>> = Rc::new(RefCell::new((*p.borrow()).clone()));
     let xx: Value<X> = Rc::new(RefCell::new(<X>::default()));
     let zz: Value<Ptr<X>> = Rc::new(RefCell::new((xx.as_pointer())));
-    (*(*xx.borrow()).x.borrow_mut()) = 1;
+    (*xx.borrow_mut()).x = 1;
     (*q.borrow_mut()) = ((*xx.borrow()).x.as_pointer());
     (*q.borrow_mut()) = ((*(*zz.borrow()).upgrade().deref()).x.as_pointer());
-    (*zz.borrow()).with_mut(|__v| (*__v.x.borrow_mut()) = 2);
+    (*zz.borrow()).with_mut(|__v| __v.x = 2);
     let ww: Value<X> = Rc::new(RefCell::new((*xx.borrow()).clone()));
     (*ww.borrow_mut()) = (*xx.borrow()).clone();
     let aa: Value<i32> = Rc::new(RefCell::new(({ func_0() })));

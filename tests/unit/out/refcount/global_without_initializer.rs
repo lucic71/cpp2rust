@@ -8,13 +8,11 @@ use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
 #[derive(Default)]
 pub struct S {
-    pub a: Value<i32>,
+    pub a: i32,
 }
 impl Clone for S {
     fn clone(&self) -> Self {
-        let mut this = Self {
-            a: Rc::new(RefCell::new((*self.a.borrow()))),
-        };
+        let mut this = Self { a: self.a };
         this
     }
 }
@@ -23,11 +21,11 @@ impl ByteRepr for S {
         4
     }
     fn to_bytes(&self, buf: &mut [u8]) {
-        (*self.a.borrow()).to_bytes(&mut buf[0..4]);
+        self.a.to_bytes(&mut buf[0..4]);
     }
     fn from_bytes(buf: &[u8]) -> Self {
         Self {
-            a: Rc::new(RefCell::new(<i32>::from_bytes(&buf[0..4]))),
+            a: <i32>::from_bytes(&buf[0..4]),
         }
     }
 }

@@ -44,35 +44,26 @@ impl ByteRepr for anon_0 {
         }
     }
 }
-#[derive(Default)]
+#[derive(Clone, Default)]
 pub struct node {
-    pub len: Value<usize>,
-    pub pos: Value<usize>,
-    pub x: Value<anon_0>,
-}
-impl Clone for node {
-    fn clone(&self) -> Self {
-        Self {
-            len: Rc::new(RefCell::new((*self.len.borrow()).clone())),
-            pos: Rc::new(RefCell::new((*self.pos.borrow()).clone())),
-            x: Rc::new(RefCell::new((*self.x.borrow()).clone())),
-        }
-    }
+    pub len: usize,
+    pub pos: usize,
+    pub x: anon_0,
 }
 impl ByteRepr for node {
     fn byte_size() -> usize {
         24
     }
     fn to_bytes(&self, buf: &mut [u8]) {
-        (*self.len.borrow()).to_bytes(&mut buf[0..8]);
-        (*self.pos.borrow()).to_bytes(&mut buf[8..16]);
-        (*self.x.borrow()).to_bytes(&mut buf[16..24]);
+        self.len.to_bytes(&mut buf[0..8]);
+        self.pos.to_bytes(&mut buf[8..16]);
+        self.x.to_bytes(&mut buf[16..24]);
     }
     fn from_bytes(buf: &[u8]) -> Self {
         Self {
-            len: Rc::new(RefCell::new(<usize>::from_bytes(&buf[0..8]))),
-            pos: Rc::new(RefCell::new(<usize>::from_bytes(&buf[8..16]))),
-            x: Rc::new(RefCell::new(<anon_0>::from_bytes(&buf[16..24]))),
+            len: <usize>::from_bytes(&buf[0..8]),
+            pos: <usize>::from_bytes(&buf[8..16]),
+            x: <anon_0>::from_bytes(&buf[16..24]),
         }
     }
 }
@@ -87,11 +78,12 @@ fn main_0() -> i32 {
         )
         .reinterpret_cast::<node>(),
     ));
-    (*n.borrow()).with_mut(|__v| (*__v.len.borrow_mut()) = (*tail_size.borrow()));
+    (*n.borrow()).with_mut(|__v| __v.len = (*tail_size.borrow()));
     let i: Value<usize> = Rc::new(RefCell::new(0_usize));
     'loop_: while ((((*i.borrow()) < (*tail_size.borrow())) as i32) != 0) {
         let __rhs = (((*i.borrow()) & 255_usize) as u8);
-        ((*(*(*n.borrow()).upgrade().deref()).x.borrow())
+        ((*(*n.borrow()).upgrade().deref())
+            .x
             .bytes()
             .reinterpret_cast::<u8>() as Ptr<u8>)
             .offset((*i.borrow()) as isize)
@@ -102,7 +94,8 @@ fn main_0() -> i32 {
     'loop_: while ((((*i.borrow()) < (*tail_size.borrow())) as i32) != 0) {
         assert!(
             ((({
-                let _lhs = ((((*(*(*n.borrow()).upgrade().deref()).x.borrow())
+                let _lhs = ((((*(*n.borrow()).upgrade().deref())
+                    .x
                     .bytes()
                     .reinterpret_cast::<u8>() as Ptr<u8>)
                     .offset((*i.borrow()) as isize)
@@ -114,7 +107,8 @@ fn main_0() -> i32 {
         (*i.borrow_mut()).postfix_inc();
     }
     let p: Value<Ptr<u8>> = Rc::new(RefCell::new(
-        (((*(*(*n.borrow()).upgrade().deref()).x.borrow())
+        (((*(*n.borrow()).upgrade().deref())
+            .x
             .bytes()
             .reinterpret_cast::<u8>() as Ptr<u8>)
             .offset((10) as isize)),
@@ -122,7 +116,8 @@ fn main_0() -> i32 {
     assert!(((((((*p.borrow()).read()) as i32) == 10) as i32) != 0));
     (*p.borrow()).write(170_u8);
     assert!(
-        (((((((*(*(*n.borrow()).upgrade().deref()).x.borrow())
+        (((((((*(*n.borrow()).upgrade().deref())
+            .x
             .bytes()
             .reinterpret_cast::<u8>() as Ptr::<u8>)
             .offset((10) as isize)
@@ -130,12 +125,13 @@ fn main_0() -> i32 {
             == 170) as i32)
             != 0)
     );
-    (*n.borrow()).with_mut(|__v| (*__v.pos.borrow_mut()) = 20_usize);
+    (*n.borrow()).with_mut(|__v| __v.pos = 20_usize);
     let q: Value<Ptr<u8>> = Rc::new(RefCell::new(
-        (((*(*(*n.borrow()).upgrade().deref()).x.borrow())
+        (((*(*n.borrow()).upgrade().deref())
+            .x
             .bytes()
             .reinterpret_cast::<u8>() as Ptr<u8>)
-            .offset((*(*(*n.borrow()).upgrade().deref()).pos.borrow()) as isize)),
+            .offset(((*(*n.borrow()).upgrade().deref()).pos) as isize)),
     ));
     assert!(((((((*q.borrow()).read()) as i32) == 20) as i32) != 0));
     (*q.borrow()).write(187_u8);

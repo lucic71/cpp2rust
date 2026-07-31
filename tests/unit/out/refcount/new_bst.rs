@@ -8,16 +8,16 @@ use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
 #[derive(Default)]
 pub struct node_t {
-    pub left: Value<Ptr<node_t>>,
-    pub right: Value<Ptr<node_t>>,
-    pub value: Value<i32>,
+    pub left: Ptr<node_t>,
+    pub right: Ptr<node_t>,
+    pub value: i32,
 }
 impl Clone for node_t {
     fn clone(&self) -> Self {
         let mut this = Self {
-            left: Rc::new(RefCell::new((*self.left.borrow()).clone())),
-            right: Rc::new(RefCell::new((*self.right.borrow()).clone())),
-            value: Rc::new(RefCell::new((*self.value.borrow()))),
+            left: (self.left).clone(),
+            right: (self.right).clone(),
+            value: self.value,
         };
         this
     }
@@ -27,15 +27,15 @@ impl ByteRepr for node_t {
         24
     }
     fn to_bytes(&self, buf: &mut [u8]) {
-        (*self.left.borrow()).to_bytes(&mut buf[0..8]);
-        (*self.right.borrow()).to_bytes(&mut buf[8..16]);
-        (*self.value.borrow()).to_bytes(&mut buf[16..20]);
+        self.left.to_bytes(&mut buf[0..8]);
+        self.right.to_bytes(&mut buf[8..16]);
+        self.value.to_bytes(&mut buf[16..20]);
     }
     fn from_bytes(buf: &[u8]) -> Self {
         Self {
-            left: Rc::new(RefCell::new(<Ptr<node_t>>::from_bytes(&buf[0..8]))),
-            right: Rc::new(RefCell::new(<Ptr<node_t>>::from_bytes(&buf[8..16]))),
-            value: Rc::new(RefCell::new(<i32>::from_bytes(&buf[16..20]))),
+            left: <Ptr<node_t>>::from_bytes(&buf[0..8]),
+            right: <Ptr<node_t>>::from_bytes(&buf[8..16]),
+            value: <i32>::from_bytes(&buf[16..20]),
         }
     }
 }
@@ -44,29 +44,29 @@ pub fn find_0(node: Ptr<node_t>, value: i32) -> Ptr<node_t> {
     let value: Value<i32> = Rc::new(RefCell::new(value));
     if ({
         let _lhs = (*value.borrow());
-        _lhs < (*(*(*node.borrow()).upgrade().deref()).value.borrow())
-    }) && (!((*(*(*node.borrow()).upgrade().deref()).left.borrow()).is_null()))
+        _lhs < (*(*node.borrow()).upgrade().deref()).value
+    }) && (!(((*(*node.borrow()).upgrade().deref()).left).is_null()))
     {
         return ({
             find_0(
-                (*(*(*node.borrow()).upgrade().deref()).left.borrow()).clone(),
+                ((*(*node.borrow()).upgrade().deref()).left).clone(),
                 (*value.borrow()),
             )
         });
     } else if ({
         let _lhs = (*value.borrow());
-        _lhs > (*(*(*node.borrow()).upgrade().deref()).value.borrow())
-    }) && (!((*(*(*node.borrow()).upgrade().deref()).right.borrow()).is_null()))
+        _lhs > (*(*node.borrow()).upgrade().deref()).value
+    }) && (!(((*(*node.borrow()).upgrade().deref()).right).is_null()))
     {
         return ({
             find_0(
-                (*(*(*node.borrow()).upgrade().deref()).right.borrow()).clone(),
+                ((*(*node.borrow()).upgrade().deref()).right).clone(),
                 (*value.borrow()),
             )
         });
     } else if {
         let _lhs = (*value.borrow());
-        _lhs == (*(*(*node.borrow()).upgrade().deref()).value.borrow())
+        _lhs == (*(*node.borrow()).upgrade().deref()).value
     } {
         return (*node.borrow()).clone();
     }
@@ -77,43 +77,43 @@ pub fn insert_1(node: Ptr<node_t>, value: i32) -> Ptr<node_t> {
     let value: Value<i32> = Rc::new(RefCell::new(value));
     if (*node.borrow()).is_null() {
         return Ptr::alloc(node_t {
-            left: Rc::new(RefCell::new(Ptr::<node_t>::null())),
-            right: Rc::new(RefCell::new(Ptr::<node_t>::null())),
-            value: Rc::new(RefCell::new((*value.borrow()))),
+            left: Ptr::<node_t>::null(),
+            right: Ptr::<node_t>::null(),
+            value: (*value.borrow()),
         });
     }
     if {
         let _lhs = (*value.borrow());
-        _lhs < (*(*(*node.borrow()).upgrade().deref()).value.borrow())
+        _lhs < (*(*node.borrow()).upgrade().deref()).value
     } {
         let __rhs = ({
             insert_1(
-                (*(*(*node.borrow()).upgrade().deref()).left.borrow()).clone(),
+                ((*(*node.borrow()).upgrade().deref()).left).clone(),
                 (*value.borrow()),
             )
         });
-        (*node.borrow()).with_mut(|__v| (*__v.left.borrow_mut()) = __rhs);
+        (*node.borrow()).with_mut(|__v| __v.left = __rhs);
     } else if {
         let _lhs = (*value.borrow());
-        _lhs > (*(*(*node.borrow()).upgrade().deref()).value.borrow())
+        _lhs > (*(*node.borrow()).upgrade().deref()).value
     } {
         let __rhs = ({
             insert_1(
-                (*(*(*node.borrow()).upgrade().deref()).right.borrow()).clone(),
+                ((*(*node.borrow()).upgrade().deref()).right).clone(),
                 (*value.borrow()),
             )
         });
-        (*node.borrow()).with_mut(|__v| (*__v.right.borrow_mut()) = __rhs);
+        (*node.borrow()).with_mut(|__v| __v.right = __rhs);
     }
     return (*node.borrow()).clone();
 }
 pub fn del_2(node: Ptr<node_t>) {
     let node: Value<Ptr<node_t>> = Rc::new(RefCell::new(node));
-    if !((*(*(*node.borrow()).upgrade().deref()).left.borrow()).is_null()) {
-        ({ del_2((*(*(*node.borrow()).upgrade().deref()).left.borrow()).clone()) });
+    if !(((*(*node.borrow()).upgrade().deref()).left).is_null()) {
+        ({ del_2(((*(*node.borrow()).upgrade().deref()).left).clone()) });
     }
-    if !((*(*(*node.borrow()).upgrade().deref()).right.borrow()).is_null()) {
-        ({ del_2((*(*(*node.borrow()).upgrade().deref()).right.borrow()).clone()) });
+    if !(((*(*node.borrow()).upgrade().deref()).right).is_null()) {
+        ({ del_2(((*(*node.borrow()).upgrade().deref()).right).clone()) });
     }
     (*node.borrow()).delete();
 }
@@ -122,9 +122,9 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     let root: Value<Ptr<node_t>> = Rc::new(RefCell::new(Ptr::alloc(node_t {
-        left: Rc::new(RefCell::new(Ptr::<node_t>::null())),
-        right: Rc::new(RefCell::new(Ptr::<node_t>::null())),
-        value: Rc::new(RefCell::new(0)),
+        left: Ptr::<node_t>::null(),
+        right: Ptr::<node_t>::null(),
+        value: 0,
     })));
     let __rhs = ({ insert_1((*root.borrow()).clone(), 1) });
     (*root.borrow_mut()) = __rhs;
@@ -135,26 +135,11 @@ fn main_0() -> i32 {
     let __rhs = ({ insert_1((*root.borrow()).clone(), 4) });
     (*root.borrow_mut()) = __rhs;
     let out: Value<bool> = Rc::new(RefCell::new(
-        ((((((*(*({ find_0((*root.borrow()).clone(), 0) }).upgrade().deref())
-            .value
-            .borrow())
-            == 0)
-            && ((*(*({ find_0((*root.borrow()).clone(), 1) }).upgrade().deref())
-                .value
-                .borrow())
-                == 1))
-            && ((*(*({ find_0((*root.borrow()).clone(), 2) }).upgrade().deref())
-                .value
-                .borrow())
-                == 2))
-            && ((*(*({ find_0((*root.borrow()).clone(), 3) }).upgrade().deref())
-                .value
-                .borrow())
-                == 3))
-            && ((*(*({ find_0((*root.borrow()).clone(), 4) }).upgrade().deref())
-                .value
-                .borrow())
-                == 4))
+        ((((((*({ find_0((*root.borrow()).clone(), 0) }).upgrade().deref()).value == 0)
+            && ((*({ find_0((*root.borrow()).clone(), 1) }).upgrade().deref()).value == 1))
+            && ((*({ find_0((*root.borrow()).clone(), 2) }).upgrade().deref()).value == 2))
+            && ((*({ find_0((*root.borrow()).clone(), 3) }).upgrade().deref()).value == 3))
+            && ((*({ find_0((*root.borrow()).clone(), 4) }).upgrade().deref()).value == 4))
             && (({ find_0((*root.borrow()).clone(), 5) }).is_null()),
     ));
     ({ del_2((*root.borrow()).clone()) });

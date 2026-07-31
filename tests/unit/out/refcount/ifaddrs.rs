@@ -20,8 +20,8 @@ fn main_0() -> i32 {
                     let __list: Vec<nix::ifaddrs::InterfaceAddress> = __ifas.collect();
                     let mut __next = Ptr::<Ifaddrs>::null();
                     for __ifa in __list.iter().rev() {
-                        let __node = Ifaddrs::from_interface_address(__ifa);
-                        *__node.ifa_next.borrow_mut() = __next.clone();
+                        let mut __node = Ifaddrs::from_interface_address(__ifa);
+                        __node.ifa_next = __next.clone();
                         __next = Ptr::alloc(__node);
                     }
                     __out.write(__next);
@@ -41,29 +41,27 @@ fn main_0() -> i32 {
         Rc::new(RefCell::new(Ptr::<libcc2rs::Ifaddrs>::null()));
     (*ifa.borrow_mut()) = (*list.borrow()).clone();
     'loop_: while (((!((*ifa.borrow()).is_null())) as i32) != 0) {
-        assert!(
-            (((!((*(*(*ifa.borrow()).upgrade().deref()).ifa_name.borrow()).is_null())) as i32)
-                != 0)
-        );
-        if ((((*(*(*ifa.borrow()).upgrade().deref()).ifa_addr.borrow()).is_null()) as i32) != 0) {
-            let __rhs = (*(*(*ifa.borrow()).upgrade().deref()).ifa_next.borrow()).clone();
+        assert!((((!(((*(*ifa.borrow()).upgrade().deref()).ifa_name).is_null())) as i32) != 0));
+        if (((((*(*ifa.borrow()).upgrade().deref()).ifa_addr).is_null()) as i32) != 0) {
+            let __rhs = ((*(*ifa.borrow()).upgrade().deref()).ifa_next).clone();
             (*ifa.borrow_mut()) = __rhs;
             continue 'loop_;
         }
-        if (((((*(*(*(*(*ifa.borrow()).upgrade().deref()).ifa_addr.borrow())
+        if (((((*(*(*ifa.borrow()).upgrade().deref())
+            .ifa_addr
             .upgrade()
             .deref())
-        .sa_family
-        .borrow()) as i32)
+        .sa_family as i32)
             != libc::AF_INET) as i32)
             != 0)
         {
-            let __rhs = (*(*(*ifa.borrow()).upgrade().deref()).ifa_next.borrow()).clone();
+            let __rhs = ((*(*ifa.borrow()).upgrade().deref()).ifa_next).clone();
             (*ifa.borrow_mut()) = __rhs;
             continue 'loop_;
         }
         let sin: Value<Ptr<libcc2rs::SockaddrIn>> = Rc::new(RefCell::new(
-            (*(*(*ifa.borrow()).upgrade().deref()).ifa_addr.borrow())
+            (*(*ifa.borrow()).upgrade().deref())
+                .ifa_addr
                 .reinterpret_cast::<libcc2rs::SockaddrIn>(),
         ));
         let lo_be: Value<Box<[u8]>> = Rc::new(RefCell::new(Box::new([127_u8, 0_u8, 0_u8, 1_u8])));
@@ -78,17 +76,13 @@ fn main_0() -> i32 {
             != 0)
         {
             (*found_loopback.borrow_mut()) = 1;
+            assert!(((((*(*ifa.borrow()).upgrade().deref()).ifa_flags != 0_u32) as i32) != 0));
             assert!(
-                ((((*(*(*ifa.borrow()).upgrade().deref()).ifa_flags.borrow()) != 0_u32) as i32)
-                    != 0)
-            );
-            assert!(
-                (((!((*(*(*ifa.borrow()).upgrade().deref()).ifa_netmask.borrow()).is_null()))
-                    as i32)
-                    != 0)
+                (((!(((*(*ifa.borrow()).upgrade().deref()).ifa_netmask).is_null())) as i32) != 0)
             );
             let mask: Value<Ptr<libcc2rs::SockaddrIn>> = Rc::new(RefCell::new(
-                (*(*(*ifa.borrow()).upgrade().deref()).ifa_netmask.borrow())
+                (*(*ifa.borrow()).upgrade().deref())
+                    .ifa_netmask
                     .reinterpret_cast::<libcc2rs::SockaddrIn>(),
             ));
             let mask_be: Value<Box<[u8]>> =
@@ -106,7 +100,8 @@ fn main_0() -> i32 {
             );
             assert!(
                 (((match nix::net::if_::if_nametoindex(
-                    (*(*(*ifa.borrow()).upgrade().deref()).ifa_name.borrow())
+                    (*(*ifa.borrow()).upgrade().deref())
+                        .ifa_name
                         .to_rust_string()
                         .as_str()
                 ) {
@@ -119,7 +114,7 @@ fn main_0() -> i32 {
                     != 0)
             );
         }
-        let __rhs = (*(*(*ifa.borrow()).upgrade().deref()).ifa_next.borrow()).clone();
+        let __rhs = ((*(*ifa.borrow()).upgrade().deref()).ifa_next).clone();
         (*ifa.borrow_mut()) = __rhs;
     }
     assert!(((*found_loopback.borrow()) != 0));
@@ -127,19 +122,19 @@ fn main_0() -> i32 {
         let mut __cur = (*list.borrow()).clone();
         while !__cur.is_null() {
             let __next = __cur.with(|__i| {
-                let __name = __i.ifa_name.borrow();
+                let __name = &__i.ifa_name;
                 if !__name.is_null() {
                     __name.delete_array();
                 }
-                let __addr = __i.ifa_addr.borrow();
+                let __addr = &__i.ifa_addr;
                 if !__addr.is_null() {
                     __addr.delete();
                 }
-                let __mask = __i.ifa_netmask.borrow();
+                let __mask = &__i.ifa_netmask;
                 if !__mask.is_null() {
                     __mask.delete();
                 }
-                (*__i.ifa_next.borrow()).clone()
+                __i.ifa_next.clone()
             });
             __cur.delete();
             __cur = __next;

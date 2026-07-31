@@ -8,12 +8,12 @@ use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
 #[derive(Default)]
 pub struct Holder {
-    pub v: Value<Vec<i32>>,
+    pub v: Vec<i32>,
 }
 impl Clone for Holder {
     fn clone(&self) -> Self {
         let mut this = Self {
-            v: Rc::new(RefCell::new((*self.v.borrow()).clone())),
+            v: (self.v).clone(),
         };
         this
     }
@@ -40,8 +40,8 @@ fn main_0() -> i32 {
         .offset(1_usize)
         .write(30);
     let h: Value<Holder> = Rc::new(RefCell::new(<Holder>::default()));
-    (*(*h.borrow()).v.borrow_mut()).push(40);
-    (*(*h.borrow()).v.borrow_mut()).push(50);
+    (*h.borrow_mut()).v.push(40);
+    (*h.borrow_mut()).v.push(50);
     let hp: Value<Ptr<Holder>> = Rc::new(RefCell::new((h.as_pointer())));
     let b: Value<i32> = Rc::new(RefCell::new(
         (((*(*hp.borrow()).upgrade().deref()).v.as_pointer() as Ptr<i32>)

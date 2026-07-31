@@ -54,27 +54,20 @@ impl ByteRepr for anon_1 {
         <anon_1>::from(i32::from_bytes(buf))
     }
 }
-#[derive(Default)]
+#[derive(Clone, Default)]
 pub struct S {
-    pub a: Value<i32>,
-}
-impl Clone for S {
-    fn clone(&self) -> Self {
-        Self {
-            a: Rc::new(RefCell::new((*self.a.borrow()).clone())),
-        }
-    }
+    pub a: i32,
 }
 impl ByteRepr for S {
     fn byte_size() -> usize {
         4
     }
     fn to_bytes(&self, buf: &mut [u8]) {
-        (*self.a.borrow()).to_bytes(&mut buf[0..4]);
+        self.a.to_bytes(&mut buf[0..4]);
     }
     fn from_bytes(buf: &[u8]) -> Self {
         Self {
-            a: Rc::new(RefCell::new(<i32>::from_bytes(&buf[0..4]))),
+            a: <i32>::from_bytes(&buf[0..4]),
         }
     }
 }
@@ -126,31 +119,23 @@ impl ByteRepr for anon_2 {
         <anon_2>::from(i32::from_bytes(buf))
     }
 }
-#[derive(Default)]
+#[derive(Clone, Default)]
 pub struct WithAnonField {
-    pub a: Value<i32>,
-    pub field: Value<anon_2>,
-}
-impl Clone for WithAnonField {
-    fn clone(&self) -> Self {
-        Self {
-            a: Rc::new(RefCell::new((*self.a.borrow()).clone())),
-            field: Rc::new(RefCell::new((*self.field.borrow()).clone())),
-        }
-    }
+    pub a: i32,
+    pub field: anon_2,
 }
 impl ByteRepr for WithAnonField {
     fn byte_size() -> usize {
         8
     }
     fn to_bytes(&self, buf: &mut [u8]) {
-        (*self.a.borrow()).to_bytes(&mut buf[0..4]);
-        (*self.field.borrow()).to_bytes(&mut buf[4..8]);
+        self.a.to_bytes(&mut buf[0..4]);
+        self.field.to_bytes(&mut buf[4..8]);
     }
     fn from_bytes(buf: &[u8]) -> Self {
         Self {
-            a: Rc::new(RefCell::new(<i32>::from_bytes(&buf[0..4]))),
-            field: Rc::new(RefCell::new(<anon_2>::from_bytes(&buf[4..8]))),
+            a: <i32>::from_bytes(&buf[0..4]),
+            field: <anon_2>::from_bytes(&buf[4..8]),
         }
     }
 }
@@ -190,15 +175,9 @@ fn main_0() -> i32 {
     (*td.borrow_mut()) = TdEnum_enum::TD_B;
     assert!((((((*td.borrow()) as u32) == ((TdEnum_enum::TD_B as i32) as u32)) as i32) != 0));
     let w: Value<WithAnonField> = <Value<WithAnonField>>::default();
-    (*(*w.borrow()).field.borrow_mut()) = anon_2::FIELD_A;
-    assert!(
-        (((((*(*w.borrow()).field.borrow()) as u32) == ((anon_2::FIELD_A as i32) as u32)) as i32)
-            != 0)
-    );
-    (*(*w.borrow()).field.borrow_mut()) = anon_2::FIELD_B;
-    assert!(
-        (((((*(*w.borrow()).field.borrow()) as u32) == ((anon_2::FIELD_B as i32) as u32)) as i32)
-            != 0)
-    );
+    (*w.borrow_mut()).field = anon_2::FIELD_A;
+    assert!((((((*w.borrow()).field as u32) == ((anon_2::FIELD_A as i32) as u32)) as i32) != 0));
+    (*w.borrow_mut()).field = anon_2::FIELD_B;
+    assert!((((((*w.borrow()).field as u32) == ((anon_2::FIELD_B as i32) as u32)) as i32) != 0));
     return 0;
 }

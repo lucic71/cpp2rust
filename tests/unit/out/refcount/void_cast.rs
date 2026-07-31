@@ -12,12 +12,12 @@ pub fn unused_param_0(x: i32) {
 }
 #[derive(Default)]
 pub struct NonTrivial {
-    pub data: Value<Vec<i32>>,
+    pub data: Vec<i32>,
 }
 impl Clone for NonTrivial {
     fn clone(&self) -> Self {
         let mut this = Self {
-            data: Rc::new(RefCell::new((*self.data.borrow()).clone())),
+            data: (self.data).clone(),
         };
         this
     }
@@ -39,13 +39,11 @@ pub fn bump_and_return_4() -> i32 {
 }
 #[derive(Default)]
 pub struct Holder {
-    pub field: Value<i32>,
+    pub field: i32,
 }
 impl Clone for Holder {
     fn clone(&self) -> Self {
-        let mut this = Self {
-            field: Rc::new(RefCell::new((*self.field.borrow()))),
-        };
+        let mut this = Self { field: self.field };
         this
     }
 }
@@ -54,11 +52,11 @@ impl ByteRepr for Holder {
         4
     }
     fn to_bytes(&self, buf: &mut [u8]) {
-        (*self.field.borrow()).to_bytes(&mut buf[0..4]);
+        self.field.to_bytes(&mut buf[0..4]);
     }
     fn from_bytes(buf: &[u8]) -> Self {
         Self {
-            field: Rc::new(RefCell::new(<i32>::from_bytes(&buf[0..4]))),
+            field: <i32>::from_bytes(&buf[0..4]),
         }
     }
 }
@@ -116,12 +114,10 @@ fn main_0() -> i32 {
     (*p.borrow_mut()).clone();
     let arr: Value<Box<[i32]>> = Rc::new(RefCell::new(Box::new([1, 2, 3])));
     ((*arr.borrow_mut())[(1) as usize]);
-    let h: Value<Holder> = Rc::new(RefCell::new(Holder {
-        field: Rc::new(RefCell::new(17)),
-    }));
-    (*(*h.borrow()).field.borrow_mut());
+    let h: Value<Holder> = Rc::new(RefCell::new(Holder { field: 17 }));
+    ((*h.borrow()).field);
     let hp: Value<Ptr<Holder>> = Rc::new(RefCell::new((h.as_pointer())));
-    (*(*(*hp.borrow()).upgrade().deref()).field.borrow_mut());
+    ((*(*hp.borrow()).upgrade().deref()).field);
     let nt: Value<NonTrivial> = Rc::new(RefCell::new(<NonTrivial>::default()));
     ({ unused_ref_param_1(nt.as_pointer()) });
     ({ unused_ptr_param_2((nt.as_pointer())) });

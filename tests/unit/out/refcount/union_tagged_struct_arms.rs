@@ -32,111 +32,81 @@ impl ByteRepr for Choice_enum {
         <Choice_enum>::from(i32::from_bytes(buf))
     }
 }
-#[derive(Default)]
+#[derive(Clone, Default)]
 pub struct anon_1 {
-    pub items: Value<Ptr<Ptr<u8>>>,
-    pub count: Value<i64>,
-    pub cursor: Value<i64>,
-}
-impl Clone for anon_1 {
-    fn clone(&self) -> Self {
-        Self {
-            items: Rc::new(RefCell::new((*self.items.borrow()).clone())),
-            count: Rc::new(RefCell::new((*self.count.borrow()).clone())),
-            cursor: Rc::new(RefCell::new((*self.cursor.borrow()).clone())),
-        }
-    }
+    pub items: Ptr<Ptr<u8>>,
+    pub count: i64,
+    pub cursor: i64,
 }
 impl ByteRepr for anon_1 {
     fn byte_size() -> usize {
         24
     }
     fn to_bytes(&self, buf: &mut [u8]) {
-        (*self.items.borrow()).to_bytes(&mut buf[0..8]);
-        (*self.count.borrow()).to_bytes(&mut buf[8..16]);
-        (*self.cursor.borrow()).to_bytes(&mut buf[16..24]);
+        self.items.to_bytes(&mut buf[0..8]);
+        self.count.to_bytes(&mut buf[8..16]);
+        self.cursor.to_bytes(&mut buf[16..24]);
     }
     fn from_bytes(buf: &[u8]) -> Self {
         Self {
-            items: Rc::new(RefCell::new(<Ptr<Ptr<u8>>>::from_bytes(&buf[0..8]))),
-            count: Rc::new(RefCell::new(<i64>::from_bytes(&buf[8..16]))),
-            cursor: Rc::new(RefCell::new(<i64>::from_bytes(&buf[16..24]))),
+            items: <Ptr<Ptr<u8>>>::from_bytes(&buf[0..8]),
+            count: <i64>::from_bytes(&buf[8..16]),
+            cursor: <i64>::from_bytes(&buf[16..24]),
         }
     }
 }
-#[derive(Default)]
+#[derive(Clone, Default)]
 pub struct anon_2 {
-    pub lo: Value<i32>,
-    pub hi: Value<i32>,
-    pub curr: Value<i32>,
-    pub step: Value<u8>,
-}
-impl Clone for anon_2 {
-    fn clone(&self) -> Self {
-        Self {
-            lo: Rc::new(RefCell::new((*self.lo.borrow()).clone())),
-            hi: Rc::new(RefCell::new((*self.hi.borrow()).clone())),
-            curr: Rc::new(RefCell::new((*self.curr.borrow()).clone())),
-            step: Rc::new(RefCell::new((*self.step.borrow()).clone())),
-        }
-    }
+    pub lo: i32,
+    pub hi: i32,
+    pub curr: i32,
+    pub step: u8,
 }
 impl ByteRepr for anon_2 {
     fn byte_size() -> usize {
         16
     }
     fn to_bytes(&self, buf: &mut [u8]) {
-        (*self.lo.borrow()).to_bytes(&mut buf[0..4]);
-        (*self.hi.borrow()).to_bytes(&mut buf[4..8]);
-        (*self.curr.borrow()).to_bytes(&mut buf[8..12]);
-        (*self.step.borrow()).to_bytes(&mut buf[12..13]);
+        self.lo.to_bytes(&mut buf[0..4]);
+        self.hi.to_bytes(&mut buf[4..8]);
+        self.curr.to_bytes(&mut buf[8..12]);
+        self.step.to_bytes(&mut buf[12..13]);
     }
     fn from_bytes(buf: &[u8]) -> Self {
         Self {
-            lo: Rc::new(RefCell::new(<i32>::from_bytes(&buf[0..4]))),
-            hi: Rc::new(RefCell::new(<i32>::from_bytes(&buf[4..8]))),
-            curr: Rc::new(RefCell::new(<i32>::from_bytes(&buf[8..12]))),
-            step: Rc::new(RefCell::new(<u8>::from_bytes(&buf[12..13]))),
+            lo: <i32>::from_bytes(&buf[0..4]),
+            hi: <i32>::from_bytes(&buf[4..8]),
+            curr: <i32>::from_bytes(&buf[8..12]),
+            step: <u8>::from_bytes(&buf[12..13]),
         }
     }
 }
-#[derive(Default)]
+#[derive(Clone, Default)]
 pub struct anon_3 {
-    pub lo: Value<i64>,
-    pub hi: Value<i64>,
-    pub curr: Value<i64>,
-    pub step: Value<i64>,
-    pub width: Value<i32>,
-}
-impl Clone for anon_3 {
-    fn clone(&self) -> Self {
-        Self {
-            lo: Rc::new(RefCell::new((*self.lo.borrow()).clone())),
-            hi: Rc::new(RefCell::new((*self.hi.borrow()).clone())),
-            curr: Rc::new(RefCell::new((*self.curr.borrow()).clone())),
-            step: Rc::new(RefCell::new((*self.step.borrow()).clone())),
-            width: Rc::new(RefCell::new((*self.width.borrow()).clone())),
-        }
-    }
+    pub lo: i64,
+    pub hi: i64,
+    pub curr: i64,
+    pub step: i64,
+    pub width: i32,
 }
 impl ByteRepr for anon_3 {
     fn byte_size() -> usize {
         40
     }
     fn to_bytes(&self, buf: &mut [u8]) {
-        (*self.lo.borrow()).to_bytes(&mut buf[0..8]);
-        (*self.hi.borrow()).to_bytes(&mut buf[8..16]);
-        (*self.curr.borrow()).to_bytes(&mut buf[16..24]);
-        (*self.step.borrow()).to_bytes(&mut buf[24..32]);
-        (*self.width.borrow()).to_bytes(&mut buf[32..36]);
+        self.lo.to_bytes(&mut buf[0..8]);
+        self.hi.to_bytes(&mut buf[8..16]);
+        self.curr.to_bytes(&mut buf[16..24]);
+        self.step.to_bytes(&mut buf[24..32]);
+        self.width.to_bytes(&mut buf[32..36]);
     }
     fn from_bytes(buf: &[u8]) -> Self {
         Self {
-            lo: Rc::new(RefCell::new(<i64>::from_bytes(&buf[0..8]))),
-            hi: Rc::new(RefCell::new(<i64>::from_bytes(&buf[8..16]))),
-            curr: Rc::new(RefCell::new(<i64>::from_bytes(&buf[16..24]))),
-            step: Rc::new(RefCell::new(<i64>::from_bytes(&buf[24..32]))),
-            width: Rc::new(RefCell::new(<i32>::from_bytes(&buf[32..36]))),
+            lo: <i64>::from_bytes(&buf[0..8]),
+            hi: <i64>::from_bytes(&buf[8..16]),
+            curr: <i64>::from_bytes(&buf[16..24]),
+            step: <i64>::from_bytes(&buf[24..32]),
+            width: <i32>::from_bytes(&buf[32..36]),
         }
     }
 }
@@ -181,35 +151,26 @@ impl ByteRepr for anon_0 {
         }
     }
 }
-#[derive(Default)]
+#[derive(Clone, Default)]
 pub struct Branch {
-    pub choice: Value<Choice_enum>,
-    pub index: Value<i32>,
-    pub v: Value<anon_0>,
-}
-impl Clone for Branch {
-    fn clone(&self) -> Self {
-        Self {
-            choice: Rc::new(RefCell::new((*self.choice.borrow()).clone())),
-            index: Rc::new(RefCell::new((*self.index.borrow()).clone())),
-            v: Rc::new(RefCell::new((*self.v.borrow()).clone())),
-        }
-    }
+    pub choice: Choice_enum,
+    pub index: i32,
+    pub v: anon_0,
 }
 impl ByteRepr for Branch {
     fn byte_size() -> usize {
         48
     }
     fn to_bytes(&self, buf: &mut [u8]) {
-        (*self.choice.borrow()).to_bytes(&mut buf[0..4]);
-        (*self.index.borrow()).to_bytes(&mut buf[4..8]);
-        (*self.v.borrow()).to_bytes(&mut buf[8..48]);
+        self.choice.to_bytes(&mut buf[0..4]);
+        self.index.to_bytes(&mut buf[4..8]);
+        self.v.to_bytes(&mut buf[8..48]);
     }
     fn from_bytes(buf: &[u8]) -> Self {
         Self {
-            choice: Rc::new(RefCell::new(<Choice_enum>::from_bytes(&buf[0..4]))),
-            index: Rc::new(RefCell::new(<i32>::from_bytes(&buf[4..8]))),
-            v: Rc::new(RefCell::new(<anon_0>::from_bytes(&buf[8..48]))),
+            choice: <Choice_enum>::from_bytes(&buf[0..4]),
+            index: <i32>::from_bytes(&buf[4..8]),
+            v: <anon_0>::from_bytes(&buf[8..48]),
         }
     }
 }
@@ -225,103 +186,82 @@ fn main_0() -> i32 {
         ])));
     );
     let p_list: Value<Branch> = <Value<Branch>>::default();
-    (*(*p_list.borrow()).choice.borrow_mut()) = Choice_enum::C_LIST;
-    (*(*p_list.borrow()).index.borrow_mut()) = 0;
-    (*(*p_list.borrow()).v.borrow()).list().with_mut(|__v| {
-        (*__v.items.borrow_mut()) = (items_4.with(Value::clone).as_pointer() as Ptr<Ptr<u8>>)
-    });
-    (*(*p_list.borrow()).v.borrow())
+    (*p_list.borrow_mut()).choice = Choice_enum::C_LIST;
+    (*p_list.borrow_mut()).index = 0;
+    (*p_list.borrow_mut())
+        .v
         .list()
-        .with_mut(|__v| (*__v.count.borrow_mut()) = 3_i64);
-    (*(*p_list.borrow()).v.borrow())
+        .with_mut(|__v| __v.items = (items_4.with(Value::clone).as_pointer() as Ptr<Ptr<u8>>));
+    (*p_list.borrow_mut())
+        .v
         .list()
-        .with_mut(|__v| (*__v.cursor.borrow_mut()) = 1_i64);
+        .with_mut(|__v| __v.count = 3_i64);
+    (*p_list.borrow_mut())
+        .v
+        .list()
+        .with_mut(|__v| __v.cursor = 1_i64);
+    assert!(((((*(*p_list.borrow()).v.list().upgrade().deref()).count == 3_i64) as i32) != 0));
     assert!(
-        ((((*(*(*(*p_list.borrow()).v.borrow()).list().upgrade().deref())
-            .count
-            .borrow())
-            == 3_i64) as i32)
-            != 0)
-    );
-    assert!(
-        (((((((*(*(*(*p_list.borrow()).v.borrow()).list().upgrade().deref())
+        (((((((*(*p_list.borrow()).v.list().upgrade().deref())
             .items
-            .borrow())
-        .offset((1) as isize)
-        .read())
+            .offset((1) as isize)
+            .read())
         .offset((0) as isize)
         .read()) as i32)
             == ('b' as i32)) as i32)
             != 0)
     );
     let p_letters: Value<Branch> = <Value<Branch>>::default();
-    (*(*p_letters.borrow()).choice.borrow_mut()) = Choice_enum::C_LETTERS;
-    (*(*p_letters.borrow()).index.borrow_mut()) = 1;
-    (*(*p_letters.borrow()).v.borrow())
+    (*p_letters.borrow_mut()).choice = Choice_enum::C_LETTERS;
+    (*p_letters.borrow_mut()).index = 1;
+    (*p_letters.borrow_mut())
+        .v
         .letters()
-        .with_mut(|__v| (*__v.lo.borrow_mut()) = ('a' as i32));
-    (*(*p_letters.borrow()).v.borrow())
+        .with_mut(|__v| __v.lo = ('a' as i32));
+    (*p_letters.borrow_mut())
+        .v
         .letters()
-        .with_mut(|__v| (*__v.hi.borrow_mut()) = ('z' as i32));
-    (*(*p_letters.borrow()).v.borrow())
+        .with_mut(|__v| __v.hi = ('z' as i32));
+    (*p_letters.borrow_mut())
+        .v
         .letters()
-        .with_mut(|__v| (*__v.curr.borrow_mut()) = ('m' as i32));
-    (*(*p_letters.borrow()).v.borrow())
+        .with_mut(|__v| __v.curr = ('m' as i32));
+    (*p_letters.borrow_mut())
+        .v
         .letters()
-        .with_mut(|__v| (*__v.step.borrow_mut()) = 1_u8);
+        .with_mut(|__v| __v.step = 1_u8);
     assert!(
-        (((((*(*(*(*p_letters.borrow()).v.borrow())
-            .letters()
-            .upgrade()
-            .deref())
-        .hi
-        .borrow())
-            - (*(*(*(*p_letters.borrow()).v.borrow())
-                .letters()
-                .upgrade()
-                .deref())
-            .lo
-            .borrow()))
+        (((((*(*p_letters.borrow()).v.letters().upgrade().deref()).hi
+            - (*(*p_letters.borrow()).v.letters().upgrade().deref()).lo)
             == 25) as i32)
             != 0)
     );
     let p_integers: Value<Branch> = <Value<Branch>>::default();
-    (*(*p_integers.borrow()).choice.borrow_mut()) = Choice_enum::C_INTEGERS;
-    (*(*p_integers.borrow()).index.borrow_mut()) = 2;
-    (*(*p_integers.borrow()).v.borrow())
+    (*p_integers.borrow_mut()).choice = Choice_enum::C_INTEGERS;
+    (*p_integers.borrow_mut()).index = 2;
+    (*p_integers.borrow_mut())
+        .v
         .integers()
-        .with_mut(|__v| (*__v.lo.borrow_mut()) = 1_i64);
-    (*(*p_integers.borrow()).v.borrow())
+        .with_mut(|__v| __v.lo = 1_i64);
+    (*p_integers.borrow_mut())
+        .v
         .integers()
-        .with_mut(|__v| (*__v.hi.borrow_mut()) = 100_i64);
-    (*(*p_integers.borrow()).v.borrow())
+        .with_mut(|__v| __v.hi = 100_i64);
+    (*p_integers.borrow_mut())
+        .v
         .integers()
-        .with_mut(|__v| (*__v.curr.borrow_mut()) = 1_i64);
-    (*(*p_integers.borrow()).v.borrow())
+        .with_mut(|__v| __v.curr = 1_i64);
+    (*p_integers.borrow_mut())
+        .v
         .integers()
-        .with_mut(|__v| (*__v.step.borrow_mut()) = 1_i64);
-    (*(*p_integers.borrow()).v.borrow())
+        .with_mut(|__v| __v.step = 1_i64);
+    (*p_integers.borrow_mut())
+        .v
         .integers()
-        .with_mut(|__v| (*__v.width.borrow_mut()) = 3);
+        .with_mut(|__v| __v.width = 3);
     assert!(
-        ((((*(*(*(*p_integers.borrow()).v.borrow())
-            .integers()
-            .upgrade()
-            .deref())
-        .hi
-        .borrow())
-            == 100_i64) as i32)
-            != 0)
+        ((((*(*p_integers.borrow()).v.integers().upgrade().deref()).hi == 100_i64) as i32) != 0)
     );
-    assert!(
-        ((((*(*(*(*p_integers.borrow()).v.borrow())
-            .integers()
-            .upgrade()
-            .deref())
-        .width
-        .borrow())
-            == 3) as i32)
-            != 0)
-    );
+    assert!(((((*(*p_integers.borrow()).v.integers().upgrade().deref()).width == 3) as i32) != 0));
     return 0;
 }

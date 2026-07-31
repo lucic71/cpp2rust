@@ -8,14 +8,14 @@ use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
 #[derive(Default)]
 pub struct Point {
-    pub x: Value<i32>,
-    pub y: Value<i32>,
+    pub x: i32,
+    pub y: i32,
 }
 impl Clone for Point {
     fn clone(&self) -> Self {
         let mut this = Self {
-            x: Rc::new(RefCell::new((*self.x.borrow()))),
-            y: Rc::new(RefCell::new((*self.y.borrow()))),
+            x: self.x,
+            y: self.y,
         };
         this
     }
@@ -25,19 +25,19 @@ impl ByteRepr for Point {
         8
     }
     fn to_bytes(&self, buf: &mut [u8]) {
-        (*self.x.borrow()).to_bytes(&mut buf[0..4]);
-        (*self.y.borrow()).to_bytes(&mut buf[4..8]);
+        self.x.to_bytes(&mut buf[0..4]);
+        self.y.to_bytes(&mut buf[4..8]);
     }
     fn from_bytes(buf: &[u8]) -> Self {
         Self {
-            x: Rc::new(RefCell::new(<i32>::from_bytes(&buf[0..4]))),
-            y: Rc::new(RefCell::new(<i32>::from_bytes(&buf[4..8]))),
+            x: <i32>::from_bytes(&buf[0..4]),
+            y: <i32>::from_bytes(&buf[4..8]),
         }
     }
 }
 pub fn sum_0(p: Point) -> i32 {
     let p: Value<Point> = Rc::new(RefCell::new(p));
-    return ((*(*p.borrow()).x.borrow()) + (*(*p.borrow()).y.borrow()));
+    return ((*p.borrow()).x + (*p.borrow()).y);
 }
 pub fn main() {
     std::process::exit(main_0());
@@ -45,13 +45,13 @@ pub fn main() {
 fn main_0() -> i32 {
     let p: Value<Option<Value<Point>>> =
         Rc::new(RefCell::new(Some(Rc::new(RefCell::new(Point {
-            x: Rc::new(RefCell::new(3)),
-            y: Rc::new(RefCell::new(4)),
+            x: 3,
+            y: 4,
         })))));
-    (*(*(*p.borrow()).as_ref().unwrap().borrow()).x.borrow_mut()) += 10;
-    let __rhs = ((*(*(*p.borrow()).as_ref().unwrap().borrow()).x.borrow())
-        + (*(*(*p.borrow()).as_ref().unwrap().borrow()).y.borrow()));
-    (*(*(*p.borrow()).as_ref().unwrap().borrow()).y.borrow_mut()) = __rhs;
+    (*(*p.borrow_mut()).as_ref().unwrap().borrow_mut()).x += 10;
+    let __rhs = ((*(*p.borrow()).as_ref().unwrap().borrow()).x
+        + (*(*p.borrow()).as_ref().unwrap().borrow()).y);
+    (*(*p.borrow_mut()).as_ref().unwrap().borrow_mut()).y = __rhs;
     let s: Value<i32> = Rc::new(RefCell::new(
         ({ sum_0((*(*p.borrow()).as_ref().unwrap().borrow()).clone()) }),
     ));

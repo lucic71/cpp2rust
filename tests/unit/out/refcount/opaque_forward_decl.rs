@@ -6,31 +6,23 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Default)]
+#[derive(Clone, Default)]
 pub struct container {
-    pub p: Value<Ptr<opaque>>,
-    pub x: Value<i32>,
-}
-impl Clone for container {
-    fn clone(&self) -> Self {
-        Self {
-            p: Rc::new(RefCell::new((*self.p.borrow()).clone())),
-            x: Rc::new(RefCell::new((*self.x.borrow()).clone())),
-        }
-    }
+    pub p: Ptr<opaque>,
+    pub x: i32,
 }
 impl ByteRepr for container {
     fn byte_size() -> usize {
         16
     }
     fn to_bytes(&self, buf: &mut [u8]) {
-        (*self.p.borrow()).to_bytes(&mut buf[0..8]);
-        (*self.x.borrow()).to_bytes(&mut buf[8..12]);
+        self.p.to_bytes(&mut buf[0..8]);
+        self.x.to_bytes(&mut buf[8..12]);
     }
     fn from_bytes(buf: &[u8]) -> Self {
         Self {
-            p: Rc::new(RefCell::new(<Ptr<opaque>>::from_bytes(&buf[0..8]))),
-            x: Rc::new(RefCell::new(<i32>::from_bytes(&buf[8..12]))),
+            p: <Ptr<opaque>>::from_bytes(&buf[0..8]),
+            x: <i32>::from_bytes(&buf[8..12]),
         }
     }
 }
@@ -39,11 +31,11 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     let c: Value<container> = Rc::new(RefCell::new(container {
-        p: Rc::new(RefCell::new(Ptr::<opaque>::null())),
-        x: Rc::new(RefCell::new(42)),
+        p: Ptr::<opaque>::null(),
+        x: 42,
     }));
-    (*(*c.borrow()).p.borrow()).clone();
-    return ((*(*c.borrow()).x.borrow()) - 42);
+    (*c.borrow()).p.clone();
+    return ((*c.borrow()).x - 42);
 }
 pub struct opaque;
 impl ByteRepr for opaque {}

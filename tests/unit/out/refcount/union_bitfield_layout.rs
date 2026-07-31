@@ -6,24 +6,13 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Default)]
+#[derive(Clone, Default)]
 pub struct packed_flags {
-    pub a: Value<u32>,
-    pub b: Value<u32>,
-    pub wide: Value<u32>,
-    pub sgn: Value<i32>,
-    pub tail: Value<u32>,
-}
-impl Clone for packed_flags {
-    fn clone(&self) -> Self {
-        Self {
-            a: Rc::new(RefCell::new((*self.a.borrow()).clone())),
-            b: Rc::new(RefCell::new((*self.b.borrow()).clone())),
-            wide: Rc::new(RefCell::new((*self.wide.borrow()).clone())),
-            sgn: Rc::new(RefCell::new((*self.sgn.borrow()).clone())),
-            tail: Rc::new(RefCell::new((*self.tail.borrow()).clone())),
-        }
-    }
+    pub a: u32,
+    pub b: u32,
+    pub wide: u32,
+    pub sgn: i32,
+    pub tail: u32,
 }
 impl ByteRepr for packed_flags {
     fn byte_size() -> usize {
@@ -31,38 +20,34 @@ impl ByteRepr for packed_flags {
     }
     fn to_bytes(&self, buf: &mut [u8]) {
         {
-            let __v = (*self.a.borrow()) as u64;
+            let __v = self.a as u64;
             buf[0] = (buf[0] & !0x01u8) | ((((__v >> 0) as u8) << 0) & 0x01u8);
         }
         {
-            let __v = (*self.b.borrow()) as u64;
+            let __v = self.b as u64;
             buf[0] = (buf[0] & !0x0eu8) | ((((__v >> 0) as u8) << 1) & 0x0eu8);
         }
         {
-            let __v = (*self.wide.borrow()) as u64;
+            let __v = self.wide as u64;
             buf[0] = (buf[0] & !0xf0u8) | ((((__v >> 0) as u8) << 4) & 0xf0u8);
             buf[1] = (buf[1] & !0xffu8) | ((((__v >> 4) as u8) << 0) & 0xffu8);
             buf[2] = (buf[2] & !0xffu8) | ((((__v >> 12) as u8) << 0) & 0xffu8);
         }
         {
-            let __v = (*self.sgn.borrow()) as u64;
+            let __v = self.sgn as u64;
             buf[3] = (buf[3] & !0x0fu8) | ((((__v >> 0) as u8) << 0) & 0x0fu8);
         }
-        (*self.tail.borrow()).to_bytes(&mut buf[4..8]);
+        self.tail.to_bytes(&mut buf[4..8]);
     }
     fn from_bytes(buf: &[u8]) -> Self {
         Self {
-            a: Rc::new(RefCell::new((((buf[0] as u64 >> 0) & 0x1) << 0) as u32)),
-            b: Rc::new(RefCell::new((((buf[0] as u64 >> 1) & 0x7) << 0) as u32)),
-            wide: Rc::new(RefCell::new(
-                ((((buf[0] as u64 >> 4) & 0xf) << 0)
-                    | (((buf[1] as u64 >> 0) & 0xff) << 4)
-                    | (((buf[2] as u64 >> 0) & 0xff) << 12)) as u32,
-            )),
-            sgn: Rc::new(RefCell::new(
-                ((((((buf[3] as u64 >> 0) & 0xf) << 0) << 60) as i64) >> 60) as i32,
-            )),
-            tail: Rc::new(RefCell::new(<u32>::from_bytes(&buf[4..8]))),
+            a: (((buf[0] as u64 >> 0) & 0x1) << 0) as u32,
+            b: (((buf[0] as u64 >> 1) & 0x7) << 0) as u32,
+            wide: ((((buf[0] as u64 >> 4) & 0xf) << 0)
+                | (((buf[1] as u64 >> 0) & 0xff) << 4)
+                | (((buf[2] as u64 >> 0) & 0xff) << 12)) as u32,
+            sgn: ((((((buf[3] as u64 >> 0) & 0xf) << 0) << 60) as i64) >> 60) as i32,
+            tail: <u32>::from_bytes(&buf[4..8]),
         }
     }
 }
@@ -115,21 +100,13 @@ fn main_0() -> i32 {
             .memset((0) as u8, 8usize as usize);
         ((v.as_pointer()) as Ptr<view>).to_any().clone()
     };
-    (*v.borrow())
+    (*v.borrow_mut()).f().with_mut(|__v| __v.a = 1_u32);
+    (*v.borrow_mut()).f().with_mut(|__v| __v.b = 5_u32);
+    (*v.borrow_mut()).f().with_mut(|__v| __v.wide = 703710_u32);
+    (*v.borrow_mut()).f().with_mut(|__v| __v.sgn = -3_i32);
+    (*v.borrow_mut())
         .f()
-        .with_mut(|__v| (*__v.a.borrow_mut()) = 1_u32);
-    (*v.borrow())
-        .f()
-        .with_mut(|__v| (*__v.b.borrow_mut()) = 5_u32);
-    (*v.borrow())
-        .f()
-        .with_mut(|__v| (*__v.wide.borrow_mut()) = 703710_u32);
-    (*v.borrow())
-        .f()
-        .with_mut(|__v| (*__v.sgn.borrow_mut()) = -3_i32);
-    (*v.borrow())
-        .f()
-        .with_mut(|__v| (*__v.tail.borrow_mut()) = 287454020_u32);
+        .with_mut(|__v| __v.tail = 287454020_u32);
     assert!(
         (((((((*v.borrow()).raw_().reinterpret_cast::<u8>() as Ptr::<u8>)
             .offset((0) as isize)
@@ -186,9 +163,7 @@ fn main_0() -> i32 {
             == 17) as i32)
             != 0)
     );
-    (*v.borrow())
-        .f()
-        .with_mut(|__v| (*__v.b.borrow_mut()) = 2_u32);
+    (*v.borrow_mut()).f().with_mut(|__v| __v.b = 2_u32);
     assert!(
         (((((((*v.borrow()).raw_().reinterpret_cast::<u8>() as Ptr::<u8>)
             .offset((0) as isize)
@@ -196,15 +171,10 @@ fn main_0() -> i32 {
             == 229) as i32)
             != 0)
     );
-    assert!((((((*(*(*v.borrow()).f().upgrade().deref()).a.borrow()) as i32) == 1) as i32) != 0));
-    assert!(
-        (((((*(*(*v.borrow()).f().upgrade().deref()).wide.borrow()) as i32) == 703710) as i32)
-            != 0)
-    );
-    assert!(((((*(*(*v.borrow()).f().upgrade().deref()).sgn.borrow()) == -3_i32) as i32) != 0));
-    assert!(
-        ((((*(*(*v.borrow()).f().upgrade().deref()).tail.borrow()) == 287454020_u32) as i32) != 0)
-    );
+    assert!((((((*(*v.borrow()).f().upgrade().deref()).a as i32) == 1) as i32) != 0));
+    assert!((((((*(*v.borrow()).f().upgrade().deref()).wide as i32) == 703710) as i32) != 0));
+    assert!(((((*(*v.borrow()).f().upgrade().deref()).sgn == -3_i32) as i32) != 0));
+    assert!(((((*(*v.borrow()).f().upgrade().deref()).tail == 287454020_u32) as i32) != 0));
     {
         ((v.as_pointer()) as Ptr<view>)
             .to_any()
@@ -223,12 +193,10 @@ fn main_0() -> i32 {
     ((*v.borrow()).raw_().reinterpret_cast::<u8>() as Ptr<u8>)
         .offset((3) as isize)
         .write(15_u8);
-    assert!((((((*(*(*v.borrow()).f().upgrade().deref()).a.borrow()) as i32) == 0) as i32) != 0));
-    assert!((((((*(*(*v.borrow()).f().upgrade().deref()).b.borrow()) as i32) == 6) as i32) != 0));
-    assert!(
-        (((((*(*(*v.borrow()).f().upgrade().deref()).wide.borrow()) as i32) == 291) as i32) != 0)
-    );
-    assert!(((((*(*(*v.borrow()).f().upgrade().deref()).sgn.borrow()) == -1_i32) as i32) != 0));
-    assert!(((((*(*(*v.borrow()).f().upgrade().deref()).tail.borrow()) == 0_u32) as i32) != 0));
+    assert!((((((*(*v.borrow()).f().upgrade().deref()).a as i32) == 0) as i32) != 0));
+    assert!((((((*(*v.borrow()).f().upgrade().deref()).b as i32) == 6) as i32) != 0));
+    assert!((((((*(*v.borrow()).f().upgrade().deref()).wide as i32) == 291) as i32) != 0));
+    assert!(((((*(*v.borrow()).f().upgrade().deref()).sgn == -1_i32) as i32) != 0));
+    assert!(((((*(*v.borrow()).f().upgrade().deref()).tail == 0_u32) as i32) != 0));
     return 0;
 }

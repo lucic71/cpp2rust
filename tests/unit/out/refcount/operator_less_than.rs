@@ -8,20 +8,20 @@ use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
 #[derive(Default)]
 pub struct Pair {
-    pub x: Value<i32>,
-    pub y: Value<i32>,
+    pub x: i32,
+    pub y: i32,
 }
 impl Pair {
     pub fn lt(&self, other: Ptr<Pair>) -> bool {
         return ({
-            let _lhs = (*self.x.borrow());
-            _lhs < (*(*other.upgrade().deref()).x.borrow())
+            let _lhs = self.x;
+            _lhs < (*other.upgrade().deref()).x
         }) || (({
-            let _lhs = (*self.x.borrow());
-            _lhs == (*(*other.upgrade().deref()).x.borrow())
+            let _lhs = self.x;
+            _lhs == (*other.upgrade().deref()).x
         }) && ({
-            let _lhs = (*self.y.borrow());
-            _lhs < (*(*other.upgrade().deref()).y.borrow())
+            let _lhs = self.y;
+            _lhs < (*other.upgrade().deref()).y
         }));
     }
 }
@@ -55,8 +55,8 @@ impl Eq for Pair {}
 impl Clone for Pair {
     fn clone(&self) -> Self {
         let mut this = Self {
-            x: Rc::new(RefCell::new((*self.x.borrow()))),
-            y: Rc::new(RefCell::new((*self.y.borrow()))),
+            x: self.x,
+            y: self.y,
         };
         this
     }
@@ -66,13 +66,13 @@ impl ByteRepr for Pair {
         8
     }
     fn to_bytes(&self, buf: &mut [u8]) {
-        (*self.x.borrow()).to_bytes(&mut buf[0..4]);
-        (*self.y.borrow()).to_bytes(&mut buf[4..8]);
+        self.x.to_bytes(&mut buf[0..4]);
+        self.y.to_bytes(&mut buf[4..8]);
     }
     fn from_bytes(buf: &[u8]) -> Self {
         Self {
-            x: Rc::new(RefCell::new(<i32>::from_bytes(&buf[0..4]))),
-            y: Rc::new(RefCell::new(<i32>::from_bytes(&buf[4..8]))),
+            x: <i32>::from_bytes(&buf[0..4]),
+            y: <i32>::from_bytes(&buf[4..8]),
         }
     }
 }
@@ -80,13 +80,7 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let pair1: Value<Pair> = Rc::new(RefCell::new(Pair {
-        x: Rc::new(RefCell::new(1)),
-        y: Rc::new(RefCell::new(2)),
-    }));
-    let pair2: Value<Pair> = Rc::new(RefCell::new(Pair {
-        x: Rc::new(RefCell::new(1)),
-        y: Rc::new(RefCell::new(3)),
-    }));
+    let pair1: Value<Pair> = Rc::new(RefCell::new(Pair { x: 1, y: 2 }));
+    let pair2: Value<Pair> = Rc::new(RefCell::new(Pair { x: 1, y: 3 }));
     return ((*pair1.borrow()).lt(pair2.as_pointer()) as i32);
 }

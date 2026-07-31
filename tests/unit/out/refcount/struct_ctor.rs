@@ -8,19 +8,19 @@ use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
 #[derive(Default)]
 pub struct StructWithCtor {
-    x1_: Value<i32>,
-    x2_: Value<i32>,
+    x1_: i32,
+    x2_: i32,
 }
 impl StructWithCtor {
     pub fn StructWithCtor(x1: i32, x2: i32) -> Self {
         let x1: Value<i32> = Rc::new(RefCell::new(x1));
         let x2: Value<i32> = Rc::new(RefCell::new(x2));
         let mut this = Self {
-            x1_: Rc::new(RefCell::new((*x1.borrow()))),
-            x2_: Rc::new(RefCell::new((*x2.borrow()))),
+            x1_: (*x1.borrow()),
+            x2_: (*x2.borrow()),
         };
-        (*this.x1_.borrow_mut()).prefix_inc();
-        (*this.x2_.borrow_mut()).prefix_dec();
+        this.x1_.prefix_inc();
+        this.x2_.prefix_dec();
         this
     }
     pub fn x1(&self) -> Ptr<i32> {
@@ -33,8 +33,8 @@ impl StructWithCtor {
 impl Clone for StructWithCtor {
     fn clone(&self) -> Self {
         let mut this = Self {
-            x1_: Rc::new(RefCell::new((*self.x1_.borrow()))),
-            x2_: Rc::new(RefCell::new((*self.x2_.borrow()))),
+            x1_: self.x1_,
+            x2_: self.x2_,
         };
         this
     }
@@ -44,13 +44,13 @@ impl ByteRepr for StructWithCtor {
         8
     }
     fn to_bytes(&self, buf: &mut [u8]) {
-        (*self.x1_.borrow()).to_bytes(&mut buf[0..4]);
-        (*self.x2_.borrow()).to_bytes(&mut buf[4..8]);
+        self.x1_.to_bytes(&mut buf[0..4]);
+        self.x2_.to_bytes(&mut buf[4..8]);
     }
     fn from_bytes(buf: &[u8]) -> Self {
         Self {
-            x1_: Rc::new(RefCell::new(<i32>::from_bytes(&buf[0..4]))),
-            x2_: Rc::new(RefCell::new(<i32>::from_bytes(&buf[4..8]))),
+            x1_: <i32>::from_bytes(&buf[0..4]),
+            x2_: <i32>::from_bytes(&buf[4..8]),
         }
     }
 }

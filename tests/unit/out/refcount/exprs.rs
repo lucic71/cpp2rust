@@ -8,13 +8,11 @@ use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
 #[derive(Default)]
 pub struct X {
-    pub x: Value<i32>,
+    pub x: i32,
 }
 impl Clone for X {
     fn clone(&self) -> Self {
-        let mut this = Self {
-            x: Rc::new(RefCell::new((*self.x.borrow()))),
-        };
+        let mut this = Self { x: self.x };
         this
     }
 }
@@ -23,18 +21,18 @@ impl ByteRepr for X {
         4
     }
     fn to_bytes(&self, buf: &mut [u8]) {
-        (*self.x.borrow()).to_bytes(&mut buf[0..4]);
+        self.x.to_bytes(&mut buf[0..4]);
     }
     fn from_bytes(buf: &[u8]) -> Self {
         Self {
-            x: Rc::new(RefCell::new(<i32>::from_bytes(&buf[0..4]))),
+            x: <i32>::from_bytes(&buf[0..4]),
         }
     }
 }
 #[derive(Default)]
 pub struct Y {
-    pub x: Value<X>,
-    pub p: Value<Ptr<X>>,
+    pub x: X,
+    pub p: Ptr<X>,
 }
 impl Y {
     pub fn foo(&self) -> Ptr<X> {
@@ -47,8 +45,8 @@ impl Y {
 impl Clone for Y {
     fn clone(&self) -> Self {
         let mut this = Self {
-            x: Rc::new(RefCell::new((*self.x.borrow()).clone())),
-            p: Rc::new(RefCell::new((*self.p.borrow()).clone())),
+            x: (self.x).clone(),
+            p: (self.p).clone(),
         };
         this
     }
@@ -58,13 +56,13 @@ impl ByteRepr for Y {
         16
     }
     fn to_bytes(&self, buf: &mut [u8]) {
-        (*self.x.borrow()).to_bytes(&mut buf[0..4]);
-        (*self.p.borrow()).to_bytes(&mut buf[8..16]);
+        self.x.to_bytes(&mut buf[0..4]);
+        self.p.to_bytes(&mut buf[8..16]);
     }
     fn from_bytes(buf: &[u8]) -> Self {
         Self {
-            x: Rc::new(RefCell::new(<X>::from_bytes(&buf[0..4]))),
-            p: Rc::new(RefCell::new(<Ptr<X>>::from_bytes(&buf[8..16]))),
+            x: <X>::from_bytes(&buf[0..4]),
+            p: <Ptr<X>>::from_bytes(&buf[8..16]),
         }
     }
 }
@@ -105,23 +103,19 @@ fn main_0() -> i32 {
         } + 5),
     ));
     let p2: Value<Ptr<i32>> = Rc::new(RefCell::new((r).clone()));
-    let x: Value<X> = Rc::new(RefCell::new(X {
-        x: Rc::new(RefCell::new(1)),
-    }));
+    let x: Value<X> = Rc::new(RefCell::new(X { x: 1 }));
     let y: Value<Y> = Rc::new(RefCell::new(Y {
-        x: Rc::new(RefCell::new(X {
-            x: Rc::new(RefCell::new(0)),
-        })),
-        p: Rc::new(RefCell::new((x.as_pointer()))),
+        x: X { x: 0 },
+        p: (x.as_pointer()),
     }));
-    (*(*(*y.borrow()).x.borrow()).x.borrow_mut()) = 5;
-    ({ (*y.borrow()).foo() }).with_mut(|__v| (*__v.x.borrow_mut()) = 1);
-    (*(*y.borrow()).p.borrow()).with_mut(|__v| (*__v.x.borrow_mut()) = 10);
+    (*y.borrow_mut()).x.x = 5;
+    ({ (*y.borrow()).foo() }).with_mut(|__v| __v.x = 1);
+    (*y.borrow()).p.with_mut(|__v| __v.x = 10);
     let p3: Value<Ptr<Y>> = Rc::new(RefCell::new((y.as_pointer())));
-    (*(*(*p3.borrow()).upgrade().deref()).p.borrow()).with_mut(|__v| (*__v.x.borrow_mut()) = 100);
-    ({ (*y.borrow()).ptr() }).with_mut(|__v| (*__v.x.borrow_mut()) = 1);
-    (*(*({ (*y.borrow()).ptr() }).upgrade().deref())
-        .x
-        .borrow_mut()) = 50;
-    return (*(*x.borrow()).x.borrow());
+    (*(*p3.borrow()).upgrade().deref())
+        .p
+        .with_mut(|__v| __v.x = 100);
+    ({ (*y.borrow()).ptr() }).with_mut(|__v| __v.x = 1);
+    ({ (*y.borrow()).ptr() }).with_mut(|__v| __v.x = 50);
+    return (*x.borrow()).x;
 }

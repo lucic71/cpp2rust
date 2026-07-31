@@ -6,27 +6,20 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Default)]
+#[derive(Clone, Default)]
 pub struct record {
-    pub name: Value<Ptr<u8>>,
-}
-impl Clone for record {
-    fn clone(&self) -> Self {
-        Self {
-            name: Rc::new(RefCell::new((*self.name.borrow()).clone())),
-        }
-    }
+    pub name: Ptr<u8>,
 }
 impl ByteRepr for record {
     fn byte_size() -> usize {
         8
     }
     fn to_bytes(&self, buf: &mut [u8]) {
-        (*self.name.borrow()).to_bytes(&mut buf[0..8]);
+        self.name.to_bytes(&mut buf[0..8]);
     }
     fn from_bytes(buf: &[u8]) -> Self {
         Self {
-            name: Rc::new(RefCell::new(<Ptr<u8>>::from_bytes(&buf[0..8]))),
+            name: <Ptr<u8>>::from_bytes(&buf[0..8]),
         }
     }
 }
@@ -129,17 +122,16 @@ fn main_0() -> i32 {
     );
     libcc2rs::free_refcount(((*d4.borrow()).clone() as Ptr<u8>).to_any());
     let rec: Value<record> = Rc::new(RefCell::new(record {
-        name: Rc::new(RefCell::new(Ptr::<u8>::null())),
+        name: Ptr::<u8>::null(),
     }));
     let r: Value<Ptr<record>> = Rc::new(RefCell::new((rec.as_pointer())));
-    (*r.borrow()).with_mut(|__v| {
-        (*__v.name.borrow_mut()) = libcc2rs::strdup_refcount((*p.borrow()).clone())
-    });
-    assert!((((!((*(*(*r.borrow()).upgrade().deref()).name.borrow()).is_null())) as i32) != 0));
+    (*r.borrow()).with_mut(|__v| __v.name = libcc2rs::strdup_refcount((*p.borrow()).clone()));
+    assert!((((!(((*(*r.borrow()).upgrade().deref()).name).is_null())) as i32) != 0));
     assert!(
         ((({
-            let mut __it1 =
-                (*(*(*r.borrow()).upgrade().deref()).name.borrow()).to_c_string_iterator();
+            let mut __it1 = (*(*r.borrow()).upgrade().deref())
+                .name
+                .to_c_string_iterator();
             let mut __it2 = (*p.borrow()).to_c_string_iterator();
             loop {
                 let __c1 = __it1.next();
@@ -155,7 +147,7 @@ fn main_0() -> i32 {
             != 0)
     );
     libcc2rs::free_refcount(
-        ((*(*(*r.borrow()).upgrade().deref()).name.borrow()).clone() as Ptr<u8>).to_any(),
+        (((*(*r.borrow()).upgrade().deref()).name).clone() as Ptr<u8>).to_any(),
     );
     return 0;
 }

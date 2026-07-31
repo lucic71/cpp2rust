@@ -32,31 +32,23 @@ impl ByteRepr for Mode {
         <Mode>::from(i32::from_bytes(buf))
     }
 }
-#[derive(Default)]
+#[derive(Clone, Default)]
 pub struct Config {
-    pub count: Value<i32>,
-    pub mode: Value<Mode>,
-}
-impl Clone for Config {
-    fn clone(&self) -> Self {
-        Self {
-            count: Rc::new(RefCell::new((*self.count.borrow()).clone())),
-            mode: Rc::new(RefCell::new((*self.mode.borrow()).clone())),
-        }
-    }
+    pub count: i32,
+    pub mode: Mode,
 }
 impl ByteRepr for Config {
     fn byte_size() -> usize {
         8
     }
     fn to_bytes(&self, buf: &mut [u8]) {
-        (*self.count.borrow()).to_bytes(&mut buf[0..4]);
-        (*self.mode.borrow()).to_bytes(&mut buf[4..8]);
+        self.count.to_bytes(&mut buf[0..4]);
+        self.mode.to_bytes(&mut buf[4..8]);
     }
     fn from_bytes(buf: &[u8]) -> Self {
         Self {
-            count: Rc::new(RefCell::new(<i32>::from_bytes(&buf[0..4]))),
-            mode: Rc::new(RefCell::new(<Mode>::from_bytes(&buf[4..8]))),
+            count: <i32>::from_bytes(&buf[0..4]),
+            mode: <Mode>::from_bytes(&buf[4..8]),
         }
     }
 }
@@ -67,9 +59,9 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    assert!(((((*(*config_0.with(Value::clone).borrow()).count.borrow()) == 0) as i32) != 0));
+    assert!(((((*config_0.with(Value::clone).borrow()).count == 0) as i32) != 0));
     assert!(
-        (((((*(*config_0.with(Value::clone).borrow()).mode.borrow()) as u32)
+        (((((*config_0.with(Value::clone).borrow()).mode as u32)
             == ((Mode::MODE_NONE as i32) as u32)) as i32)
             != 0)
     );

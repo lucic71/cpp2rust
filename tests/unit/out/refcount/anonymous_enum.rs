@@ -56,13 +56,11 @@ impl ByteRepr for anon_1 {
 }
 #[derive(Default)]
 pub struct S {
-    pub a: Value<i32>,
+    pub a: i32,
 }
 impl Clone for S {
     fn clone(&self) -> Self {
-        let mut this = Self {
-            a: Rc::new(RefCell::new((*self.a.borrow()))),
-        };
+        let mut this = Self { a: self.a };
         this
     }
 }
@@ -71,11 +69,11 @@ impl ByteRepr for S {
         4
     }
     fn to_bytes(&self, buf: &mut [u8]) {
-        (*self.a.borrow()).to_bytes(&mut buf[0..4]);
+        self.a.to_bytes(&mut buf[0..4]);
     }
     fn from_bytes(buf: &[u8]) -> Self {
         Self {
-            a: Rc::new(RefCell::new(<i32>::from_bytes(&buf[0..4]))),
+            a: <i32>::from_bytes(&buf[0..4]),
         }
     }
 }
@@ -129,14 +127,14 @@ impl ByteRepr for anon_2 {
 }
 #[derive(Default)]
 pub struct WithAnonField {
-    pub a: Value<i32>,
-    pub field: Value<anon_2>,
+    pub a: i32,
+    pub field: anon_2,
 }
 impl Clone for WithAnonField {
     fn clone(&self) -> Self {
         let mut this = Self {
-            a: Rc::new(RefCell::new((*self.a.borrow()))),
-            field: Rc::new(RefCell::new((*self.field.borrow()))),
+            a: self.a,
+            field: self.field,
         };
         this
     }
@@ -146,13 +144,13 @@ impl ByteRepr for WithAnonField {
         8
     }
     fn to_bytes(&self, buf: &mut [u8]) {
-        (*self.a.borrow()).to_bytes(&mut buf[0..4]);
-        (*self.field.borrow()).to_bytes(&mut buf[4..8]);
+        self.a.to_bytes(&mut buf[0..4]);
+        self.field.to_bytes(&mut buf[4..8]);
     }
     fn from_bytes(buf: &[u8]) -> Self {
         Self {
-            a: Rc::new(RefCell::new(<i32>::from_bytes(&buf[0..4]))),
-            field: Rc::new(RefCell::new(<anon_2>::from_bytes(&buf[4..8]))),
+            a: <i32>::from_bytes(&buf[0..4]),
+            field: <anon_2>::from_bytes(&buf[4..8]),
         }
     }
 }
@@ -192,9 +190,9 @@ fn main_0() -> i32 {
     (*td.borrow_mut()) = TdEnum::TD_B;
     assert!((((*td.borrow()) as i32) == (TdEnum::TD_B as i32)));
     let w: Value<WithAnonField> = Rc::new(RefCell::new(<WithAnonField>::default()));
-    (*(*w.borrow()).field.borrow_mut()) = anon_2::FIELD_A;
-    assert!((((*(*w.borrow()).field.borrow()) as i32) == (anon_2::FIELD_A as i32)));
-    (*(*w.borrow()).field.borrow_mut()) = anon_2::FIELD_B;
-    assert!((((*(*w.borrow()).field.borrow()) as i32) == (anon_2::FIELD_B as i32)));
+    (*w.borrow_mut()).field = anon_2::FIELD_A;
+    assert!((((*w.borrow()).field as i32) == (anon_2::FIELD_A as i32)));
+    (*w.borrow_mut()).field = anon_2::FIELD_B;
+    assert!((((*w.borrow()).field as i32) == (anon_2::FIELD_B as i32)));
     return 0;
 }

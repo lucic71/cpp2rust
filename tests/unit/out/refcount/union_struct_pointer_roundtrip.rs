@@ -6,31 +6,23 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Default)]
+#[derive(Clone, Default)]
 pub struct pair {
-    pub x: Value<i32>,
-    pub y: Value<i32>,
-}
-impl Clone for pair {
-    fn clone(&self) -> Self {
-        Self {
-            x: Rc::new(RefCell::new((*self.x.borrow()).clone())),
-            y: Rc::new(RefCell::new((*self.y.borrow()).clone())),
-        }
-    }
+    pub x: i32,
+    pub y: i32,
 }
 impl ByteRepr for pair {
     fn byte_size() -> usize {
         8
     }
     fn to_bytes(&self, buf: &mut [u8]) {
-        (*self.x.borrow()).to_bytes(&mut buf[0..4]);
-        (*self.y.borrow()).to_bytes(&mut buf[4..8]);
+        self.x.to_bytes(&mut buf[0..4]);
+        self.y.to_bytes(&mut buf[4..8]);
     }
     fn from_bytes(buf: &[u8]) -> Self {
         Self {
-            x: Rc::new(RefCell::new(<i32>::from_bytes(&buf[0..4]))),
-            y: Rc::new(RefCell::new(<i32>::from_bytes(&buf[4..8]))),
+            x: <i32>::from_bytes(&buf[0..4]),
+            y: <i32>::from_bytes(&buf[4..8]),
         }
     }
 }
@@ -41,9 +33,9 @@ fn main_0() -> i32 {
     let arr: Value<Box<[pair]>> = Rc::new(RefCell::new(
         (0..3).map(|_| <pair>::default()).collect::<Box<[pair]>>(),
     ));
-    (*(*arr.borrow())[(0) as usize].x.borrow_mut()) = 10;
-    (*(*arr.borrow())[(1) as usize].x.borrow_mut()) = 20;
-    (*(*arr.borrow())[(2) as usize].x.borrow_mut()) = 30;
+    (*arr.borrow_mut())[(0) as usize].x = 10;
+    (*arr.borrow_mut())[(1) as usize].x = 20;
+    (*arr.borrow_mut())[(2) as usize].x = 30;
     pub struct anon_0 {
         __bytes: Value<Box<[u8]>>,
     }
@@ -87,7 +79,7 @@ fn main_0() -> i32 {
         .p()
         .write(((arr.as_pointer() as Ptr<pair>).offset(1)));
     let q: Value<Ptr<pair>> = Rc::new(RefCell::new(((*u.borrow()).p().read()).clone()));
-    assert!(((((*(*(*q.borrow()).upgrade().deref()).x.borrow()) == 20) as i32) != 0));
+    assert!(((((*(*q.borrow()).upgrade().deref()).x == 20) as i32) != 0));
     assert!(
         ((({
             let _lhs = (*q.borrow()).clone();
@@ -99,7 +91,7 @@ fn main_0() -> i32 {
         let rhs_0 = ((*u.borrow()).bits().read()).wrapping_add((8usize as u64));
         (*u.borrow_mut()).bits().write(rhs_0)
     };
-    assert!(((((*(*((*u.borrow()).p().read()).upgrade().deref()).x.borrow()) == 30) as i32) != 0));
+    assert!(((((*((*u.borrow()).p().read()).upgrade().deref()).x == 30) as i32) != 0));
     assert!(
         ((({
             let _lhs = ((*u.borrow()).p().read()).clone();
@@ -112,7 +104,7 @@ fn main_0() -> i32 {
             .wrapping_sub(((2_usize).wrapping_mul((8usize as usize)) as u64));
         (*u.borrow_mut()).bits().write(rhs_0)
     };
-    assert!(((((*(*((*u.borrow()).p().read()).upgrade().deref()).x.borrow()) == 10) as i32) != 0));
+    assert!(((((*((*u.borrow()).p().read()).upgrade().deref()).x == 10) as i32) != 0));
     assert!(
         ((({
             let _lhs = ((*u.borrow()).p().read()).clone();

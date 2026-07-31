@@ -8,14 +8,14 @@ use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
 #[derive(Default)]
 pub struct Item {
-    pub key: Value<i32>,
-    pub value: Value<i32>,
+    pub key: i32,
+    pub value: i32,
 }
 impl Clone for Item {
     fn clone(&self) -> Self {
         let mut this = Self {
-            key: Rc::new(RefCell::new((*self.key.borrow()))),
-            value: Rc::new(RefCell::new((*self.value.borrow()))),
+            key: self.key,
+            value: self.value,
         };
         this
     }
@@ -25,20 +25,20 @@ impl ByteRepr for Item {
         8
     }
     fn to_bytes(&self, buf: &mut [u8]) {
-        (*self.key.borrow()).to_bytes(&mut buf[0..4]);
-        (*self.value.borrow()).to_bytes(&mut buf[4..8]);
+        self.key.to_bytes(&mut buf[0..4]);
+        self.value.to_bytes(&mut buf[4..8]);
     }
     fn from_bytes(buf: &[u8]) -> Self {
         Self {
-            key: Rc::new(RefCell::new(<i32>::from_bytes(&buf[0..4]))),
-            value: Rc::new(RefCell::new(<i32>::from_bytes(&buf[4..8]))),
+            key: <i32>::from_bytes(&buf[0..4]),
+            value: <i32>::from_bytes(&buf[4..8]),
         }
     }
 }
 pub fn Compare_0(a: Ptr<Item>, b: Ptr<Item>) -> bool {
     return {
-        let _lhs = (*(*a.upgrade().deref()).key.borrow());
-        _lhs < (*(*b.upgrade().deref()).key.borrow())
+        let _lhs = (*a.upgrade().deref()).key;
+        _lhs < (*b.upgrade().deref()).key
     };
 }
 pub fn main() {
@@ -46,48 +46,33 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     let v: Value<Vec<Item>> = Rc::new(RefCell::new(Vec::new()));
-    (*v.borrow_mut()).push(Item {
-        key: Rc::new(RefCell::new(3)),
-        value: Rc::new(RefCell::new(30)),
-    });
-    (*v.borrow_mut()).push(Item {
-        key: Rc::new(RefCell::new(1)),
-        value: Rc::new(RefCell::new(10)),
-    });
-    (*v.borrow_mut()).push(Item {
-        key: Rc::new(RefCell::new(2)),
-        value: Rc::new(RefCell::new(20)),
-    });
+    (*v.borrow_mut()).push(Item { key: 3, value: 30 });
+    (*v.borrow_mut()).push(Item { key: 1, value: 10 });
+    (*v.borrow_mut()).push(Item { key: 2, value: 20 });
     (v.as_pointer() as Ptr<Item>).sort_with_cmp(
         (v.as_pointer() as Ptr<Item>).to_end().get_offset(),
         *FnPtr::<fn(Ptr<Item>, Ptr<Item>) -> bool>::new(Compare_0),
     );
     assert!(
-        ((*(*(v.as_pointer() as Ptr<Item>)
+        ((*(v.as_pointer() as Ptr<Item>)
             .offset(0_usize)
             .upgrade()
             .deref())
-        .key
-        .borrow())
-            == 1)
+        .key == 1)
     );
     assert!(
-        ((*(*(v.as_pointer() as Ptr<Item>)
+        ((*(v.as_pointer() as Ptr<Item>)
             .offset(1_usize)
             .upgrade()
             .deref())
-        .key
-        .borrow())
-            == 2)
+        .key == 2)
     );
     assert!(
-        ((*(*(v.as_pointer() as Ptr<Item>)
+        ((*(v.as_pointer() as Ptr<Item>)
             .offset(2_usize)
             .upgrade()
             .deref())
-        .key
-        .borrow())
-            == 3)
+        .key == 3)
     );
     return 0;
 }
