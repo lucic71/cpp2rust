@@ -1594,7 +1594,7 @@ bool ConverterRefCount::RustSizeofMatchesCSizeof(clang::QualType ty) const {
       return false;
     }
     for (const auto *field : def->fields()) {
-      if (!RustSizeofMatchesCSizeof(field->getType())) {
+      if (field->isBitField() || !RustSizeofMatchesCSizeof(field->getType())) {
         return false;
       }
     }
