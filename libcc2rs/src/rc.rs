@@ -1094,38 +1094,14 @@ impl Ptr<u8> {
         }
     }
 
-    #[allow(clippy::explicit_counter_loop)]
     pub fn memcpy(&self, src: &Self, len: usize) {
-        if *self > *src {
-            let mut dst = self.offset(len);
-            let mut s = src.offset(len);
-            for _ in 0..len {
-                dst -= 1;
-                s -= 1;
-                dst.write(s.read());
-            }
-            return;
-        }
-        let mut dst = self.clone();
-        let mut i: usize = 0;
-        for value in src {
-            if i >= len {
-                break;
-            }
-            dst.write(value.read());
-            dst += 1;
-            i += 1;
-        }
-        assert_eq!(i, len, "ub: memcpy");
+        let mut buf = vec![0u8; len];
+        src.with_slice(len, |s| buf.copy_from_slice(s));
+        self.with_slice_mut(len, |dst| dst.copy_from_slice(&buf));
     }
 
-    #[allow(clippy::explicit_counter_loop)]
     pub fn memset(&self, value: u8, num: usize) {
-        let mut dst = self.clone();
-        for _ in 0..num {
-            dst.write(value);
-            dst += 1;
-        }
+        self.with_slice_mut(num, |dst| dst.fill(value));
     }
 
     #[allow(clippy::explicit_counter_loop)]
