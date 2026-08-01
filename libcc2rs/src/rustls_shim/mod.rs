@@ -38,7 +38,23 @@ impl Default for RustlsStr {
     }
 }
 
-impl ByteRepr for RustlsStr {}
+impl ByteRepr for RustlsStr {
+    fn byte_size() -> usize {
+        16
+    }
+
+    fn to_bytes(&self, buf: &mut [u8]) {
+        self.data.to_bytes(&mut buf[0..8]);
+        self.len.to_bytes(&mut buf[8..16]);
+    }
+
+    fn from_bytes(buf: &[u8]) -> Self {
+        Self {
+            data: <Ptr<u8>>::from_bytes(&buf[0..8]),
+            len: usize::from_bytes(&buf[8..16]),
+        }
+    }
+}
 
 impl RustlsStr {
     pub fn copy_from(s: &str) -> RustlsStr {
@@ -65,7 +81,23 @@ impl Default for RustlsSliceBytes {
     }
 }
 
-impl ByteRepr for RustlsSliceBytes {}
+impl ByteRepr for RustlsSliceBytes {
+    fn byte_size() -> usize {
+        16
+    }
+
+    fn to_bytes(&self, buf: &mut [u8]) {
+        self.data.to_bytes(&mut buf[0..8]);
+        self.len.to_bytes(&mut buf[8..16]);
+    }
+
+    fn from_bytes(buf: &[u8]) -> Self {
+        Self {
+            data: <Ptr<u8>>::from_bytes(&buf[0..8]),
+            len: usize::from_bytes(&buf[8..16]),
+        }
+    }
+}
 
 impl RustlsSliceBytes {
     pub fn to_vec(&self) -> Vec<u8> {
@@ -134,7 +166,15 @@ pub enum RustlsResult {
     AlertInternalError = 7221,
 }
 
-impl ByteRepr for RustlsResult {}
+impl ByteRepr for RustlsResult {
+    fn byte_size() -> usize {
+        4
+    }
+
+    fn to_bytes(&self, buf: &mut [u8]) {
+        (*self as u32).to_bytes(buf);
+    }
+}
 
 pub fn map_rustls_error(err: &rustls::Error) -> RustlsResult {
     use RustlsResult::*;
@@ -242,13 +282,21 @@ pub fn default_crypto_provider() -> CryptoProvider {
 }
 
 pub struct RustlsCryptoProvider(pub CryptoProvider);
-impl ByteRepr for RustlsCryptoProvider {}
+impl ByteRepr for RustlsCryptoProvider {
+    fn byte_size() -> usize {
+        0
+    }
+}
 
 pub struct RustlsCryptoProviderBuilder {
     pub base: Arc<CryptoProvider>,
     pub cipher_suites: Vec<SupportedCipherSuite>,
 }
-impl ByteRepr for RustlsCryptoProviderBuilder {}
+impl ByteRepr for RustlsCryptoProviderBuilder {
+    fn byte_size() -> usize {
+        0
+    }
+}
 
 impl RustlsCryptoProviderBuilder {
     pub fn build(&self) -> CryptoProvider {
@@ -269,16 +317,32 @@ impl RustlsCryptoProviderBuilder {
 
 #[derive(Clone, Copy)]
 pub struct RustlsSupportedCiphersuite(pub SupportedCipherSuite);
-impl ByteRepr for RustlsSupportedCiphersuite {}
+impl ByteRepr for RustlsSupportedCiphersuite {
+    fn byte_size() -> usize {
+        0
+    }
+}
 
 pub struct RustlsCertificate(pub CertificateDer<'static>);
-impl ByteRepr for RustlsCertificate {}
+impl ByteRepr for RustlsCertificate {
+    fn byte_size() -> usize {
+        0
+    }
+}
 
 pub struct RustlsRootCertStore(pub Arc<RootCertStore>);
-impl ByteRepr for RustlsRootCertStore {}
+impl ByteRepr for RustlsRootCertStore {
+    fn byte_size() -> usize {
+        0
+    }
+}
 
 pub struct RustlsRootCertStoreBuilder(pub Option<RootCertStore>);
-impl ByteRepr for RustlsRootCertStoreBuilder {}
+impl ByteRepr for RustlsRootCertStoreBuilder {
+    fn byte_size() -> usize {
+        0
+    }
+}
 
 pub fn rustls_root_cert_store_builder_new() -> Ptr<RustlsRootCertStoreBuilder> {
     Ptr::alloc(RustlsRootCertStoreBuilder(Some(RootCertStore::empty())))
@@ -358,7 +422,11 @@ pub fn rustls_root_cert_store_builder_build(
 }
 
 pub struct RustlsCertifiedKey(pub Arc<CertifiedKey>);
-impl ByteRepr for RustlsCertifiedKey {}
+impl ByteRepr for RustlsCertifiedKey {
+    fn byte_size() -> usize {
+        0
+    }
+}
 
 pub fn rustls_certified_key_build(
     cert_chain: Ptr<u8>,
@@ -403,7 +471,11 @@ pub fn rustls_certified_key_keys_match(key: Ptr<RustlsCertifiedKey>) -> RustlsRe
 }
 
 pub struct RustlsServerCertVerifier(pub Arc<dyn ServerCertVerifier>);
-impl ByteRepr for RustlsServerCertVerifier {}
+impl ByteRepr for RustlsServerCertVerifier {
+    fn byte_size() -> usize {
+        0
+    }
+}
 
 pub struct WebPkiVerifierBuilderState {
     pub roots: Arc<RootCertStore>,
@@ -411,7 +483,11 @@ pub struct WebPkiVerifierBuilderState {
 }
 
 pub struct RustlsWebPkiServerCertVerifierBuilder(pub Option<WebPkiVerifierBuilderState>);
-impl ByteRepr for RustlsWebPkiServerCertVerifierBuilder {}
+impl ByteRepr for RustlsWebPkiServerCertVerifierBuilder {
+    fn byte_size() -> usize {
+        0
+    }
+}
 
 pub fn rustls_web_pki_server_cert_verifier_builder_new(
     store: Ptr<RustlsRootCertStore>,
@@ -496,7 +572,11 @@ pub fn rustls_platform_server_cert_verifier(
 }
 
 pub struct RustlsClientConfig(pub Arc<ClientConfig>);
-impl ByteRepr for RustlsClientConfig {}
+impl ByteRepr for RustlsClientConfig {
+    fn byte_size() -> usize {
+        0
+    }
+}
 
 pub struct RustlsClientConfigBuilder {
     pub provider: Arc<CryptoProvider>,
@@ -506,7 +586,11 @@ pub struct RustlsClientConfigBuilder {
     pub cert_resolver: Option<Arc<dyn ResolvesClientCert>>,
     pub key_log: Option<Arc<dyn KeyLog>>,
 }
-impl ByteRepr for RustlsClientConfigBuilder {}
+impl ByteRepr for RustlsClientConfigBuilder {
+    fn byte_size() -> usize {
+        0
+    }
+}
 
 pub type RustlsKeylogLogCallback = fn(RustlsStr, Ptr<u8>, usize, Ptr<u8>, usize);
 pub type RustlsKeylogWillLogCallback = fn(RustlsStr) -> i32;
@@ -645,7 +729,11 @@ pub fn rustls_client_config_builder_set_certified_key(
 
 #[derive(Default)]
 pub struct RustlsVerifyServerCertParams;
-impl ByteRepr for RustlsVerifyServerCertParams {}
+impl ByteRepr for RustlsVerifyServerCertParams {
+    fn byte_size() -> usize {
+        0
+    }
+}
 
 pub type RustlsVerifyServerCertCallback = fn(AnyPtr, Ptr<RustlsVerifyServerCertParams>) -> u32;
 
@@ -807,7 +895,11 @@ pub struct RustlsConnection {
     pub conn: rustls::ClientConnection,
     pub userdata: AnyPtr,
 }
-impl ByteRepr for RustlsConnection {}
+impl ByteRepr for RustlsConnection {
+    fn byte_size() -> usize {
+        0
+    }
+}
 
 pub fn rustls_connection_set_userdata(conn: Ptr<RustlsConnection>, userdata: AnyPtr) {
     conn.with_mut(|c| c.userdata = userdata.clone());
