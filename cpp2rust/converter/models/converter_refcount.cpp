@@ -963,10 +963,36 @@ RsExpr *ConverterRefCount::LowerPtrUse(RsExpr *node) {
   return nullptr;
 }
 
+static bool MergeSameObjectWith(RsExpr *&slot, const std::string &object,
+                                bool &is_mut) {
+  if (auto *with = clang::dyn_cast<PtrWith>(slot)) {
+    if (with->object->print() != object) {
+      return MergeSameObjectWith(with->object, object, is_mut);
+    }
+    is_mut = is_mut || with->is_mut;
+    slot = clang::cast<Closure>(with->closure)->body;
+    MergeSameObjectWith(slot, object, is_mut);
+    return true;
+  }
+
+  bool merged = false;
+  slot->ForEachChild([&](RsExpr *&child) {
+    merged |= MergeSameObjectWith(child, object, is_mut);
+  });
+  return merged;
+}
+
 RsExpr *ConverterRefCount::NestPtrUse(RsExpr *node) {
   if (!clang::isa<PtrWith>(node)) {
     return nullptr;
   }
+  auto *with = clang::cast<PtrWith>(node);
+  auto *body = clang::cast<Closure>(with->closure);
+  bool is_mut = with->is_mut;
+  if (MergeSameObjectWith(body->body, with->object->print(), is_mut)) {
+    with->is_mut = is_mut;
+  }
+
   auto *outer = node;
   while (auto *inner = outer->TakeWith()) {
     outer = arena_.New<PtrWith>(inner->object, inner->is_mut,
