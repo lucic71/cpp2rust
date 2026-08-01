@@ -193,6 +193,9 @@ impl<T: 'static> ErasedPtr for FnPtr<T> {
     fn write_address(&self, buf: &mut [u8]) {
         ByteRepr::to_bytes(self, buf);
     }
+    fn is_derived(&self) -> bool {
+        false
+    }
     fn as_any(&self) -> &dyn Any {
         self
     }

@@ -111,6 +111,9 @@ impl<K: 'static, V: 'static> ByteRepr for std::collections::BTreeMap<K, V> {}
 // Type-erased byte-level access to the original allocation.
 // Concrete impls know the source type S; callers only see bytes.
 pub trait OriginalAlloc {
+    fn base_addr(&self) -> Option<usize> {
+        None
+    }
     fn read_bytes(&self, byte_offset: usize, buf: &mut [u8]);
     fn write_bytes(&self, byte_offset: usize, data: &[u8]);
     fn total_byte_len(&self) -> usize;

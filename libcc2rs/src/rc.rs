@@ -91,6 +91,10 @@ struct FieldOriginalAlloc<F> {
 }
 
 impl<F: ByteRepr> OriginalAlloc for FieldOriginalAlloc<F> {
+    fn base_addr(&self) -> Option<usize> {
+        Some(self.view.base_addr_dyn())
+    }
+
     fn read_bytes(&self, byte_offset: usize, buf: &mut [u8]) {
         self.view.read_bytes_dyn(byte_offset, buf);
     }
@@ -171,6 +175,10 @@ impl<T> PtrKind<T> {
             PtrKind::Reinterpreted(data) => data.alloc.address(),
             PtrKind::FieldPtr(view) => view.address(),
         }
+    }
+
+    fn is_derived(&self) -> bool {
+        matches!(self, PtrKind::Reinterpreted(_) | PtrKind::FieldPtr(_))
     }
 
     fn is_dangling(&self) -> bool {
@@ -473,8 +481,14 @@ impl<T: ByteRepr> Ptr<T> {
     }
 
     fn base_addr(&self) -> usize {
-        if let PtrKind::FieldPtr(view) = &self.kind {
-            return view.base_addr_dyn();
+        match &self.kind {
+            PtrKind::FieldPtr(view) => return view.base_addr_dyn(),
+            PtrKind::Reinterpreted(data) => {
+                if let Some(base) = data.alloc.base_addr() {
+                    return base;
+                }
+            }
+            _ => {}
         }
         let byte_len = if self.kind.is_dangling() {
             0
@@ -1205,6 +1219,7 @@ impl Ptr<u8> {
 pub(crate) trait ErasedPtr: std::any::Any {
     fn as_bytes(&self) -> Ptr<u8>;
     fn write_address(&self, buf: &mut [u8]);
+    fn is_derived(&self) -> bool;
     fn as_any(&self) -> &dyn std::any::Any;
     fn equals(&self, other: &dyn ErasedPtr) -> bool;
     fn is_null(&self) -> bool;
@@ -1228,6 +1243,10 @@ where
 
     fn write_address(&self, buf: &mut [u8]) {
         ByteRepr::to_bytes(self, buf);
+    }
+
+    fn is_derived(&self) -> bool {
+        self.kind.is_derived()
     }
 
     fn as_any(&self) -> &dyn std::any::Any {
@@ -1419,6 +1438,13 @@ pub(crate) enum Registered {
 }
 
 impl Registered {
+    fn is_derived(&self) -> bool {
+        match self {
+            Registered::Data(any) => any.ptr.is_derived(),
+            Registered::Fn(_) => false,
+        }
+    }
+
     fn is_dangling(&self) -> bool {
         match self {
             Registered::Data(any) => any.ptr.is_dangling(),
@@ -1445,7 +1471,13 @@ impl PtrRegistry {
     fn put(&mut self, real_addr: RealAddr, byte_len: ByteLen, ptr: Registered) -> SyntheticAddr {
         self.evict_dead();
         let base = self.ranges.get_synthetic_addr(real_addr, byte_len);
-        self.entries.insert(base, (ptr, byte_len));
+        let keep = match self.entries.get(&base) {
+            None => true,
+            Some((existing, _)) => !ptr.is_derived() || existing.is_derived(),
+        };
+        if keep {
+            self.entries.insert(base, (ptr, byte_len));
+        }
         base
     }
 
