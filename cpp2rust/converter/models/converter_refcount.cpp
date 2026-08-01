@@ -1760,12 +1760,13 @@ RsExpr *ConverterRefCount::VisitInitListExpr(clang::InitListExpr *expr) {
 
 RsExpr *ConverterRefCount::ConvertUnionMemberAccessor(clang::MemberExpr *expr) {
   auto member = expr->getMemberDecl();
+  bool is_mut = isLValue();
   RsExpr *accessor = nullptr;
   {
-    PushExprKind push(*this, isLValue() ? ExprKind::LValue : ExprKind::RValue);
+    PushExprKind push(*this, is_mut ? ExprKind::LValue : ExprKind::RValue);
     auto *field = clang::cast<Field>(Converter::ConvertMemberExpr(expr));
-    accessor = MethodCall(field->object, field->member,
-                          std::vector<RsExpr *>{}, /*is_mut=*/false);
+    accessor =
+        MethodCall(field->object, field->member, std::vector<RsExpr *>{}, is_mut);
   }
 
   if (isAddrOf()) {
