@@ -961,18 +961,22 @@ RsExpr *ConverterRefCount::LowerPtrUse(RsExpr *node) {
 }
 
 RsExpr *ConverterRefCount::NestPtrUse(RsExpr *node) {
-  auto *with = clang::dyn_cast<PtrWith>(node);
-  if (!with) {
+  if (!clang::isa<PtrWith>(node)) {
     return nullptr;
   }
-  auto *inner = clang::dyn_cast<PtrWith>(with->object);
-  if (!inner) {
+  auto *outer = node;
+  while (auto *inner = outer->TakeWith()) {
+    outer = arena_.New<PtrWith>(inner->object, inner->is_mut,
+                                arena_.New<Closure>("__v", nullptr, outer));
+  }
+  if (outer == node) {
     return nullptr;
   }
-  auto *body = clang::cast<Closure>(inner->closure)->body;
-  auto *nested = arena_.New<PtrWith>(body, with->is_mut, with->closure);
-  return arena_.New<PtrWith>(inner->object, inner->is_mut,
-                             arena_.New<Closure>("__v", nullptr, nested));
+  auto *closure = clang::cast<Closure>(clang::cast<PtrWith>(outer)->closure);
+  if (auto *nested = NestPtrUse(closure->body)) {
+    closure->body = nested;
+  }
+  return outer;
 }
 
 RsExpr *

@@ -241,8 +241,7 @@ fn main_0() -> i32 {
         (({ Find_0((*head.borrow()).clone(), 1) }).with(|__v| (*__v)
             .next
             .clone()
-            .with(|__v| (*__v).next.clone())
-            .with(|__v| (*__v).val))
+            .with(|__v| (*__v).next.clone().with(|__v| (*__v).val)))
             == 1)
     );
     assert!(
@@ -255,8 +254,7 @@ fn main_0() -> i32 {
         (({ FindBack_1((*tail.borrow()).clone(), 1) }).with(|__v| (*__v)
             .prev
             .clone()
-            .with(|__v| (*__v).prev.clone())
-            .with(|__v| (*__v).val))
+            .with(|__v| (*__v).prev.clone().with(|__v| (*__v).val)))
             == 3)
     );
     ({ Find_0((*head.borrow()).clone(), 0) })

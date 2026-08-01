@@ -20,6 +20,8 @@ class Expr;
 
 namespace cpp2rust {
 
+struct PtrWith;
+
 struct RsExpr {
   enum class Kind : uint8_t {
     Verbatim,
@@ -54,6 +56,12 @@ struct RsExpr {
   RsExpr *IgnoreParens();
 
   virtual RsExpr *Pointer() { return nullptr; }
+
+  // Removes the innermost `with` from the receiver chain, splicing its closure
+  // body in its place.
+  virtual PtrWith *TakeWith() { return nullptr; }
+
+  static PtrWith *TakeWithFrom(RsExpr *&slot);
 
   virtual RsExpr *TakePtr(RsExpr *) { return nullptr; }
 
@@ -130,6 +138,8 @@ struct Delim : RsExpr {
     return open == '(' ? inner->Pointer() : nullptr;
   }
 
+  PtrWith *TakeWith() override { return TakeWithFrom(inner); }
+
   char open;
   char close;
   RsExpr *inner;
@@ -165,6 +175,8 @@ struct Unary : RsExpr {
 
   RsExpr *Pointer() override { return op == Op::Deref ? operand : nullptr; }
 
+  PtrWith *TakeWith() override { return TakeWithFrom(operand); }
+
   Op op;
   RsExpr *operand;
 };
@@ -190,6 +202,8 @@ struct Cast : RsExpr {
     }
     return expr->TakePtr(replacement);
   }
+
+  PtrWith *TakeWith() override { return TakeWithFrom(expr); }
 
   RsExpr *expr;
   RsExpr *type;
@@ -228,6 +242,8 @@ struct Call : RsExpr {
     }
     return callee->TakePtr(replacement);
   }
+
+  PtrWith *TakeWith() override { return TakeWithFrom(callee); }
 
   RsExpr *callee;
   std::vector<RsExpr *> args;
@@ -427,6 +443,8 @@ struct Accessor : RsExpr {
     }
     return object->TakePtr(replacement);
   }
+
+  PtrWith *TakeWith() override { return TakeWithFrom(object); }
 
   RsExpr *object;
 };

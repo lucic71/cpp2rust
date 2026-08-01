@@ -18,4 +18,12 @@ RsExpr *RsExpr::IgnoreParens() {
   return node;
 }
 
+PtrWith *RsExpr::TakeWithFrom(RsExpr *&slot) {
+  if (auto *with = llvm::dyn_cast<PtrWith>(slot)) {
+    slot = llvm::cast<Closure>(with->closure)->body;
+    return with;
+  }
+  return slot->TakeWith();
+}
+
 } // namespace cpp2rust
