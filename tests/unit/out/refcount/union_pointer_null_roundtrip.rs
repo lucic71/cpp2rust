@@ -49,14 +49,66 @@ fn main_0() -> i32 {
         }
     };
     let u: Value<anon_0> = <Value<anon_0>>::default();
-    (*u.borrow_mut()).bits().write(0_u64);
-    assert!((((((*u.borrow()).p().read()).is_null()) as i32) != 0));
+    (u.as_pointer()
+        .reinterpret_cast::<u8>()
+        .offset(0usize)
+        .reinterpret_cast::<u64>() as Ptr<u64>)
+        .write(0_u64);
+    assert!(
+        (((((u
+            .as_pointer()
+            .reinterpret_cast::<u8>()
+            .offset(0usize)
+            .reinterpret_cast::<Ptr::<i32>>() as Ptr<Ptr::<i32>>)
+            .read())
+        .is_null()) as i32)
+            != 0)
+    );
     let x: Value<i32> = Rc::new(RefCell::new(5));
-    (*u.borrow_mut()).p().write((x.as_pointer()));
-    assert!((((((*u.borrow()).bits().read()) != 0_u64) as i32) != 0));
-    (*u.borrow_mut()).bits().write(0_u64);
-    assert!((((((*u.borrow()).p().read()).is_null()) as i32) != 0));
-    (*u.borrow_mut()).p().write(Ptr::<i32>::null());
-    assert!((((((*u.borrow()).bits().read()) == 0_u64) as i32) != 0));
+    (u.as_pointer()
+        .reinterpret_cast::<u8>()
+        .offset(0usize)
+        .reinterpret_cast::<Ptr<i32>>() as Ptr<Ptr<i32>>)
+        .write((x.as_pointer()));
+    assert!(
+        (((((u
+            .as_pointer()
+            .reinterpret_cast::<u8>()
+            .offset(0usize)
+            .reinterpret_cast::<u64>() as Ptr<u64>)
+            .read())
+            != 0_u64) as i32)
+            != 0)
+    );
+    (u.as_pointer()
+        .reinterpret_cast::<u8>()
+        .offset(0usize)
+        .reinterpret_cast::<u64>() as Ptr<u64>)
+        .write(0_u64);
+    assert!(
+        (((((u
+            .as_pointer()
+            .reinterpret_cast::<u8>()
+            .offset(0usize)
+            .reinterpret_cast::<Ptr::<i32>>() as Ptr<Ptr::<i32>>)
+            .read())
+        .is_null()) as i32)
+            != 0)
+    );
+    (u.as_pointer()
+        .reinterpret_cast::<u8>()
+        .offset(0usize)
+        .reinterpret_cast::<Ptr<i32>>() as Ptr<Ptr<i32>>)
+        .write(Ptr::<i32>::null());
+    assert!(
+        (((((u
+            .as_pointer()
+            .reinterpret_cast::<u8>()
+            .offset(0usize)
+            .reinterpret_cast::<u64>() as Ptr<u64>)
+            .read())
+            == 0_u64) as i32)
+            != 0)
+    );
     return 0;
 }

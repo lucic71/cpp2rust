@@ -174,22 +174,43 @@ fn main_0() -> i32 {
     (*ex.borrow_mut()).level = 1;
     (*ex.borrow_mut()).variant = 6;
     (*ex.borrow_mut()).len = (16usize as u32);
-    (*ex.borrow_mut()).body.h().with_mut(|__v| __v.code = 2_u16);
-    (*ex.borrow_mut())
-        .body
-        .h()
+    (ex.as_pointer()
+        .reinterpret_cast::<u8>()
+        .offset(16usize)
+        .reinterpret_cast::<record>() as Ptr<record>)
+        .with_mut(|__v| __v.code = 2_u16);
+    (ex.as_pointer()
+        .reinterpret_cast::<u8>()
+        .offset(16usize)
+        .reinterpret_cast::<record>() as Ptr<record>)
         .with_mut(|__v| __v.pad[(0) as usize] = (('X' as i32) as u8));
-    assert!((((((*ex.borrow()).body.h().with(|__v| (*__v).code) as i32) == 2) as i32) != 0));
     assert!(
-        (((((*ex.borrow()).body.h().with(|__v| (*__v).pad[(0) as usize]) as i32) == ('X' as i32))
-            as i32)
+        (((((ex
+            .as_pointer()
+            .reinterpret_cast::<u8>()
+            .offset(16usize)
+            .reinterpret_cast::<record>() as Ptr<record>)
+            .with(|__v| (*__v).code) as i32)
+            == 2) as i32)
             != 0)
     );
     assert!(
-        (((((*ex.borrow())
-            .body
-            .nested()
-            .with(|__v| (*__v).view.h().clone().with(|__v| (*__v).code)) as i32)
+        (((((ex
+            .as_pointer()
+            .reinterpret_cast::<u8>()
+            .offset(16usize)
+            .reinterpret_cast::<record>() as Ptr<record>)
+            .with(|__v| (*__v).pad[(0) as usize]) as i32)
+            == ('X' as i32)) as i32)
+            != 0)
+    );
+    assert!(
+        (((((ex
+            .as_pointer()
+            .reinterpret_cast::<u8>()
+            .offset(16usize)
+            .reinterpret_cast::<record>() as Ptr<record>)
+            .with(|__v| (*__v).code) as i32)
             == 2) as i32)
             != 0)
     );

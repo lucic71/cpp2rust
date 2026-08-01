@@ -50,8 +50,17 @@ fn main_0() -> i32 {
         }
     };
     let pp: Value<anon_0> = <Value<anon_0>>::default();
-    (*pp.borrow_mut()).as_signed().write((x.as_pointer()));
-    ((*pp.borrow()).as_unsigned().read()).write(42_u64);
+    (pp.as_pointer()
+        .reinterpret_cast::<u8>()
+        .offset(0usize)
+        .reinterpret_cast::<Ptr<i64>>() as Ptr<Ptr<i64>>)
+        .write((x.as_pointer()));
+    ((pp.as_pointer()
+        .reinterpret_cast::<u8>()
+        .offset(0usize)
+        .reinterpret_cast::<Ptr<u64>>() as Ptr<Ptr<u64>>)
+        .read())
+    .write(42_u64);
     assert!(((((*x.borrow()) == 42_i64) as i32) != 0));
     return 0;
 }

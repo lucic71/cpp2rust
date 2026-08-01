@@ -128,49 +128,54 @@ fn main_0() -> i32 {
     };
     let e: Value<Ptr<entry>> = Rc::new(RefCell::new(((*table.borrow()).offset(((0) as isize)))));
     (*e.borrow()).with_mut(|__v| __v.kind = 1);
-    (*e.borrow()).with_mut(|__v| __v.c.set().with_mut(|__v| __v.size = 7_i64));
-    (*e.borrow()).with_mut(|__v| __v.c.set().with_mut(|__v| __v.idx = 3_i64));
-    (*e.borrow()).with_mut(|__v| {
-        __v.c.set().with_mut(|__v| {
-            __v.elem = libcc2rs::malloc_refcount(8usize).reinterpret_cast::<Ptr<u8>>()
-        })
-    });
+    ((*e.borrow())
+        .reinterpret_cast::<u8>()
+        .offset(8usize)
+        .reinterpret_cast::<anon_1>() as Ptr<anon_1>)
+        .with_mut(|__v| __v.size = 7_i64);
+    ((*e.borrow())
+        .reinterpret_cast::<u8>()
+        .offset(8usize)
+        .reinterpret_cast::<anon_1>() as Ptr<anon_1>)
+        .with_mut(|__v| __v.idx = 3_i64);
+    ((*e.borrow())
+        .reinterpret_cast::<u8>()
+        .offset(8usize)
+        .reinterpret_cast::<anon_1>() as Ptr<anon_1>)
+        .with_mut(|__v| __v.elem = libcc2rs::malloc_refcount(8usize).reinterpret_cast::<Ptr<u8>>());
     assert!(
-        (((!(((*e.borrow()).with(|__v| (*__v).c.set().clone().with(|__v| (*__v).elem.clone())))
-            .is_null())) as i32)
+        (((!((((*e.borrow())
+            .reinterpret_cast::<u8>()
+            .offset(8usize)
+            .reinterpret_cast::<anon_1>() as Ptr<anon_1>)
+            .with(|__v| (*__v).elem.clone()))
+        .is_null())) as i32)
             != 0)
     );
     let __rhs = libcc2rs::strdup_refcount(Ptr::from_string_literal(b"alpha").clone());
-    (*e.borrow())
-        .with(|__v| {
-            (*__v)
-                .c
-                .set()
-                .clone()
-                .with(|__v| (*__v).elem.offset(((0) as isize)).clone())
-        })
+    ((*e.borrow())
+        .reinterpret_cast::<u8>()
+        .offset(8usize)
+        .reinterpret_cast::<anon_1>() as Ptr<anon_1>)
+        .with(|__v| (*__v).elem.offset(((0) as isize)).clone())
         .write(__rhs);
     assert!(
-        (((!(((*e.borrow())
-            .with(|__v| (*__v)
-                .c
-                .set()
-                .clone()
-                .with(|__v| (*__v).elem.offset(((0) as isize)).clone()))
+        (((!((((*e.borrow())
+            .reinterpret_cast::<u8>()
+            .offset(8usize)
+            .reinterpret_cast::<anon_1>() as Ptr<anon_1>)
+            .with(|__v| (*__v).elem.offset(((0) as isize)).clone())
             .read())
         .is_null())) as i32)
             != 0)
     );
     assert!(
         ((({
-            let mut __it1 = ((*e.borrow())
-                .with(|__v| {
-                    (*__v)
-                        .c
-                        .set()
-                        .clone()
-                        .with(|__v| (*__v).elem.offset(((0) as isize)).clone())
-                })
+            let mut __it1 = (((*e.borrow())
+                .reinterpret_cast::<u8>()
+                .offset(8usize)
+                .reinterpret_cast::<anon_1>() as Ptr<anon_1>)
+                .with(|__v| (*__v).elem.offset(((0) as isize)).clone())
                 .read())
             .to_c_string_iterator();
             let mut __it2 = Ptr::from_string_literal(b"alpha").to_c_string_iterator();
@@ -188,57 +193,82 @@ fn main_0() -> i32 {
             != 0)
     );
     assert!(
-        ((((*e.borrow()).with(|__v| (*__v).c.set().clone().with(|__v| (*__v).size)) == 7_i64)
-            as i32)
+        (((((*e.borrow())
+            .reinterpret_cast::<u8>()
+            .offset(8usize)
+            .reinterpret_cast::<anon_1>() as Ptr<anon_1>)
+            .with(|__v| (*__v).size)
+            == 7_i64) as i32)
             != 0)
     );
     assert!(
-        ((((*e.borrow()).with(|__v| (*__v).c.set().clone().with(|__v| (*__v).idx)) == 3_i64)
-            as i32)
+        (((((*e.borrow())
+            .reinterpret_cast::<u8>()
+            .offset(8usize)
+            .reinterpret_cast::<anon_1>() as Ptr<anon_1>)
+            .with(|__v| (*__v).idx)
+            == 3_i64) as i32)
             != 0)
     );
     assert!(((((*e.borrow()).with(|__v| (*__v).kind) == 1) as i32) != 0));
     (*e.borrow_mut()) = ((*table.borrow()).offset(((1) as isize)));
     (*e.borrow()).with_mut(|__v| __v.kind = 2);
-    (*e.borrow()).with_mut(|__v| __v.c.range().with_mut(|__v| __v.min = 10));
-    (*e.borrow()).with_mut(|__v| __v.c.range().with_mut(|__v| __v.max = 20));
+    ((*e.borrow())
+        .reinterpret_cast::<u8>()
+        .offset(8usize)
+        .reinterpret_cast::<anon_2>() as Ptr<anon_2>)
+        .with_mut(|__v| __v.min = 10);
+    ((*e.borrow())
+        .reinterpret_cast::<u8>()
+        .offset(8usize)
+        .reinterpret_cast::<anon_2>() as Ptr<anon_2>)
+        .with_mut(|__v| __v.max = 20);
     assert!(
-        ((((*e.borrow()).with(|__v| (*__v).c.range().clone().with(|__v| (*__v).min)) == 10)
-            as i32)
+        (((((*e.borrow())
+            .reinterpret_cast::<u8>()
+            .offset(8usize)
+            .reinterpret_cast::<anon_2>() as Ptr<anon_2>)
+            .with(|__v| (*__v).min)
+            == 10) as i32)
             != 0)
     );
     assert!(
-        ((((*e.borrow()).with(|__v| (*__v).c.range().clone().with(|__v| (*__v).max)) == 20)
-            as i32)
+        (((((*e.borrow())
+            .reinterpret_cast::<u8>()
+            .offset(8usize)
+            .reinterpret_cast::<anon_2>() as Ptr<anon_2>)
+            .with(|__v| (*__v).max)
+            == 20) as i32)
             != 0)
     );
     assert!(
-        ((((*table.borrow()).offset(((0) as isize)).with(|__v| (*__v)
-            .c
-            .set()
-            .clone()
-            .with(|__v| (*__v).size))
+        (((((*table.borrow())
+            .offset(((0) as isize))
+            .reinterpret_cast::<u8>()
+            .offset(8usize)
+            .reinterpret_cast::<anon_1>() as Ptr<anon_1>)
+            .with(|__v| (*__v).size)
             == 7_i64) as i32)
             != 0)
     );
     libcc2rs::free_refcount(
-        (((*table.borrow())
+        ((((*table.borrow())
             .offset(((0) as isize))
-            .with(|__v| {
-                (*__v)
-                    .c
-                    .set()
-                    .clone()
-                    .with(|__v| (*__v).elem.offset(((0) as isize)).clone())
-            })
+            .reinterpret_cast::<u8>()
+            .offset(8usize)
+            .reinterpret_cast::<anon_1>() as Ptr<anon_1>)
+            .with(|__v| (*__v).elem.offset(((0) as isize)).clone())
             .read())
         .clone() as Ptr<u8>)
             .to_any(),
     );
     libcc2rs::free_refcount(
-        (((*table.borrow())
+        ((((*table.borrow())
             .offset(((0) as isize))
-            .with(|__v| (*__v).c.set().clone().with(|__v| (*__v).elem.clone())))
+            .reinterpret_cast::<u8>()
+            .offset(8usize)
+            .reinterpret_cast::<anon_1>() as Ptr<anon_1>)
+            .with(|__v| (*__v).elem.clone()))
         .clone() as Ptr<Ptr<u8>>)
             .to_any(),
     );

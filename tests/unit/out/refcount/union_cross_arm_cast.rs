@@ -149,18 +149,46 @@ fn main_0() -> i32 {
             .memset((0) as u8, 68usize as usize);
         ((c.as_pointer()) as Ptr<Container>).to_any().clone()
     };
-    (*c.borrow_mut()).u.a().with_mut(|__v| __v.code = 10_u16);
+    (c.as_pointer()
+        .reinterpret_cast::<u8>()
+        .offset(4usize)
+        .reinterpret_cast::<shape_a>() as Ptr<shape_a>)
+        .with_mut(|__v| __v.code = 10_u16);
     (*c.borrow_mut()).len = (28usize as u32);
-    (((*c.borrow()).u.a())
-        .clone()
+    ((c.as_pointer()
+        .reinterpret_cast::<u8>()
+        .offset(4usize)
+        .reinterpret_cast::<shape_a>() as Ptr<shape_a>)
         .to_any()
         .reinterpret_cast::<shape_b>())
     .with_mut(|__v| __v.tail = 3735928559_u32);
-    assert!(((((*c.borrow()).u.b().with(|__v| (*__v).tail) == 3735928559_u32) as i32) != 0));
-    assert!((((((*c.borrow()).u.b().with(|__v| (*__v).code) as i32) == 10) as i32) != 0));
-    (*c.borrow_mut()).u.b().with_mut(|__v| __v.lo = 8080_u16);
     assert!(
-        ((((((((*c.borrow()).u.raw_().reinterpret_cast::<u8>() as Ptr<u8>)
+        ((((c
+            .as_pointer()
+            .reinterpret_cast::<u8>()
+            .offset(4usize)
+            .reinterpret_cast::<shape_b>() as Ptr<shape_b>)
+            .with(|__v| (*__v).tail)
+            == 3735928559_u32) as i32)
+            != 0)
+    );
+    assert!(
+        (((((c
+            .as_pointer()
+            .reinterpret_cast::<u8>()
+            .offset(4usize)
+            .reinterpret_cast::<shape_b>() as Ptr<shape_b>)
+            .with(|__v| (*__v).code) as i32)
+            == 10) as i32)
+            != 0)
+    );
+    (c.as_pointer()
+        .reinterpret_cast::<u8>()
+        .offset(4usize)
+        .reinterpret_cast::<shape_b>() as Ptr<shape_b>)
+        .with_mut(|__v| __v.lo = 8080_u16);
+    assert!(
+        ((((((((c.as_pointer().reinterpret_cast::<u8>().offset(4usize) as Ptr<u8>) as Ptr<u8>)
             .reinterpret_cast::<u8>())
         .offset(((2) as isize))
         .read()) as i32)
@@ -168,7 +196,7 @@ fn main_0() -> i32 {
             != 0)
     );
     assert!(
-        ((((((((*c.borrow()).u.raw_().reinterpret_cast::<u8>() as Ptr<u8>)
+        ((((((((c.as_pointer().reinterpret_cast::<u8>().offset(4usize) as Ptr<u8>) as Ptr<u8>)
             .reinterpret_cast::<u8>())
         .offset(((3) as isize))
         .read()) as i32)

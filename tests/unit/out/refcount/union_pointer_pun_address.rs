@@ -89,8 +89,20 @@ fn main_0() -> i32 {
         }
     };
     let ptr: Value<anon_0> = <Value<anon_0>>::default();
-    (*ptr.borrow_mut()).to_a().write((a.as_pointer()));
-    let out: Value<Ptr<node_b>> = Rc::new(RefCell::new(((*ptr.borrow()).to_b().read()).clone()));
+    (ptr.as_pointer()
+        .reinterpret_cast::<u8>()
+        .offset(0usize)
+        .reinterpret_cast::<Ptr<node_a>>() as Ptr<Ptr<node_a>>)
+        .write((a.as_pointer()));
+    let out: Value<Ptr<node_b>> = Rc::new(RefCell::new(
+        ((ptr
+            .as_pointer()
+            .reinterpret_cast::<u8>()
+            .offset(0usize)
+            .reinterpret_cast::<Ptr<node_b>>() as Ptr<Ptr<node_b>>)
+            .read())
+        .clone(),
+    ));
     assert!(
         ((({
             let _lhs = (*out.borrow()).clone().to_any();

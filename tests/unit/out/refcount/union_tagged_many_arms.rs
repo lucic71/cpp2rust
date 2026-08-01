@@ -110,22 +110,51 @@ pub fn main() {
 fn main_0() -> i32 {
     let a: Value<Slot> = <Value<Slot>>::default();
     (*a.borrow_mut()).tag = Tag_enum::T_NUM_S;
-    (*a.borrow_mut()).payload.signed_n().write((-7_i32 as i64));
-    assert!((((((*a.borrow()).payload.signed_n().read()) == (-7_i32 as i64)) as i32) != 0));
+    (a.as_pointer()
+        .reinterpret_cast::<u8>()
+        .offset(8usize)
+        .reinterpret_cast::<i64>() as Ptr<i64>)
+        .write((-7_i32 as i64));
+    assert!(
+        (((((a
+            .as_pointer()
+            .reinterpret_cast::<u8>()
+            .offset(8usize)
+            .reinterpret_cast::<i64>() as Ptr<i64>)
+            .read())
+            == (-7_i32 as i64)) as i32)
+            != 0)
+    );
     let b: Value<Slot> = <Value<Slot>>::default();
     (*b.borrow_mut()).tag = Tag_enum::T_NUM_U;
-    (*b.borrow_mut()).payload.unsigned_n().write(3735928559_u64);
-    assert!((((((*b.borrow()).payload.unsigned_n().read()) == 3735928559_u64) as i32) != 0));
+    (b.as_pointer()
+        .reinterpret_cast::<u8>()
+        .offset(8usize)
+        .reinterpret_cast::<u64>() as Ptr<u64>)
+        .write(3735928559_u64);
+    assert!(
+        (((((b
+            .as_pointer()
+            .reinterpret_cast::<u8>()
+            .offset(8usize)
+            .reinterpret_cast::<u64>() as Ptr<u64>)
+            .read())
+            == 3735928559_u64) as i32)
+            != 0)
+    );
     let c: Value<Slot> = <Value<Slot>>::default();
     (*c.borrow_mut()).tag = Tag_enum::T_TEXT;
-    (*c.borrow_mut())
-        .payload
-        .text()
+    (c.as_pointer()
+        .reinterpret_cast::<u8>()
+        .offset(8usize)
+        .reinterpret_cast::<Ptr<u8>>() as Ptr<Ptr<u8>>)
         .write(Ptr::from_string_literal(b"hello"));
     assert!(
-        ((((((*c.borrow())
-            .payload
-            .text()
+        ((((((c
+            .as_pointer()
+            .reinterpret_cast::<u8>()
+            .offset(8usize)
+            .reinterpret_cast::<Ptr::<u8>>() as Ptr<Ptr::<u8>>)
             .with(|__v| (*__v).offset(((0) as isize)).clone())
             .read()) as i32)
             == ('h' as i32)) as i32)
@@ -133,18 +162,38 @@ fn main_0() -> i32 {
     );
     let d: Value<Slot> = <Value<Slot>>::default();
     (*d.borrow_mut()).tag = Tag_enum::T_FLOAT;
-    (*d.borrow_mut()).payload.f().write(1.5E+0);
-    assert!((((((*d.borrow()).payload.f().read()) == 1.5E+0) as i32) != 0));
+    (d.as_pointer()
+        .reinterpret_cast::<u8>()
+        .offset(8usize)
+        .reinterpret_cast::<f64>() as Ptr<f64>)
+        .write(1.5E+0);
+    assert!(
+        (((((d
+            .as_pointer()
+            .reinterpret_cast::<u8>()
+            .offset(8usize)
+            .reinterpret_cast::<f64>() as Ptr<f64>)
+            .read())
+            == 1.5E+0) as i32)
+            != 0)
+    );
     let x: Value<i32> = Rc::new(RefCell::new(0));
     let e: Value<Slot> = <Value<Slot>>::default();
     (*e.borrow_mut()).tag = Tag_enum::T_REF;
-    (*e.borrow_mut())
-        .payload
-        .handle()
+    (e.as_pointer()
+        .reinterpret_cast::<u8>()
+        .offset(8usize)
+        .reinterpret_cast::<AnyPtr>() as Ptr<AnyPtr>)
         .write(((x.as_pointer()) as Ptr<i32>).to_any());
     assert!(
         ((({
-            let _lhs = ((*e.borrow()).payload.handle().read()).clone();
+            let _lhs = ((e
+                .as_pointer()
+                .reinterpret_cast::<u8>()
+                .offset(8usize)
+                .reinterpret_cast::<AnyPtr>() as Ptr<AnyPtr>)
+                .read())
+            .clone();
             _lhs == ((x.as_pointer()) as Ptr<i32>).to_any()
         }) as i32)
             != 0)

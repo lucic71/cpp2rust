@@ -145,6 +145,9 @@ public:
   RsExpr *ConvertFieldPtr(clang::MemberExpr *expr,
                           const clang::FieldDecl *field);
 
+  RsExpr *ConvertMemberBytePtr(clang::MemberExpr *expr,
+                            clang::QualType elem_type);
+
   RsExpr *TryFlexibleArrayMember(clang::MemberExpr *expr);
 
   RsExpr *VisitCXXNewExpr(clang::CXXNewExpr *expr) override;

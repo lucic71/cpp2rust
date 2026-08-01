@@ -76,10 +76,19 @@ fn main_0() -> i32 {
         }
     };
     let u: Value<anon_0> = <Value<anon_0>>::default();
-    (*u.borrow_mut())
-        .p()
+    (u.as_pointer()
+        .reinterpret_cast::<u8>()
+        .offset(0usize)
+        .reinterpret_cast::<Ptr<pair>>() as Ptr<Ptr<pair>>)
         .write(((arr.as_pointer() as Ptr<pair>).offset(1)));
-    let q: Value<Ptr<pair>> = Rc::new(RefCell::new(((*u.borrow()).p().read()).clone()));
+    let q: Value<Ptr<pair>> = Rc::new(RefCell::new(
+        ((u.as_pointer()
+            .reinterpret_cast::<u8>()
+            .offset(0usize)
+            .reinterpret_cast::<Ptr<pair>>() as Ptr<Ptr<pair>>)
+            .read())
+        .clone(),
+    ));
     assert!(((((*q.borrow()).with(|__v| (*__v).x) == 20) as i32) != 0));
     assert!(
         ((({
@@ -89,35 +98,85 @@ fn main_0() -> i32 {
             != 0)
     );
     {
-        let rhs_0 = (*u.borrow()).bits().with(|__v| {
-            (*__v)
-                .wrapping_add((::std::mem::size_of::<pair>() as u64))
-                .clone()
-        });
-        (*u.borrow_mut()).bits().write(rhs_0)
+        let rhs_0 = (u
+            .as_pointer()
+            .reinterpret_cast::<u8>()
+            .offset(0usize)
+            .reinterpret_cast::<u64>() as Ptr<u64>)
+            .with(|__v| {
+                (*__v)
+                    .wrapping_add((::std::mem::size_of::<pair>() as u64))
+                    .clone()
+            });
+        (u.as_pointer()
+            .reinterpret_cast::<u8>()
+            .offset(0usize)
+            .reinterpret_cast::<u64>() as Ptr<u64>)
+            .write(rhs_0)
     };
-    assert!((((((*u.borrow()).p().read()).with(|__v| (*__v).x) == 30) as i32) != 0));
+    assert!(
+        (((((u
+            .as_pointer()
+            .reinterpret_cast::<u8>()
+            .offset(0usize)
+            .reinterpret_cast::<Ptr<pair>>() as Ptr<Ptr<pair>>)
+            .read())
+        .with(|__v| (*__v).x)
+            == 30) as i32)
+            != 0)
+    );
     assert!(
         ((({
-            let _lhs = ((*u.borrow()).p().read()).clone();
+            let _lhs = ((u
+                .as_pointer()
+                .reinterpret_cast::<u8>()
+                .offset(0usize)
+                .reinterpret_cast::<Ptr<pair>>() as Ptr<Ptr<pair>>)
+                .read())
+            .clone();
             _lhs == ((arr.as_pointer() as Ptr<pair>).offset(2))
         }) as i32)
             != 0)
     );
     {
-        let rhs_0 = (*u.borrow()).bits().with(|__v| {
-            (*__v)
-                .wrapping_sub(
-                    ((2_usize).wrapping_mul((::std::mem::size_of::<pair>() as usize)) as u64),
-                )
-                .clone()
-        });
-        (*u.borrow_mut()).bits().write(rhs_0)
+        let rhs_0 = (u
+            .as_pointer()
+            .reinterpret_cast::<u8>()
+            .offset(0usize)
+            .reinterpret_cast::<u64>() as Ptr<u64>)
+            .with(|__v| {
+                (*__v)
+                    .wrapping_sub(
+                        ((2_usize).wrapping_mul((::std::mem::size_of::<pair>() as usize)) as u64),
+                    )
+                    .clone()
+            });
+        (u.as_pointer()
+            .reinterpret_cast::<u8>()
+            .offset(0usize)
+            .reinterpret_cast::<u64>() as Ptr<u64>)
+            .write(rhs_0)
     };
-    assert!((((((*u.borrow()).p().read()).with(|__v| (*__v).x) == 10) as i32) != 0));
+    assert!(
+        (((((u
+            .as_pointer()
+            .reinterpret_cast::<u8>()
+            .offset(0usize)
+            .reinterpret_cast::<Ptr<pair>>() as Ptr<Ptr<pair>>)
+            .read())
+        .with(|__v| (*__v).x)
+            == 10) as i32)
+            != 0)
+    );
     assert!(
         ((({
-            let _lhs = ((*u.borrow()).p().read()).clone();
+            let _lhs = ((u
+                .as_pointer()
+                .reinterpret_cast::<u8>()
+                .offset(0usize)
+                .reinterpret_cast::<Ptr<pair>>() as Ptr<Ptr<pair>>)
+                .read())
+            .clone();
             _lhs == ((arr.as_pointer() as Ptr<pair>).offset(0))
         }) as i32)
             != 0)

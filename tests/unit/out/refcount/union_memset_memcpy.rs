@@ -142,17 +142,35 @@ fn main_0() -> i32 {
             .memset((0) as u8, 256usize as usize);
         ((c.as_pointer()) as Ptr<Container>).to_any().clone()
     };
-    assert!((((((*c.borrow()).view.a().with(|__v| (*__v).code) as i32) == 0) as i32) != 0));
-    assert!((((((*c.borrow()).view.b().with(|__v| (*__v).lo) as i32) == 0) as i32) != 0));
     assert!(
-        (((((((*c.borrow()).view.raw_().reinterpret_cast::<u8>() as Ptr::<u8>)
+        (((((c
+            .as_pointer()
+            .reinterpret_cast::<u8>()
+            .offset(0usize)
+            .reinterpret_cast::<shape_a>() as Ptr<shape_a>)
+            .with(|__v| (*__v).code) as i32)
+            == 0) as i32)
+            != 0)
+    );
+    assert!(
+        (((((c
+            .as_pointer()
+            .reinterpret_cast::<u8>()
+            .offset(0usize)
+            .reinterpret_cast::<shape_b>() as Ptr<shape_b>)
+            .with(|__v| (*__v).lo) as i32)
+            == 0) as i32)
+            != 0)
+    );
+    assert!(
+        (((((((c.as_pointer().reinterpret_cast::<u8>().offset(0usize) as Ptr<u8>) as Ptr::<u8>)
             .offset(((0) as isize))
             .read()) as i32)
             == 0) as i32)
             != 0)
     );
     assert!(
-        (((((((*c.borrow()).view.raw_().reinterpret_cast::<u8>() as Ptr::<u8>)
+        (((((((c.as_pointer().reinterpret_cast::<u8>().offset(0usize) as Ptr<u8>) as Ptr::<u8>)
             .offset(((255) as isize))
             .read()) as i32)
             == 0) as i32)
@@ -186,23 +204,39 @@ fn main_0() -> i32 {
     let len: Value<usize> = Rc::new(RefCell::new(16_usize));
     assert!(((((*len.borrow()) <= 256usize) as i32) != 0));
     {
-        (((*c.borrow()).view.raw_().reinterpret_cast::<u8>() as Ptr<u8>) as Ptr<u8>)
+        (((c.as_pointer().reinterpret_cast::<u8>().offset(0usize) as Ptr<u8>) as Ptr<u8>)
+            as Ptr<u8>)
             .to_any()
             .memcpy(
                 &((src.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any(),
                 (*len.borrow()) as usize,
             );
-        (((*c.borrow()).view.raw_().reinterpret_cast::<u8>() as Ptr<u8>) as Ptr<u8>)
+        (((c.as_pointer().reinterpret_cast::<u8>().offset(0usize) as Ptr<u8>) as Ptr<u8>)
+            as Ptr<u8>)
             .to_any()
             .clone()
     };
-    assert!((((((*c.borrow()).view.b().with(|__v| (*__v).code) as i32) == 2) as i32) != 0));
     assert!(
-        ((((((((*c.borrow()).view.b().field_ptr(
-            2,
-            |__v: &shape_b| ::std::slice::from_ref(&__v.lo),
-            |__v: &mut shape_b| ::std::slice::from_mut(&mut __v.lo)
-        ))
+        (((((c
+            .as_pointer()
+            .reinterpret_cast::<u8>()
+            .offset(0usize)
+            .reinterpret_cast::<shape_b>() as Ptr<shape_b>)
+            .with(|__v| (*__v).code) as i32)
+            == 2) as i32)
+            != 0)
+    );
+    assert!(
+        ((((((((c
+            .as_pointer()
+            .reinterpret_cast::<u8>()
+            .offset(0usize)
+            .reinterpret_cast::<shape_b>() as Ptr<shape_b>)
+            .field_ptr(
+                2,
+                |__v: &shape_b| ::std::slice::from_ref(&__v.lo),
+                |__v: &mut shape_b| ::std::slice::from_mut(&mut __v.lo)
+            ))
         .reinterpret_cast::<u8>())
         .offset(((0) as isize))
         .read()) as i32)
@@ -215,6 +249,15 @@ fn main_0() -> i32 {
             .memset((0) as u8, 256usize as usize);
         ((c.as_pointer()) as Ptr<Container>).to_any().clone()
     };
-    assert!((((((*c.borrow()).view.b().with(|__v| (*__v).code) as i32) == 0) as i32) != 0));
+    assert!(
+        (((((c
+            .as_pointer()
+            .reinterpret_cast::<u8>()
+            .offset(0usize)
+            .reinterpret_cast::<shape_b>() as Ptr<shape_b>)
+            .with(|__v| (*__v).code) as i32)
+            == 0) as i32)
+            != 0)
+    );
     return 0;
 }

@@ -681,9 +681,12 @@ RsExpr *ConverterRefCount::AddByteReprTrait(const clang::RecordDecl *decl) {
 
 RsExpr *ConverterRefCount::AddByteReprTrait(const clang::EnumDecl *decl) {
   auto name = GetRecordName(decl);
+  auto byte_size = ctx_.getTypeSize(decl->getIntegerType()) / 8;
   return Cat(
       Text(std::format("impl ByteRepr for {}", name)),
-      Braces(Cat(Text("fn to_bytes(&self, buf: &mut [u8]) { (*self as i32)"
+      Braces(Cat(Text(std::format("fn byte_size() -> usize {{ {} }}",
+                                  byte_size)),
+                 Text("fn to_bytes(&self, buf: &mut [u8]) { (*self as i32)"
                       ".to_bytes(buf); }"),
                  Text(std::format("fn from_bytes(buf: &[u8]) -> Self {{ "
                                   "<{}>::from(i32::from_bytes(buf)) }}",
@@ -1763,46 +1766,24 @@ RsExpr *ConverterRefCount::VisitInitListExpr(clang::InitListExpr *expr) {
 }
 
 RsExpr *ConverterRefCount::ConvertUnionMemberAccessor(clang::MemberExpr *expr) {
-  if (auto *fam = TryFlexibleArrayMember(expr)) {
-    return fam;
-  }
-  auto member = expr->getMemberDecl();
-  bool is_mut = isLValue();
-  RsExpr *accessor = nullptr;
-  {
-    PushExprKind push(*this, is_mut ? ExprKind::LValue : ExprKind::RValue);
-    auto *field = clang::cast<Field>(Converter::ConvertMemberExpr(expr));
-    accessor =
-        MethodCall(field->object, field->member, std::vector<RsExpr *>{}, is_mut);
-  }
+  auto member_type = expr->getMemberDecl()->getType();
+  bool is_array = member_type->isArrayType();
+  auto *node = ConvertMemberBytePtr(
+      expr, is_array ? member_type->getAsArrayTypeUnsafe()->getElementType()
+                     : member_type);
 
-  if (isAddrOf()) {
-    if (member->getType()->isArrayType()) {
-      PushConversionKind push(*this, ConversionKind::Unboxed);
-      computed_expr_type_ = ComputedExprType::FreshPointer;
-      auto *elem_type =
-          Convert(member->getType()->getAsArrayTypeUnsafe()->getElementType());
-      return Cat(accessor, Text(".reinterpret_cast::<"), elem_type,
-                 Text(">()"));
-    }
-    computed_expr_type_ = ComputedExprType::Pointer;
-    return accessor;
+  if (isAddrOf() || is_array) {
+    return node;
   }
-
-  if (isLValue()) {
-    return arena_.New<Unary>(Unary::Op::Deref, accessor);
+  node = arena_.New<Unary>(Unary::Op::Deref, node);
+  if (!isLValue()) {
+    SetValueFreshness(member_type);
   }
-  auto *node = arena_.New<Unary>(Unary::Op::Deref, accessor);
-  SetValueFreshness(member->getType());
   return node;
 }
 
-RsExpr *ConverterRefCount::TryFlexibleArrayMember(clang::MemberExpr *expr) {
-  if (!IsFlexibleArrayMemberAccess(ctx_, expr)) {
-    return nullptr;
-  }
-  auto elem_type = expr->getType()->getAsArrayTypeUnsafe()->getElementType();
-
+RsExpr *ConverterRefCount::ConvertMemberBytePtr(clang::MemberExpr *expr,
+                                             clang::QualType elem_type) {
   uint64_t byte_off = 0;
   clang::Expr *base = expr;
   while (auto *member = clang::dyn_cast<clang::MemberExpr>(base)) {
@@ -1831,6 +1812,14 @@ RsExpr *ConverterRefCount::TryFlexibleArrayMember(clang::MemberExpr *expr) {
   }
   computed_expr_type_ = ComputedExprType::FreshPointer;
   return arena_.New<Cast>(node, Text(std::format("Ptr<{}>", elem_name)));
+}
+
+RsExpr *ConverterRefCount::TryFlexibleArrayMember(clang::MemberExpr *expr) {
+  if (!IsFlexibleArrayMemberAccess(ctx_, expr)) {
+    return nullptr;
+  }
+  return ConvertMemberBytePtr(
+      expr, expr->getType()->getAsArrayTypeUnsafe()->getElementType());
 }
 
 RsExpr *ConverterRefCount::ConvertFieldPtr(clang::MemberExpr *expr,

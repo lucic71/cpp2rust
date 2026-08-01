@@ -50,18 +50,38 @@ fn main_0() -> i32 {
         }
     };
     let u: Value<anon_0> = <Value<anon_0>>::default();
-    (*u.borrow_mut()).p().write((arr.as_pointer() as Ptr<i32>));
+    (u.as_pointer()
+        .reinterpret_cast::<u8>()
+        .offset(0usize)
+        .reinterpret_cast::<Ptr<i32>>() as Ptr<Ptr<i32>>)
+        .write((arr.as_pointer() as Ptr<i32>));
     {
-        let rhs_0 = (*u.borrow()).bits().with(|__v| {
-            (*__v)
-                .wrapping_add(
-                    ((100_usize).wrapping_mul((::std::mem::size_of::<i32>() as usize)) as u64),
-                )
-                .clone()
-        });
-        (*u.borrow_mut()).bits().write(rhs_0)
+        let rhs_0 = (u
+            .as_pointer()
+            .reinterpret_cast::<u8>()
+            .offset(0usize)
+            .reinterpret_cast::<u64>() as Ptr<u64>)
+            .with(|__v| {
+                (*__v)
+                    .wrapping_add(
+                        ((100_usize).wrapping_mul((::std::mem::size_of::<i32>() as usize)) as u64),
+                    )
+                    .clone()
+            });
+        (u.as_pointer()
+            .reinterpret_cast::<u8>()
+            .offset(0usize)
+            .reinterpret_cast::<u64>() as Ptr<u64>)
+            .write(rhs_0)
     };
-    let p: Value<Ptr<i32>> = Rc::new(RefCell::new(((*u.borrow()).p().read()).clone()));
+    let p: Value<Ptr<i32>> = Rc::new(RefCell::new(
+        ((u.as_pointer()
+            .reinterpret_cast::<u8>()
+            .offset(0usize)
+            .reinterpret_cast::<Ptr<i32>>() as Ptr<Ptr<i32>>)
+            .read())
+        .clone(),
+    ));
     return if (((((*p.borrow()).read()) == 0) as i32) != 0) {
         0
     } else {

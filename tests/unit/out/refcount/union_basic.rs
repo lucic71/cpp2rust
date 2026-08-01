@@ -49,9 +49,31 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     let u: Value<basic> = Rc::new(RefCell::new(<basic>::default()));
-    (*u.borrow_mut()).i().write(42);
-    assert!((((*u.borrow()).i().read()) == 42));
-    (*u.borrow_mut()).f().write(3.140000105E+0);
-    assert!((((*u.borrow()).f().read()) == 3.140000105E+0));
+    (u.as_pointer()
+        .reinterpret_cast::<u8>()
+        .offset(0usize)
+        .reinterpret_cast::<i32>() as Ptr<i32>)
+        .write(42);
+    assert!(
+        (((u.as_pointer()
+            .reinterpret_cast::<u8>()
+            .offset(0usize)
+            .reinterpret_cast::<i32>() as Ptr<i32>)
+            .read())
+            == 42)
+    );
+    (u.as_pointer()
+        .reinterpret_cast::<u8>()
+        .offset(0usize)
+        .reinterpret_cast::<f32>() as Ptr<f32>)
+        .write(3.140000105E+0);
+    assert!(
+        (((u.as_pointer()
+            .reinterpret_cast::<u8>()
+            .offset(0usize)
+            .reinterpret_cast::<f32>() as Ptr<f32>)
+            .read())
+            == 3.140000105E+0)
+    );
     return 0;
 }

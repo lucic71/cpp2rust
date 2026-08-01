@@ -194,23 +194,40 @@ fn main_0() -> i32 {
     let p_list: Value<Branch> = <Value<Branch>>::default();
     (*p_list.borrow_mut()).choice = Choice_enum::C_LIST;
     (*p_list.borrow_mut()).index = 0;
-    (*p_list.borrow_mut())
-        .v
-        .list()
+    (p_list
+        .as_pointer()
+        .reinterpret_cast::<u8>()
+        .offset(8usize)
+        .reinterpret_cast::<anon_1>() as Ptr<anon_1>)
         .with_mut(|__v| __v.items = (items_4.with(Value::clone).as_pointer() as Ptr<Ptr<u8>>));
-    (*p_list.borrow_mut())
-        .v
-        .list()
+    (p_list
+        .as_pointer()
+        .reinterpret_cast::<u8>()
+        .offset(8usize)
+        .reinterpret_cast::<anon_1>() as Ptr<anon_1>)
         .with_mut(|__v| __v.count = 3_i64);
-    (*p_list.borrow_mut())
-        .v
-        .list()
+    (p_list
+        .as_pointer()
+        .reinterpret_cast::<u8>()
+        .offset(8usize)
+        .reinterpret_cast::<anon_1>() as Ptr<anon_1>)
         .with_mut(|__v| __v.cursor = 1_i64);
-    assert!(((((*p_list.borrow()).v.list().with(|__v| (*__v).count) == 3_i64) as i32) != 0));
     assert!(
-        ((((((*p_list.borrow())
-            .v
-            .list()
+        ((((p_list
+            .as_pointer()
+            .reinterpret_cast::<u8>()
+            .offset(8usize)
+            .reinterpret_cast::<anon_1>() as Ptr<anon_1>)
+            .with(|__v| (*__v).count)
+            == 3_i64) as i32)
+            != 0)
+    );
+    assert!(
+        ((((((p_list
+            .as_pointer()
+            .reinterpret_cast::<u8>()
+            .offset(8usize)
+            .reinterpret_cast::<anon_1>() as Ptr<anon_1>)
             .with(|__v| (*__v)
                 .items
                 .offset(((1) as isize))
@@ -223,52 +240,98 @@ fn main_0() -> i32 {
     let p_letters: Value<Branch> = <Value<Branch>>::default();
     (*p_letters.borrow_mut()).choice = Choice_enum::C_LETTERS;
     (*p_letters.borrow_mut()).index = 1;
-    (*p_letters.borrow_mut())
-        .v
-        .letters()
+    (p_letters
+        .as_pointer()
+        .reinterpret_cast::<u8>()
+        .offset(8usize)
+        .reinterpret_cast::<anon_2>() as Ptr<anon_2>)
         .with_mut(|__v| __v.lo = ('a' as i32));
-    (*p_letters.borrow_mut())
-        .v
-        .letters()
+    (p_letters
+        .as_pointer()
+        .reinterpret_cast::<u8>()
+        .offset(8usize)
+        .reinterpret_cast::<anon_2>() as Ptr<anon_2>)
         .with_mut(|__v| __v.hi = ('z' as i32));
-    (*p_letters.borrow_mut())
-        .v
-        .letters()
+    (p_letters
+        .as_pointer()
+        .reinterpret_cast::<u8>()
+        .offset(8usize)
+        .reinterpret_cast::<anon_2>() as Ptr<anon_2>)
         .with_mut(|__v| __v.curr = ('m' as i32));
-    (*p_letters.borrow_mut())
-        .v
-        .letters()
+    (p_letters
+        .as_pointer()
+        .reinterpret_cast::<u8>()
+        .offset(8usize)
+        .reinterpret_cast::<anon_2>() as Ptr<anon_2>)
         .with_mut(|__v| __v.step = 1_u8);
     assert!(
-        (((((*p_letters.borrow()).v.letters().with(|__v| (*__v).hi)
-            - (*p_letters.borrow()).v.letters().with(|__v| (*__v).lo))
+        (((((p_letters
+            .as_pointer()
+            .reinterpret_cast::<u8>()
+            .offset(8usize)
+            .reinterpret_cast::<anon_2>() as Ptr<anon_2>)
+            .with(|__v| (*__v).hi)
+            - (p_letters
+                .as_pointer()
+                .reinterpret_cast::<u8>()
+                .offset(8usize)
+                .reinterpret_cast::<anon_2>() as Ptr<anon_2>)
+                .with(|__v| (*__v).lo))
             == 25) as i32)
             != 0)
     );
     let p_integers: Value<Branch> = <Value<Branch>>::default();
     (*p_integers.borrow_mut()).choice = Choice_enum::C_INTEGERS;
     (*p_integers.borrow_mut()).index = 2;
-    (*p_integers.borrow_mut())
-        .v
-        .integers()
+    (p_integers
+        .as_pointer()
+        .reinterpret_cast::<u8>()
+        .offset(8usize)
+        .reinterpret_cast::<anon_3>() as Ptr<anon_3>)
         .with_mut(|__v| __v.lo = 1_i64);
-    (*p_integers.borrow_mut())
-        .v
-        .integers()
+    (p_integers
+        .as_pointer()
+        .reinterpret_cast::<u8>()
+        .offset(8usize)
+        .reinterpret_cast::<anon_3>() as Ptr<anon_3>)
         .with_mut(|__v| __v.hi = 100_i64);
-    (*p_integers.borrow_mut())
-        .v
-        .integers()
+    (p_integers
+        .as_pointer()
+        .reinterpret_cast::<u8>()
+        .offset(8usize)
+        .reinterpret_cast::<anon_3>() as Ptr<anon_3>)
         .with_mut(|__v| __v.curr = 1_i64);
-    (*p_integers.borrow_mut())
-        .v
-        .integers()
+    (p_integers
+        .as_pointer()
+        .reinterpret_cast::<u8>()
+        .offset(8usize)
+        .reinterpret_cast::<anon_3>() as Ptr<anon_3>)
         .with_mut(|__v| __v.step = 1_i64);
-    (*p_integers.borrow_mut())
-        .v
-        .integers()
+    (p_integers
+        .as_pointer()
+        .reinterpret_cast::<u8>()
+        .offset(8usize)
+        .reinterpret_cast::<anon_3>() as Ptr<anon_3>)
         .with_mut(|__v| __v.width = 3);
-    assert!(((((*p_integers.borrow()).v.integers().with(|__v| (*__v).hi) == 100_i64) as i32) != 0));
-    assert!(((((*p_integers.borrow()).v.integers().with(|__v| (*__v).width) == 3) as i32) != 0));
+    assert!(
+        ((((p_integers
+            .as_pointer()
+            .reinterpret_cast::<u8>()
+            .offset(8usize)
+            .reinterpret_cast::<anon_3>() as Ptr<anon_3>)
+            .with(|__v| (*__v).hi)
+            == 100_i64) as i32)
+            != 0)
+    );
+    assert!(
+        ((((p_integers
+            .as_pointer()
+            .reinterpret_cast::<u8>()
+            .offset(8usize)
+            .reinterpret_cast::<anon_3>() as Ptr<anon_3>)
+            .with(|__v| (*__v).width)
+            == 3) as i32)
+            != 0)
+    );
     return 0;
 }

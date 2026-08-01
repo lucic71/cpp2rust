@@ -105,18 +105,41 @@ fn main_0() -> i32 {
             .memset((0) as u8, 16usize as usize);
         ((outer.as_pointer()) as Ptr<Outer>).to_any().clone()
     };
-    (*outer.borrow_mut()).u.inner().with_mut(|__v| __v.a = 3);
-    (*outer.borrow_mut()).u.inner().with_mut(|__v| __v.b = 4);
-    assert!((((({ sum_inner_0(((*outer.borrow()).u.inner()).clone()) }) == 7) as i32) != 0));
+    (outer
+        .as_pointer()
+        .reinterpret_cast::<u8>()
+        .offset(0usize)
+        .reinterpret_cast::<Inner>() as Ptr<Inner>)
+        .with_mut(|__v| __v.a = 3);
+    (outer
+        .as_pointer()
+        .reinterpret_cast::<u8>()
+        .offset(0usize)
+        .reinterpret_cast::<Inner>() as Ptr<Inner>)
+        .with_mut(|__v| __v.b = 4);
     assert!(
-        ((((((((*outer.borrow()).u.raw_().reinterpret_cast::<u8>() as Ptr::<u8>)
+        (((({
+            sum_inner_0(
+                (outer
+                    .as_pointer()
+                    .reinterpret_cast::<u8>()
+                    .offset(0usize)
+                    .reinterpret_cast::<Inner>() as Ptr<Inner>),
+            )
+        }) == 7) as i32)
+            != 0)
+    );
+    assert!(
+        ((((((((outer.as_pointer().reinterpret_cast::<u8>().offset(0usize) as Ptr<u8>)
+            as Ptr::<u8>)
             .offset(((0) as isize))
             .read()) as u8) as i32)
             == 3) as i32)
             != 0)
     );
     assert!(
-        ((((((((*outer.borrow()).u.raw_().reinterpret_cast::<u8>() as Ptr::<u8>)
+        ((((((((outer.as_pointer().reinterpret_cast::<u8>().offset(0usize) as Ptr<u8>)
+            as Ptr::<u8>)
             .offset(((4) as isize))
             .read()) as u8) as i32)
             == 4) as i32)

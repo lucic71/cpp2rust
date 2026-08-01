@@ -49,8 +49,19 @@ fn main_0() -> i32 {
         }
     };
     let u: Value<anon_0> = <Value<anon_0>>::default();
-    (*u.borrow_mut()).bits().write(3735928559_u64);
-    let p: Value<Ptr<i32>> = Rc::new(RefCell::new(((*u.borrow()).p().read()).clone()));
+    (u.as_pointer()
+        .reinterpret_cast::<u8>()
+        .offset(0usize)
+        .reinterpret_cast::<u64>() as Ptr<u64>)
+        .write(3735928559_u64);
+    let p: Value<Ptr<i32>> = Rc::new(RefCell::new(
+        ((u.as_pointer()
+            .reinterpret_cast::<u8>()
+            .offset(0usize)
+            .reinterpret_cast::<Ptr<i32>>() as Ptr<Ptr<i32>>)
+            .read())
+        .clone(),
+    ));
     return if (((((*p.borrow()).read()) == 0) as i32) != 0) {
         0
     } else {

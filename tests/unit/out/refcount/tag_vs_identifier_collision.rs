@@ -250,11 +250,37 @@ fn main_0() -> i32 {
     (*p.borrow_mut()).y = 4;
     assert!((((((*p.borrow()).x + (*p.borrow()).y) == 7) as i32) != 0));
     let up: Value<point> = <Value<point>>::default();
-    (*up.borrow_mut()).whole().write(5);
-    assert!((((((*up.borrow()).whole().read()) == 5) as i32) != 0));
+    (up.as_pointer()
+        .reinterpret_cast::<u8>()
+        .offset(0usize)
+        .reinterpret_cast::<i32>() as Ptr<i32>)
+        .write(5);
+    assert!(
+        (((((up
+            .as_pointer()
+            .reinterpret_cast::<u8>()
+            .offset(0usize)
+            .reinterpret_cast::<i32>() as Ptr<i32>)
+            .read())
+            == 5) as i32)
+            != 0)
+    );
     let b: Value<slot_union> = <Value<slot_union>>::default();
-    (*b.borrow_mut()).i().write(9);
-    assert!((((((*b.borrow()).i().read()) == 9) as i32) != 0));
+    (b.as_pointer()
+        .reinterpret_cast::<u8>()
+        .offset(0usize)
+        .reinterpret_cast::<i32>() as Ptr<i32>)
+        .write(9);
+    assert!(
+        (((((b
+            .as_pointer()
+            .reinterpret_cast::<u8>()
+            .offset(0usize)
+            .reinterpret_cast::<i32>() as Ptr<i32>)
+            .read())
+            == 9) as i32)
+            != 0)
+    );
     let e: Value<slot> = Rc::new(RefCell::new(slot::SLOT_B));
     assert!((((((*e.borrow()) as u32) == ((slot::SLOT_B as i32) as u32)) as i32) != 0));
     let inner_tag: Value<Inner> = <Value<Inner>>::default();
