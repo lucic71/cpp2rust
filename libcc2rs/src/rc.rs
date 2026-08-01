@@ -1051,7 +1051,13 @@ impl Ptr<u8> {
                 data.alloc.write_bytes(off, &buf);
                 r
             }
-            PtrKind::FieldPtr(_) => panic!("with_slice_mut not supported for field pointers"),
+            PtrKind::FieldPtr(view) => {
+                let mut buf = vec![0u8; len];
+                view.read_bytes_dyn(off, &mut buf);
+                let r = f(&mut buf);
+                view.write_bytes_dyn(off, &buf);
+                r
+            }
         }
     }
 
@@ -1080,7 +1086,11 @@ impl Ptr<u8> {
                 data.alloc.read_bytes(off, &mut buf);
                 f(&buf)
             }
-            PtrKind::FieldPtr(_) => panic!("with_slice not supported for field pointers"),
+            PtrKind::FieldPtr(view) => {
+                let mut buf = vec![0u8; len];
+                view.read_bytes_dyn(off, &mut buf);
+                f(&buf)
+            }
         }
     }
 
