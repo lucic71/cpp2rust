@@ -517,6 +517,21 @@ impl<T: ByteRepr> Ptr<T> {
     }
 }
 
+fn write_changed_bytes(alloc: &dyn OriginalAlloc, byte_offset: usize, old: &[u8], new: &[u8]) {
+    let mut i = 0;
+    while i < new.len() {
+        if old[i] == new[i] {
+            i += 1;
+            continue;
+        }
+        let start = i;
+        while i < new.len() && old[i] != new[i] {
+            i += 1;
+        }
+        alloc.write_bytes(byte_offset + start, &new[start..i]);
+    }
+}
+
 impl<T> Ptr<T> {
     pub fn with_mut<R>(&self, f: impl FnOnce(&mut T) -> R) -> R
     where
@@ -551,12 +566,13 @@ impl<T> Ptr<T> {
                 f(&mut borrow[self.offset])
             }
             PtrKind::Reinterpreted(data) => {
-                let mut buf = vec![0u8; T::byte_size()];
-                data.alloc.read_bytes(self.offset, &mut buf);
-                let mut val = T::from_bytes(&buf);
+                let mut old = vec![0u8; T::byte_size()];
+                data.alloc.read_bytes(self.offset, &mut old);
+                let mut val = T::from_bytes(&old);
                 f(&mut val);
-                val.to_bytes(&mut buf);
-                data.alloc.write_bytes(self.offset, &buf);
+                let mut new = vec![0u8; T::byte_size()];
+                val.to_bytes(&mut new);
+                write_changed_bytes(&*data.alloc, self.offset, &old, &new);
             }
             PtrKind::FieldPtr(view) => view.with_mut_dyn(self.offset, f),
         }
