@@ -129,6 +129,7 @@ enum PtrKind<T> {
     Vec(Weak<RefCell<Vec<T>>>),
     Reinterpreted(Rc<ReinterpretedView>),
     FieldPtr(Rc<dyn FieldAccess<T>>),
+    Dangling(SyntheticAddr),
 }
 
 impl<T> fmt::Debug for PtrKind<T> {
@@ -144,6 +145,7 @@ impl<T> fmt::Debug for PtrKind<T> {
                 write!(f, "Reinterpreted(0x{:x})", data.alloc.address())
             }
             PtrKind::FieldPtr(view) => write!(f, "FieldPtr(0x{:x})", view.address()),
+            PtrKind::Dangling(addr) => write!(f, "Dangling(0x{addr:x})"),
         }
     }
 }
@@ -159,6 +161,7 @@ impl<T> Clone for PtrKind<T> {
             PtrKind::HeapArray(weak) => PtrKind::HeapArray(weak.clone()),
             PtrKind::Reinterpreted(data) => PtrKind::Reinterpreted(Rc::clone(data)),
             PtrKind::FieldPtr(view) => PtrKind::FieldPtr(Rc::clone(view)),
+            PtrKind::Dangling(addr) => PtrKind::Dangling(*addr),
         }
     }
 }
@@ -172,6 +175,7 @@ impl<T> PtrKind<T> {
             PtrKind::StackArray(w) | PtrKind::HeapArray(w) => w.as_ptr() as usize,
             PtrKind::Reinterpreted(data) => data.alloc.address(),
             PtrKind::FieldPtr(view) => view.address(),
+            PtrKind::Dangling(addr) => *addr,
         }
     }
 
@@ -187,6 +191,7 @@ impl<T> PtrKind<T> {
             PtrKind::StackArray(w) | PtrKind::HeapArray(w) => w.strong_count() == 0,
             PtrKind::Reinterpreted(data) => data.alloc.is_dangling(),
             PtrKind::FieldPtr(view) => view.is_dangling(),
+            PtrKind::Dangling(_) => true,
         }
     }
 }
@@ -331,6 +336,7 @@ impl<T> Ptr<T> {
             }
             PtrKind::Reinterpreted(data) => data.alloc.total_byte_len() / data.elem_byte_size,
             PtrKind::FieldPtr(_) => 1,
+            PtrKind::Dangling(_) => 0,
         }
     }
 
@@ -351,6 +357,7 @@ impl<T> Ptr<T> {
                 .is_empty(),
             PtrKind::Reinterpreted(data) => self.offset >= data.alloc.total_byte_len(),
             PtrKind::FieldPtr(_) => false,
+            PtrKind::Dangling(_) => true,
         }
     }
 
@@ -449,6 +456,7 @@ impl<T> Ptr<T> {
                 }),
                 src_byte_off,
             ),
+            PtrKind::Dangling(_) => panic!("ub: dangling pointer"),
         };
 
         Ptr {
@@ -479,6 +487,7 @@ impl<T: ByteRepr> Ptr<T> {
 
     fn base_addr(&self) -> usize {
         match &self.kind {
+            PtrKind::Dangling(addr) => return *addr,
             PtrKind::FieldPtr(view) => return view.base_addr_dyn(),
             PtrKind::Reinterpreted(data) => {
                 if let Some(base) = data.alloc.base_addr() {
@@ -572,6 +581,7 @@ impl<T> Ptr<T> {
                 write_changed_bytes(&*data.alloc, self.offset, &old, &new);
             }
             PtrKind::FieldPtr(view) => view.with_mut_dyn(self.offset, f),
+            PtrKind::Dangling(_) => panic!("ub: dangling pointer"),
         }
     }
 
@@ -614,6 +624,7 @@ impl<T> Ptr<T> {
                 f(&val)
             }
             PtrKind::FieldPtr(view) => view.with_dyn(self.offset, f),
+            PtrKind::Dangling(_) => panic!("ub: dangling pointer"),
         }
     }
 }
@@ -668,6 +679,7 @@ impl<T: std::cmp::Ord> Ptr<T> {
                 let strong = weak.upgrade().expect("ub: dangling pointer");
                 (*strong.borrow_mut())[self.get_offset()..last].sort();
             }
+            PtrKind::Dangling(_) => panic!("ub: dangling pointer"),
             PtrKind::Reinterpreted(_) | PtrKind::FieldPtr(_) => {
                 panic!("sorting not supported for this pointer kind")
             }
@@ -713,6 +725,7 @@ impl<T: Clone> Ptr<T> {
                 let mut borrow = strong.borrow_mut();
                 sort(&mut borrow, self.get_offset(), last, &mut cmp);
             }
+            PtrKind::Dangling(_) => panic!("ub: dangling pointer"),
             PtrKind::Reinterpreted(_) | PtrKind::FieldPtr(_) => {
                 panic!("sorting not supported for this pointer kind")
             }
@@ -994,6 +1007,7 @@ impl<T> ToOwnedOption<T, T> for Ptr<T> {
             PtrKind::HeapArray(_) => panic!("Can't own an array variable as single"),
             PtrKind::Reinterpreted(_) => panic!("Can't own a reinterpreted pointer"),
             PtrKind::FieldPtr(_) => panic!("Can't own a field pointer"),
+            PtrKind::Dangling(_) => panic!("ub: dangling pointer"),
         }
     }
 }
@@ -1021,6 +1035,7 @@ impl<T> ToOwnedOption<T, Box<[T]>> for Ptr<T> {
             PtrKind::HeapSingle(_) => panic!("Can't own a single variable as an array"),
             PtrKind::Reinterpreted(_) => panic!("Can't own a reinterpreted pointer"),
             PtrKind::FieldPtr(_) => panic!("Can't own a field pointer"),
+            PtrKind::Dangling(_) => panic!("ub: dangling pointer"),
         }
     }
 }
@@ -1038,6 +1053,7 @@ impl<T> fmt::Debug for Ptr<T> {
             PtrKind::Vec(w) => (Weak::as_ptr(w) as usize).wrapping_add(self.byte_offset()),
             PtrKind::Reinterpreted(data) => data.alloc.address().wrapping_add(self.byte_offset()),
             PtrKind::FieldPtr(view) => view.address().wrapping_add(self.byte_offset()),
+            PtrKind::Dangling(addr) => *addr,
         };
         write!(f, "0x{:x}", addr)
     }
@@ -1102,6 +1118,7 @@ impl Ptr<u8> {
                 view.write_bytes_dyn(off, &buf);
                 r
             }
+            PtrKind::Dangling(_) => panic!("ub: dangling pointer"),
         }
     }
 
@@ -1135,6 +1152,7 @@ impl Ptr<u8> {
                 view.read_bytes_dyn(off, &mut buf);
                 f(&buf)
             }
+            PtrKind::Dangling(_) => panic!("ub: dangling pointer"),
         }
     }
 
@@ -1198,6 +1216,7 @@ impl Ptr<u8> {
                 buf
             }
             PtrKind::FieldPtr(_) => panic!("slice_until not supported for field pointers"),
+            PtrKind::Dangling(_) => panic!("ub: dangling pointer"),
         }
     }
 
@@ -1558,7 +1577,7 @@ impl<T: ByteRepr> ByteRepr for Ptr<T> {
             if was_allocated(addr) {
                 return Ptr {
                     offset: 0,
-                    kind: PtrKind::HeapSingle(Weak::new()),
+                    kind: PtrKind::Dangling(addr),
                 };
             }
             panic!("ub: cast of invalid address 0x{addr:x} to pointer");
