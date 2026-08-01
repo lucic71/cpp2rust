@@ -41,13 +41,14 @@ trait FieldAccess<F> {
     fn read_bytes_dyn(&self, byte_offset: usize, buf: &mut [u8]);
     fn write_bytes_dyn(&self, byte_offset: usize, data: &[u8]);
     fn total_byte_len_dyn(&self) -> usize;
+    fn base_addr_dyn(&self) -> usize;
 }
 
 impl<P: ByteRepr, F: ByteRepr> FieldAccess<F> for FieldView<P, F> {
     fn address(&self) -> usize {
         self.parent
             .kind
-            .address()
+            .real_addr()
             .wrapping_add(self.parent.byte_offset())
             .wrapping_add(self.field_byte_offset)
     }
@@ -76,6 +77,12 @@ impl<P: ByteRepr, F: ByteRepr> FieldAccess<F> for FieldView<P, F> {
 
     fn total_byte_len_dyn(&self) -> usize {
         self.parent.with(|p| (self.get)(p).len()) * F::byte_size()
+    }
+
+    fn base_addr_dyn(&self) -> usize {
+        self.parent
+            .address()
+            .wrapping_add(self.field_byte_offset)
     }
 }
 
@@ -155,7 +162,7 @@ impl<T> Clone for PtrKind<T> {
 }
 
 impl<T> PtrKind<T> {
-    fn address(&self) -> usize {
+    fn real_addr(&self) -> usize {
         match self {
             PtrKind::Null => 0,
             PtrKind::StackSingle(w) | PtrKind::HeapSingle(w) => w.as_ptr() as usize,
@@ -178,25 +185,6 @@ impl<T> PtrKind<T> {
     }
 }
 
-impl<T> Eq for PtrKind<T> {}
-
-impl<T> PartialEq for PtrKind<T> {
-    fn eq(&self, other: &Self) -> bool {
-        match (self, other) {
-            (PtrKind::Null, PtrKind::Null) => true,
-            _ => self.address() == other.address(),
-        }
-    }
-}
-
-impl<T> PartialOrd for PtrKind<T> {
-    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
-        match (self, other) {
-            (PtrKind::Null, PtrKind::Null) => Some(std::cmp::Ordering::Equal),
-            _ => self.address().partial_cmp(&other.address()),
-        }
-    }
-}
 
 pub struct Ptr<T> {
     offset: usize,
@@ -221,20 +209,17 @@ impl<T> Clone for Ptr<T> {
     }
 }
 
-impl<T> PartialEq for Ptr<T> {
+impl<T: ByteRepr> PartialEq for Ptr<T> {
     fn eq(&self, other: &Self) -> bool {
-        self.byte_offset() == other.byte_offset() && self.kind == other.kind
+        self.address() == other.address()
     }
 }
 
-impl<T> Eq for Ptr<T> {}
+impl<T: ByteRepr> Eq for Ptr<T> {}
 
-impl<T> PartialOrd for Ptr<T> {
+impl<T: ByteRepr> PartialOrd for Ptr<T> {
     fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
-        match self.kind.partial_cmp(&other.kind) {
-            Some(std::cmp::Ordering::Equal) => self.byte_offset().partial_cmp(&other.byte_offset()),
-            ord => ord,
-        }
+        self.address().partial_cmp(&other.address())
     }
 }
 
@@ -478,6 +463,35 @@ impl<T: ByteRepr> Ptr<T> {
             PtrKind::Reinterpreted(data) => data.alloc.total_byte_len(),
             _ => self.len().wrapping_mul(T::byte_size()),
         }
+    }
+
+    pub fn address(&self) -> usize {
+        if self.is_null() {
+            return 0;
+        }
+        self.base_addr().wrapping_add(self.c_byte_offset())
+    }
+
+    fn base_addr(&self) -> usize {
+        if let PtrKind::FieldPtr(view) = &self.kind {
+            return view.base_addr_dyn();
+        }
+        let byte_len = if self.kind.is_dangling() {
+            0
+        } else {
+            self.c_byte_len()
+        };
+        register_ptr(
+            self.kind.real_addr(),
+            byte_len,
+            Registered::Data(
+                Ptr {
+                    offset: 0,
+                    kind: self.kind.clone(),
+                }
+                .to_any(),
+            ),
+        )
     }
 
     #[inline]
@@ -780,7 +794,10 @@ impl Iterator for CStringIterator {
 impl<T> Sub for Ptr<T> {
     type Output = isize;
     fn sub(self, other: Self) -> Self::Output {
-        assert!(self.kind == other.kind, "ub: invalid subtraction");
+        assert!(
+            self.kind.real_addr() == other.kind.real_addr(),
+            "ub: invalid subtraction"
+        );
         (self.get_offset() as isize).wrapping_sub(other.get_offset() as isize)
     }
 }
@@ -1121,7 +1138,10 @@ impl Ptr<u8> {
     }
 
     pub fn slice_until(&self, end: &Self) -> Vec<u8> {
-        assert!(self.kind == end.kind, "ub: invalid slice");
+        assert!(
+            self.kind.real_addr() == end.kind.real_addr(),
+            "ub: invalid slice"
+        );
         let start: usize = self.offset;
         let end: usize = end.offset;
         assert!(start <= end);
@@ -1425,12 +1445,7 @@ impl PtrRegistry {
     fn put(&mut self, real_addr: RealAddr, byte_len: ByteLen, ptr: Registered) -> SyntheticAddr {
         self.evict_dead();
         let base = self.ranges.get_synthetic_addr(real_addr, byte_len);
-        match self.entries.get(&base) {
-            Some((_, len)) if *len > byte_len => {}
-            _ => {
-                self.entries.insert(base, (ptr, byte_len));
-            }
-        }
+        self.entries.insert(base, (ptr, byte_len));
         base
     }
 
@@ -1486,23 +1501,7 @@ impl<T: ByteRepr> ByteRepr for Ptr<T> {
             0usize.to_bytes(buf);
             return;
         }
-        let byte_len = if self.kind.is_dangling() {
-            0
-        } else {
-            self.c_byte_len()
-        };
-        let base = register_ptr(
-            self.kind.address(),
-            byte_len,
-            Registered::Data(
-                Ptr {
-                    offset: 0,
-                    kind: self.kind.clone(),
-                }
-                .to_any(),
-            ),
-        );
-        base.wrapping_add(self.c_byte_offset()).to_bytes(buf);
+        self.address().to_bytes(buf);
     }
 
     fn from_bytes(buf: &[u8]) -> Self {
@@ -1523,13 +1522,10 @@ impl<T: ByteRepr> ByteRepr for Ptr<T> {
             panic!("ub: cast of invalid address 0x{addr:x} to pointer");
         };
         let delta = addr - base;
-        let elem_size = T::byte_size();
-        if elem_size == 0 {
-            assert_eq!(delta, 0, "ub: misaligned pointer");
+        if delta == 0 {
             return any.reinterpret_cast::<T>();
         }
-        assert_eq!(delta % elem_size, 0, "ub: misaligned pointer");
-        any.reinterpret_cast::<T>().offset(delta / elem_size)
+        any.ptr.as_bytes().offset(delta).reinterpret_cast::<T>()
     }
 }
 
