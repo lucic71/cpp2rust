@@ -72,24 +72,33 @@ fn f8(a0: AnyPtr, a1: AnyPtr, a2: usize, a3: usize, a4: fn(AnyPtr, AnyPtr) -> i3
 
 fn f9(a0: AnyPtr, a1: usize, a2: usize, a3: fn(AnyPtr, AnyPtr) -> i32) {
     let __base = a0.reinterpret_cast::<u8>();
+    let __size = a2;
+    let mut __x = vec![0u8; __size];
+    let mut __y = vec![0u8; __size];
     for __i in 0..a1 {
         let mut __min = __i;
         for __j in (__i + 1)..a1 {
             if a3(
-                __base.offset(__j * a2).to_any(),
-                __base.offset(__min * a2).to_any(),
+                __base.offset(__j * __size).to_any(),
+                __base.offset(__min * __size).to_any(),
             ) < 0
             {
                 __min = __j;
             }
         }
         if __min != __i {
-            for __b in 0..a2 {
-                let __x = __base.offset(__i * a2 + __b).read();
-                let __y = __base.offset(__min * a2 + __b).read();
-                __base.offset(__i * a2 + __b).write(__y);
-                __base.offset(__min * a2 + __b).write(__x);
-            }
+            __base
+                .offset(__i * __size)
+                .with_slice(__size, |__s| __x.copy_from_slice(__s));
+            __base
+                .offset(__min * __size)
+                .with_slice(__size, |__s| __y.copy_from_slice(__s));
+            __base
+                .offset(__i * __size)
+                .with_slice_mut(__size, |__d| __d.copy_from_slice(&__y));
+            __base
+                .offset(__min * __size)
+                .with_slice_mut(__size, |__d| __d.copy_from_slice(&__x));
         }
     }
 }

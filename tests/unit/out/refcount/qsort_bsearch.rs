@@ -26,32 +26,33 @@ fn main_0() -> i32 {
         let __base = ((arr.as_pointer() as Ptr<i32>) as Ptr<i32>)
             .to_any()
             .reinterpret_cast::<u8>();
+        let __size = ::std::mem::size_of::<i32>();
+        let mut __x = vec![0u8; __size];
+        let mut __y = vec![0u8; __size];
         for __i in 0..8_usize {
             let mut __min = __i;
             for __j in (__i + 1)..8_usize {
                 if FnPtr::<fn(AnyPtr, AnyPtr) -> i32>::new(cmp_int_0)(
-                    __base.offset(__j * ::std::mem::size_of::<i32>()).to_any(),
-                    __base.offset(__min * ::std::mem::size_of::<i32>()).to_any(),
+                    __base.offset(__j * __size).to_any(),
+                    __base.offset(__min * __size).to_any(),
                 ) < 0
                 {
                     __min = __j;
                 }
             }
             if __min != __i {
-                for __b in 0..::std::mem::size_of::<i32>() {
-                    let __x = __base
-                        .offset(__i * ::std::mem::size_of::<i32>() + __b)
-                        .read();
-                    let __y = __base
-                        .offset(__min * ::std::mem::size_of::<i32>() + __b)
-                        .read();
-                    __base
-                        .offset(__i * ::std::mem::size_of::<i32>() + __b)
-                        .write(__y);
-                    __base
-                        .offset(__min * ::std::mem::size_of::<i32>() + __b)
-                        .write(__x);
-                }
+                __base
+                    .offset(__i * __size)
+                    .with_slice(__size, |__s| __x.copy_from_slice(__s));
+                __base
+                    .offset(__min * __size)
+                    .with_slice(__size, |__s| __y.copy_from_slice(__s));
+                __base
+                    .offset(__i * __size)
+                    .with_slice_mut(__size, |__d| __d.copy_from_slice(&__y));
+                __base
+                    .offset(__min * __size)
+                    .with_slice_mut(__size, |__d| __d.copy_from_slice(&__x));
             }
         }
     };
