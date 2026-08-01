@@ -567,7 +567,7 @@ impl<T> Ptr<T> {
                 data.alloc.read_bytes(self.offset, &mut old);
                 let mut val = T::from_bytes(&old);
                 f(&mut val);
-                let mut new = vec![0u8; T::byte_size()];
+                let mut new = old.clone();
                 val.to_bytes(&mut new);
                 write_changed_bytes(&*data.alloc, self.offset, &old, &new);
             }
