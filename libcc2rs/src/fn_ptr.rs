@@ -190,6 +190,9 @@ impl<T: 'static> ErasedPtr for FnPtr<T> {
     fn as_bytes(&self) -> Ptr<u8> {
         panic!("byte view not supported on fn pointer");
     }
+    fn write_address(&self, buf: &mut [u8]) {
+        ByteRepr::to_bytes(self, buf);
+    }
     fn as_any(&self) -> &dyn Any {
         self
     }

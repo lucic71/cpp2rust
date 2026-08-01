@@ -1198,6 +1198,7 @@ impl Ptr<u8> {
 
 pub(crate) trait ErasedPtr: std::any::Any {
     fn as_bytes(&self) -> Ptr<u8>;
+    fn write_address(&self, buf: &mut [u8]);
     fn as_any(&self) -> &dyn std::any::Any;
     fn equals(&self, other: &dyn ErasedPtr) -> bool;
     fn is_null(&self) -> bool;
@@ -1217,6 +1218,10 @@ where
 {
     fn as_bytes(&self) -> Ptr<u8> {
         self.reinterpret_cast::<u8>()
+    }
+
+    fn write_address(&self, buf: &mut [u8]) {
+        ByteRepr::to_bytes(self, buf);
     }
 
     fn as_any(&self) -> &dyn std::any::Any {
@@ -1523,7 +1528,7 @@ impl<T: ByteRepr> ByteRepr for Ptr<T> {
             }
             panic!("ub: cast of invalid address 0x{addr:x} to pointer");
         };
-        let (base, Registered::Data(any), byte_len) = entry else {
+        let (base, Registered::Data(any), _) = entry else {
             panic!("ub: cast of invalid address 0x{addr:x} to pointer");
         };
         let delta = addr - base;
@@ -1543,10 +1548,16 @@ impl ByteRepr for AnyPtr {
     }
 
     fn to_bytes(&self, buf: &mut [u8]) {
-        self.ptr.as_bytes().to_bytes(buf);
+        self.ptr.write_address(buf);
     }
 
     fn from_bytes(buf: &[u8]) -> Self {
+        let addr = usize::from_bytes(buf);
+        if let Some((base, Registered::Data(any), _)) = lookup_ptr(addr)
+            && base == addr
+        {
+            return any;
+        }
         Ptr::<u8>::from_bytes(buf).to_any()
     }
 }
