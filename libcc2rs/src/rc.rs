@@ -1425,7 +1425,12 @@ impl PtrRegistry {
     fn put(&mut self, real_addr: RealAddr, byte_len: ByteLen, ptr: Registered) -> SyntheticAddr {
         self.evict_dead();
         let base = self.ranges.get_synthetic_addr(real_addr, byte_len);
-        self.entries.insert(base, (ptr, byte_len));
+        match self.entries.get(&base) {
+            Some((_, len)) if *len > byte_len => {}
+            _ => {
+                self.entries.insert(base, (ptr, byte_len));
+            }
+        }
         base
     }
 
