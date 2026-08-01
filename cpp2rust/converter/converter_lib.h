@@ -229,4 +229,6 @@ ConstCastType GetConstCastType(clang::QualType to, clang::QualType from);
 
 bool HasZeroEnumerator(const clang::EnumDecl *decl);
 
+bool IsFlexibleArrayMemberAccess(clang::ASTContext &ctx, clang::Expr *array);
+
 } // namespace cpp2rust

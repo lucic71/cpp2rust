@@ -83,9 +83,7 @@ fn main_0() -> i32 {
     let i: Value<usize> = Rc::new(RefCell::new(0_usize));
     'loop_: while ((((*i.borrow()) < (*tail_size.borrow())) as i32) != 0) {
         let __rhs = (((*i.borrow()) & 255_usize) as u8);
-        ((*n.borrow())
-            .with(|__v| (*__v).x.bytes().clone())
-            .reinterpret_cast::<u8>() as Ptr<u8>)
+        (((*n.borrow()).reinterpret_cast::<u8>().offset(16usize) as Ptr<u8>) as Ptr<u8>)
             .offset(((*i.borrow()) as isize))
             .write(__rhs);
         (*i.borrow_mut()).postfix_inc();
@@ -94,9 +92,8 @@ fn main_0() -> i32 {
     'loop_: while ((((*i.borrow()) < (*tail_size.borrow())) as i32) != 0) {
         assert!(
             ((({
-                let _lhs = ((((*n.borrow())
-                    .with(|__v| (*__v).x.bytes().clone())
-                    .reinterpret_cast::<u8>() as Ptr<u8>)
+                let _lhs = (((((*n.borrow()).reinterpret_cast::<u8>().offset(16usize) as Ptr<u8>)
+                    as Ptr<u8>)
                     .offset(((*i.borrow()) as isize))
                     .read()) as i32);
                 _lhs == ((((*i.borrow()) & 255_usize) as u8) as i32)
@@ -106,17 +103,13 @@ fn main_0() -> i32 {
         (*i.borrow_mut()).postfix_inc();
     }
     let p: Value<Ptr<u8>> = Rc::new(RefCell::new(
-        (((*n.borrow())
-            .with(|__v| (*__v).x.bytes().clone())
-            .reinterpret_cast::<u8>() as Ptr<u8>)
+        ((((*n.borrow()).reinterpret_cast::<u8>().offset(16usize) as Ptr<u8>) as Ptr<u8>)
             .offset(((10) as isize))),
     ));
     assert!(((((((*p.borrow()).read()) as i32) == 10) as i32) != 0));
     (*p.borrow()).write(170_u8);
     assert!(
-        (((((((*n.borrow())
-            .with(|__v| (*__v).x.bytes().clone())
-            .reinterpret_cast::<u8>() as Ptr::<u8>)
+        ((((((((*n.borrow()).reinterpret_cast::<u8>().offset(16usize) as Ptr<u8>) as Ptr::<u8>)
             .offset(((10) as isize))
             .read()) as i32)
             == 170) as i32)
@@ -124,9 +117,7 @@ fn main_0() -> i32 {
     );
     (*n.borrow()).with_mut(|__v| __v.pos = 20_usize);
     let q: Value<Ptr<u8>> = Rc::new(RefCell::new(
-        (((*n.borrow())
-            .with(|__v| (*__v).x.bytes().clone())
-            .reinterpret_cast::<u8>() as Ptr<u8>)
+        ((((*n.borrow()).reinterpret_cast::<u8>().offset(16usize) as Ptr<u8>) as Ptr<u8>)
             .offset((((*n.borrow()).with(|__v| (*__v).pos)) as isize))),
     ));
     assert!(((((((*q.borrow()).read()) as i32) == 20) as i32) != 0));

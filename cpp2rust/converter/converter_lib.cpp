@@ -1155,4 +1155,10 @@ bool HasZeroEnumerator(const clang::EnumDecl *decl) {
   return false;
 }
 
+bool IsFlexibleArrayMemberAccess(clang::ASTContext &ctx, clang::Expr *array) {
+  return array->isFlexibleArrayMemberLike(
+      ctx, clang::LangOptions::StrictFlexArraysLevelKind::OneZeroOrIncomplete,
+      /*IgnoreTemplateOrMacroSubstitution=*/true);
+}
+
 } // namespace cpp2rust

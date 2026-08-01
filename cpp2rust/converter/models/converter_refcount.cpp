@@ -1763,6 +1763,9 @@ RsExpr *ConverterRefCount::VisitInitListExpr(clang::InitListExpr *expr) {
 }
 
 RsExpr *ConverterRefCount::ConvertUnionMemberAccessor(clang::MemberExpr *expr) {
+  if (auto *fam = TryFlexibleArrayMember(expr)) {
+    return fam;
+  }
   auto member = expr->getMemberDecl();
   bool is_mut = isLValue();
   RsExpr *accessor = nullptr;
@@ -1794,8 +1797,48 @@ RsExpr *ConverterRefCount::ConvertUnionMemberAccessor(clang::MemberExpr *expr) {
   return node;
 }
 
+RsExpr *ConverterRefCount::TryFlexibleArrayMember(clang::MemberExpr *expr) {
+  if (!IsFlexibleArrayMemberAccess(ctx_, expr)) {
+    return nullptr;
+  }
+  auto elem_type = expr->getType()->getAsArrayTypeUnsafe()->getElementType();
+
+  uint64_t byte_off = 0;
+  clang::Expr *base = expr;
+  while (auto *member = clang::dyn_cast<clang::MemberExpr>(base)) {
+    const auto *field = clang::cast<clang::FieldDecl>(member->getMemberDecl());
+    const auto &layout = ctx_.getASTRecordLayout(field->getParent());
+    byte_off += layout.getFieldOffset(field->getFieldIndex()) / 8;
+    base = member->getBase();
+    if (member->isArrow()) {
+      break;
+    }
+    base = base->IgnoreParenImpCasts();
+  }
+
+  RsExpr *node = ConvertPointer(base);
+  node = MethodCall(node, "reinterpret_cast::<u8>", std::vector<RsExpr *>{},
+                    /*is_mut=*/false);
+  node = MethodCall(node, "offset",
+                    std::vector<RsExpr *>{Text(std::format("{}usize", byte_off))},
+                    /*is_mut=*/false);
+  PushConversionKind push(*this, ConversionKind::Unboxed);
+  auto elem_name = RenderType(elem_type);
+  if (elem_name != "u8") {
+    node = MethodCall(node,
+                      std::format("reinterpret_cast::<{}>", elem_name),
+                      std::vector<RsExpr *>{}, /*is_mut=*/false);
+  }
+  computed_expr_type_ = ComputedExprType::FreshPointer;
+  return arena_.New<Cast>(node, Text(std::format("Ptr<{}>", elem_name)));
+}
+
 RsExpr *ConverterRefCount::ConvertFieldPtr(clang::MemberExpr *expr,
                                            const clang::FieldDecl *field) {
+  if (auto *fam = TryFlexibleArrayMember(expr)) {
+    return fam;
+  }
+
   auto *base = expr->getBase();
   auto base_type = expr->isArrow() ? base->getType()->getPointeeType()
                                    : base->getType().getNonReferenceType();
@@ -2455,6 +2498,21 @@ RsExpr *ConverterRefCount::ConvertSubscriptIndex(clang::Expr *idx) {
 RsExpr *ConverterRefCount::ConvertArraySubscript(clang::Expr *base,
                                                  clang::Expr *idx,
                                                  clang::QualType type) {
+  if (auto *member =
+          clang::dyn_cast<clang::MemberExpr>(base->IgnoreParenImpCasts())) {
+    if (auto *fam = TryFlexibleArrayMember(member)) {
+      auto *idx_node = arena_.New<Cast>(Parens(ConvertSubscriptIndex(idx)),
+                                        Text("isize"));
+      auto *node = MethodCall(fam, "offset", std::vector<RsExpr *>{idx_node},
+                              /*is_mut=*/false);
+      if (isAddrOf()) {
+        computed_expr_type_ = ComputedExprType::FreshPointer;
+        return node;
+      }
+      SetValueFreshness(type);
+      return arena_.New<Unary>(Unary::Op::Deref, node);
+    }
+  }
   if (isAddrOf()) {
     bool is_inner_boxed = false;
     if (auto base_arr_ty = clang::dyn_cast<clang::ArrayType>(

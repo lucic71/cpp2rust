@@ -3796,13 +3796,6 @@ RsExpr *Converter::ConvertPointerOffset(clang::Expr *base, clang::Expr *idx,
                     /*is_mut=*/false);
 }
 
-static bool IsFlexibleArrayMemberAccess(clang::ASTContext &ctx,
-                                        clang::Expr *array) {
-  return array->isFlexibleArrayMemberLike(
-      ctx, clang::LangOptions::StrictFlexArraysLevelKind::OneZeroOrIncomplete,
-      /*IgnoreTemplateOrMacroSubstitution=*/true);
-}
-
 RsExpr *Converter::EmitFlexibleArrayElementPtr(clang::Expr *array,
                                                clang::Expr *idx, bool is_mut) {
   RsExpr *array_node = nullptr;
