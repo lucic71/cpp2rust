@@ -25,6 +25,7 @@ pub struct Node {
     pub next: *mut Node,
 }
 #[derive(Clone, Copy, PartialEq, Debug, Default)]
+#[repr(u32)]
 enum Color {
     #[default]
     RED = 0,

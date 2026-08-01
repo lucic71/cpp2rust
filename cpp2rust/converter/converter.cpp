@@ -3266,6 +3266,9 @@ RsExpr *Converter::VisitEnumDecl(clang::EnumDecl *decl) {
                      {"Clone", "Copy", "PartialEq", "Debug", "Default"});
   std::vector<RsExpr *> parts;
   parts.push_back(Text("#[derive(Clone, Copy, PartialEq, Debug, Default)]"));
+  parts.push_back(
+      Text(std::format("#[repr({})]", GetUnsafeTypeAsString(
+                                          decl->getIntegerType()))));
   parts.push_back(Text(std::format("enum {}", GetRecordName(decl))));
   std::vector<RsExpr *> enumerators;
   if (!HasZeroEnumerator(decl)) {

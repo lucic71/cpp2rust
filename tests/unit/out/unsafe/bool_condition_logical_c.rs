@@ -7,6 +7,7 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 #[derive(Clone, Copy, PartialEq, Debug, Default)]
+#[repr(u32)]
 enum Code {
     #[default]
     CODE_OK = 0,

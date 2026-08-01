@@ -7,6 +7,7 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
 #[derive(Clone, Copy, PartialEq, Debug, Default)]
+#[repr(u32)]
 enum Color {
     #[default]
     RED = 0,
@@ -25,6 +26,9 @@ impl From<i32> for Color {
 }
 libcc2rs::impl_enum_inc_dec!(Color);
 impl ByteRepr for Color {
+    fn byte_size() -> usize {
+        4
+    }
     fn to_bytes(&self, buf: &mut [u8]) {
         (*self as i32).to_bytes(buf);
     }
@@ -33,6 +37,7 @@ impl ByteRepr for Color {
     }
 }
 #[derive(Clone, Copy, PartialEq, Debug, Default)]
+#[repr(u32)]
 enum Option {
     #[default]
     OPT_NONE = 0,
@@ -53,6 +58,9 @@ impl From<i32> for Option {
 }
 libcc2rs::impl_enum_inc_dec!(Option);
 impl ByteRepr for Option {
+    fn byte_size() -> usize {
+        4
+    }
     fn to_bytes(&self, buf: &mut [u8]) {
         (*self as i32).to_bytes(buf);
     }
@@ -61,6 +69,7 @@ impl ByteRepr for Option {
     }
 }
 #[derive(Clone, Copy, PartialEq, Debug, Default)]
+#[repr(u32)]
 enum Tag_enum {
     #[default]
     TAG_ZERO = 0,
@@ -79,6 +88,9 @@ impl From<i32> for Tag_enum {
 }
 libcc2rs::impl_enum_inc_dec!(Tag_enum);
 impl ByteRepr for Tag_enum {
+    fn byte_size() -> usize {
+        4
+    }
     fn to_bytes(&self, buf: &mut [u8]) {
         (*self as i32).to_bytes(buf);
     }

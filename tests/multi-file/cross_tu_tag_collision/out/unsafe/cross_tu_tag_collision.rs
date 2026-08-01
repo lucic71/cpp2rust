@@ -27,6 +27,7 @@ unsafe fn main_0() -> i32 {
     return 0;
 }
 #[derive(Clone, Copy, PartialEq, Debug, Default)]
+#[repr(u32)]
 enum widget_enum {
     #[default]
     WIDGET_A = 0,

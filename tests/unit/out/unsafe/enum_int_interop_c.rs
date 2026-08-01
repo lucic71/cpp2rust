@@ -7,6 +7,7 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 #[derive(Clone, Copy, PartialEq, Debug, Default)]
+#[repr(u32)]
 enum Color {
     #[default]
     RED = 0,
@@ -25,6 +26,7 @@ impl From<i32> for Color {
 }
 libcc2rs::impl_enum_inc_dec!(Color);
 #[derive(Clone, Copy, PartialEq, Debug, Default)]
+#[repr(u32)]
 enum Option {
     #[default]
     OPT_NONE = 0,
@@ -45,6 +47,7 @@ impl From<i32> for Option {
 }
 libcc2rs::impl_enum_inc_dec!(Option);
 #[derive(Clone, Copy, PartialEq, Debug, Default)]
+#[repr(u32)]
 enum Tag_enum {
     #[default]
     TAG_ZERO = 0,

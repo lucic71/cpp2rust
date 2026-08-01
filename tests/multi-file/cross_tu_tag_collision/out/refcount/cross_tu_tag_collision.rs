@@ -38,6 +38,7 @@ fn main_0() -> i32 {
     return 0;
 }
 #[derive(Clone, Copy, PartialEq, Debug, Default)]
+#[repr(u32)]
 enum widget_enum {
     #[default]
     WIDGET_A = 0,
@@ -56,6 +57,9 @@ impl From<i32> for widget_enum {
 }
 libcc2rs::impl_enum_inc_dec!(widget_enum);
 impl ByteRepr for widget_enum {
+    fn byte_size() -> usize {
+        4
+    }
     fn to_bytes(&self, buf: &mut [u8]) {
         (*self as i32).to_bytes(buf);
     }

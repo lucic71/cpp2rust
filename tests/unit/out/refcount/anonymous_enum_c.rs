@@ -7,6 +7,7 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
 #[derive(Clone, Copy, PartialEq, Debug, Default)]
+#[repr(u32)]
 enum anon_0 {
     #[default]
     FIRST_A = 0,
@@ -23,6 +24,9 @@ impl From<i32> for anon_0 {
 }
 libcc2rs::impl_enum_inc_dec!(anon_0);
 impl ByteRepr for anon_0 {
+    fn byte_size() -> usize {
+        4
+    }
     fn to_bytes(&self, buf: &mut [u8]) {
         (*self as i32).to_bytes(buf);
     }
@@ -31,6 +35,7 @@ impl ByteRepr for anon_0 {
     }
 }
 #[derive(Clone, Copy, PartialEq, Debug, Default)]
+#[repr(u32)]
 enum anon_1 {
     #[default]
     SECOND_A = 0,
@@ -47,6 +52,9 @@ impl From<i32> for anon_1 {
 }
 libcc2rs::impl_enum_inc_dec!(anon_1);
 impl ByteRepr for anon_1 {
+    fn byte_size() -> usize {
+        4
+    }
     fn to_bytes(&self, buf: &mut [u8]) {
         (*self as i32).to_bytes(buf);
     }
@@ -73,6 +81,7 @@ impl ByteRepr for S {
     }
 }
 #[derive(Clone, Copy, PartialEq, Debug, Default)]
+#[repr(u32)]
 enum TdEnum_enum {
     #[default]
     TD_A = 0,
@@ -89,6 +98,9 @@ impl From<i32> for TdEnum_enum {
 }
 libcc2rs::impl_enum_inc_dec!(TdEnum_enum);
 impl ByteRepr for TdEnum_enum {
+    fn byte_size() -> usize {
+        4
+    }
     fn to_bytes(&self, buf: &mut [u8]) {
         (*self as i32).to_bytes(buf);
     }
@@ -97,6 +109,7 @@ impl ByteRepr for TdEnum_enum {
     }
 }
 #[derive(Clone, Copy, PartialEq, Debug, Default)]
+#[repr(u32)]
 enum anon_2 {
     #[default]
     FIELD_A = 0,
@@ -113,6 +126,9 @@ impl From<i32> for anon_2 {
 }
 libcc2rs::impl_enum_inc_dec!(anon_2);
 impl ByteRepr for anon_2 {
+    fn byte_size() -> usize {
+        4
+    }
     fn to_bytes(&self, buf: &mut [u8]) {
         (*self as i32).to_bytes(buf);
     }
@@ -146,6 +162,7 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     #[derive(Clone, Copy, PartialEq, Debug, Default)]
+    #[repr(u32)]
     enum anon_3 {
         #[default]
         THIRD_A = 0,
@@ -162,6 +179,9 @@ fn main_0() -> i32 {
     }
     libcc2rs::impl_enum_inc_dec!(anon_3);
     impl ByteRepr for anon_3 {
+        fn byte_size() -> usize {
+            4
+        }
         fn to_bytes(&self, buf: &mut [u8]) {
             (*self as i32).to_bytes(buf);
         }

@@ -28,6 +28,7 @@ impl ByteRepr for registry {
     }
 }
 #[derive(Clone, Copy, PartialEq, Debug, Default)]
+#[repr(u32)]
 enum field {
     #[default]
     FIELD_SLOT = 0,
@@ -44,6 +45,9 @@ impl From<i32> for field {
 }
 libcc2rs::impl_enum_inc_dec!(field);
 impl ByteRepr for field {
+    fn byte_size() -> usize {
+        4
+    }
     fn to_bytes(&self, buf: &mut [u8]) {
         (*self as i32).to_bytes(buf);
     }

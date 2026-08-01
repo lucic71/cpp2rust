@@ -28,6 +28,7 @@ impl ByteRepr for node {
     }
 }
 #[derive(Clone, Copy, PartialEq, Debug, Default)]
+#[repr(u32)]
 enum opt {
     #[default]
     OPT_STRING_OUT = 0,
@@ -48,6 +49,9 @@ impl From<i32> for opt {
 }
 libcc2rs::impl_enum_inc_dec!(opt);
 impl ByteRepr for opt {
+    fn byte_size() -> usize {
+        4
+    }
     fn to_bytes(&self, buf: &mut [u8]) {
         (*self as i32).to_bytes(buf);
     }

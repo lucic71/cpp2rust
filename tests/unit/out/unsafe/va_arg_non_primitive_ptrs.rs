@@ -13,6 +13,7 @@ pub struct node {
     pub next: *mut node,
 }
 #[derive(Clone, Copy, PartialEq, Debug, Default)]
+#[repr(u32)]
 enum opt {
     #[default]
     OPT_STRING_OUT = 0,

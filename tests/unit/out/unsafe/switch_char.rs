@@ -30,6 +30,7 @@ pub unsafe fn switch_char_0(mut c: libc::c_char) -> i32 {
     panic!("ub: non-void function does not return a value")
 }
 #[derive(Clone, Copy, PartialEq, Debug, Default)]
+#[repr(u32)]
 enum Color {
     #[default]
     kRed = 0,

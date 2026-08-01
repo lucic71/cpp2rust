@@ -7,6 +7,7 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
 #[derive(Clone, Copy, PartialEq, Debug, Default)]
+#[repr(u32)]
 enum widget_enum {
     #[default]
     MODE_IDLE = 0,
@@ -25,6 +26,9 @@ impl From<i32> for widget_enum {
 }
 libcc2rs::impl_enum_inc_dec!(widget_enum);
 impl ByteRepr for widget_enum {
+    fn byte_size() -> usize {
+        4
+    }
     fn to_bytes(&self, buf: &mut [u8]) {
         (*self as i32).to_bytes(buf);
     }
@@ -151,6 +155,7 @@ impl ByteRepr for slot_union {
     }
 }
 #[derive(Clone, Copy, PartialEq, Debug, Default)]
+#[repr(u32)]
 enum slot {
     #[default]
     SLOT_A = 0,
@@ -167,6 +172,9 @@ impl From<i32> for slot {
 }
 libcc2rs::impl_enum_inc_dec!(slot);
 impl ByteRepr for slot {
+    fn byte_size() -> usize {
+        4
+    }
     fn to_bytes(&self, buf: &mut [u8]) {
         (*self as i32).to_bytes(buf);
     }

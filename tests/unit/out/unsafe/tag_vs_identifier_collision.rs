@@ -7,6 +7,7 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 #[derive(Clone, Copy, PartialEq, Debug, Default)]
+#[repr(u32)]
 enum widget_enum {
     #[default]
     MODE_IDLE = 0,
@@ -59,6 +60,7 @@ impl Default for slot_union {
     }
 }
 #[derive(Clone, Copy, PartialEq, Debug, Default)]
+#[repr(u32)]
 enum slot {
     #[default]
     SLOT_A = 0,

@@ -70,6 +70,7 @@ impl ByteRepr for Node {
     }
 }
 #[derive(Clone, Copy, PartialEq, Debug, Default)]
+#[repr(u32)]
 enum Color {
     #[default]
     RED = 0,
@@ -88,6 +89,9 @@ impl From<i32> for Color {
 }
 libcc2rs::impl_enum_inc_dec!(Color);
 impl ByteRepr for Color {
+    fn byte_size() -> usize {
+        4
+    }
     fn to_bytes(&self, buf: &mut [u8]) {
         (*self as i32).to_bytes(buf);
     }

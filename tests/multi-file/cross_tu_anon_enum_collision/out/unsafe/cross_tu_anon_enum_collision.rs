@@ -7,6 +7,7 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 #[derive(Clone, Copy, PartialEq, Debug, Default)]
+#[repr(u32)]
 enum anon_0 {
     #[default]
     _ZERO_ = 0,
@@ -38,6 +39,7 @@ unsafe fn main_0() -> i32 {
     return 0;
 }
 #[derive(Clone, Copy, PartialEq, Debug, Default)]
+#[repr(u32)]
 enum anon_3 {
     #[default]
     _ZERO_ = 0,

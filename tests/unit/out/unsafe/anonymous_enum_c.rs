@@ -7,6 +7,7 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 #[derive(Clone, Copy, PartialEq, Debug, Default)]
+#[repr(u32)]
 enum anon_0 {
     #[default]
     FIRST_A = 0,
@@ -23,6 +24,7 @@ impl From<i32> for anon_0 {
 }
 libcc2rs::impl_enum_inc_dec!(anon_0);
 #[derive(Clone, Copy, PartialEq, Debug, Default)]
+#[repr(u32)]
 enum anon_1 {
     #[default]
     SECOND_A = 0,
@@ -44,6 +46,7 @@ pub struct S {
     pub a: i32,
 }
 #[derive(Clone, Copy, PartialEq, Debug, Default)]
+#[repr(u32)]
 enum TdEnum_enum {
     #[default]
     TD_A = 0,
@@ -60,6 +63,7 @@ impl From<i32> for TdEnum_enum {
 }
 libcc2rs::impl_enum_inc_dec!(TdEnum_enum);
 #[derive(Clone, Copy, PartialEq, Debug, Default)]
+#[repr(u32)]
 enum anon_2 {
     #[default]
     FIELD_A = 0,
@@ -88,6 +92,7 @@ pub fn main() {
 }
 unsafe fn main_0() -> i32 {
     #[derive(Clone, Copy, PartialEq, Debug, Default)]
+    #[repr(u32)]
     enum anon_3 {
         #[default]
         THIRD_A = 0,

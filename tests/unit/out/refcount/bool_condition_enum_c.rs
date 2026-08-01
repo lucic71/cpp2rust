@@ -7,6 +7,7 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
 #[derive(Clone, Copy, PartialEq, Debug, Default)]
+#[repr(u32)]
 enum Code {
     #[default]
     CODE_OK = 0,
@@ -25,6 +26,9 @@ impl From<i32> for Code {
 }
 libcc2rs::impl_enum_inc_dec!(Code);
 impl ByteRepr for Code {
+    fn byte_size() -> usize {
+        4
+    }
     fn to_bytes(&self, buf: &mut [u8]) {
         (*self as i32).to_bytes(buf);
     }

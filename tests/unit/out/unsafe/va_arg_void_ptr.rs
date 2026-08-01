@@ -13,6 +13,7 @@ pub struct registry {
     pub level: i64,
 }
 #[derive(Clone, Copy, PartialEq, Debug, Default)]
+#[repr(u32)]
 enum field {
     #[default]
     FIELD_SLOT = 0,
