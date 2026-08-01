@@ -85,11 +85,11 @@ fn f25<T1>(a0: Ptr<T1>, a1: usize) -> Ptr<T1> {
     a0.offset(a1 as isize)
 }
 
-fn f26<T1>(a0: Ptr<T1>, a1: Ptr<T1>) -> bool {
+fn f26<T1: ByteRepr>(a0: Ptr<T1>, a1: Ptr<T1>) -> bool {
     a0 != a1
 }
 
-fn f27<T1>(a0: Ptr<T1>, a1: Ptr<T1>) -> bool {
+fn f27<T1: ByteRepr>(a0: Ptr<T1>, a1: Ptr<T1>) -> bool {
     a0 == a1
 }
 
@@ -270,11 +270,11 @@ fn f84<T1>(a0: Ptr<T1>, a1: usize) -> Ptr<T1> {
     a0.offset(a1 as isize)
 }
 
-fn f85<T1>(a0: Ptr<T1>, a1: Ptr<T1>) -> bool {
+fn f85<T1: ByteRepr>(a0: Ptr<T1>, a1: Ptr<T1>) -> bool {
     a0 != a1
 }
 
-fn f86<T1>(a0: Ptr<T1>, a1: Ptr<T1>) -> bool {
+fn f86<T1: ByteRepr>(a0: Ptr<T1>, a1: Ptr<T1>) -> bool {
     a0 == a1
 }
 

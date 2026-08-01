@@ -61,9 +61,9 @@ fn f1(a0: i32, a1: Ptr<CFdSet>, a2: Ptr<CFdSet>, a3: Ptr<CFdSet>, a4: Ptr<Timeva
         }
         let mut __tv = match __tp.is_null() {
             true => None,
-            false => Some(__tp.with(|__t| {
-                nix::sys::time::TimeVal::new(__t.tv_sec as _, __t.tv_usec as _)
-            })),
+            false => Some(
+                __tp.with(|__t| nix::sys::time::TimeVal::new(__t.tv_sec as _, __t.tv_usec as _)),
+            ),
         };
         match nix::sys::select::select(
             a0,

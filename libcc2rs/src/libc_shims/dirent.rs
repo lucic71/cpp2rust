@@ -27,9 +27,11 @@ impl Default for Dirent {
 
 impl Dirent {
     pub fn from_entry(ino: u64, name: &[u8], d_type: u8) -> Self {
-        let mut de = Dirent::default();
-        de.d_ino = ino;
-        de.d_type = d_type;
+        let mut de = Dirent {
+            d_ino: ino,
+            d_type,
+            ..Default::default()
+        };
         {
             let nm = &mut de.d_name;
             let n = name.len().min(nm.len() - 1);

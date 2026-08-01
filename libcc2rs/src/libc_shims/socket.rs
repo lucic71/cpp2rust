@@ -60,11 +60,14 @@ impl SockaddrIn {
     }
 
     pub fn from_ipv4(addr: &::std::net::Ipv4Addr, port: u16) -> Self {
-        let mut s = Self::default();
-        s.sin_family = ::libc::AF_INET as u16;
-        s.sin_port = port.to_be();
-        s.sin_addr.s_addr = u32::from(*addr).to_be();
-        s
+        Self {
+            sin_family: ::libc::AF_INET as u16,
+            sin_port: port.to_be(),
+            sin_addr: InAddr {
+                s_addr: u32::from(*addr).to_be(),
+            },
+            ..Default::default()
+        }
     }
 
     #[cfg(target_os = "linux")]
@@ -116,9 +119,11 @@ impl SockaddrIn6 {
     }
 
     pub fn from_ipv6(addr: &::std::net::Ipv6Addr, port: u16) -> Self {
-        let mut s = Self::default();
-        s.sin6_family = ::libc::AF_INET6 as u16;
-        s.sin6_port = port.to_be();
+        let s = Self {
+            sin6_family: ::libc::AF_INET6 as u16,
+            sin6_port: port.to_be(),
+            ..Default::default()
+        };
         s.sin6_addr
             .s6_addr
             .borrow_mut()

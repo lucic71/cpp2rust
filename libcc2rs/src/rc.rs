@@ -13,8 +13,8 @@ use std::{
 };
 
 use crate::reinterpret::{
-    slice_read_bytes, slice_write_bytes, ByteRepr, OriginalAlloc, SingleOriginalAlloc,
-    SliceOriginalAlloc,
+    ByteRepr, OriginalAlloc, SingleOriginalAlloc, SliceOriginalAlloc, slice_read_bytes,
+    slice_write_bytes,
 };
 
 pub type Value<T> = Rc<RefCell<T>>;
@@ -80,9 +80,7 @@ impl<P: ByteRepr, F: ByteRepr> FieldAccess<F> for FieldView<P, F> {
     }
 
     fn base_addr_dyn(&self) -> usize {
-        self.parent
-            .address()
-            .wrapping_add(self.field_byte_offset)
+        self.parent.address().wrapping_add(self.field_byte_offset)
     }
 }
 
@@ -192,7 +190,6 @@ impl<T> PtrKind<T> {
         }
     }
 }
-
 
 pub struct Ptr<T> {
     offset: usize,

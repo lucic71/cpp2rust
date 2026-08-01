@@ -991,8 +991,8 @@ RsExpr *Converter::ConvertMethodItem(clang::CXXMethodDecl *decl,
     name = GetNamedDeclAsString(decl);
   }
 
-  auto receiver = decl->isStatic() ? Fn::Receiver::None
-                                   : GetMethodReceiver(decl);
+  auto receiver =
+      decl->isStatic() ? Fn::Receiver::None : GetMethodReceiver(decl);
 
   std::optional<std::vector<RsExpr *>> body;
   if (with_body) {
@@ -1004,8 +1004,7 @@ RsExpr *Converter::ConvertMethodItem(clang::CXXMethodDecl *decl,
                         ConvertFunctionReturnType(decl), std::move(body));
 }
 
-Fn::Receiver
-Converter::GetMethodReceiver(const clang::CXXMethodDecl *decl) {
+Fn::Receiver Converter::GetMethodReceiver(const clang::CXXMethodDecl *decl) {
   // This assumes that all overloaded comparison operators are declared const
   return (decl->isConst() || IsOverloadedComparisonOperator(decl))
              ? Fn::Receiver::Ref
@@ -1033,8 +1032,7 @@ RsExpr *Converter::VisitCXXConstructorDecl(clang::CXXConstructorDecl *decl) {
       std::vector<RsExpr *>{Text(AccessSpecifierAsString(decl->getAccess())),
                             Text(keyword_unsafe_)},
       std::move(ctor_name), Fn::Receiver::None, std::move(params),
-      Cat(Text(token::kArrow), Text("Self")),
-      std::vector<RsExpr *>{body});
+      Cat(Text(token::kArrow), Text("Self")), std::vector<RsExpr *>{body});
 }
 
 RsExpr *Converter::ConvertCXXConstructorBody(clang::CXXConstructorDecl *decl) {
@@ -1417,8 +1415,7 @@ RsExpr *Converter::ConvertExpr(clang::Expr *expr,
   RsExpr *node = DispatchExpr(expr);
   node->expr = expr;
   if (ict && NeedsImplicitScalarCast(expr->IgnoreImplicit()->getType(), *ict)) {
-    node = Parens(
-        arena_.New<Cast>(node, Text(GetUnsafeTypeAsString(*ict))));
+    node = Parens(arena_.New<Cast>(node, Text(GetUnsafeTypeAsString(*ict))));
     computed_expr_type_ = ComputedExprType::FreshValue;
   }
   return node;
@@ -2041,8 +2038,7 @@ RsExpr *Converter::EmitCall(CallInfo &&info) {
     is_mut = method && !method->isConst();
   }
 
-  auto *call =
-      arena_.New<Call>(callee_node, CollectArgNodes(info), is_mut);
+  auto *call = arena_.New<Call>(callee_node, CollectArgNodes(info), is_mut);
   return Cat(hoisted, call);
 }
 
@@ -2310,10 +2306,9 @@ RsExpr *Converter::VisitImplicitCastExpr(clang::ImplicitCastExpr *expr) {
     auto *inner = ConvertExpr(sub_expr);
     if (type->isVoidPointerType()) {
       inner = arena_.New<Cast>(
-          inner,
-          Cat(Text(type->getPointeeType().isConstQualified() ? "*const"
-                                                             : "*mut"),
-              ConvertPointeeType(sub_expr->getType())));
+          inner, Cat(Text(type->getPointeeType().isConstQualified() ? "*const"
+                                                                    : "*mut"),
+                     ConvertPointeeType(sub_expr->getType())));
     }
     return Parens(CastTo(inner, type));
   }
@@ -2460,10 +2455,9 @@ RsExpr *Converter::ConvertBinaryOperator(clang::BinaryOperator *expr) {
       auto op = opcode_as_string;
       op.remove_suffix(1); // remove '=' from operator
       auto *rhs_node = ConvertExpr(rhs, computation_result_type);
-      node = Cat(
-          lhs_node, Text(token::kAssign),
-          Parens(Cat(Parens(CastTo(lhs_again, computation_result_type)),
-                     Text(std::string(op)), rhs_node)));
+      node = Cat(lhs_node, Text(token::kAssign),
+                 Parens(Cat(Parens(CastTo(lhs_again, computation_result_type)),
+                            Text(std::string(op)), rhs_node)));
     }
     if (lhs_type->isBooleanType()) {
       return Cat(node, Text(token::kDiff), Text(token::kZero));
@@ -2945,8 +2939,8 @@ RsExpr *Converter::ConvertMemberExpr(clang::MemberExpr *expr) {
   }
 
   auto *base = expr->getBase();
-  bool base_is_this = clang::isa<clang::CXXThisExpr>(base->IgnoreCasts()) &&
-                      ThisIsValue();
+  bool base_is_this =
+      clang::isa<clang::CXXThisExpr>(base->IgnoreCasts()) && ThisIsValue();
   PushExprKind push(*this, isLValue() ? ExprKind::LValue : ExprKind::RValue);
   RsExpr *base_node = nullptr;
   if (expr->isArrow() && !base_is_this) {
@@ -3266,9 +3260,8 @@ RsExpr *Converter::VisitEnumDecl(clang::EnumDecl *decl) {
                      {"Clone", "Copy", "PartialEq", "Debug", "Default"});
   std::vector<RsExpr *> parts;
   parts.push_back(Text("#[derive(Clone, Copy, PartialEq, Debug, Default)]"));
-  parts.push_back(
-      Text(std::format("#[repr({})]", GetUnsafeTypeAsString(
-                                          decl->getIntegerType()))));
+  parts.push_back(Text(std::format(
+      "#[repr({})]", GetUnsafeTypeAsString(decl->getIntegerType()))));
   parts.push_back(Text(std::format("enum {}", GetRecordName(decl))));
   std::vector<RsExpr *> enumerators;
   if (!HasZeroEnumerator(decl)) {
@@ -3808,8 +3801,7 @@ RsExpr *Converter::EmitFlexibleArrayElementPtr(clang::Expr *array,
   }
   auto *idx_node = ConvertExpr(idx);
   return Cat(array_node, Text(is_mut ? ".as_mut_ptr()" : ".as_ptr()"),
-             Text(".add"),
-             arena_.New<Cast>(Parens(idx_node), Text("usize")));
+             Text(".add"), arena_.New<Cast>(Parens(idx_node), Text("usize")));
 }
 
 RsExpr *Converter::ConvertArraySubscript(clang::Expr *base, clang::Expr *idx,
@@ -3917,8 +3909,7 @@ RsExpr *Converter::ConvertAbstractClass(clang::CXXRecordDecl *decl) {
 bool Converter::IsTranslatableMethod(clang::CXXMethodDecl *method) {
   return !method->isImplicit() &&
          !(method->getDefinition() && method->getDefinition()->isDefaulted()) &&
-         !method->isVirtual() &&
-         !clang::isa<clang::CXXDestructorDecl>(method);
+         !method->isVirtual() && !clang::isa<clang::CXXDestructorDecl>(method);
 }
 
 bool Converter::IsMethodOnRecord(clang::CXXMethodDecl *method) {
@@ -3951,10 +3942,9 @@ RsExpr *Converter::ConvertVirtualMethods(clang::CXXRecordDecl *decl) {
   if (methods.empty()) {
     return Text("");
   }
-  return arena_.New<Impl>(
-      std::vector<RsExpr *>{Text(keyword_unsafe_)},
-      GetUnsafeTypeAsString(decl->bases_begin()->getType()),
-      Text(GetRecordName(decl)), std::move(methods));
+  return arena_.New<Impl>(std::vector<RsExpr *>{Text(keyword_unsafe_)},
+                          GetUnsafeTypeAsString(decl->bases_begin()->getType()),
+                          Text(GetRecordName(decl)), std::move(methods));
 }
 
 std::vector<RsExpr *>

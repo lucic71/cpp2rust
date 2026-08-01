@@ -564,8 +564,8 @@ ConverterRefCount::EmitBitFieldToBytes(const clang::FieldDecl *field,
   auto bit_off = layout.getFieldOffset(field->getFieldIndex());
   auto width = field->getBitWidthValue();
 
-  std::string stmts = std::format("{{ let __v = self.{} as u64;",
-                                  GetNamedDeclAsString(field));
+  std::string stmts =
+      std::format("{{ let __v = self.{} as u64;", GetNamedDeclAsString(field));
   for (auto byte = bit_off / 8; byte <= (bit_off + width - 1) / 8; ++byte) {
     auto lo = std::max(bit_off, byte * 8);
     auto hi = std::min(bit_off + width, byte * 8 + 8);
@@ -606,8 +606,7 @@ ConverterRefCount::EmitBitFieldFromBytes(const clang::FieldDecl *field,
     value = std::format("({}) as {}", raw, storage_ty);
   }
 
-  return Text(
-      std::format("{}: {},", GetNamedDeclAsString(field), value));
+  return Text(std::format("{}: {},", GetNamedDeclAsString(field), value));
 }
 
 RsExpr *ConverterRefCount::AddByteReprTrait(const clang::RecordDecl *decl) {
@@ -648,10 +647,9 @@ RsExpr *ConverterRefCount::AddByteReprTrait(const clang::RecordDecl *decl) {
     }
     auto byte_off = layout.getFieldOffset(field->getFieldIndex()) / 8;
     auto byte_size = ctx_.getTypeSize(field->getType()) / 8;
-    to_bytes.push_back(
-        Text(std::format("self.{}.to_bytes(&mut buf[{}..{}]);",
-                         GetNamedDeclAsString(field), byte_off,
-                         byte_off + byte_size)));
+    to_bytes.push_back(Text(std::format("self.{}.to_bytes(&mut buf[{}..{}]);",
+                                        GetNamedDeclAsString(field), byte_off,
+                                        byte_off + byte_size)));
   }
   body.push_back(Text("fn to_bytes(&self, buf: &mut [u8])"));
   body.push_back(Braces(arena_.New<Concat>(std::move(to_bytes))));
@@ -666,10 +664,9 @@ RsExpr *ConverterRefCount::AddByteReprTrait(const clang::RecordDecl *decl) {
     }
     auto byte_off = layout.getFieldOffset(field->getFieldIndex()) / 8;
     auto byte_size = ctx_.getTypeSize(field->getType()) / 8;
-    from_bytes.push_back(
-        Text(std::format("{}: <{}>::from_bytes(&buf[{}..{}]),",
-                         GetNamedDeclAsString(field), storage_ty, byte_off,
-                         byte_off + byte_size)));
+    from_bytes.push_back(Text(std::format(
+        "{}: <{}>::from_bytes(&buf[{}..{}]),", GetNamedDeclAsString(field),
+        storage_ty, byte_off, byte_off + byte_size)));
   }
   body.push_back(Text("fn from_bytes(buf: &[u8]) -> Self"));
   body.push_back(Braces(
@@ -684,13 +681,13 @@ RsExpr *ConverterRefCount::AddByteReprTrait(const clang::EnumDecl *decl) {
   auto byte_size = ctx_.getTypeSize(decl->getIntegerType()) / 8;
   return Cat(
       Text(std::format("impl ByteRepr for {}", name)),
-      Braces(Cat(Text(std::format("fn byte_size() -> usize {{ {} }}",
-                                  byte_size)),
-                 Text("fn to_bytes(&self, buf: &mut [u8]) { (*self as i32)"
-                      ".to_bytes(buf); }"),
-                 Text(std::format("fn from_bytes(buf: &[u8]) -> Self {{ "
-                                  "<{}>::from(i32::from_bytes(buf)) }}",
-                                  name)))));
+      Braces(
+          Cat(Text(std::format("fn byte_size() -> usize {{ {} }}", byte_size)),
+              Text("fn to_bytes(&self, buf: &mut [u8]) { (*self as i32)"
+                   ".to_bytes(buf); }"),
+              Text(std::format("fn from_bytes(buf: &[u8]) -> Self {{ "
+                               "<{}>::from(i32::from_bytes(buf)) }}",
+                               name)))));
 }
 
 bool ConverterRefCount::IsMethodOnPtr(clang::CXXMethodDecl *method) {
@@ -914,8 +911,8 @@ RsExpr *ConverterRefCount::LowerPtrUse(RsExpr *node) {
       return arena_.New<PtrWrite>(ptr, assign->right);
     }
     if (auto *ptr = assign->left->TakePtr(Text("__v"))) {
-      return arena_.New<PtrWith>(
-          ptr, true, arena_.New<Closure>("__v", nullptr, node));
+      return arena_.New<PtrWith>(ptr, true,
+                                 arena_.New<Closure>("__v", nullptr, node));
     }
     return nullptr;
   }
@@ -931,16 +928,16 @@ RsExpr *ConverterRefCount::LowerPtrUse(RsExpr *node) {
                         arena_.New<PtrWrite>(Text("_ptr"), value)));
     }
     if (auto *ptr = assign->left->TakePtr(Text("__v"))) {
-      return arena_.New<PtrWith>(
-          ptr, true, arena_.New<Closure>("__v", nullptr, node));
+      return arena_.New<PtrWith>(ptr, true,
+                                 arena_.New<Closure>("__v", nullptr, node));
     }
     return nullptr;
   }
 
   if (auto *call = clang::dyn_cast<Call>(node); call && call->is_mut) {
     if (auto *ptr = call->TakePtr(Text("__v"))) {
-      return arena_.New<PtrWith>(
-          ptr, true, arena_.New<Closure>("__v", nullptr, node));
+      return arena_.New<PtrWith>(ptr, true,
+                                 arena_.New<Closure>("__v", nullptr, node));
     }
     return nullptr;
   }
@@ -1769,11 +1766,10 @@ RsExpr *ConverterRefCount::VisitInitListExpr(clang::InitListExpr *expr) {
       expr->getNumInits() > 0 && expr->getInit(0)->getType()->isArrayType();
   // 2D arrays are FullRefCount'ed on the second level as well, including the
   // ones held by an unboxed field.
-  PushConversionKind push(*this,
-                          nested_array ? ConversionKind::FullRefCount
-                                       : ConversionKind::Unboxed,
-                          !nested_array ||
-                              conv == ConversionKind::UnboxedField);
+  PushConversionKind push(
+      *this,
+      nested_array ? ConversionKind::FullRefCount : ConversionKind::Unboxed,
+      !nested_array || conv == ConversionKind::UnboxedField);
 
   RsExpr *node = nullptr;
   switch (conv) {
@@ -1809,7 +1805,7 @@ RsExpr *ConverterRefCount::ConvertUnionMemberAccessor(clang::MemberExpr *expr) {
 }
 
 RsExpr *ConverterRefCount::ConvertMemberBytePtr(clang::MemberExpr *expr,
-                                             clang::QualType elem_type) {
+                                                clang::QualType elem_type) {
   uint64_t byte_off = 0;
   clang::Expr *base = expr;
   while (auto *member = clang::dyn_cast<clang::MemberExpr>(base)) {
@@ -1826,14 +1822,14 @@ RsExpr *ConverterRefCount::ConvertMemberBytePtr(clang::MemberExpr *expr,
   RsExpr *node = ConvertPointer(base);
   node = MethodCall(node, "reinterpret_cast::<u8>", std::vector<RsExpr *>{},
                     /*is_mut=*/false);
-  node = MethodCall(node, "offset",
-                    std::vector<RsExpr *>{Text(std::format("{}usize", byte_off))},
-                    /*is_mut=*/false);
+  node =
+      MethodCall(node, "offset",
+                 std::vector<RsExpr *>{Text(std::format("{}usize", byte_off))},
+                 /*is_mut=*/false);
   PushConversionKind push(*this, ConversionKind::Unboxed);
   auto elem_name = RenderType(elem_type);
   if (elem_name != "u8") {
-    node = MethodCall(node,
-                      std::format("reinterpret_cast::<{}>", elem_name),
+    node = MethodCall(node, std::format("reinterpret_cast::<{}>", elem_name),
                       std::vector<RsExpr *>{}, /*is_mut=*/false);
   }
   computed_expr_type_ = ComputedExprType::FreshPointer;
@@ -2050,11 +2046,10 @@ ConverterRefCount::VisitCXXForRangeStmtVector(clang::CXXForRangeStmt *stmt) {
     parts.push_back(Text(token::kSemiColon));
     shadow = arena_.New<Concat>(std::move(parts));
   } else {
-    shadow =
-        EmitByValueShadow(loop_var_name, loop_var->getType(),
-                          Cat(arena_.New<Unary>(Unary::Op::Deref,
-                                                Text(loop_var_name)),
-                              Text(".clone()")));
+    shadow = EmitByValueShadow(
+        loop_var_name, loop_var->getType(),
+        Cat(arena_.New<Unary>(Unary::Op::Deref, Text(loop_var_name)),
+            Text(".clone()")));
   }
 
   auto *body = ConvertForRangeBody(stmt);
@@ -2451,10 +2446,10 @@ RsExpr *ConverterRefCount::ConvertCXXOperatorCallExpr(
       auto *object = ConvertObject(expr->getArg(0));
       auto *ptr_type = ConvertPtrType(expr->getArg(0)->getType());
       auto *idx = ConvertSubscriptIndex(expr->getArg(1));
-      return arena_.New<Unary>(
-          Unary::Op::Deref,
-          MethodCall(arena_.New<Cast>(object, ptr_type), "offset",
-                     std::vector<RsExpr *>{idx}, /*is_mut=*/false));
+      return arena_.New<Unary>(Unary::Op::Deref,
+                               MethodCall(arena_.New<Cast>(object, ptr_type),
+                                          "offset", std::vector<RsExpr *>{idx},
+                                          /*is_mut=*/false));
     }
 
     RsExpr *offset = nullptr;
@@ -2469,8 +2464,8 @@ RsExpr *ConverterRefCount::ConvertCXXOperatorCallExpr(
 
     auto *node = offset;
     if (is_inner_boxed) {
-      node = Cat(arena_.New<Unary>(Unary::Op::Deref, node),
-                 Text(".as_pointer()"));
+      node =
+          Cat(arena_.New<Unary>(Unary::Op::Deref, node), Text(".as_pointer()"));
       if (!isObject()) {
         node = arena_.New<Cast>(
             node, Cat(Text("Ptr<"), Convert(expr->getType()), Text('>')));
@@ -2516,8 +2511,8 @@ RsExpr *ConverterRefCount::ConvertArraySubscript(clang::Expr *base,
   if (auto *member =
           clang::dyn_cast<clang::MemberExpr>(base->IgnoreParenImpCasts())) {
     if (auto *fam = TryFlexibleArrayMember(member)) {
-      auto *idx_node = arena_.New<Cast>(Parens(ConvertSubscriptIndex(idx)),
-                                        Text("isize"));
+      auto *idx_node =
+          arena_.New<Cast>(Parens(ConvertSubscriptIndex(idx)), Text("isize"));
       auto *node = MethodCall(fam, "offset", std::vector<RsExpr *>{idx_node},
                               /*is_mut=*/false);
       if (isAddrOf()) {
@@ -2746,8 +2741,8 @@ RsExpr *ConverterRefCount::ConvertMappedMethodCall(
     auto *body = ConvertIRFragment(mc.body, expr, args, num_args, ctx);
     auto *node = Cat(receiver, body);
     if (auto *ptr = receiver->TakePtr(Text("__v"))) {
-      return arena_.New<PtrWith>(
-          ptr, true, arena_.New<Closure>("__v", nullptr, node));
+      return arena_.New<PtrWith>(ptr, true,
+                                 arena_.New<Closure>("__v", nullptr, node));
     }
     return node;
   }
@@ -2759,8 +2754,7 @@ RsExpr *ConverterRefCount::ConvertMappedMethodCall(
     auto *body = ConvertIRFragment(mc.body, expr, args, num_args, ctx);
     return arena_.New<PtrWith>(
         ptr, true,
-        arena_.New<Closure>("__v", Text(param_type),
-                            Cat(Text("__v"), body)));
+        arena_.New<Closure>("__v", Text(param_type), Cat(Text("__v"), body)));
   }
 
   auto *receiver =
@@ -2779,8 +2773,7 @@ RsExpr *ConverterRefCount::ConvertMappedMethodCall(
 
   return arena_.New<PtrWith>(
       receiver_ptr, true,
-      arena_.New<Closure>("__v", Text(param_type),
-                          Cat(Text("__v"), body)));
+      arena_.New<Closure>("__v", Text(param_type), Cat(Text("__v"), body)));
 }
 
 RsExpr *ConverterRefCount::ConvertPointeeType(clang::QualType ptr_type) {

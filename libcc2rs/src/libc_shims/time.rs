@@ -20,17 +20,19 @@ pub struct Tm {
 
 impl Tm {
     pub fn from_zoned(dt: &jiff::Zoned) -> Self {
-        let mut tm = Tm::default();
-        tm.tm_sec = dt.second() as i32;
-        tm.tm_min = dt.minute() as i32;
-        tm.tm_hour = dt.hour() as i32;
-        tm.tm_mday = dt.day() as i32;
-        tm.tm_mon = dt.month() as i32 - 1;
-        tm.tm_year = dt.year() as i32 - 1900;
-        tm.tm_wday = dt.weekday().to_sunday_zero_offset() as i32;
-        tm.tm_yday = dt.day_of_year() as i32 - 1;
-        tm.tm_isdst = 0;
-        tm.tm_gmtoff = dt.offset().seconds() as i64;
+        let mut tm = Tm {
+            tm_sec: dt.second() as i32,
+            tm_min: dt.minute() as i32,
+            tm_hour: dt.hour() as i32,
+            tm_mday: dt.day() as i32,
+            tm_mon: dt.month() as i32 - 1,
+            tm_year: dt.year() as i32 - 1900,
+            tm_wday: dt.weekday().to_sunday_zero_offset() as i32,
+            tm_yday: dt.day_of_year() as i32 - 1,
+            tm_isdst: 0,
+            tm_gmtoff: dt.offset().seconds() as i64,
+            ..Default::default()
+        };
         #[cfg(target_os = "linux")]
         let zone: &'static [u8] = b"GMT";
         #[cfg(target_os = "macos")]

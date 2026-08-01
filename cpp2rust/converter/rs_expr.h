@@ -182,7 +182,8 @@ struct Unary : RsExpr {
 };
 
 struct Cast : RsExpr {
-  Cast(RsExpr *expr, RsExpr *type) : RsExpr(Kind::Cast), expr(expr), type(type) {}
+  Cast(RsExpr *expr, RsExpr *type)
+      : RsExpr(Kind::Cast), expr(expr), type(type) {}
 
   static bool classof(const RsExpr *e) { return e->kind == Kind::Cast; }
 
@@ -492,11 +493,10 @@ struct FieldPtr : Accessor {
   }
 
   std::string print() const override {
-    auto get =
-        container
-            ? std::format("|__v: &{}| &__v.{}[..]", type_name, field)
-            : std::format("|__v: &{}| ::std::slice::from_ref(&__v.{})",
-                          type_name, field);
+    auto get = container
+                   ? std::format("|__v: &{}| &__v.{}[..]", type_name, field)
+                   : std::format("|__v: &{}| ::std::slice::from_ref(&__v.{})",
+                                 type_name, field);
     auto get_mut =
         container
             ? std::format("|__v: &mut {}| &mut __v.{}[..]", type_name, field)

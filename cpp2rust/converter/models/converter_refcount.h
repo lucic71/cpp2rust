@@ -36,7 +36,6 @@ public:
 
   RsExpr *EmitRustUnion(clang::RecordDecl *decl) override;
 
-
   const char *CharRustType() const override { return "u8"; }
 
   RsExpr *ConvertOrdAndPartialOrdTraits(const clang::CXXRecordDecl *decl,
@@ -74,8 +73,7 @@ public:
   RsExpr *EmitOutOfLineMethod(clang::CXXMethodDecl *decl,
                               RsExpr *inner) override;
 
-  Fn::Receiver
-  GetMethodReceiver(const clang::CXXMethodDecl *decl) override;
+  Fn::Receiver GetMethodReceiver(const clang::CXXMethodDecl *decl) override;
 
   RsExpr *VisitCXXConstructorDecl(clang::CXXConstructorDecl *decl) override;
 
@@ -146,7 +144,7 @@ public:
                           const clang::FieldDecl *field);
 
   RsExpr *ConvertMemberBytePtr(clang::MemberExpr *expr,
-                            clang::QualType elem_type);
+                               clang::QualType elem_type);
 
   RsExpr *TryFlexibleArrayMember(clang::MemberExpr *expr);
 
@@ -242,7 +240,6 @@ private:
                                     clang::CXXConstructExpr *ctor) override;
   RsExpr *emplace_back_emit_push_open(clang::CXXMemberCallExpr *call) override;
   RsExpr *emplace_back_emit_push_close(clang::CXXMemberCallExpr *call) override;
-
 
   RsExpr *BuildFnAdapter(const clang::FunctionDecl *src_fn,
                          const clang::FunctionProtoType *src_proto,

@@ -540,7 +540,6 @@ protected:
   virtual std::vector<RsExpr *>
   ConvertFunctionParameters(clang::FunctionDecl *decl);
 
-
   virtual RsExpr *ConvertFunctionReturnType(clang::FunctionDecl *decl);
 
   virtual RsExpr *
@@ -906,7 +905,6 @@ protected:
                                     clang::CXXConstructExpr *ctor);
   virtual RsExpr *emplace_back_emit_push_open(clang::CXXMemberCallExpr *call);
   virtual RsExpr *emplace_back_emit_push_close(clang::CXXMemberCallExpr *call);
-
 
   TempMaterializationCtx CollectRefBindingTempArgs(clang::CallExpr *expr);
 

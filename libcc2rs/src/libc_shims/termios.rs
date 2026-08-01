@@ -63,11 +63,13 @@ impl ByteRepr for Termios {
 impl Termios {
     #[allow(clippy::unnecessary_cast)]
     pub fn from_libc(t: &::libc::termios) -> Self {
-        let mut s = Self::default();
-        s.c_iflag = t.c_iflag as u32;
-        s.c_oflag = t.c_oflag as u32;
-        s.c_cflag = t.c_cflag as u32;
-        s.c_lflag = t.c_lflag as u32;
+        let mut s = Self {
+            c_iflag: t.c_iflag as u32,
+            c_oflag: t.c_oflag as u32,
+            c_cflag: t.c_cflag as u32,
+            c_lflag: t.c_lflag as u32,
+            ..Default::default()
+        };
         #[cfg(target_os = "linux")]
         {
             s.c_line = t.c_line;
@@ -140,7 +142,6 @@ impl Winsize {
         })
     }
 }
-
 
 impl ByteRepr for Winsize {
     fn byte_size() -> usize {

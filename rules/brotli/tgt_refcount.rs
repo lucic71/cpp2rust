@@ -35,12 +35,7 @@ fn f5(a0: usize, a1: Ptr<u8>, a2: Ptr<usize>, a3: Ptr<u8>) -> ::brotli_sys::Brot
     a1.with(|__v1: &u8| {
         a2.with_mut(|_v2| {
             a3.with_mut(|_v3| unsafe {
-                ::brotli_sys::BrotliDecoderDecompress(
-                    a0,
-                    __v1,
-                    _v2 as *mut usize,
-                    _v3,
-                )
+                ::brotli_sys::BrotliDecoderDecompress(a0, __v1, _v2 as *mut usize, _v3)
             })
         })
     })
@@ -67,9 +62,8 @@ fn f8(
     a5: Ptr<usize>,
 ) -> ::brotli_sys::BrotliDecoderResult {
     unsafe {
-        let _a2: Ptr<*const u8> = Ptr::alloc(
-            a2.with(|__v2: &Ptr<u8>| __v2.with(|__v: &u8| __v as *const u8)),
-        );
+        let _a2: Ptr<*const u8> =
+            Ptr::alloc(a2.with(|__v2: &Ptr<u8>| __v2.with(|__v: &u8| __v as *const u8)));
 
         a1.with_mut(|_v1| {
             _a2.with_mut(|_v2| {
