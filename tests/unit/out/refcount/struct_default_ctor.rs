@@ -41,7 +41,23 @@ impl Default for WOFF2Params {
         { WOFF2Params::WOFF2Params() }
     }
 }
-impl ByteRepr for WOFF2Params {}
+impl ByteRepr for WOFF2Params {
+    fn byte_size() -> usize {
+        40
+    }
+    fn to_bytes(&self, buf: &mut [u8]) {
+        self.extended_metadata.to_bytes(&mut buf[0..32]);
+        self.brotli_quality.to_bytes(&mut buf[32..36]);
+        self.allow_transforms.to_bytes(&mut buf[36..37]);
+    }
+    fn from_bytes(buf: &[u8]) -> Self {
+        Self {
+            extended_metadata: <Vec<u8>>::from_bytes(&buf[0..32]),
+            brotli_quality: <i32>::from_bytes(&buf[32..36]),
+            allow_transforms: <bool>::from_bytes(&buf[36..37]),
+        }
+    }
+}
 pub fn main() {
     std::process::exit(main_0());
 }

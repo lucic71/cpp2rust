@@ -29,7 +29,21 @@ impl Default for UserDefined {
         }
     }
 }
-impl ByteRepr for UserDefined {}
+impl ByteRepr for UserDefined {
+    fn byte_size() -> usize {
+        32
+    }
+    fn to_bytes(&self, buf: &mut [u8]) {
+        self.a.to_bytes(&mut buf[0..4]);
+        self.v.to_bytes(&mut buf[8..32]);
+    }
+    fn from_bytes(buf: &[u8]) -> Self {
+        Self {
+            a: <Vec<i32>>::from_bytes(&buf[0..4]),
+            v: <Vec<i32>>::from_bytes(&buf[8..32]),
+        }
+    }
+}
 #[repr(C)]
 #[derive()]
 pub struct FieldIsLibcType {
@@ -50,7 +64,19 @@ impl Default for FieldIsLibcType {
         }
     }
 }
-impl ByteRepr for FieldIsLibcType {}
+impl ByteRepr for FieldIsLibcType {
+    fn byte_size() -> usize {
+        16
+    }
+    fn to_bytes(&self, buf: &mut [u8]) {
+        self.addr.to_bytes(&mut buf[0..16]);
+    }
+    fn from_bytes(buf: &[u8]) -> Self {
+        Self {
+            addr: <libcc2rs::Sockaddr>::from_bytes(&buf[0..16]),
+        }
+    }
+}
 pub fn main() {
     std::process::exit(main_0());
 }

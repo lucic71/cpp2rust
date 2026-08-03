@@ -272,7 +272,23 @@ impl DisjointSetMethods for Ptr<DisjointSet> {
         }
     }
 }
-impl ByteRepr for DisjointSet {}
+impl ByteRepr for DisjointSet {
+    fn byte_size() -> usize {
+        24
+    }
+    fn to_bytes(&self, buf: &mut [u8]) {
+        self.rank.to_bytes(&mut buf[0..8]);
+        self.parent.to_bytes(&mut buf[8..16]);
+        self.n.to_bytes(&mut buf[16..20]);
+    }
+    fn from_bytes(buf: &[u8]) -> Self {
+        Self {
+            rank: <Option<Value<Box<[i32]>>>>::from_bytes(&buf[0..8]),
+            parent: <Option<Value<Box<[i32]>>>>::from_bytes(&buf[8..16]),
+            n: <i32>::from_bytes(&buf[16..20]),
+        }
+    }
+}
 #[repr(C)]
 #[derive(Default)]
 pub struct Graph {
@@ -280,7 +296,23 @@ pub struct Graph {
     pub V: i32,
     pub E: i32,
 }
-impl ByteRepr for Graph {}
+impl ByteRepr for Graph {
+    fn byte_size() -> usize {
+        16
+    }
+    fn to_bytes(&self, buf: &mut [u8]) {
+        self.edges.to_bytes(&mut buf[0..8]);
+        self.V.to_bytes(&mut buf[8..12]);
+        self.E.to_bytes(&mut buf[12..16]);
+    }
+    fn from_bytes(buf: &[u8]) -> Self {
+        Self {
+            edges: <Option<Value<Box<[Edge]>>>>::from_bytes(&buf[0..8]),
+            V: <i32>::from_bytes(&buf[8..12]),
+            E: <i32>::from_bytes(&buf[12..16]),
+        }
+    }
+}
 pub fn MSTKruskal_2(graph: Ptr<Graph>) -> f64 {
     ({
         let _arr: Ptr<Option<Value<Box<[Edge]>>>> = graph.field_ptr(

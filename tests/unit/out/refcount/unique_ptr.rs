@@ -24,7 +24,19 @@ impl SafePointerMethods for Ptr<SafePointer> {
         .prefix_inc();
     }
 }
-impl ByteRepr for SafePointer {}
+impl ByteRepr for SafePointer {
+    fn byte_size() -> usize {
+        8
+    }
+    fn to_bytes(&self, buf: &mut [u8]) {
+        self.ptr.to_bytes(&mut buf[0..8]);
+    }
+    fn from_bytes(buf: &[u8]) -> Self {
+        Self {
+            ptr: <Option<Value<i32>>>::from_bytes(&buf[0..8]),
+        }
+    }
+}
 #[repr(C)]
 #[derive(Default)]
 pub struct Pair {

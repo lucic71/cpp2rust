@@ -21,7 +21,21 @@ impl Clone for NonCopy {
         this
     }
 }
-impl ByteRepr for NonCopy {}
+impl ByteRepr for NonCopy {
+    fn byte_size() -> usize {
+        32
+    }
+    fn to_bytes(&self, buf: &mut [u8]) {
+        self.data.to_bytes(&mut buf[0..24]);
+        self.tag.to_bytes(&mut buf[24..28]);
+    }
+    fn from_bytes(buf: &[u8]) -> Self {
+        Self {
+            data: <Vec<i32>>::from_bytes(&buf[0..24]),
+            tag: <i32>::from_bytes(&buf[24..28]),
+        }
+    }
+}
 pub fn main() {
     std::process::exit(main_0());
 }

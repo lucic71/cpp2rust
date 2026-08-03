@@ -61,7 +61,19 @@ impl Clone for MyContainer_int_ {
         this
     }
 }
-impl ByteRepr for MyContainer_int_ {}
+impl ByteRepr for MyContainer_int_ {
+    fn byte_size() -> usize {
+        24
+    }
+    fn to_bytes(&self, buf: &mut [u8]) {
+        self.vec_.to_bytes(&mut buf[0..24]);
+    }
+    fn from_bytes(buf: &[u8]) -> Self {
+        Self {
+            vec_: <Vec<i32>>::from_bytes(&buf[0..24]),
+        }
+    }
+}
 #[repr(C)]
 #[derive(Default)]
 pub struct MyContainer_char_ {
@@ -117,7 +129,19 @@ impl Clone for MyContainer_char_ {
         this
     }
 }
-impl ByteRepr for MyContainer_char_ {}
+impl ByteRepr for MyContainer_char_ {
+    fn byte_size() -> usize {
+        24
+    }
+    fn to_bytes(&self, buf: &mut [u8]) {
+        self.vec_.to_bytes(&mut buf[0..24]);
+    }
+    fn from_bytes(buf: &[u8]) -> Self {
+        Self {
+            vec_: <Vec<u8>>::from_bytes(&buf[0..24]),
+        }
+    }
+}
 #[repr(C)]
 #[derive(Default)]
 pub struct MyContainer_float_ {
@@ -173,7 +197,19 @@ impl Clone for MyContainer_float_ {
         this
     }
 }
-impl ByteRepr for MyContainer_float_ {}
+impl ByteRepr for MyContainer_float_ {
+    fn byte_size() -> usize {
+        24
+    }
+    fn to_bytes(&self, buf: &mut [u8]) {
+        self.vec_.to_bytes(&mut buf[0..24]);
+    }
+    fn from_bytes(buf: &[u8]) -> Self {
+        Self {
+            vec_: <Vec<f32>>::from_bytes(&buf[0..24]),
+        }
+    }
+}
 pub fn main() {
     std::process::exit(main_0());
 }
