@@ -2,12 +2,29 @@
 // Distributed under the MIT license that can be found in the LICENSE file.
 
 use std::any::{Any, TypeId};
+use std::cell::RefCell;
+use std::collections::HashMap;
 use std::marker::PhantomData;
 use std::ops::Deref;
 use std::rc::Rc;
 
 use crate::rc::{AnyPtr, ErasedPtr, Ptr};
 use crate::reinterpret::ByteRepr;
+
+thread_local! {
+    static ADAPTER_REGISTRY: RefCell<HashMap<(usize, TypeId), Rc<dyn ErasedFn>>> =
+        RefCell::new(HashMap::new());
+}
+
+fn register_adapter(orig_addr: usize, target: TypeId, adapter: Rc<dyn ErasedFn>) {
+    ADAPTER_REGISTRY.with(|r| {
+        r.borrow_mut().insert((orig_addr, target), adapter);
+    });
+}
+
+fn lookup_adapter(orig_addr: usize, target: TypeId) -> Option<Rc<dyn ErasedFn>> {
+    ADAPTER_REGISTRY.with(|r| r.borrow().get(&(orig_addr, target)).cloned())
+}
 
 pub trait FnAddr {
     fn fn_addr(&self) -> usize;
@@ -88,7 +105,11 @@ impl<T: 'static> FnPtr<T> {
         } else if Any::type_id(&**original) == TypeId::of::<U>() {
             Some(original.clone())
         } else {
-            adapter.map(|a| Rc::new(a) as Rc<dyn ErasedFn>)
+            adapter.map(|a| {
+                let rc: Rc<dyn ErasedFn> = Rc::new(a);
+                register_adapter(original.addr(), TypeId::of::<U>(), rc.clone());
+                rc
+            })
         };
 
         FnPtr {
@@ -174,9 +195,10 @@ impl<T: 'static> ByteRepr for FnPtr<T> {
         if base != addr {
             panic!("ub: cast of interior address 0x{addr:x} to fn pointer");
         }
-        let current_cast = match Any::type_id(&*original) == TypeId::of::<T>() {
-            true => Some(original.clone()),
-            false => None,
+        let current_cast = if Any::type_id(&*original) == TypeId::of::<T>() {
+            Some(original.clone())
+        } else {
+            lookup_adapter(original.addr(), TypeId::of::<T>())
         };
         FnPtr {
             original: Some(original),
