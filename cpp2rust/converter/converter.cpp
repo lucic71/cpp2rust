@@ -2210,6 +2210,12 @@ RsExpr *Converter::VisitStringLiteral(clang::StringLiteral *expr) {
   if (expr->getString().contains('\0')) {
     std::string out = "(&[";
     for (unsigned char c : expr->getString()) {
+      if (c > 127) {
+        out += getTypedLiteral((std::to_string(c) + "u8").c_str(),
+                               CharRustType()) +
+               ", ";
+        continue;
+      }
       out += getTypedLiteral(std::to_string(c).c_str(), CharRustType()) + ", ";
     }
     out += getTypedLiteral("0", CharRustType()) + "])";
