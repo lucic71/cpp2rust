@@ -52,3 +52,7 @@ int f28(int errnum, char *buf, size_t buflen) {
 #else
 #error "Unsupported platform for strerror_r"
 #endif
+
+#if defined(__linux__)
+void f29(void *s, size_t n) { return explicit_bzero(s, n); }
+#endif

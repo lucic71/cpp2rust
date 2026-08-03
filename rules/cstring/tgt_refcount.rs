@@ -381,3 +381,8 @@ fn f26(a0: AnyPtr, a1: i32, a2: usize) -> AnyPtr {
         }
     }
 }
+
+#[cfg(target_os = "linux")]
+fn f29(a0: AnyPtr, a1: usize) {
+    a0.memset(0u8, a1);
+}

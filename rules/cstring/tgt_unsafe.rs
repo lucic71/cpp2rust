@@ -148,3 +148,8 @@ unsafe fn f28(a0: i32, a1: *mut libc::c_char, a2: usize) -> *mut libc::c_char {
 unsafe fn f28(a0: i32, a1: *mut libc::c_char, a2: usize) -> i32 {
     libc::strerror_r(a0, a1, a2 as usize)
 }
+
+#[cfg(target_os = "linux")]
+unsafe fn f29(a0: *mut libc::c_void, a1: usize) {
+    libc::explicit_bzero(a0, a1)
+}

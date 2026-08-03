@@ -4,3 +4,6 @@
 #include <net/if.h>
 
 unsigned int f1(const char *ifname) { return if_nametoindex(ifname); }
+
+int f2(void) { return IFF_UP; }
+int f3(void) { return IFF_LOOPBACK; }

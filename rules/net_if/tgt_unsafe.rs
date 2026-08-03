@@ -4,3 +4,11 @@
 unsafe fn f1(a0: *const libc::c_char) -> u32 {
     libc::if_nametoindex(a0)
 }
+
+unsafe fn f2() -> i32 {
+    ::libc::IFF_UP
+}
+
+unsafe fn f3() -> i32 {
+    ::libc::IFF_LOOPBACK
+}
