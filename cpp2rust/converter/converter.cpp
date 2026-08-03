@@ -12,6 +12,7 @@
 
 #include <algorithm>
 #include <format>
+#include <tuple>
 #include <utility>
 
 #include "compiler.h"
@@ -2885,7 +2886,7 @@ RsExpr *Converter::VisitMemberExpr(clang::MemberExpr *expr) {
 }
 
 // Returns the inner member and the replacement string.
-static std::pair<clang::MemberExpr *, std::string>
+static std::tuple<clang::MemberExpr *, std::string, std::string>
 replaceNonUniformLibcField(clang::MemberExpr *expr) {
   // Example: ::struct stat::st_mtim::tv_sec -> ::libc::stat::st_mtime
   struct Mapping {
@@ -2893,11 +2894,13 @@ replaceNonUniformLibcField(clang::MemberExpr *expr) {
     const char *inner_field;
     const char *leaf_field;
     const char *replacement;
+    const char *cast;
   };
   static constexpr Mapping kFields[] = {
-      {"stat", "st_mtim", "tv_sec", "st_mtime"},      // Linux
-      {"stat", "st_mtimespec", "tv_sec", "st_mtime"}, // macOS
-      {"in6_addr", "__in6_u", "__u6_addr8", "s6_addr"},
+      {"stat", "st_mtim", "tv_sec", "st_mtime", ""},      // Linux
+      {"stat", "st_mtimespec", "tv_sec", "st_mtime", ""}, // macOS
+      {"in6_addr", "__in6_u", "__u6_addr8", "s6_addr", ""},
+      {"in6_addr", "__in6_u", "__u6_addr32", "s6_addr", "[u32; 4]"},
   };
 
   auto getNamedIdentifierOrNull = [](auto *decl) {
@@ -2914,14 +2917,14 @@ replaceNonUniformLibcField(clang::MemberExpr *expr) {
             if (field->getParent()->getName() == m.record &&
                 field->getName() == m.inner_field &&
                 leaf->getName() == m.leaf_field) {
-              return {inner, m.replacement};
+              return {inner, m.replacement, m.cast};
             }
           }
         }
       }
     }
   }
-  return {nullptr, ""};
+  return {nullptr, "", ""};
 }
 
 RsExpr *Converter::ConvertMemberExpr(clang::MemberExpr *expr) {
@@ -2933,7 +2936,7 @@ RsExpr *Converter::ConvertMemberExpr(clang::MemberExpr *expr) {
   }
 
   auto *member = expr->getMemberDecl();
-  auto [inner, name_override] = replaceNonUniformLibcField(expr);
+  auto [inner, name_override, cast_override] = replaceNonUniformLibcField(expr);
   if (inner) {
     expr = inner;
   }
@@ -2954,7 +2957,14 @@ RsExpr *Converter::ConvertMemberExpr(clang::MemberExpr *expr) {
     return arena_.New<Field>(base_node, GetOverloadedFunctionName(method));
   }
   if (!name_override.empty()) {
-    return arena_.New<Field>(base_node, std::move(name_override));
+    auto *field = arena_.New<Field>(base_node, std::move(name_override));
+    if (!cast_override.empty()) {
+      return Parens(Cat(Text(token::kStar),
+                        Parens(Cat(Text(token::kRef), field,
+                                   Text("as *const _ as *const " +
+                                        cast_override)))));
+    }
+    return field;
   }
   if (member->getDeclName().isIdentifier()) {
     return arena_.New<Field>(base_node, GetNamedDeclAsString(member));
