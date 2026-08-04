@@ -1005,6 +1005,63 @@ RsExpr *ConverterRefCount::NestPtrUse(RsExpr *node) {
   return outer;
 }
 
+static bool MayReachOtherBorrow(RsExpr *node) {
+  if (clang::isa<PtrWith>(node) || clang::isa<PtrRead>(node) ||
+      clang::isa<PtrWrite>(node) || clang::isa<Call>(node)) {
+    return true;
+  }
+  bool found = false;
+  node->ForEachChild(
+      [&](RsExpr *&child) { found = found || MayReachOtherBorrow(child); });
+  return found;
+}
+
+static bool UsesClosureParam(RsExpr *node, const std::string &param) {
+  if (auto *closure = clang::dyn_cast<Closure>(node);
+      closure && closure->param == param) {
+    return false;
+  }
+  if (auto *verbatim = clang::dyn_cast<Verbatim>(node)) {
+    return verbatim->text.find(param) != std::string::npos;
+  }
+  bool used = false;
+  node->ForEachChild(
+      [&](RsExpr *&child) { used = used || UsesClosureParam(child, param); });
+  return used;
+}
+
+RsExpr *ConverterRefCount::HoistPtrUse(RsExpr *node) {
+  auto *with = clang::dyn_cast<PtrWith>(node);
+  if (!with) {
+    return nullptr;
+  }
+  auto *closure = clang::dyn_cast<Closure>(with->closure);
+  if (!closure) {
+    return nullptr;
+  }
+  if (auto *inner = HoistPtrUse(closure->body)) {
+    closure->body = inner;
+    return nullptr;
+  }
+  if (!with->is_mut) {
+    return nullptr;
+  }
+  RsExpr **right = nullptr;
+  if (auto *assign = clang::dyn_cast<Assign>(closure->body)) {
+    right = &assign->right;
+  } else if (auto *assign = clang::dyn_cast<CompoundAssign>(closure->body)) {
+    right = &assign->right;
+  }
+  if (!right || !MayReachOtherBorrow(*right) ||
+      UsesClosureParam(*right, closure->param)) {
+    return nullptr;
+  }
+  auto *rhs = *right;
+  *right = Text("__rhs");
+  return Braces(Cat(Text(keyword::kLet), Text("__rhs"), Text(token::kAssign),
+                    rhs, Text(token::kSemiColon), node));
+}
+
 RsExpr *
 ConverterRefCount::VisitConditionalOperator(clang::ConditionalOperator *expr) {
   auto *cond = ConvertCondition(expr->getCond());

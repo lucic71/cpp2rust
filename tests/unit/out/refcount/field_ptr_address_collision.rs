@@ -80,12 +80,13 @@ fn main_0() -> i32 {
     let h: Value<Ptr<holder>> = Rc::new(RefCell::new(
         libcc2rs::malloc_refcount(16usize).reinterpret_cast::<holder>(),
     ));
-    (*h.borrow()).with_mut(|__v| {
-        __v.words = libcc2rs::malloc_refcount(
+    {
+        let __rhs = libcc2rs::malloc_refcount(
             (2_usize).wrapping_mul((::std::mem::size_of::<i64>() as usize)),
         )
-        .reinterpret_cast::<i64>()
-    });
+        .reinterpret_cast::<i64>();
+        (*h.borrow()).with_mut(|__v| __v.words = __rhs)
+    };
     (*h.borrow()).with_mut(|__v| {
         __v.field = ((*o.borrow()).field_ptr(
             0,

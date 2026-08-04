@@ -289,6 +289,9 @@ void Converter::LowerNodes(RsExpr *&node) {
   if (auto *nested = NestPtrUse(node)) {
     node = nested;
   }
+  if (auto *hoisted = HoistPtrUse(node)) {
+    node = hoisted;
+  }
 }
 
 RsExpr *Converter::ConvertDecl(clang::Decl *decl) {

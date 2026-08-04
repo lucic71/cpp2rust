@@ -102,6 +102,8 @@ public:
 
   RsExpr *NestPtrUse(RsExpr *node) override;
 
+  RsExpr *HoistPtrUse(RsExpr *node) override;
+
   RsExpr *VisitConditionalOperator(clang::ConditionalOperator *expr) override;
 
   RsExpr *ConvertPrintf(clang::CallExpr *expr) override;
