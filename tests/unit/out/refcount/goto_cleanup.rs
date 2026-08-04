@@ -108,8 +108,10 @@ pub fn via_pointer_3(w: Ptr<wrapper>, fail: i32) -> i32 {
                 (*ret.borrow_mut()) = -1_i32;
                 goto!('out);
             }
-            let __rhs = ((*item.borrow()).read());
-            (*ret.borrow_mut()) = __rhs;
+            {
+                let __rhs = ((*item.borrow()).read());
+                (*ret.borrow_mut()) = __rhs
+            };
         }
         'out: {
             return (*ret.borrow());

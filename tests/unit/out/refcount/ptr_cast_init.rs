@@ -78,9 +78,11 @@ thread_local!(
 );
 pub fn get_registry_3(out: Ptr<Ptr<Ptr<entry>>>) {
     let out: Value<Ptr<Ptr<Ptr<entry>>>> = Rc::new(RefCell::new(out));
-    let __rhs = (registry_2.with(Value::clone).as_pointer() as Ptr<Ptr<entry>>)
-        .reinterpret_cast::<Ptr<entry>>();
-    (*out.borrow()).write(__rhs);
+    {
+        let __rhs = (registry_2.with(Value::clone).as_pointer() as Ptr<Ptr<entry>>)
+            .reinterpret_cast::<Ptr<entry>>();
+        (*out.borrow()).write(__rhs)
+    };
 }
 pub fn main() {
     std::process::exit(main_0());

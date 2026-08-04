@@ -41,8 +41,10 @@ fn main_0() -> i32 {
             .reinterpret_cast::<pair>(),
     ));
     (*s.borrow()).with_mut(|__v| __v.b = 1);
-    let __rhs = ({ bump_0((*s.borrow()).clone()) });
-    (*s.borrow()).with_mut(|__v| __v.a = __rhs);
+    {
+        let __rhs = ({ bump_0((*s.borrow()).clone()) });
+        (*s.borrow()).with_mut(|__v| __v.a = __rhs)
+    };
     assert!(((((*s.borrow()).with(|__v| (*__v).a) == 11) as i32) != 0));
     assert!(((((*s.borrow()).with(|__v| (*__v).b) == 11) as i32) != 0));
     libcc2rs::free_refcount(((*s.borrow()).clone() as Ptr<pair>).to_any());

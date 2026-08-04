@@ -20,8 +20,10 @@ pub fn All_0(arr: Ptr<Option<Value<Box<[i32]>>>>, N: i32, element: i32) {
             (*element.borrow());
         (*i.borrow_mut()).prefix_inc();
     }
-    let __rhs = (*all.borrow_mut()).take();
-    arr.write(__rhs);
+    {
+        let __rhs = (*all.borrow_mut()).take();
+        arr.write(__rhs)
+    };
 }
 pub fn Consume_1(arr: Option<Value<Box<[i32]>>>, N: i32) -> i32 {
     let arr: Value<Option<Value<Box<[i32]>>>> = Rc::new(RefCell::new(arr));

@@ -8,12 +8,16 @@ use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
 pub fn foo_0(x: u32) {
     let x: Value<u32> = Rc::new(RefCell::new(x));
-    let __rhs = (*x.borrow()).wrapping_add(1_u32);
-    (*x.borrow_mut()) = __rhs;
+    {
+        let __rhs = (*x.borrow()).wrapping_add(1_u32);
+        (*x.borrow_mut()) = __rhs
+    };
 }
 pub fn bar_1(x: Ptr<u32>) {
-    let __rhs = x.with(|__v| (*__v).wrapping_add(1_u32));
-    x.write(__rhs);
+    {
+        let __rhs = x.with(|__v| (*__v).wrapping_add(1_u32));
+        x.write(__rhs)
+    };
 }
 pub fn main() {
     std::process::exit(main_0());
@@ -151,30 +155,32 @@ fn main_0() -> i32 {
             .read())
             == 4_u32)
     );
-    let __rhs = (m.as_pointer() as Ptr<BTreeMap<i16, Value<u32>>>)
-        .with_mut(|__v: &mut BTreeMap<i16, Value<u32>>| {
-            __v.entry(0_i16.clone())
-                .or_insert_with(|| Rc::new(RefCell::new(<u32>::default())))
-                .as_pointer()
-        })
-        .with(|__v| {
-            (*__v).wrapping_add(
-                ((m.as_pointer() as Ptr<BTreeMap<i16, Value<u32>>>)
-                    .with_mut(|__v: &mut BTreeMap<i16, Value<u32>>| {
-                        __v.entry(2_i16.clone())
-                            .or_insert_with(|| Rc::new(RefCell::new(<u32>::default())))
-                            .as_pointer()
-                    })
-                    .read()),
-            )
-        });
-    (m.as_pointer() as Ptr<BTreeMap<i16, Value<u32>>>)
-        .with_mut(|__v: &mut BTreeMap<i16, Value<u32>>| {
-            __v.entry(0_i16.clone())
-                .or_insert_with(|| Rc::new(RefCell::new(<u32>::default())))
-                .as_pointer()
-        })
-        .write(__rhs);
+    {
+        let __rhs = (m.as_pointer() as Ptr<BTreeMap<i16, Value<u32>>>)
+            .with_mut(|__v: &mut BTreeMap<i16, Value<u32>>| {
+                __v.entry(0_i16.clone())
+                    .or_insert_with(|| Rc::new(RefCell::new(<u32>::default())))
+                    .as_pointer()
+            })
+            .with(|__v| {
+                (*__v).wrapping_add(
+                    ((m.as_pointer() as Ptr<BTreeMap<i16, Value<u32>>>)
+                        .with_mut(|__v: &mut BTreeMap<i16, Value<u32>>| {
+                            __v.entry(2_i16.clone())
+                                .or_insert_with(|| Rc::new(RefCell::new(<u32>::default())))
+                                .as_pointer()
+                        })
+                        .read()),
+                )
+            });
+        (m.as_pointer() as Ptr<BTreeMap<i16, Value<u32>>>)
+            .with_mut(|__v: &mut BTreeMap<i16, Value<u32>>| {
+                __v.entry(0_i16.clone())
+                    .or_insert_with(|| Rc::new(RefCell::new(<u32>::default())))
+                    .as_pointer()
+            })
+            .write(__rhs)
+    };
     assert!(
         (((m.as_pointer() as Ptr<BTreeMap<i16, Value<u32>>>)
             .with_mut(|__v: &mut BTreeMap<i16, Value<u32>>| {
@@ -367,19 +373,21 @@ fn main_0() -> i32 {
     }
     let i: Value<u32> = Rc::new(RefCell::new(0_u32));
     'loop_: while (((*i.borrow()) as usize) < (*indexes.borrow()).len()) {
-        let __rhs = ((*i.borrow()).wrapping_rem(2_u32) != 0);
-        (m2.as_pointer() as Ptr<BTreeMap<i32, Value<bool>>>)
-            .with_mut(|__v: &mut BTreeMap<i32, Value<bool>>| {
-                __v.entry(
-                    ((indexes.as_pointer() as Ptr<i32>)
-                        .offset(((*i.borrow()) as usize))
-                        .read())
-                    .clone(),
-                )
-                .or_insert_with(|| Rc::new(RefCell::new(<bool>::default())))
-                .as_pointer()
-            })
-            .write(__rhs);
+        {
+            let __rhs = ((*i.borrow()).wrapping_rem(2_u32) != 0);
+            (m2.as_pointer() as Ptr<BTreeMap<i32, Value<bool>>>)
+                .with_mut(|__v: &mut BTreeMap<i32, Value<bool>>| {
+                    __v.entry(
+                        ((indexes.as_pointer() as Ptr<i32>)
+                            .offset(((*i.borrow()) as usize))
+                            .read())
+                        .clone(),
+                    )
+                    .or_insert_with(|| Rc::new(RefCell::new(<bool>::default())))
+                    .as_pointer()
+                })
+                .write(__rhs)
+        };
         (*i.borrow_mut()).prefix_inc();
     }
     assert!(((*m2.borrow()).len() == (*indexes.borrow()).len()));

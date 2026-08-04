@@ -15,8 +15,10 @@ pub fn first_nonnull_0(count: i32, __args: &[VaArg]) -> i32 {
     'loop_: while ((((*i.borrow()) < (*count.borrow())) as i32) != 0) {
         let p: Value<Ptr<i32>> = Rc::new(RefCell::new((*ap.borrow_mut()).arg::<Ptr<i32>>()));
         if (((!((*p.borrow()).is_null())) as i32) != 0) {
-            let __rhs = ((*p.borrow()).read());
-            (*result.borrow_mut()) = __rhs;
+            {
+                let __rhs = ((*p.borrow()).read());
+                (*result.borrow_mut()) = __rhs
+            };
             break;
         }
         (*i.borrow_mut()).postfix_inc();

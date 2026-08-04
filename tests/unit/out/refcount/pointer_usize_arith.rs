@@ -65,8 +65,10 @@ fn main_0() -> i32 {
         let _lhs = (*it.borrow()).clone();
         _lhs != (*end.borrow()).clone()
     } {
-        let __rhs = ((*it.borrow()).read());
-        (*sum.borrow_mut()) += __rhs;
+        {
+            let __rhs = ((*it.borrow()).read());
+            (*sum.borrow_mut()) += __rhs
+        };
         (*it.borrow_mut()).prefix_inc();
     }
     assert!(((*sum.borrow()) == (((((((10 + 11) + 12) + 13) + 14) + 99) + 16) + 17)));

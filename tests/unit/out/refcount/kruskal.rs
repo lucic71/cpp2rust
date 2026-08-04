@@ -66,13 +66,16 @@ pub fn partition_0(arr: Ptr<Option<Value<Box<[Edge]>>>>, start: i32, end: i32) -
         weight: (*(arr.read()).as_ref().unwrap().borrow())[((*pidx.borrow()) as usize) as usize]
             .weight,
     }));
-    let __rhs = Edge {
-        u: (*(arr.read()).as_ref().unwrap().borrow())[((*start.borrow()) as usize) as usize].u,
-        v: (*(arr.read()).as_ref().unwrap().borrow())[((*start.borrow()) as usize) as usize].v,
-        weight: (*(arr.read()).as_ref().unwrap().borrow())[((*start.borrow()) as usize) as usize]
-            .weight,
+    {
+        let __rhs = Edge {
+            u: (*(arr.read()).as_ref().unwrap().borrow())[((*start.borrow()) as usize) as usize].u,
+            v: (*(arr.read()).as_ref().unwrap().borrow())[((*start.borrow()) as usize) as usize].v,
+            weight: (*(arr.read()).as_ref().unwrap().borrow())
+                [((*start.borrow()) as usize) as usize]
+                .weight,
+        };
+        (*(arr.read()).as_ref().unwrap().borrow_mut())[((*pidx.borrow()) as usize) as usize] = __rhs
     };
-    (*(arr.read()).as_ref().unwrap().borrow_mut())[((*pidx.borrow()) as usize) as usize] = __rhs;
     (*(arr.read()).as_ref().unwrap().borrow_mut())[((*start.borrow()) as usize) as usize] = Edge {
         u: (*tmp.borrow()).u,
         v: (*tmp.borrow()).v,
@@ -105,15 +108,21 @@ pub fn partition_0(arr: Ptr<Option<Value<Box<[Edge]>>>>, start: i32, end: i32) -
                     [((*i.borrow()) as usize) as usize]
                     .weight,
             };
-            let __rhs = Edge {
-                u: (*(arr.read()).as_ref().unwrap().borrow())[((*j.borrow()) as usize) as usize].u,
-                v: (*(arr.read()).as_ref().unwrap().borrow())[((*j.borrow()) as usize) as usize].v,
-                weight: (*(arr.read()).as_ref().unwrap().borrow())
-                    [((*j.borrow()) as usize) as usize]
-                    .weight,
+            {
+                let __rhs = Edge {
+                    u: (*(arr.read()).as_ref().unwrap().borrow())
+                        [((*j.borrow()) as usize) as usize]
+                        .u,
+                    v: (*(arr.read()).as_ref().unwrap().borrow())
+                        [((*j.borrow()) as usize) as usize]
+                        .v,
+                    weight: (*(arr.read()).as_ref().unwrap().borrow())
+                        [((*j.borrow()) as usize) as usize]
+                        .weight,
+                };
+                (*(arr.read()).as_ref().unwrap().borrow_mut())[((*i.borrow()) as usize) as usize] =
+                    __rhs
             };
-            (*(arr.read()).as_ref().unwrap().borrow_mut())[((*i.borrow()) as usize) as usize] =
-                __rhs;
             (*(arr.read()).as_ref().unwrap().borrow_mut())[((*j.borrow()) as usize) as usize] =
                 Edge {
                     u: (*tmp.borrow()).u,
@@ -169,12 +178,14 @@ impl DisjointSetMethods for Ptr<DisjointSet> {
     fn makeSet(&self) {
         let i: Value<i32> = Rc::new(RefCell::new(0));
         'loop_: while ((*i.borrow()) < self.with(|__v| (*__v).n)) {
-            let __rhs = (*i.borrow());
-            (*self
-                .with(|__v| (*__v).parent.clone())
-                .as_ref()
-                .unwrap()
-                .borrow_mut())[((*i.borrow()) as usize) as usize] = __rhs;
+            {
+                let __rhs = (*i.borrow());
+                (*self
+                    .with(|__v| (*__v).parent.clone())
+                    .as_ref()
+                    .unwrap()
+                    .borrow_mut())[((*i.borrow()) as usize) as usize] = __rhs
+            };
             (*self
                 .with(|__v| (*__v).rank.clone())
                 .as_ref()
@@ -192,19 +203,21 @@ impl DisjointSetMethods for Ptr<DisjointSet> {
             .borrow())[((*x.borrow()) as usize) as usize]
             != (*x.borrow()))
         {
-            let __rhs = ({
-                let _x: i32 = (*self
+            {
+                let __rhs = ({
+                    let _x: i32 = (*self
+                        .with(|__v| (*__v).parent.clone())
+                        .as_ref()
+                        .unwrap()
+                        .borrow())[((*x.borrow()) as usize) as usize];
+                    self.find(_x)
+                });
+                (*self
                     .with(|__v| (*__v).parent.clone())
                     .as_ref()
                     .unwrap()
-                    .borrow())[((*x.borrow()) as usize) as usize];
-                self.find(_x)
-            });
-            (*self
-                .with(|__v| (*__v).parent.clone())
-                .as_ref()
-                .unwrap()
-                .borrow_mut())[((*x.borrow()) as usize) as usize] = __rhs;
+                    .borrow_mut())[((*x.borrow()) as usize) as usize] = __rhs
+            };
         }
         return (*self
             .with(|__v| (*__v).parent.clone())
@@ -258,17 +271,19 @@ impl DisjointSetMethods for Ptr<DisjointSet> {
                 .as_ref()
                 .unwrap()
                 .borrow_mut())[((*yset.borrow()) as usize) as usize] = (*xset.borrow());
-            let __rhs = ((*self
-                .with(|__v| (*__v).rank.clone())
-                .as_ref()
-                .unwrap()
-                .borrow())[((*xset.borrow()) as usize) as usize]
-                + 1);
-            (*self
-                .with(|__v| (*__v).rank.clone())
-                .as_ref()
-                .unwrap()
-                .borrow_mut())[((*xset.borrow()) as usize) as usize] = __rhs;
+            {
+                let __rhs = ((*self
+                    .with(|__v| (*__v).rank.clone())
+                    .as_ref()
+                    .unwrap()
+                    .borrow())[((*xset.borrow()) as usize) as usize]
+                    + 1);
+                (*self
+                    .with(|__v| (*__v).rank.clone())
+                    .as_ref()
+                    .unwrap()
+                    .borrow_mut())[((*xset.borrow()) as usize) as usize] = __rhs
+            };
         }
     }
 }

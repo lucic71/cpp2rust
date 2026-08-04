@@ -152,13 +152,15 @@ fn main_0() -> i32 {
         .is_null())) as i32)
             != 0)
     );
-    let __rhs = libcc2rs::strdup_refcount(Ptr::from_string_literal(b"alpha").clone());
-    ((*e.borrow())
-        .reinterpret_cast::<u8>()
-        .offset(8usize)
-        .reinterpret_cast::<anon_1>() as Ptr<anon_1>)
-        .with(|__v| (*__v).elem.offset(((0) as isize)).clone())
-        .write(__rhs);
+    {
+        let __rhs = libcc2rs::strdup_refcount(Ptr::from_string_literal(b"alpha").clone());
+        ((*e.borrow())
+            .reinterpret_cast::<u8>()
+            .offset(8usize)
+            .reinterpret_cast::<anon_1>() as Ptr<anon_1>)
+            .with(|__v| (*__v).elem.offset(((0) as isize)).clone())
+            .write(__rhs)
+    };
     assert!(
         (((!((((*e.borrow())
             .reinterpret_cast::<u8>()

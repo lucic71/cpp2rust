@@ -24,29 +24,35 @@ fn main_0() -> i32 {
     }
     'loop_: for mut e1 in (v.as_pointer() as Ptr<i32>) {
         'loop_: for mut e2 in (v.as_pointer() as Ptr<i32>) {
-            let __rhs = {
-                let _lhs = (e1.read());
-                _lhs * (e2.read())
+            {
+                let __rhs = {
+                    let _lhs = (e1.read());
+                    _lhs * (e2.read())
+                };
+                (*square.borrow_mut()) += __rhs
             };
-            (*square.borrow_mut()) += __rhs;
         }
     }
     'loop_: for mut e1 in (v.as_pointer() as Ptr<i32>) {
         'loop_: for mut e2 in (v.as_pointer() as Ptr<i32>) {
-            let __rhs = {
-                let _lhs = (e1.read());
-                _lhs * (e2.read())
+            {
+                let __rhs = {
+                    let _lhs = (e1.read());
+                    _lhs * (e2.read())
+                };
+                (*square.borrow_mut()) += __rhs
             };
-            (*square.borrow_mut()) += __rhs;
         }
     }
     'loop_: for mut e1 in (v.as_pointer() as Ptr<i32>) {
         'loop_: for mut e2 in (v.as_pointer() as Ptr<i32>) {
-            let __rhs = {
-                let _lhs = (e1.read());
-                _lhs * (e2.read())
+            {
+                let __rhs = {
+                    let _lhs = (e1.read());
+                    _lhs * (e2.read())
+                };
+                (*square.borrow_mut()) += __rhs
             };
-            (*square.borrow_mut()) += __rhs;
         }
     }
     let m: Value<Vec<Value<Vec<i32>>>> = Rc::new(RefCell::new(Vec::new()));
@@ -65,8 +71,10 @@ fn main_0() -> i32 {
     'loop_: for mut row in (m.as_pointer() as Ptr<Value<Vec<i32>>>) {
         let row: Ptr<Vec<i32>> = (row.read()).as_pointer();
         'loop_: for mut col in (row.to_strong().as_pointer() as Ptr<i32>) {
-            let __rhs = (col.read());
-            (*square.borrow_mut()) += __rhs;
+            {
+                let __rhs = (col.read());
+                (*square.borrow_mut()) += __rhs
+            };
         }
     }
     return (*square.borrow());

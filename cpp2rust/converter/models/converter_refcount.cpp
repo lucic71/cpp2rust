@@ -1672,8 +1672,12 @@ RsExpr *ConverterRefCount::ConvertBinaryOperator(clang::BinaryOperator *expr) {
       value = CastTo(value, lhs_type);
     }
     auto *assign_node = arena_.New<Assign>(ConvertLValue(lhs), Text("rhs_0"));
-    return Braces(Cat(Text(keyword::kLet), Text("rhs_0"), Text(token::kAssign),
-                      value, Text(token::kSemiColon), assign_node));
+    auto *node = Cat(Text(keyword::kLet), Text("rhs_0"), Text(token::kAssign),
+                     value, Text(token::kSemiColon), assign_node);
+    if (isRValue()) {
+      node = Cat(node, Text(token::kSemiColon), ConvertFreshRValue(lhs));
+    }
+    return Braces(node);
   }
 
   if (IsUnsignedArithOp(expr)) {
@@ -1686,9 +1690,12 @@ RsExpr *ConverterRefCount::ConvertBinaryOperator(clang::BinaryOperator *expr) {
     auto *arith = ConvertUnsignedArithBinaryOperator(expr, rhs, operand);
     if (expr->isCompoundAssignmentOp()) {
       auto *assign_node = arena_.New<Assign>(ConvertLValue(lhs), Text("rhs_0"));
-      return Braces(Cat(Text(keyword::kLet), Text("rhs_0"),
-                        Text(token::kAssign), arith, Text(token::kSemiColon),
-                        assign_node));
+      auto *node = Cat(Text(keyword::kLet), Text("rhs_0"), Text(token::kAssign),
+                       arith, Text(token::kSemiColon), assign_node);
+      if (isRValue()) {
+        node = Cat(node, Text(token::kSemiColon), ConvertFreshRValue(lhs));
+      }
+      return Braces(node);
     }
     computed_expr_type_ = ComputedExprType::FreshValue;
     return arith;
@@ -2302,7 +2309,8 @@ RsExpr *ConverterRefCount::ConvertAssignment(clang::Expr *lhs, clang::Expr *rhs,
   auto *rhs_node = ConvertFreshRValue(rhs, lhs->getType());
 
   std::vector<RsExpr *> parts;
-  if (MayCauseBorrowMutError(lhs, rhs)) {
+  bool hoisted_rhs = MayCauseBorrowMutError(lhs, rhs);
+  if (hoisted_rhs) {
     parts.push_back(Cat(Text(keyword::kLet), Text("__rhs"),
                         Text(token::kAssign), rhs_node,
                         Text(token::kSemiColon)));
@@ -2321,7 +2329,8 @@ RsExpr *ConverterRefCount::ConvertAssignment(clang::Expr *lhs, clang::Expr *rhs,
     parts.push_back(Text(token::kSemiColon));
     parts.push_back(ConvertFreshRValue(lhs));
   }
-  return Braces(arena_.New<Concat>(std::move(parts)), isRValue());
+  return Braces(arena_.New<Concat>(std::move(parts)),
+                isRValue() || hoisted_rhs);
 }
 
 RsExpr *

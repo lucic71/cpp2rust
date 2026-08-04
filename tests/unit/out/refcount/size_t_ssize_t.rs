@@ -65,8 +65,10 @@ fn main_0() -> i32 {
                 .wrapping_mul(2_usize) as usize)
                 .wrapping_sub(10_usize))
     );
-    let __rhs = (*sz.borrow()).wrapping_add(1_usize);
-    (*sz.borrow_mut()) = __rhs;
+    {
+        let __rhs = (*sz.borrow()).wrapping_add(1_usize);
+        (*sz.borrow_mut()) = __rhs
+    };
     assert!(((*sz.borrow()) == 21_usize));
     let fr: Value<usize> = Rc::new(RefCell::new(
         ({
@@ -134,8 +136,10 @@ fn main_0() -> i32 {
     ));
     let i: Value<usize> = Rc::new(RefCell::new(0_usize));
     'loop_: while ((*i.borrow()) < (*count.borrow())) {
-        let __rhs = (((*i.borrow()).wrapping_mul(2_usize)) as i32);
-        (*data.borrow_mut())[(*i.borrow()) as usize] = __rhs;
+        {
+            let __rhs = (((*i.borrow()).wrapping_mul(2_usize)) as i32);
+            (*data.borrow_mut())[(*i.borrow()) as usize] = __rhs
+        };
         (*i.borrow_mut()).postfix_inc();
     }
     let total: Value<usize> = Rc::new(RefCell::new(0_usize));

@@ -74,11 +74,13 @@ pub fn fft_3(a: Ptr<Option<Value<Box<[Complex]>>>>, N: i32) -> Option<Value<Box<
                 .collect::<Box<[_]>>(),
         )))));
     if ((*N.borrow()) == 1) {
-        let __rhs = Complex {
-            re: (*(a.read()).as_ref().unwrap().borrow())[(0_usize) as usize].re,
-            img: (*(a.read()).as_ref().unwrap().borrow())[(0_usize) as usize].img,
+        {
+            let __rhs = Complex {
+                re: (*(a.read()).as_ref().unwrap().borrow())[(0_usize) as usize].re,
+                img: (*(a.read()).as_ref().unwrap().borrow())[(0_usize) as usize].img,
+            };
+            (*(*y.borrow()).as_ref().unwrap().borrow_mut())[(0_usize) as usize] = __rhs
         };
-        (*(*y.borrow()).as_ref().unwrap().borrow_mut())[(0_usize) as usize] = __rhs;
         return (*y.borrow_mut()).take();
     }
     let w: Value<Option<Value<Box<[Complex]>>>> =
@@ -114,22 +116,30 @@ pub fn fft_3(a: Ptr<Option<Value<Box<[Complex]>>>>, N: i32) -> Option<Value<Box<
         )))));
     let i: Value<i32> = Rc::new(RefCell::new(0));
     'loop_: while ((*i.borrow()) < ((*N.borrow()) / 2)) {
-        let __rhs = Complex {
-            re: (*(a.read()).as_ref().unwrap().borrow())[(((*i.borrow()) * 2) as usize) as usize]
-                .re,
-            img: (*(a.read()).as_ref().unwrap().borrow())[(((*i.borrow()) * 2) as usize) as usize]
-                .img,
+        {
+            let __rhs = Complex {
+                re: (*(a.read()).as_ref().unwrap().borrow())
+                    [(((*i.borrow()) * 2) as usize) as usize]
+                    .re,
+                img: (*(a.read()).as_ref().unwrap().borrow())
+                    [(((*i.borrow()) * 2) as usize) as usize]
+                    .img,
+            };
+            (*(*A0.borrow()).as_ref().unwrap().borrow_mut())[((*i.borrow()) as usize) as usize] =
+                __rhs
         };
-        (*(*A0.borrow()).as_ref().unwrap().borrow_mut())[((*i.borrow()) as usize) as usize] = __rhs;
-        let __rhs = Complex {
-            re: (*(a.read()).as_ref().unwrap().borrow())
-                [((((*i.borrow()) * 2) + 1) as usize) as usize]
-                .re,
-            img: (*(a.read()).as_ref().unwrap().borrow())
-                [((((*i.borrow()) * 2) + 1) as usize) as usize]
-                .img,
+        {
+            let __rhs = Complex {
+                re: (*(a.read()).as_ref().unwrap().borrow())
+                    [((((*i.borrow()) * 2) + 1) as usize) as usize]
+                    .re,
+                img: (*(a.read()).as_ref().unwrap().borrow())
+                    [((((*i.borrow()) * 2) + 1) as usize) as usize]
+                    .img,
+            };
+            (*(*A1.borrow()).as_ref().unwrap().borrow_mut())[((*i.borrow()) as usize) as usize] =
+                __rhs
         };
-        (*(*A1.borrow()).as_ref().unwrap().borrow_mut())[((*i.borrow()) as usize) as usize] = __rhs;
         (*i.borrow_mut()).postfix_inc();
     }
     let y0: Value<Option<Value<Box<[Complex]>>>> = Rc::new(RefCell::new(
@@ -205,11 +215,14 @@ fn main_0() -> i32 {
         )))));
     let i: Value<i32> = Rc::new(RefCell::new(0));
     'loop_: while ((*i.borrow()) < (*N.borrow())) {
-        let __rhs = Complex {
-            re: (((*i.borrow()) as f64) + 1_f64),
-            img: 0_f64,
+        {
+            let __rhs = Complex {
+                re: (((*i.borrow()) as f64) + 1_f64),
+                img: 0_f64,
+            };
+            (*(*a.borrow()).as_ref().unwrap().borrow_mut())[((*i.borrow()) as usize) as usize] =
+                __rhs
         };
-        (*(*a.borrow()).as_ref().unwrap().borrow_mut())[((*i.borrow()) as usize) as usize] = __rhs;
         (*i.borrow_mut()).postfix_inc();
     }
     let b: Value<Option<Value<Box<[Complex]>>>> =
@@ -228,16 +241,22 @@ fn main_0() -> i32 {
         )))));
     let i: Value<i32> = Rc::new(RefCell::new(0));
     'loop_: while ((*i.borrow()) < (*N.borrow())) {
-        let __rhs = ((*(*b.borrow()).as_ref().unwrap().borrow())[((*i.borrow()) as usize) as usize]
-            .re
-            .round() as i32);
-        (*(*reals.borrow()).as_ref().unwrap().borrow_mut())[((*i.borrow()) as usize) as usize] =
-            __rhs;
-        let __rhs = ((*(*b.borrow()).as_ref().unwrap().borrow())[((*i.borrow()) as usize) as usize]
-            .img
-            .round() as i32);
-        (*(*imgs.borrow()).as_ref().unwrap().borrow_mut())[((*i.borrow()) as usize) as usize] =
-            __rhs;
+        {
+            let __rhs = ((*(*b.borrow()).as_ref().unwrap().borrow())
+                [((*i.borrow()) as usize) as usize]
+                .re
+                .round() as i32);
+            (*(*reals.borrow()).as_ref().unwrap().borrow_mut())[((*i.borrow()) as usize) as usize] =
+                __rhs
+        };
+        {
+            let __rhs = ((*(*b.borrow()).as_ref().unwrap().borrow())
+                [((*i.borrow()) as usize) as usize]
+                .img
+                .round() as i32);
+            (*(*imgs.borrow()).as_ref().unwrap().borrow_mut())[((*i.borrow()) as usize) as usize] =
+                __rhs
+        };
         (*i.borrow_mut()).prefix_inc();
     }
     return (((((((*(*reals.borrow()).as_ref().unwrap().borrow())[(0_usize) as usize] == 10)

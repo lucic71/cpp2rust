@@ -50,9 +50,11 @@ fn main_0() -> i32 {
             y: 4,
         })))));
     (*(*p.borrow_mut()).as_ref().unwrap().borrow_mut()).x += 10;
-    let __rhs = ((*(*p.borrow()).as_ref().unwrap().borrow()).x
-        + (*(*p.borrow()).as_ref().unwrap().borrow()).y);
-    (*(*p.borrow_mut()).as_ref().unwrap().borrow_mut()).y = __rhs;
+    {
+        let __rhs = ((*(*p.borrow()).as_ref().unwrap().borrow()).x
+            + (*(*p.borrow()).as_ref().unwrap().borrow()).y);
+        (*(*p.borrow_mut()).as_ref().unwrap().borrow_mut()).y = __rhs
+    };
     let s: Value<i32> = Rc::new(RefCell::new(
         ({ sum_0((*(*p.borrow()).as_ref().unwrap().borrow()).clone()) }),
     ));

@@ -313,14 +313,16 @@ fn main_0() -> i32 {
     let map1: Value<BTreeMap<i32, Value<i32>>> = Rc::new(RefCell::new(BTreeMap::new()));
     let i: Value<i32> = Rc::new(RefCell::new(0));
     'loop_: while ((*i.borrow()) < (*N.borrow())) {
-        let __rhs = (*i.borrow());
-        (map1.as_pointer() as Ptr<BTreeMap<i32, Value<i32>>>)
-            .with_mut(|__v: &mut BTreeMap<i32, Value<i32>>| {
-                __v.entry((*i.borrow()).clone())
-                    .or_insert_with(|| Rc::new(RefCell::new(<i32>::default())))
-                    .as_pointer()
-            })
-            .write(__rhs);
+        {
+            let __rhs = (*i.borrow());
+            (map1.as_pointer() as Ptr<BTreeMap<i32, Value<i32>>>)
+                .with_mut(|__v: &mut BTreeMap<i32, Value<i32>>| {
+                    __v.entry((*i.borrow()).clone())
+                        .or_insert_with(|| Rc::new(RefCell::new(<i32>::default())))
+                        .as_pointer()
+                })
+                .write(__rhs)
+        };
         (*i.borrow_mut()).prefix_inc();
     }
     let map2: Value<BTreeMap<i32, Value<i32>>> = Rc::new(RefCell::new(
@@ -382,10 +384,14 @@ fn main_0() -> i32 {
         Rc::new(RefCell::new((*pair1.borrow()).0.borrow().clone())),
         Rc::new(RefCell::new((*pair1.borrow()).1.borrow().clone())),
     )));
-    let __rhs = ((*(*pair2.borrow()).0.borrow()) * 10);
-    (*(*pair2.borrow()).0.borrow_mut()) = __rhs;
-    let __rhs = ((*(*pair2.borrow()).1.borrow()) * 10);
-    (*(*pair2.borrow()).1.borrow_mut()) = __rhs;
+    {
+        let __rhs = ((*(*pair2.borrow()).0.borrow()) * 10);
+        (*(*pair2.borrow()).0.borrow_mut()) = __rhs
+    };
+    {
+        let __rhs = ((*(*pair2.borrow()).1.borrow()) * 10);
+        (*(*pair2.borrow()).1.borrow_mut()) = __rhs
+    };
     assert!(((*(*pair2.borrow()).0.borrow()) == 10));
     assert!(((*(*pair2.borrow()).1.borrow()) == 20));
     assert!(((*(*pair1.borrow()).0.borrow()) == 1));

@@ -146,8 +146,10 @@ fn main_0() -> i32 {
     ));
     (*x2.borrow_mut()) += 1;
     (*x2.borrow_mut()) += ({ foo_0((*x1.borrow())) });
-    let __rhs = ((({ foo_0((*x2.borrow())) }) + ({ foo_0((*x3.borrow())) })) + 1);
-    (*x3.borrow_mut()) += __rhs;
+    {
+        let __rhs = ((({ foo_0((*x2.borrow())) }) + ({ foo_0((*x3.borrow())) })) + 1);
+        (*x3.borrow_mut()) += __rhs
+    };
     let p1: Value<Ptr<i32>> = Rc::new(RefCell::new((x1.as_pointer())));
     let p2: Value<Ptr<i32>> = Rc::new(RefCell::new(({ ptr_1((*p1.borrow()).clone()) })));
     (*p1.borrow_mut()) = (*p2.borrow()).clone();
@@ -155,15 +157,19 @@ fn main_0() -> i32 {
     let r1: Ptr<i32> = x1.as_pointer();
     let r2: Ptr<i32> = ({ bar_2(x1.as_pointer()) });
     let r3: Ptr<i32> = ({ bar_2((r1).clone()) });
-    let __rhs = (*x1.borrow());
     {
-        let _ptr = r2.clone();
-        _ptr.write((_ptr.read()) + __rhs)
+        let __rhs = (*x1.borrow());
+        {
+            let _ptr = r2.clone();
+            _ptr.write((_ptr.read()) + __rhs)
+        }
     };
-    let __rhs = (r1.read());
     {
-        let _ptr = r3.clone();
-        _ptr.write((_ptr.read()) + __rhs)
+        let __rhs = (r1.read());
+        {
+            let _ptr = r3.clone();
+            _ptr.write((_ptr.read()) + __rhs)
+        }
     };
     let x4: Value<i32> = Rc::new(RefCell::new(
         ((({ foo_0((*x3.borrow())) }) + (({ ptr_1((x3.as_pointer())) }).read()))

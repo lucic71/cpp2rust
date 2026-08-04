@@ -83,24 +83,28 @@ pub fn insert_1(node: Ptr<node_t>, new_node: Ptr<node_t>) -> Ptr<node_t> {
         let _lhs = (*new_node.borrow()).with(|__v| (*__v).value);
         _lhs < (*node.borrow()).with(|__v| (*__v).value)
     } {
-        let __rhs = ({
-            insert_1(
-                ((*node.borrow()).with(|__v| (*__v).left.clone())).clone(),
-                (*new_node.borrow()).clone(),
-            )
-        });
-        (*node.borrow()).with_mut(|__v| __v.left = __rhs);
+        {
+            let __rhs = ({
+                insert_1(
+                    ((*node.borrow()).with(|__v| (*__v).left.clone())).clone(),
+                    (*new_node.borrow()).clone(),
+                )
+            });
+            (*node.borrow()).with_mut(|__v| __v.left = __rhs)
+        };
     } else if {
         let _lhs = (*new_node.borrow()).with(|__v| (*__v).value);
         _lhs > (*node.borrow()).with(|__v| (*__v).value)
     } {
-        let __rhs = ({
-            insert_1(
-                ((*node.borrow()).with(|__v| (*__v).right.clone())).clone(),
-                (*new_node.borrow()).clone(),
-            )
-        });
-        (*node.borrow()).with_mut(|__v| __v.right = __rhs);
+        {
+            let __rhs = ({
+                insert_1(
+                    ((*node.borrow()).with(|__v| (*__v).right.clone())).clone(),
+                    (*new_node.borrow()).clone(),
+                )
+            });
+            (*node.borrow()).with_mut(|__v| __v.right = __rhs)
+        };
     }
     return (*node.borrow()).clone();
 }
@@ -139,14 +143,22 @@ fn main_0() -> i32 {
             value: 4,
         })))));
     let ptr1: Value<Ptr<node_t>> = Rc::new(RefCell::new(((*tree.borrow()).as_pointer())));
-    let __rhs = ({ insert_1((*ptr1.borrow()).clone(), ((*n1.borrow()).as_pointer())) });
-    (*ptr1.borrow_mut()) = __rhs;
-    let __rhs = ({ insert_1((*ptr1.borrow()).clone(), ((*n2.borrow()).as_pointer())) });
-    (*ptr1.borrow_mut()) = __rhs;
-    let __rhs = ({ insert_1((*ptr1.borrow()).clone(), ((*n3.borrow()).as_pointer())) });
-    (*ptr1.borrow_mut()) = __rhs;
-    let __rhs = ({ insert_1((*ptr1.borrow()).clone(), ((*n4.borrow()).as_pointer())) });
-    (*ptr1.borrow_mut()) = __rhs;
+    {
+        let __rhs = ({ insert_1((*ptr1.borrow()).clone(), ((*n1.borrow()).as_pointer())) });
+        (*ptr1.borrow_mut()) = __rhs
+    };
+    {
+        let __rhs = ({ insert_1((*ptr1.borrow()).clone(), ((*n2.borrow()).as_pointer())) });
+        (*ptr1.borrow_mut()) = __rhs
+    };
+    {
+        let __rhs = ({ insert_1((*ptr1.borrow()).clone(), ((*n3.borrow()).as_pointer())) });
+        (*ptr1.borrow_mut()) = __rhs
+    };
+    {
+        let __rhs = ({ insert_1((*ptr1.borrow()).clone(), ((*n4.borrow()).as_pointer())) });
+        (*ptr1.borrow_mut()) = __rhs
+    };
     return (((((((({ find_0((*ptr1.borrow()).clone(), 0) }).with(|__v| (*__v).value) == 0)
         && (({ find_0((*ptr1.borrow()).clone(), 1) }).with(|__v| (*__v).value) == 1))
         && (({ find_0((*ptr1.borrow()).clone(), 2) }).with(|__v| (*__v).value) == 2))

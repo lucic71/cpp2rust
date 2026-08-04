@@ -94,10 +94,14 @@ fn main_0() -> i32 {
     (*x4.borrow_mut()) = ((*x3.borrow()) + (*x2.borrow()));
     let p1: Value<Ptr<i32>> = Rc::new(RefCell::new((x1.as_pointer())));
     (*p1.borrow_mut()) = (x2.as_pointer());
-    let __rhs = (*x1.borrow());
-    (*p1.borrow()).write(__rhs);
-    let __rhs = (((*x1.borrow()) + (*x4.borrow())) + 1);
-    (*p1.borrow()).write(__rhs);
+    {
+        let __rhs = (*x1.borrow());
+        (*p1.borrow()).write(__rhs)
+    };
+    {
+        let __rhs = (((*x1.borrow()) + (*x4.borrow())) + 1);
+        (*p1.borrow()).write(__rhs)
+    };
     let x5: Value<i32> = Rc::new(RefCell::new(((*p1.borrow()).read())));
     let x6: Value<i32> = Rc::new(RefCell::new(
         ({
@@ -107,8 +111,10 @@ fn main_0() -> i32 {
     ));
     let r: Ptr<i32> = x1.as_pointer();
     r.write(5);
-    let __rhs = (((*p1.borrow()).read()) + 5);
-    r.write(__rhs);
+    {
+        let __rhs = (((*p1.borrow()).read()) + 5);
+        r.write(__rhs)
+    };
     let x7: Value<i32> = Rc::new(RefCell::new((r.read())));
     let x8: Value<i32> = Rc::new(RefCell::new(
         ({

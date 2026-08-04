@@ -78,8 +78,10 @@ fn main_0() -> i32 {
         let q: Value<Ptr<u8>> = Rc::new(RefCell::new(
             libcc2rs::malloc_refcount(16_usize).reinterpret_cast::<u8>(),
         ));
-        let __rhs = ((*i.borrow()) as u8);
-        (*q.borrow()).offset(((0) as isize)).write(__rhs);
+        {
+            let __rhs = ((*i.borrow()) as u8);
+            (*q.borrow()).offset(((0) as isize)).write(__rhs)
+        };
         libcc2rs::free_refcount(((*q.borrow()).clone() as Ptr<u8>).to_any());
         (*i.borrow_mut()).postfix_inc();
     }

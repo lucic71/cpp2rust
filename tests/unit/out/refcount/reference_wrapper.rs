@@ -63,8 +63,10 @@ fn main_0() -> i32 {
     let i4: Value<i32> = Rc::new(RefCell::new(2));
     let ref_3: Value<Ptr<i32>> = Rc::new(RefCell::new(i3.as_pointer()));
     let ref_4: Value<Ptr<i32>> = Rc::new(RefCell::new(i4.as_pointer()));
-    let __rhs = ((*ref_4.borrow()).clone().read());
-    (*ref_3.borrow()).clone().write(__rhs);
+    {
+        let __rhs = ((*ref_4.borrow()).clone().read());
+        (*ref_3.borrow()).clone().write(__rhs)
+    };
     write!(
         libcc2rs::cout(),
         "{:} {:}\n",

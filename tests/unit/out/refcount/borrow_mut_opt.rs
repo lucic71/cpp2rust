@@ -41,66 +41,98 @@ pub fn convert_without_rhs_0() {
 }
 pub fn convert_with_rhs_1() {
     let x: Value<i32> = Rc::new(RefCell::new(0));
-    let __rhs = ((*x.borrow()) + 1);
-    (*x.borrow_mut()) = __rhs;
+    {
+        let __rhs = ((*x.borrow()) + 1);
+        (*x.borrow_mut()) = __rhs
+    };
     let y: Value<i32> = Rc::new(RefCell::new(0));
-    let __rhs = ((*y.borrow()) + 1);
-    (*y.borrow_mut()) = __rhs;
+    {
+        let __rhs = ((*y.borrow()) + 1);
+        (*y.borrow_mut()) = __rhs
+    };
     let arr: Value<Box<[i32]>> = Rc::new(RefCell::new(Box::new([1, 2])));
-    let __rhs = ((*y.borrow()) + 1);
-    (*arr.borrow_mut())[(*y.borrow()) as usize] = __rhs;
-    let __rhs = ((*x.borrow()) + 1);
-    (*arr.borrow_mut())[(*x.borrow()) as usize] = __rhs;
-    let __rhs = ((*arr.borrow())[(*y.borrow()) as usize] + 1);
-    (*arr.borrow_mut())[(*x.borrow()) as usize] = __rhs;
+    {
+        let __rhs = ((*y.borrow()) + 1);
+        (*arr.borrow_mut())[(*y.borrow()) as usize] = __rhs
+    };
+    {
+        let __rhs = ((*x.borrow()) + 1);
+        (*arr.borrow_mut())[(*x.borrow()) as usize] = __rhs
+    };
+    {
+        let __rhs = ((*arr.borrow())[(*y.borrow()) as usize] + 1);
+        (*arr.borrow_mut())[(*x.borrow()) as usize] = __rhs
+    };
     let z: Ptr<i32> = x.as_pointer();
-    let __rhs = (z.read());
-    (*x.borrow_mut()) += __rhs;
-    let __rhs = (z.read());
-    (*y.borrow_mut()) += __rhs;
+    {
+        let __rhs = (z.read());
+        (*x.borrow_mut()) += __rhs
+    };
+    {
+        let __rhs = (z.read());
+        (*y.borrow_mut()) += __rhs
+    };
     let p: Value<Ptr<i32>> = Rc::new(RefCell::new((x.as_pointer())));
-    let __rhs = ((*p.borrow()).read());
-    (*x.borrow_mut()) += __rhs;
-    let __rhs = ((*p.borrow()).read());
-    (*y.borrow_mut()) += __rhs;
+    {
+        let __rhs = ((*p.borrow()).read());
+        (*x.borrow_mut()) += __rhs
+    };
+    {
+        let __rhs = ((*p.borrow()).read());
+        (*y.borrow_mut()) += __rhs
+    };
     (*p.borrow_mut()) = ((arr.as_pointer() as Ptr<i32>).offset(0));
-    let __rhs = ((*p.borrow()).read());
-    (*arr.borrow_mut())[(0) as usize] = __rhs;
-    let __rhs = (*x.borrow());
     {
-        let _ptr = z.clone();
-        _ptr.write((_ptr.read()) + __rhs)
-    };
-    let __rhs = (*y.borrow());
-    {
-        let _ptr = z.clone();
-        _ptr.write((_ptr.read()) + __rhs)
-    };
-    let __rhs = ((*p.borrow()).read());
-    {
-        let _ptr = z.clone();
-        _ptr.write((_ptr.read()) + __rhs)
-    };
-    let __rhs = ((*y.borrow()) + (*x.borrow()));
-    {
-        let _ptr = (*p.borrow()).clone();
-        _ptr.write((_ptr.read()) + __rhs)
-    };
-    let __rhs = {
-        let _lhs = (*x.borrow());
-        _lhs + (z.read())
+        let __rhs = ((*p.borrow()).read());
+        (*arr.borrow_mut())[(0) as usize] = __rhs
     };
     {
-        let _ptr = (*p.borrow()).clone();
-        _ptr.write((_ptr.read()) + __rhs)
-    };
-    let __rhs = {
-        let _lhs = (*y.borrow());
-        _lhs + (z.read())
+        let __rhs = (*x.borrow());
+        {
+            let _ptr = z.clone();
+            _ptr.write((_ptr.read()) + __rhs)
+        }
     };
     {
-        let _ptr = (*p.borrow()).clone();
-        _ptr.write((_ptr.read()) + __rhs)
+        let __rhs = (*y.borrow());
+        {
+            let _ptr = z.clone();
+            _ptr.write((_ptr.read()) + __rhs)
+        }
+    };
+    {
+        let __rhs = ((*p.borrow()).read());
+        {
+            let _ptr = z.clone();
+            _ptr.write((_ptr.read()) + __rhs)
+        }
+    };
+    {
+        let __rhs = ((*y.borrow()) + (*x.borrow()));
+        {
+            let _ptr = (*p.borrow()).clone();
+            _ptr.write((_ptr.read()) + __rhs)
+        }
+    };
+    {
+        let __rhs = {
+            let _lhs = (*x.borrow());
+            _lhs + (z.read())
+        };
+        {
+            let _ptr = (*p.borrow()).clone();
+            _ptr.write((_ptr.read()) + __rhs)
+        }
+    };
+    {
+        let __rhs = {
+            let _lhs = (*y.borrow());
+            _lhs + (z.read())
+        };
+        {
+            let _ptr = (*p.borrow()).clone();
+            _ptr.write((_ptr.read()) + __rhs)
+        }
     };
 }
 pub fn main() {

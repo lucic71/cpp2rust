@@ -89,9 +89,11 @@ pub fn DoStuffWithSafePointer_0(safe_ptr: Ptr<Option<Value<SafePointer>>>) {
     ({ ((safe_ptr.read()).as_pointer()).inc() });
     let x3: Value<Option<Value<i32>>> = Rc::new(RefCell::new(Some(Rc::new(RefCell::new(10)))));
     let x4: Value<Option<Value<i32>>> = Rc::new(RefCell::new(Some(Rc::new(RefCell::new(20)))));
-    let __rhs = ((*(*x3.borrow()).as_ref().unwrap().borrow())
-        + (*(*x4.borrow()).as_ref().unwrap().borrow()));
-    (*(*x3.borrow_mut()).as_ref().unwrap().borrow_mut()) = __rhs;
+    {
+        let __rhs = ((*(*x3.borrow()).as_ref().unwrap().borrow())
+            + (*(*x4.borrow()).as_ref().unwrap().borrow()));
+        (*(*x3.borrow_mut()).as_ref().unwrap().borrow_mut()) = __rhs
+    };
     (*x4.borrow_mut()) = (*x3.borrow_mut()).take();
     let raw_ptr2: Value<Ptr<i32>> = Rc::new(RefCell::new(((*x4.borrow()).as_pointer())));
     {
@@ -104,22 +106,24 @@ pub fn DoStuffWithSafePointer_0(safe_ptr: Ptr<Option<Value<SafePointer>>>) {
             y: 5,
         })))));
     ({ ((*pair.borrow()).as_pointer()).inc(10) });
-    let __rhs = {
-        let _lhs = {
-            let _lhs = (*(*(safe_ptr.read()).as_ref().unwrap().borrow())
-                .ptr
-                .as_ref()
-                .unwrap()
-                .borrow());
-            _lhs + (*(*pair.borrow()).as_ref().unwrap().borrow()).x
+    {
+        let __rhs = {
+            let _lhs = {
+                let _lhs = (*(*(safe_ptr.read()).as_ref().unwrap().borrow())
+                    .ptr
+                    .as_ref()
+                    .unwrap()
+                    .borrow());
+                _lhs + (*(*pair.borrow()).as_ref().unwrap().borrow()).x
+            };
+            _lhs + (*(*pair.borrow()).as_ref().unwrap().borrow()).y
         };
-        _lhs + (*(*pair.borrow()).as_ref().unwrap().borrow()).y
+        (*(*(safe_ptr.read()).as_ref().unwrap().borrow_mut())
+            .ptr
+            .as_ref()
+            .unwrap()
+            .borrow_mut()) = __rhs
     };
-    (*(*(safe_ptr.read()).as_ref().unwrap().borrow_mut())
-        .ptr
-        .as_ref()
-        .unwrap()
-        .borrow_mut()) = __rhs;
 }
 pub fn Consume_1(safe_ptr: Option<Value<SafePointer>>) -> i32 {
     let safe_ptr: Value<Option<Value<SafePointer>>> = Rc::new(RefCell::new(safe_ptr));

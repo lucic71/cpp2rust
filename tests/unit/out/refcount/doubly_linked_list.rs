@@ -60,8 +60,10 @@ pub fn Find_0(head: Ptr<Node>, idx: i32) -> Ptr<Node> {
     let curr: Value<Ptr<Node>> = Rc::new(RefCell::new((*head.borrow()).clone()));
     let i: Value<i32> = Rc::new(RefCell::new(0));
     'loop_: while ((*i.borrow()) < (*idx.borrow())) {
-        let __rhs = ((*curr.borrow()).with(|__v| (*__v).next.clone())).clone();
-        (*curr.borrow_mut()) = __rhs;
+        {
+            let __rhs = ((*curr.borrow()).with(|__v| (*__v).next.clone())).clone();
+            (*curr.borrow_mut()) = __rhs
+        };
         (*i.borrow_mut()).postfix_inc();
     }
     return (*curr.borrow()).clone();
@@ -72,8 +74,10 @@ pub fn FindBack_1(tail: Ptr<Node>, idx: i32) -> Ptr<Node> {
     let curr: Value<Ptr<Node>> = Rc::new(RefCell::new((*tail.borrow()).clone()));
     let i: Value<i32> = Rc::new(RefCell::new(0));
     'loop_: while ((*i.borrow()) < (*idx.borrow())) {
-        let __rhs = ((*curr.borrow()).with(|__v| (*__v).prev.clone())).clone();
-        (*curr.borrow_mut()) = __rhs;
+        {
+            let __rhs = ((*curr.borrow()).with(|__v| (*__v).prev.clone())).clone();
+            (*curr.borrow_mut()) = __rhs
+        };
         (*i.borrow_mut()).postfix_inc();
     }
     return (*curr.borrow()).clone();
@@ -81,8 +85,10 @@ pub fn FindBack_1(tail: Ptr<Node>, idx: i32) -> Ptr<Node> {
 pub fn Append_2(head: Ptr<Node>, new_node: Ptr<Node>) {
     let curr: Value<Ptr<Node>> = Rc::new(RefCell::new((head).clone()));
     'loop_: while !(((*curr.borrow()).with(|__v| (*__v).next.clone())).is_null()) {
-        let __rhs = ((*curr.borrow()).with(|__v| (*__v).next.clone())).clone();
-        (*curr.borrow_mut()) = __rhs;
+        {
+            let __rhs = ((*curr.borrow()).with(|__v| (*__v).next.clone())).clone();
+            (*curr.borrow_mut()) = __rhs
+        };
     }
     ({ (*curr.borrow()).SetNext((new_node).clone()) });
     ({
@@ -117,8 +123,10 @@ pub fn Delete_3(head: Ptr<Node>, val: i32) -> Ptr<Node> {
                 return (*next.borrow()).clone();
             }
         }
-        let __rhs = ((*curr.borrow()).with(|__v| (*__v).next.clone())).clone();
-        (*curr.borrow_mut()) = __rhs;
+        {
+            let __rhs = ((*curr.borrow()).with(|__v| (*__v).next.clone())).clone();
+            (*curr.borrow_mut()) = __rhs
+        };
     }
     return (*head.borrow()).clone();
 }
@@ -126,8 +134,10 @@ pub fn Tail_4(head: Ptr<Node>) -> Ptr<Node> {
     let head: Value<Ptr<Node>> = Rc::new(RefCell::new(head));
     let curr: Value<Ptr<Node>> = Rc::new(RefCell::new((*head.borrow()).clone()));
     'loop_: while !(((*curr.borrow()).with(|__v| (*__v).next.clone())).is_null()) {
-        let __rhs = ((*curr.borrow()).with(|__v| (*__v).next.clone())).clone();
-        (*curr.borrow_mut()) = __rhs;
+        {
+            let __rhs = ((*curr.borrow()).with(|__v| (*__v).next.clone())).clone();
+            (*curr.borrow_mut()) = __rhs
+        };
     }
     return (*curr.borrow()).clone();
 }
@@ -211,12 +221,18 @@ fn main_0() -> i32 {
         let _new_node: Ptr<Node> = n7.as_pointer();
         Append_2(_head, _new_node)
     });
-    let __rhs = ({ Delete_3((*head.borrow()).clone(), 5) });
-    (*head.borrow_mut()) = __rhs;
-    let __rhs = ({ Delete_3((*head.borrow()).clone(), 0) });
-    (*head.borrow_mut()) = __rhs;
-    let __rhs = ({ Delete_3((*head.borrow()).clone(), -2_i32) });
-    (*head.borrow_mut()) = __rhs;
+    {
+        let __rhs = ({ Delete_3((*head.borrow()).clone(), 5) });
+        (*head.borrow_mut()) = __rhs
+    };
+    {
+        let __rhs = ({ Delete_3((*head.borrow()).clone(), 0) });
+        (*head.borrow_mut()) = __rhs
+    };
+    {
+        let __rhs = ({ Delete_3((*head.borrow()).clone(), -2_i32) });
+        (*head.borrow_mut()) = __rhs
+    };
     let tail: Value<Ptr<Node>> = Rc::new(RefCell::new(({ Tail_4((*head.borrow()).clone()) })));
     assert!((({ Find_0((*head.borrow()).clone(), 0) }).with(|__v| (*__v).val) == 4));
     assert!((({ Find_0((*head.borrow()).clone(), 1) }).with(|__v| (*__v).val) == 3));
@@ -260,10 +276,12 @@ fn main_0() -> i32 {
     ({ Find_0((*head.borrow()).clone(), 0) })
         .with(|__v| (*__v).next.clone().with_mut(|__v| __v.val = 30));
     assert!((({ Find_0((*head.borrow()).clone(), 1) }).with(|__v| (*__v).val) == 30));
-    let __rhs = (({ Find_0((*head.borrow()).clone(), 0) }).with(|__v| (*__v).val)
-        + ({ Find_0((*head.borrow()).clone(), 3) }).with(|__v| (*__v).val));
-    ({ Find_0((*head.borrow()).clone(), 1) })
-        .with(|__v| (*__v).next.clone().with_mut(|__v| __v.val = __rhs));
+    {
+        let __rhs = (({ Find_0((*head.borrow()).clone(), 0) }).with(|__v| (*__v).val)
+            + ({ Find_0((*head.borrow()).clone(), 3) }).with(|__v| (*__v).val));
+        ({ Find_0((*head.borrow()).clone(), 1) })
+            .with(|__v| (*__v).next.clone().with_mut(|__v| __v.val = __rhs))
+    };
     assert!((({ Find_0((*head.borrow()).clone(), 2) }).with(|__v| (*__v).val) == (4 + 1)));
     let sum: Value<i32> = Rc::new(RefCell::new(
         ((((({ Find_0((*head.borrow()).clone(), 0) }).with(|__v| (*__v).val)

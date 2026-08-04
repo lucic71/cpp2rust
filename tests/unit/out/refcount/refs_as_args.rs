@@ -16,31 +16,35 @@ pub fn more_refs_0(x1: i32, x2: i32, r1: Ptr<i32>, r2: Ptr<i32>) {
     let rpr1: Ptr<i32> = (*pr1.borrow()).clone();
     let rpr2: Ptr<i32> = (*pr2.borrow()).clone();
     let r: Ptr<i32> = (r1).clone();
-    let __rhs = {
-        let _lhs = {
+    {
+        let __rhs = {
             let _lhs = {
                 let _lhs = {
                     let _lhs = {
                         let _lhs = {
-                            let _lhs = (1 + (rx1.read()));
-                            _lhs + (rx2.read())
+                            let _lhs = {
+                                let _lhs = (1 + (rx1.read()));
+                                _lhs + (rx2.read())
+                            };
+                            _lhs + ((*pr1.borrow()).read())
                         };
-                        _lhs + ((*pr1.borrow()).read())
+                        _lhs + ((*pr2.borrow()).read())
                     };
-                    _lhs + ((*pr2.borrow()).read())
+                    _lhs + (rpr1.read())
                 };
-                _lhs + (rpr1.read())
+                _lhs + (rpr2.read())
             };
-            _lhs + (rpr2.read())
+            _lhs + (r.read())
         };
-        _lhs + (r.read())
+        {
+            let _ptr = rx2.clone();
+            _ptr.write((_ptr.read()) + __rhs)
+        }
     };
     {
-        let _ptr = rx2.clone();
-        _ptr.write((_ptr.read()) + __rhs)
+        let __rhs = (rx2.read());
+        r1.write(__rhs)
     };
-    let __rhs = (rx2.read());
-    r1.write(__rhs);
 }
 pub fn main() {
     std::process::exit(main_0());

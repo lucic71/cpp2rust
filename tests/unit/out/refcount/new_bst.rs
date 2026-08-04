@@ -87,24 +87,28 @@ pub fn insert_1(node: Ptr<node_t>, value: i32) -> Ptr<node_t> {
         let _lhs = (*value.borrow());
         _lhs < (*node.borrow()).with(|__v| (*__v).value)
     } {
-        let __rhs = ({
-            insert_1(
-                ((*node.borrow()).with(|__v| (*__v).left.clone())).clone(),
-                (*value.borrow()),
-            )
-        });
-        (*node.borrow()).with_mut(|__v| __v.left = __rhs);
+        {
+            let __rhs = ({
+                insert_1(
+                    ((*node.borrow()).with(|__v| (*__v).left.clone())).clone(),
+                    (*value.borrow()),
+                )
+            });
+            (*node.borrow()).with_mut(|__v| __v.left = __rhs)
+        };
     } else if {
         let _lhs = (*value.borrow());
         _lhs > (*node.borrow()).with(|__v| (*__v).value)
     } {
-        let __rhs = ({
-            insert_1(
-                ((*node.borrow()).with(|__v| (*__v).right.clone())).clone(),
-                (*value.borrow()),
-            )
-        });
-        (*node.borrow()).with_mut(|__v| __v.right = __rhs);
+        {
+            let __rhs = ({
+                insert_1(
+                    ((*node.borrow()).with(|__v| (*__v).right.clone())).clone(),
+                    (*value.borrow()),
+                )
+            });
+            (*node.borrow()).with_mut(|__v| __v.right = __rhs)
+        };
     }
     return (*node.borrow()).clone();
 }
@@ -127,14 +131,22 @@ fn main_0() -> i32 {
         right: Ptr::<node_t>::null(),
         value: 0,
     })));
-    let __rhs = ({ insert_1((*root.borrow()).clone(), 1) });
-    (*root.borrow_mut()) = __rhs;
-    let __rhs = ({ insert_1((*root.borrow()).clone(), 2) });
-    (*root.borrow_mut()) = __rhs;
-    let __rhs = ({ insert_1((*root.borrow()).clone(), 3) });
-    (*root.borrow_mut()) = __rhs;
-    let __rhs = ({ insert_1((*root.borrow()).clone(), 4) });
-    (*root.borrow_mut()) = __rhs;
+    {
+        let __rhs = ({ insert_1((*root.borrow()).clone(), 1) });
+        (*root.borrow_mut()) = __rhs
+    };
+    {
+        let __rhs = ({ insert_1((*root.borrow()).clone(), 2) });
+        (*root.borrow_mut()) = __rhs
+    };
+    {
+        let __rhs = ({ insert_1((*root.borrow()).clone(), 3) });
+        (*root.borrow_mut()) = __rhs
+    };
+    {
+        let __rhs = ({ insert_1((*root.borrow()).clone(), 4) });
+        (*root.borrow_mut()) = __rhs
+    };
     let out: Value<bool> = Rc::new(RefCell::new(
         (((((({ find_0((*root.borrow()).clone(), 0) }).with(|__v| (*__v).value) == 0)
             && (({ find_0((*root.borrow()).clone(), 1) }).with(|__v| (*__v).value) == 1))

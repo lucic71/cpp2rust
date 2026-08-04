@@ -32,8 +32,10 @@ impl PairMethods for Ptr<Pair> {
         let new_val: Value<i32> = Rc::new(RefCell::new(new_val));
         ({ self.NOP() });
         let old_val: Value<i32> = Rc::new(RefCell::new((field.read())));
-        let __rhs = (*new_val.borrow());
-        field.write(__rhs);
+        {
+            let __rhs = (*new_val.borrow());
+            field.write(__rhs)
+        };
         return (*old_val.borrow());
     }
     fn SetFirst(&self, new_first: i32) -> i32 {

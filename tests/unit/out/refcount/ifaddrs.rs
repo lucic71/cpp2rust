@@ -45,8 +45,10 @@ fn main_0() -> i32 {
             (((!(((*ifa.borrow()).with(|__v| (*__v).ifa_name.clone())).is_null())) as i32) != 0)
         );
         if (((((*ifa.borrow()).with(|__v| (*__v).ifa_addr.clone())).is_null()) as i32) != 0) {
-            let __rhs = ((*ifa.borrow()).with(|__v| (*__v).ifa_next.clone())).clone();
-            (*ifa.borrow_mut()) = __rhs;
+            {
+                let __rhs = ((*ifa.borrow()).with(|__v| (*__v).ifa_next.clone())).clone();
+                (*ifa.borrow_mut()) = __rhs
+            };
             continue 'loop_;
         }
         if (((((*ifa.borrow()).with(|__v| (*__v).ifa_addr.clone().with(|__v| (*__v).sa_family))
@@ -54,8 +56,10 @@ fn main_0() -> i32 {
             != libc::AF_INET) as i32)
             != 0)
         {
-            let __rhs = ((*ifa.borrow()).with(|__v| (*__v).ifa_next.clone())).clone();
-            (*ifa.borrow_mut()) = __rhs;
+            {
+                let __rhs = ((*ifa.borrow()).with(|__v| (*__v).ifa_next.clone())).clone();
+                (*ifa.borrow_mut()) = __rhs
+            };
             continue 'loop_;
         }
         let sin: Value<Ptr<libcc2rs::SockaddrIn>> = Rc::new(RefCell::new(
@@ -120,8 +124,10 @@ fn main_0() -> i32 {
                     != 0)
             );
         }
-        let __rhs = ((*ifa.borrow()).with(|__v| (*__v).ifa_next.clone())).clone();
-        (*ifa.borrow_mut()) = __rhs;
+        {
+            let __rhs = ((*ifa.borrow()).with(|__v| (*__v).ifa_next.clone())).clone();
+            (*ifa.borrow_mut()) = __rhs
+        };
     }
     assert!(((*found_loopback.borrow()) != 0));
     {

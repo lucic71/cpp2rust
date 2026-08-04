@@ -67,17 +67,19 @@ fn main_0() -> i32 {
         __v.xfer = libcc2rs::malloc_refcount(36usize).reinterpret_cast::<transfer>()
     });
     (*h.borrow()).with(|__v| (*__v).xfer.clone().with_mut(|__v| __v.code = 7));
-    let __rhs = ((*h.borrow()).with(|__v| {
-        (*__v)
-            .xfer
-            .field_ptr(
-                0,
-                |__v: &transfer| &__v.errbuf[..],
-                |__v: &mut transfer| &mut __v.errbuf[..],
-            )
-            .clone()
-    }) as Ptr<u8>);
-    (*h.borrow()).with_mut(|__v| __v.err = __rhs);
+    {
+        let __rhs = ((*h.borrow()).with(|__v| {
+            (*__v)
+                .xfer
+                .field_ptr(
+                    0,
+                    |__v: &transfer| &__v.errbuf[..],
+                    |__v: &mut transfer| &mut __v.errbuf[..],
+                )
+                .clone()
+        }) as Ptr<u8>);
+        (*h.borrow()).with_mut(|__v| __v.err = __rhs)
+    };
     {
         (((*h.borrow()).with(|__v| (*__v).err.clone())).clone() as Ptr<u8>)
             .to_any()

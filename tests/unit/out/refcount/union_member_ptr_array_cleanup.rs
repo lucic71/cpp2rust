@@ -119,19 +119,21 @@ fn main_0() -> i32 {
                 __v.elem = libcc2rs::malloc_refcount(8usize).reinterpret_cast::<Ptr<u8>>()
             })
     });
-    let __rhs = libcc2rs::strdup_refcount(Ptr::from_string_literal(b"alpha").clone());
-    (*h.borrow())
-        .with(|__v| {
-            ((*__v)
-                .table
-                .offset(((0) as isize))
-                .reinterpret_cast::<u8>()
-                .offset(0usize)
-                .reinterpret_cast::<anon_1>()
-                .clone() as Ptr<anon_1>)
-                .with(|__v| (*__v).elem.offset(((0) as isize)).clone())
-        })
-        .write(__rhs);
+    {
+        let __rhs = libcc2rs::strdup_refcount(Ptr::from_string_literal(b"alpha").clone());
+        (*h.borrow())
+            .with(|__v| {
+                ((*__v)
+                    .table
+                    .offset(((0) as isize))
+                    .reinterpret_cast::<u8>()
+                    .offset(0usize)
+                    .reinterpret_cast::<anon_1>()
+                    .clone() as Ptr<anon_1>)
+                    .with(|__v| (*__v).elem.offset(((0) as isize)).clone())
+            })
+            .write(__rhs)
+    };
     assert!(
         ((({
             let mut __it1 = ((*h.borrow())

@@ -28,8 +28,10 @@ fn main_0() -> i32 {
     let z: Value<i32> = Rc::new(RefCell::new({
         let v: Value<i32> = Rc::new(RefCell::new(5));
         if ((*v.borrow()) > 0) {
-            let __rhs = ((*v.borrow()) * 2);
-            (*v.borrow_mut()) = __rhs;
+            {
+                let __rhs = ((*v.borrow()) * 2);
+                (*v.borrow_mut()) = __rhs
+            };
         }
         let __result = (*v.borrow());
         __result

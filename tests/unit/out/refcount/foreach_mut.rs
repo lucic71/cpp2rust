@@ -30,8 +30,10 @@ fn main_0() -> i32 {
         };
     }
     'loop_: for mut x in (v1.as_pointer() as Ptr<i32>) {
-        let __rhs = (x.read());
-        (*sum.borrow_mut()) += __rhs;
+        {
+            let __rhs = (x.read());
+            (*sum.borrow_mut()) += __rhs
+        };
     }
     let v2: Value<Vec<Ptr<i32>>> = Rc::new(RefCell::new(Vec::new()));
     (*v2.borrow_mut()).push(((v1.as_pointer() as Ptr<i32>).offset(0_usize)));
@@ -46,8 +48,10 @@ fn main_0() -> i32 {
     }
     'loop_: for p in (v2.as_pointer() as Ptr<Ptr<i32>>) {
         let p: Value<Ptr<i32>> = Rc::new(RefCell::new((p.read()).clone()));
-        let __rhs = ((*p.borrow()).read());
-        (*sum.borrow_mut()) += __rhs;
+        {
+            let __rhs = ((*p.borrow()).read());
+            (*sum.borrow_mut()) += __rhs
+        };
     }
     'loop_: for mut p in (v2.as_pointer() as Ptr<Ptr<i32>>) {
         let p: Value<Ptr<i32>> = Rc::new(RefCell::new((p.read()).clone()));
@@ -58,8 +62,10 @@ fn main_0() -> i32 {
     }
     'loop_: for mut p in (v2.as_pointer() as Ptr<Ptr<i32>>) {
         let p: Value<Ptr<i32>> = Rc::new(RefCell::new((p.read()).clone()));
-        let __rhs = ((*p.borrow()).read());
-        (*sum.borrow_mut()) += __rhs;
+        {
+            let __rhs = ((*p.borrow()).read());
+            (*sum.borrow_mut()) += __rhs
+        };
     }
     return (*sum.borrow());
 }

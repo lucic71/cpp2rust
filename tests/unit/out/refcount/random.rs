@@ -222,22 +222,38 @@ fn main_0() -> i32 {
     let cp1: Value<Ptr<i32>> = Rc::new(RefCell::new((c1.as_pointer())));
     (*x1.borrow_mut()) = (*c1.borrow());
     (*x1.borrow_mut()) = 1;
-    let __rhs = (cr1.read());
-    (*x1.borrow_mut()) = __rhs;
-    let __rhs = ((*cp1.borrow()).read());
-    (*x1.borrow_mut()) = __rhs;
-    let __rhs = (*c1.borrow());
-    rx1.write(__rhs);
-    let __rhs = (cr1.read());
-    rx2.write(__rhs);
-    let __rhs = ((*cp1.borrow()).read());
-    rx3.write(__rhs);
-    let __rhs = (*c1.borrow());
-    (*px1.borrow()).write(__rhs);
-    let __rhs = (cr1.read());
-    (*px2.borrow()).write(__rhs);
-    let __rhs = ((*cp1.borrow()).read());
-    (*px3.borrow()).write(__rhs);
+    {
+        let __rhs = (cr1.read());
+        (*x1.borrow_mut()) = __rhs
+    };
+    {
+        let __rhs = ((*cp1.borrow()).read());
+        (*x1.borrow_mut()) = __rhs
+    };
+    {
+        let __rhs = (*c1.borrow());
+        rx1.write(__rhs)
+    };
+    {
+        let __rhs = (cr1.read());
+        rx2.write(__rhs)
+    };
+    {
+        let __rhs = ((*cp1.borrow()).read());
+        rx3.write(__rhs)
+    };
+    {
+        let __rhs = (*c1.borrow());
+        (*px1.borrow()).write(__rhs)
+    };
+    {
+        let __rhs = (cr1.read());
+        (*px2.borrow()).write(__rhs)
+    };
+    {
+        let __rhs = ((*cp1.borrow()).read());
+        (*px3.borrow()).write(__rhs)
+    };
     (*px1.borrow_mut()) = (c1.as_pointer());
     (*px2.borrow_mut()) = (cr1).clone();
     (*px3.borrow_mut()) = (*cp1.borrow()).clone();
@@ -269,8 +285,10 @@ fn main_0() -> i32 {
         pair: Ptr::<Pair>::null(),
         ap: Box::new([Ptr::<i32>::null(), Ptr::<i32>::null()]),
     }));
-    let __rhs = (*new_y.borrow()).x;
-    (*y1.borrow_mut()).x = __rhs;
+    {
+        let __rhs = (*new_y.borrow()).x;
+        (*y1.borrow_mut()).x = __rhs
+    };
     let i: Value<u32> = Rc::new(RefCell::new(1_u32));
     (*y1.borrow_mut()).a[(*i.borrow()) as usize] = -1_i32;
     (*x1.borrow_mut()).postfix_inc();

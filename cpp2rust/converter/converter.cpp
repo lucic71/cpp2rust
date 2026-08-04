@@ -2491,7 +2491,11 @@ RsExpr *Converter::ConvertBinaryOperator(clang::BinaryOperator *expr) {
       computed_expr_type_ = ComputedExprType::FreshValue;
     }
     if (prefix) {
-      return Cat(prefix, arith);
+      auto *node = Cat(prefix, arith);
+      if (!isVoid()) {
+        node = Cat(node, Text(token::kSemiColon), ConvertRValue(lhs));
+      }
+      return Braces(node, !isVoid());
     }
     return arith;
   }
@@ -3765,7 +3769,11 @@ RsExpr *Converter::ConvertUnsignedArithOperand(clang::Expr *expr,
   bool needs_cast = (expr->isIntegerConstantExpr(ctx_) &&
                      !clang::isa<clang::ImplicitCastExpr>(expr)) ||
                     Mapper::Map(expr->getType()) != Mapper::Map(type);
-  auto *node = ConvertExpr(expr);
+  RsExpr *node = nullptr;
+  {
+    PushExprKind push(*this, ExprKind::RValue);
+    node = ConvertExpr(expr);
+  }
   if (needs_cast) {
     return Parens(CastTo(node, type));
   }
