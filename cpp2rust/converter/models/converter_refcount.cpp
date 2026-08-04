@@ -1176,6 +1176,11 @@ static std::vector<const char *> printf2fmt(std::string &format) {
       format.replace(pos, 2, "{}");
       pos += 2;
       continue;
+    case 'x':
+      types.emplace_back();
+      format.replace(pos, 2, "{:x}");
+      pos += 4;
+      continue;
     case 'p':
       types.emplace_back();
       format.replace(pos, 2, "{:?}");
