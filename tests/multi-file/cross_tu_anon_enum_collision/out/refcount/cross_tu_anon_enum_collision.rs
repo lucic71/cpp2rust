@@ -8,7 +8,7 @@ use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
 #[derive(Clone, Copy, PartialEq, Debug, Default)]
 #[repr(u32)]
-enum anon_0 {
+pub enum anon_0 {
     #[default]
     _ZERO_ = 0,
     ALPHA = 7,
@@ -49,7 +49,7 @@ fn main_0() -> i32 {
 }
 #[derive(Clone, Copy, PartialEq, Debug, Default)]
 #[repr(u32)]
-enum anon_3 {
+pub enum anon_3 {
     #[default]
     _ZERO_ = 0,
     BETA = 9,

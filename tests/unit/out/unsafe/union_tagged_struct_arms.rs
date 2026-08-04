@@ -8,7 +8,7 @@ use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 #[derive(Clone, Copy, PartialEq, Debug, Default)]
 #[repr(u32)]
-enum Choice_enum {
+pub enum Choice_enum {
     #[default]
     _ZERO_ = 0,
     C_LIST = 1,

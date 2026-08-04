@@ -8,7 +8,7 @@ use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 #[derive(Clone, Copy, PartialEq, Debug, Default)]
 #[repr(u32)]
-enum Tag_enum {
+pub enum Tag_enum {
     #[default]
     T_NUM_S = 0,
     T_NUM_U = 1,

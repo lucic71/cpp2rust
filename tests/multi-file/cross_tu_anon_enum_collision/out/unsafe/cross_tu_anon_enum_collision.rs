@@ -8,7 +8,7 @@ use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 #[derive(Clone, Copy, PartialEq, Debug, Default)]
 #[repr(u32)]
-enum anon_0 {
+pub enum anon_0 {
     #[default]
     _ZERO_ = 0,
     ALPHA = 7,
@@ -40,7 +40,7 @@ unsafe fn main_0() -> i32 {
 }
 #[derive(Clone, Copy, PartialEq, Debug, Default)]
 #[repr(u32)]
-enum anon_3 {
+pub enum anon_3 {
     #[default]
     _ZERO_ = 0,
     BETA = 9,

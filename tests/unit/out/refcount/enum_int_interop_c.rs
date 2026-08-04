@@ -8,7 +8,7 @@ use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
 #[derive(Clone, Copy, PartialEq, Debug, Default)]
 #[repr(u32)]
-enum Color {
+pub enum Color {
     #[default]
     RED = 0,
     GREEN = 1,
@@ -38,7 +38,7 @@ impl ByteRepr for Color {
 }
 #[derive(Clone, Copy, PartialEq, Debug, Default)]
 #[repr(u32)]
-enum Option {
+pub enum Option {
     #[default]
     OPT_NONE = 0,
     OPT_A = 10,
@@ -70,7 +70,7 @@ impl ByteRepr for Option {
 }
 #[derive(Clone, Copy, PartialEq, Debug, Default)]
 #[repr(u32)]
-enum Tag_enum {
+pub enum Tag_enum {
     #[default]
     TAG_ZERO = 0,
     TAG_ONE = 1,

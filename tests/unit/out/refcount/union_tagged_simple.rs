@@ -8,7 +8,7 @@ use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
 #[derive(Clone, Copy, PartialEq, Debug, Default)]
 #[repr(u32)]
-enum Kind_enum {
+pub enum Kind_enum {
     #[default]
     KIND_NONE = 0,
     KIND_DONE = 1,

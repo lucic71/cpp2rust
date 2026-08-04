@@ -32,7 +32,7 @@ pub fn switch_char_0(c: u8) -> i32 {
 }
 #[derive(Clone, Copy, PartialEq, Debug, Default)]
 #[repr(u32)]
-enum Color {
+pub enum Color {
     #[default]
     kRed = 0,
     kGreen = 1,

@@ -8,7 +8,7 @@ use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
 #[derive(Clone, Copy, PartialEq, Debug, Default)]
 #[repr(u32)]
-enum Width_enum {
+pub enum Width_enum {
     #[default]
     W_64 = 0,
     W_32 = 1,

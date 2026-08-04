@@ -8,7 +8,7 @@ use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
 #[derive(Clone, Copy, PartialEq, Debug, Default)]
 #[repr(u32)]
-enum Choice_enum {
+pub enum Choice_enum {
     #[default]
     _ZERO_ = 0,
     C_LIST = 1,

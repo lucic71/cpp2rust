@@ -8,7 +8,7 @@ use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 #[derive(Clone, Copy, PartialEq, Debug, Default)]
 #[repr(u32)]
-enum Color {
+pub enum Color {
     #[default]
     kRed = 0,
     kGreen = 1,

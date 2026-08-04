@@ -29,7 +29,7 @@ impl ByteRepr for node {
 }
 #[derive(Clone, Copy, PartialEq, Debug, Default)]
 #[repr(u32)]
-enum opt {
+pub enum opt {
     #[default]
     OPT_STRING_OUT = 0,
     OPT_FILE = 1,

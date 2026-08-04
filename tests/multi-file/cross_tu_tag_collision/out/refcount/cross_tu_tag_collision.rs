@@ -39,7 +39,7 @@ fn main_0() -> i32 {
 }
 #[derive(Clone, Copy, PartialEq, Debug, Default)]
 #[repr(u32)]
-enum widget_enum {
+pub enum widget_enum {
     #[default]
     WIDGET_A = 0,
     WIDGET_B = 1,

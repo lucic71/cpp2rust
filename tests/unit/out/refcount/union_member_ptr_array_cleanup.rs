@@ -107,18 +107,20 @@ fn main_0() -> i32 {
     ));
     (*h.borrow())
         .with_mut(|__v| __v.table = libcc2rs::malloc_refcount(8usize).reinterpret_cast::<entry>());
-    (*h.borrow()).with(|__v| {
-        ((*__v)
-            .table
-            .offset(((0) as isize))
-            .reinterpret_cast::<u8>()
-            .offset(0usize)
-            .reinterpret_cast::<anon_1>()
-            .clone() as Ptr<anon_1>)
-            .with_mut(|__v| {
-                __v.elem = libcc2rs::malloc_refcount(8usize).reinterpret_cast::<Ptr<u8>>()
-            })
-    });
+    {
+        let __obj = (*h.borrow()).with(|__v| {
+            ((*__v)
+                .table
+                .offset(((0) as isize))
+                .reinterpret_cast::<u8>()
+                .offset(0usize)
+                .reinterpret_cast::<anon_1>()
+                .clone() as Ptr<anon_1>)
+        });
+        __obj.with_mut(|__v| {
+            __v.elem = libcc2rs::malloc_refcount(8usize).reinterpret_cast::<Ptr<u8>>()
+        })
+    };
     {
         let __rhs = libcc2rs::strdup_refcount(Ptr::from_string_literal(b"alpha").clone());
         (*h.borrow())
@@ -219,16 +221,18 @@ fn main_0() -> i32 {
         .clone() as Ptr<Ptr<u8>>)
             .to_any(),
     );
-    (*h.borrow()).with(|__v| {
-        ((*__v)
-            .table
-            .offset(((0) as isize))
-            .reinterpret_cast::<u8>()
-            .offset(0usize)
-            .reinterpret_cast::<anon_1>()
-            .clone() as Ptr<anon_1>)
-            .with_mut(|__v| __v.elem = Ptr::<Ptr<u8>>::null())
-    });
+    {
+        let __obj = (*h.borrow()).with(|__v| {
+            ((*__v)
+                .table
+                .offset(((0) as isize))
+                .reinterpret_cast::<u8>()
+                .offset(0usize)
+                .reinterpret_cast::<anon_1>()
+                .clone() as Ptr<anon_1>)
+        });
+        __obj.with_mut(|__v| __v.elem = Ptr::<Ptr<u8>>::null())
+    };
     assert!(
         (((((*h.borrow()).with(|__v| ((*__v)
             .table

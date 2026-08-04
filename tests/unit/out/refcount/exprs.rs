@@ -132,7 +132,10 @@ fn main_0() -> i32 {
     ({ y.as_pointer().foo() }).with_mut(|__v| __v.x = 1);
     (*y.borrow()).p.with_mut(|__v| __v.x = 10);
     let p3: Value<Ptr<Y>> = Rc::new(RefCell::new((y.as_pointer())));
-    (*p3.borrow()).with(|__v| (*__v).p.clone().with_mut(|__v| __v.x = 100));
+    {
+        let __obj = (*p3.borrow()).with(|__v| (*__v).p.clone());
+        __obj.with_mut(|__v| __v.x = 100)
+    };
     ({ y.as_pointer().ptr() }).with_mut(|__v| __v.x = 1);
     ({ y.as_pointer().ptr() }).with_mut(|__v| __v.x = 50);
     return (*x.borrow()).x;

@@ -29,7 +29,7 @@ impl ByteRepr for registry {
 }
 #[derive(Clone, Copy, PartialEq, Debug, Default)]
 #[repr(u32)]
-enum field {
+pub enum field {
     #[default]
     FIELD_SLOT = 0,
     FIELD_LEVEL = 1,

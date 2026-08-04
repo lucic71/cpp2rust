@@ -8,7 +8,7 @@ use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 #[derive(Clone, Copy, PartialEq, Debug, Default)]
 #[repr(u32)]
-enum Width_enum {
+pub enum Width_enum {
     #[default]
     W_64 = 0,
     W_32 = 1,

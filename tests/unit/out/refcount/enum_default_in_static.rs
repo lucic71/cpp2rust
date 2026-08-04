@@ -8,7 +8,7 @@ use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
 #[derive(Clone, Copy, PartialEq, Debug, Default)]
 #[repr(u32)]
-enum Mode {
+pub enum Mode {
     #[default]
     MODE_NONE = 0,
     MODE_ONE = 1,

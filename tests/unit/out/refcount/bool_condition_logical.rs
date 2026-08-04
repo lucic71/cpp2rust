@@ -8,7 +8,7 @@ use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
 #[derive(Clone, Copy, PartialEq, Debug, Default)]
 #[repr(u32)]
-enum Code {
+pub enum Code {
     #[default]
     CODE_OK = 0,
     CODE_ERR = 1,

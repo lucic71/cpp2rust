@@ -8,7 +8,7 @@ use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
 #[derive(Clone, Copy, PartialEq, Debug, Default)]
 #[repr(u32)]
-enum widget_enum {
+pub enum widget_enum {
     #[default]
     MODE_IDLE = 0,
     MODE_ACTIVE = 1,
@@ -156,7 +156,7 @@ impl ByteRepr for slot_union {
 }
 #[derive(Clone, Copy, PartialEq, Debug, Default)]
 #[repr(u32)]
-enum slot {
+pub enum slot {
     #[default]
     SLOT_A = 0,
     SLOT_B = 1,

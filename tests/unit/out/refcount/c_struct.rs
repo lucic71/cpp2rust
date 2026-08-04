@@ -71,7 +71,7 @@ impl ByteRepr for Node {
 }
 #[derive(Clone, Copy, PartialEq, Debug, Default)]
 #[repr(u32)]
-enum Color {
+pub enum Color {
     #[default]
     RED = 0,
     GREEN = 1,

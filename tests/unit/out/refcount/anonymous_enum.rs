@@ -8,7 +8,7 @@ use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
 #[derive(Clone, Copy, PartialEq, Debug, Default)]
 #[repr(u32)]
-enum anon_0 {
+pub enum anon_0 {
     #[default]
     FIRST_A = 0,
     FIRST_B = 1,
@@ -36,7 +36,7 @@ impl ByteRepr for anon_0 {
 }
 #[derive(Clone, Copy, PartialEq, Debug, Default)]
 #[repr(u32)]
-enum anon_1 {
+pub enum anon_1 {
     #[default]
     SECOND_A = 0,
     SECOND_B = 1,
@@ -88,7 +88,7 @@ impl ByteRepr for S {
 }
 #[derive(Clone, Copy, PartialEq, Debug, Default)]
 #[repr(u32)]
-enum TdEnum {
+pub enum TdEnum {
     #[default]
     TD_A = 0,
     TD_B = 1,
@@ -116,7 +116,7 @@ impl ByteRepr for TdEnum {
 }
 #[derive(Clone, Copy, PartialEq, Debug, Default)]
 #[repr(u32)]
-enum anon_2 {
+pub enum anon_2 {
     #[default]
     FIELD_A = 0,
     FIELD_B = 1,
@@ -178,7 +178,7 @@ pub fn main() {
 fn main_0() -> i32 {
     #[derive(Clone, Copy, PartialEq, Debug, Default)]
     #[repr(u32)]
-    enum anon_3 {
+    pub enum anon_3 {
         #[default]
         THIRD_A = 0,
         THIRD_B = 1,

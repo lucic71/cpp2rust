@@ -31,7 +31,7 @@ pub unsafe fn switch_char_0(mut c: libc::c_char) -> i32 {
 }
 #[derive(Clone, Copy, PartialEq, Debug, Default)]
 #[repr(u32)]
-enum Color {
+pub enum Color {
     #[default]
     kRed = 0,
     kGreen = 1,

@@ -8,7 +8,7 @@ use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 #[derive(Clone, Copy, PartialEq, Debug, Default)]
 #[repr(u32)]
-enum widget_enum {
+pub enum widget_enum {
     #[default]
     MODE_IDLE = 0,
     MODE_ACTIVE = 1,
@@ -61,7 +61,7 @@ impl Default for slot_union {
 }
 #[derive(Clone, Copy, PartialEq, Debug, Default)]
 #[repr(u32)]
-enum slot {
+pub enum slot {
     #[default]
     SLOT_A = 0,
     SLOT_B = 1,

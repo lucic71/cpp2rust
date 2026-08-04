@@ -66,7 +66,10 @@ fn main_0() -> i32 {
     (*h.borrow()).with_mut(|__v| {
         __v.xfer = libcc2rs::malloc_refcount(36usize).reinterpret_cast::<transfer>()
     });
-    (*h.borrow()).with(|__v| (*__v).xfer.clone().with_mut(|__v| __v.code = 7));
+    {
+        let __obj = (*h.borrow()).with(|__v| (*__v).xfer.clone());
+        __obj.with_mut(|__v| __v.code = 7)
+    };
     {
         let __rhs = ((*h.borrow()).with(|__v| {
             (*__v)
