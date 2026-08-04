@@ -74,9 +74,11 @@ fn f16(a0: i32, a1: Ptr<Sockaddr>, a2: u32) -> i32 {
 }
 
 fn f18(a0: i32, a1: AnyPtr, a2: usize, a3: i32, a4: Ptr<Sockaddr>, a5: Ptr<u32>) -> isize {
+    let __fd = a0;
+    let __len = a2;
     let __buf = a1.reinterpret_cast::<u8>();
-    match __buf.with_slice_mut(a2, |__s| {
-        nix::sys::socket::recvfrom::<nix::sys::socket::SockaddrStorage>(a0, __s)
+    match __buf.with_slice_mut(__len, |__s| {
+        nix::sys::socket::recvfrom::<nix::sys::socket::SockaddrStorage>(__fd, __s)
     }) {
         Ok((__n, __from)) => {
             match __from {
@@ -93,11 +95,13 @@ fn f18(a0: i32, a1: AnyPtr, a2: usize, a3: i32, a4: Ptr<Sockaddr>, a5: Ptr<u32>)
 }
 
 fn f19(a0: i32, a1: AnyPtr, a2: usize, a3: i32, a4: Ptr<Sockaddr>, a5: u32) -> isize {
+    let __fd = a0;
+    let __len = a2;
     let __buf = a1.reinterpret_cast::<u8>();
     match Sockaddr::decode(&a4, a5) {
-        Some(__addr) => match __buf.with_slice(a2, |__s| {
+        Some(__addr) => match __buf.with_slice(__len, |__s| {
             nix::sys::socket::sendto(
-                a0,
+                __fd,
                 __s,
                 &*__addr,
                 nix::sys::socket::MsgFlags::from_bits_truncate(a3),
@@ -117,9 +121,11 @@ fn f19(a0: i32, a1: AnyPtr, a2: usize, a3: i32, a4: Ptr<Sockaddr>, a5: u32) -> i
 }
 
 fn f9(a0: i32, a1: AnyPtr, a2: usize, a3: i32) -> isize {
+    let __fd = a0;
+    let __len = a2;
     let __buf = a1.reinterpret_cast::<u8>();
-    match __buf.with_slice_mut(a2, |__s| {
-        nix::sys::socket::recv(a0, __s, nix::sys::socket::MsgFlags::from_bits_truncate(a3))
+    match __buf.with_slice_mut(__len, |__s| {
+        nix::sys::socket::recv(__fd, __s, nix::sys::socket::MsgFlags::from_bits_truncate(a3))
     }) {
         Ok(__n) => __n as isize,
         Err(__e) => {
@@ -130,9 +136,11 @@ fn f9(a0: i32, a1: AnyPtr, a2: usize, a3: i32) -> isize {
 }
 
 fn f10(a0: i32, a1: AnyPtr, a2: usize, a3: i32) -> isize {
+    let __fd = a0;
+    let __len = a2;
     let __buf = a1.reinterpret_cast::<u8>();
-    match __buf.with_slice(a2, |__s| {
-        nix::sys::socket::send(a0, __s, nix::sys::socket::MsgFlags::from_bits_truncate(a3))
+    match __buf.with_slice(__len, |__s| {
+        nix::sys::socket::send(__fd, __s, nix::sys::socket::MsgFlags::from_bits_truncate(a3))
     }) {
         Ok(__n) => __n as isize,
         Err(__e) => {
