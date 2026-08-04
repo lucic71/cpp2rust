@@ -118,7 +118,7 @@ RsExpr *Converter::Convert(clang::QualType qual_type) {
     return Convert(ctx_.getPointerType(qual_type));
   }
   llvm::errs() << "Convert: unhandled type class " << type->getTypeClassName()
-               << '\n';
+               << ": " << qual_type.getAsString() << '\n';
   assert(false && "type class not handled by Convert dispatch");
   return Text("");
 }
@@ -2965,10 +2965,10 @@ RsExpr *Converter::ConvertMemberExpr(clang::MemberExpr *expr) {
   if (!name_override.empty()) {
     auto *field = arena_.New<Field>(base_node, std::move(name_override));
     if (!cast_override.empty()) {
-      return Parens(Cat(Text(token::kStar),
-                        Parens(Cat(Text(token::kRef), field,
-                                   Text("as *const _ as *const " +
-                                        cast_override)))));
+      return Parens(
+          Cat(Text(token::kStar),
+              Parens(Cat(Text(token::kRef), field,
+                         Text("as *const _ as *const " + cast_override)))));
     }
     return field;
   }

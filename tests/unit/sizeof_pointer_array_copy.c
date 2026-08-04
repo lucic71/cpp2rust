@@ -7,7 +7,7 @@ static const char *names[] = {"alpha", "beta", "gamma", NULL};
 int main(void) {
   size_t count = 0;
   const char *const *walk;
-  for(walk = names; *walk; walk++) {
+  for (walk = names; *walk; walk++) {
     ++count;
   }
   assert(count == 3);
@@ -24,7 +24,7 @@ int main(void) {
   assert(copy[3] == NULL);
 
   count = 0;
-  for(walk = copy; *walk; walk++) {
+  for (walk = copy; *walk; walk++) {
     ++count;
   }
   assert(count == 3);

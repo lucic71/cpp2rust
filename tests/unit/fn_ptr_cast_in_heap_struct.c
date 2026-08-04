@@ -7,9 +7,7 @@ struct item {
 
 typedef int (*cb_t)(void *p);
 
-static int read_item(struct item *it) {
-  return it->value + 1;
-}
+static int read_item(struct item *it) { return it->value + 1; }
 
 struct holder {
   cb_t callback;
