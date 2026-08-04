@@ -430,10 +430,6 @@ impl<T> Ptr<T> {
             return Ptr::null();
         }
 
-        if U::byte_size() == 0 {
-            panic!("cannot reinterpret_cast to zero-sized type");
-        }
-
         let src_byte_off = self.offset.wrapping_mul(T::byte_size());
         let (alloc, abs_byte_off): (Rc<dyn OriginalAlloc>, usize) = match &self.kind {
             PtrKind::Null => unreachable!(),
@@ -463,7 +459,7 @@ impl<T> Ptr<T> {
             offset: abs_byte_off,
             kind: PtrKind::Reinterpreted(Rc::new(ReinterpretedView {
                 alloc,
-                elem_byte_size: U::byte_size(),
+                elem_byte_size: U::byte_size().max(1),
             })),
         }
     }
