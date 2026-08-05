@@ -82,7 +82,7 @@ fn main_0() -> i32 {
             let __rhs = ((*i.borrow()) as u8);
             (*q.borrow()).offset(((0) as isize)).write(__rhs)
         };
-        libcc2rs::free_refcount(((*q.borrow()).clone() as Ptr<u8>).to_any());
+        libcc2rs::free_refcount(((*q.borrow()).clone() as Ptr<u8>).to_any().clone());
         (*i.borrow_mut()).postfix_inc();
     }
     assert!(
@@ -92,6 +92,6 @@ fn main_0() -> i32 {
         }) as i32)
             != 0)
     );
-    libcc2rs::free_refcount(((*p.borrow()).clone() as Ptr<pair>).to_any());
+    libcc2rs::free_refcount(((*p.borrow()).clone() as Ptr<pair>).to_any().clone());
     return 0;
 }

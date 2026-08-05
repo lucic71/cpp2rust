@@ -104,6 +104,6 @@ fn main_0() -> i32 {
         (*walk.borrow_mut()).postfix_inc();
     }
     assert!(((((*count.borrow()) == 3_usize) as i32) != 0));
-    libcc2rs::free_refcount(((*copy.borrow()).clone() as Ptr<Ptr<u8>>).to_any());
+    libcc2rs::free_refcount(((*copy.borrow()).clone() as Ptr<Ptr<u8>>).to_any().clone());
     return 0;
 }

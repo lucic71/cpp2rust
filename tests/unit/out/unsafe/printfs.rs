@@ -28,9 +28,28 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    printf(c"%s\n".as_ptr() as *const i8, c"fprintf stdout".as_ptr());
-    printf(c"%d %u %ld\n".as_ptr() as *const i8, 1, 2_u32, 3_i64);
-    printf(c"hello world".as_ptr() as *const i8);
+    (unsafe {
+        libc::fprintf(
+            libcc2rs::stdout_unsafe() as *mut ::libc::FILE,
+            c"%s\n".as_ptr() as *const libc::c_char,
+            (c"fprintf stdout".as_ptr()),
+        )
+    });
+    (unsafe {
+        libc::fprintf(
+            libcc2rs::stdout_unsafe() as *mut ::libc::FILE,
+            c"%d %u %ld\n".as_ptr() as *const libc::c_char,
+            (1),
+            (2_u32),
+            (3_i64),
+        )
+    });
+    (unsafe {
+        libc::fprintf(
+            libcc2rs::stdout_unsafe() as *mut ::libc::FILE,
+            c"hello world".as_ptr() as *const libc::c_char,
+        )
+    });
     let mut in_: *mut ::libc::FILE = libcc2rs::stdin_unsafe();
     assert!(!((in_).is_null()));
     printf(c"%s\n".as_ptr() as *const i8, c"printf".as_ptr());

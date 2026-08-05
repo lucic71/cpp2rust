@@ -95,7 +95,7 @@ fn main_0() -> i32 {
     };
     assert!(((((*o.borrow()).with(|__v| (*__v).big.b) == 9_i64) as i32) != 0));
     assert!(((((*o.borrow()).with(|__v| (*__v).pad) == 1_i64) as i32) != 0));
-    libcc2rs::free_refcount(((*h.borrow()).clone() as Ptr<holder>).to_any());
-    libcc2rs::free_refcount(((*o.borrow()).clone() as Ptr<outer>).to_any());
+    libcc2rs::free_refcount(((*h.borrow()).clone() as Ptr<holder>).to_any().clone());
+    libcc2rs::free_refcount(((*o.borrow()).clone() as Ptr<outer>).to_any().clone());
     return 0;
 }

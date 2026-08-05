@@ -179,7 +179,8 @@ fn main_0() -> i32 {
             })
             .read())
         .clone() as Ptr<u8>)
-            .to_any(),
+            .to_any()
+            .clone(),
     );
     (*h.borrow())
         .with(|__v| {
@@ -219,7 +220,8 @@ fn main_0() -> i32 {
                 .with(|__v| (*__v).elem.clone())
         }))
         .clone() as Ptr<Ptr<u8>>)
-            .to_any(),
+            .to_any()
+            .clone(),
     );
     {
         let __obj = (*h.borrow()).with(|__v| {
@@ -246,8 +248,10 @@ fn main_0() -> i32 {
             != 0)
     );
     libcc2rs::free_refcount(
-        (((*h.borrow()).with(|__v| (*__v).table.clone())).clone() as Ptr<entry>).to_any(),
+        (((*h.borrow()).with(|__v| (*__v).table.clone())).clone() as Ptr<entry>)
+            .to_any()
+            .clone(),
     );
-    libcc2rs::free_refcount(((*h.borrow()).clone() as Ptr<holder>).to_any());
+    libcc2rs::free_refcount(((*h.borrow()).clone() as Ptr<holder>).to_any().clone());
     return 0;
 }

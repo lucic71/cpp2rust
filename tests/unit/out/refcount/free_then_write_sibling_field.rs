@@ -76,7 +76,9 @@ fn main_0() -> i32 {
     };
     (*h.borrow()).with_mut(|__v| __v.count = 2);
     libcc2rs::free_refcount(
-        (((*h.borrow()).with(|__v| (*__v).first.clone())).clone() as Ptr<payload>).to_any(),
+        (((*h.borrow()).with(|__v| (*__v).first.clone())).clone() as Ptr<payload>)
+            .to_any()
+            .clone(),
     );
     (*h.borrow()).with_mut(|__v| __v.count = 1);
     assert!(((((*h.borrow()).with(|__v| (*__v).count) == 1) as i32) != 0));
@@ -88,12 +90,14 @@ fn main_0() -> i32 {
     assert!((((((*h.borrow()).with(|__v| (*__v).first.clone())).is_null()) as i32) != 0));
     assert!(((((*h.borrow()).with(|__v| (*__v).count) == 1) as i32) != 0));
     libcc2rs::free_refcount(
-        (((*h.borrow()).with(|__v| (*__v).second.clone())).clone() as Ptr<payload>).to_any(),
+        (((*h.borrow()).with(|__v| (*__v).second.clone())).clone() as Ptr<payload>)
+            .to_any()
+            .clone(),
     );
     (*h.borrow()).with_mut(|__v| __v.second = Ptr::<payload>::null());
     (*h.borrow()).with_mut(|__v| __v.count = 0);
     assert!(((((*h.borrow()).with(|__v| (*__v).count) == 0) as i32) != 0));
     assert!((((((*h.borrow()).with(|__v| (*__v).first.clone())).is_null()) as i32) != 0));
-    libcc2rs::free_refcount(((*h.borrow()).clone() as Ptr<holder>).to_any());
+    libcc2rs::free_refcount(((*h.borrow()).clone() as Ptr<holder>).to_any().clone());
     return 0;
 }

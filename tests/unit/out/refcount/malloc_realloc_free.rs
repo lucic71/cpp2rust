@@ -18,7 +18,7 @@ fn main_0() -> i32 {
         ));
         (*p.borrow()).write(42);
         assert!((((((*p.borrow()).read()) == 42) as i32) != 0));
-        libcc2rs::free_refcount(((*p.borrow()).clone() as Ptr<i32>).to_any());
+        libcc2rs::free_refcount(((*p.borrow()).clone() as Ptr<i32>).to_any().clone());
         let arr: Value<Ptr<i32>> = Rc::new(RefCell::new(
             libcc2rs::malloc_refcount(
                 (4_usize).wrapping_mul((::std::mem::size_of::<i32>() as usize)),
@@ -37,7 +37,7 @@ fn main_0() -> i32 {
         }
         assert!((((((*arr.borrow()).offset(((0) as isize)).read()) == 0) as i32) != 0));
         assert!((((((*arr.borrow()).offset(((3) as isize)).read()) == 30) as i32) != 0));
-        libcc2rs::free_refcount(((*arr.borrow()).clone() as Ptr<i32>).to_any());
+        libcc2rs::free_refcount(((*arr.borrow()).clone() as Ptr<i32>).to_any().clone());
         let grow: Value<Ptr<i32>> = Rc::new(RefCell::new(
             libcc2rs::malloc_refcount(
                 (2_usize).wrapping_mul((::std::mem::size_of::<i32>() as usize)),
@@ -60,7 +60,7 @@ fn main_0() -> i32 {
         assert!((((((*grow.borrow()).offset(((1) as isize)).read()) == 2) as i32) != 0));
         assert!((((((*grow.borrow()).offset(((2) as isize)).read()) == 3) as i32) != 0));
         assert!((((((*grow.borrow()).offset(((3) as isize)).read()) == 4) as i32) != 0));
-        libcc2rs::free_refcount(((*grow.borrow()).clone() as Ptr<i32>).to_any());
+        libcc2rs::free_refcount(((*grow.borrow()).clone() as Ptr<i32>).to_any().clone());
         let zeros: Value<Ptr<i32>> = Rc::new(RefCell::new(
             libcc2rs::calloc_refcount(4_usize, ::std::mem::size_of::<i32>())
                 .reinterpret_cast::<i32>(),
@@ -72,7 +72,7 @@ fn main_0() -> i32 {
             );
             (*i.borrow_mut()).postfix_inc();
         }
-        libcc2rs::free_refcount(((*zeros.borrow()).clone() as Ptr<i32>).to_any());
+        libcc2rs::free_refcount(((*zeros.borrow()).clone() as Ptr<i32>).to_any().clone());
     }
     let pmalloc: Value<FnPtr<fn(usize) -> AnyPtr>> =
         Rc::new(RefCell::new(FnPtr::<fn(usize) -> AnyPtr>::new(

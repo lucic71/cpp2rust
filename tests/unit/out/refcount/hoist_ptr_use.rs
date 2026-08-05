@@ -106,6 +106,6 @@ fn main_0() -> i32 {
         (*ha.borrow()).with_mut(|__v| __v.total = __rhs)
     };
     assert!(((((*h.borrow()).with(|__v| (*__v).total) == 6) as i32) != 0));
-    libcc2rs::free_refcount(((*h.borrow()).clone() as Ptr<outer>).to_any());
+    libcc2rs::free_refcount(((*h.borrow()).clone() as Ptr<outer>).to_any().clone());
     return 0;
 }

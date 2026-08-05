@@ -69,6 +69,6 @@ fn main_0() -> i32 {
         (((((*b.borrow()).with(|__v| (*__v).buf[(1) as usize]) as i32) == ('b' as i32)) as i32)
             != 0)
     );
-    libcc2rs::free_refcount(((*b.borrow()).clone() as Ptr<bin>).to_any());
+    libcc2rs::free_refcount(((*b.borrow()).clone() as Ptr<bin>).to_any().clone());
     return 0;
 }

@@ -574,7 +574,7 @@ pub fn test_strdup_10() {
             }
         } == 0)
     );
-    libcc2rs::free_refcount(((*d.borrow()).clone() as Ptr<u8>).to_any());
+    libcc2rs::free_refcount(((*d.borrow()).clone() as Ptr<u8>).to_any().clone());
     let p: Value<Ptr<u8>> = Rc::new(RefCell::new(Ptr::from_string_literal(b"world")));
     let buf: Value<Box<[u8]>> = Rc::new(RefCell::new(Box::new([
         ('a' as u8),
@@ -602,7 +602,7 @@ pub fn test_strdup_10() {
             }
         } == 0)
     );
-    libcc2rs::free_refcount(((*d2.borrow()).clone() as Ptr<u8>).to_any());
+    libcc2rs::free_refcount(((*d2.borrow()).clone() as Ptr<u8>).to_any().clone());
     let d3: Value<Ptr<u8>> = Rc::new(RefCell::new(libcc2rs::strdup_refcount(
         (buf.as_pointer() as Ptr<u8>).clone(),
     )));
@@ -623,7 +623,7 @@ pub fn test_strdup_10() {
             }
         } == 0)
     );
-    libcc2rs::free_refcount(((*d3.borrow()).clone() as Ptr<u8>).to_any());
+    libcc2rs::free_refcount(((*d3.borrow()).clone() as Ptr<u8>).to_any().clone());
 }
 pub fn test_strcspn_11() {
     assert!(

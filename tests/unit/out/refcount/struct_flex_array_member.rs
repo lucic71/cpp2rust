@@ -142,6 +142,6 @@ fn main_0() -> i32 {
         } == 0) as i32)
             != 0)
     );
-    libcc2rs::free_refcount(((*p.borrow()).clone() as Ptr<peer>).to_any());
+    libcc2rs::free_refcount(((*p.borrow()).clone() as Ptr<peer>).to_any().clone());
     return 0;
 }

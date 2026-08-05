@@ -45,6 +45,6 @@ fn main_0() -> i32 {
     (*p.borrow()).write(1);
     assert!(((((*c.borrow()).with(|__v| (*__v).first) == 1) as i32) != 0));
     assert!(((((*c.borrow()).with(|__v| (*__v).port) == 443) as i32) != 0));
-    libcc2rs::free_refcount(((*c.borrow()).clone() as Ptr<conn>).to_any());
+    libcc2rs::free_refcount(((*c.borrow()).clone() as Ptr<conn>).to_any().clone());
     return 0;
 }

@@ -76,6 +76,6 @@ fn main_0() -> i32 {
         } == 0) as i32)
             != 0)
     );
-    libcc2rs::free_refcount(((*h.borrow()).clone() as Ptr<hdr>).to_any());
+    libcc2rs::free_refcount(((*h.borrow()).clone() as Ptr<hdr>).to_any().clone());
     return 0;
 }
