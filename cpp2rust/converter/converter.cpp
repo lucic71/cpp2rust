@@ -2929,12 +2929,12 @@ replaceNonUniformLibcField(clang::MemberExpr *expr) {
     const char *cast;
   };
   static constexpr Mapping kFields[] = {
-      {"stat", "st_mtim", "tv_sec", "st_mtime", ""},      // Linux
-      {"stat", "st_mtimespec", "tv_sec", "st_mtime", ""}, // macOS
+      {"stat", "st_mtim", "tv_sec", "st_mtime", ""},            // Linux
+      {"stat", "st_mtimespec", "tv_sec", "st_mtime", ""},       // macOS
       {"stat", "st_mtim", "tv_nsec", "st_mtime_nsec", ""},      // Linux
       {"stat", "st_mtimespec", "tv_nsec", "st_mtime_nsec", ""}, // macOS
-      {"stat", "st_atim", "tv_sec", "st_atime", ""},      // Linux
-      {"stat", "st_atimespec", "tv_sec", "st_atime", ""}, // macOS
+      {"stat", "st_atim", "tv_sec", "st_atime", ""},            // Linux
+      {"stat", "st_atimespec", "tv_sec", "st_atime", ""},       // macOS
       {"stat", "st_atim", "tv_nsec", "st_atime_nsec", ""},      // Linux
       {"stat", "st_atimespec", "tv_nsec", "st_atime_nsec", ""}, // macOS
       {"in6_addr", "__in6_u", "__u6_addr8", "s6_addr", ""},

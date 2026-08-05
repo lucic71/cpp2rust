@@ -794,7 +794,8 @@ void AddRuleForUserDefinedType(clang::NamedDecl *decl) {
   auto rs_name = ToRustName(cpp_name);
 
   AddUserTypeRule(cpp_name, TranslationRule::TypeRule::Plain(rs_name));
-  AddUserTypeRule("const " + cpp_name, TranslationRule::TypeRule::Plain(rs_name));
+  AddUserTypeRule("const " + cpp_name,
+                  TranslationRule::TypeRule::Plain(rs_name));
 
   if (auto record_decl = llvm::dyn_cast<clang::RecordDecl>(decl)) {
     // Forward declaration
@@ -809,13 +810,14 @@ void AddRuleForUserDefinedType(clang::NamedDecl *decl) {
       auto pointee = is_abstract ? "dyn " + rs_name : rs_name;
       AddUserTypeRule(cpp_name + " *",
                       TranslationRule::TypeRule::UnsafePtr("*mut " + pointee));
-      AddUserTypeRule("const " + cpp_name + " *",
-                      TranslationRule::TypeRule::UnsafePtr("*const " + pointee));
+      AddUserTypeRule(
+          "const " + cpp_name + " *",
+          TranslationRule::TypeRule::UnsafePtr("*const " + pointee));
       break;
     }
     case Model::kRefCount: {
-      auto ptr = is_abstract ? "PtrDyn<dyn " + rs_name + '>'
-                             : "Ptr<" + rs_name + '>';
+      auto ptr =
+          is_abstract ? "PtrDyn<dyn " + rs_name + '>' : "Ptr<" + rs_name + '>';
       AddUserTypeRule(cpp_name + " *",
                       TranslationRule::TypeRule::RefcountPtr(ptr));
       AddUserTypeRule("const " + cpp_name + " *",
