@@ -3275,7 +3275,8 @@ static constexpr const char *kZeroEnumerator = "_ZERO_";
 RsExpr *Converter::VisitEnumDecl(clang::EnumDecl *decl) {
 
   ENSURE(decl_ids_.insert(GetID(decl)).second);
-  if (Mapper::Contains(ctx_.getCanonicalTagType(decl))) {
+  if (!IsUserDefinedDecl(decl) &&
+      Mapper::Contains(ctx_.getCanonicalTagType(decl))) {
     return arena_.New<Verbatim>("");
   }
   Mapper::AddRuleForUserDefinedType(decl);

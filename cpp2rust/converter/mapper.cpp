@@ -87,6 +87,14 @@ void AddTypeRule(std::string src, TranslationRule::TypeRule &&rule) {
   types_.emplace(std::move(key), std::move(rule));
 }
 
+void AddUserTypeRule(std::string src, TranslationRule::TypeRule &&rule) {
+  auto [it, end] = types_.equal_range(GetTypeMapKey(src));
+  while (it != end) {
+    it = it->second.src == src ? types_.erase(it) : std::next(it);
+  }
+  AddTypeRule(std::move(src), std::move(rule));
+}
+
 // Attempts to unify an instantiated C++ type or function signature with a
 // corresponding template pattern. If the two match structurally, it returns
 // a mapping from template parameter names (e.g., "T1") to their concrete
@@ -785,7 +793,8 @@ void AddRuleForUserDefinedType(clang::NamedDecl *decl) {
   auto cpp_name = ToString(GetTypeForDecl(decl));
   auto rs_name = ToRustName(cpp_name);
 
-  AddTypeRule(cpp_name, TranslationRule::TypeRule::Plain(rs_name));
+  AddUserTypeRule(cpp_name, TranslationRule::TypeRule::Plain(rs_name));
+  AddUserTypeRule("const " + cpp_name, TranslationRule::TypeRule::Plain(rs_name));
 
   if (auto record_decl = llvm::dyn_cast<clang::RecordDecl>(decl)) {
     // Forward declaration
@@ -793,31 +802,29 @@ void AddRuleForUserDefinedType(clang::NamedDecl *decl) {
       return;
     }
 
-    if (auto cxx_decl = llvm::dyn_cast<clang::CXXRecordDecl>(record_decl)) {
-      if (cxx_decl->isAbstract()) {
-        switch (model_) {
-        case Model::kUnsafe:
-          AddTypeRule(cpp_name + " *", TranslationRule::TypeRule::UnsafePtr(
-                                           "*mut dyn " + rs_name));
-          break;
-        case Model::kRefCount:
-          AddTypeRule(cpp_name + " *", TranslationRule::TypeRule::RefcountPtr(
-                                           "PtrDyn<dyn " + rs_name + '>'));
-          break;
-        }
-      } else {
-        switch (model_) {
-        case Model::kUnsafe:
-          AddTypeRule(cpp_name + " *",
-                      TranslationRule::TypeRule::UnsafePtr("*mut " + rs_name));
-          break;
-        case Model::kRefCount:
-          AddTypeRule(cpp_name + " *", TranslationRule::TypeRule::RefcountPtr(
-                                           "Ptr<" + rs_name + '>'));
-          break;
-        }
-      }
+    auto cxx_decl = llvm::dyn_cast<clang::CXXRecordDecl>(record_decl);
+    bool is_abstract = cxx_decl && cxx_decl->isAbstract();
+    switch (model_) {
+    case Model::kUnsafe: {
+      auto pointee = is_abstract ? "dyn " + rs_name : rs_name;
+      AddUserTypeRule(cpp_name + " *",
+                      TranslationRule::TypeRule::UnsafePtr("*mut " + pointee));
+      AddUserTypeRule("const " + cpp_name + " *",
+                      TranslationRule::TypeRule::UnsafePtr("*const " + pointee));
+      break;
+    }
+    case Model::kRefCount: {
+      auto ptr = is_abstract ? "PtrDyn<dyn " + rs_name + '>'
+                             : "Ptr<" + rs_name + '>';
+      AddUserTypeRule(cpp_name + " *",
+                      TranslationRule::TypeRule::RefcountPtr(ptr));
+      AddUserTypeRule("const " + cpp_name + " *",
+                      TranslationRule::TypeRule::RefcountPtr(std::move(ptr)));
+      break;
+    }
+    }
 
+    if (cxx_decl) {
       for (auto *nested : GetNestedStructs(cxx_decl)) {
         AddRuleForUserDefinedType(nested);
       }
