@@ -16,7 +16,9 @@ pub struct Stat {
     pub st_blksize: i64,
     pub st_blocks: i64,
     pub st_atime: i64,
+    pub st_atime_nsec: i64,
     pub st_mtime: i64,
+    pub st_mtime_nsec: i64,
     pub st_ctime: i64,
 }
 
@@ -35,7 +37,9 @@ impl Stat {
             st_blksize: s.st_blksize as i64,
             st_blocks: s.st_blocks as i64,
             st_atime: s.st_atime as i64,
+            st_atime_nsec: s.st_atime_nsec as i64,
             st_mtime: s.st_mtime as i64,
+            st_mtime_nsec: s.st_mtime_nsec as i64,
             st_ctime: s.st_ctime as i64,
         }
     }
@@ -58,7 +62,9 @@ impl ByteRepr for Stat {
         self.st_blksize.to_bytes(&mut buf[56..64]);
         self.st_blocks.to_bytes(&mut buf[64..72]);
         self.st_atime.to_bytes(&mut buf[72..80]);
+        self.st_atime_nsec.to_bytes(&mut buf[80..88]);
         self.st_mtime.to_bytes(&mut buf[88..96]);
+        self.st_mtime_nsec.to_bytes(&mut buf[96..104]);
         self.st_ctime.to_bytes(&mut buf[104..112]);
     }
 
@@ -75,7 +81,9 @@ impl ByteRepr for Stat {
             st_blksize: i64::from_bytes(&buf[56..64]),
             st_blocks: i64::from_bytes(&buf[64..72]),
             st_atime: i64::from_bytes(&buf[72..80]),
+            st_atime_nsec: i64::from_bytes(&buf[80..88]),
             st_mtime: i64::from_bytes(&buf[88..96]),
+            st_mtime_nsec: i64::from_bytes(&buf[96..104]),
             st_ctime: i64::from_bytes(&buf[104..112]),
         }
     }

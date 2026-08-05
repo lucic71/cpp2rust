@@ -201,3 +201,7 @@ fn f29(a0: Ptr<CFile>, a1: Ptr<u8>, va: &[VaArg]) -> i32 {
         false => -1,
     }
 }
+
+fn f28(a0: Ptr<CFile>) -> i32 {
+    a0.with_mut(|__f| __f.getc())
+}

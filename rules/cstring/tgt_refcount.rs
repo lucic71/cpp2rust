@@ -386,3 +386,19 @@ fn f26(a0: AnyPtr, a1: i32, a2: usize) -> AnyPtr {
 fn f29(a0: AnyPtr, a1: usize) {
     a0.memset(0u8, a1);
 }
+
+fn f30(a0: Ptr<u8>, a1: Ptr<u8>) -> Ptr<u8> {
+    let __ret = a0.clone();
+    let __src: Vec<u8> = a1.to_c_string_iterator().collect();
+    a0.with_slice_mut(__src.len() + 1, |__dst| {
+        __dst[..__src.len()].copy_from_slice(&__src);
+        __dst[__src.len()] = 0;
+    });
+    __ret
+}
+
+fn f31(a0: i32) -> Ptr<u8> {
+    let mut __bytes = nix::errno::Errno::from_raw(a0).desc().as_bytes().to_vec();
+    __bytes.push(0);
+    Ptr::alloc_array(__bytes.into_boxed_slice())
+}

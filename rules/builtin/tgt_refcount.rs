@@ -23,3 +23,7 @@ fn f13(a0: i64, a1: i64, a2: Ptr<i64>) -> bool {
     a2.write(val);
     ovf
 }
+
+fn f17(a0: AnyPtr, va: &[VaArg]) {
+    ();
+}

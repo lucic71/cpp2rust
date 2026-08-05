@@ -179,3 +179,13 @@ unsafe fn f10() -> nix::time::ClockId {
 unsafe fn f11() -> nix::time::ClockId {
     nix::time::ClockId::CLOCK_MONOTONIC_RAW
 }
+
+fn f12() -> ::libc::clock_t {
+    match nix::time::clock_gettime(nix::time::ClockId::CLOCK_PROCESS_CPUTIME_ID) {
+        Ok(__ts) => (__ts.tv_sec() * 1_000_000 + __ts.tv_nsec() / 1_000) as ::libc::clock_t,
+        Err(__e) => {
+            libcc2rs::cpp2rust_errno().write(__e as i32);
+            -1
+        }
+    }
+}

@@ -127,3 +127,17 @@ fn f11(a0: Ptr<u8>) -> i32 {
         }
     }
 }
+
+fn f12(a0: Ptr<u8>, a1: ::libc::uid_t, a2: ::libc::gid_t) -> i32 {
+    match nix::unistd::chown(
+        a0.to_rust_string().as_str(),
+        Some(nix::unistd::Uid::from_raw(a1)),
+        Some(nix::unistd::Gid::from_raw(a2)),
+    ) {
+        Ok(()) => 0,
+        Err(__e) => {
+            libcc2rs::cpp2rust_errno().write(__e as i32);
+            -1
+        }
+    }
+}
