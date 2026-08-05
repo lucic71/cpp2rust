@@ -3,6 +3,8 @@
 
 #include_next <assert.h>
 
+#ifndef NDEBUG
+
 #undef assert
 
 #ifndef __cplusplus
@@ -12,3 +14,5 @@
 void cpp2rust_assert_fail(bool condition) __attribute__((noreturn));
 
 #define assert(expr) cpp2rust_assert_fail(expr)
+
+#endif
