@@ -414,6 +414,12 @@ RsExpr *Converter::EmitHoistedDecls(clang::CompoundStmt *body) {
   for (auto *child : body->body()) {
     if (auto *decl_stmt = clang::dyn_cast<clang::DeclStmt>(child)) {
       for (auto *decl : decl_stmt->decls()) {
+        auto *static_local = clang::dyn_cast<clang::VarDecl>(decl);
+        if (static_local && static_local->isStaticLocal()) {
+          parts.push_back(VisitVarDecl(static_local));
+          hoisted_decls_.insert(static_local);
+          continue;
+        }
         if (auto *var = clang::dyn_cast<clang::VarDecl>(decl);
             var && var->isLocalVarDecl() && !IsGlobalVar(var)) {
           hoisted_decls_.insert(var);
@@ -627,6 +633,10 @@ RsExpr *Converter::ConvertGlobalVarDecl(clang::VarDecl *decl) {
 
 RsExpr *Converter::VisitVarDecl(clang::VarDecl *decl) {
   if (ConvertLambdaVarDecl(decl)) {
+    return arena_.New<Verbatim>("");
+  }
+
+  if (decl->isStaticLocal() && hoisted_decls_.contains(decl)) {
     return arena_.New<Verbatim>("");
   }
 
