@@ -125,7 +125,11 @@ fn f9(a0: i32, a1: AnyPtr, a2: usize, a3: i32) -> isize {
     let __len = a2;
     let __buf = a1.reinterpret_cast::<u8>();
     match __buf.with_slice_mut(__len, |__s| {
-        nix::sys::socket::recv(__fd, __s, nix::sys::socket::MsgFlags::from_bits_truncate(a3))
+        nix::sys::socket::recv(
+            __fd,
+            __s,
+            nix::sys::socket::MsgFlags::from_bits_truncate(a3),
+        )
     }) {
         Ok(__n) => __n as isize,
         Err(__e) => {
@@ -140,7 +144,11 @@ fn f10(a0: i32, a1: AnyPtr, a2: usize, a3: i32) -> isize {
     let __len = a2;
     let __buf = a1.reinterpret_cast::<u8>();
     match __buf.with_slice(__len, |__s| {
-        nix::sys::socket::send(__fd, __s, nix::sys::socket::MsgFlags::from_bits_truncate(a3))
+        nix::sys::socket::send(
+            __fd,
+            __s,
+            nix::sys::socket::MsgFlags::from_bits_truncate(a3),
+        )
     }) {
         Ok(__n) => __n as isize,
         Err(__e) => {
