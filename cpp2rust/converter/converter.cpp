@@ -3462,6 +3462,8 @@ RsExpr *Converter::EmitSwitchArm(const SwitchArm &arm, bool is_default) {
   std::vector<RsExpr *> parts;
   if (is_default) {
     parts.push_back(Text("_ => "));
+  } else if (arm.head == nullptr) {
+    parts.push_back(Text("__v if false => "));
   } else {
     parts.push_back(Text("__v if __v == "));
     parts.push_back(ConvertSwitchCaseCondition(arm.head));

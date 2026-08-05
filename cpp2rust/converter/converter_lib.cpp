@@ -1085,6 +1085,10 @@ std::vector<SwitchArm> AnalyzeSwitchArms(clang::CompoundStmt *body) {
       arms.emplace_back(std::vector<clang::Stmt *>{GetLastStmtOfSwitchCase(sc)},
                         label, sc, CaseChainHasDefault(sc),
                         /*has_fallthrough=*/false);
+    } else if (!label.empty()) {
+      arms.emplace_back(std::vector<clang::Stmt *>{inner}, label,
+                        /*head=*/nullptr, /*is_default_case=*/false,
+                        /*has_fallthrough=*/false);
     } else if (!arms.empty()) {
       arms.back().body.push_back(s);
     }
