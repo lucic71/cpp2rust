@@ -448,7 +448,11 @@ static std::string GetParamSignature(const clang::Decl *decl) {
 
 std::string GetID(const clang::Decl *decl) {
   assert(decl);
-  return GetLocationID(decl) + GetParamSignature(decl);
+  std::string name;
+  if (auto *named = clang::dyn_cast<clang::NamedDecl>(decl)) {
+    name = named->getNameAsString();
+  }
+  return name + GetLocationID(decl) + GetParamSignature(decl);
 }
 
 std::string DisambiguateAnonymousTag(const clang::TagDecl *tag) {
