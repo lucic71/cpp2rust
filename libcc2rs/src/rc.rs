@@ -520,18 +520,11 @@ impl<T: ByteRepr> Ptr<T> {
 }
 
 fn write_changed_bytes(alloc: &dyn OriginalAlloc, byte_offset: usize, old: &[u8], new: &[u8]) {
-    let mut i = 0;
-    while i < new.len() {
-        if old[i] == new[i] {
-            i += 1;
-            continue;
-        }
-        let start = i;
-        while i < new.len() && old[i] != new[i] {
-            i += 1;
-        }
-        alloc.write_bytes(byte_offset + start, &new[start..i]);
-    }
+    let Some(first) = (0..new.len()).find(|&i| old[i] != new[i]) else {
+        return;
+    };
+    let last = (0..new.len()).rfind(|&i| old[i] != new[i]).unwrap();
+    alloc.write_bytes(byte_offset + first, &new[first..=last]);
 }
 
 impl<T> Ptr<T> {
