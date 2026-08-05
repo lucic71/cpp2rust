@@ -1803,6 +1803,19 @@ RsExpr *ConverterRefCount::ConvertBinaryOperator(clang::BinaryOperator *expr) {
   return Converter::ConvertBinaryOperator(expr);
 }
 
+static bool IsZeroInitExpr(clang::ASTContext &ctx, const clang::Expr *expr) {
+  if (clang::isa<clang::ImplicitValueInitExpr>(expr)) {
+    return true;
+  }
+  if (expr->isNullPointerConstant(ctx, clang::Expr::NPC_ValueDependentIsNull) !=
+      clang::Expr::NPCK_NotNull) {
+    return true;
+  }
+  clang::Expr::EvalResult result;
+  return expr->EvaluateAsRValue(result, ctx) && result.Val.isInt() &&
+         result.Val.getInt() == 0;
+}
+
 RsExpr *ConverterRefCount::VisitInitListExpr(clang::InitListExpr *expr) {
   if (auto form = expr->getSemanticForm())
     expr = form;
@@ -1827,6 +1840,14 @@ RsExpr *ConverterRefCount::VisitInitListExpr(clang::InitListExpr *expr) {
       }
       computed_expr_type_ = ComputedExprType::FreshValue;
       return Cat(Text("vec!"), node);
+    }
+
+    if (record->isUnion()) {
+      assert((expr->getNumInits() == 0 ||
+              IsZeroInitExpr(ctx_, expr->getInit(0))) &&
+             "unsupported non-zero union initializer");
+      computed_expr_type_ = ComputedExprType::FreshValue;
+      return Text("Default::default()");
     }
 
     std::vector<RsExpr *> fields;

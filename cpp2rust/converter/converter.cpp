@@ -3039,6 +3039,18 @@ RsExpr *Converter::VisitInitListExpr(clang::InitListExpr *expr) {
       return Cat(Text("vec!"), Text("[]"));
     }
 
+    if (record->isUnion()) {
+      const auto *field = expr->getInitializedFieldInUnion();
+      if (expr->getNumInits() == 0 || field == nullptr) {
+        return GetDefaultAsString(qual_type);
+      }
+      return Cat(Text(GetUnsafeTypeAsString(qual_type)),
+                 Braces(Cat(Text(GetNamedDeclAsString(field)),
+                            Text(token::kColon),
+                            ConvertVarInit(field->getType(), expr->getInit(0)),
+                            Text(token::kComma))));
+    }
+
     std::vector<RsExpr *> fields;
     int i = 0;
     for (const auto *field : record->fields()) {
