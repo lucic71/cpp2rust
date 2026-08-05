@@ -4,7 +4,7 @@
 use libcc2rs::*;
 
 fn f2(a0: AnyPtr) {
-    libcc2rs::free_refcount(a0)
+    libcc2rs::free_refcount(a0.clone())
 }
 
 fn f3(a0: usize) -> AnyPtr {
