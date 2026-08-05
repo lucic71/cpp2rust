@@ -1069,29 +1069,76 @@ static bool SwitchCaseHasFallthrough(clang::Stmt *stmt) {
   return true;
 }
 
-std::vector<SwitchArm> AnalyzeSwitchArms(clang::CompoundStmt *body) {
+static bool HasInteriorSwitchEntry(const clang::CompoundStmt *compound) {
+  for (const auto *child : compound->body()) {
+    if (clang::isa<clang::SwitchCase>(child) ||
+        clang::isa<clang::LabelStmt>(child)) {
+      return true;
+    }
+  }
+  return false;
+}
+
+static void AccumulateSwitchStmt(std::vector<SwitchArm> &arms, clang::Stmt *s,
+                                 std::vector<clang::CompoundStmt *> *flattened);
+
+static void FlattenCaseCompound(std::vector<SwitchArm> &arms,
+                                clang::CompoundStmt *compound,
+                                std::vector<clang::CompoundStmt *> *flattened) {
+  for (clang::Stmt *child : compound->body()) {
+    AccumulateSwitchStmt(arms, child, flattened);
+  }
+}
+
+static void AccumulateSwitchStmt(std::vector<SwitchArm> &arms, clang::Stmt *s,
+                                 std::vector<clang::CompoundStmt *> *flattened) {
+  llvm::StringRef label;
+  clang::Stmt *inner = s;
+  if (auto *outer = clang::dyn_cast<clang::LabelStmt>(inner)) {
+    label = outer->getDecl()->getName();
+    do {
+      inner = clang::cast<clang::LabelStmt>(inner)->getSubStmt();
+    } while (clang::isa<clang::LabelStmt>(inner));
+  }
+
+  if (auto *sc = clang::dyn_cast<clang::SwitchCase>(inner)) {
+    clang::Stmt *last = GetLastStmtOfSwitchCase(sc);
+    while (auto *ls = clang::dyn_cast<clang::LabelStmt>(last)) {
+      if (label.empty()) {
+        label = ls->getDecl()->getName();
+      }
+      last = ls->getSubStmt();
+    }
+    auto *compound = clang::dyn_cast<clang::CompoundStmt>(last);
+    if (compound && flattened && HasInteriorSwitchEntry(compound)) {
+      flattened->push_back(compound);
+      arms.emplace_back(std::vector<clang::Stmt *>{}, label, sc,
+                        CaseChainHasDefault(sc), /*has_fallthrough=*/false);
+      FlattenCaseCompound(arms, compound, flattened);
+      return;
+    }
+    arms.emplace_back(std::vector<clang::Stmt *>{last}, label, sc,
+                      CaseChainHasDefault(sc),
+                      /*has_fallthrough=*/false);
+    return;
+  }
+  if (!label.empty()) {
+    arms.emplace_back(std::vector<clang::Stmt *>{inner}, label,
+                      /*head=*/nullptr, /*is_default_case=*/false,
+                      /*has_fallthrough=*/false);
+    return;
+  }
+  if (!arms.empty()) {
+    arms.back().body.push_back(s);
+  }
+}
+
+std::vector<SwitchArm>
+AnalyzeSwitchArms(clang::CompoundStmt *body,
+                  std::vector<clang::CompoundStmt *> *flattened) {
   std::vector<SwitchArm> arms;
   for (clang::Stmt *s : body->body()) {
-    llvm::StringRef label;
-    clang::Stmt *inner = s;
-    if (auto *outer = clang::dyn_cast<clang::LabelStmt>(inner)) {
-      label = outer->getDecl()->getName();
-      do {
-        inner = clang::cast<clang::LabelStmt>(inner)->getSubStmt();
-      } while (clang::isa<clang::LabelStmt>(inner));
-    }
-
-    if (auto *sc = clang::dyn_cast<clang::SwitchCase>(inner)) {
-      arms.emplace_back(std::vector<clang::Stmt *>{GetLastStmtOfSwitchCase(sc)},
-                        label, sc, CaseChainHasDefault(sc),
-                        /*has_fallthrough=*/false);
-    } else if (!label.empty()) {
-      arms.emplace_back(std::vector<clang::Stmt *>{inner}, label,
-                        /*head=*/nullptr, /*is_default_case=*/false,
-                        /*has_fallthrough=*/false);
-    } else if (!arms.empty()) {
-      arms.back().body.push_back(s);
-    }
+    AccumulateSwitchStmt(arms, s, flattened);
   }
 
   for (SwitchArm &arm : arms) {

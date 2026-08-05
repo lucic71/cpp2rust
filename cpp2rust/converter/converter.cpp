@@ -1202,7 +1202,9 @@ RsExpr *Converter::ConvertStmt(clang::Stmt *stmt) {
     return arena_.New<Verbatim>("");
   default:
     llvm::errs() << "ConvertStmt: unhandled statement class "
-                 << stmt->getStmtClassName() << '\n';
+                 << stmt->getStmtClassName() << " at "
+                 << stmt->getBeginLoc().printToString(ctx_.getSourceManager())
+                 << '\n';
     assert(false && "statement class not handled by ConvertStmt dispatch");
     return arena_.New<Verbatim>("");
   }
@@ -3483,7 +3485,8 @@ RsExpr *Converter::EmitSwitchArm(const SwitchArm &arm, bool is_default) {
 RsExpr *Converter::VisitSwitchStmt(clang::SwitchStmt *stmt) {
   auto *body = clang::dyn_cast<clang::CompoundStmt>(stmt->getBody());
   assert(body);
-  auto arms = AnalyzeSwitchArms(body);
+  std::vector<clang::CompoundStmt *> flattened;
+  auto arms = AnalyzeSwitchArms(body, &flattened);
 
   bool needs_switch_macro = std::ranges::any_of(arms, [](const SwitchArm &arm) {
     return !arm.label.empty() || arm.has_fallthrough;
@@ -3524,10 +3527,17 @@ RsExpr *Converter::VisitSwitchStmt(clang::SwitchStmt *stmt) {
 
   parts.push_back(Braces(arena_.New<Concat>(std::move(match_arms))));
   auto *node = arena_.New<Concat>(std::move(parts));
-  if (needs_switch_macro) {
-    return Cat(Text("switch!"), Parens(node));
+  auto *result = needs_switch_macro ? Cat(Text("switch!"), Parens(node))
+                                    : Cat(Text("'switch:"), Braces(node));
+  if (flattened.empty()) {
+    return result;
   }
-  return Cat(Text("'switch:"), Braces(node));
+  std::vector<RsExpr *> pre;
+  for (auto *compound : flattened) {
+    pre.push_back(EmitHoistedDecls(compound));
+  }
+  pre.push_back(result);
+  return arena_.New<Concat>(std::move(pre));
 }
 
 // TODO: right now defaults go into the constructor, but they should also be
