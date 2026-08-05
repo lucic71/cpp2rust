@@ -259,8 +259,8 @@ pub unsafe fn test_fcntl_7() {
 pub unsafe fn test_ioctl_8() {
     let mut arg: i32 = 0;
     assert!(
-        ((((unsafe { libc::ioctl(0 as i32, 0_u64 as u64, (&mut arg as *mut i32),) }) >= (-1_i32))
-            as i32)
+        ((((unsafe { libc::ioctl(0 as i32, 0_u64 as u64, (&raw mut arg as *mut i32),) })
+            >= (-1_i32)) as i32)
             != 0)
     );
 }

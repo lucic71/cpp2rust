@@ -22,7 +22,7 @@ impl Y {
         return (&mut self.x as *mut X);
     }
     pub unsafe fn ptr(&mut self) -> *mut X {
-        return (&mut self.x as *mut X);
+        return (&raw mut self.x as *mut X);
     }
 }
 pub fn main() {
@@ -39,8 +39,8 @@ unsafe fn main_0() -> i32 {
     x2 = x1;
     x3 = ((x1) + (5));
     x4 = ((x3) + (x2));
-    let mut p1: *mut i32 = (&mut x1 as *mut i32);
-    p1 = (&mut x2 as *mut i32);
+    let mut p1: *mut i32 = (&raw mut x1 as *mut i32);
+    p1 = (&raw mut x2 as *mut i32);
     (*p1) = x1;
     (*p1) = (((x1) + (x4)) + (1));
     let mut x5: i32 = (*p1);
@@ -54,12 +54,12 @@ unsafe fn main_0() -> i32 {
     let mut x: X = X { x: 1 };
     let mut y: Y = Y {
         x: X { x: 0 },
-        p: (&mut x as *mut X),
+        p: (&raw mut x as *mut X),
     };
     y.x.x = 5;
     (*(unsafe { y.foo() })).x = 1;
     (*y.p).x = 10;
-    let mut p3: *mut Y = (&mut y as *mut Y);
+    let mut p3: *mut Y = (&raw mut y as *mut Y);
     (*(*p3).p).x = 100;
     (*(unsafe { y.ptr() })).x = 1;
     (*(unsafe { y.ptr() })).x = 50;

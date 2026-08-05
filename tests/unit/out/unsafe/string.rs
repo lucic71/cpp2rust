@@ -299,8 +299,8 @@ unsafe fn main_0() -> i32 {
         let s = c"cast".as_ptr();
         std::slice::from_raw_parts(s, (0..).take_while(|&i| *s.add(i) != 0).count() + 1).to_vec()
     };
-    let mut output_data: *mut u8 =
-        (((&mut string_to_cast[(0_usize)] as *mut libc::c_char) as *mut libc::c_char) as *mut u8);
+    let mut output_data: *mut u8 = (((&raw mut string_to_cast[(0_usize)] as *mut libc::c_char)
+        as *mut libc::c_char) as *mut u8);
     assert!((((*output_data) as i32) == (('c' as libc::c_char) as i32)));
     assert!((((*output_data.offset(((1) as isize))) as i32) == (('a' as libc::c_char) as i32)));
     assert!((((*output_data.offset(((2) as isize))) as i32) == (('s' as libc::c_char) as i32)));

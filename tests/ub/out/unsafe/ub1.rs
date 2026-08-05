@@ -8,7 +8,7 @@ use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 pub unsafe fn dangling_0() -> *mut i32 {
     let mut x: i32 = 1;
-    let mut p: *mut i32 = (&mut x as *mut i32);
+    let mut p: *mut i32 = (&raw mut x as *mut i32);
     return (&mut (*p) as *mut i32);
 }
 pub fn main() {

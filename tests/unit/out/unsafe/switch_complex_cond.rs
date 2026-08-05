@@ -33,9 +33,9 @@ pub fn main() {
 }
 unsafe fn main_0() -> i32 {
     let mut p_val: i32 = 5;
-    assert!(((unsafe { switch_complex_cond_0((&mut p_val as *mut i32), 0) }) == (2)));
-    assert!(((unsafe { switch_complex_cond_0((&mut p_val as *mut i32), 5) }) == (3)));
-    assert!(((unsafe { switch_complex_cond_0((&mut p_val as *mut i32), -5_i32) }) == (1)));
-    assert!(((unsafe { switch_complex_cond_0((&mut p_val as *mut i32), 99) }) == (0)));
+    assert!(((unsafe { switch_complex_cond_0((&raw mut p_val as *mut i32), 0) }) == (2)));
+    assert!(((unsafe { switch_complex_cond_0((&raw mut p_val as *mut i32), 5) }) == (3)));
+    assert!(((unsafe { switch_complex_cond_0((&raw mut p_val as *mut i32), -5_i32) }) == (1)));
+    assert!(((unsafe { switch_complex_cond_0((&raw mut p_val as *mut i32), 99) }) == (0)));
     return 0;
 }

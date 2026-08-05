@@ -29,10 +29,10 @@ unsafe fn main_0() -> i32 {
     let mut a: i32 = 1;
     let mut b: i32 = 2;
     let mut c: i32 = (unsafe { identity_0(local) });
-    let mut p: *mut i32 = (&mut a as *mut i32);
-    p = (&mut (b) as *mut i32);
-    p = (&mut a as *mut i32);
-    (unsafe { swap_by_ptr_1(p, (&mut b as *mut i32)) });
+    let mut p: *mut i32 = (&raw mut a as *mut i32);
+    p = (&raw mut (b) as *mut i32);
+    p = (&raw mut a as *mut i32);
+    (unsafe { swap_by_ptr_1(p, (&raw mut b as *mut i32)) });
     (unsafe { swap_by_ref_2((&mut a as *mut i32), (&mut c as *mut i32)) });
     return c;
 }

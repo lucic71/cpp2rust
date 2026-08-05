@@ -42,7 +42,7 @@ unsafe fn main_0() -> i32 {
         c: 0_u16,
     };
     v.b = 3735928559_u32;
-    let mut base: *mut u8 = ((&mut v as *mut Layout) as *mut u8);
+    let mut base: *mut u8 = ((&raw mut v as *mut Layout) as *mut u8);
     let mut bp: *mut u32 =
         ((base.offset(((::std::mem::offset_of!(Layout, b)) as isize))) as *mut u32);
     assert!(((*bp) == (3735928559_u32)));

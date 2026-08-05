@@ -38,7 +38,7 @@ unsafe fn main_0() -> i32 {
                     (0).into(),
                     (10).into(),
                     (1).into(),
-                    (&mut x as *mut i32).into(),
+                    (&raw mut x as *mut i32).into(),
                     (0).into(),
                     (20).into(),
                 ],
@@ -48,7 +48,7 @@ unsafe fn main_0() -> i32 {
     );
     let mut y: i32 = 50;
     assert!(
-        ((((unsafe { mixed_args_0(1, &[(1).into(), (&mut y as *mut i32).into(),]) }) == (50))
+        ((((unsafe { mixed_args_0(1, &[(1).into(), (&raw mut y as *mut i32).into(),]) }) == (50))
             as i32)
             != 0)
     );

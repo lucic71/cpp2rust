@@ -35,7 +35,7 @@ unsafe fn main_0() -> i32 {
     (*o).big.b = 3_i64;
     let mut h: *mut holder =
         (libcc2rs::malloc_unsafe(::std::mem::size_of::<holder>()) as *mut holder);
-    (*h).p = (&mut (*o).big as *mut big);
+    (*h).p = (&raw mut (*o).big as *mut big);
     assert!((((((*(*h).p).a) == (2_i64)) as i32) != 0));
     (*(*h).p).b = 9_i64;
     assert!((((((*o).big.b) == (9_i64)) as i32) != 0));

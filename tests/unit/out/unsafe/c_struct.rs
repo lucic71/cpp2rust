@@ -82,7 +82,7 @@ unsafe fn main_0() -> i32 {
     };
     let mut b: Node = Node {
         value: 2,
-        next: (&mut a as *mut Node),
+        next: (&raw mut a as *mut Node),
     };
     assert!((((((*b.next).value) == (1)) as i32) != 0));
     let mut c: Container = Container {

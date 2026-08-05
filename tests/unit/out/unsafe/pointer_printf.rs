@@ -13,7 +13,7 @@ pub fn main() {
 }
 unsafe fn main_0() -> i32 {
     let mut a: i32 = 1;
-    let mut p: *mut i32 = (&mut a as *mut i32);
+    let mut p: *mut i32 = (&raw mut a as *mut i32);
     printf(c"%p %d".as_ptr() as *const i8, p, (*p));
     return 0;
 }

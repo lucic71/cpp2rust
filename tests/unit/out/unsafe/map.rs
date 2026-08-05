@@ -69,7 +69,7 @@ unsafe fn main_0() -> i32 {
     (*m.entry(4_i16).or_default().as_mut()) = 5_u32;
     let mut it4: UnsafeMapIterator<i16, u32> =
         UnsafeMapIterator::find_key(&m as *const BTreeMap<i16, Box<u32>>, &4_i16);
-    let mut p: *mut u32 = (&mut *it4.second() as *mut u32);
+    let mut p: *mut u32 = (&raw mut *it4.second() as *mut u32);
     let mut x5: u32 = (*p);
     assert!(((*m.entry(4_i16).or_default().as_mut()) == (5_u32)));
     assert!(((*it4.second()) == (5_u32)));

@@ -34,7 +34,7 @@ unsafe fn main_0() -> i32 {
     }
     let mut key: i32 = 7;
     let mut hit: *mut i32 = (libc::bsearch(
-        (((&mut key as *mut i32) as *const i32) as *const ::libc::c_void),
+        (((&raw mut key as *mut i32) as *const i32) as *const ::libc::c_void),
         ((arr.as_mut_ptr() as *const i32) as *const ::libc::c_void),
         8_usize,
         ::std::mem::size_of::<i32>(),
@@ -47,7 +47,7 @@ unsafe fn main_0() -> i32 {
     assert!(((((*hit) == (7)) as i32) != 0));
     let mut miss_key: i32 = 42;
     let mut miss: *mut i32 = (libc::bsearch(
-        (((&mut miss_key as *mut i32) as *const i32) as *const ::libc::c_void),
+        (((&raw mut miss_key as *mut i32) as *const i32) as *const ::libc::c_void),
         ((arr.as_mut_ptr() as *const i32) as *const ::libc::c_void),
         8_usize,
         ::std::mem::size_of::<i32>(),

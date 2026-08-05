@@ -83,17 +83,17 @@ unsafe fn main_0() -> i32 {
     ));
     assert!(((side_effect_counter_3) == (2)));
     let mut storage: i32 = 11;
-    let mut p: *mut i32 = (&mut storage as *mut i32);
+    let mut p: *mut i32 = (&raw mut storage as *mut i32);
     &(*p);
     &(p);
     let mut arr: [i32; 3] = [1, 2, 3];
     &(arr[((1) as usize)]);
     let mut h: Holder = Holder { field: 17 };
     &(h.field);
-    let mut hp: *mut Holder = (&mut h as *mut Holder);
+    let mut hp: *mut Holder = (&raw mut h as *mut Holder);
     &((*hp).field);
     let mut nt: NonTrivial = <NonTrivial>::default();
     (unsafe { unused_ref_param_1((&nt as *const NonTrivial)) });
-    (unsafe { unused_ptr_param_2((&mut nt as *mut NonTrivial).cast_const()) });
+    (unsafe { unused_ptr_param_2((&raw mut nt as *mut NonTrivial).cast_const()) });
     return 0;
 }

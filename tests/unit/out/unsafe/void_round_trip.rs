@@ -14,7 +14,8 @@ pub fn main() {
 unsafe fn main_0() -> i32 {
     let mut a: u32 = 42_u32;
     assert!(
-        ((((*(((&mut a as *mut u32) as *mut ::libc::c_void) as *mut i32)) == (42)) as i32) != 0)
+        ((((*(((&raw mut a as *mut u32) as *mut ::libc::c_void) as *mut i32)) == (42)) as i32)
+            != 0)
     );
     return 0;
 }

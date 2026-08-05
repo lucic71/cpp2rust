@@ -13,11 +13,11 @@ pub fn main() {
 }
 unsafe fn main_0() -> i32 {
     let mut neg: i32 = -1_i32;
-    let mut words: *mut u16 = ((&mut neg as *mut i32) as *mut u16);
+    let mut words: *mut u16 = ((&raw mut neg as *mut i32) as *mut u16);
     assert!((((*words.offset(((0) as isize))) as i32) == (65535)));
     assert!((((*words.offset(((1) as isize))) as i32) == (65535)));
     let mut neg64: i64 = (-256_i32 as i64);
-    let mut quarters: *mut i16 = ((&mut neg64 as *mut i64) as *mut i16);
+    let mut quarters: *mut i16 = ((&raw mut neg64 as *mut i64) as *mut i16);
     assert!((((*quarters.offset(((0) as isize))) as i32) == (-256_i32)));
     assert!((((*quarters.offset(((1) as isize))) as i32) == (-1_i32)));
     assert!((((*quarters.offset(((2) as isize))) as i32) == (-1_i32)));

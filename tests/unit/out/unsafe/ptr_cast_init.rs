@@ -46,7 +46,7 @@ unsafe fn main_0() -> i32 {
     assert!((((((*u.offset(((0) as isize))) as i32) == ('h' as i32)) as i32) != 0));
     assert!((((((*u.offset(((1) as isize))) as i32) == ('i' as i32)) as i32) != 0));
     let mut h: header = header { tag: 7, size: 32 };
-    let mut hp: *mut header = (&mut h as *mut header);
+    let mut hp: *mut header = (&raw mut h as *mut header);
     let mut v: *mut view = (hp as *mut view);
     assert!((((((*v).tag) == (7)) as i32) != 0));
     let mut data: [libc::c_char; 3] = std::mem::transmute(*b"hi\0");
@@ -68,7 +68,7 @@ unsafe fn main_0() -> i32 {
     } as *mut libc::c_char);
     assert!(((((sel).is_null()) as i32) != 0));
     let mut avail: *mut *const entry = std::ptr::null_mut();
-    (unsafe { get_registry_3((&mut avail as *mut *mut *const entry)) });
+    (unsafe { get_registry_3((&raw mut avail as *mut *mut *const entry)) });
     assert!((((!((avail).is_null())) as i32) != 0));
     assert!((((((*(*avail.offset(((0) as isize)))).id) == (1)) as i32) != 0));
     assert!((((((*(*avail.offset(((1) as isize)))).id) == (2)) as i32) != 0));

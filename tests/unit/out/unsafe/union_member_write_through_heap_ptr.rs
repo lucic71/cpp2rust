@@ -53,7 +53,7 @@ unsafe fn main_0() -> i32 {
         }
         ((table as *mut entry) as *mut ::libc::c_void)
     };
-    let mut e: *mut entry = (&mut (*table.offset(((0) as isize))) as *mut entry);
+    let mut e: *mut entry = (&raw mut (*table.offset(((0) as isize))) as *mut entry);
     (*e).kind = 1;
     (*e).c.set.size = 7_i64;
     (*e).c.set.idx = 3_i64;
@@ -73,7 +73,7 @@ unsafe fn main_0() -> i32 {
     assert!((((((*e).c.set.size) == (7_i64)) as i32) != 0));
     assert!((((((*e).c.set.idx) == (3_i64)) as i32) != 0));
     assert!((((((*e).kind) == (1)) as i32) != 0));
-    e = (&mut (*table.offset(((1) as isize))) as *mut entry);
+    e = (&raw mut (*table.offset(((1) as isize))) as *mut entry);
     (*e).kind = 2;
     (*e).c.range.min = 10;
     (*e).c.range.max = 20;

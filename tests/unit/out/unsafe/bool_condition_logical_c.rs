@@ -45,7 +45,7 @@ unsafe fn main_0() -> i32 {
     let mut n: i32 = 3;
     let mut zero: i32 = 0;
     let mut storage: i32 = 7;
-    let mut p: *mut i32 = (&mut storage as *mut i32);
+    let mut p: *mut i32 = (&raw mut storage as *mut i32);
     let mut np: *mut i32 = std::ptr::null_mut();
     let mut u: u32 = 4_u32;
     let mut code: Code = Code::CODE_OK;

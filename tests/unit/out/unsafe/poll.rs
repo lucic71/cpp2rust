@@ -40,7 +40,7 @@ unsafe fn main_0() -> i32 {
     assert!(
         ((((libc::read(
             fds[((0) as usize)],
-            (((&mut ch as *mut libc::c_char) as *mut libc::c_char) as *mut ::libc::c_void),
+            (((&raw mut ch as *mut libc::c_char) as *mut libc::c_char) as *mut ::libc::c_void),
             1_usize
         )) == (1_isize)) as i32)
             != 0)

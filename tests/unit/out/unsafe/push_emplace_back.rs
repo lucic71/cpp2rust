@@ -30,9 +30,9 @@ pub unsafe fn push_local_from_field_1(mut jpg: *mut JPEGData, mut cond: bool) {
     let mut head: [u8; 3] = [1_u8, 2_u8, 3_u8];
     let mut dest: *mut Vec<Vec<u8>> = std::ptr::null_mut();
     if cond {
-        dest = (&mut (*jpg).com_data as *mut Vec<Vec<u8>>);
+        dest = (&raw mut (*jpg).com_data as *mut Vec<Vec<u8>>);
     } else {
-        dest = (&mut (*jpg).app_data as *mut Vec<Vec<u8>>);
+        dest = (&raw mut (*jpg).app_data as *mut Vec<Vec<u8>>);
     }
     (*dest).push(
         core::slice::from_raw_parts(
@@ -54,9 +54,9 @@ pub unsafe fn emplace_local_from_field_4(mut jpg: *mut JPEGData, mut cond: bool)
     let mut head: [u8; 3] = [1_u8, 2_u8, 3_u8];
     let mut dest: *mut Vec<Vec<u8>> = std::ptr::null_mut();
     if cond {
-        dest = (&mut (*jpg).com_data as *mut Vec<Vec<u8>>);
+        dest = (&raw mut (*jpg).com_data as *mut Vec<Vec<u8>>);
     } else {
-        dest = (&mut (*jpg).app_data as *mut Vec<Vec<u8>>);
+        dest = (&raw mut (*jpg).app_data as *mut Vec<Vec<u8>>);
     }
     (*dest).push(
         core::slice::from_raw_parts(
@@ -84,11 +84,11 @@ pub fn main() {
 }
 unsafe fn main_0() -> i32 {
     let mut vecs: Vec<Vec<u8>> = Vec::new();
-    (unsafe { push_param_0((&mut vecs as *mut Vec<Vec<u8>>)) });
+    (unsafe { push_param_0((&raw mut vecs as *mut Vec<Vec<u8>>)) });
     assert!(((vecs.len()) == (1_usize)));
     assert!(vecs[(0_usize)].is_empty());
     let mut jpg: JPEGData = <JPEGData>::default();
-    (unsafe { push_local_from_field_1((&mut jpg as *mut JPEGData), true) });
+    (unsafe { push_local_from_field_1((&raw mut jpg as *mut JPEGData), true) });
     assert!(((jpg.com_data.len()) == (1_usize)));
     assert!(((jpg.com_data[(0_usize)].len()) == (3_usize)));
     assert!(((jpg.com_data[(0_usize)][(0_usize)] as i32) == (1)));
@@ -96,26 +96,26 @@ unsafe fn main_0() -> i32 {
     assert!(((jpg.com_data[(0_usize)][(2_usize)] as i32) == (3)));
     assert!(jpg.app_data.is_empty());
     let mut chunks: Vec<Chunk> = Vec::new();
-    (unsafe { shrink_through_ptr_2((&mut chunks as *mut Vec<Chunk>)) });
+    (unsafe { shrink_through_ptr_2((&raw mut chunks as *mut Vec<Chunk>)) });
     assert!(chunks.is_empty());
     let mut w: Writer = <Writer>::default();
     w.chunk.data = 42;
-    w.output = (&mut chunks as *mut Vec<Chunk>);
-    (unsafe { nested_push_move_3((&mut w as *mut Writer)) });
+    w.output = (&raw mut chunks as *mut Vec<Chunk>);
+    (unsafe { nested_push_move_3((&raw mut w as *mut Writer)) });
     assert!(((chunks.len()) == (1_usize)));
     assert!(((chunks[(0_usize)].data) == (42)));
-    (unsafe { emplace_local_from_field_4((&mut jpg as *mut JPEGData), false) });
+    (unsafe { emplace_local_from_field_4((&raw mut jpg as *mut JPEGData), false) });
     assert!(((jpg.app_data.len()) == (1_usize)));
     assert!(((jpg.app_data[(0_usize)].len()) == (3_usize)));
     assert!(((jpg.app_data[(0_usize)][(0_usize)] as i32) == (1)));
     assert!(((jpg.app_data[(0_usize)][(2_usize)] as i32) == (3)));
     assert!(((jpg.com_data.len()) == (1_usize)));
     w.chunk.data = 99;
-    w.output = (&mut chunks as *mut Vec<Chunk>);
-    (unsafe { nested_emplace_move_5((&mut w as *mut Writer)) });
+    w.output = (&raw mut chunks as *mut Vec<Chunk>);
+    (unsafe { nested_emplace_move_5((&raw mut w as *mut Writer)) });
     assert!(((chunks.len()) == (2_usize)));
     assert!(((chunks[(1_usize)].data) == (99)));
-    (unsafe { self_ref_push_6((&mut chunks as *mut Vec<Chunk>)) });
+    (unsafe { self_ref_push_6((&raw mut chunks as *mut Vec<Chunk>)) });
     assert!(((chunks.len()) == (3_usize)));
     assert!(((chunks[(2_usize)].data) == (42)));
     return 0;

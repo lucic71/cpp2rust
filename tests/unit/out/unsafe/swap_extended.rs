@@ -51,7 +51,7 @@ unsafe fn main_0() -> i32 {
         b,
     );
     let mut c: i32 = 2;
-    let mut p: *mut i32 = (&mut c as *mut i32);
+    let mut p: *mut i32 = (&raw mut c as *mut i32);
     write!(
         std::fs::File::from_raw_fd(
             std::io::stdout()
@@ -65,7 +65,7 @@ unsafe fn main_0() -> i32 {
     );
     let mut d: i32 = 3;
     let mut e: i32 = 4;
-    (unsafe { swap_by_ptr_1((&mut d as *mut i32), (&mut e as *mut i32)) });
+    (unsafe { swap_by_ptr_1((&raw mut d as *mut i32), (&raw mut e as *mut i32)) });
     let mut f: i32 = 4;
     let mut g: i32 = 5;
     (unsafe { swap_by_ref_2((&mut f as *mut i32), (&mut g as *mut i32)) });

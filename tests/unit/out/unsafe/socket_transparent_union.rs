@@ -18,8 +18,8 @@ unsafe fn main_0() -> i32 {
     assert!(
         ((((libc::getsockname(
             fd,
-            ((&mut ssloc as *mut libc::sockaddr_storage) as *mut libc::sockaddr),
-            (&mut slen as *mut u32)
+            ((&raw mut ssloc as *mut libc::sockaddr_storage) as *mut libc::sockaddr),
+            (&raw mut slen as *mut u32)
         )) == (-1_i32)) as i32)
             != 0)
     );
@@ -28,8 +28,8 @@ unsafe fn main_0() -> i32 {
     assert!(
         ((((libc::getsockname(
             fd,
-            ((&mut sin as *mut ::libc::sockaddr_in) as *mut libc::sockaddr),
-            (&mut inlen as *mut u32)
+            ((&raw mut sin as *mut ::libc::sockaddr_in) as *mut libc::sockaddr),
+            (&raw mut inlen as *mut u32)
         )) == (-1_i32)) as i32)
             != 0)
     );

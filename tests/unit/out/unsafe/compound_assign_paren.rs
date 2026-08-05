@@ -18,7 +18,7 @@ pub fn main() {
 }
 unsafe fn main_0() -> i32 {
     let mut item: Item = Item { flags: 0_u8 };
-    let mut ptr: *mut Item = (&mut item as *mut Item);
+    let mut ptr: *mut Item = (&raw mut item as *mut Item);
     ((*(ptr)).flags = (((*(ptr)).flags as i32) | ((1) << (0))) as u8);
     ((*(ptr)).flags = (((*(ptr)).flags as i32) | ((1) << (1))) as u8);
     assert!((((*ptr).flags as i32) == (3)));

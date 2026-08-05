@@ -13,7 +13,9 @@ pub fn main() {
 }
 unsafe fn main_0() -> i32 {
     let mut list: *mut libc::ifaddrs = std::ptr::null_mut();
-    assert!(((((libc::getifaddrs((&mut list as *mut *mut libc::ifaddrs))) == (0)) as i32) != 0));
+    assert!(
+        ((((libc::getifaddrs((&raw mut list as *mut *mut libc::ifaddrs))) == (0)) as i32) != 0)
+    );
     assert!((((!((list).is_null())) as i32) != 0));
     let mut found_loopback: i32 = 0;
     let mut ifa: *mut libc::ifaddrs = std::ptr::null_mut();
@@ -32,7 +34,7 @@ unsafe fn main_0() -> i32 {
         let mut lo_be: [u8; 4] = [127_u8, 0_u8, 0_u8, 1_u8];
         if (((({
             let sa = core::slice::from_raw_parts(
-                (((&mut (*sin).sin_addr as *mut ::libc::in_addr) as *const ::libc::in_addr)
+                (((&raw mut (*sin).sin_addr as *mut ::libc::in_addr) as *const ::libc::in_addr)
                     as *const ::libc::c_void) as *const u8,
                 4_usize as usize,
             );
@@ -60,7 +62,8 @@ unsafe fn main_0() -> i32 {
             assert!(
                 (((({
                     let sa = core::slice::from_raw_parts(
-                        (((&mut (*mask).sin_addr as *mut ::libc::in_addr) as *const ::libc::in_addr)
+                        (((&raw mut (*mask).sin_addr as *mut ::libc::in_addr)
+                            as *const ::libc::in_addr)
                             as *const ::libc::c_void) as *const u8,
                         4_usize as usize,
                     );

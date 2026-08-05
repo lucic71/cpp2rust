@@ -78,26 +78,26 @@ unsafe fn main_0() -> i32 {
     let mut c: Container = <Container>::default();
     {
         let byte_0 =
-            (((&mut c as *mut Container) as *mut Container) as *mut ::libc::c_void) as *mut u8;
+            (((&raw mut c as *mut Container) as *mut Container) as *mut ::libc::c_void) as *mut u8;
         for offset in 0..::std::mem::size_of::<Container>() {
             *byte_0.offset(offset as isize) = 0 as u8;
         }
-        (((&mut c as *mut Container) as *mut Container) as *mut ::libc::c_void)
+        (((&raw mut c as *mut Container) as *mut Container) as *mut ::libc::c_void)
     };
     (unsafe {
-        let _out: *mut ::libc::c_void = ((&mut c.view as *mut anon_0) as *mut ::libc::c_void);
+        let _out: *mut ::libc::c_void = ((&raw mut c.view as *mut anon_0) as *mut ::libc::c_void);
         let _cap: usize = ::std::mem::size_of::<anon_0>();
         fill_1(_out, _cap)
     });
     assert!(((((c.view.h.code as i32) == (2)) as i32) != 0));
     assert!(
-        (((((*((&mut c.view.h.lo as *mut u16) as *mut u8).offset(((0) as isize))) as i32) == (0))
-            as i32)
+        (((((*((&raw mut c.view.h.lo as *mut u16) as *mut u8).offset(((0) as isize))) as i32)
+            == (0)) as i32)
             != 0)
     );
     assert!(
-        (((((*((&mut c.view.h.lo as *mut u16) as *mut u8).offset(((1) as isize))) as i32) == (80))
-            as i32)
+        (((((*((&raw mut c.view.h.lo as *mut u16) as *mut u8).offset(((1) as isize))) as i32)
+            == (80)) as i32)
             != 0)
     );
     assert!(((((c.view.raw_[((0) as usize)] as i32) == (2)) as i32) != 0));

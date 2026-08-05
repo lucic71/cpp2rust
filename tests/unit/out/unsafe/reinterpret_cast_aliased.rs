@@ -13,8 +13,8 @@ pub fn main() {
 }
 unsafe fn main_0() -> i32 {
     let mut val: u64 = 578437695752307201_u64;
-    let mut view1: *mut u32 = ((&mut val as *mut u64) as *mut u32);
-    let mut view2: *mut u32 = ((&mut val as *mut u64) as *mut u32);
+    let mut view1: *mut u32 = ((&raw mut val as *mut u64) as *mut u32);
+    let mut view2: *mut u32 = ((&raw mut val as *mut u64) as *mut u32);
     (*view1.offset(((0) as isize))) = 3721182122_u32;
     assert!(((*view2.offset(((0) as isize))) == (3721182122_u32)));
     assert!(((val) == (578437699406183338_u64)));

@@ -13,7 +13,7 @@ pub fn main() {
 }
 unsafe fn main_0() -> i32 {
     let mut original: i32 = 67305985;
-    let mut halves: *mut i16 = ((&mut original as *mut i32) as *mut i16);
+    let mut halves: *mut i16 = ((&raw mut original as *mut i32) as *mut i16);
     assert!((((*halves.offset(((0) as isize))) as i32) == (513)));
     assert!((((*halves.offset(((1) as isize))) as i32) == (1027)));
     (*halves.offset(((0) as isize))) = 4112_i16;

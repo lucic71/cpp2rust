@@ -37,7 +37,7 @@ unsafe fn main_0() -> i32 {
     (*h).words =
         (libcc2rs::malloc_unsafe((2_usize).wrapping_mul((::std::mem::size_of::<i64>() as usize)))
             as *mut i64);
-    (*h).field = (&mut (*o).in_ as *mut inner);
+    (*h).field = (&raw mut (*o).in_ as *mut inner);
     (*(*h).words.offset(((0) as isize))) = 11_i64;
     (*(*h).words.offset(((1) as isize))) = 22_i64;
     (*(*h).field).a = 33_i64;

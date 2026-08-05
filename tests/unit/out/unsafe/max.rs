@@ -16,8 +16,8 @@ unsafe fn main_0() -> i32 {
     let mut x2: i32 = 2;
     let mut x3: i32 = 10;
     let mut x4: i32 = 20;
-    let mut p1: *mut i32 = (&mut x1 as *mut i32);
-    let mut p2: *mut i32 = (&mut x2 as *mut i32);
+    let mut p1: *mut i32 = (&raw mut x1 as *mut i32);
+    let mut p2: *mut i32 = (&raw mut x2 as *mut i32);
     let mut r1: i32 = (*if *&mut x1 >= *&mut x2 {
         (&mut x1) as *const _
     } else {

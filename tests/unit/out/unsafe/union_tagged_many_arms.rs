@@ -74,9 +74,9 @@ unsafe fn main_0() -> i32 {
     let mut x: i32 = 0;
     let mut e: Slot = <Slot>::default();
     e.tag = Tag_enum::T_REF;
-    e.payload.handle = (((&mut x as *mut i32) as *mut i32) as *mut ::libc::c_void);
+    e.payload.handle = (((&raw mut x as *mut i32) as *mut i32) as *mut ::libc::c_void);
     assert!(
-        ((((e.payload.handle) == (((&mut x as *mut i32) as *mut i32) as *mut ::libc::c_void))
+        ((((e.payload.handle) == (((&raw mut x as *mut i32) as *mut i32) as *mut ::libc::c_void))
             as i32)
             != 0)
     );

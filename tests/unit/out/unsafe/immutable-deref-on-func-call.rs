@@ -31,7 +31,7 @@ unsafe fn main_0() -> i32 {
     (*arr.offset(((0) as isize))).value = 1;
     (*arr.offset(((1) as isize))).value = 2;
     (unsafe {
-        let _other: *mut Item = (&mut (*arr.offset(((1) as isize))) as *mut Item);
+        let _other: *mut Item = (&raw mut (*arr.offset(((1) as isize))) as *mut Item);
         (*arr.offset(((0) as isize))).foo(_other)
     });
     let mut result: i32 =

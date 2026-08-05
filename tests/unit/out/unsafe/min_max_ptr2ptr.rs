@@ -14,10 +14,10 @@ pub fn main() {
 unsafe fn main_0() -> i32 {
     let mut a: i32 = 10;
     let mut b: i32 = 20;
-    let mut pa: *mut i32 = (&mut a as *mut i32);
-    let mut pb: *mut i32 = (&mut b as *mut i32);
-    let mut ppa: *mut *mut i32 = (&mut pa as *mut *mut i32);
-    let mut ppb: *mut *mut i32 = (&mut pb as *mut *mut i32);
+    let mut pa: *mut i32 = (&raw mut a as *mut i32);
+    let mut pb: *mut i32 = (&raw mut b as *mut i32);
+    let mut ppa: *mut *mut i32 = (&raw mut pa as *mut *mut i32);
+    let mut ppb: *mut *mut i32 = (&raw mut pb as *mut *mut i32);
     let mut r1: i32 = (*if *(*ppa) >= *(*ppb) {
         (*ppa) as *const _
     } else {

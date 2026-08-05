@@ -27,7 +27,7 @@ unsafe fn main_0() -> i32 {
     u.bits = 0_u64;
     assert!(((((u.p).is_null()) as i32) != 0));
     let mut x: i32 = 5;
-    u.p = (&mut x as *mut i32);
+    u.p = (&raw mut x as *mut i32);
     assert!(((((u.bits) != (0_u64)) as i32) != 0));
     u.bits = 0_u64;
     assert!(((((u.p).is_null()) as i32) != 0));

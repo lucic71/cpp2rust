@@ -62,7 +62,7 @@ unsafe fn main_0() -> i32 {
     x2 += 1;
     x2 += (unsafe { foo_0(x1) });
     x3 += (((unsafe { foo_0(x2) }) + (unsafe { foo_0(x3) })) + (1));
-    let mut p1: *mut i32 = (&mut x1 as *mut i32);
+    let mut p1: *mut i32 = (&raw mut x1 as *mut i32);
     let mut p2: *mut i32 = (unsafe { ptr_1(p1) });
     p1 = p2;
     p2 = (unsafe { ptr_1(p1) });
@@ -71,19 +71,19 @@ unsafe fn main_0() -> i32 {
     let r3: *mut i32 = (unsafe { bar_2(r1) });
     (*r2) += x1;
     (*r3) += (*r1);
-    let mut x4: i32 = (((unsafe { foo_0(x3) }) + (*(unsafe { ptr_1((&mut x3 as *mut i32)) })))
+    let mut x4: i32 = (((unsafe { foo_0(x3) }) + (*(unsafe { ptr_1((&raw mut x3 as *mut i32)) })))
         + (*(unsafe { bar_2((&mut x2 as *mut i32)) })));
     let mut a: X1 = X1 { v: 0 };
     let mut b: X2 = X2 {
         v: (&mut a as *mut X1),
     };
     let mut c: X3 = X3 {
-        v: (&mut b as *mut X2),
+        v: (&raw mut b as *mut X2),
     };
     let mut d: X4 = X4 { v: c.clone() };
     (*(*d.v.v).v).v = 0;
     (*(unsafe { (*(unsafe { (*(unsafe { d.get() })).get() })).get() })).v = 0;
-    d.v.v = (&mut b as *mut X2);
+    d.v.v = (&raw mut b as *mut X2);
     let r4: *const i32 =
         (&(*(unsafe { (*(unsafe { (*(unsafe { d.get() })).get() })).get() })).v as *const i32);
     let r5: *mut X1 = (unsafe { (*(unsafe { (*(unsafe { d.get() })).get() })).get() });
@@ -130,49 +130,49 @@ unsafe fn main_0() -> i32 {
         )
     }))
     .postfix_inc();
-    (*(unsafe { ptr_1((&mut x1 as *mut i32)) })).prefix_inc();
-    (*(unsafe { ptr_1((&mut x1 as *mut i32)) })) += 1;
+    (*(unsafe { ptr_1((&raw mut x1 as *mut i32)) })).prefix_inc();
+    (*(unsafe { ptr_1((&raw mut x1 as *mut i32)) })) += 1;
     (*(unsafe {
         ptr_1(
-            (&mut (*(unsafe { (*(unsafe { (*(unsafe { d.get() })).get() })).get() })).v
+            (&raw mut (*(unsafe { (*(unsafe { (*(unsafe { d.get() })).get() })).get() })).v
                 as *mut i32),
         )
     }))
     .prefix_inc();
     (*(unsafe {
         ptr_1(
-            (&mut (*(unsafe { (*(unsafe { (*(unsafe { d.get() })).get() })).get() })).v
+            (&raw mut (*(unsafe { (*(unsafe { (*(unsafe { d.get() })).get() })).get() })).v
                 as *mut i32),
         )
     })) += 1;
-    (*(&mut (*(unsafe {
+    (*(&raw mut (*(unsafe {
         ptr_1(
-            (&mut (*(unsafe { (*(unsafe { (*(unsafe { d.get() })).get() })).get() })).v
+            (&raw mut (*(unsafe { (*(unsafe { (*(unsafe { d.get() })).get() })).get() })).v
                 as *mut i32),
         )
     })) as *mut i32)) += 1;
     let mut ptr1: i32 = (*(unsafe {
         ptr_1(
-            (&mut (*(unsafe { (*(unsafe { (*(unsafe { d.get() })).get() })).get() })).v
+            (&raw mut (*(unsafe { (*(unsafe { (*(unsafe { d.get() })).get() })).get() })).v
                 as *mut i32),
         )
     }))
     .postfix_inc();
     let ptr2: *mut i32 = (&mut (*(unsafe {
         ptr_1(
-            (&mut (*(unsafe { (*(unsafe { (*(unsafe { d.get() })).get() })).get() })).v
+            (&raw mut (*(unsafe { (*(unsafe { (*(unsafe { d.get() })).get() })).get() })).v
                 as *mut i32),
         )
     })) as *mut i32);
-    let mut ptr3: *mut i32 = (&mut (*(unsafe {
+    let mut ptr3: *mut i32 = (&raw mut (*(unsafe {
         ptr_1(
-            (&mut (*(unsafe { (*(unsafe { (*(unsafe { d.get() })).get() })).get() })).v
+            (&raw mut (*(unsafe { (*(unsafe { (*(unsafe { d.get() })).get() })).get() })).v
                 as *mut i32),
         )
     })) as *mut i32);
     let mut vptr: i32 = (*(unsafe {
         ptr_1(
-            (&mut (*(unsafe { (*(unsafe { (*(unsafe { d.get() })).get() })).get() })).v
+            (&raw mut (*(unsafe { (*(unsafe { (*(unsafe { d.get() })).get() })).get() })).v
                 as *mut i32),
         )
     }));
@@ -191,7 +191,7 @@ unsafe fn main_0() -> i32 {
     .postfix_inc();
     return (((*(unsafe {
         ptr_1(
-            (&mut (*(unsafe { (*(unsafe { (*(unsafe { d.get() })).get() })).get() })).v
+            (&raw mut (*(unsafe { (*(unsafe { (*(unsafe { d.get() })).get() })).get() })).v
                 as *mut i32),
         )
     })) + (*(unsafe {

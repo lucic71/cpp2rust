@@ -65,7 +65,7 @@ unsafe fn main_0() -> i32 {
     assert!(((((unsafe { (table_1[((1) as usize)].probe).unwrap()() }) == (1)) as i32) != 0));
     assert!(((((table_1[((1) as usize)].mask) == (32)) as i32) != 0));
     let mut tail: *const libc::c_char =
-        (&mut (*c"ab.cd".as_ptr().cast_mut().offset(((2) as isize))) as *mut libc::c_char)
+        (&raw mut (*c"ab.cd".as_ptr().cast_mut().offset(((2) as isize))) as *mut libc::c_char)
             .cast_const();
     assert!((((((*tail.offset(((0) as isize))) as i32) == ('.' as i32)) as i32) != 0));
     assert!((((((*tail.offset(((1) as isize))) as i32) == ('c' as i32)) as i32) != 0));

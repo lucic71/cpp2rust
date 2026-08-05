@@ -103,7 +103,7 @@ unsafe fn main_0() -> i32 {
     let mut w: widget = <widget>::default();
     w.id = 7;
     w.mode = widget_enum::MODE_ACTIVE;
-    assert!(((unsafe { is_active_0((&mut w as *mut widget)) }) != 0));
+    assert!(((unsafe { is_active_0((&raw mut w as *mut widget)) }) != 0));
     w.mode = widget_enum::MODE_DONE;
     assert!(((((w.mode as u32) == ((widget_enum::MODE_DONE as i32) as u32)) as i32) != 0));
     let mut p: point_struct = <point_struct>::default();

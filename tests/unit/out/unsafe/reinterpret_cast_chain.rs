@@ -13,7 +13,7 @@ pub fn main() {
 }
 unsafe fn main_0() -> i32 {
     let mut val: u64 = 578437695752307201_u64;
-    let mut dwords: *mut u32 = ((&mut val as *mut u64) as *mut u32);
+    let mut dwords: *mut u32 = ((&raw mut val as *mut u64) as *mut u32);
     assert!(((*dwords.offset(((0) as isize))) == (67305985_u32)));
     assert!(((*dwords.offset(((1) as isize))) == (134678021_u32)));
     let mut words: *mut u16 = (dwords as *mut u16);

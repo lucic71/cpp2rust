@@ -7,7 +7,7 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 pub unsafe fn foo_0(mut p: *mut i32) -> *mut i32 {
-    return (&mut (*p.offset(((5) as isize))) as *mut i32);
+    return (&raw mut (*p.offset(((5) as isize))) as *mut i32);
 }
 pub fn main() {
     unsafe {
@@ -22,7 +22,7 @@ unsafe fn main_0() -> i32 {
         (*p1.offset(((i) as isize))) = (i as i32);
         i.prefix_inc();
     }
-    let mut out: i32 = (*(unsafe { foo_0((&mut (*p1.offset(((1) as isize))) as *mut i32)) })
+    let mut out: i32 = (*(unsafe { foo_0((&raw mut (*p1.offset(((1) as isize))) as *mut i32)) })
         .offset(((3) as isize)));
     ::std::mem::drop(Box::from_raw(::std::slice::from_raw_parts_mut(
         p1,

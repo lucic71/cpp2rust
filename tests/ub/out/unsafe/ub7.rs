@@ -28,5 +28,5 @@ unsafe fn main_0() -> i32 {
         ('n' as libc::c_char),
         ('g' as libc::c_char),
     ];
-    return ((unsafe { strlen_0((&s[((0) as usize)] as *const libc::c_char)) }) as i32);
+    return ((unsafe { strlen_0((&raw const s[((0) as usize)] as *const libc::c_char)) }) as i32);
 }

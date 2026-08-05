@@ -34,7 +34,7 @@ unsafe fn main_0() -> i32 {
                 2,
                 &[
                     (0 as *mut ::libc::c_void).into(),
-                    (&mut x as *mut i32).into(),
+                    (&raw mut x as *mut i32).into(),
                 ],
             )
         }) == (42)) as i32)
@@ -47,7 +47,7 @@ unsafe fn main_0() -> i32 {
                 &[
                     (0 as *mut ::libc::c_void).into(),
                     (0 as *mut ::libc::c_void).into(),
-                    (&mut x as *mut i32).into(),
+                    (&raw mut x as *mut i32).into(),
                 ],
             )
         }) == (42)) as i32)

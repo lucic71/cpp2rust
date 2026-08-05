@@ -14,7 +14,7 @@ pub unsafe fn test_stat_0() {
     libc::fputs((c"hello".as_ptr().cast_mut()).cast_const(), fp);
     assert!(((((libc::fclose(fp)) == (0)) as i32) != 0));
     let mut st: ::libc::stat = unsafe { std::mem::zeroed() };
-    assert!(((((libc::stat(path, (&mut st as *mut ::libc::stat))) == (0)) as i32) != 0));
+    assert!(((((libc::stat(path, (&raw mut st as *mut ::libc::stat))) == (0)) as i32) != 0));
     assert!(((((st.st_size) == (5_i64)) as i32) != 0));
     assert!(((((st.st_mtime) > (0_i64)) as i32) != 0));
     libc::unlink(path);
@@ -28,7 +28,7 @@ pub unsafe fn test_fstat_1() {
     libc::fflush(fp);
     let mut fd: i32 = libc::fileno(fp);
     let mut st: ::libc::stat = unsafe { std::mem::zeroed() };
-    assert!(((((libc::fstat(fd, (&mut st as *mut ::libc::stat))) == (0)) as i32) != 0));
+    assert!(((((libc::fstat(fd, (&raw mut st as *mut ::libc::stat))) == (0)) as i32) != 0));
     assert!(((((st.st_size) == (11_i64)) as i32) != 0));
     assert!(((((st.st_mtime) > (0_i64)) as i32) != 0));
     assert!(((((libc::fclose(fp)) == (0)) as i32) != 0));

@@ -33,7 +33,7 @@ pub unsafe fn DoStuffWithSafePointer_0(safe_ptr: *mut Option<Box<SafePointer>>) 
     let mut x2: Option<Box<i32>> = Some(Box::new(0));
     (*x2.as_deref_mut().unwrap()) = 1;
     x1 = x2;
-    let mut raw_ptr1: *mut i32 = (&mut (*x1.as_deref_mut().unwrap()) as *mut i32);
+    let mut raw_ptr1: *mut i32 = (&raw mut (*x1.as_deref_mut().unwrap()) as *mut i32);
     (*raw_ptr1).prefix_inc();
     (*(*safe_ptr).as_deref_mut().unwrap()).ptr = x1;
     (unsafe { (*(*safe_ptr).as_deref_mut().unwrap()).inc() });
@@ -42,7 +42,7 @@ pub unsafe fn DoStuffWithSafePointer_0(safe_ptr: *mut Option<Box<SafePointer>>) 
     let mut x4: Option<Box<i32>> = Some(Box::new(20));
     (*x3.as_deref_mut().unwrap()) = ((*x3.as_deref_mut().unwrap()) + (*x4.as_deref_mut().unwrap()));
     x4 = x3;
-    let mut raw_ptr2: *mut i32 = (&mut (*x4.as_deref_mut().unwrap()) as *mut i32);
+    let mut raw_ptr2: *mut i32 = (&raw mut (*x4.as_deref_mut().unwrap()) as *mut i32);
     (*raw_ptr2) += 1;
     let mut pair: Option<Box<Pair>> = Some(Box::new(Pair {
         x: (*raw_ptr2),

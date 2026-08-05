@@ -232,7 +232,7 @@ pub unsafe fn test_memchr_8() {
         4_usize as usize,
     ) as *const ::libc::c_void;
     assert!(
-        ((r) == (((&data[((2) as usize)] as *const libc::c_char) as *const libc::c_char)
+        ((r) == (((&raw const data[((2) as usize)] as *const libc::c_char) as *const libc::c_char)
             as *const ::libc::c_void))
     );
     assert!(
@@ -268,7 +268,7 @@ pub unsafe fn test_strrchr_9() {
     ];
     assert!(
         ((libc::strrchr(buf.as_mut_ptr(), (('a' as libc::c_char) as i32)))
-            == (&mut buf[((2) as usize)] as *mut libc::c_char))
+            == (&raw mut buf[((2) as usize)] as *mut libc::c_char))
     );
 }
 pub unsafe fn test_strdup_10() {
@@ -324,7 +324,7 @@ pub unsafe fn test_strstr_13() {
     ];
     assert!(
         ((libc::strstr(buf.as_mut_ptr(), c"ll".as_ptr()))
-            == (&mut buf[((2) as usize)] as *mut libc::c_char))
+            == (&raw mut buf[((2) as usize)] as *mut libc::c_char))
     );
 }
 pub unsafe fn test_strpbrk_14() {
@@ -341,7 +341,7 @@ pub unsafe fn test_strpbrk_14() {
     ];
     assert!(
         ((libc::strpbrk(buf.as_mut_ptr(), c"b".as_ptr()))
-            == (&mut buf[((1) as usize)] as *mut libc::c_char))
+            == (&raw mut buf[((1) as usize)] as *mut libc::c_char))
     );
 }
 pub unsafe fn test_strcasecmp_15() {

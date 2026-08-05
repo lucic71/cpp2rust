@@ -22,7 +22,7 @@ unsafe fn main_0() -> i32 {
         .as_deref_mut()
         .map_or(::std::ptr::null_mut(), |v| v as *mut i32);
     (*f_ptr1) = 10;
-    let mut f_ptr2: *mut i32 = (&mut (*f.as_deref_mut().unwrap()) as *mut i32);
+    let mut f_ptr2: *mut i32 = (&raw mut (*f.as_deref_mut().unwrap()) as *mut i32);
     (*f_ptr2) = 11;
     f = Some(Box::new(9));
     f = (unsafe { fn_0(f) });

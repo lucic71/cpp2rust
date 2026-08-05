@@ -90,7 +90,7 @@ unsafe fn main_0() -> i32 {
         next: std::ptr::null_mut(),
         prev: std::ptr::null_mut(),
     };
-    let mut head: *mut Node = (&mut n0 as *mut Node);
+    let mut head: *mut Node = (&raw mut n0 as *mut Node);
     let mut n1: Node = Node {
         val: 4,
         next: std::ptr::null_mut(),

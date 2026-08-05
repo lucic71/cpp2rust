@@ -66,9 +66,9 @@ unsafe fn main_0() -> i32 {
     assert!(
         ((((unsafe {
             registry_update_0(
-                (&mut r as *mut registry),
+                (&raw mut r as *mut registry),
                 field::FIELD_SLOT,
-                &[(&mut payload as *mut i32).into()],
+                &[(&raw mut payload as *mut i32).into()],
             )
         }) == (0)) as i32)
             != 0)
@@ -76,14 +76,14 @@ unsafe fn main_0() -> i32 {
     assert!(
         ((((unsafe {
             registry_update_0(
-                (&mut r as *mut registry),
+                (&raw mut r as *mut registry),
                 field::FIELD_LEVEL,
                 &[(5_i64).into()],
             )
         }) == (0)) as i32)
             != 0)
     );
-    assert!(((((r.slot) == ((&mut payload as *mut i32) as *mut ::libc::c_void)) as i32) != 0));
+    assert!(((((r.slot) == ((&raw mut payload as *mut i32) as *mut ::libc::c_void)) as i32) != 0));
     assert!(((((*(r.slot as *mut i32)) == (7)) as i32) != 0));
     assert!(((((r.level) == (5_i64)) as i32) != 0));
     return 0;

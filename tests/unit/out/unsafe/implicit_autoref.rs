@@ -23,13 +23,13 @@ unsafe fn main_0() -> i32 {
     let mut v: Vec<i32> = Vec::new();
     v.push(10);
     v.push(20);
-    let mut p: *mut Vec<i32> = (&mut v as *mut Vec<i32>);
+    let mut p: *mut Vec<i32> = (&raw mut v as *mut Vec<i32>);
     let mut a: i32 = (&mut (*p))[(0_usize)];
     (&mut (*p))[(1_usize)] = 30;
     let mut h: Holder = <Holder>::default();
     h.v.push(40);
     h.v.push(50);
-    let mut hp: *mut Holder = (&mut h as *mut Holder);
+    let mut hp: *mut Holder = (&raw mut h as *mut Holder);
     let mut b: i32 = (&mut (*hp)).v[(0_usize)];
     (&mut (*hp)).v[(1_usize)] = 60;
     assert!(((a) == (10)));

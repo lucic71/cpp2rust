@@ -40,7 +40,9 @@ unsafe fn main_0() -> i32 {
     it.value = 41;
     assert!(
         ((((unsafe {
-            ((*h).callback).unwrap()((((&mut it as *mut item) as *mut item) as *mut ::libc::c_void))
+            ((*h).callback).unwrap()(
+                (((&raw mut it as *mut item) as *mut item) as *mut ::libc::c_void),
+            )
         }) == (42)) as i32)
             != 0)
     );

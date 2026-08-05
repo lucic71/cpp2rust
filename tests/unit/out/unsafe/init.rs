@@ -23,13 +23,13 @@ unsafe fn main_0() -> i32 {
     let mut x: i32 = 0_i32;
     let mut p: *mut i32 = std::ptr::null_mut();
     let g: *mut i32 = (&mut x as *mut i32);
-    let mut q: *mut i32 = (&mut x as *mut i32);
+    let mut q: *mut i32 = (&raw mut x as *mut i32);
     let mut z: *mut i32 = p;
     let mut xx: X = <X>::default();
-    let mut zz: *mut X = (&mut xx as *mut X);
+    let mut zz: *mut X = (&raw mut xx as *mut X);
     xx.x = 1;
-    q = (&mut xx.x as *mut i32);
-    q = (&mut (*zz).x as *mut i32);
+    q = (&raw mut xx.x as *mut i32);
+    q = (&raw mut (*zz).x as *mut i32);
     (*zz).x = 2;
     let mut ww: X = xx.clone();
     ww = xx;

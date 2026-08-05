@@ -40,7 +40,7 @@ pub unsafe fn test_mul_overflow_long_8() {
     assert!(
         ((!{
             let (val, ovf) = 3_i64.overflowing_mul(7_i64);
-            *(&mut r as *mut i64) = val;
+            *(&raw mut r as *mut i64) = val;
             ovf
         } as i32)
             != 0)
@@ -48,7 +48,7 @@ pub unsafe fn test_mul_overflow_long_8() {
     assert!(((((r) == (21_i64)) as i32) != 0));
     assert!({
         let (val, ovf) = 9223372036854775807_i64.overflowing_mul(2_i64);
-        *(&mut r as *mut i64) = val;
+        *(&raw mut r as *mut i64) = val;
         ovf
     });
 }
@@ -57,7 +57,7 @@ pub unsafe fn test_mul_overflow_long_long_9() {
     assert!(
         ((!{
             let (val, ovf) = 1000_i64.overflowing_mul(1000_i64);
-            *(&mut r as *mut i64) = val;
+            *(&raw mut r as *mut i64) = val;
             ovf
         } as i32)
             != 0)
@@ -65,7 +65,7 @@ pub unsafe fn test_mul_overflow_long_long_9() {
     assert!(((((r) == (1000000_i64)) as i32) != 0));
     assert!({
         let (val, ovf) = 9223372036854775807_i64.overflowing_mul(2_i64);
-        *(&mut r as *mut i64) = val;
+        *(&raw mut r as *mut i64) = val;
         ovf
     });
 }

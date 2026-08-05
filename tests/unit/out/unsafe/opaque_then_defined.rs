@@ -29,7 +29,7 @@ unsafe fn main_0() -> i32 {
         next: std::ptr::null_mut(),
     };
     let mut l: list = list {
-        head: (&mut n as *mut node),
+        head: (&raw mut n as *mut node),
         size: 1,
     };
     assert!((((((*l.head).value) == (42)) as i32) != 0));

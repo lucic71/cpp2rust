@@ -30,7 +30,7 @@ unsafe fn main_0() -> i32 {
     ctx.last_error = 0;
     (unsafe {
         set_error_0(
-            (&mut ctx as *mut context),
+            (&raw mut ctx as *mut context),
             (c"error %d".as_ptr().cast_mut()).cast_const(),
             &[(42).into()],
         )
@@ -39,7 +39,7 @@ unsafe fn main_0() -> i32 {
     ctx.verbose = 0;
     (unsafe {
         set_error_0(
-            (&mut ctx as *mut context),
+            (&raw mut ctx as *mut context),
             (c"error %d".as_ptr().cast_mut()).cast_const(),
             &[(99).into()],
         )

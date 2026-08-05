@@ -13,7 +13,7 @@ pub fn main() {
 }
 unsafe fn main_0() -> i32 {
     let mut storage: i32 = 7;
-    let mut p: *mut i32 = (&mut storage as *mut i32);
+    let mut p: *mut i32 = (&raw mut storage as *mut i32);
     let mut np: *mut i32 = std::ptr::null_mut();
     if !(p).is_null() {
         assert!((1 != 0));

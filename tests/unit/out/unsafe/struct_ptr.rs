@@ -18,10 +18,10 @@ pub fn main() {
 }
 unsafe fn main_0() -> i32 {
     let mut obj: XX = <XX>::default();
-    let mut ptr: *mut XX = (&mut obj as *mut XX);
+    let mut ptr: *mut XX = (&raw mut obj as *mut XX);
     (*ptr).x = 2;
     let mut c: bool = false;
     let mut r: i32 = if c { obj.x } else { (*ptr).x };
-    let mut p: *mut i32 = (&mut obj.x as *mut i32);
+    let mut p: *mut i32 = (&raw mut obj.x as *mut i32);
     return ((*p) + (r));
 }

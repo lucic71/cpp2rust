@@ -4250,11 +4250,12 @@ RsExpr *Converter::ConvertAddrOf(clang::Expr *expr,
                   pointer_type);
   }
   auto *node = ConvertExpr(expr);
-  if (!pointer_type->getPointeeType().isConstQualified()) {
-    return CastTo(Cat(Text(token::kRef), Text(keyword_mut_), node),
-                  pointer_type);
-  }
-  return CastTo(Cat(Text(token::kRef), node), pointer_type);
+  return CastTo(Cat(Text("&raw"),
+                    Text(pointer_type->getPointeeType().isConstQualified()
+                             ? keyword::kConst
+                             : keyword_mut_),
+                    node),
+                pointer_type);
 }
 
 RsExpr *Converter::EmitDeref(RsExpr *inner, clang::QualType pointee_type) {

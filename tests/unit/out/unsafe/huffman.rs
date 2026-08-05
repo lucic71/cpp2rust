@@ -58,7 +58,7 @@ impl MinHeap {
             left: std::ptr::null_mut(),
             right: std::ptr::null_mut(),
         };
-        return (&mut self.alloc.as_mut().unwrap()[(self.next.postfix_inc() as usize)]
+        return (&raw mut self.alloc.as_mut().unwrap()[(self.next.postfix_inc() as usize)]
             as *mut MinHeapNode);
     }
     pub unsafe fn Heapify(&mut self, mut idx: i32) {

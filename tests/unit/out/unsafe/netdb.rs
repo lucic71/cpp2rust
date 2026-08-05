@@ -21,8 +21,8 @@ pub unsafe fn test_ipv4_literal_0() {
         ((((libc::getaddrinfo(
             (c"127.0.0.1".as_ptr().cast_mut()).cast_const(),
             (c"8080".as_ptr().cast_mut()).cast_const(),
-            (&mut hints as *mut ::libc::addrinfo).cast_const(),
-            (&mut res as *mut *mut ::libc::addrinfo)
+            (&raw mut hints as *mut ::libc::addrinfo).cast_const(),
+            (&raw mut res as *mut *mut ::libc::addrinfo)
         )) == (0)) as i32)
             != 0)
     );
@@ -40,7 +40,7 @@ pub unsafe fn test_ipv4_literal_0() {
     assert!(
         (((({
             let sa = core::slice::from_raw_parts(
-                (((&mut (*sin).sin_port as *mut u16) as *const u16) as *const ::libc::c_void)
+                (((&raw mut (*sin).sin_port as *mut u16) as *const u16) as *const ::libc::c_void)
                     as *const u8,
                 2_usize as usize,
             );
@@ -63,7 +63,7 @@ pub unsafe fn test_ipv4_literal_0() {
     assert!(
         (((({
             let sa = core::slice::from_raw_parts(
-                (((&mut (*sin).sin_addr as *mut ::libc::in_addr) as *const ::libc::in_addr)
+                (((&raw mut (*sin).sin_addr as *mut ::libc::in_addr) as *const ::libc::in_addr)
                     as *const ::libc::c_void) as *const u8,
                 4_usize as usize,
             );
@@ -99,8 +99,8 @@ pub unsafe fn test_ipv6_literal_1() {
         ((((libc::getaddrinfo(
             (c"::1".as_ptr().cast_mut()).cast_const(),
             (c"443".as_ptr().cast_mut()).cast_const(),
-            (&mut hints as *mut ::libc::addrinfo).cast_const(),
-            (&mut res as *mut *mut ::libc::addrinfo)
+            (&raw mut hints as *mut ::libc::addrinfo).cast_const(),
+            (&raw mut res as *mut *mut ::libc::addrinfo)
         )) == (0)) as i32)
             != 0)
     );
@@ -118,7 +118,7 @@ pub unsafe fn test_ipv6_literal_1() {
     assert!(
         (((({
             let sa = core::slice::from_raw_parts(
-                (((&mut (*sin6).sin6_port as *mut u16) as *const u16) as *const ::libc::c_void)
+                (((&raw mut (*sin6).sin6_port as *mut u16) as *const u16) as *const ::libc::c_void)
                     as *const u8,
                 2_usize as usize,
             );
@@ -144,7 +144,7 @@ pub unsafe fn test_ipv6_literal_1() {
     assert!(
         (((({
             let sa = core::slice::from_raw_parts(
-                (((&mut (*sin6).sin6_addr as *mut ::libc::in6_addr) as *const ::libc::in6_addr)
+                (((&raw mut (*sin6).sin6_addr as *mut ::libc::in6_addr) as *const ::libc::in6_addr)
                     as *const ::libc::c_void) as *const u8,
                 16_usize as usize,
             );
@@ -172,7 +172,7 @@ pub unsafe fn test_null_hints_2() {
             (c"127.0.0.1".as_ptr().cast_mut()).cast_const(),
             (c"80".as_ptr().cast_mut()).cast_const(),
             std::ptr::null(),
-            (&mut res as *mut *mut ::libc::addrinfo)
+            (&raw mut res as *mut *mut ::libc::addrinfo)
         )) == (0)) as i32)
             != 0)
     );
@@ -183,7 +183,7 @@ pub unsafe fn test_null_hints_2() {
     assert!(
         (((({
             let sa = core::slice::from_raw_parts(
-                (((&mut (*sin).sin_addr as *mut ::libc::in_addr) as *const ::libc::in_addr)
+                (((&raw mut (*sin).sin_addr as *mut ::libc::in_addr) as *const ::libc::in_addr)
                     as *const ::libc::c_void) as *const u8,
                 4_usize as usize,
             );

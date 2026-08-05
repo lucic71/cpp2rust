@@ -19,7 +19,7 @@ impl Test {
         self.x.postfix_dec();
     }
     pub unsafe fn as_ptr(&mut self) -> *mut i32 {
-        return (&mut self.x as *mut i32);
+        return (&raw mut self.x as *mut i32);
     }
     pub unsafe fn update(&mut self, mut x: i32, mut y: i32) {
         self.x = ((x) + (y));
@@ -46,7 +46,7 @@ pub fn main() {
 }
 unsafe fn main_0() -> i32 {
     let mut t1: Test = Test { x: 100 };
-    let mut t2: *mut Test = (unsafe { Update_0((&mut t1 as *mut Test)) });
+    let mut t2: *mut Test = (unsafe { Update_0((&raw mut t1 as *mut Test)) });
     let mut t3: *mut Test = std::ptr::null_mut();
     t3 = t2;
     (*t3).x = 15;

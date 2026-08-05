@@ -53,7 +53,7 @@ unsafe fn main_0() -> i32 {
     let mut rec: record = record {
         name: std::ptr::null_mut(),
     };
-    let mut r: *mut record = (&mut rec as *mut record);
+    let mut r: *mut record = (&raw mut rec as *mut record);
     (*r).name = libcc2rs::strdup_unsafe(p);
     assert!((((!(((*r).name).is_null())) as i32) != 0));
     assert!(((((libc::strcmp(((*r).name).cast_const(), p)) == (0)) as i32) != 0));

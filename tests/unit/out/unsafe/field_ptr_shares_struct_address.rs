@@ -20,7 +20,7 @@ pub fn main() {
 unsafe fn main_0() -> i32 {
     let mut c: *mut conn = (libcc2rs::malloc_unsafe(::std::mem::size_of::<conn>()) as *mut conn);
     (*c).port = 443;
-    let mut p: *mut i32 = (&mut (*c).first as *mut i32);
+    let mut p: *mut i32 = (&raw mut (*c).first as *mut i32);
     (*p) = 1;
     assert!((((((*c).first) == (1)) as i32) != 0));
     assert!((((((*c).port) == (443)) as i32) != 0));

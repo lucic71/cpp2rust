@@ -34,11 +34,11 @@ pub fn main() {
 unsafe fn main_0() -> i32 {
     let mut v: view = <view>::default();
     {
-        let byte_0 = (((&mut v as *mut view) as *mut view) as *mut ::libc::c_void) as *mut u8;
+        let byte_0 = (((&raw mut v as *mut view) as *mut view) as *mut ::libc::c_void) as *mut u8;
         for offset in 0..::std::mem::size_of::<view>() {
             *byte_0.offset(offset as isize) = 0 as u8;
         }
-        (((&mut v as *mut view) as *mut view) as *mut ::libc::c_void)
+        (((&raw mut v as *mut view) as *mut view) as *mut ::libc::c_void)
     };
     v.f.a = 1_u32;
     v.f.b = 5_u32;
@@ -60,11 +60,11 @@ unsafe fn main_0() -> i32 {
     assert!(((((v.f.sgn) == (-3_i32)) as i32) != 0));
     assert!(((((v.f.tail) == (287454020_u32)) as i32) != 0));
     {
-        let byte_0 = (((&mut v as *mut view) as *mut view) as *mut ::libc::c_void) as *mut u8;
+        let byte_0 = (((&raw mut v as *mut view) as *mut view) as *mut ::libc::c_void) as *mut u8;
         for offset in 0..::std::mem::size_of::<view>() {
             *byte_0.offset(offset as isize) = 0 as u8;
         }
-        (((&mut v as *mut view) as *mut view) as *mut ::libc::c_void)
+        (((&raw mut v as *mut view) as *mut view) as *mut ::libc::c_void)
     };
     v.raw_[((0) as usize)] = 60_u8;
     v.raw_[((1) as usize)] = 18_u8;

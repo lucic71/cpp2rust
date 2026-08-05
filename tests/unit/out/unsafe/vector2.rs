@@ -10,7 +10,7 @@ pub unsafe fn fn_0(v: *mut Vec<i32>, mut v3: Vec<i32>) {
     (*v).push(20);
     let mut x: i32 = 0_i32;
     let mut v2: Vec<i32> = Vec::new();
-    let mut v4: *mut Vec<i32> = (&mut v3 as *mut Vec<i32>);
+    let mut v4: *mut Vec<i32> = (&raw mut v3 as *mut Vec<i32>);
     v2.push(0);
     v2.push(1);
     v2.push(3);

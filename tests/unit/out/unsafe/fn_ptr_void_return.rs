@@ -22,14 +22,14 @@ pub fn main() {
 }
 unsafe fn main_0() -> i32 {
     let mut a: i32 = 42;
-    (unsafe { run_2(Some(negate_0), (&mut a as *mut i32)) });
+    (unsafe { run_2(Some(negate_0), (&raw mut a as *mut i32)) });
     assert!(((a) == (-42_i32)));
-    (unsafe { run_2(Some(zero_out_1), (&mut a as *mut i32)) });
+    (unsafe { run_2(Some(zero_out_1), (&raw mut a as *mut i32)) });
     assert!(((a) == (0)));
     let mut fn_: Option<unsafe fn(*mut i32)> = Some(negate_0);
     assert!(!((fn_).is_none()));
     let mut b: i32 = 10;
-    (unsafe { (fn_).unwrap()((&mut b as *mut i32)) });
+    (unsafe { (fn_).unwrap()((&raw mut b as *mut i32)) });
     assert!(((b) == (-10_i32)));
     return 0;
 }

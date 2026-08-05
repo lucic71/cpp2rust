@@ -78,7 +78,7 @@ unsafe fn main_0() -> i32 {
         ((((unsafe {
             dispatch_0(
                 (opt::OPT_STRING_OUT as i32),
-                &[(&mut s as *mut *const libc::c_char).into()],
+                &[(&raw mut s as *mut *const libc::c_char).into()],
             )
         }) == (1)) as i32)
             != 0)
@@ -107,16 +107,20 @@ unsafe fn main_0() -> i32 {
         next: std::ptr::null_mut(),
     };
     assert!(
-        ((((unsafe { dispatch_0((opt::OPT_NODE as i32), &[(&mut head as *mut node).into(),]) })
-            == (42)) as i32)
+        ((((unsafe {
+            dispatch_0(
+                (opt::OPT_NODE as i32),
+                &[(&raw mut head as *mut node).into()],
+            )
+        }) == (42)) as i32)
             != 0)
     );
-    let mut outp: *mut node = (&mut head as *mut node);
+    let mut outp: *mut node = (&raw mut head as *mut node);
     assert!(
         ((((unsafe {
             dispatch_0(
                 (opt::OPT_NODE_OUT as i32),
-                &[(&mut outp as *mut *mut node).into()],
+                &[(&raw mut outp as *mut *mut node).into()],
             )
         }) == (2)) as i32)
             != 0)

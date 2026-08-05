@@ -13,7 +13,7 @@ pub fn main() {
 }
 unsafe fn main_0() -> i32 {
     let mut value: u32 = 67305985_u32;
-    let mut bytes: *mut u8 = ((&mut value as *mut u32) as *mut u8);
+    let mut bytes: *mut u8 = ((&raw mut value as *mut u32) as *mut u8);
     assert!((((*bytes.offset(((0) as isize))) as i32) == (1)));
     assert!((((*bytes.offset(((1) as isize))) as i32) == (2)));
     assert!((((*bytes.offset(((2) as isize))) as i32) == (3)));

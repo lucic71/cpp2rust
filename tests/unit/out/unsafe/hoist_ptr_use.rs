@@ -31,11 +31,11 @@ unsafe fn main_0() -> i32 {
         in_: inner { x: 1, y: 2 },
         total: 10,
     };
-    let mut p: *mut outer = (&mut o as *mut outer);
-    let mut q: *mut outer = (&mut o as *mut outer);
+    let mut p: *mut outer = (&raw mut o as *mut outer);
+    let mut q: *mut outer = (&raw mut o as *mut outer);
     (*p).total = (((*q).in_.x) + ((*q).in_.y));
     assert!(((((o.total) == (3)) as i32) != 0));
-    let mut ip: *mut inner = (&mut (*p).in_ as *mut inner);
+    let mut ip: *mut inner = (&raw mut (*p).in_ as *mut inner);
     (*ip).x = (((*p).total) + (1));
     assert!(((((o.in_.x) == (4)) as i32) != 0));
     (*p).total += (*q).in_.x;

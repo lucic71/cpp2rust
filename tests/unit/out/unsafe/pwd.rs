@@ -30,14 +30,14 @@ pub unsafe fn test_getpwuid_r_2() {
     assert!(
         ((((libc::getpwuid_r(
             libc::geteuid(),
-            (&mut pw as *mut ::libc::passwd),
+            (&raw mut pw as *mut ::libc::passwd),
             buf.as_mut_ptr(),
             ::std::mem::size_of::<[libc::c_char; 4096]>(),
-            (&mut result as *mut *mut ::libc::passwd)
+            (&raw mut result as *mut *mut ::libc::passwd)
         )) == (0)) as i32)
             != 0)
     );
-    assert!(((((result) == (&mut pw as *mut ::libc::passwd)) as i32) != 0));
+    assert!(((((result) == (&raw mut pw as *mut ::libc::passwd)) as i32) != 0));
     assert!(((((pw.pw_uid) == (libc::geteuid())) as i32) != 0));
     assert!(((((libc::strlen((pw.pw_name).cast_const())) > (0_usize)) as i32) != 0));
     let mut pw2: *mut ::libc::passwd = libc::getpwuid(libc::geteuid());
@@ -59,10 +59,10 @@ pub unsafe fn test_getpwuid_r_erange_3() {
     assert!(
         ((((libc::getpwuid_r(
             libc::geteuid(),
-            (&mut pw as *mut ::libc::passwd),
+            (&raw mut pw as *mut ::libc::passwd),
             tiny.as_mut_ptr(),
             ::std::mem::size_of::<[libc::c_char; 1]>(),
-            (&mut result as *mut *mut ::libc::passwd)
+            (&raw mut result as *mut *mut ::libc::passwd)
         )) == (libc::ERANGE)) as i32)
             != 0)
     );
