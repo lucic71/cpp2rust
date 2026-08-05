@@ -32,3 +32,5 @@ void f9(void *base, size_t nmemb, size_t size,
 char *f10(const char *path, char *resolved_path) {
   return realpath(path, resolved_path);
 }
+
+void f11(int status) { return exit(status); }

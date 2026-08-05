@@ -51,3 +51,5 @@ clockid_t f10() { return CLOCK_MONOTONIC; }
 #ifdef __linux__
 clockid_t f11() { return CLOCK_MONOTONIC_RAW; }
 #endif
+
+clock_t f12(void) { return clock(); }

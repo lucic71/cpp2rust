@@ -64,3 +64,9 @@ unsafe fn f10() -> libc::clockid_t {
 unsafe fn f11() -> libc::clockid_t {
     libc::CLOCK_MONOTONIC_RAW
 }
+
+unsafe fn f12() -> ::libc::clock_t {
+    let mut __ts: ::libc::timespec = std::mem::zeroed();
+    ::libc::clock_gettime(::libc::CLOCK_PROCESS_CPUTIME_ID, &mut __ts);
+    (__ts.tv_sec * 1_000_000 + __ts.tv_nsec / 1_000) as ::libc::clock_t
+}

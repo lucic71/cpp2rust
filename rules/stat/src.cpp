@@ -12,3 +12,10 @@ int f1(const char *pathname, struct stat *statbuf) {
 int f2(int fd, struct stat *statbuf) { return fstat(fd, statbuf); }
 
 int f3(const char *pathname, mode_t mode) { return mkdir(pathname, mode); }
+
+int f4(const char *pathname, mode_t mode) { return chmod(pathname, mode); }
+
+int f5(int dirfd, const char *pathname, const struct timespec *times,
+       int flags) {
+  return utimensat(dirfd, pathname, times, flags);
+}

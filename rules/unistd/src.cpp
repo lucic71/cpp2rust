@@ -26,3 +26,7 @@ ssize_t f10(int fd, const void *buf, size_t count) {
 }
 
 int f11(const char *pathname) { return rmdir(pathname); }
+
+int f12(const char *pathname, uid_t owner, gid_t group) {
+  return chown(pathname, owner, group);
+}

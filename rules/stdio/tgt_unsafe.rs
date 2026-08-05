@@ -116,3 +116,7 @@ unsafe fn f26() -> i32 {
 unsafe fn f27() -> i32 {
     ::libc::SEEK_END
 }
+
+unsafe fn f28(a0: *mut ::libc::FILE) -> i32 {
+    libc::fgetc(a0)
+}

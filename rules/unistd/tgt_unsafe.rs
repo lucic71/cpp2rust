@@ -44,3 +44,7 @@ unsafe fn f10(a0: i32, a1: *const ::libc::c_void, a2: usize) -> isize {
 unsafe fn f11(a0: *const libc::c_char) -> i32 {
     libc::rmdir(a0)
 }
+
+unsafe fn f12(a0: *const libc::c_char, a1: ::libc::uid_t, a2: ::libc::gid_t) -> i32 {
+    libc::chown(a0, a1, a2)
+}

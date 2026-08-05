@@ -56,3 +56,7 @@ int f28(int errnum, char *buf, size_t buflen) {
 #if defined(__linux__)
 void f29(void *s, size_t n) { return explicit_bzero(s, n); }
 #endif
+
+char *f30(char *dest, const char *src) { return strcpy(dest, src); }
+
+char *f31(int errnum) { return strerror(errnum); }

@@ -16,3 +16,11 @@ unsafe fn f2(a0: i32, a1: *mut ::libc::stat) -> i32 {
 unsafe fn f3(a0: *const libc::c_char, a1: ::libc::mode_t) -> i32 {
     libc::mkdir(a0, a1 as ::libc::mode_t)
 }
+
+unsafe fn f4(a0: *const libc::c_char, a1: ::libc::mode_t) -> i32 {
+    libc::chmod(a0, a1 as ::libc::mode_t)
+}
+
+unsafe fn f5(a0: i32, a1: *const libc::c_char, a2: *const ::libc::timespec, a3: i32) -> i32 {
+    libc::utimensat(a0, a1, a2, a3)
+}

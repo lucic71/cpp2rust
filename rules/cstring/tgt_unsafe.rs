@@ -153,3 +153,11 @@ unsafe fn f28(a0: i32, a1: *mut libc::c_char, a2: usize) -> i32 {
 unsafe fn f29(a0: *mut libc::c_void, a1: usize) {
     libc::explicit_bzero(a0, a1)
 }
+
+unsafe fn f30(a0: *mut libc::c_char, a1: *const libc::c_char) -> *mut libc::c_char {
+    libc::strcpy(a0, a1)
+}
+
+unsafe fn f31(a0: i32) -> *mut libc::c_char {
+    libc::strerror(a0)
+}

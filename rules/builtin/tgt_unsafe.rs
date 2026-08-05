@@ -53,3 +53,15 @@ unsafe fn f13(a0: i64, a1: i64, a2: *mut i64) -> bool {
 unsafe fn f14(a0: u64) -> u64 {
     a0.swap_bytes()
 }
+
+unsafe fn f15(a0: u64) -> i32 {
+    a0.trailing_zeros() as i32
+}
+
+unsafe fn f16() -> f64 {
+    f64::INFINITY
+}
+
+unsafe fn f17(a0: *const ::libc::c_void, va: &[::libcc2rs::VaArg]) {
+    ();
+}

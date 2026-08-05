@@ -77,3 +77,5 @@ int f25(void) { return SEEK_SET; }
 int f26(void) { return SEEK_CUR; }
 
 int f27(void) { return SEEK_END; }
+
+int f28(FILE *stream) { return fgetc(stream); }

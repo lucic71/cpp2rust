@@ -26,3 +26,8 @@ bool f10(long long a, long long b, long long *r) { return __builtin_mul_overflow
 #if defined(__x86_64__) || defined(__i386__)
 void f11(void) { return __builtin_ia32_pause(); }
 #endif
+
+template <typename... Args>
+void f17(const void *addr, Args... args) {
+  return __builtin_prefetch(addr, args...);
+}
