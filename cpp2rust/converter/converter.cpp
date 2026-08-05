@@ -1730,6 +1730,13 @@ RsExpr *Converter::ConvertCallToOstream(clang::CallExpr *expr) {
 RsExpr *Converter::ConvertPrintf(clang::CallExpr *expr) {
   bool is_fprintf =
       Mapper::ToString(expr->getCallee()).starts_with("int fprintf");
+  if (is_fprintf) {
+    auto fd = Mapper::ToString(expr->getArg(0));
+    if (fd != "stdout" && fd != "__stdoutp" && fd != "stderr" &&
+        fd != "__stderrp") {
+      return nullptr;
+    }
+  }
 
   std::vector<RsExpr *> parts;
   parts.push_back(Text("printf("));
@@ -2067,7 +2074,9 @@ Converter::ConvertCallExpr(clang::CallExpr *expr) {
 
   if (auto fn = Mapper::ToString(callee);
       fn.starts_with("int printf") || fn.starts_with("int fprintf")) {
-    return {ConvertPrintf(expr), std::nullopt};
+    if (auto *node = ConvertPrintf(expr)) {
+      return {node, std::nullopt};
+    }
   }
   if (expr->isCallToStdMove()) {
     return {ConvertExpr(expr->getArg(0)), std::nullopt};

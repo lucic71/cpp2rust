@@ -79,3 +79,8 @@ int f26(void) { return SEEK_CUR; }
 int f27(void) { return SEEK_END; }
 
 int f28(FILE *stream) { return fgetc(stream); }
+
+template <typename... Args>
+int f29(FILE *stream, const char *format, Args... args) {
+  return fprintf(stream, format, args...);
+}

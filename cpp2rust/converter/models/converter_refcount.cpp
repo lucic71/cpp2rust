@@ -1260,6 +1260,18 @@ static std::vector<const char *> printf2fmt(std::string &format) {
               ok = false;
             }
             break;
+          case '.': {
+            auto prec_end = format.find_first_not_of("0123456789", end + 1);
+            if (prec_end == std::string::npos || format[prec_end] != 'f') {
+              ok = false;
+              break;
+            }
+            auto width = format.substr(pos + 1, end - pos - 1);
+            repl = "{:" + (width == "0" ? "" : width) + "." +
+                   format.substr(end + 1, prec_end - end - 1);
+            end = prec_end;
+            break;
+          }
           default:
             ok = false;
             break;
@@ -1288,10 +1300,7 @@ RsExpr *ConverterRefCount::ConvertPrintf(clang::CallExpr *expr) {
           expr->getArg(is_fprintf)->IgnoreImplicit())) {
     format = GetEscapedStringLiteral(str);
   } else {
-    llvm::errs() << "Unknown fprintf format: ";
-    expr->getArg(1)->dump();
-    llvm::errs() << '\n';
-    exit(1);
+    return nullptr;
   }
   bool ends_newline = format.ends_with("\\n\"");
 
@@ -1302,8 +1311,7 @@ RsExpr *ConverterRefCount::ConvertPrintf(clang::CallExpr *expr) {
   } else if (fd == "stderr" || fd == "__stderrp") {
     macro = ends_newline ? "eprintln!(" : "eprint!(";
   } else {
-    llvm::errs() << "Unknown fprintf fd: " << fd << '\n';
-    exit(1);
+    return nullptr;
   }
   if (ends_newline) {
     format.replace(format.size() - 3, 2, "");

@@ -120,3 +120,7 @@ unsafe fn f27() -> i32 {
 unsafe fn f28(a0: *mut ::libc::FILE) -> i32 {
     libc::fgetc(a0)
 }
+
+unsafe extern "C" {
+    fn f29(a0: *mut ::libc::FILE, a1: *const libc::c_char, ...) -> i32;
+}

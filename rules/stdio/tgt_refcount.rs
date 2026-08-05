@@ -192,3 +192,12 @@ fn f23(a0: Ptr<CFile>) -> i32 {
 fn f24(a0: Ptr<CFile>, a1: Ptr<u8>, a2: i32, a3: usize) -> i32 {
     0
 }
+
+fn f29(a0: Ptr<CFile>, a1: Ptr<u8>, va: &[VaArg]) -> i32 {
+    let __s = libcc2rs::format_c(&a1.to_rust_string(), va);
+    let __bytes = __s.as_bytes();
+    match a0.with_mut(|__f| __f.write(__bytes)) == __bytes.len() {
+        true => __bytes.len() as i32,
+        false => -1,
+    }
+}
