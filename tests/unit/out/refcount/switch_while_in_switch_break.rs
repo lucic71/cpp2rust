@@ -33,7 +33,7 @@ pub fn while_in_switch_break_0(n: i32) -> i32 {
     return (*r.borrow());
 }
 pub fn main() {
-    std::process::exit(main_0());
+    libcc2rs::exit_refcount(main_0());
 }
 fn main_0() -> i32 {
     assert!((({ while_in_switch_break_0(0) }) == 1006));

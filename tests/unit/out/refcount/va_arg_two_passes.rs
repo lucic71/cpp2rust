@@ -33,7 +33,7 @@ pub fn sum_then_product_0(first: i32, __args: &[VaArg]) -> i32 {
     return ((*sum.borrow()) + (*product.borrow()));
 }
 pub fn main() {
-    std::process::exit(main_0());
+    libcc2rs::exit_refcount(main_0());
 }
 fn main_0() -> i32 {
     assert!(

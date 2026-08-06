@@ -37,7 +37,7 @@ pub fn set_error_0(ctx: Ptr<context>, fmt: Ptr<u8>, __args: &[VaArg]) {
     }
 }
 pub fn main() {
-    std::process::exit(main_0());
+    libcc2rs::exit_refcount(main_0());
 }
 fn main_0() -> i32 {
     let ctx: Value<context> = <Value<context>>::default();

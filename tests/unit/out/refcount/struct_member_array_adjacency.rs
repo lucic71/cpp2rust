@@ -36,7 +36,7 @@ impl ByteRepr for pair {
     }
 }
 pub fn main() {
-    std::process::exit(main_0());
+    libcc2rs::exit_refcount(main_0());
 }
 fn main_0() -> i32 {
     let s: Value<pair> = <Value<pair>>::default();

@@ -17,7 +17,7 @@ pub fn test_1(fn_: FnPtr<fn() -> bool>) -> i32 {
     return 0;
 }
 pub fn main() {
-    std::process::exit(main_0());
+    libcc2rs::exit_refcount(main_0());
 }
 fn main_0() -> i32 {
     return ({ test_1(FnPtr::<fn() -> bool>::new(test1_0)) });

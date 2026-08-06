@@ -25,7 +25,7 @@ impl ByteRepr for cb {
     }
 }
 pub fn main() {
-    std::process::exit(main_0());
+    libcc2rs::exit_refcount(main_0());
 }
 fn main_0() -> i32 {
     let arr: Value<Box<[i32]>> = Rc::new(RefCell::new(Box::new([10, 20, 30, 40])));

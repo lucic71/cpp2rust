@@ -11,7 +11,7 @@ pub fn foo_0(array: Ptr<i32>) {
     (*array.borrow()).delete_array();
 }
 pub fn main() {
-    std::process::exit(main_0());
+    libcc2rs::exit_refcount(main_0());
 }
 fn main_0() -> i32 {
     let x: Value<Ptr<i32>> = Rc::new(RefCell::new(Ptr::alloc(1)));

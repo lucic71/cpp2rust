@@ -19,7 +19,7 @@ pub fn strlen_1(s: Ptr<u8>) -> i32 {
     return (*c.borrow());
 }
 pub fn main() {
-    std::process::exit(main_0());
+    libcc2rs::exit_refcount(main_0());
 }
 fn main_0() -> i32 {
     let a: Value<Box<[i32]>> = Rc::new(RefCell::new(Box::new([1, 2])));

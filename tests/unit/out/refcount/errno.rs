@@ -38,7 +38,7 @@ pub fn test_errno_from_fseek_2() {
     libcc2rs::cpp2rust_errno().write(0);
 }
 pub fn main() {
-    std::process::exit(main_0());
+    libcc2rs::exit_refcount(main_0());
 }
 fn main_0() -> i32 {
     ({ test_errno_0() });

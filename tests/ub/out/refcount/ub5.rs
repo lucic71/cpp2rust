@@ -11,7 +11,7 @@ pub fn null_0(p: Ptr<Ptr<i32>>) {
     (*p.borrow()).write(Ptr::<i32>::null());
 }
 pub fn main() {
-    std::process::exit(main_0());
+    libcc2rs::exit_refcount(main_0());
 }
 fn main_0() -> i32 {
     let x: Value<i32> = Rc::new(RefCell::new(1));

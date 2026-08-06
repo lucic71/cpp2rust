@@ -25,7 +25,7 @@ pub fn cmp_0(a: AnyPtr, b: AnyPtr) -> i32 {
     };
 }
 pub fn main() {
-    std::process::exit(main_0());
+    libcc2rs::exit_refcount(main_0());
 }
 fn main_0() -> i32 {
     let items: Value<Box<[Ptr<u8>]>> = Rc::new(RefCell::new(Box::new([

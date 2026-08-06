@@ -51,7 +51,7 @@ pub fn returns_zero_3() -> i32 {
     return 0;
 }
 pub fn main() {
-    std::process::exit(main_0());
+    libcc2rs::exit_refcount(main_0());
 }
 fn main_0() -> i32 {
     let n: Value<i32> = Rc::new(RefCell::new(3));

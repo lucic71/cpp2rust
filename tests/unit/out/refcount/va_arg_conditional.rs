@@ -18,7 +18,7 @@ pub fn conditional_log_0(verbose: i32, fmt: Ptr<u8>, __args: &[VaArg]) -> i32 {
     return -1_i32;
 }
 pub fn main() {
-    std::process::exit(main_0());
+    libcc2rs::exit_refcount(main_0());
 }
 fn main_0() -> i32 {
     assert!(

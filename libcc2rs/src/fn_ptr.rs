@@ -98,6 +98,13 @@ impl<T> FnPtr<T> {
         matches!(self.kind, FnPtrKind::Null)
     }
 
+    pub(crate) fn dangling_value(&self) -> Option<usize> {
+        match self.kind {
+            FnPtrKind::Dangling(value) => Some(value),
+            _ => None,
+        }
+    }
+
     pub fn from_int(value: usize) -> Self {
         if value == 0 {
             return Self::null();

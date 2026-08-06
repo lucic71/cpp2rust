@@ -75,7 +75,7 @@ impl ByteRepr for Holder {
     }
 }
 pub fn main() {
-    std::process::exit(main_0());
+    libcc2rs::exit_refcount(main_0());
 }
 fn main_0() -> i32 {
     ({ unused_param_0(42) });

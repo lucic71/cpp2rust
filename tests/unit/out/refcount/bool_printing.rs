@@ -13,7 +13,7 @@ pub fn bar_1() -> bool {
     return true;
 }
 pub fn main() {
-    std::process::exit(main_0());
+    libcc2rs::exit_refcount(main_0());
 }
 fn main_0() -> i32 {
     let i1: Value<i32> = Rc::new(RefCell::new(0));

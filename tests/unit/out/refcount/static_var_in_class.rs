@@ -57,7 +57,7 @@ impl ByteRepr for S {
     }
 }
 pub fn main() {
-    std::process::exit(main_0());
+    libcc2rs::exit_refcount(main_0());
 }
 fn main_0() -> i32 {
     let c: Value<C> = Rc::new(RefCell::new(<C>::default()));

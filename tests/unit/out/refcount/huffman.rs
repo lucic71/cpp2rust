@@ -463,7 +463,7 @@ pub fn HuffmanCodes_5(
     return (*out.borrow_mut()).take();
 }
 pub fn main() {
-    std::process::exit(main_0());
+    libcc2rs::exit_refcount(main_0());
 }
 fn main_0() -> i32 {
     let size: Value<i32> = Rc::new(RefCell::new(6));

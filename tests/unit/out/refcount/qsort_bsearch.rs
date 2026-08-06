@@ -18,7 +18,7 @@ pub fn cmp_int_0(a: AnyPtr, b: AnyPtr) -> i32 {
     return ((((*x.borrow()) > (*y.borrow())) as i32) - (((*x.borrow()) < (*y.borrow())) as i32));
 }
 pub fn main() {
-    std::process::exit(main_0());
+    libcc2rs::exit_refcount(main_0());
 }
 fn main_0() -> i32 {
     let arr: Value<Box<[i32]>> = Rc::new(RefCell::new(Box::new([5, 2, 9, 1, 7, 3, 8, 4])));

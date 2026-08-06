@@ -27,7 +27,7 @@ pub fn retry_0(n: i32) -> i32 {
     panic!("ub: non-void function does not return a value")
 }
 pub fn main() {
-    std::process::exit(main_0());
+    libcc2rs::exit_refcount(main_0());
 }
 fn main_0() -> i32 {
     assert!((((({ retry_0(4) }) == 12) as i32) != 0));

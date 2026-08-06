@@ -37,7 +37,7 @@ pub fn write_through_0(p: Ptr<i32>) {
     (*p.borrow()).write(42);
 }
 pub fn main() {
-    std::process::exit(main_0());
+    libcc2rs::exit_refcount(main_0());
 }
 fn main_0() -> i32 {
     let v: Value<Vec<i32>> = Rc::new(RefCell::new(Vec::new()));

@@ -145,7 +145,7 @@ impl ByteRepr for Container {
     }
 }
 pub fn main() {
-    std::process::exit(main_0());
+    libcc2rs::exit_refcount(main_0());
 }
 fn main_0() -> i32 {
     let p: Value<Point> = Rc::new(RefCell::new(Point { x: 10, y: 20 }));

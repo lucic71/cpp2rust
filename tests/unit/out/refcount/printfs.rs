@@ -20,7 +20,7 @@ pub fn fn2_1(v: Ptr<Vec<u8>>) -> Ptr<Vec<u8>> {
     return (v).clone();
 }
 pub fn main() {
-    std::process::exit(main_0());
+    libcc2rs::exit_refcount(main_0());
 }
 fn main_0() -> i32 {
     println!("{}", Ptr::from_string_literal(b"fprintf stdout"));

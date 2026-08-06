@@ -43,7 +43,7 @@ pub fn configure_0(h: Ptr<handle>, op: i32, __args: &[VaArg]) -> i32 {
     return (*rc.borrow());
 }
 pub fn main() {
-    std::process::exit(main_0());
+    libcc2rs::exit_refcount(main_0());
 }
 fn main_0() -> i32 {
     let h: Value<handle> = Rc::new(RefCell::new(handle { value: 0 }));

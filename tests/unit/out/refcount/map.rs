@@ -20,7 +20,7 @@ pub fn bar_1(x: Ptr<u32>) {
     };
 }
 pub fn main() {
-    std::process::exit(main_0());
+    libcc2rs::exit_refcount(main_0());
 }
 fn main_0() -> i32 {
     let m: Value<BTreeMap<i16, Value<u32>>> = Rc::new(RefCell::new(BTreeMap::new()));

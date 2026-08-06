@@ -61,7 +61,7 @@ thread_local!(
     pub static config_0: Value<Config> = <Value<Config>>::default();
 );
 pub fn main() {
-    std::process::exit(main_0());
+    libcc2rs::exit_refcount(main_0());
 }
 fn main_0() -> i32 {
     assert!(((((*config_0.with(Value::clone).borrow()).count == 0) as i32) != 0));

@@ -90,7 +90,7 @@ pub fn table_create_0(n: i32) -> Ptr<table> {
     return (*t.borrow()).clone();
 }
 pub fn main() {
-    std::process::exit(main_0());
+    libcc2rs::exit_refcount(main_0());
 }
 fn main_0() -> i32 {
     assert!((((4usize == 4_usize) as i32) != 0));

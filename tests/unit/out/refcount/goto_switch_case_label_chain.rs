@@ -31,7 +31,7 @@ pub fn pick_0(op: i32, x: i32) -> i32 {
     return (*r.borrow());
 }
 pub fn main() {
-    std::process::exit(main_0());
+    libcc2rs::exit_refcount(main_0());
 }
 fn main_0() -> i32 {
     assert!((((({ pick_0(1, 0) }) == 5) as i32) != 0));

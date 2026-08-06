@@ -33,7 +33,7 @@ pub fn bump_0(s: Ptr<pair>) -> i32 {
     return (*s.borrow()).with(|__v| (*__v).b);
 }
 pub fn main() {
-    std::process::exit(main_0());
+    libcc2rs::exit_refcount(main_0());
 }
 fn main_0() -> i32 {
     let s: Value<Ptr<pair>> = Rc::new(RefCell::new(

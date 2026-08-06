@@ -15,7 +15,7 @@ pub fn strlen_0(s: Ptr<u8>) -> usize {
     return (*count.borrow());
 }
 pub fn main() {
-    std::process::exit(main_0());
+    libcc2rs::exit_refcount(main_0());
 }
 fn main_0() -> i32 {
     let s: Value<Box<[u8]>> = Rc::new(RefCell::new(Box::new([

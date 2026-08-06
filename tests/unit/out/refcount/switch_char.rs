@@ -61,7 +61,7 @@ impl ByteRepr for Color {
     }
 }
 pub fn main() {
-    std::process::exit(main_0());
+    libcc2rs::exit_refcount(main_0());
 }
 fn main_0() -> i32 {
     assert!((({ switch_char_0(('a' as u8)) }) == 1));

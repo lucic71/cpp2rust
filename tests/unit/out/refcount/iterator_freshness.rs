@@ -10,7 +10,7 @@ pub fn foo_0(a0: Ptr<i32>) {
     let a0: Value<Ptr<i32>> = Rc::new(RefCell::new(a0));
 }
 pub fn main() {
-    std::process::exit(main_0());
+    libcc2rs::exit_refcount(main_0());
 }
 fn main_0() -> i32 {
     let vec_: Value<Vec<i32>> = Rc::new(RefCell::new(

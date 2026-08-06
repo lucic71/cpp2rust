@@ -67,7 +67,7 @@ impl ByteRepr for holder {
     }
 }
 pub fn main() {
-    std::process::exit(main_0());
+    libcc2rs::exit_refcount(main_0());
 }
 fn main_0() -> i32 {
     let o: Value<Ptr<outer>> = Rc::new(RefCell::new(

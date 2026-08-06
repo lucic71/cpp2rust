@@ -11,7 +11,7 @@ pub fn escape_0(ptr: Ptr<i32>) {
     (*ptr.borrow()).delete();
 }
 pub fn main() {
-    std::process::exit(main_0());
+    libcc2rs::exit_refcount(main_0());
 }
 fn main_0() -> i32 {
     let alloc: Value<Ptr<i32>> = Rc::new(RefCell::new(Ptr::alloc(1)));

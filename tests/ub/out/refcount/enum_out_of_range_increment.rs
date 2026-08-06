@@ -37,7 +37,7 @@ impl ByteRepr for color {
     }
 }
 pub fn main() {
-    std::process::exit(main_0());
+    libcc2rs::exit_refcount(main_0());
 }
 fn main_0() -> i32 {
     let c: Value<color> = Rc::new(RefCell::new(color::BLUE));

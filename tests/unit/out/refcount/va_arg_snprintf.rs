@@ -20,7 +20,7 @@ pub fn extract_first_0(buf: Ptr<u8>, size: i32, fmt: Ptr<u8>, __args: &[VaArg]) 
     return (*n.borrow());
 }
 pub fn main() {
-    std::process::exit(main_0());
+    libcc2rs::exit_refcount(main_0());
 }
 fn main_0() -> i32 {
     let buf: Value<Box<[u8]>> = Rc::new(RefCell::new(

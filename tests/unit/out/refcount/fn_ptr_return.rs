@@ -22,7 +22,7 @@ pub fn pick_2(choose_inc: i32) -> FnPtr<fn(i32) -> i32> {
     return FnPtr::<fn(i32) -> i32>::new(dec_1);
 }
 pub fn main() {
-    std::process::exit(main_0());
+    libcc2rs::exit_refcount(main_0());
 }
 fn main_0() -> i32 {
     let f: Value<FnPtr<fn(i32) -> i32>> = Rc::new(RefCell::new(({ pick_2(1) })));

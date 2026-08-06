@@ -67,7 +67,7 @@ impl ByteRepr for Pair {
     }
 }
 pub fn main() {
-    std::process::exit(main_0());
+    libcc2rs::exit_refcount(main_0());
 }
 fn main_0() -> i32 {
     let pt: Value<Point> = Rc::new(RefCell::new(Point {

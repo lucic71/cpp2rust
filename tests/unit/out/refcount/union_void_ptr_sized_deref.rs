@@ -142,7 +142,7 @@ pub fn write_count_1(s: Ptr<Sink>, count: i64) {
     };
 }
 pub fn main() {
-    std::process::exit(main_0());
+    libcc2rs::exit_refcount(main_0());
 }
 fn main_0() -> i32 {
     let buf64: Value<i64> = Rc::new(RefCell::new(0_i64));

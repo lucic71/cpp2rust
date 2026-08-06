@@ -139,7 +139,7 @@ pub fn classify_2(mode: i32, v: i32) -> i32 {
     panic!("ub: non-void function does not return a value")
 }
 pub fn main() {
-    std::process::exit(main_0());
+    libcc2rs::exit_refcount(main_0());
 }
 fn main_0() -> i32 {
     assert!((((({ lookup_0((('a' as i32) as u8), -1_i32) }) == 11) as i32) != 0));

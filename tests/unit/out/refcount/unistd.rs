@@ -482,7 +482,7 @@ pub fn test_gethostname_11() {
     println!("{}", (name.as_pointer() as Ptr::<u8>));
 }
 pub fn main() {
-    std::process::exit(main_0());
+    libcc2rs::exit_refcount(main_0());
 }
 fn main_0() -> i32 {
     ({ test_close_0() });

@@ -123,7 +123,7 @@ pub fn del_2(node: Ptr<node_t>) {
     (*node.borrow()).delete();
 }
 pub fn main() {
-    std::process::exit(main_0());
+    libcc2rs::exit_refcount(main_0());
 }
 fn main_0() -> i32 {
     let root: Value<Ptr<node_t>> = Rc::new(RefCell::new(Ptr::alloc(node_t {

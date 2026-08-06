@@ -21,7 +21,7 @@ pub fn read_global_3() -> i32 {
     return (*value_0.with(Value::clone).borrow());
 }
 pub fn main() {
-    std::process::exit(main_0());
+    libcc2rs::exit_refcount(main_0());
 }
 fn main_0() -> i32 {
     assert!((((({ param_shadow_1(10) }) == 11) as i32) != 0));

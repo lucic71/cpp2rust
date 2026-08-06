@@ -18,7 +18,7 @@ pub fn fill_row_0(row: Ptr<u8>, c: u8) {
         .write((('\0' as i32) as u8));
 }
 pub fn main() {
-    std::process::exit(main_0());
+    libcc2rs::exit_refcount(main_0());
 }
 fn main_0() -> i32 {
     let grid: Value<Box<[Value<Box<[u8]>>]>> = Rc::new(RefCell::new(

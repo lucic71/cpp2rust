@@ -59,7 +59,7 @@ impl ByteRepr for WOFF2Params {
     }
 }
 pub fn main() {
-    std::process::exit(main_0());
+    libcc2rs::exit_refcount(main_0());
 }
 fn main_0() -> i32 {
     let params: Value<WOFF2Params> = Rc::new(RefCell::new(WOFF2Params::WOFF2Params()));

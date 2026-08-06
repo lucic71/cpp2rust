@@ -23,7 +23,7 @@ pub fn dowhile_0(x: i32) -> i32 {
     return (*x.borrow());
 }
 pub fn main() {
-    std::process::exit(main_0());
+    libcc2rs::exit_refcount(main_0());
 }
 fn main_0() -> i32 {
     return ({ dowhile_0(0) });

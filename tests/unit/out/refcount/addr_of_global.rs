@@ -77,7 +77,7 @@ thread_local!(
     }));
 );
 pub fn main() {
-    std::process::exit(main_0());
+    libcc2rs::exit_refcount(main_0());
 }
 fn main_0() -> i32 {
     assert!(((*items_3.with(Value::clone).borrow())[(0) as usize].with(|__v| (*__v).value) == 1));

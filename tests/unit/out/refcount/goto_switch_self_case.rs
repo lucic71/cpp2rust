@@ -26,7 +26,7 @@ pub fn sm_0(n: i32) -> i32 {
     return (*steps.borrow());
 }
 pub fn main() {
-    std::process::exit(main_0());
+    libcc2rs::exit_refcount(main_0());
 }
 fn main_0() -> i32 {
     assert!((((({ sm_0(0) }) == 1) as i32) != 0));

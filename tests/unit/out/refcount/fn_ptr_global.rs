@@ -30,7 +30,7 @@ pub fn call_op_4(x: i32) -> i32 {
     return (*x.borrow());
 }
 pub fn main() {
-    std::process::exit(main_0());
+    libcc2rs::exit_refcount(main_0());
 }
 fn main_0() -> i32 {
     assert!((({ call_op_4(5) }) == 5));

@@ -51,7 +51,7 @@ pub fn fatorial_by_ptr_2(n: Ptr<i32>) {
     };
 }
 pub fn main() {
-    std::process::exit(main_0());
+    libcc2rs::exit_refcount(main_0());
 }
 fn main_0() -> i32 {
     let n1: Value<i32> = Rc::new(RefCell::new(2));

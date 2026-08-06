@@ -46,7 +46,7 @@ impl ByteRepr for node_b {
     }
 }
 pub fn main() {
-    std::process::exit(main_0());
+    libcc2rs::exit_refcount(main_0());
 }
 fn main_0() -> i32 {
     let a: Value<node_a> = Rc::new(RefCell::new(node_a { n: 123 }));

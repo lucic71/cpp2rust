@@ -40,7 +40,7 @@ thread_local!(
     pub static size_2: Value<usize> = Rc::new(RefCell::new(0_usize));
 );
 pub fn main() {
-    std::process::exit(main_0());
+    libcc2rs::exit_refcount(main_0());
 }
 fn main_0() -> i32 {
     assert!((*s_0.with(Value::clone).borrow()).is_null());

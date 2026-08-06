@@ -17,7 +17,7 @@ pub fn smaller_0(x1: Ptr<i32>, x2: Ptr<i32>) -> Ptr<i32> {
     };
 }
 pub fn main() {
-    std::process::exit(main_0());
+    libcc2rs::exit_refcount(main_0());
 }
 fn main_0() -> i32 {
     let out: Value<Ptr<i32>> = Rc::new(RefCell::new(Ptr::<i32>::null()));

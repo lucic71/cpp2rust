@@ -31,7 +31,7 @@ pub fn mixed_return_break_0(x: i32) -> i32 {
     return (*r.borrow());
 }
 pub fn main() {
-    std::process::exit(main_0());
+    libcc2rs::exit_refcount(main_0());
 }
 fn main_0() -> i32 {
     assert!((({ mixed_return_break_0(0) }) == 100));

@@ -37,7 +37,7 @@ impl ByteRepr for Entry {
     }
 }
 pub fn main() {
-    std::process::exit(main_0());
+    libcc2rs::exit_refcount(main_0());
 }
 fn main_0() -> i32 {
     let table: Value<Box<[Entry]>> = Rc::new(RefCell::new(Box::new([

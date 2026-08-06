@@ -21,7 +21,7 @@ pub fn my_alternative_fwrite_1(p: Ptr<u8>, n: usize, m: usize, f: AnyPtr) -> usi
     return 33_usize;
 }
 pub fn main() {
-    std::process::exit(main_0());
+    libcc2rs::exit_refcount(main_0());
 }
 fn main_0() -> i32 {
     let fn1: Value<FnPtr<fn(AnyPtr, usize, usize, Ptr<CFile>) -> usize>> =
@@ -83,7 +83,7 @@ fn main_0() -> i32 {
             ((buf.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any().clone()
         };
         let n: Value<usize> = Rc::new(RefCell::new({
-            let __a0 = ((buf.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any();
+            let __a0 = ((buf.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any().clone();
             let __a1 = 1_usize;
             let __a2 = 10_usize;
             let __a3 = (*stream.borrow()).clone();
@@ -205,7 +205,7 @@ fn main_0() -> i32 {
             ((buf.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any().clone()
         };
         let n: Value<usize> = Rc::new(RefCell::new({
-            let __a0 = ((buf.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any();
+            let __a0 = ((buf.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any().clone();
             let __a1 = 1_usize;
             let __a2 = 10_usize;
             let __a3 = (*stream.borrow()).clone();

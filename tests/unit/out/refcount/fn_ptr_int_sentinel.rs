@@ -27,7 +27,7 @@ pub fn consume_2(data: AnyPtr, d: FnPtr<fn(AnyPtr)>) -> i32 {
     return 3;
 }
 pub fn main() {
-    std::process::exit(main_0());
+    libcc2rs::exit_refcount(main_0());
 }
 fn main_0() -> i32 {
     let x: Value<i32> = Rc::new(RefCell::new(7));

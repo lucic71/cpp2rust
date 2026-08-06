@@ -19,7 +19,7 @@ pub fn b_2() -> i32 {
     return (*i_3.with(Value::clone).borrow());
 }
 pub fn main() {
-    std::process::exit(main_0());
+    libcc2rs::exit_refcount(main_0());
 }
 fn main_0() -> i32 {
     assert!((({ a_0() }) == 1));

@@ -39,7 +39,7 @@ thread_local!(
     pub static p_zero_7: Value<Ptr<i32>> = Rc::new(RefCell::new(Ptr::<i32>::null()));
 );
 pub fn main() {
-    std::process::exit(main_0());
+    libcc2rs::exit_refcount(main_0());
 }
 fn main_0() -> i32 {
     assert!((*p_mut_0.with(Value::clone).borrow()).is_null());

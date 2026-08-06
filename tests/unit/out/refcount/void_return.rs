@@ -15,7 +15,7 @@ pub fn f1_0(first: Ptr<i32>, last: Ptr<i32>) {
     return;
 }
 pub fn main() {
-    std::process::exit(main_0());
+    libcc2rs::exit_refcount(main_0());
 }
 fn main_0() -> i32 {
     let v: Value<Vec<i32>> = Rc::new(RefCell::new(vec![1, 3, 0, 2, 8, 7]));

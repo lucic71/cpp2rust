@@ -42,7 +42,7 @@ pub fn write_val_1(h: Ptr<Holder>, v: i32) {
         .borrow_mut()) = (*v.borrow());
 }
 pub fn main() {
-    std::process::exit(main_0());
+    libcc2rs::exit_refcount(main_0());
 }
 fn main_0() -> i32 {
     let h: Value<Holder> = Rc::new(RefCell::new(<Holder>::default()));

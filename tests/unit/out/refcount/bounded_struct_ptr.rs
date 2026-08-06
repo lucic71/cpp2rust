@@ -37,7 +37,7 @@ impl ByteRepr for Foo {
     }
 }
 pub fn main() {
-    std::process::exit(main_0());
+    libcc2rs::exit_refcount(main_0());
 }
 fn main_0() -> i32 {
     let arr: Value<Box<[Foo]>> = Rc::new(RefCell::new(Box::new([

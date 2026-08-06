@@ -215,7 +215,7 @@ pub fn check_local_static_5() {
     assert!((*local_p_8.with(Value::clone).borrow()).is_null());
 }
 pub fn main() {
-    std::process::exit(main_0());
+    libcc2rs::exit_refcount(main_0());
 }
 fn main_0() -> i32 {
     assert!((*static_fn_0.with(Value::clone).borrow()).is_null());

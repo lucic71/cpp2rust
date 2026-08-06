@@ -30,7 +30,7 @@ pub fn a_value_0() -> i32 {
     return (*w.borrow()).id;
 }
 pub fn main() {
-    std::process::exit(main_0());
+    libcc2rs::exit_refcount(main_0());
 }
 fn main_0() -> i32 {
     assert!((((({ a_value_0() }) == 11) as i32) != 0));

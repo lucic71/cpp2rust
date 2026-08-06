@@ -40,7 +40,7 @@ pub fn total_1(x: Ptr<i32>, y: Ptr<i32>) -> i32 {
     };
 }
 pub fn main() {
-    std::process::exit(main_0());
+    libcc2rs::exit_refcount(main_0());
 }
 fn main_0() -> i32 {
     let s: Value<Ptr<u8>> = Rc::new(RefCell::new(Ptr::from_string_literal(b"abc")));

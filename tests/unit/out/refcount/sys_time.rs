@@ -298,7 +298,7 @@ pub fn test_strftime_5() {
     );
 }
 pub fn main() {
-    std::process::exit(main_0());
+    libcc2rs::exit_refcount(main_0());
 }
 fn main_0() -> i32 {
     ({ test_time_0() });

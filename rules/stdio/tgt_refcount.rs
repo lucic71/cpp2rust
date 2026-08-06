@@ -30,7 +30,7 @@ fn f4(a0: &mut CFile, a1: i64, a2: i32) -> i32 {
 }
 
 fn f5(a0: AnyPtr, a1: usize, a2: usize, a3: Ptr<CFile>) -> usize {
-    let __a0 = a0;
+    let __a0 = a0.clone();
     let __a1 = a1;
     let __a2 = a2;
     let __a3 = a3.clone();
@@ -38,7 +38,7 @@ fn f5(a0: AnyPtr, a1: usize, a2: usize, a3: Ptr<CFile>) -> usize {
 }
 
 fn f6(a0: AnyPtr, a1: usize, a2: usize, a3: Ptr<CFile>) -> usize {
-    let __a0 = a0;
+    let __a0 = a0.clone();
     let __a1 = a1;
     let __a2 = a2;
     let __a3 = a3.clone();

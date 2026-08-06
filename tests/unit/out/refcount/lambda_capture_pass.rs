@@ -17,7 +17,7 @@ pub fn apply_1(fn_: impl Fn(i32) -> i32, x: i32) -> i32 {
     return ({ (*fn_.borrow_mut())((*x.borrow())) });
 }
 pub fn main() {
-    std::process::exit(main_0());
+    libcc2rs::exit_refcount(main_0());
 }
 fn main_0() -> i32 {
     let base: Value<i32> = Rc::new(RefCell::new(10));

@@ -101,7 +101,7 @@ pub fn test_call_through_cast_5() {
     assert!(((*result.borrow()) == 142));
 }
 pub fn main() {
-    std::process::exit(main_0());
+    libcc2rs::exit_refcount(main_0());
 }
 fn main_0() -> i32 {
     ({ test_roundtrip_1() });

@@ -46,7 +46,7 @@ pub fn PODIncrement_0(pod: Ptr<POD>) {
     pod.with_mut(|__v| __v.x3 += 3);
 }
 pub fn main() {
-    std::process::exit(main_0());
+    libcc2rs::exit_refcount(main_0());
 }
 fn main_0() -> i32 {
     let p1: Value<POD> = Rc::new(RefCell::new(POD {

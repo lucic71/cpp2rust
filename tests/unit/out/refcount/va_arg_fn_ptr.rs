@@ -52,7 +52,7 @@ pub fn not_supported_5(ctx: AnyPtr, fn_: FnPtr<fn(i32) -> i32>, extra: AnyPtr) -
     return -3_i32;
 }
 pub fn main() {
-    std::process::exit(main_0());
+    libcc2rs::exit_refcount(main_0());
 }
 fn main_0() -> i32 {
     assert!(

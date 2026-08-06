@@ -40,7 +40,7 @@ pub fn route_0(op: i32, v: i32) -> i32 {
     return (*out.borrow());
 }
 pub fn main() {
-    std::process::exit(main_0());
+    libcc2rs::exit_refcount(main_0());
 }
 fn main_0() -> i32 {
     assert!((((({ route_0(1, 5) }) == 54) as i32) != 0));

@@ -50,7 +50,7 @@ pub fn add_b_0(f: Flags_enum) -> Flags_enum {
     return (*f.borrow());
 }
 pub fn main() {
-    std::process::exit(main_0());
+    libcc2rs::exit_refcount(main_0());
 }
 fn main_0() -> i32 {
     let f: Value<Flags_enum> = Rc::new(RefCell::new(Flags_enum::F_A));

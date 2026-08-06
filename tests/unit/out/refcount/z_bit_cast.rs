@@ -13,7 +13,7 @@ pub fn bit_cast_1(p: AnyPtr) {
     let p: Value<AnyPtr> = Rc::new(RefCell::new(p));
 }
 pub fn main() {
-    std::process::exit(main_0());
+    libcc2rs::exit_refcount(main_0());
 }
 fn main_0() -> i32 {
     let a1: Value<Box<[u32]>> = Rc::new(RefCell::new(Box::new([1_u32, 2_u32, 3_u32])));

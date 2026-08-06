@@ -26,7 +26,7 @@ pub fn no_default_0(x: i32) -> i32 {
     return (*r.borrow());
 }
 pub fn main() {
-    std::process::exit(main_0());
+    libcc2rs::exit_refcount(main_0());
 }
 fn main_0() -> i32 {
     assert!((({ no_default_0(7) }) == 1));

@@ -13,7 +13,7 @@ pub fn foo_const_1(str: Ptr<u8>) {
     let str: Value<Ptr<u8>> = Rc::new(RefCell::new(str));
 }
 pub fn main() {
-    std::process::exit(main_0());
+    libcc2rs::exit_refcount(main_0());
 }
 fn main_0() -> i32 {
     let mutable_strings: Value<Box<[Ptr<u8>]>> = Rc::new(RefCell::new(Box::new([

@@ -27,7 +27,7 @@ pub fn outer_1(count: i32, __args: &[VaArg]) -> i32 {
     return (*result.borrow());
 }
 pub fn main() {
-    std::process::exit(main_0());
+    libcc2rs::exit_refcount(main_0());
 }
 fn main_0() -> i32 {
     assert!((((({ outer_1(3, &[(10).into(), (20).into(), (30).into(),]) }) == 60) as i32) != 0));

@@ -81,7 +81,7 @@ pub fn registry_update_0(r: Ptr<registry>, field: field, __args: &[VaArg]) -> i3
     return (*result.borrow());
 }
 pub fn main() {
-    std::process::exit(main_0());
+    libcc2rs::exit_refcount(main_0());
 }
 fn main_0() -> i32 {
     let r: Value<registry> = Rc::new(RefCell::new(registry {

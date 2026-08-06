@@ -211,7 +211,7 @@ pub fn test_getpwuid_r_erange_3() {
     assert!(((((*result.borrow()).is_null()) as i32) != 0));
 }
 pub fn main() {
-    std::process::exit(main_0());
+    libcc2rs::exit_refcount(main_0());
 }
 fn main_0() -> i32 {
     ({ test_getpwuid_0() });

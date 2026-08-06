@@ -41,7 +41,7 @@ pub fn nested_1() -> i32 {
     return (*runs.borrow());
 }
 pub fn main() {
-    std::process::exit(main_0());
+    libcc2rs::exit_refcount(main_0());
 }
 fn main_0() -> i32 {
     assert!((((({ run_0() }) == 4) as i32) != 0));

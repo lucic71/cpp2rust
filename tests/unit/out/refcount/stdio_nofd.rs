@@ -71,7 +71,7 @@ pub fn test_fputc_fputs_0() {
     ])));
     assert!(
         ((({
-            let __a0 = ((buf.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any();
+            let __a0 = ((buf.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any().clone();
             let __a1 = 1_usize;
             let __a2 = 16_usize;
             let __a3 = (*fp.borrow()).clone();
@@ -371,7 +371,7 @@ pub fn test_freopen_3() {
     ])));
     assert!(
         ((({
-            let __a0 = ((buf.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any();
+            let __a0 = ((buf.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any().clone();
             let __a1 = 1_usize;
             let __a2 = 8_usize;
             let __a3 = (*fp2.borrow()).clone();
@@ -443,7 +443,7 @@ pub fn test_fseeko_4() {
     ])));
     assert!(
         ((({
-            let __a0 = ((buf.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any();
+            let __a0 = ((buf.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any().clone();
             let __a1 = 1_usize;
             let __a2 = 5_usize;
             let __a3 = (*fp.borrow()).clone();
@@ -586,7 +586,7 @@ pub fn test_setvbuf_6() {
     assert!((((libcc2rs::unlink_refcount((*path.borrow()).clone()) == 0) as i32) != 0));
 }
 pub fn main() {
-    std::process::exit(main_0());
+    libcc2rs::exit_refcount(main_0());
 }
 fn main_0() -> i32 {
     ({ test_fputc_fputs_0() });

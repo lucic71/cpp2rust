@@ -16,7 +16,7 @@ pub fn foo_1(fn_: FnPtr<fn(AnyPtr) -> i32>, pi: Ptr<i32>) -> i32 {
     return ({ (*(*fn_.borrow()))(((*pi.borrow()).clone() as Ptr<i32>).to_any()) });
 }
 pub fn main() {
-    std::process::exit(main_0());
+    libcc2rs::exit_refcount(main_0());
 }
 fn main_0() -> i32 {
     let fn_: Value<FnPtr<fn(AnyPtr) -> i32>> =

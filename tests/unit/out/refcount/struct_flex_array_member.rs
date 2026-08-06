@@ -59,7 +59,7 @@ pub fn peer_create_0(host: Ptr<u8>) -> Ptr<peer> {
     return (*p.borrow()).clone();
 }
 pub fn main() {
-    std::process::exit(main_0());
+    libcc2rs::exit_refcount(main_0());
 }
 fn main_0() -> i32 {
     let p: Value<Ptr<peer>> = Rc::new(RefCell::new(

@@ -263,7 +263,7 @@ pub fn foo_0(
     return 0;
 }
 pub fn main() {
-    std::process::exit(main_0());
+    libcc2rs::exit_refcount(main_0());
 }
 fn main_0() -> i32 {
     let s: Value<S> = Rc::new(RefCell::new(S {

@@ -118,3 +118,11 @@ fn f12(a0: Ptr<u8>) -> i32 {
         .parse::<i64>()
         .map_or(0, |__v| __v.clamp(i32::MIN as i64, i32::MAX as i64) as i32)
 }
+
+fn f15(a0: FnPtr<fn()>) -> i32 {
+    libcc2rs::atexit_refcount(a0.clone())
+}
+
+fn f11(a0: i32) {
+    libcc2rs::exit_refcount(a0);
+}

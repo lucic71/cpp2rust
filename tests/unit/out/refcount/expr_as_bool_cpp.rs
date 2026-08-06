@@ -21,7 +21,7 @@ pub fn both_null_2(s1: Ptr<u8>, s2: Ptr<u8>) -> i32 {
     return ((((*s1.borrow()).is_null()) && ((*s2.borrow()).is_null())) as i32);
 }
 pub fn main() {
-    std::process::exit(main_0());
+    libcc2rs::exit_refcount(main_0());
 }
 fn main_0() -> i32 {
     let a: Value<i32> = Rc::new(RefCell::new(0));

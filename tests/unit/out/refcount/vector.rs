@@ -10,7 +10,7 @@ pub fn copy_0(copy_vector: Vec<i32>) {
     let copy_vector: Value<Vec<i32>> = Rc::new(RefCell::new(copy_vector));
 }
 pub fn main() {
-    std::process::exit(main_0());
+    libcc2rs::exit_refcount(main_0());
 }
 fn main_0() -> i32 {
     let v1: Value<Vec<i32>> = Rc::new(RefCell::new(Vec::new()));

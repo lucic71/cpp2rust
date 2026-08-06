@@ -7,7 +7,7 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
 pub fn main() {
-    std::process::exit(main_0());
+    libcc2rs::exit_refcount(main_0());
 }
 fn main_0() -> i32 {
     let arr: Value<Box<[u8]>> = Rc::new(RefCell::new(Box::new([10_u8, 20_u8, 30_u8, 40_u8])));

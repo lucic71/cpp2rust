@@ -25,7 +25,7 @@ pub fn stacked_with_inner_fallthrough_0(x: i32, flag: i32) -> i32 {
     return (*r.borrow());
 }
 pub fn main() {
-    std::process::exit(main_0());
+    libcc2rs::exit_refcount(main_0());
 }
 fn main_0() -> i32 {
     assert!((({ stacked_with_inner_fallthrough_0(1, 0) }) == 50));

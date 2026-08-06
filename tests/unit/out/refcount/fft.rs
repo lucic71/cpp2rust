@@ -203,7 +203,7 @@ pub fn fft_3(a: Ptr<Option<Value<Box<[Complex]>>>>, N: i32) -> Option<Value<Box<
     return (*y.borrow_mut()).take();
 }
 pub fn main() {
-    std::process::exit(main_0());
+    libcc2rs::exit_refcount(main_0());
 }
 fn main_0() -> i32 {
     let N: Value<i32> = Rc::new(RefCell::new(4));

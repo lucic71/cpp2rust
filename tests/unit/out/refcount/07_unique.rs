@@ -12,7 +12,7 @@ pub fn fn_0(u: Option<Value<i32>>) -> Option<Value<i32>> {
     return (*u.borrow_mut()).take();
 }
 pub fn main() {
-    std::process::exit(main_0());
+    libcc2rs::exit_refcount(main_0());
 }
 fn main_0() -> i32 {
     let f: Value<Option<Value<i32>>> = Rc::new(RefCell::new(Some(Rc::new(RefCell::new(8)))));

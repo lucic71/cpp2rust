@@ -37,7 +37,7 @@ impl ByteRepr for Code {
     }
 }
 pub fn main() {
-    std::process::exit(main_0());
+    libcc2rs::exit_refcount(main_0());
 }
 fn main_0() -> i32 {
     let code: Value<Code> = Rc::new(RefCell::new(Code::CODE_OK));

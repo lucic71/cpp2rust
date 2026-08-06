@@ -40,7 +40,7 @@ pub fn reduce_0(rule: i32, v: i32) -> i32 {
     return (*acc.borrow());
 }
 pub fn main() {
-    std::process::exit(main_0());
+    libcc2rs::exit_refcount(main_0());
 }
 fn main_0() -> i32 {
     assert!((((({ reduce_0(0, 5) }) == 11) as i32) != 0));

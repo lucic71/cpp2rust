@@ -43,7 +43,7 @@ pub fn Compare_0(a: Ptr<Item>, b: Ptr<Item>) -> bool {
     };
 }
 pub fn main() {
-    std::process::exit(main_0());
+    libcc2rs::exit_refcount(main_0());
 }
 fn main_0() -> i32 {
     let v: Value<Vec<Item>> = Rc::new(RefCell::new(Vec::new()));

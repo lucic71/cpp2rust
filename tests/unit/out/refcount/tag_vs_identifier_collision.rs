@@ -242,7 +242,7 @@ pub fn is_active_0(w: Ptr<widget>) -> i32 {
         == ((widget_enum::MODE_ACTIVE as i32) as u32)) as i32);
 }
 pub fn main() {
-    std::process::exit(main_0());
+    libcc2rs::exit_refcount(main_0());
 }
 fn main_0() -> i32 {
     let w: Value<widget> = <Value<widget>>::default();

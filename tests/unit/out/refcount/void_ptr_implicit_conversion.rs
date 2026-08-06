@@ -16,7 +16,7 @@ pub fn bump_0(arg: AnyPtr) -> i32 {
     return ((*value.borrow()).read());
 }
 pub fn main() {
-    std::process::exit(main_0());
+    libcc2rs::exit_refcount(main_0());
 }
 fn main_0() -> i32 {
     let value: Value<i32> = Rc::new(RefCell::new(41));

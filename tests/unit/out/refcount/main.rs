@@ -20,7 +20,7 @@ pub fn main() {
             .collect(),
     ));
     (*argv.borrow_mut()).push(Ptr::null());
-    ::std::process::exit(main_0(::std::env::args().len() as i32, argv.as_pointer()));
+    libcc2rs::exit_refcount(main_0(::std::env::args().len() as i32, argv.as_pointer()));
 }
 fn main_0(argc: i32, argv: Ptr<Ptr<u8>>) -> i32 {
     let argc: Value<i32> = Rc::new(RefCell::new(argc));

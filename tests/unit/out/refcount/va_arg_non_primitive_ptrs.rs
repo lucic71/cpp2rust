@@ -99,7 +99,7 @@ pub fn dispatch_0(option: i32, __args: &[VaArg]) -> i32 {
     return (*result.borrow());
 }
 pub fn main() {
-    std::process::exit(main_0());
+    libcc2rs::exit_refcount(main_0());
 }
 fn main_0() -> i32 {
     let s: Value<Ptr<u8>> = Rc::new(RefCell::new(Ptr::<u8>::null()));

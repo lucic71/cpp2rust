@@ -44,7 +44,7 @@ pub fn emit_after_skip_1(out: Ptr<CFile>, fmt: Ptr<u8>, __args: &[VaArg]) -> i32
     return ((*rc.borrow()) + (*skipped.borrow()));
 }
 pub fn main() {
-    std::process::exit(main_0());
+    libcc2rs::exit_refcount(main_0());
 }
 fn main_0() -> i32 {
     let path: Value<Ptr<u8>> = Rc::new(RefCell::new(Ptr::from_string_literal(
@@ -125,7 +125,7 @@ fn main_0() -> i32 {
     ])));
     assert!(
         ((({
-            let __a0 = ((buf.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any();
+            let __a0 = ((buf.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any().clone();
             let __a1 = 1_usize;
             let __a2 = 32_usize;
             let __a3 = (*fp.borrow()).clone();

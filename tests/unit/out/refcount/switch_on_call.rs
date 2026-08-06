@@ -32,7 +32,7 @@ pub fn switch_on_call_1(x: i32) -> i32 {
     panic!("ub: non-void function does not return a value")
 }
 pub fn main() {
-    std::process::exit(main_0());
+    libcc2rs::exit_refcount(main_0());
 }
 fn main_0() -> i32 {
     assert!((({ switch_on_call_1(0) }) == 100));

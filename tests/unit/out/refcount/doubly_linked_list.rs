@@ -142,7 +142,7 @@ pub fn Tail_4(head: Ptr<Node>) -> Ptr<Node> {
     return (*curr.borrow()).clone();
 }
 pub fn main() {
-    std::process::exit(main_0());
+    libcc2rs::exit_refcount(main_0());
 }
 fn main_0() -> i32 {
     let n0: Value<Node> = Rc::new(RefCell::new(Node {

@@ -108,7 +108,7 @@ pub fn foo_1(x1: i32, x2: Ptr<i32>, x3: Ptr<i32>, p2: Ptr<Pair>, p3: Ptr<Pair>) 
     let p3: Value<Ptr<Pair>> = Rc::new(RefCell::new(p3));
 }
 pub fn main() {
-    std::process::exit(main_0());
+    libcc2rs::exit_refcount(main_0());
 }
 fn main_0() -> i32 {
     let x1: Value<i32> = Rc::new(RefCell::new(1));

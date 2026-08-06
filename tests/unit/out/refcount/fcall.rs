@@ -43,7 +43,7 @@ pub fn f1_2(x: f64, y: f64) -> f64 {
     return ({ f2_0((*z1.borrow()), (*x.borrow())) });
 }
 pub fn main() {
-    std::process::exit(main_0());
+    libcc2rs::exit_refcount(main_0());
 }
 fn main_0() -> i32 {
     return (({ f1_2(1.0E+0, 2.0E+0) }) as i32);

@@ -59,7 +59,7 @@ pub fn pmax_long_7(a: i64, b: i64) -> i64 {
     };
 }
 pub fn main() {
-    std::process::exit(main_0());
+    libcc2rs::exit_refcount(main_0());
 }
 fn main_0() -> i32 {
     assert!((((({ scaleA_0(5) }) == 10) as i32) != 0));

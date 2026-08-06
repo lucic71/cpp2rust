@@ -21,7 +21,7 @@ pub fn sub_signed_2(a: isize, b: isize) -> isize {
     return ((*a.borrow()) - (*b.borrow()));
 }
 pub fn main() {
-    std::process::exit(main_0());
+    libcc2rs::exit_refcount(main_0());
 }
 fn main_0() -> i32 {
     let n: Value<usize> = Rc::new(RefCell::new(

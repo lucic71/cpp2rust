@@ -27,7 +27,7 @@ pub fn sum_mixed_0(count: i32, __args: &[VaArg]) -> i32 {
     return (*total.borrow());
 }
 pub fn main() {
-    std::process::exit(main_0());
+    libcc2rs::exit_refcount(main_0());
 }
 fn main_0() -> i32 {
     assert!(

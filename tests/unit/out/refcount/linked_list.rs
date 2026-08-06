@@ -98,7 +98,7 @@ pub fn Delete_2(head: Ptr<Node>, val: i32) -> Ptr<Node> {
     return (*head.borrow()).clone();
 }
 pub fn main() {
-    std::process::exit(main_0());
+    libcc2rs::exit_refcount(main_0());
 }
 fn main_0() -> i32 {
     let n0: Value<Node> = Rc::new(RefCell::new(Node {

@@ -97,7 +97,7 @@ impl ByteRepr for Event {
     }
 }
 pub fn main() {
-    std::process::exit(main_0());
+    libcc2rs::exit_refcount(main_0());
 }
 fn main_0() -> i32 {
     let dummy: Value<i32> = Rc::new(RefCell::new(0));

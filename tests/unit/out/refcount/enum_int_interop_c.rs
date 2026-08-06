@@ -183,7 +183,7 @@ pub fn make_color_6(n: i32) -> Color {
     return Color::from((*n.borrow()));
 }
 pub fn main() {
-    std::process::exit(main_0());
+    libcc2rs::exit_refcount(main_0());
 }
 fn main_0() -> i32 {
     let c: Value<Color> = Rc::new(RefCell::new(Color::RED));

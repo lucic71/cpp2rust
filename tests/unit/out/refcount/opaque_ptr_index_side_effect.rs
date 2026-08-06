@@ -42,7 +42,7 @@ pub fn store_0(p: AnyPtr, c: u8) {
     (*b.borrow()).with_mut(|__v| __v.buf[(__v.idx.postfix_inc()) as usize] = (*c.borrow()));
 }
 pub fn main() {
-    std::process::exit(main_0());
+    libcc2rs::exit_refcount(main_0());
 }
 fn main_0() -> i32 {
     let b: Value<Ptr<bin>> = Rc::new(RefCell::new(

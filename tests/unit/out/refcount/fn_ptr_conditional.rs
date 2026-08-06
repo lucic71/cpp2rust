@@ -42,7 +42,7 @@ pub fn apply_4(fn_: FnPtr<fn(i32) -> i32>, x: i32) -> i32 {
     return ({ (*(*actual.borrow()))((*x.borrow())) });
 }
 pub fn main() {
-    std::process::exit(main_0());
+    libcc2rs::exit_refcount(main_0());
 }
 fn main_0() -> i32 {
     assert!((({ (*({ pick_3(1) }))(10) }) == 11));

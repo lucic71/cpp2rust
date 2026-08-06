@@ -12,7 +12,7 @@ pub fn dangling_0() -> Ptr<i32> {
     return (*p.borrow()).clone();
 }
 pub fn main() {
-    std::process::exit(main_0());
+    libcc2rs::exit_refcount(main_0());
 }
 fn main_0() -> i32 {
     let x: Value<Ptr<i32>> = Rc::new(RefCell::new(({ dangling_0() })));

@@ -41,7 +41,7 @@ impl ByteRepr for sink {
     }
 }
 pub fn main() {
-    std::process::exit(main_0());
+    libcc2rs::exit_refcount(main_0());
 }
 fn main_0() -> i32 {
     assert!((((({ fileno_0((libcc2rs::c_stdout()).clone()) }) == 42) as i32) != 0));

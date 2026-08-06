@@ -13,7 +13,7 @@ pub fn function_0(y: i32, z: i32) -> i32 {
     return (((*x.borrow()) + (*y.borrow())) + (*z.borrow()));
 }
 pub fn main() {
-    std::process::exit(main_0());
+    libcc2rs::exit_refcount(main_0());
 }
 fn main_0() -> i32 {
     let y: Value<i32> = Rc::new(RefCell::new(({ function_0(10, 1) })));

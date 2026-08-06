@@ -2791,12 +2791,12 @@ pub fn main() {{
         argv.iter().map(|x| {{ x.borrow_mut().push(0); x.as_pointer() }}).collect(),
     ));
     (*argv.borrow_mut()).push(Ptr::null());
-    ::std::process::exit({}(::std::env::args().len() as i32,
+    libcc2rs::exit_refcount({}(::std::env::args().len() as i32,
                                 argv.as_pointer()));
 }})",
                             main_function_name));
   }
-  return Text(std::format("pub fn main() {{ std::process::exit({}()); }}",
+  return Text(std::format("pub fn main() {{ libcc2rs::exit_refcount({}()); }}",
                           main_function_name));
 }
 

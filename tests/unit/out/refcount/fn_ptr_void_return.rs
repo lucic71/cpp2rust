@@ -23,7 +23,7 @@ pub fn run_2(fn_: FnPtr<fn(Ptr<i32>)>, x: Ptr<i32>) {
     ({ (*(*fn_.borrow()))((*x.borrow()).clone()) });
 }
 pub fn main() {
-    std::process::exit(main_0());
+    libcc2rs::exit_refcount(main_0());
 }
 fn main_0() -> i32 {
     let a: Value<i32> = Rc::new(RefCell::new(42));

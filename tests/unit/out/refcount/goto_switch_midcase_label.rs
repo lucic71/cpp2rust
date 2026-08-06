@@ -39,7 +39,7 @@ pub fn classify_0(kind: i32, x: i32) -> i32 {
     return (*width.borrow());
 }
 pub fn main() {
-    std::process::exit(main_0());
+    libcc2rs::exit_refcount(main_0());
 }
 fn main_0() -> i32 {
     assert!((((({ classify_0(0, 4) }) == 9) as i32) != 0));

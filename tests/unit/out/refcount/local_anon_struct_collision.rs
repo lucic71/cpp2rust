@@ -61,7 +61,7 @@ pub fn second_2() -> i32 {
     return (((*q.borrow()).a + (*q.borrow()).b) as i32);
 }
 pub fn main() {
-    std::process::exit(main_0());
+    libcc2rs::exit_refcount(main_0());
 }
 fn main_0() -> i32 {
     assert!((((({ first_0() }) == 3) as i32) != 0));

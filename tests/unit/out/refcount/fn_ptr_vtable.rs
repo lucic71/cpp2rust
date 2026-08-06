@@ -66,7 +66,7 @@ pub fn int_destroy_3(p: AnyPtr) {
     (*p.borrow()).reinterpret_cast::<i32>().write(0);
 }
 pub fn main() {
-    std::process::exit(main_0());
+    libcc2rs::exit_refcount(main_0());
 }
 fn main_0() -> i32 {
     let vt: Value<Vtable> = Rc::new(RefCell::new(Vtable {

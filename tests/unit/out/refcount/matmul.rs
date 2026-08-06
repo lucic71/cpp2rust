@@ -83,7 +83,7 @@ pub fn matmul_1(
     return (*m3.borrow_mut()).take();
 }
 pub fn main() {
-    std::process::exit(main_0());
+    libcc2rs::exit_refcount(main_0());
 }
 fn main_0() -> i32 {
     let n: Value<i32> = Rc::new(RefCell::new(1));

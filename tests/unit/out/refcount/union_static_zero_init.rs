@@ -167,7 +167,7 @@ pub fn get_rec_5() -> Ptr<Rec> {
     return (dummy_6.with(Value::clone).as_pointer());
 }
 pub fn main() {
-    std::process::exit(main_0());
+    libcc2rs::exit_refcount(main_0());
 }
 fn main_0() -> i32 {
     assert!(((((*zeroRec_1.with(Value::clone).borrow()).kind == 0) as i32) != 0));

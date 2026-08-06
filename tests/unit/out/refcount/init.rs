@@ -34,7 +34,7 @@ pub fn func_0() -> i32 {
     return 42;
 }
 pub fn main() {
-    std::process::exit(main_0());
+    libcc2rs::exit_refcount(main_0());
 }
 fn main_0() -> i32 {
     let x: Value<i32> = <Value<i32>>::default();

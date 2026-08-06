@@ -53,7 +53,7 @@ pub fn fn_0(v: Ptr<Vec<i32>>, v3: Vec<i32>) {
     v.with_mut(|__v: &mut Vec<i32>| __v.push(20));
 }
 pub fn main() {
-    std::process::exit(main_0());
+    libcc2rs::exit_refcount(main_0());
 }
 fn main_0() -> i32 {
     let v: Value<Vec<i32>> = Rc::new(RefCell::new(Vec::new()));

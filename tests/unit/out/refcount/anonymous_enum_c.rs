@@ -158,7 +158,7 @@ impl ByteRepr for WithAnonField {
     }
 }
 pub fn main() {
-    std::process::exit(main_0());
+    libcc2rs::exit_refcount(main_0());
 }
 fn main_0() -> i32 {
     #[derive(Clone, Copy, PartialEq, Debug, Default)]

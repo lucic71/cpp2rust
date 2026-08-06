@@ -19,7 +19,7 @@ pub fn a_bar_3() -> i32 {
     return (*same_name_same_type_1.with(Value::clone).borrow());
 }
 pub fn main() {
-    std::process::exit(main_0());
+    libcc2rs::exit_refcount(main_0());
 }
 fn main_0() -> i32 {
     assert!((((({ a_foo_2() }) == 1) as i32) != 0));

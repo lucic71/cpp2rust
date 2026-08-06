@@ -28,7 +28,7 @@ impl ByteRepr for point {
     }
 }
 pub fn main() {
-    std::process::exit(main_0());
+    libcc2rs::exit_refcount(main_0());
 }
 fn main_0() -> i32 {
     let src: Value<point> = Rc::new(RefCell::new(point { x: 3, y: 7 }));

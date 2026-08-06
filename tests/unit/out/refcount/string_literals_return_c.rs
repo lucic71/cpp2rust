@@ -20,7 +20,7 @@ pub fn get_branch_2(x: i32) -> Ptr<u8> {
     return Ptr::from_string_literal(b"non-positive");
 }
 pub fn main() {
-    std::process::exit(main_0());
+    libcc2rs::exit_refcount(main_0());
 }
 fn main_0() -> i32 {
     let a: Value<Ptr<u8>> = Rc::new(RefCell::new(({ get_greeting_0() })));

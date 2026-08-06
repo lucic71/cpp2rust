@@ -73,7 +73,7 @@ pub fn foo_0(x: Ptr<i32>) -> Ptr<i32> {
     return (x).clone();
 }
 pub fn main() {
-    std::process::exit(main_0());
+    libcc2rs::exit_refcount(main_0());
 }
 fn main_0() -> i32 {
     let struct_with_ctor: Value<StructWithCtor> =

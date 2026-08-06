@@ -65,7 +65,7 @@ pub fn scan_0(s: Ptr<u8>, start_inside: i32) -> i32 {
     panic!("ub: non-void function does not return a value")
 }
 pub fn main() {
-    std::process::exit(main_0());
+    libcc2rs::exit_refcount(main_0());
 }
 fn main_0() -> i32 {
     assert!((((({ scan_0(Ptr::from_string_literal(b""), 0) }) == 0) as i32) != 0));

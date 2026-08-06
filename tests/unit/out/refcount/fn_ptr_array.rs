@@ -22,7 +22,7 @@ pub fn mul_2(a: i32, b: i32) -> i32 {
     return ((*a.borrow()) * (*b.borrow()));
 }
 pub fn main() {
-    std::process::exit(main_0());
+    libcc2rs::exit_refcount(main_0());
 }
 fn main_0() -> i32 {
     let ops: Value<Box<[FnPtr<fn(i32, i32) -> i32>]>> = Rc::new(RefCell::new(Box::new([

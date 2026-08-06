@@ -134,6 +134,8 @@ pub mod rustls_tgt_unsafe;
 pub mod select_tgt_refcount;
 #[path = r#"../select/tgt_unsafe.rs"#]
 pub mod select_tgt_unsafe;
+#[path = r#"../signal/tgt_refcount.rs"#]
+pub mod signal_tgt_refcount;
 #[path = r#"../signal/tgt_unsafe.rs"#]
 pub mod signal_tgt_unsafe;
 #[path = r#"../socket/tgt_refcount.rs"#]
