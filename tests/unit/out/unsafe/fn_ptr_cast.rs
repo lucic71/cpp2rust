@@ -60,6 +60,20 @@ pub unsafe fn test_call_through_cast_5() {
     });
     assert!(((result) == (142)));
 }
+pub static mut tick_count_6: i32 = unsafe { 0 };
+pub unsafe fn tick_7() -> i32 {
+    tick_count_6.postfix_inc();
+    return tick_count_6;
+}
+pub unsafe fn test_return_dropping_cast_8() {
+    let mut g: Option<unsafe fn()> =
+        std::mem::transmute::<Option<unsafe fn() -> i32>, Option<unsafe fn()>>(Some(tick_7));
+    assert!(!((g).is_none()));
+    let mut t: Option<unsafe fn() -> i32> =
+        std::mem::transmute::<Option<unsafe fn()>, Option<unsafe fn() -> i32>>(g);
+    assert!(((unsafe { (t).unwrap()() }) == (1)));
+    assert!(((t) == (Some(tick_7))));
+}
 pub fn main() {
     unsafe {
         std::process::exit(main_0() as i32);
@@ -70,5 +84,6 @@ unsafe fn main_0() -> i32 {
     (unsafe { test_double_cast_2() });
     (unsafe { test_void_ptr_to_fn_3() });
     (unsafe { test_call_through_cast_5() });
+    (unsafe { test_return_dropping_cast_8() });
     return 0;
 }

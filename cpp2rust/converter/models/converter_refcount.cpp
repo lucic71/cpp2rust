@@ -225,7 +225,12 @@ RsExpr *ConverterRefCount::BuildFnAdapter(
     }
     parts.push_back(Text(','));
   }
-  parts.push_back(Text(") })"));
+  if (target_proto->getReturnType()->isVoidType() &&
+      !src_fn->getReturnType()->isVoidType()) {
+    parts.push_back(Text("); })"));
+  } else {
+    parts.push_back(Text(") })"));
+  }
 
   parts.push_back(Text("as"));
   parts.push_back(ConvertFunctionPointerType(target_proto));

@@ -50,10 +50,25 @@ void test_call_through_cast() {
   assert(result == 142);
 }
 
+int tick_count = 0;
+int tick() {
+  tick_count++;
+  return tick_count;
+}
+
+void test_return_dropping_cast() {
+  generic_fn g = (generic_fn)tick;
+  assert(g != nullptr);
+  int (*t)() = (int (*)())g;
+  assert(t() == 1);
+  assert(t == tick);
+}
+
 int main() {
   test_roundtrip();
   test_double_cast();
   test_void_ptr_to_fn();
   test_call_through_cast();
+  test_return_dropping_cast();
   return 0;
 }

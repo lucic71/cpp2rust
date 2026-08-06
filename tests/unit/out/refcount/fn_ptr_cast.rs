@@ -100,6 +100,31 @@ pub fn test_call_through_cast_5() {
     ));
     assert!(((*result.borrow()) == 142));
 }
+thread_local!(
+    pub static tick_count_6: Value<i32> = Rc::new(RefCell::new(0));
+);
+pub fn tick_7() -> i32 {
+    (*tick_count_6.with(Value::clone).borrow_mut()).postfix_inc();
+    return (*tick_count_6.with(Value::clone).borrow());
+}
+pub fn test_return_dropping_cast_8() {
+    let g: Value<FnPtr<fn()>> = Rc::new(RefCell::new(
+        FnPtr::<fn() -> i32>::new(tick_7).cast::<fn()>(Some(
+            (|| {
+                tick_7();
+            }) as fn(),
+        )),
+    ));
+    assert!(!((*g.borrow()).is_null()));
+    let t: Value<FnPtr<fn() -> i32>> = Rc::new(RefCell::new(
+        ((*g.borrow()).cast::<fn() -> i32>(None)).clone(),
+    ));
+    assert!((({ (*(*t.borrow()))() }) == 1));
+    assert!({
+        let _lhs = (*t.borrow()).clone();
+        _lhs == FnPtr::<fn() -> i32>::new(tick_7)
+    });
+}
 pub fn main() {
     libcc2rs::exit_refcount(main_0());
 }
@@ -108,5 +133,6 @@ fn main_0() -> i32 {
     ({ test_double_cast_2() });
     ({ test_void_ptr_to_fn_3() });
     ({ test_call_through_cast_5() });
+    ({ test_return_dropping_cast_8() });
     return 0;
 }
