@@ -126,3 +126,11 @@ fn f15(a0: FnPtr<fn()>) -> i32 {
 fn f11(a0: i32) {
     libcc2rs::exit_refcount(a0);
 }
+
+fn f13(a0: Ptr<u8>, a1: Ptr<Ptr<u8>>) -> f64 {
+    libcc2rs::strtod_refcount(a0.clone(), a1.clone())
+}
+
+fn f14(a0: Ptr<u8>, a1: Ptr<Ptr<u8>>, a2: i32) -> i64 {
+    libcc2rs::strtoll_refcount(a0.clone(), a1.clone(), a2)
+}

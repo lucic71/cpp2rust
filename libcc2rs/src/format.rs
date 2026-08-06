@@ -287,3 +287,130 @@ pub fn scan_c(input: &str, fmt: &str, va: &[VaArg]) -> i32 {
     }
     matched
 }
+
+use crate::rc::Ptr;
+
+pub fn strtoll_refcount(a0: Ptr<u8>, a1: Ptr<Ptr<u8>>, a2: i32) -> i64 {
+    let s = a0.to_rust_string();
+    let b = s.as_bytes();
+    let mut pos = 0;
+    while pos < b.len() && b[pos].is_ascii_whitespace() {
+        pos += 1;
+    }
+    let mut negative = false;
+    if pos < b.len() && (b[pos] == b'+' || b[pos] == b'-') {
+        negative = b[pos] == b'-';
+        pos += 1;
+    }
+    let mut base = a2 as u32;
+    let mut after_zero = None;
+    if base == 0 {
+        if b[pos..].starts_with(b"0x") || b[pos..].starts_with(b"0X") {
+            base = 16;
+        } else if pos < b.len() && b[pos] == b'0' {
+            base = 8;
+        } else {
+            base = 10;
+        }
+    }
+    if !(2..=36).contains(&base) {
+        crate::cpp2rust_errno().write(::libc::EINVAL);
+        if !a1.is_null() {
+            a1.write(a0.clone());
+        }
+        return 0;
+    }
+    if base == 16 && (b[pos..].starts_with(b"0x") || b[pos..].starts_with(b"0X")) {
+        after_zero = Some(pos + 1);
+        pos += 2;
+    }
+    let digits_start = pos;
+    while pos < b.len() && (b[pos] as char).to_digit(base).is_some() {
+        pos += 1;
+    }
+    if pos == digits_start {
+        match after_zero {
+            Some(end) => {
+                if !a1.is_null() {
+                    a1.write(a0.clone().offset(end as isize));
+                }
+                return 0;
+            }
+            None => {
+                if !a1.is_null() {
+                    a1.write(a0.clone());
+                }
+                return 0;
+            }
+        }
+    }
+    if !a1.is_null() {
+        a1.write(a0.clone().offset(pos as isize));
+    }
+    let num = match negative {
+        true => format!("-{}", &s[digits_start..pos]),
+        false => s[digits_start..pos].to_string(),
+    };
+    match i64::from_str_radix(&num, base) {
+        Ok(value) => value,
+        Err(e) => {
+            crate::cpp2rust_errno().write(::libc::ERANGE);
+            match e.kind() {
+                std::num::IntErrorKind::NegOverflow => i64::MIN,
+                _ => i64::MAX,
+            }
+        }
+    }
+}
+
+pub fn strtod_refcount(a0: Ptr<u8>, a1: Ptr<Ptr<u8>>) -> f64 {
+    let s = a0.to_rust_string();
+    let b = s.as_bytes();
+    let mut pos = 0;
+    while pos < b.len() && b[pos].is_ascii_whitespace() {
+        pos += 1;
+    }
+    let start = pos;
+    if pos < b.len() && (b[pos] == b'+' || b[pos] == b'-') {
+        pos += 1;
+    }
+    let int_start = pos;
+    while pos < b.len() && b[pos].is_ascii_digit() {
+        pos += 1;
+    }
+    let int_digits = pos - int_start;
+    let mut frac_digits = 0;
+    if pos < b.len() && b[pos] == b'.' {
+        pos += 1;
+        let frac_start = pos;
+        while pos < b.len() && b[pos].is_ascii_digit() {
+            pos += 1;
+        }
+        frac_digits = pos - frac_start;
+    }
+    if int_digits == 0 && frac_digits == 0 {
+        if !a1.is_null() {
+            a1.write(a0.clone());
+        }
+        return 0.0;
+    }
+    if pos < b.len() && (b[pos] == b'e' || b[pos] == b'E') {
+        let mut exp_pos = pos + 1;
+        if exp_pos < b.len() && (b[exp_pos] == b'+' || b[exp_pos] == b'-') {
+            exp_pos += 1;
+        }
+        let exp_start = exp_pos;
+        while exp_pos < b.len() && b[exp_pos].is_ascii_digit() {
+            exp_pos += 1;
+        }
+        if exp_pos > exp_start {
+            pos = exp_pos;
+        }
+    }
+    if !a1.is_null() {
+        a1.write(a0.clone().offset(pos as isize));
+    }
+    s[start..pos]
+        .parse::<f64>()
+        .expect("strtod: scanned prefix must parse")
+}
