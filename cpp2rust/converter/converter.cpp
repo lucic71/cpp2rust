@@ -3849,12 +3849,36 @@ RsExpr *Converter::VisitSwitchStmt(clang::SwitchStmt *stmt) {
   auto *node = arena_.New<Concat>(std::move(parts));
   auto *result = needs_switch_macro ? Cat(Text("switch!"), Parens(node))
                                     : Cat(Text("'switch:"), Braces(node));
-  if (flattened.empty()) {
-    return result;
-  }
+
   std::vector<RsExpr *> pre;
+  for (auto *child : body->body()) {
+    if (clang::isa<clang::SwitchCase>(child) ||
+        clang::isa<clang::LabelStmt>(child)) {
+      break;
+    }
+    auto *decl_stmt = clang::dyn_cast<clang::DeclStmt>(child);
+    if (decl_stmt == nullptr) {
+      continue;
+    }
+    for (auto *decl : decl_stmt->decls()) {
+      auto *var = clang::dyn_cast<clang::VarDecl>(decl);
+      if (var == nullptr || !var->isLocalVarDecl() || IsGlobalVar(var)) {
+        continue;
+      }
+      hoisted_decls_.insert(var);
+      auto [header, proceed] = ConvertVarDeclSkipInit(var);
+      if (proceed) {
+        pre.push_back(Cat(header, Text(token::kAssign),
+                          ConvertVarDefaultInit(var->getType()),
+                          Text(token::kSemiColon)));
+      }
+    }
+  }
   for (auto *compound : flattened) {
     pre.push_back(EmitHoistedDecls(compound));
+  }
+  if (pre.empty()) {
+    return result;
   }
   pre.push_back(result);
   return arena_.New<Concat>(std::move(pre));
