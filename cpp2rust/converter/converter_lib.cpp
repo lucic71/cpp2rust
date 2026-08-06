@@ -1100,8 +1100,9 @@ static void FlattenCaseCompound(std::vector<SwitchArm> &arms,
   }
 }
 
-static void AccumulateSwitchStmt(std::vector<SwitchArm> &arms, clang::Stmt *s,
-                                 std::vector<clang::CompoundStmt *> *flattened) {
+static void
+AccumulateSwitchStmt(std::vector<SwitchArm> &arms, clang::Stmt *s,
+                     std::vector<clang::CompoundStmt *> *flattened) {
   llvm::StringRef label;
   clang::Stmt *inner = s;
   if (auto *outer = clang::dyn_cast<clang::LabelStmt>(inner)) {

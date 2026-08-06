@@ -720,8 +720,8 @@ RsExpr *Converter::TryConvertFlattenedBody(clang::CompoundStmt *body) {
                             ConvertSwitchCaseCondition(sw_arms[i].head),
                             Braces(go(labels[i])), Text(token::kComma)));
       }
-      cases.push_back(Cat(Text("_ => "), Braces(go(default_label)),
-                          Text(token::kComma)));
+      cases.push_back(
+          Cat(Text("_ => "), Braces(go(default_label)), Text(token::kComma)));
       emit(Cat(Text("match"), ConvertExpr(sw->getCond()),
                Braces(arena_.New<Concat>(std::move(cases)))));
 
@@ -3366,11 +3366,11 @@ RsExpr *Converter::VisitInitListExpr(clang::InitListExpr *expr) {
       if (expr->getNumInits() == 0 || field == nullptr) {
         return GetDefaultAsString(qual_type);
       }
-      return Cat(Text(GetUnsafeTypeAsString(qual_type)),
-                 Braces(Cat(Text(GetNamedDeclAsString(field)),
-                            Text(token::kColon),
-                            ConvertVarInit(field->getType(), expr->getInit(0)),
-                            Text(token::kComma))));
+      return Cat(
+          Text(GetUnsafeTypeAsString(qual_type)),
+          Braces(Cat(Text(GetNamedDeclAsString(field)), Text(token::kColon),
+                     ConvertVarInit(field->getType(), expr->getInit(0)),
+                     Text(token::kComma))));
     }
 
     std::vector<RsExpr *> fields;

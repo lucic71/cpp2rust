@@ -4,7 +4,7 @@
 typedef void (*destructor_t)(void *);
 
 #define D_SENTILEN_1 ((destructor_t)0)
-#define D_SENTILEN_2 ((destructor_t)-1)
+#define D_SENTILEN_2 ((destructor_t) - 1)
 
 static int freed = 0;
 
