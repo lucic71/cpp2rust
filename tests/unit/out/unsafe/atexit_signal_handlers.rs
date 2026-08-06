@@ -24,13 +24,14 @@ pub fn main() {
 unsafe fn main_0() -> i32 {
     assert!(
         (((({
-            let __prev = libc::signal(
-                10,
-                std::mem::transmute::<*const (), unsafe extern "C" fn(i32)>(
-                    on_signal_1 as *const (),
-                ) as usize,
-            );
-            std::mem::transmute::<usize, unsafe fn(i32)>(__prev)
+            let __handler = match Some(on_signal_1) {
+                None => 0_usize,
+                Some(__f) => __f as usize,
+            };
+            match libc::signal(10, __handler) {
+                0 => None,
+                __prev => Some(std::mem::transmute::<usize, unsafe fn(i32)>(__prev)),
+            }
         })
         .is_none()) as i32)
             != 0)
@@ -39,26 +40,27 @@ unsafe fn main_0() -> i32 {
     assert!(((((got_0) == (10)) as i32) != 0));
     got_0 = 0;
     let mut prev: Option<unsafe fn(i32)> = {
-        let __prev = libc::signal(
-            10,
-            std::mem::transmute::<*const (), unsafe extern "C" fn(i32)>(
-                (std::mem::transmute::<usize, Option<unsafe fn(i32)>>((1 as usize))) as *const (),
-            ) as usize,
-        );
-        std::mem::transmute::<usize, unsafe fn(i32)>(__prev)
+        let __handler = match (std::mem::transmute::<usize, Option<unsafe fn(i32)>>((1 as usize))) {
+            None => 0_usize,
+            Some(__f) => __f as usize,
+        };
+        match libc::signal(10, __handler) {
+            0 => None,
+            __prev => Some(std::mem::transmute::<usize, unsafe fn(i32)>(__prev)),
+        }
     };
     assert!(((((prev) == (Some(on_signal_1))) as i32) != 0));
     assert!(((((libc::raise(10)) == (0)) as i32) != 0));
     assert!(((((got_0) == (0)) as i32) != 0));
     assert!(
         ((((libc::atexit(std::mem::transmute::<*const (), extern "C" fn()>(
-            first_exit_2 as *const (),
+            Some(first_exit_2).expect("atexit: null handler") as *const (),
         ))) == (0)) as i32)
             != 0)
     );
     assert!(
         ((((libc::atexit(std::mem::transmute::<*const (), extern "C" fn()>(
-            second_exit_3 as *const (),
+            Some(second_exit_3).expect("atexit: null handler") as *const (),
         ))) == (0)) as i32)
             != 0)
     );

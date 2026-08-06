@@ -1545,7 +1545,8 @@ RsExpr *ConverterRefCount::EmitFnPtrCall(clang::Expr *callee) {
   return Cat(Text("(*"), ConvertExpr(callee), Text(')'));
 }
 
-RsExpr *ConverterRefCount::ConvertFunctionPointerPlaceholder(clang::Expr *arg) {
+RsExpr *ConverterRefCount::ConvertFunctionPointerPlaceholder(
+    clang::Expr *arg, [[maybe_unused]] std::string_view param_type) {
   return ConvertRValue(arg);
 }
 

@@ -9,10 +9,13 @@ unsafe fn f2(a0: i32) -> i32 {
     libc::raise(a0)
 }
 
-unsafe fn f3(a0: i32, a1: unsafe fn(i32)) -> unsafe fn(i32) {
-    let __prev = libc::signal(
-        a0,
-        std::mem::transmute::<*const (), unsafe extern "C" fn(i32)>(a1 as *const ()) as usize,
-    );
-    std::mem::transmute::<usize, unsafe fn(i32)>(__prev)
+unsafe fn f3(a0: i32, a1: Option<unsafe fn(i32)>) -> Option<unsafe fn(i32)> {
+    let __handler = match a1 {
+        None => 0_usize,
+        Some(__f) => __f as usize,
+    };
+    match libc::signal(a0, __handler) {
+        0 => None,
+        __prev => Some(std::mem::transmute::<usize, unsafe fn(i32)>(__prev)),
+    }
 }

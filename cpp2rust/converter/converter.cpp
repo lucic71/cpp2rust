@@ -2193,7 +2193,11 @@ RsExpr *Converter::ConvertFunctionToFunctionPointer(
   return Text(std::format("Some({})", Mapper::MapFunctionName(fn_decl)));
 }
 
-RsExpr *Converter::ConvertFunctionPointerPlaceholder(clang::Expr *arg) {
+RsExpr *Converter::ConvertFunctionPointerPlaceholder(
+    clang::Expr *arg, std::string_view param_type) {
+  if (param_type.find("Option<") != std::string_view::npos) {
+    return ConvertRValue(arg);
+  }
   PushExprKind push(*this, ExprKind::Callee);
   return ConvertExpr(arg);
 }
@@ -4777,7 +4781,7 @@ void Converter::PlaceholderCtx::dump() const {
 RsExpr *Converter::ConvertPlaceholder(clang::Expr *expr, clang::Expr *arg,
                                       const PlaceholderCtx &ph_ctx) {
   if (arg->getType()->isFunctionPointerType()) {
-    return ConvertFunctionPointerPlaceholder(arg);
+    return ConvertFunctionPointerPlaceholder(arg, ph_ctx.param_type);
   }
 
   if (ph_ctx.declared_in_rule_as_rust_ptr && arg->getType()->isArrayType()) {

@@ -113,7 +113,8 @@ public:
   RsExpr *
   ConvertFunctionToFunctionPointer(const clang::FunctionDecl *fn_decl) override;
 
-  RsExpr *ConvertFunctionPointerPlaceholder(clang::Expr *arg) override;
+  RsExpr *ConvertFunctionPointerPlaceholder(clang::Expr *arg,
+                                            std::string_view param_type) override;
 
   // FnPtr does not implement Copy
   bool FunctionPointerImplementsCopy() const override { return false; }

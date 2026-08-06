@@ -28,10 +28,12 @@ unsafe fn main_0() -> i32 {
         (items.as_mut_ptr() as *mut ::libc::c_void),
         4_usize,
         ::std::mem::size_of::<*const libc::c_char>(),
-        Some(std::mem::transmute::<
-            *const (),
-            unsafe extern "C" fn(*const ::libc::c_void, *const ::libc::c_void) -> i32,
-        >(cmp_0 as *const ())),
+        Some(cmp_0).map(|__f| {
+            std::mem::transmute::<
+                *const (),
+                unsafe extern "C" fn(*const ::libc::c_void, *const ::libc::c_void) -> i32,
+            >(__f as *const ())
+        }),
     );
     assert!(
         ((((libc::strcmp(
