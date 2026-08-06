@@ -6,6 +6,7 @@
 #include <clang/AST/RecordLayout.h>
 #include <clang/Basic/OperatorKinds.h>
 
+#include <algorithm>
 #include <format>
 #include <optional>
 #include <vector>
@@ -1809,6 +1810,12 @@ static bool IsZeroInitExpr(clang::ASTContext &ctx, const clang::Expr *expr) {
   if (clang::isa<clang::ImplicitValueInitExpr>(expr)) {
     return true;
   }
+  if (auto list = clang::dyn_cast<clang::InitListExpr>(expr)) {
+    return std::all_of(list->inits().begin(), list->inits().end(),
+                       [&](const clang::Expr *init) {
+                         return IsZeroInitExpr(ctx, init);
+                       });
+  }
   if (expr->isNullPointerConstant(ctx, clang::Expr::NPC_ValueDependentIsNull) !=
       clang::Expr::NPCK_NotNull) {
     return true;
@@ -1873,6 +1880,12 @@ RsExpr *ConverterRefCount::VisitInitListExpr(clang::InitListExpr *expr) {
   }
 
   if (qual_type->isRecordType()) {
+    if (IsZeroInitExpr(ctx_, expr)) {
+      if (auto init = Mapper::MapInitializer(qual_type); !init.empty()) {
+        computed_expr_type_ = ComputedExprType::FreshValue;
+        return Text(std::move(init));
+      }
+    }
     const auto *record = qual_type->getAsRecordDecl();
     if (record->getQualifiedNameAsString() == "std::array") {
       RsExpr *node = nullptr;
