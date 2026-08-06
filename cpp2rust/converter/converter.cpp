@@ -2215,10 +2215,12 @@ Converter::CallInfo Converter::CollectCallInfo(clang::CallExpr *expr) {
 
   for (unsigned i = 0; i < num_named_params && i < num_args; ++i) {
     auto *arg = expr->getArg(i + arg_begin);
+    auto param_name = std::format("_arg{}", i);
+    if (function && !function->getParamDecl(i)->getName().empty()) {
+      param_name = "_" + function->getParamDecl(i)->getNameAsString();
+    }
     CallArg ca{
-        .param_name = function
-                          ? ("_" + function->getParamDecl(i)->getNameAsString())
-                          : ("_arg" + std::to_string(i)),
+        .param_name = std::move(param_name),
         .param_type = function ? function->getParamDecl(i)->getType()
                                : proto->getParamType(i),
         .expr = arg,
