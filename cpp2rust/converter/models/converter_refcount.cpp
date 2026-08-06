@@ -1745,7 +1745,7 @@ RsExpr *ConverterRefCount::ConvertBinaryOperator(clang::BinaryOperator *expr) {
       auto *lhs_node = ConvertRValue(lhs);
       auto op = opcode_as_string;
       op.remove_suffix(1); // remove '=' from operator
-      auto *rhs_node = ConvertExpr(rhs);
+      auto *rhs_node = ConvertRValue(rhs);
       value = Parens(Cat(Parens(CastTo(lhs_node, computation_result_type)),
                          Text(std::string(op)), rhs_node));
     }

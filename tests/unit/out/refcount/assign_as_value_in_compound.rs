@@ -39,7 +39,10 @@ pub fn merge_0(a: Ptr<item>, n: i32) -> u8 {
                         .with(|__v| (*__v).flags);
                     (*a.borrow())
                         .offset(((*i.borrow()) as isize))
-                        .with_mut(|__v| __v.flags = __rhs)
+                        .with_mut(|__v| __v.flags = __rhs);
+                    (*a.borrow())
+                        .offset(((*i.borrow()) as isize))
+                        .with(|__v| (*__v).flags)
                 }) as i32)) as u8);
             (*all.borrow_mut()) = rhs_0
         };
