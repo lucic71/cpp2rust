@@ -211,7 +211,7 @@ Converter::VisitConstantArrayType(const clang::ConstantArrayType *type) {
 
 RsExpr *
 Converter::VisitIncompleteArrayType(const clang::IncompleteArrayType *type) {
-  return Cat(Text('['), Convert(type->getElementType()), Text(']'));
+  return Cat(Text('['), Convert(type->getElementType()), Text("; 0]"));
 }
 
 RsExpr *
@@ -3895,9 +3895,8 @@ RsExpr *Converter::GetArrayDefaultAsString(clang::QualType qual_type) {
     return Cat(Text('['), element_default,
                Text(std::format("; {}]", size_as_string.c_str())));
   }
-  if (auto *array_type =
-          clang::dyn_cast<clang::IncompleteArrayType>(qual_type)) {
-    return GetDefaultAsString(array_type->getElementType());
+  if (clang::isa<clang::IncompleteArrayType>(qual_type)) {
+    return Text("[]");
   }
   if (Mapper::ToString(qual_type).contains("std::array")) {
     assert(GetTemplateArgs(qual_type).has_value());

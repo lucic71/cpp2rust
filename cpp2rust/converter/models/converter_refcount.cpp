@@ -2297,6 +2297,12 @@ ConverterRefCount::VisitCXXDefaultArgExpr(clang::CXXDefaultArgExpr *expr) {
 }
 
 RsExpr *ConverterRefCount::GetArrayDefaultAsString(clang::QualType qual_type) {
+  if (auto *array_type =
+          clang::dyn_cast<clang::IncompleteArrayType>(qual_type)) {
+    PushConversionKind push(*this, ConversionKind::Unboxed);
+    return Cat(Text("<Box<["), Convert(array_type->getElementType()),
+               Text("]>>::default()"));
+  }
   if (auto *array_type = clang::dyn_cast<clang::ConstantArrayType>(qual_type)) {
     const auto &size = array_type->getSize();
     auto size_as_string = GetNumAsString(size);
