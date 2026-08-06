@@ -566,11 +566,12 @@ RsExpr *Converter::TryConvertFlattenedBody(clang::CompoundStmt *body) {
 
   std::vector<RsExpr *> hoisted;
   for (auto *var : locals) {
-    hoisted_decls_.insert(var);
     if (var->isStaticLocal()) {
       hoisted.push_back(VisitVarDecl(var));
+      hoisted_decls_.insert(var);
       continue;
     }
+    hoisted_decls_.insert(var);
     auto [header, proceed] = ConvertVarDeclSkipInit(var);
     if (proceed) {
       hoisted.push_back(Cat(header, Text(token::kAssign),
