@@ -5,5 +5,5 @@ edition = "2024"
 
 [dependencies]
 libc = "0.2"
-nix = { version = "0.30", features = ["socket", "net", "fs", "poll", "time", "user", "dir", "term", "event", "hostname", "resource"] }
+nix = { version = "0.30", features = ["socket", "net", "fs", "poll", "time", "user", "dir", "term", "event", "hostname", "resource", "process"] }
 jiff = "0.2"

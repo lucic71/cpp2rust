@@ -141,3 +141,21 @@ fn f12(a0: Ptr<u8>, a1: ::libc::uid_t, a2: ::libc::gid_t) -> i32 {
         }
     }
 }
+
+fn f18(a0: i32) -> i32 {
+    match FdRegistry::with_fd(a0, |__fd| nix::unistd::fsync(__fd)) {
+        Ok(()) => 0,
+        Err(__e) => {
+            libcc2rs::cpp2rust_errno().write(__e as i32);
+            -1
+        }
+    }
+}
+
+fn f21() -> i32 {
+    nix::unistd::getpid().as_raw()
+}
+
+fn f22() -> u32 {
+    nix::unistd::getuid().as_raw()
+}
