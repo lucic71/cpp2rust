@@ -61,7 +61,8 @@ std::string Converter::EmitOpaqueRecords() {
   std::string out;
   record_decls_.ForEachUndefined([&](const std::string &name) {
     out += std::format("pub struct {};\n", name);
-    out += std::format("impl ByteRepr for {} {{}}\n", name);
+    out += std::format(
+        "impl ByteRepr for {} {{ fn byte_size() -> usize {{ 0 }} }}\n", name);
   });
   return out;
 }
