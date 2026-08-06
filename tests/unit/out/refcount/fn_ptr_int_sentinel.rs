@@ -20,7 +20,7 @@ pub fn consume_2(data: AnyPtr, d: FnPtr<fn(AnyPtr)>) -> i32 {
     if ((((*d.borrow()).is_null()) as i32) != 0) {
         return 1;
     }
-    if ((((*d.borrow()) == (<FnPtr<fn(AnyPtr)>>::from_int(-1_i32))) as i32) != 0) {
+    if ((((*d.borrow()) == (<FnPtr<fn(AnyPtr)>>::from_int((-1_i32) as usize))) as i32) != 0) {
         return 2;
     }
     ({ (*(*d.borrow()))((*data.borrow()).clone()) });
@@ -44,7 +44,7 @@ fn main_0() -> i32 {
         (((({
             consume_2(
                 ((x.as_pointer()) as Ptr<i32>).to_any(),
-                (<FnPtr<fn(AnyPtr)>>::from_int(-1_i32)),
+                (<FnPtr<fn(AnyPtr)>>::from_int((-1_i32) as usize)),
             )
         }) == 2) as i32)
             != 0)

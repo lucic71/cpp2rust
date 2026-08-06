@@ -58,9 +58,28 @@ impl<T: FnAddr + Any> ErasedFn for T {
     }
 }
 
+#[derive(Clone)]
+enum FnPtrKind {
+    Null,
+    Fn {
+        original: Rc<dyn ErasedFn>,
+        current_cast: Option<Rc<dyn ErasedFn>>,
+    },
+    Dangling(usize),
+}
+
+impl FnPtrKind {
+    fn addr(&self) -> usize {
+        match self {
+            FnPtrKind::Null => 0,
+            FnPtrKind::Fn { original, .. } => original.addr(),
+            FnPtrKind::Dangling(value) => *value,
+        }
+    }
+}
+
 pub struct FnPtr<T> {
-    original: Option<Rc<dyn ErasedFn>>,
-    current_cast: Option<Rc<dyn ErasedFn>>,
+    kind: FnPtrKind,
     // FnPtr does not use T, hence wrap in PhantomData
     _marker: PhantomData<T>,
 }
@@ -69,15 +88,24 @@ impl<T> FnPtr<T> {
     #[inline]
     pub fn null() -> Self {
         FnPtr {
-            original: None,
-            current_cast: None,
+            kind: FnPtrKind::Null,
             _marker: PhantomData,
         }
     }
 
     #[inline]
     pub fn is_null(&self) -> bool {
-        self.original.is_none()
+        matches!(self.kind, FnPtrKind::Null)
+    }
+
+    pub fn from_int(value: usize) -> Self {
+        if value == 0 {
+            return Self::null();
+        }
+        FnPtr {
+            kind: FnPtrKind::Dangling(value),
+            _marker: PhantomData,
+        }
     }
 }
 
@@ -85,8 +113,10 @@ impl<T: FnAddr + 'static> FnPtr<T> {
     pub fn new(f: T) -> Self {
         let rc: Rc<dyn ErasedFn> = Rc::new(f);
         FnPtr {
-            original: Some(rc.clone()),
-            current_cast: Some(rc),
+            kind: FnPtrKind::Fn {
+                original: rc.clone(),
+                current_cast: Some(rc),
+            },
             _marker: PhantomData,
         }
     }
@@ -94,14 +124,25 @@ impl<T: FnAddr + 'static> FnPtr<T> {
 
 impl<T: 'static> FnPtr<T> {
     pub fn cast<U: FnAddr + 'static>(&self, adapter: Option<U>) -> FnPtr<U> {
-        let original = self.original.as_ref().expect("ub: null fn pointer cast");
+        let (original, current_cast) = match &self.kind {
+            FnPtrKind::Null => panic!("ub: null fn pointer cast"),
+            FnPtrKind::Dangling(value) => {
+                return FnPtr {
+                    kind: FnPtrKind::Dangling(*value),
+                    _marker: PhantomData,
+                };
+            }
+            FnPtrKind::Fn {
+                original,
+                current_cast,
+            } => (original, current_cast),
+        };
 
-        let current_cast = if self
-            .current_cast
+        let current_cast = if current_cast
             .as_ref()
             .is_some_and(|rc| Any::type_id(&**rc) == TypeId::of::<U>())
         {
-            self.current_cast.clone()
+            current_cast.clone()
         } else if Any::type_id(&**original) == TypeId::of::<U>() {
             Some(original.clone())
         } else {
@@ -113,8 +154,10 @@ impl<T: 'static> FnPtr<T> {
         };
 
         FnPtr {
-            original: Some(original.clone()),
-            current_cast,
+            kind: FnPtrKind::Fn {
+                original: original.clone(),
+                current_cast,
+            },
             _marker: PhantomData,
         }
     }
@@ -123,11 +166,14 @@ impl<T: 'static> FnPtr<T> {
 impl<T: 'static> Deref for FnPtr<T> {
     type Target = T;
     fn deref(&self) -> &T {
-        if self.original.is_none() {
-            panic!("ub: null fn pointer call");
-        }
-        let rc = self
-            .current_cast
+        let current_cast = match &self.kind {
+            FnPtrKind::Null => panic!("ub: null fn pointer call"),
+            FnPtrKind::Dangling(value) => {
+                panic!("ub: called dangling fn pointer 0x{value:x}")
+            }
+            FnPtrKind::Fn { current_cast, .. } => current_cast,
+        };
+        let rc = current_cast
             .as_ref()
             .expect("ub: calling through incompatible fn pointer type");
         let any: &dyn Any = &**rc;
@@ -139,8 +185,7 @@ impl<T: 'static> Deref for FnPtr<T> {
 impl<T> Clone for FnPtr<T> {
     fn clone(&self) -> Self {
         FnPtr {
-            original: self.original.clone(),
-            current_cast: self.current_cast.clone(),
+            kind: self.kind.clone(),
             _marker: PhantomData,
         }
     }
@@ -154,11 +199,7 @@ impl<T> Default for FnPtr<T> {
 
 impl<T> PartialEq for FnPtr<T> {
     fn eq(&self, other: &Self) -> bool {
-        match (&self.original, &other.original) {
-            (None, None) => true,
-            (Some(a), Some(b)) => a.addr() == b.addr(),
-            _ => false,
-        }
+        self.kind.addr() == other.kind.addr()
     }
 }
 
@@ -170,9 +211,10 @@ impl<T: 'static> ByteRepr for FnPtr<T> {
     }
 
     fn to_bytes(&self, buf: &mut [u8]) {
-        match &self.original {
-            None => 0usize.to_bytes(buf),
-            Some(original) => crate::rc::register_ptr(
+        match &self.kind {
+            FnPtrKind::Null => 0usize.to_bytes(buf),
+            FnPtrKind::Dangling(value) => value.to_bytes(buf),
+            FnPtrKind::Fn { original, .. } => crate::rc::register_ptr(
                 original.addr(),
                 1,
                 crate::rc::Registered::Fn(original.clone()),
@@ -187,7 +229,10 @@ impl<T: 'static> ByteRepr for FnPtr<T> {
             return Self::null();
         }
         let Some((base, entry, _)) = crate::rc::lookup_ptr(addr) else {
-            panic!("ub: cast of invalid address 0x{addr:x} to fn pointer");
+            return FnPtr {
+                kind: FnPtrKind::Dangling(addr),
+                _marker: PhantomData,
+            };
         };
         let crate::rc::Registered::Fn(original) = entry else {
             panic!("ub: cast of data address 0x{addr:x} to fn pointer");
@@ -201,8 +246,10 @@ impl<T: 'static> ByteRepr for FnPtr<T> {
             lookup_adapter(original.addr(), TypeId::of::<T>())
         };
         FnPtr {
-            original: Some(original),
-            current_cast,
+            kind: FnPtrKind::Fn {
+                original,
+                current_cast,
+            },
             _marker: PhantomData,
         }
     }
@@ -228,7 +275,7 @@ impl<T: 'static> ErasedPtr for FnPtr<T> {
         FnPtr::is_null(self)
     }
     fn is_dangling(&self) -> bool {
-        false
+        matches!(self.kind, FnPtrKind::Dangling(_))
     }
 }
 

@@ -1,4 +1,3 @@
-// no-compile: refcount
 #include <assert.h>
 
 typedef void (*destructor_t)(void *);

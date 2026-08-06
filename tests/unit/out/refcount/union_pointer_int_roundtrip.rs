@@ -6,6 +6,24 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
+#[repr(C)]
+#[derive(Clone, Default)]
+pub struct cb {
+    pub ctx: AnyPtr,
+}
+impl ByteRepr for cb {
+    fn byte_size() -> usize {
+        8
+    }
+    fn to_bytes(&self, buf: &mut [u8]) {
+        self.ctx.to_bytes(&mut buf[0..8]);
+    }
+    fn from_bytes(buf: &[u8]) -> Self {
+        Self {
+            ctx: <AnyPtr>::from_bytes(&buf[0..8]),
+        }
+    }
+}
 pub fn main() {
     std::process::exit(main_0());
 }
@@ -151,5 +169,16 @@ fn main_0() -> i32 {
         }) as i32)
             != 0)
     );
+    let c: Value<cb> = Rc::new(RefCell::new(cb {
+        ctx: (<AnyPtr>::from_int(((99) as i64) as usize)),
+    }));
+    assert!(((((((*c.borrow()).ctx).to_int() as i32) == 99) as i32) != 0));
+    let m: Value<AnyPtr> = Rc::new(RefCell::new(
+        (<AnyPtr>::from_int(((-1_i32) as i64) as usize)),
+    ));
+    assert!((((((*m.borrow()).to_int() as i32) == -1_i32) as i32) != 0));
+    assert!((((!((*m.borrow()).is_null())) as i32) != 0));
+    (*c.borrow_mut()).ctx = (AnyPtr::default());
+    assert!((((((*c.borrow()).ctx).is_null()) as i32) != 0));
     return 0;
 }

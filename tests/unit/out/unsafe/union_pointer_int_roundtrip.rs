@@ -6,6 +6,11 @@ use std::collections::BTreeMap;
 use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
+#[repr(C)]
+#[derive(Copy, Clone, Default)]
+pub struct cb {
+    pub ctx: *mut ::libc::c_void,
+}
 pub fn main() {
     unsafe {
         std::process::exit(main_0() as i32);
@@ -37,5 +42,14 @@ unsafe fn main_0() -> i32 {
     assert!(((((*u.p) == (10)) as i32) != 0));
     u.p = arr.as_mut_ptr().offset(((4) as isize));
     assert!(((((u.p) == (arr.as_mut_ptr().offset(((4) as isize)))) as i32) != 0));
+    let mut c: cb = cb {
+        ctx: (((99) as i64) as *mut ::libc::c_void),
+    };
+    assert!(((((((c.ctx) as i64) as i32) == (99)) as i32) != 0));
+    let mut m: *mut ::libc::c_void = (((-1_i32) as i64) as *mut ::libc::c_void);
+    assert!(((((((m) as i64) as i32) == (-1_i32)) as i32) != 0));
+    assert!((((!((m).is_null())) as i32) != 0));
+    c.ctx = (((0) as i64) as *mut ::libc::c_void);
+    assert!(((((c.ctx).is_null()) as i32) != 0));
     return 0;
 }

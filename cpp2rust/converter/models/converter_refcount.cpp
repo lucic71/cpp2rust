@@ -1655,6 +1655,9 @@ ConverterRefCount::VisitExplicitCastExpr(clang::ExplicitCastExpr *expr) {
       }
       auto *sub = ConvertExpr(expr->getSubExpr());
       computed_expr_type_ = ComputedExprType::FreshPointer;
+      if (GetSafeTypeAsString(expr->getSubExpr()->getType()) != "usize") {
+        sub = Cat(Parens(sub), Text("as usize"));
+      }
       return Cat(Text('<'), dst_type, Text(">::from_int("), sub, Text(')'));
     }
 
