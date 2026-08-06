@@ -110,6 +110,10 @@ impl<T> VaArgGet for *mut T {
     fn get(v: &VaArg) -> Self {
         match v {
             VaArg::RawPtr(p) => *p as Self,
+            VaArg::Int(n) => *n as usize as Self,
+            VaArg::UInt(n) => *n as usize as Self,
+            VaArg::Long(n) => *n as usize as Self,
+            VaArg::ULong(n) => *n as usize as Self,
             _ => panic!("VaArgGet: expected pointer"),
         }
     }
@@ -118,6 +122,10 @@ impl<T> VaArgGet for *const T {
     fn get(v: &VaArg) -> Self {
         match v {
             VaArg::RawPtr(p) => *p as Self,
+            VaArg::Int(n) => *n as usize as Self,
+            VaArg::UInt(n) => *n as usize as Self,
+            VaArg::Long(n) => *n as usize as Self,
+            VaArg::ULong(n) => *n as usize as Self,
             _ => panic!("VaArgGet: expected pointer"),
         }
     }
@@ -127,6 +135,7 @@ impl<T: 'static + crate::ByteRepr> VaArgGet for crate::rc::Ptr<T> {
     fn get(v: &VaArg) -> Self {
         match v {
             VaArg::Ptr(any) => any.reinterpret_cast::<T>(),
+            VaArg::Int(0) | VaArg::UInt(0) | VaArg::Long(0) | VaArg::ULong(0) => Self::null(),
             _ => panic!("VaArgGet: expected Ptr"),
         }
     }
