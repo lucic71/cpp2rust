@@ -636,12 +636,10 @@ pub fn fclose_refcount(a0: Ptr<CFile>) -> i32 {
     r
 }
 
-pub fn popen_refcount(a0: Ptr<u8>, a1: Ptr<u8>) -> Ptr<CFile> {
+pub fn popen_refcount(_a0: Ptr<u8>, _a1: Ptr<u8>) -> Ptr<CFile> {
     panic!("popen: popen streams are not supported in the refcount model");
-    Ptr::null()
 }
 
-pub fn pclose_refcount(a0: Ptr<CFile>) -> i32 {
+pub fn pclose_refcount(_a0: Ptr<CFile>) -> i32 {
     panic!("pclose: popen streams are not supported in the refcount model");
-    -1
 }
