@@ -2732,9 +2732,14 @@ RsExpr *Converter::VisitExplicitCastExpr(clang::ExplicitCastExpr *expr) {
     }
     if (type->isFunctionPointerType() ||
         sub_expr->getType()->isFunctionPointerType()) {
-      auto *src_type = Convert(sub_expr->getType());
+      bool from_integer = sub_expr->getType()->isIntegerType();
+      auto *src_type =
+          from_integer ? Text("usize") : Convert(sub_expr->getType());
       auto *dst_type = Convert(type);
       auto *sub_node = ConvertExpr(sub_expr);
+      if (from_integer) {
+        sub_node = Parens(Cat(sub_node, Text(" as usize")));
+      }
       return Cat(Text("std::mem::transmute::<"), src_type, Text(','), dst_type,
                  Text(">("), sub_node, Text(')'));
     }
