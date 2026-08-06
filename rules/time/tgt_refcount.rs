@@ -189,3 +189,15 @@ fn f12() -> ::libc::clock_t {
         }
     }
 }
+
+fn f13(a0: Ptr<libcc2rs::Timespec>, a1: Ptr<libcc2rs::Timespec>) -> i32 {
+    let __req = a0.read();
+    ::std::thread::sleep(::std::time::Duration::new(
+        __req.tv_sec as u64,
+        __req.tv_nsec as u32,
+    ));
+    if !a1.is_null() {
+        a1.with_mut(|__rem| *__rem = Default::default());
+    }
+    0
+}

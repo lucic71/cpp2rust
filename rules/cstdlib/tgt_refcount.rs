@@ -102,3 +102,19 @@ fn f9(a0: AnyPtr, a1: usize, a2: usize, a3: fn(AnyPtr, AnyPtr) -> i32) {
         }
     }
 }
+
+fn f12(a0: Ptr<u8>) -> i32 {
+    let __s = a0.to_rust_string();
+    let __num: String = __s
+        .trim_start()
+        .chars()
+        .enumerate()
+        .take_while(|(__i, __c)| {
+            __c.is_ascii_digit() || (*__i == 0 && (*__c == '-' || *__c == '+'))
+        })
+        .map(|(_, __c)| __c)
+        .collect();
+    __num
+        .parse::<i64>()
+        .map_or(0, |__v| __v.clamp(i32::MIN as i64, i32::MAX as i64) as i32)
+}

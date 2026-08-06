@@ -211,3 +211,20 @@ fn f33(a0: Ptr<u8>, a1: Ptr<u8>) -> Ptr<CFile> {
 fn f34(a0: Ptr<CFile>) -> i32 {
     libcc2rs::pclose_refcount(a0.clone())
 }
+
+fn f30(a0: Ptr<CFile>) {
+    a0.with_mut(|__f| {
+        __f.seek(0, 0);
+        __f.err = false;
+        __f.eof = false;
+    });
+}
+
+fn f35(a0: Ptr<CFile>, a1: Ptr<u8>, a2: VaList) -> i32 {
+    let __s = libcc2rs::format_c(&a1.to_rust_string(), a2.remaining());
+    let __bytes = __s.as_bytes();
+    match a0.with_mut(|__f| __f.write(__bytes)) == __bytes.len() {
+        true => __bytes.len() as i32,
+        false => -1,
+    }
+}

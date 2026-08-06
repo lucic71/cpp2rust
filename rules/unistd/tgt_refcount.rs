@@ -147,3 +147,23 @@ fn f20(a0: i32, a1: AnyPtr, a2: usize, a3: i64) -> isize {
 fn f23(a0: i32, a1: ::libc::uid_t, a2: ::libc::gid_t) -> i32 {
     libcc2rs::fchown_refcount(a0, a1, a2)
 }
+
+fn f15(a0: Ptr<u8>, a1: Ptr<u8>) -> i32 {
+    match ::std::os::unix::fs::symlink(a0.to_rust_string(), a1.to_rust_string()) {
+        Ok(()) => 0,
+        Err(__e) => {
+            libcc2rs::cpp2rust_errno().write(__e.raw_os_error().unwrap_or(::libc::EIO));
+            -1
+        }
+    }
+}
+
+fn f17(a0: Ptr<u8>) -> i32 {
+    match nix::unistd::chdir(a0.to_rust_string().as_str()) {
+        Ok(()) => 0,
+        Err(__e) => {
+            libcc2rs::cpp2rust_errno().write(__e as i32);
+            -1
+        }
+    }
+}
