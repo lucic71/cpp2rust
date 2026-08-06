@@ -237,5 +237,103 @@ unsafe fn main_0() -> i32 {
         )) == (0)) as i32)
             != 0)
     );
+    let mut segment: [libc::c_char; 8] = std::mem::transmute(*b"abcdef\0\0");
+    assert!(
+        ((((unsafe {
+            libc::snprintf(
+                buf.as_mut_ptr() as *mut libc::c_char,
+                ::std::mem::size_of::<[libc::c_char; 32]>() as usize,
+                (c"<%.*s>".as_ptr().cast_mut()).cast_const() as *const libc::c_char,
+                (3),
+                (segment.as_mut_ptr()),
+            )
+        }) == (5)) as i32)
+            != 0)
+    );
+    assert!(
+        ((((libc::strcmp(
+            (buf.as_mut_ptr()).cast_const(),
+            (c"<abc>".as_ptr().cast_mut()).cast_const()
+        )) == (0)) as i32)
+            != 0)
+    );
+    assert!(
+        ((((unsafe {
+            libc::snprintf(
+                buf.as_mut_ptr() as *mut libc::c_char,
+                ::std::mem::size_of::<[libc::c_char; 32]>() as usize,
+                (c"%.*s".as_ptr().cast_mut()).cast_const() as *const libc::c_char,
+                (10),
+                (segment.as_mut_ptr()),
+            )
+        }) == (6)) as i32)
+            != 0)
+    );
+    assert!(
+        ((((libc::strcmp(
+            (buf.as_mut_ptr()).cast_const(),
+            (c"abcdef".as_ptr().cast_mut()).cast_const()
+        )) == (0)) as i32)
+            != 0)
+    );
+    assert!(
+        ((((unsafe {
+            libc::snprintf(
+                buf.as_mut_ptr() as *mut libc::c_char,
+                ::std::mem::size_of::<[libc::c_char; 32]>() as usize,
+                (c"%.*s".as_ptr().cast_mut()).cast_const() as *const libc::c_char,
+                (-1_i32),
+                (segment.as_mut_ptr()),
+            )
+        }) == (6)) as i32)
+            != 0)
+    );
+    assert!(
+        ((((libc::strcmp(
+            (buf.as_mut_ptr()).cast_const(),
+            (c"abcdef".as_ptr().cast_mut()).cast_const()
+        )) == (0)) as i32)
+            != 0)
+    );
+    assert!(
+        ((((unsafe {
+            libc::snprintf(
+                buf.as_mut_ptr() as *mut libc::c_char,
+                ::std::mem::size_of::<[libc::c_char; 32]>() as usize,
+                (c"%*d|%-*d|".as_ptr().cast_mut()).cast_const() as *const libc::c_char,
+                (5),
+                (42),
+                (5),
+                (42),
+            )
+        }) == (12)) as i32)
+            != 0)
+    );
+    assert!(
+        ((((libc::strcmp(
+            (buf.as_mut_ptr()).cast_const(),
+            (c"   42|42   |".as_ptr().cast_mut()).cast_const()
+        )) == (0)) as i32)
+            != 0)
+    );
+    assert!(
+        ((((unsafe {
+            libc::snprintf(
+                buf.as_mut_ptr() as *mut libc::c_char,
+                ::std::mem::size_of::<[libc::c_char; 32]>() as usize,
+                (c"%*d".as_ptr().cast_mut()).cast_const() as *const libc::c_char,
+                (-5_i32),
+                (42),
+            )
+        }) == (5)) as i32)
+            != 0)
+    );
+    assert!(
+        ((((libc::strcmp(
+            (buf.as_mut_ptr()).cast_const(),
+            (c"42   ".as_ptr().cast_mut()).cast_const()
+        )) == (0)) as i32)
+            != 0)
+    );
     return 0;
 }

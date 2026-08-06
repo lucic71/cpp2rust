@@ -36,5 +36,16 @@ int main() {
   fmt[5] = 0;
   assert(snprintf(buf, sizeof(buf), fmt, 3.26) == 5);
   assert(strcmp(buf, "  3.3") == 0);
+  char segment[8] = "abcdef";
+  assert(snprintf(buf, sizeof(buf), "<%.*s>", 3, segment) == 5);
+  assert(strcmp(buf, "<abc>") == 0);
+  assert(snprintf(buf, sizeof(buf), "%.*s", 10, segment) == 6);
+  assert(strcmp(buf, "abcdef") == 0);
+  assert(snprintf(buf, sizeof(buf), "%.*s", -1, segment) == 6);
+  assert(strcmp(buf, "abcdef") == 0);
+  assert(snprintf(buf, sizeof(buf), "%*d|%-*d|", 5, 42, 5, 42) == 12);
+  assert(strcmp(buf, "   42|42   |") == 0);
+  assert(snprintf(buf, sizeof(buf), "%*d", -5, 42) == 5);
+  assert(strcmp(buf, "42   ") == 0);
   return 0;
 }

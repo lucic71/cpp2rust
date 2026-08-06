@@ -427,5 +427,181 @@ fn main_0() -> i32 {
         } == 0) as i32)
             != 0)
     );
+    let segment: Value<Box<[u8]>> = Rc::new(RefCell::new(Box::from(*b"abcdef\0\0")));
+    assert!(
+        ((({
+            let __s = libcc2rs::format_c(
+                &Ptr::from_string_literal(b"<%.*s>").to_rust_string(),
+                &[(3).into(), (segment.as_pointer() as Ptr<u8>).into()],
+            );
+            let __b = __s.as_bytes();
+            if 32usize > 0 {
+                let __n = ::std::cmp::min(__b.len(), 32usize - 1);
+                (buf.as_pointer() as Ptr<u8>).with_slice_mut(__n + 1, |__dst| {
+                    __dst[..__n].copy_from_slice(&__b[..__n]);
+                    __dst[__n] = 0;
+                });
+            }
+            __b.len() as i32
+        } == 5) as i32)
+            != 0)
+    );
+    assert!(
+        ((({
+            let mut __it1 = (buf.as_pointer() as Ptr<u8>).to_c_string_iterator();
+            let mut __it2 = Ptr::from_string_literal(b"<abc>").to_c_string_iterator();
+            loop {
+                let __c1 = __it1.next();
+                let __c2 = __it2.next();
+                if __c1 != __c2 {
+                    break (__c1.unwrap_or(0) as i32) - (__c2.unwrap_or(0) as i32);
+                }
+                if __c1.is_none() {
+                    break 0;
+                }
+            }
+        } == 0) as i32)
+            != 0)
+    );
+    assert!(
+        ((({
+            let __s = libcc2rs::format_c(
+                &Ptr::from_string_literal(b"%.*s").to_rust_string(),
+                &[(10).into(), (segment.as_pointer() as Ptr<u8>).into()],
+            );
+            let __b = __s.as_bytes();
+            if 32usize > 0 {
+                let __n = ::std::cmp::min(__b.len(), 32usize - 1);
+                (buf.as_pointer() as Ptr<u8>).with_slice_mut(__n + 1, |__dst| {
+                    __dst[..__n].copy_from_slice(&__b[..__n]);
+                    __dst[__n] = 0;
+                });
+            }
+            __b.len() as i32
+        } == 6) as i32)
+            != 0)
+    );
+    assert!(
+        ((({
+            let mut __it1 = (buf.as_pointer() as Ptr<u8>).to_c_string_iterator();
+            let mut __it2 = Ptr::from_string_literal(b"abcdef").to_c_string_iterator();
+            loop {
+                let __c1 = __it1.next();
+                let __c2 = __it2.next();
+                if __c1 != __c2 {
+                    break (__c1.unwrap_or(0) as i32) - (__c2.unwrap_or(0) as i32);
+                }
+                if __c1.is_none() {
+                    break 0;
+                }
+            }
+        } == 0) as i32)
+            != 0)
+    );
+    assert!(
+        ((({
+            let __s = libcc2rs::format_c(
+                &Ptr::from_string_literal(b"%.*s").to_rust_string(),
+                &[(-1_i32).into(), (segment.as_pointer() as Ptr<u8>).into()],
+            );
+            let __b = __s.as_bytes();
+            if 32usize > 0 {
+                let __n = ::std::cmp::min(__b.len(), 32usize - 1);
+                (buf.as_pointer() as Ptr<u8>).with_slice_mut(__n + 1, |__dst| {
+                    __dst[..__n].copy_from_slice(&__b[..__n]);
+                    __dst[__n] = 0;
+                });
+            }
+            __b.len() as i32
+        } == 6) as i32)
+            != 0)
+    );
+    assert!(
+        ((({
+            let mut __it1 = (buf.as_pointer() as Ptr<u8>).to_c_string_iterator();
+            let mut __it2 = Ptr::from_string_literal(b"abcdef").to_c_string_iterator();
+            loop {
+                let __c1 = __it1.next();
+                let __c2 = __it2.next();
+                if __c1 != __c2 {
+                    break (__c1.unwrap_or(0) as i32) - (__c2.unwrap_or(0) as i32);
+                }
+                if __c1.is_none() {
+                    break 0;
+                }
+            }
+        } == 0) as i32)
+            != 0)
+    );
+    assert!(
+        ((({
+            let __s = libcc2rs::format_c(
+                &Ptr::from_string_literal(b"%*d|%-*d|").to_rust_string(),
+                &[(5).into(), (42).into(), (5).into(), (42).into()],
+            );
+            let __b = __s.as_bytes();
+            if 32usize > 0 {
+                let __n = ::std::cmp::min(__b.len(), 32usize - 1);
+                (buf.as_pointer() as Ptr<u8>).with_slice_mut(__n + 1, |__dst| {
+                    __dst[..__n].copy_from_slice(&__b[..__n]);
+                    __dst[__n] = 0;
+                });
+            }
+            __b.len() as i32
+        } == 12) as i32)
+            != 0)
+    );
+    assert!(
+        ((({
+            let mut __it1 = (buf.as_pointer() as Ptr<u8>).to_c_string_iterator();
+            let mut __it2 = Ptr::from_string_literal(b"   42|42   |").to_c_string_iterator();
+            loop {
+                let __c1 = __it1.next();
+                let __c2 = __it2.next();
+                if __c1 != __c2 {
+                    break (__c1.unwrap_or(0) as i32) - (__c2.unwrap_or(0) as i32);
+                }
+                if __c1.is_none() {
+                    break 0;
+                }
+            }
+        } == 0) as i32)
+            != 0)
+    );
+    assert!(
+        ((({
+            let __s = libcc2rs::format_c(
+                &Ptr::from_string_literal(b"%*d").to_rust_string(),
+                &[(-5_i32).into(), (42).into()],
+            );
+            let __b = __s.as_bytes();
+            if 32usize > 0 {
+                let __n = ::std::cmp::min(__b.len(), 32usize - 1);
+                (buf.as_pointer() as Ptr<u8>).with_slice_mut(__n + 1, |__dst| {
+                    __dst[..__n].copy_from_slice(&__b[..__n]);
+                    __dst[__n] = 0;
+                });
+            }
+            __b.len() as i32
+        } == 5) as i32)
+            != 0)
+    );
+    assert!(
+        ((({
+            let mut __it1 = (buf.as_pointer() as Ptr<u8>).to_c_string_iterator();
+            let mut __it2 = Ptr::from_string_literal(b"42   ").to_c_string_iterator();
+            loop {
+                let __c1 = __it1.next();
+                let __c2 = __it2.next();
+                if __c1 != __c2 {
+                    break (__c1.unwrap_or(0) as i32) - (__c2.unwrap_or(0) as i32);
+                }
+                if __c1.is_none() {
+                    break 0;
+                }
+            }
+        } == 0) as i32)
+            != 0)
+    );
     return 0;
 }
