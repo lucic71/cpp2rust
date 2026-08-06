@@ -490,6 +490,10 @@ protected:
   }
 
   RsExpr *CastTo(RsExpr *expr, clang::QualType qual_type) {
+    if (qual_type->isEnumeralType()) {
+      return Cat(Text(GetUnsafeTypeAsString(qual_type) + "::from"),
+                 Parens(arena_.New<Cast>(expr, Text("i32"))));
+    }
     return arena_.New<Cast>(expr, Text(GetUnsafeTypeAsString(qual_type)));
   }
 

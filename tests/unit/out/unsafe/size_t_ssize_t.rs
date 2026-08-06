@@ -38,9 +38,9 @@ unsafe fn main_0() -> i32 {
                 .wrapping_add((::std::mem::size_of::<i64>() as usize))))
     );
     let mut acc: usize = 100_usize;
-    (acc = ((acc as u64).wrapping_add((::std::mem::size_of::<f64>() as u64))) as usize);
+    acc = (((acc as u64).wrapping_add((::std::mem::size_of::<f64>() as u64))) as usize);
     acc = (acc).wrapping_mul(2_usize);
-    (acc = ((acc as u64).wrapping_sub(ul)) as usize);
+    acc = (((acc as u64).wrapping_sub(ul)) as usize);
     assert!(
         ((acc)
             == (((((100_usize).wrapping_add((::std::mem::size_of::<f64>() as usize))) as usize)

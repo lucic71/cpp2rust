@@ -2805,27 +2805,25 @@ RsExpr *Converter::ConvertBinaryOperator(clang::BinaryOperator *expr) {
       GetUnsafeTypeAsString(lhs_type) !=
           GetUnsafeTypeAsString(cmpd_assign_op->getComputationResultType())) {
     auto computation_result_type = cmpd_assign_op->getComputationResultType();
-    RsExpr *node = nullptr;
+    auto *lhs_node = ConvertExpr(lhs);
+    auto *lhs_again = ConvertExpr(lhs);
+    RsExpr *value = nullptr;
     if (IsUnsignedArithOp(cmpd_assign_op)) {
-      auto *lhs_node = ConvertExpr(lhs);
-      auto *lhs_again = ConvertExpr(lhs);
       auto *receiver = Parens(CastTo(lhs_again, computation_result_type));
-      auto *arith = ConvertUnsignedArithBinaryOperator(expr, rhs, receiver);
-      node = Cat(lhs_node, Text(token::kAssign), Parens(arith));
+      value = Parens(ConvertUnsignedArithBinaryOperator(expr, rhs, receiver));
     } else {
-      auto *lhs_node = ConvertExpr(lhs);
-      auto *lhs_again = ConvertExpr(lhs);
       auto op = opcode_as_string;
       op.remove_suffix(1); // remove '=' from operator
       auto *rhs_node = ConvertExpr(rhs, computation_result_type);
-      node = Cat(lhs_node, Text(token::kAssign),
-                 Parens(Cat(Parens(CastTo(lhs_again, computation_result_type)),
-                            Text(std::string(op)), rhs_node)));
+      value = Parens(Cat(Parens(CastTo(lhs_again, computation_result_type)),
+                         Text(std::string(op)), rhs_node));
     }
     if (lhs_type->isBooleanType()) {
-      return Cat(node, Text(token::kDiff), Text(token::kZero));
+      value = Parens(Cat(value, Text(token::kDiff), Text(token::kZero)));
+    } else {
+      value = CastTo(value, lhs_type);
     }
-    return CastTo(node, lhs_type);
+    return Cat(lhs_node, Text(token::kAssign), value);
   }
   if (expr->isCommaOp()) {
     RsExpr *lhs_node = nullptr;
