@@ -3,6 +3,8 @@
 
 #include <fcntl.h>
 
+typedef struct flock t1;
+
 template <typename... Args>
 int f1(int a0, int a1, Args... args) {
   return fcntl(a0, a1, args...);

@@ -3,6 +3,10 @@
 
 use libcc2rs::*;
 
+fn t1() -> libcc2rs::Flock {
+    Default::default()
+}
+
 fn f1(a0: i32, a1: i32, va: &[VaArg]) -> i32 {
     let __res = match a1 {
         ::libc::F_GETFL => FdRegistry::with_fd(a0, |__fd| {

@@ -4,6 +4,7 @@
 mod cfile;
 mod dirent;
 mod fdset;
+mod flock;
 mod ifaddrs;
 mod ip;
 mod netdb;
@@ -17,6 +18,7 @@ mod time;
 pub use cfile::*;
 pub use dirent::*;
 pub use fdset::*;
+pub use flock::*;
 pub use ifaddrs::*;
 pub use ip::*;
 pub use netdb::*;
