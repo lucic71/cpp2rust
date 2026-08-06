@@ -2814,7 +2814,7 @@ RsExpr *Converter::ConvertBinaryOperator(clang::BinaryOperator *expr) {
     } else {
       auto op = opcode_as_string;
       op.remove_suffix(1); // remove '=' from operator
-      auto *rhs_node = ConvertExpr(rhs, computation_result_type);
+      auto *rhs_node = ConvertRValue(rhs, computation_result_type);
       value = Parens(Cat(Parens(CastTo(lhs_again, computation_result_type)),
                          Text(std::string(op)), rhs_node));
     }
@@ -2823,7 +2823,11 @@ RsExpr *Converter::ConvertBinaryOperator(clang::BinaryOperator *expr) {
     } else {
       value = CastTo(value, lhs_type);
     }
-    return Cat(lhs_node, Text(token::kAssign), value);
+    auto *node = Cat(lhs_node, Text(token::kAssign), value);
+    if (!isVoid()) {
+      node = Cat(node, Text(token::kSemiColon), ConvertRValue(lhs));
+    }
+    return Braces(node, !isVoid());
   }
   if (expr->isCommaOp()) {
     RsExpr *lhs_node = nullptr;

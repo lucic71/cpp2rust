@@ -2435,12 +2435,12 @@ RsExpr *ConverterRefCount::ConvertAssignment(clang::Expr *lhs, clang::Expr *rhs,
         lhs_node, std::string(assign_operator), rhs_node));
   }
 
-  if (isRValue()) {
+  if (!isVoid()) {
     parts.push_back(Text(token::kSemiColon));
     parts.push_back(ConvertFreshRValue(lhs));
   }
   return Braces(arena_.New<Concat>(std::move(parts)),
-                isRValue() || hoisted_rhs);
+                !isVoid() || hoisted_rhs);
 }
 
 RsExpr *
