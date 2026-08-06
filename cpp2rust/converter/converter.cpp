@@ -4565,11 +4565,26 @@ RsExpr *Converter::AddDefaultTrait(const clang::RecordDecl *decl) {
 
 RsExpr *Converter::EmitDefaultStructLiteral(const clang::RecordDecl *decl) {
   std::vector<RsExpr *> fields;
-  for (auto *field : decl->fields()) {
+  auto emit_field = [&](const clang::FieldDecl *field) {
     fields.push_back(Text(GetNamedDeclAsString(field)));
     fields.push_back(Text(token::kColon));
     fields.push_back(GetDefaultAsString(field->getType()));
     fields.push_back(Text(token::kComma));
+  };
+  if (decl->isUnion()) {
+    const clang::FieldDecl *widest = nullptr;
+    for (auto *field : decl->fields()) {
+      if (!widest || ctx_.getTypeSize(field->getType()) >
+                         ctx_.getTypeSize(widest->getType())) {
+        widest = field;
+      }
+    }
+    assert(widest && "union must have at least one field");
+    emit_field(widest);
+  } else {
+    for (auto *field : decl->fields()) {
+      emit_field(field);
+    }
   }
   return Cat(Text(GetRecordName(decl)),
              Braces(arena_.New<Concat>(std::move(fields))));
