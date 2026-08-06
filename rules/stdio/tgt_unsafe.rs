@@ -141,3 +141,16 @@ unsafe fn f33(a0: *const libc::c_char, a1: *const libc::c_char) -> *mut ::libc::
 unsafe fn f34(a0: *mut ::libc::FILE) -> i32 {
     libcc2rs::pclose_unsafe(a0)
 }
+
+unsafe fn f35(a0: *mut ::libc::FILE, a1: *const libc::c_char, a2: libcc2rs::VaList) -> i32 {
+    let __s = libcc2rs::format_c(
+        ::std::ffi::CStr::from_ptr(a1).to_str().unwrap(),
+        a2.remaining(),
+    );
+    libc::fwrite(
+        __s.as_ptr() as *const libc::c_void,
+        1,
+        __s.len(),
+        a0,
+    ) as i32
+}

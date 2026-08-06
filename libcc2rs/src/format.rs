@@ -43,6 +43,11 @@ pub fn format_c(fmt: &str, va: &[VaArg]) -> String {
                 ConversionType::Char => Box::new(i32::get(arg) as u8 as char),
                 ConversionType::String => match arg {
                     VaArg::Ptr(v) => Box::new(v.reinterpret_cast::<u8>().to_rust_string()),
+                    VaArg::RawPtr(v) => Box::new(
+                        unsafe { std::ffi::CStr::from_ptr(*v as *const std::ffi::c_char) }
+                            .to_string_lossy()
+                            .into_owned(),
+                    ),
                     _ => panic!("format_c: %s expects a string argument"),
                 },
                 ConversionType::DecFloatLower

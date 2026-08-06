@@ -60,6 +60,10 @@ impl<'a> VaList<'a> {
         VaList { args, pos: 0 }
     }
 
+    pub fn remaining(&self) -> &'a [VaArg] {
+        &self.args[self.pos..]
+    }
+
     pub fn arg<T: VaArgGet>(&mut self) -> T {
         let val = &self.args[self.pos];
         self.pos += 1;

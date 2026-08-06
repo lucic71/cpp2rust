@@ -1,6 +1,7 @@
 // Copyright (c) 2022-present INESC-ID.
 // Distributed under the MIT license that can be found in the LICENSE file.
 
+#include <stdarg.h>
 #include <stdio.h>
 
 using t1 = FILE *;
@@ -102,3 +103,7 @@ FILE *f33(const char *command, const char *type) {
 }
 
 int f34(FILE *stream) { return pclose(stream); }
+
+int f35(FILE *stream, const char *format, va_list ap) {
+  return vfprintf(stream, format, ap);
+}
