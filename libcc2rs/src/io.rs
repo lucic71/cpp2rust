@@ -276,6 +276,13 @@ pub unsafe fn fclose_unsafe(a0: *mut libc::FILE) -> i32 {
 
 /// # Safety
 ///
+/// Same contract as C's `pclose`.
+pub unsafe fn pclose_unsafe(a0: *mut libc::FILE) -> i32 {
+    unsafe { libc::pclose(a0) }
+}
+
+/// # Safety
+///
 /// Same contract as C's `access`.
 pub unsafe fn access_unsafe(a0: *const libc::c_char, a1: i32) -> i32 {
     unsafe { libc::access(a0, a1) }

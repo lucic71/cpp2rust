@@ -11,6 +11,35 @@ pub fn fileno_0(stream: Ptr<CFile>) -> i32 {
     (*stream.borrow()).clone();
     return 42;
 }
+#[repr(C)]
+#[derive(Clone)]
+pub struct sink {
+    pub in_: Ptr<CFile>,
+    pub closer: FnPtr<fn(Ptr<CFile>) -> i32>,
+}
+impl Default for sink {
+    fn default() -> Self {
+        sink {
+            in_: Ptr::null(),
+            closer: FnPtr::<fn(Ptr<CFile>) -> i32>::null(),
+        }
+    }
+}
+impl ByteRepr for sink {
+    fn byte_size() -> usize {
+        16
+    }
+    fn to_bytes(&self, buf: &mut [u8]) {
+        self.in_.to_bytes(&mut buf[0..8]);
+        self.closer.to_bytes(&mut buf[8..16]);
+    }
+    fn from_bytes(buf: &[u8]) -> Self {
+        Self {
+            in_: <Ptr<CFile>>::from_bytes(&buf[0..8]),
+            closer: <FnPtr<fn(Ptr<CFile>) -> i32>>::from_bytes(&buf[8..16]),
+        }
+    }
+}
 pub fn main() {
     std::process::exit(main_0());
 }
@@ -31,5 +60,35 @@ fn main_0() -> i32 {
         },
     ));
     assert!(((((*tty.borrow()) == 0) as i32) != 0));
+    let k: Value<sink> = <Value<sink>>::default();
+    (*k.borrow_mut()).in_ = libc::popen(
+        Ptr::from_string_literal(b"exit 7"),
+        Ptr::from_string_literal(b"r"),
+    );
+    assert!((((!(((*k.borrow()).in_).is_null())) as i32) != 0));
+    (*k.borrow_mut()).closer = FnPtr::<fn(Ptr<CFile>) -> i32>::new(libcc2rs::pclose_refcount);
+    assert!(
+        (((({
+            let _arg0: Ptr<CFile> = ((*k.borrow()).in_).clone();
+            (*(*k.borrow()).closer)(_arg0)
+        }) == (7 * 256)) as i32)
+            != 0)
+    );
+    (*k.borrow_mut()).in_ = match CFile::open(
+        &Ptr::from_string_literal(b"/dev/null").to_rust_string(),
+        &Ptr::from_string_literal(b"r").to_rust_string(),
+    ) {
+        Some(__f) => Ptr::alloc(__f),
+        None => Ptr::null(),
+    };
+    assert!((((!(((*k.borrow()).in_).is_null())) as i32) != 0));
+    (*k.borrow_mut()).closer = FnPtr::<fn(Ptr<CFile>) -> i32>::new(libcc2rs::fclose_refcount);
+    assert!(
+        (((({
+            let _arg0: Ptr<CFile> = ((*k.borrow()).in_).clone();
+            (*(*k.borrow()).closer)(_arg0)
+        }) == 0) as i32)
+            != 0)
+    );
     return 0;
 }

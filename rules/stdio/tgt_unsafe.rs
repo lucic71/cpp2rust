@@ -139,5 +139,5 @@ unsafe fn f33(a0: *const libc::c_char, a1: *const libc::c_char) -> *mut ::libc::
 }
 
 unsafe fn f34(a0: *mut ::libc::FILE) -> i32 {
-    libc::pclose(a0)
+    libcc2rs::pclose_unsafe(a0)
 }

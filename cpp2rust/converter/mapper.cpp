@@ -672,7 +672,10 @@ bool IsLibcPassthrough(const clang::Expr *expr) {
 
 std::string MapFunctionName(const clang::FunctionDecl *decl) {
   assert(decl);
-  if (!IsUserDefinedDecl(decl) &&
+  const clang::FunctionDecl *resolved = decl->getDefinition() != nullptr
+                                            ? decl->getDefinition()
+                                            : decl->getCanonicalDecl();
+  if (!IsUserDefinedDecl(resolved) &&
       exprs_.contains(GetExprMapKey(ToString(decl)))) {
     return std::format("libcc2rs::{}_{}", decl->getNameAsString(),
                        model_ == Model::kRefCount ? "refcount" : "unsafe");
