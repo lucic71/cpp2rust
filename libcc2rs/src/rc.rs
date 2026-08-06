@@ -1507,10 +1507,6 @@ impl PtrRegistry {
         (addr <= base + len).then(|| (*base, entry.clone(), *len))
     }
 
-    fn was_allocated(&self, addr: SyntheticAddr) -> bool {
-        addr < self.ranges.cursor
-    }
-
     fn evict_dead(&mut self) {
         if self.entries.len() < 16.max(2 * self.evicted_len) {
             return;
@@ -1540,10 +1536,6 @@ pub(crate) fn lookup_ptr(addr: SyntheticAddr) -> Option<(SyntheticAddr, Register
     PTR_REGISTRY.with(|r| r.borrow().get(addr))
 }
 
-pub(crate) fn was_allocated(addr: SyntheticAddr) -> bool {
-    PTR_REGISTRY.with(|r| r.borrow().was_allocated(addr))
-}
-
 impl<T: ByteRepr> ByteRepr for Ptr<T> {
     fn byte_size() -> usize {
         std::mem::size_of::<usize>()
@@ -1563,16 +1555,16 @@ impl<T: ByteRepr> ByteRepr for Ptr<T> {
             return Ptr::null();
         }
         let Some(entry) = lookup_ptr(addr) else {
-            if was_allocated(addr) {
-                return Ptr {
-                    offset: 0,
-                    kind: PtrKind::Dangling(addr),
-                };
-            }
-            panic!("ub: cast of invalid address 0x{addr:x} to pointer");
+            return Ptr {
+                offset: 0,
+                kind: PtrKind::Dangling(addr),
+            };
         };
         let (base, Registered::Data(any), _) = entry else {
-            panic!("ub: cast of invalid address 0x{addr:x} to pointer");
+            return Ptr {
+                offset: 0,
+                kind: PtrKind::Dangling(addr),
+            };
         };
         let delta = addr - base;
         if delta == 0 {
