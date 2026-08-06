@@ -15,7 +15,7 @@ unsafe fn main_0() -> i32 {
     let mut fds: [i32; 2] = [0_i32; 2];
     assert!(((((libc::pipe(fds.as_mut_ptr())) == (0)) as i32) != 0));
     assert!(
-        ((((libc::write(
+        ((((libcc2rs::write_unsafe(
             fds[((1) as usize)],
             ((c"ab".as_ptr().cast_mut() as *const libc::c_char) as *const ::libc::c_void),
             2_usize
@@ -31,7 +31,7 @@ unsafe fn main_0() -> i32 {
         ((buf.as_mut_ptr() as *mut libc::c_char) as *mut ::libc::c_void)
     };
     assert!(
-        ((((libc::read(
+        ((((libcc2rs::read_unsafe(
             fds[((0) as usize)],
             ((buf.as_mut_ptr() as *mut libc::c_char) as *mut ::libc::c_void),
             ::std::mem::size_of::<[libc::c_char; 4]>()
@@ -45,15 +45,15 @@ unsafe fn main_0() -> i32 {
         )) == (0)) as i32)
             != 0)
     );
-    assert!(((((libc::close(fds[((1) as usize)])) == (0)) as i32) != 0));
+    assert!(((((libcc2rs::close_unsafe(fds[((1) as usize)])) == (0)) as i32) != 0));
     assert!(
-        ((((libc::read(
+        ((((libcc2rs::read_unsafe(
             fds[((0) as usize)],
             ((buf.as_mut_ptr() as *mut libc::c_char) as *mut ::libc::c_void),
             ::std::mem::size_of::<[libc::c_char; 4]>()
         )) == (0_isize)) as i32)
             != 0)
     );
-    assert!(((((libc::close(fds[((0) as usize)])) == (0)) as i32) != 0));
+    assert!(((((libcc2rs::close_unsafe(fds[((0) as usize)])) == (0)) as i32) != 0));
     return 0;
 }

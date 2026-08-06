@@ -27,6 +27,6 @@ unsafe fn main_0() -> i32 {
         ofs.write_all(::std::slice::from_raw_parts(__start, __len));
         ofs.try_clone().unwrap()
     };
-    libc::unlink(file.as_ptr());
+    libcc2rs::unlink_unsafe(file.as_ptr());
     return 0;
 }

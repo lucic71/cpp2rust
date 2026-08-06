@@ -6,15 +6,15 @@ fn t1() -> ::libc::stat {
 }
 
 unsafe fn f1(a0: *const libc::c_char, a1: *mut ::libc::stat) -> i32 {
-    libc::stat(a0, a1)
+    libcc2rs::stat_unsafe(a0, a1)
 }
 
 unsafe fn f2(a0: i32, a1: *mut ::libc::stat) -> i32 {
-    libc::fstat(a0, a1)
+    libcc2rs::fstat_unsafe(a0, a1)
 }
 
 unsafe fn f3(a0: *const libc::c_char, a1: ::libc::mode_t) -> i32 {
-    libc::mkdir(a0, a1 as ::libc::mode_t)
+    libcc2rs::mkdir_unsafe(a0, a1 as ::libc::mode_t)
 }
 
 unsafe fn f4(a0: *const libc::c_char, a1: ::libc::mode_t) -> i32 {

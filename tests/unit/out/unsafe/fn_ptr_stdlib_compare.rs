@@ -84,7 +84,7 @@ unsafe fn main_0() -> i32 {
             assert!(((buf[((i) as usize)] as i32) == (('X' as libc::c_char) as i32)));
             i.prefix_inc();
         }
-        libc::fclose(stream);
+        libcc2rs::fclose_unsafe(stream);
     }
     let mut __do_while = true;
     'loop_: while __do_while || (0 != 0) {
@@ -119,7 +119,7 @@ unsafe fn main_0() -> i32 {
             assert!(((buf[((i) as usize)] as i32) == (('X' as libc::c_char) as i32)));
             i.prefix_inc();
         }
-        libc::fclose(stream);
+        libcc2rs::fclose_unsafe(stream);
     }
     let mut gn1: Option<
         unsafe fn(*const ::libc::c_void, usize, usize, *mut ::libc::FILE) -> usize,
@@ -169,7 +169,7 @@ unsafe fn main_0() -> i32 {
             stream,
         );
         assert!(((n) == (10_usize)));
-        libc::fclose(stream);
+        libcc2rs::fclose_unsafe(stream);
     }
     let mut __do_while = true;
     'loop_: while __do_while || (0 != 0) {
@@ -194,7 +194,7 @@ unsafe fn main_0() -> i32 {
             )
         });
         assert!(((n) == (10_usize)));
-        libc::fclose(stream);
+        libcc2rs::fclose_unsafe(stream);
     }
     return 0;
 }

@@ -2,7 +2,7 @@
 // Distributed under the MIT license that can be found in the LICENSE file.
 
 unsafe fn f1(a0: i32) -> i32 {
-    libc::close(a0)
+    libcc2rs::close_unsafe(a0)
 }
 
 unsafe fn f2(a0: i32, a1: i64, a2: i32) -> i64 {
@@ -10,11 +10,11 @@ unsafe fn f2(a0: i32, a1: i64, a2: i32) -> i64 {
 }
 
 unsafe fn f3(a0: i32, a1: *mut ::libc::c_void, a2: usize) -> isize {
-    libc::read(a0, a1, a2)
+    libcc2rs::read_unsafe(a0, a1, a2)
 }
 
 unsafe fn f4(a0: *const libc::c_char) -> i32 {
-    libc::unlink(a0)
+    libcc2rs::unlink_unsafe(a0)
 }
 
 unsafe fn f5(a0: *mut i32) -> i32 {
@@ -22,7 +22,7 @@ unsafe fn f5(a0: *mut i32) -> i32 {
 }
 
 unsafe fn f6(a0: i32, a1: i64) -> i32 {
-    libc::ftruncate(a0, a1)
+    libcc2rs::ftruncate_unsafe(a0, a1)
 }
 
 unsafe fn f7(a0: i32) -> i32 {
@@ -30,7 +30,7 @@ unsafe fn f7(a0: i32) -> i32 {
 }
 
 unsafe fn f8() -> u32 {
-    libc::geteuid()
+    libcc2rs::geteuid_unsafe()
 }
 
 unsafe fn f9(a0: *mut libc::c_char, a1: usize) -> i32 {
@@ -38,11 +38,11 @@ unsafe fn f9(a0: *mut libc::c_char, a1: usize) -> i32 {
 }
 
 unsafe fn f10(a0: i32, a1: *const ::libc::c_void, a2: usize) -> isize {
-    libc::write(a0, a1, a2)
+    libcc2rs::write_unsafe(a0, a1, a2)
 }
 
 unsafe fn f11(a0: *const libc::c_char) -> i32 {
-    libc::rmdir(a0)
+    libcc2rs::rmdir_unsafe(a0)
 }
 
 unsafe fn f12(a0: *const libc::c_char, a1: ::libc::uid_t, a2: ::libc::gid_t) -> i32 {

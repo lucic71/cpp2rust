@@ -189,3 +189,87 @@ pub unsafe fn fread_unsafe(
 ) -> usize {
     unsafe { libc::fread(a0, a1, a2, a3) }
 }
+
+/// # Safety
+///
+/// Same contract as C's `close`.
+pub unsafe fn close_unsafe(a0: i32) -> i32 {
+    unsafe { libc::close(a0) }
+}
+
+/// # Safety
+///
+/// Same contract as C's `read`.
+pub unsafe fn read_unsafe(a0: i32, a1: *mut ::std::ffi::c_void, a2: usize) -> isize {
+    unsafe { libc::read(a0, a1, a2) }
+}
+
+/// # Safety
+///
+/// Same contract as C's `write`.
+pub unsafe fn write_unsafe(a0: i32, a1: *const ::std::ffi::c_void, a2: usize) -> isize {
+    unsafe { libc::write(a0, a1, a2) }
+}
+
+/// # Safety
+///
+/// Same contract as C's `fcntl`, restricted to the three-argument form.
+pub unsafe fn fcntl_unsafe(a0: i32, a1: i32, a2: *mut ::std::ffi::c_void) -> i32 {
+    unsafe { libc::fcntl(a0, a1, a2) }
+}
+
+/// # Safety
+///
+/// Same contract as C's `ftruncate`.
+pub unsafe fn ftruncate_unsafe(a0: i32, a1: libc::off_t) -> i32 {
+    unsafe { libc::ftruncate(a0, a1) }
+}
+
+/// # Safety
+///
+/// Same contract as C's `stat`.
+pub unsafe fn stat_unsafe(a0: *const libc::c_char, a1: *mut libc::stat) -> i32 {
+    unsafe { libc::stat(a0, a1) }
+}
+
+/// # Safety
+///
+/// Same contract as C's `fstat`.
+pub unsafe fn fstat_unsafe(a0: i32, a1: *mut libc::stat) -> i32 {
+    unsafe { libc::fstat(a0, a1) }
+}
+
+/// # Safety
+///
+/// Same contract as C's `mkdir`.
+pub unsafe fn mkdir_unsafe(a0: *const libc::c_char, a1: libc::mode_t) -> i32 {
+    unsafe { libc::mkdir(a0, a1) }
+}
+
+/// # Safety
+///
+/// Same contract as C's `rmdir`.
+pub unsafe fn rmdir_unsafe(a0: *const libc::c_char) -> i32 {
+    unsafe { libc::rmdir(a0) }
+}
+
+/// # Safety
+///
+/// Same contract as C's `unlink`.
+pub unsafe fn unlink_unsafe(a0: *const libc::c_char) -> i32 {
+    unsafe { libc::unlink(a0) }
+}
+
+/// # Safety
+///
+/// Same contract as C's `geteuid`.
+pub unsafe fn geteuid_unsafe() -> libc::uid_t {
+    unsafe { libc::geteuid() }
+}
+
+/// # Safety
+///
+/// Same contract as C's `fclose`.
+pub unsafe fn fclose_unsafe(a0: *mut libc::FILE) -> i32 {
+    unsafe { libc::fclose(a0) }
+}

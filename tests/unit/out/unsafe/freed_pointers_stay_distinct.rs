@@ -29,8 +29,8 @@ unsafe fn main_0() -> i32 {
         (c"w".as_ptr().cast_mut()).cast_const(),
     );
     assert!((((((*p).a) != ((*p).b)) as i32) != 0));
-    libc::fclose((*p).a);
-    libc::fclose((*p).b);
+    libcc2rs::fclose_unsafe((*p).a);
+    libcc2rs::fclose_unsafe((*p).b);
     let mut i: i32 = 0;
     'loop_: while ((((i) < (64)) as i32) != 0) {
         let mut q: *mut libc::c_char = (libcc2rs::malloc_unsafe(16_usize) as *mut libc::c_char);

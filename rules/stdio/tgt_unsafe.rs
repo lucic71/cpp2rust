@@ -10,7 +10,7 @@ unsafe fn f1(a0: *const libc::c_char, a1: *const libc::c_char) -> *mut ::libc::F
 }
 
 unsafe fn f2(a0: *mut ::libc::FILE) -> i32 {
-    libc::fclose(a0)
+    libcc2rs::fclose_unsafe(a0)
 }
 
 unsafe fn f3(a0: *mut ::libc::FILE) -> i64 {

@@ -18,9 +18,9 @@ unsafe fn main_0() -> i32 {
             ::libc::O_RDONLY as i32,
         )
     });
-    libc::close(fd);
+    libcc2rs::close_unsafe(fd);
     let mut buf: [libc::c_char; 4] = [(0 as libc::c_char); 4];
-    let mut n: isize = libc::read(
+    let mut n: isize = libcc2rs::read_unsafe(
         fd,
         ((buf.as_mut_ptr() as *mut libc::c_char) as *mut ::libc::c_void),
         ::std::mem::size_of::<[libc::c_char; 4]>(),

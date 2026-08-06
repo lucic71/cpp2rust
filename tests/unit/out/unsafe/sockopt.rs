@@ -48,6 +48,6 @@ unsafe fn main_0() -> i32 {
             != 0)
     );
     assert!(((((err) == (0)) as i32) != 0));
-    assert!(((((libc::close(s)) == (0)) as i32) != 0));
+    assert!(((((libcc2rs::close_unsafe(s)) == (0)) as i32) != 0));
     return 0;
 }

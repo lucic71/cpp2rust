@@ -46,7 +46,7 @@ unsafe fn main_0() -> i32 {
             != 0)
     );
     assert!(
-        ((((libc::write(
+        ((((libcc2rs::write_unsafe(
             fds[((1) as usize)],
             ((c"x".as_ptr().cast_mut() as *const libc::c_char) as *const ::libc::c_void),
             1_usize
@@ -73,7 +73,7 @@ unsafe fn main_0() -> i32 {
         ) as i32
             != 0)
     );
-    assert!(((((libc::close(fds[((0) as usize)])) == (0)) as i32) != 0));
-    assert!(((((libc::close(fds[((1) as usize)])) == (0)) as i32) != 0));
+    assert!(((((libcc2rs::close_unsafe(fds[((0) as usize)])) == (0)) as i32) != 0));
+    assert!(((((libcc2rs::close_unsafe(fds[((1) as usize)])) == (0)) as i32) != 0));
     return 0;
 }

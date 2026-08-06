@@ -31,7 +31,7 @@ unsafe fn main_0() -> i32 {
     assert!((((((flags) & (::libc::O_NONBLOCK)) != (0)) as i32) != 0));
     let mut b: libc::c_char = (0 as libc::c_char);
     assert!(
-        ((((libc::read(
+        ((((libcc2rs::read_unsafe(
             fds[((0) as usize)],
             (((&raw mut b as *mut libc::c_char) as *mut libc::c_char) as *mut ::libc::c_void),
             1_usize
@@ -52,7 +52,7 @@ unsafe fn main_0() -> i32 {
             as i32)
             != 0)
     );
-    assert!(((((libc::close(fds[((0) as usize)])) == (0)) as i32) != 0));
-    assert!(((((libc::close(fds[((1) as usize)])) == (0)) as i32) != 0));
+    assert!(((((libcc2rs::close_unsafe(fds[((0) as usize)])) == (0)) as i32) != 0));
+    assert!(((((libcc2rs::close_unsafe(fds[((1) as usize)])) == (0)) as i32) != 0));
     return 0;
 }

@@ -12,12 +12,14 @@ pub unsafe fn test_stat_0() {
     let mut fp: *mut ::libc::FILE = libc::fopen(path, (c"wb".as_ptr().cast_mut()).cast_const());
     assert!((((!((fp).is_null())) as i32) != 0));
     libc::fputs((c"hello".as_ptr().cast_mut()).cast_const(), fp);
-    assert!(((((libc::fclose(fp)) == (0)) as i32) != 0));
+    assert!(((((libcc2rs::fclose_unsafe(fp)) == (0)) as i32) != 0));
     let mut st: ::libc::stat = unsafe { std::mem::zeroed() };
-    assert!(((((libc::stat(path, (&raw mut st as *mut ::libc::stat))) == (0)) as i32) != 0));
+    assert!(
+        ((((libcc2rs::stat_unsafe(path, (&raw mut st as *mut ::libc::stat))) == (0)) as i32) != 0)
+    );
     assert!(((((st.st_size) == (5_i64)) as i32) != 0));
     assert!(((((st.st_mtime) > (0_i64)) as i32) != 0));
-    libc::unlink(path);
+    libcc2rs::unlink_unsafe(path);
 }
 pub unsafe fn test_fstat_1() {
     let mut path: *const libc::c_char =
@@ -28,11 +30,13 @@ pub unsafe fn test_fstat_1() {
     libc::fflush(fp);
     let mut fd: i32 = libc::fileno(fp);
     let mut st: ::libc::stat = unsafe { std::mem::zeroed() };
-    assert!(((((libc::fstat(fd, (&raw mut st as *mut ::libc::stat))) == (0)) as i32) != 0));
+    assert!(
+        ((((libcc2rs::fstat_unsafe(fd, (&raw mut st as *mut ::libc::stat))) == (0)) as i32) != 0)
+    );
     assert!(((((st.st_size) == (11_i64)) as i32) != 0));
     assert!(((((st.st_mtime) > (0_i64)) as i32) != 0));
-    assert!(((((libc::fclose(fp)) == (0)) as i32) != 0));
-    libc::unlink(path);
+    assert!(((((libcc2rs::fclose_unsafe(fp)) == (0)) as i32) != 0));
+    libcc2rs::unlink_unsafe(path);
 }
 pub fn main() {
     unsafe {

@@ -43,8 +43,8 @@ pub unsafe fn test_fileno_3() {
     let mut fp: *mut ::libc::FILE = libc::fopen(file, (c"wb".as_ptr().cast_mut()).cast_const());
     assert!((((!((fp).is_null())) as i32) != 0));
     assert!(((((libc::fileno(fp)) > (2)) as i32) != 0));
-    libc::fclose(fp);
-    assert!(((((libc::unlink(file)) == (0)) as i32) != 0));
+    libcc2rs::fclose_unsafe(fp);
+    assert!(((((libcc2rs::unlink_unsafe(file)) == (0)) as i32) != 0));
 }
 pub fn main() {
     unsafe {

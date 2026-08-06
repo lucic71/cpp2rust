@@ -14,6 +14,6 @@ pub fn main() {
 unsafe fn main_0() -> i32 {
     let mut s: i32 = libc::socket(libc::AF_INET, libc::SOCK_STREAM, 0);
     assert!(((((s) >= (0)) as i32) != 0));
-    assert!(((((libc::close(s)) == (0)) as i32) != 0));
+    assert!(((((libcc2rs::close_unsafe(s)) == (0)) as i32) != 0));
     return 0;
 }

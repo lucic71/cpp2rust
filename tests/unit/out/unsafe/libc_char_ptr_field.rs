@@ -12,7 +12,7 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    let mut pw: *mut ::libc::passwd = libc::getpwuid(libc::geteuid());
+    let mut pw: *mut ::libc::passwd = libc::getpwuid(libcc2rs::geteuid_unsafe());
     if !!(pw).is_null() {
         return 0;
     }

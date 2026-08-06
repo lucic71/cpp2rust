@@ -17,7 +17,7 @@ unsafe fn main_0() -> i32 {
         (c"wb".as_ptr().cast_mut()).cast_const(),
     );
     assert!(!(fp).is_null());
-    libc::fclose(fp);
+    libcc2rs::fclose_unsafe(fp);
     return if ((((libc::fputc(('x' as i32), fp)) == ('x' as i32)) as i32) != 0) {
         1
     } else {
