@@ -91,6 +91,8 @@ public:
 
   RsExpr *ConvertGotoBlock(clang::CompoundStmt *body);
 
+  RsExpr *TryConvertFlattenedBody(clang::CompoundStmt *body);
+
   RsExpr *EmitHoistedDecls(clang::CompoundStmt *body);
 
   virtual RsExpr *VisitFunctionTemplateDecl(clang::FunctionTemplateDecl *decl);

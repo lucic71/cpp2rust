@@ -12,6 +12,7 @@
 
 #include <algorithm>
 #include <format>
+#include <functional>
 #include <tuple>
 #include <utility>
 
@@ -461,8 +462,318 @@ RsExpr *Converter::ConvertGotoBlock(clang::CompoundStmt *body) {
              Text(token::kSemiColon));
 }
 
+static void ScanGotoScopes(
+    clang::Stmt *stmt, std::vector<const clang::Stmt *> &scopes,
+    std::unordered_set<const clang::Stmt *> &transparent,
+    std::unordered_map<std::string, const clang::Stmt *> &owner,
+    std::vector<std::pair<std::string, std::vector<const clang::Stmt *>>>
+        &gotos) {
+  if (stmt == nullptr) {
+    return;
+  }
+  if (auto *sw = clang::dyn_cast<clang::SwitchStmt>(stmt)) {
+    if (auto *sw_body = clang::dyn_cast<clang::CompoundStmt>(sw->getBody())) {
+      std::vector<clang::CompoundStmt *> flattened;
+      for (const auto &arm : AnalyzeSwitchArms(sw_body, &flattened)) {
+        if (!arm.label.empty()) {
+          owner.emplace(arm.label.str(), sw_body);
+        }
+      }
+      transparent.insert(flattened.begin(), flattened.end());
+    }
+  }
+  if (auto *compound = clang::dyn_cast<clang::CompoundStmt>(stmt)) {
+    bool opaque = !transparent.contains(compound);
+    if (opaque) {
+      scopes.push_back(compound);
+    }
+    for (auto *child : compound->body()) {
+      for (auto *inner = child;
+           clang::isa<clang::LabelStmt>(inner) && opaque;) {
+        auto *label = clang::cast<clang::LabelStmt>(inner);
+        owner.emplace(label->getDecl()->getName().str(), compound);
+        inner = label->getSubStmt();
+      }
+      ScanGotoScopes(child, scopes, transparent, owner, gotos);
+    }
+    if (opaque) {
+      scopes.pop_back();
+    }
+    return;
+  }
+  if (auto *go = clang::dyn_cast<clang::GotoStmt>(stmt)) {
+    gotos.emplace_back(go->getLabel()->getName().str(), scopes);
+    return;
+  }
+  for (auto *child : stmt->children()) {
+    ScanGotoScopes(child, scopes, transparent, owner, gotos);
+  }
+}
+
+static bool NeedsFlattening(clang::CompoundStmt *body) {
+  std::vector<const clang::Stmt *> scopes;
+  std::unordered_set<const clang::Stmt *> transparent;
+  std::unordered_map<std::string, const clang::Stmt *> owner;
+  std::vector<std::pair<std::string, std::vector<const clang::Stmt *>>> gotos;
+  ScanGotoScopes(body, scopes, transparent, owner, gotos);
+
+  for (const auto &[label, enclosing] : gotos) {
+    auto it = owner.find(label);
+    if (it == owner.end() ||
+        std::ranges::find(enclosing, it->second) == enclosing.end()) {
+      return true;
+    }
+  }
+  return false;
+}
+
+static void CollectLocalDecls(clang::Stmt *stmt,
+                              std::vector<clang::VarDecl *> &out) {
+  if (stmt == nullptr) {
+    return;
+  }
+  if (auto *decl_stmt = clang::dyn_cast<clang::DeclStmt>(stmt)) {
+    for (auto *decl : decl_stmt->decls()) {
+      if (auto *var = clang::dyn_cast<clang::VarDecl>(decl)) {
+        out.push_back(var);
+      }
+    }
+  }
+  for (auto *child : stmt->children()) {
+    CollectLocalDecls(child, out);
+  }
+}
+
+RsExpr *Converter::TryConvertFlattenedBody(clang::CompoundStmt *body) {
+  if (!NeedsFlattening(body)) {
+    return nullptr;
+  }
+  PushHoistedDecls push_hoisted(hoisted_decls_);
+
+  std::vector<clang::VarDecl *> locals;
+  CollectLocalDecls(body, locals);
+  std::unordered_map<std::string, unsigned> name_count;
+  std::unordered_map<const clang::Decl *, std::string> renames;
+  for (auto *var : locals) {
+    if (var->isStaticLocal() || IsGlobalVar(var) || var->getName().empty()) {
+      continue;
+    }
+    if (auto seen = name_count[var->getName().str()]++; seen > 0) {
+      renames.emplace(var, std::format("{}__{}", var->getName().str(), seen));
+    }
+  }
+  SetLocalRenames(std::move(renames));
+
+  std::vector<RsExpr *> hoisted;
+  for (auto *var : locals) {
+    hoisted_decls_.insert(var);
+    if (var->isStaticLocal()) {
+      hoisted.push_back(VisitVarDecl(var));
+      continue;
+    }
+    auto [header, proceed] = ConvertVarDeclSkipInit(var);
+    if (proceed) {
+      hoisted.push_back(Cat(header, Text(token::kAssign),
+                            ConvertVarDefaultInit(var->getType()),
+                            Text(token::kSemiColon)));
+    }
+  }
+
+  std::vector<std::pair<std::string, std::vector<RsExpr *>>> arms;
+  unsigned counter = 0;
+  std::vector<std::string> break_targets;
+  std::vector<std::string> continue_targets;
+
+  auto fresh = [&counter](const char *kind) {
+    return std::format("__f{}_{}", counter++, kind);
+  };
+  auto start_arm = [&arms](std::string label) {
+    arms.emplace_back(std::move(label), std::vector<RsExpr *>{});
+  };
+  auto emit = [&arms](RsExpr *node) { arms.back().second.push_back(node); };
+  auto go = [this](const std::string &label) {
+    return Text(std::format("goto!('{});", label));
+  };
+  auto jump_unless = [this, &go](clang::Expr *cond, const std::string &label) {
+    return Cat(Text("if !"), Parens(ConvertCondition(cond)), Braces(go(label)));
+  };
+
+  std::function<void(clang::Stmt *)> emit_stmt = [&](clang::Stmt *stmt) {
+    if (stmt == nullptr) {
+      return;
+    }
+    switch (stmt->getStmtClass()) {
+    case clang::Stmt::CompoundStmtClass:
+      for (auto *child : clang::cast<clang::CompoundStmt>(stmt)->body()) {
+        emit_stmt(child);
+      }
+      return;
+    case clang::Stmt::LabelStmtClass: {
+      auto *label = clang::cast<clang::LabelStmt>(stmt);
+      start_arm(label->getDecl()->getName().str());
+      emit_stmt(label->getSubStmt());
+      return;
+    }
+    case clang::Stmt::AttributedStmtClass:
+      emit_stmt(clang::cast<clang::AttributedStmt>(stmt)->getSubStmt());
+      return;
+    case clang::Stmt::IfStmtClass: {
+      auto *if_stmt = clang::cast<clang::IfStmt>(stmt);
+      emit_stmt(if_stmt->getInit());
+      auto join = fresh("join");
+      auto els = if_stmt->getElse() != nullptr ? fresh("else") : join;
+      emit(jump_unless(if_stmt->getCond(), els));
+      start_arm(fresh("then"));
+      emit_stmt(if_stmt->getThen());
+      if (if_stmt->getElse() != nullptr) {
+        emit(go(join));
+        start_arm(els);
+        emit_stmt(if_stmt->getElse());
+      }
+      start_arm(join);
+      return;
+    }
+    case clang::Stmt::WhileStmtClass: {
+      auto *loop = clang::cast<clang::WhileStmt>(stmt);
+      auto cond = fresh("cond");
+      auto exit = fresh("exit");
+      start_arm(cond);
+      emit(jump_unless(loop->getCond(), exit));
+      start_arm(fresh("body"));
+      break_targets.push_back(exit);
+      continue_targets.push_back(cond);
+      emit_stmt(loop->getBody());
+      break_targets.pop_back();
+      continue_targets.pop_back();
+      emit(go(cond));
+      start_arm(exit);
+      return;
+    }
+    case clang::Stmt::DoStmtClass: {
+      auto *loop = clang::cast<clang::DoStmt>(stmt);
+      auto body_label = fresh("body");
+      auto cond = fresh("cond");
+      auto exit = fresh("exit");
+      start_arm(body_label);
+      break_targets.push_back(exit);
+      continue_targets.push_back(cond);
+      emit_stmt(loop->getBody());
+      break_targets.pop_back();
+      continue_targets.pop_back();
+      start_arm(cond);
+      emit(Cat(Text(keyword::kIf), Parens(ConvertCondition(loop->getCond())),
+               Braces(go(body_label))));
+      start_arm(exit);
+      return;
+    }
+    case clang::Stmt::ForStmtClass: {
+      auto *loop = clang::cast<clang::ForStmt>(stmt);
+      emit_stmt(loop->getInit());
+      auto cond = fresh("cond");
+      auto inc = fresh("inc");
+      auto exit = fresh("exit");
+      start_arm(cond);
+      if (loop->getCond() != nullptr) {
+        emit(jump_unless(loop->getCond(), exit));
+      }
+      start_arm(fresh("body"));
+      break_targets.push_back(exit);
+      continue_targets.push_back(inc);
+      emit_stmt(loop->getBody());
+      break_targets.pop_back();
+      continue_targets.pop_back();
+      start_arm(inc);
+      if (loop->getInc() != nullptr) {
+        emit(Cat(ConvertExpr(loop->getInc()), Text(token::kSemiColon)));
+      }
+      emit(go(cond));
+      start_arm(exit);
+      return;
+    }
+    case clang::Stmt::SwitchStmtClass: {
+      auto *sw = clang::cast<clang::SwitchStmt>(stmt);
+      auto *sw_body = clang::dyn_cast<clang::CompoundStmt>(sw->getBody());
+      if (sw_body == nullptr) {
+        emit(ConvertFullStmt(stmt));
+        return;
+      }
+      std::vector<clang::CompoundStmt *> flattened;
+      auto sw_arms = AnalyzeSwitchArms(sw_body, &flattened);
+      auto exit = fresh("swexit");
+      std::vector<std::string> labels;
+      for (const auto &arm : sw_arms) {
+        labels.push_back(arm.label.empty() ? fresh("case") : arm.label.str());
+      }
+
+      std::string default_label = exit;
+      std::vector<RsExpr *> cases;
+      for (unsigned i = 0; i < sw_arms.size(); ++i) {
+        if (sw_arms[i].is_default_case) {
+          default_label = labels[i];
+          continue;
+        }
+        if (sw_arms[i].head == nullptr) {
+          continue;
+        }
+        cases.push_back(Cat(Text("__v if __v == "),
+                            ConvertSwitchCaseCondition(sw_arms[i].head),
+                            Braces(go(labels[i])), Text(token::kComma)));
+      }
+      cases.push_back(Cat(Text("_ => "), Braces(go(default_label)),
+                          Text(token::kComma)));
+      emit(Cat(Text("match"), ConvertExpr(sw->getCond()),
+               Braces(arena_.New<Concat>(std::move(cases)))));
+
+      break_targets.push_back(exit);
+      for (unsigned i = 0; i < sw_arms.size(); ++i) {
+        start_arm(labels[i]);
+        for (auto *arm_stmt : sw_arms[i].body) {
+          emit_stmt(arm_stmt);
+        }
+      }
+      break_targets.pop_back();
+      start_arm(exit);
+      return;
+    }
+    case clang::Stmt::BreakStmtClass:
+      assert(!break_targets.empty() && "break outside of a loop or switch");
+      emit(go(break_targets.back()));
+      return;
+    case clang::Stmt::ContinueStmtClass:
+      assert(!continue_targets.empty() && "continue outside of a loop");
+      emit(go(continue_targets.back()));
+      return;
+    default:
+      emit(ConvertFullStmt(stmt));
+      return;
+    }
+  };
+
+  start_arm("__entry");
+  emit_stmt(body);
+
+  std::vector<RsExpr *> parts;
+  for (auto &[label, stmts] : arms) {
+    parts.push_back(Text(std::format("'{}: ", label)));
+    parts.push_back(Braces(arena_.New<Concat>(std::move(stmts))));
+  }
+  auto *node = Cat(arena_.New<Concat>(std::move(hoisted)), Text("goto_block!"),
+                   Parens(Braces(arena_.New<Concat>(std::move(parts)))),
+                   Text(token::kSemiColon));
+  SetLocalRenames({});
+  return node;
+}
+
 RsExpr *Converter::ConvertFunctionBody(clang::FunctionDecl *decl) {
   if (auto compound = clang::dyn_cast<clang::CompoundStmt>(decl->getBody())) {
+    if (auto *node = TryConvertFlattenedBody(compound)) {
+      if (!decl->getReturnType()->isVoidType()) {
+        node = Cat(
+            node,
+            Text(R"(panic!("ub: non-void function does not return a value"))"));
+      }
+      return node;
+    }
     if (CompoundHasTopLevelLabel(compound)) {
       auto *node = ConvertGotoBlock(compound);
       if (!decl->getReturnType()->isVoidType()) {
@@ -2641,6 +2952,7 @@ RsExpr *Converter::VisitUnaryOperator(clang::UnaryOperator *expr) {
   }
   switch (opcode) {
   case clang::UO_Extension:
+  case clang::UO_Plus:
     return ConvertExpr(sub_expr);
   case clang::UO_AddrOf:
     return Parens(ConvertAddrOf(sub_expr, expr->getType()));

@@ -492,7 +492,17 @@ static size_t GetDeclId(const clang::NamedDecl *decl, bool internal) {
   return type_mapping.try_emplace(key, type_mapping.size()).first->second;
 }
 
+static std::unordered_map<const clang::Decl *, std::string> local_renames;
+
+void SetLocalRenames(
+    std::unordered_map<const clang::Decl *, std::string> renames) {
+  local_renames = std::move(renames);
+}
+
 std::string GetNamedDeclAsString(const clang::NamedDecl *decl) {
+  if (auto it = local_renames.find(decl); it != local_renames.end()) {
+    return it->second;
+  }
   auto name = decl->getDeclName().isIdentifier() ? decl->getName().str()
                                                  : decl->getNameAsString();
 
