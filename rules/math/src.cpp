@@ -8,3 +8,5 @@ double f1(double x) { return cos(x); }
 double f2(double x) { return round(x); }
 
 double f3(double x) { return sin(x); }
+
+double f4(double x) { return fabs(x); }

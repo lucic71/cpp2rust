@@ -53,3 +53,7 @@ clockid_t f11() { return CLOCK_MONOTONIC_RAW; }
 #endif
 
 clock_t f12(void) { return clock(); }
+
+int f13(const struct timespec *req, struct timespec *rem) {
+  return nanosleep(req, rem);
+}

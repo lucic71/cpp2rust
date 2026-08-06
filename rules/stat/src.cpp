@@ -19,3 +19,9 @@ int f5(int dirfd, const char *pathname, const struct timespec *times,
        int flags) {
   return utimensat(dirfd, pathname, times, flags);
 }
+
+int f6(const char *pathname, struct stat *statbuf) {
+  return lstat(pathname, statbuf);
+}
+
+int f7(int fd, mode_t mode) { return fchmod(fd, mode); }

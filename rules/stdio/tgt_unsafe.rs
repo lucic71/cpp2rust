@@ -124,3 +124,20 @@ unsafe fn f28(a0: *mut ::libc::FILE) -> i32 {
 unsafe extern "C" {
     fn f29(a0: *mut ::libc::FILE, a1: *const libc::c_char, ...) -> i32;
 }
+
+unsafe fn f30(a0: *mut ::libc::FILE) {
+    libc::rewind(a0)
+}
+
+unsafe extern "C" {
+    fn f31(a0: *mut libc::c_char, a1: *const libc::c_char, ...) -> i32;
+    fn f32(a0: *const libc::c_char, a1: *const libc::c_char, ...) -> i32;
+}
+
+unsafe fn f33(a0: *const libc::c_char, a1: *const libc::c_char) -> *mut ::libc::FILE {
+    libc::popen(a0, a1)
+}
+
+unsafe fn f34(a0: *mut ::libc::FILE) -> i32 {
+    libc::pclose(a0)
+}

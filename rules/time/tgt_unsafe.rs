@@ -70,3 +70,7 @@ unsafe fn f12() -> ::libc::clock_t {
     ::libc::clock_gettime(::libc::CLOCK_PROCESS_CPUTIME_ID, &mut __ts);
     (__ts.tv_sec * 1_000_000 + __ts.tv_nsec / 1_000) as ::libc::clock_t
 }
+
+unsafe fn f13(a0: *const ::libc::timespec, a1: *mut ::libc::timespec) -> i32 {
+    libc::nanosleep(a0, a1)
+}

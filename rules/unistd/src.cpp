@@ -30,3 +30,33 @@ int f11(const char *pathname) { return rmdir(pathname); }
 int f12(const char *pathname, uid_t owner, gid_t group) {
   return chown(pathname, owner, group);
 }
+
+int f13(const char *pathname, int mode) { return access(pathname, mode); }
+
+ssize_t f14(const char *pathname, char *buf, size_t bufsiz) {
+  return readlink(pathname, buf, bufsiz);
+}
+
+int f15(const char *target, const char *linkpath) {
+  return symlink(target, linkpath);
+}
+
+char *f16(char *buf, size_t size) { return getcwd(buf, size); }
+
+int f17(const char *path) { return chdir(path); }
+
+int f18(int fd) { return fsync(fd); }
+
+ssize_t f19(int fd, void *buf, size_t count, off_t offset) {
+  return pread(fd, buf, count, offset);
+}
+
+ssize_t f20(int fd, const void *buf, size_t count, off_t offset) {
+  return pwrite(fd, buf, count, offset);
+}
+
+pid_t f21(void) { return getpid(); }
+
+uid_t f22(void) { return getuid(); }
+
+int f23(int fd, uid_t owner, gid_t group) { return fchown(fd, owner, group); }

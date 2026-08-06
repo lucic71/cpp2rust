@@ -72,3 +72,21 @@ unsafe fn f10(a0: *const libc::c_char, a1: *mut libc::c_char) -> *mut libc::c_ch
 unsafe fn f11(a0: i32) {
     std::process::exit(a0);
 }
+
+unsafe fn f12(a0: *const libc::c_char) -> i32 {
+    libc::atoi(a0)
+}
+
+unsafe fn f13(a0: *const libc::c_char, a1: *mut *mut libc::c_char) -> f64 {
+    libc::strtod(a0, a1)
+}
+
+unsafe fn f14(a0: *const libc::c_char, a1: *mut *mut libc::c_char, a2: i32) -> i64 {
+    libc::strtoll(a0, a1, a2)
+}
+
+unsafe fn f15(a0: unsafe fn()) -> i32 {
+    libc::atexit(std::mem::transmute::<*const (), extern "C" fn()>(
+        a0 as *const (),
+    ))
+}

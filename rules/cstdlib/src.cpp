@@ -34,3 +34,13 @@ char *f10(const char *path, char *resolved_path) {
 }
 
 void f11(int status) { return exit(status); }
+
+int f12(const char *nptr) { return atoi(nptr); }
+
+double f13(const char *nptr, char **endptr) { return strtod(nptr, endptr); }
+
+long long f14(const char *nptr, char **endptr, int base) {
+  return strtoll(nptr, endptr, base);
+}
+
+int f15(void (*function)(void)) { return atexit(function); }

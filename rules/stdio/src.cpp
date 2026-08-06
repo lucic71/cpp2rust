@@ -84,3 +84,21 @@ template <typename... Args>
 int f29(FILE *stream, const char *format, Args... args) {
   return fprintf(stream, format, args...);
 }
+
+void f30(FILE *stream) { return rewind(stream); }
+
+template <typename... Args>
+int f31(char *a0, const char *a1, Args... args) {
+  return sprintf(a0, a1, args...);
+}
+
+template <typename... Args>
+int f32(const char *a0, const char *a1, Args... args) {
+  return sscanf(a0, a1, args...);
+}
+
+FILE *f33(const char *command, const char *type) {
+  return popen(command, type);
+}
+
+int f34(FILE *stream) { return pclose(stream); }

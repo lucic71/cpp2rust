@@ -10,3 +10,6 @@ unsafe fn f2(a0: f64) -> f64 {
 unsafe fn f3(a0: f64) -> f64 {
     a0.sin()
 }
+unsafe fn f4(a0: f64) -> f64 {
+    a0.abs()
+}

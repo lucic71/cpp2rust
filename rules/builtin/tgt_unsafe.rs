@@ -65,3 +65,23 @@ unsafe fn f16() -> f64 {
 unsafe fn f17(a0: *const ::libc::c_void, va: &[::libcc2rs::VaArg]) {
     ();
 }
+
+unsafe fn f18(a0: f64) -> f64 {
+    a0.ceil()
+}
+
+unsafe fn f19(a0: f64) -> f64 {
+    a0.floor()
+}
+
+unsafe fn f20(a0: u64) -> i32 {
+    a0.leading_zeros() as i32
+}
+
+unsafe fn f21() -> f32 {
+    f32::INFINITY
+}
+
+unsafe fn f22(a0: *const libc::c_char) -> f32 {
+    f32::NAN
+}

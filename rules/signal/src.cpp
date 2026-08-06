@@ -6,3 +6,5 @@
 int f1(int signum, const struct sigaction *act, struct sigaction *oldact) {
   return sigaction(signum, act, oldact);
 }
+
+int f2(int sig) { return raise(sig); }
