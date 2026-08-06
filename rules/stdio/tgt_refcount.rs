@@ -15,9 +15,7 @@ fn f1(a0: Ptr<u8>, a1: Ptr<u8>) -> Ptr<CFile> {
 }
 
 fn f2(a0: Ptr<CFile>) -> i32 {
-    let __r = a0.with(|__f| __f.close());
-    a0.delete();
-    __r
+    libcc2rs::fclose_refcount(a0.clone())
 }
 
 fn f3(a0: Ptr<CFile>) -> i64 {
@@ -204,4 +202,12 @@ fn f29(a0: Ptr<CFile>, a1: Ptr<u8>, va: &[VaArg]) -> i32 {
 
 fn f28(a0: Ptr<CFile>) -> i32 {
     a0.with_mut(|__f| __f.getc())
+}
+
+fn f33(a0: Ptr<u8>, a1: Ptr<u8>) -> Ptr<CFile> {
+    libcc2rs::popen_refcount(a0.clone(), a1.clone())
+}
+
+fn f34(a0: Ptr<CFile>) -> i32 {
+    libcc2rs::pclose_refcount(a0.clone())
 }

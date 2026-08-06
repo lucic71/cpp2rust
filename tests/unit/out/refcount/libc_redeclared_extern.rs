@@ -61,9 +61,9 @@ fn main_0() -> i32 {
     ));
     assert!(((((*tty.borrow()) == 0) as i32) != 0));
     let k: Value<sink> = <Value<sink>>::default();
-    (*k.borrow_mut()).in_ = libc::popen(
-        Ptr::from_string_literal(b"exit 7"),
-        Ptr::from_string_literal(b"r"),
+    (*k.borrow_mut()).in_ = libcc2rs::popen_refcount(
+        Ptr::from_string_literal(b"exit 7").clone(),
+        Ptr::from_string_literal(b"r").clone(),
     );
     assert!((((!(((*k.borrow()).in_).is_null())) as i32) != 0));
     (*k.borrow_mut()).closer = FnPtr::<fn(Ptr<CFile>) -> i32>::new(libcc2rs::pclose_refcount);

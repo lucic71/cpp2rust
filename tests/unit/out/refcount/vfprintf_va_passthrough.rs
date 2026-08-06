@@ -86,14 +86,7 @@ fn main_0() -> i32 {
         }) == 103) as i32)
             != 0)
     );
-    assert!(
-        ((({
-            let __r = (*fp.borrow()).with(|__f| __f.close());
-            (*fp.borrow()).delete();
-            __r
-        } == 0) as i32)
-            != 0)
-    );
+    assert!((((libcc2rs::fclose_refcount((*fp.borrow()).clone()) == 0) as i32) != 0));
     (*fp.borrow_mut()) = match CFile::open(
         &(*path.borrow()).to_rust_string(),
         &Ptr::from_string_literal(b"rb").to_rust_string(),
@@ -156,23 +149,7 @@ fn main_0() -> i32 {
             == 0) as i32)
             != 0)
     );
-    assert!(
-        ((({
-            let __r = (*fp.borrow()).with(|__f| __f.close());
-            (*fp.borrow()).delete();
-            __r
-        } == 0) as i32)
-            != 0)
-    );
-    assert!(
-        (((match nix::unistd::unlink((*path.borrow()).to_rust_string().as_str()) {
-            Ok(()) => 0,
-            Err(__e) => {
-                libcc2rs::cpp2rust_errno().write(__e as i32);
-                -1
-            }
-        } == 0) as i32)
-            != 0)
-    );
+    assert!((((libcc2rs::fclose_refcount((*fp.borrow()).clone()) == 0) as i32) != 0));
+    assert!((((libcc2rs::unlink_refcount((*path.borrow()).clone()) == 0) as i32) != 0));
     return 0;
 }

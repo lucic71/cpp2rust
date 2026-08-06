@@ -1811,10 +1811,9 @@ static bool IsZeroInitExpr(clang::ASTContext &ctx, const clang::Expr *expr) {
     return true;
   }
   if (auto list = clang::dyn_cast<clang::InitListExpr>(expr)) {
-    return std::all_of(list->inits().begin(), list->inits().end(),
-                       [&](const clang::Expr *init) {
-                         return IsZeroInitExpr(ctx, init);
-                       });
+    return std::all_of(
+        list->inits().begin(), list->inits().end(),
+        [&](const clang::Expr *init) { return IsZeroInitExpr(ctx, init); });
   }
   if (expr->isNullPointerConstant(ctx, clang::Expr::NPC_ValueDependentIsNull) !=
       clang::Expr::NPCK_NotNull) {

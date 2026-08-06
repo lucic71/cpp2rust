@@ -59,20 +59,8 @@ fn main_0() -> i32 {
         }) as i32)
             != 0)
     );
-    {
-        let __r = (*p.borrow())
-            .with(|__v| (*__v).a.clone())
-            .with(|__f| __f.close());
-        (*p.borrow()).with(|__v| (*__v).a.clone()).delete();
-        __r
-    };
-    {
-        let __r = (*p.borrow())
-            .with(|__v| (*__v).b.clone())
-            .with(|__f| __f.close());
-        (*p.borrow()).with(|__v| (*__v).b.clone()).delete();
-        __r
-    };
+    libcc2rs::fclose_refcount((*p.borrow()).with(|__v| (*__v).a.clone()).clone());
+    libcc2rs::fclose_refcount((*p.borrow()).with(|__v| (*__v).b.clone()).clone());
     let i: Value<i32> = Rc::new(RefCell::new(0));
     'loop_: while ((((*i.borrow()) < 64) as i32) != 0) {
         let q: Value<Ptr<u8>> = Rc::new(RefCell::new(

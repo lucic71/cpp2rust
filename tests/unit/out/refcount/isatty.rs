@@ -43,16 +43,7 @@ fn main_0() -> i32 {
         } == 0) as i32)
             != 0)
     );
-    assert!((((FdRegistry::close((*fd.borrow())) == 0) as i32) != 0));
-    assert!(
-        (((match nix::unistd::unlink((*path.borrow()).to_rust_string().as_str()) {
-            Ok(()) => 0,
-            Err(__e) => {
-                libcc2rs::cpp2rust_errno().write(__e as i32);
-                -1
-            }
-        } == 0) as i32)
-            != 0)
-    );
+    assert!((((libcc2rs::close_refcount((*fd.borrow())) == 0) as i32) != 0));
+    assert!((((libcc2rs::unlink_refcount((*path.borrow()).clone()) == 0) as i32) != 0));
     return 0;
 }

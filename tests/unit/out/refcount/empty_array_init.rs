@@ -10,6 +10,6 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let vec_: Value<Vec<i32>> = Rc::new(RefCell::new(vec![]));
+    let vec_: Value<Vec<i32>> = Rc::new(RefCell::new(Default::default()));
     return 0;
 }

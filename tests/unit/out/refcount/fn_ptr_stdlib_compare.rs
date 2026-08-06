@@ -100,11 +100,7 @@ fn main_0() -> i32 {
             assert!((((*buf.borrow())[(*i.borrow()) as usize] as i32) == (('X' as u8) as i32)));
             (*i.borrow_mut()).prefix_inc();
         }
-        {
-            let __r = (*stream.borrow()).with(|__f| __f.close());
-            (*stream.borrow()).delete();
-            __r
-        };
+        libcc2rs::fclose_refcount((*stream.borrow()).clone());
     }
     let mut __do_while = true;
     'loop_: while __do_while || (0 != 0) {
@@ -149,11 +145,7 @@ fn main_0() -> i32 {
             assert!((((*buf.borrow())[(*i.borrow()) as usize] as i32) == (('X' as u8) as i32)));
             (*i.borrow_mut()).prefix_inc();
         }
-        {
-            let __r = (*stream.borrow()).with(|__f| __f.close());
-            (*stream.borrow()).delete();
-            __r
-        };
+        libcc2rs::fclose_refcount((*stream.borrow()).clone());
     }
     let gn1: Value<FnPtr<fn(AnyPtr, usize, usize, Ptr<CFile>) -> usize>> =
         Rc::new(RefCell::new(FnPtr::<
@@ -220,11 +212,7 @@ fn main_0() -> i32 {
             libcc2rs::fwrite_refcount(__a0, __a1, __a2, __a3)
         }));
         assert!(((*n.borrow()) == 10_usize));
-        {
-            let __r = (*stream.borrow()).with(|__f| __f.close());
-            (*stream.borrow()).delete();
-            __r
-        };
+        libcc2rs::fclose_refcount((*stream.borrow()).clone());
     }
     let mut __do_while = true;
     'loop_: while __do_while || (0 != 0) {
@@ -259,11 +247,7 @@ fn main_0() -> i32 {
             }),
         ));
         assert!(((*n.borrow()) == 10_usize));
-        {
-            let __r = (*stream.borrow()).with(|__f| __f.close());
-            (*stream.borrow()).delete();
-            __r
-        };
+        libcc2rs::fclose_refcount((*stream.borrow()).clone());
     }
     return 0;
 }

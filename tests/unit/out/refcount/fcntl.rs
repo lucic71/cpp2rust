@@ -28,224 +28,49 @@ fn main_0() -> i32 {
         } == 0) as i32)
             != 0)
     );
-    let flags: Value<i32> = Rc::new(RefCell::new({
-        let __res = match 3 {
-            ::libc::F_GETFL => FdRegistry::with_fd((*fds.borrow())[(0) as usize], |__fd| {
-                nix::fcntl::fcntl(__fd, nix::fcntl::FcntlArg::F_GETFL)
-            }),
-            ::libc::F_SETFL => {
-                let __flags = nix::fcntl::OFlag::from_bits_retain(i32::get(&&[(0).into()][0]));
-                FdRegistry::with_fd((*fds.borrow())[(0) as usize], |__fd| {
-                    nix::fcntl::fcntl(__fd, nix::fcntl::FcntlArg::F_SETFL(__flags))
-                })
-            }
-            ::libc::F_GETFD => FdRegistry::with_fd((*fds.borrow())[(0) as usize], |__fd| {
-                nix::fcntl::fcntl(__fd, nix::fcntl::FcntlArg::F_GETFD)
-            }),
-            ::libc::F_SETFD => {
-                let __flags = nix::fcntl::FdFlag::from_bits_retain(i32::get(&&[(0).into()][0]));
-                FdRegistry::with_fd((*fds.borrow())[(0) as usize], |__fd| {
-                    nix::fcntl::fcntl(__fd, nix::fcntl::FcntlArg::F_SETFD(__flags))
-                })
-            }
-            __cmd => panic!("fcntl: unsupported cmd {}", __cmd),
-        };
-        match __res {
-            Ok(__r) => __r,
-            Err(__e) => {
-                libcc2rs::cpp2rust_errno().write(__e as i32);
-                -1
-            }
-        }
-    }));
+    let flags: Value<i32> = Rc::new(RefCell::new(libcc2rs::fcntl_refcount(
+        (*fds.borrow())[(0) as usize],
+        3,
+        &[(0).into()],
+    )));
     assert!(((((*flags.borrow()) >= 0) as i32) != 0));
     assert!((((((*flags.borrow()) & ::libc::O_NONBLOCK) == 0) as i32) != 0));
     assert!(
-        ((({
-            let __res = match 4 {
-                ::libc::F_GETFL => FdRegistry::with_fd((*fds.borrow())[(0) as usize], |__fd| {
-                    nix::fcntl::fcntl(__fd, nix::fcntl::FcntlArg::F_GETFL)
-                }),
-                ::libc::F_SETFL => {
-                    let __flags = nix::fcntl::OFlag::from_bits_retain(i32::get(
-                        &&[((*flags.borrow()) | ::libc::O_NONBLOCK).into()][0],
-                    ));
-                    FdRegistry::with_fd((*fds.borrow())[(0) as usize], |__fd| {
-                        nix::fcntl::fcntl(__fd, nix::fcntl::FcntlArg::F_SETFL(__flags))
-                    })
-                }
-                ::libc::F_GETFD => FdRegistry::with_fd((*fds.borrow())[(0) as usize], |__fd| {
-                    nix::fcntl::fcntl(__fd, nix::fcntl::FcntlArg::F_GETFD)
-                }),
-                ::libc::F_SETFD => {
-                    let __flags = nix::fcntl::FdFlag::from_bits_retain(i32::get(
-                        &&[((*flags.borrow()) | ::libc::O_NONBLOCK).into()][0],
-                    ));
-                    FdRegistry::with_fd((*fds.borrow())[(0) as usize], |__fd| {
-                        nix::fcntl::fcntl(__fd, nix::fcntl::FcntlArg::F_SETFD(__flags))
-                    })
-                }
-                __cmd => panic!("fcntl: unsupported cmd {}", __cmd),
-            };
-            match __res {
-                Ok(__r) => __r,
-                Err(__e) => {
-                    libcc2rs::cpp2rust_errno().write(__e as i32);
-                    -1
-                }
-            }
-        } == 0) as i32)
+        (((libcc2rs::fcntl_refcount(
+            (*fds.borrow())[(0) as usize],
+            4,
+            &[((*flags.borrow()) | ::libc::O_NONBLOCK).into(),]
+        ) == 0) as i32)
             != 0)
     );
-    (*flags.borrow_mut()) = {
-        let __res = match 3 {
-            ::libc::F_GETFL => FdRegistry::with_fd((*fds.borrow())[(0) as usize], |__fd| {
-                nix::fcntl::fcntl(__fd, nix::fcntl::FcntlArg::F_GETFL)
-            }),
-            ::libc::F_SETFL => {
-                let __flags = nix::fcntl::OFlag::from_bits_retain(i32::get(&&[(0).into()][0]));
-                FdRegistry::with_fd((*fds.borrow())[(0) as usize], |__fd| {
-                    nix::fcntl::fcntl(__fd, nix::fcntl::FcntlArg::F_SETFL(__flags))
-                })
-            }
-            ::libc::F_GETFD => FdRegistry::with_fd((*fds.borrow())[(0) as usize], |__fd| {
-                nix::fcntl::fcntl(__fd, nix::fcntl::FcntlArg::F_GETFD)
-            }),
-            ::libc::F_SETFD => {
-                let __flags = nix::fcntl::FdFlag::from_bits_retain(i32::get(&&[(0).into()][0]));
-                FdRegistry::with_fd((*fds.borrow())[(0) as usize], |__fd| {
-                    nix::fcntl::fcntl(__fd, nix::fcntl::FcntlArg::F_SETFD(__flags))
-                })
-            }
-            __cmd => panic!("fcntl: unsupported cmd {}", __cmd),
-        };
-        match __res {
-            Ok(__r) => __r,
-            Err(__e) => {
-                libcc2rs::cpp2rust_errno().write(__e as i32);
-                -1
-            }
-        }
-    };
+    (*flags.borrow_mut()) =
+        libcc2rs::fcntl_refcount((*fds.borrow())[(0) as usize], 3, &[(0).into()]);
     assert!((((((*flags.borrow()) & ::libc::O_NONBLOCK) != 0) as i32) != 0));
     let b: Value<u8> = <Value<u8>>::default();
     assert!(
-        (((match FdRegistry::with_fd((*fds.borrow())[(0) as usize], |__fd| {
-            ((b.as_pointer()) as Ptr<u8>)
-                .to_any()
-                .reinterpret_cast::<u8>()
-                .with_slice_mut(1_usize, |__buf| nix::unistd::read(__fd, __buf))
-        }) {
-            Ok(__n) => __n as isize,
-            Err(__e) => {
-                libcc2rs::cpp2rust_errno().write(__e as i32);
-                -1
-            }
-        } == (-1_i32 as isize)) as i32)
+        (((libcc2rs::read_refcount(
+            (*fds.borrow())[(0) as usize],
+            ((b.as_pointer()) as Ptr::<u8>).to_any().clone(),
+            1_usize
+        ) == (-1_i32 as isize)) as i32)
             != 0)
     );
     assert!(
-        (((({
-            let __res = match 1 {
-                ::libc::F_GETFL => FdRegistry::with_fd((*fds.borrow())[(0) as usize], |__fd| {
-                    nix::fcntl::fcntl(__fd, nix::fcntl::FcntlArg::F_GETFL)
-                }),
-                ::libc::F_SETFL => {
-                    let __flags = nix::fcntl::OFlag::from_bits_retain(i32::get(&&[(0).into()][0]));
-                    FdRegistry::with_fd((*fds.borrow())[(0) as usize], |__fd| {
-                        nix::fcntl::fcntl(__fd, nix::fcntl::FcntlArg::F_SETFL(__flags))
-                    })
-                }
-                ::libc::F_GETFD => FdRegistry::with_fd((*fds.borrow())[(0) as usize], |__fd| {
-                    nix::fcntl::fcntl(__fd, nix::fcntl::FcntlArg::F_GETFD)
-                }),
-                ::libc::F_SETFD => {
-                    let __flags = nix::fcntl::FdFlag::from_bits_retain(i32::get(&&[(0).into()][0]));
-                    FdRegistry::with_fd((*fds.borrow())[(0) as usize], |__fd| {
-                        nix::fcntl::fcntl(__fd, nix::fcntl::FcntlArg::F_SETFD(__flags))
-                    })
-                }
-                __cmd => panic!("fcntl: unsupported cmd {}", __cmd),
-            };
-            match __res {
-                Ok(__r) => __r,
-                Err(__e) => {
-                    libcc2rs::cpp2rust_errno().write(__e as i32);
-                    -1
-                }
-            }
-        } & 1)
-            == 0) as i32)
+        ((((libcc2rs::fcntl_refcount((*fds.borrow())[(0) as usize], 1, &[(0).into(),]) & 1) == 0)
+            as i32)
             != 0)
     );
     assert!(
-        ((({
-            let __res = match 2 {
-                ::libc::F_GETFL => FdRegistry::with_fd((*fds.borrow())[(0) as usize], |__fd| {
-                    nix::fcntl::fcntl(__fd, nix::fcntl::FcntlArg::F_GETFL)
-                }),
-                ::libc::F_SETFL => {
-                    let __flags = nix::fcntl::OFlag::from_bits_retain(i32::get(&&[(1).into()][0]));
-                    FdRegistry::with_fd((*fds.borrow())[(0) as usize], |__fd| {
-                        nix::fcntl::fcntl(__fd, nix::fcntl::FcntlArg::F_SETFL(__flags))
-                    })
-                }
-                ::libc::F_GETFD => FdRegistry::with_fd((*fds.borrow())[(0) as usize], |__fd| {
-                    nix::fcntl::fcntl(__fd, nix::fcntl::FcntlArg::F_GETFD)
-                }),
-                ::libc::F_SETFD => {
-                    let __flags = nix::fcntl::FdFlag::from_bits_retain(i32::get(&&[(1).into()][0]));
-                    FdRegistry::with_fd((*fds.borrow())[(0) as usize], |__fd| {
-                        nix::fcntl::fcntl(__fd, nix::fcntl::FcntlArg::F_SETFD(__flags))
-                    })
-                }
-                __cmd => panic!("fcntl: unsupported cmd {}", __cmd),
-            };
-            match __res {
-                Ok(__r) => __r,
-                Err(__e) => {
-                    libcc2rs::cpp2rust_errno().write(__e as i32);
-                    -1
-                }
-            }
-        } == 0) as i32)
+        (((libcc2rs::fcntl_refcount((*fds.borrow())[(0) as usize], 2, &[(1).into(),]) == 0)
+            as i32)
             != 0)
     );
     assert!(
-        (((({
-            let __res = match 1 {
-                ::libc::F_GETFL => FdRegistry::with_fd((*fds.borrow())[(0) as usize], |__fd| {
-                    nix::fcntl::fcntl(__fd, nix::fcntl::FcntlArg::F_GETFL)
-                }),
-                ::libc::F_SETFL => {
-                    let __flags = nix::fcntl::OFlag::from_bits_retain(i32::get(&&[(0).into()][0]));
-                    FdRegistry::with_fd((*fds.borrow())[(0) as usize], |__fd| {
-                        nix::fcntl::fcntl(__fd, nix::fcntl::FcntlArg::F_SETFL(__flags))
-                    })
-                }
-                ::libc::F_GETFD => FdRegistry::with_fd((*fds.borrow())[(0) as usize], |__fd| {
-                    nix::fcntl::fcntl(__fd, nix::fcntl::FcntlArg::F_GETFD)
-                }),
-                ::libc::F_SETFD => {
-                    let __flags = nix::fcntl::FdFlag::from_bits_retain(i32::get(&&[(0).into()][0]));
-                    FdRegistry::with_fd((*fds.borrow())[(0) as usize], |__fd| {
-                        nix::fcntl::fcntl(__fd, nix::fcntl::FcntlArg::F_SETFD(__flags))
-                    })
-                }
-                __cmd => panic!("fcntl: unsupported cmd {}", __cmd),
-            };
-            match __res {
-                Ok(__r) => __r,
-                Err(__e) => {
-                    libcc2rs::cpp2rust_errno().write(__e as i32);
-                    -1
-                }
-            }
-        } & 1)
-            != 0) as i32)
+        ((((libcc2rs::fcntl_refcount((*fds.borrow())[(0) as usize], 1, &[(0).into(),]) & 1) != 0)
+            as i32)
             != 0)
     );
-    assert!((((FdRegistry::close((*fds.borrow())[(0) as usize]) == 0) as i32) != 0));
-    assert!((((FdRegistry::close((*fds.borrow())[(1) as usize]) == 0) as i32) != 0));
+    assert!((((libcc2rs::close_refcount((*fds.borrow())[(0) as usize]) == 0) as i32) != 0));
+    assert!((((libcc2rs::close_refcount((*fds.borrow())[(1) as usize]) == 0) as i32) != 0));
     return 0;
 }

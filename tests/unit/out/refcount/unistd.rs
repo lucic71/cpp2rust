@@ -25,26 +25,21 @@ pub fn test_close_0() {
         } == 0) as i32)
             != 0)
     );
-    assert!((((FdRegistry::close((*fds.borrow())[(0) as usize]) == 0) as i32) != 0));
+    assert!((((libcc2rs::close_refcount((*fds.borrow())[(0) as usize]) == 0) as i32) != 0));
     let buf: Value<Box<[u8]>> = Rc::new(RefCell::new(
         (0..1).map(|_| <u8>::default()).collect::<Box<[u8]>>(),
     ));
     assert!(
-        (((match FdRegistry::with_fd((*fds.borrow())[(0) as usize], |__fd| {
-            ((buf.as_pointer() as Ptr<u8>) as Ptr<u8>)
+        (((libcc2rs::read_refcount(
+            (*fds.borrow())[(0) as usize],
+            ((buf.as_pointer() as Ptr::<u8>) as Ptr::<u8>)
                 .to_any()
-                .reinterpret_cast::<u8>()
-                .with_slice_mut(1_usize, |__buf| nix::unistd::read(__fd, __buf))
-        }) {
-            Ok(__n) => __n as isize,
-            Err(__e) => {
-                libcc2rs::cpp2rust_errno().write(__e as i32);
-                -1
-            }
-        } == (-1_i32 as isize)) as i32)
+                .clone(),
+            1_usize
+        ) == (-1_i32 as isize)) as i32)
             != 0)
     );
-    assert!((((FdRegistry::close((*fds.borrow())[(1) as usize]) == 0) as i32) != 0));
+    assert!((((libcc2rs::close_refcount((*fds.borrow())[(1) as usize]) == 0) as i32) != 0));
 }
 pub fn test_lseek_1() {
     let path: Value<Ptr<u8>> = Rc::new(RefCell::new(Ptr::from_string_literal(
@@ -69,14 +64,7 @@ pub fn test_lseek_1() {
             false => -1,
         }
     };
-    assert!(
-        ((({
-            let __r = (*fp.borrow()).with(|__f| __f.close());
-            (*fp.borrow()).delete();
-            __r
-        } == 0) as i32)
-            != 0)
-    );
+    assert!((((libcc2rs::fclose_refcount((*fp.borrow()).clone()) == 0) as i32) != 0));
     (*fp.borrow_mut()) = match CFile::open(
         &(*path.borrow()).to_rust_string(),
         &Ptr::from_string_literal(b"rb").to_rust_string(),
@@ -137,18 +125,13 @@ pub fn test_lseek_1() {
         <u8>::default(),
     ])));
     assert!(
-        (((match FdRegistry::with_fd((*fd.borrow()), |__fd| {
-            ((buf.as_pointer() as Ptr<u8>) as Ptr<u8>)
+        (((libcc2rs::read_refcount(
+            (*fd.borrow()),
+            ((buf.as_pointer() as Ptr::<u8>) as Ptr::<u8>)
                 .to_any()
-                .reinterpret_cast::<u8>()
-                .with_slice_mut(5_usize, |__buf| nix::unistd::read(__fd, __buf))
-        }) {
-            Ok(__n) => __n as isize,
-            Err(__e) => {
-                libcc2rs::cpp2rust_errno().write(__e as i32);
-                -1
-            }
-        } == 5_isize) as i32)
+                .clone(),
+            5_usize
+        ) == 5_isize) as i32)
             != 0)
     );
     assert!(
@@ -158,21 +141,8 @@ pub fn test_lseek_1() {
             == 0) as i32)
             != 0)
     );
-    assert!(
-        ((({
-            let __r = (*fp.borrow()).with(|__f| __f.close());
-            (*fp.borrow()).delete();
-            __r
-        } == 0) as i32)
-            != 0)
-    );
-    match nix::unistd::unlink((*path.borrow()).to_rust_string().as_str()) {
-        Ok(()) => 0,
-        Err(__e) => {
-            libcc2rs::cpp2rust_errno().write(__e as i32);
-            -1
-        }
-    };
+    assert!((((libcc2rs::fclose_refcount((*fp.borrow()).clone()) == 0) as i32) != 0));
+    libcc2rs::unlink_refcount((*path.borrow()).clone());
 }
 pub fn test_read_2() {
     let path: Value<Ptr<u8>> = Rc::new(RefCell::new(Ptr::from_string_literal(
@@ -197,14 +167,7 @@ pub fn test_read_2() {
             false => -1,
         }
     };
-    assert!(
-        ((({
-            let __r = (*fp.borrow()).with(|__f| __f.close());
-            (*fp.borrow()).delete();
-            __r
-        } == 0) as i32)
-            != 0)
-    );
+    assert!((((libcc2rs::fclose_refcount((*fp.borrow()).clone()) == 0) as i32) != 0));
     (*fp.borrow_mut()) = match CFile::open(
         &(*path.borrow()).to_rust_string(),
         &Ptr::from_string_literal(b"rb").to_rust_string(),
@@ -233,18 +196,13 @@ pub fn test_read_2() {
         <u8>::default(),
     ])));
     assert!(
-        (((match FdRegistry::with_fd((*fd.borrow()), |__fd| {
-            ((buf.as_pointer() as Ptr<u8>) as Ptr<u8>)
+        (((libcc2rs::read_refcount(
+            (*fd.borrow()),
+            ((buf.as_pointer() as Ptr::<u8>) as Ptr::<u8>)
                 .to_any()
-                .reinterpret_cast::<u8>()
-                .with_slice_mut(16_usize, |__buf| nix::unistd::read(__fd, __buf))
-        }) {
-            Ok(__n) => __n as isize,
-            Err(__e) => {
-                libcc2rs::cpp2rust_errno().write(__e as i32);
-                -1
-            }
-        } == 11_isize) as i32)
+                .clone(),
+            16_usize
+        ) == 11_isize) as i32)
             != 0)
     );
     assert!(
@@ -254,21 +212,8 @@ pub fn test_read_2() {
             == 0) as i32)
             != 0)
     );
-    assert!(
-        ((({
-            let __r = (*fp.borrow()).with(|__f| __f.close());
-            (*fp.borrow()).delete();
-            __r
-        } == 0) as i32)
-            != 0)
-    );
-    match nix::unistd::unlink((*path.borrow()).to_rust_string().as_str()) {
-        Ok(()) => 0,
-        Err(__e) => {
-            libcc2rs::cpp2rust_errno().write(__e as i32);
-            -1
-        }
-    };
+    assert!((((libcc2rs::fclose_refcount((*fp.borrow()).clone()) == 0) as i32) != 0));
+    libcc2rs::unlink_refcount((*path.borrow()).clone());
 }
 pub fn test_unlink_3() {
     let path: Value<Ptr<u8>> = Rc::new(RefCell::new(Ptr::from_string_literal(
@@ -284,34 +229,9 @@ pub fn test_unlink_3() {
         },
     ));
     assert!((((!((*fp.borrow()).is_null())) as i32) != 0));
-    assert!(
-        ((({
-            let __r = (*fp.borrow()).with(|__f| __f.close());
-            (*fp.borrow()).delete();
-            __r
-        } == 0) as i32)
-            != 0)
-    );
-    assert!(
-        (((match nix::unistd::unlink((*path.borrow()).to_rust_string().as_str()) {
-            Ok(()) => 0,
-            Err(__e) => {
-                libcc2rs::cpp2rust_errno().write(__e as i32);
-                -1
-            }
-        } == 0) as i32)
-            != 0)
-    );
-    assert!(
-        (((match nix::unistd::unlink((*path.borrow()).to_rust_string().as_str()) {
-            Ok(()) => 0,
-            Err(__e) => {
-                libcc2rs::cpp2rust_errno().write(__e as i32);
-                -1
-            }
-        } == -1_i32) as i32)
-            != 0)
-    );
+    assert!((((libcc2rs::fclose_refcount((*fp.borrow()).clone()) == 0) as i32) != 0));
+    assert!((((libcc2rs::unlink_refcount((*path.borrow()).clone()) == 0) as i32) != 0));
+    assert!((((libcc2rs::unlink_refcount((*path.borrow()).clone()) == -1_i32) as i32) != 0));
 }
 pub fn test_pipe_4() {
     let fds: Value<Box<[i32]>> = Rc::new(RefCell::new(
@@ -334,18 +254,11 @@ pub fn test_pipe_4() {
     );
     let msg: Value<Ptr<u8>> = Rc::new(RefCell::new(Ptr::from_string_literal(b"world")));
     assert!(
-        (((match FdRegistry::with_fd((*fds.borrow())[(1) as usize], |__fd| {
-            ((*msg.borrow()).clone() as Ptr<u8>)
-                .to_any()
-                .reinterpret_cast::<u8>()
-                .with_slice(5_usize, |__buf| nix::unistd::write(__fd, __buf))
-        }) {
-            Ok(__n) => __n as isize,
-            Err(__e) => {
-                libcc2rs::cpp2rust_errno().write(__e as i32);
-                -1
-            }
-        } == 5_isize) as i32)
+        (((libcc2rs::write_refcount(
+            (*fds.borrow())[(1) as usize],
+            ((*msg.borrow()).clone() as Ptr::<u8>).to_any().clone(),
+            5_usize
+        ) == 5_isize) as i32)
             != 0)
     );
     let buf: Value<Box<[u8]>> = Rc::new(RefCell::new(Box::new([
@@ -359,18 +272,13 @@ pub fn test_pipe_4() {
         <u8>::default(),
     ])));
     assert!(
-        (((match FdRegistry::with_fd((*fds.borrow())[(0) as usize], |__fd| {
-            ((buf.as_pointer() as Ptr<u8>) as Ptr<u8>)
+        (((libcc2rs::read_refcount(
+            (*fds.borrow())[(0) as usize],
+            ((buf.as_pointer() as Ptr::<u8>) as Ptr::<u8>)
                 .to_any()
-                .reinterpret_cast::<u8>()
-                .with_slice_mut(8_usize, |__buf| nix::unistd::read(__fd, __buf))
-        }) {
-            Ok(__n) => __n as isize,
-            Err(__e) => {
-                libcc2rs::cpp2rust_errno().write(__e as i32);
-                -1
-            }
-        } == 5_isize) as i32)
+                .clone(),
+            8_usize
+        ) == 5_isize) as i32)
             != 0)
     );
     assert!(
@@ -380,23 +288,18 @@ pub fn test_pipe_4() {
             == 0) as i32)
             != 0)
     );
-    assert!((((FdRegistry::close((*fds.borrow())[(1) as usize]) == 0) as i32) != 0));
+    assert!((((libcc2rs::close_refcount((*fds.borrow())[(1) as usize]) == 0) as i32) != 0));
     assert!(
-        (((match FdRegistry::with_fd((*fds.borrow())[(0) as usize], |__fd| {
-            ((buf.as_pointer() as Ptr<u8>) as Ptr<u8>)
+        (((libcc2rs::read_refcount(
+            (*fds.borrow())[(0) as usize],
+            ((buf.as_pointer() as Ptr::<u8>) as Ptr::<u8>)
                 .to_any()
-                .reinterpret_cast::<u8>()
-                .with_slice_mut(8_usize, |__buf| nix::unistd::read(__fd, __buf))
-        }) {
-            Ok(__n) => __n as isize,
-            Err(__e) => {
-                libcc2rs::cpp2rust_errno().write(__e as i32);
-                -1
-            }
-        } == 0_isize) as i32)
+                .clone(),
+            8_usize
+        ) == 0_isize) as i32)
             != 0)
     );
-    assert!((((FdRegistry::close((*fds.borrow())[(0) as usize]) == 0) as i32) != 0));
+    assert!((((libcc2rs::close_refcount((*fds.borrow())[(0) as usize]) == 0) as i32) != 0));
 }
 pub fn test_ftruncate_5() {
     let path: Value<Ptr<u8>> = Rc::new(RefCell::new(Ptr::from_string_literal(
@@ -423,24 +326,8 @@ pub fn test_ftruncate_5() {
     };
     0;
     let fd: Value<i32> = Rc::new(RefCell::new((*fp.borrow()).with(|__f| __f.fd)));
-    assert!(
-        (((match FdRegistry::with_fd((*fd.borrow()), |__fd| nix::unistd::ftruncate(__fd, 5_i64)) {
-            Ok(()) => 0,
-            Err(__e) => {
-                libcc2rs::cpp2rust_errno().write(__e as i32);
-                -1
-            }
-        } == 0) as i32)
-            != 0)
-    );
-    assert!(
-        ((({
-            let __r = (*fp.borrow()).with(|__f| __f.close());
-            (*fp.borrow()).delete();
-            __r
-        } == 0) as i32)
-            != 0)
-    );
+    assert!((((libcc2rs::ftruncate_refcount((*fd.borrow()), 5_i64) == 0) as i32) != 0));
+    assert!((((libcc2rs::fclose_refcount((*fp.borrow()).clone()) == 0) as i32) != 0));
     (*fp.borrow_mut()) = match CFile::open(
         &(*path.borrow()).to_rust_string(),
         &Ptr::from_string_literal(b"rb").to_rust_string(),
@@ -470,21 +357,8 @@ pub fn test_ftruncate_5() {
         } == 5_i64) as i32)
             != 0)
     );
-    assert!(
-        ((({
-            let __r = (*fp.borrow()).with(|__f| __f.close());
-            (*fp.borrow()).delete();
-            __r
-        } == 0) as i32)
-            != 0)
-    );
-    match nix::unistd::unlink((*path.borrow()).to_rust_string().as_str()) {
-        Ok(()) => 0,
-        Err(__e) => {
-            libcc2rs::cpp2rust_errno().write(__e as i32);
-            -1
-        }
-    };
+    assert!((((libcc2rs::fclose_refcount((*fp.borrow()).clone()) == 0) as i32) != 0));
+    libcc2rs::unlink_refcount((*path.borrow()).clone());
 }
 pub fn test_open_6() {
     let fd: Value<i32> = Rc::new(RefCell::new({
@@ -508,7 +382,7 @@ pub fn test_open_6() {
     }));
     assert!(((((*fd.borrow()) >= -1_i32) as i32) != 0));
     if ((((*fd.borrow()) >= 0) as i32) != 0) {
-        FdRegistry::close((*fd.borrow()));
+        libcc2rs::close_refcount((*fd.borrow()));
     }
     (*fd.borrow_mut()) = {
         let __mode = match &[].first() {
@@ -531,76 +405,19 @@ pub fn test_open_6() {
     };
     assert!(((((*fd.borrow()) >= -1_i32) as i32) != 0));
     if ((((*fd.borrow()) >= 0) as i32) != 0) {
-        FdRegistry::close((*fd.borrow()));
+        libcc2rs::close_refcount((*fd.borrow()));
     }
 }
 pub fn test_fcntl_7() {
-    assert!(
-        ((({
-            let __res = match 1 {
-                ::libc::F_GETFL => FdRegistry::with_fd(0, |__fd| {
-                    nix::fcntl::fcntl(__fd, nix::fcntl::FcntlArg::F_GETFL)
-                }),
-                ::libc::F_SETFL => {
-                    let __flags = nix::fcntl::OFlag::from_bits_retain(i32::get(&&[][0]));
-                    FdRegistry::with_fd(0, |__fd| {
-                        nix::fcntl::fcntl(__fd, nix::fcntl::FcntlArg::F_SETFL(__flags))
-                    })
-                }
-                ::libc::F_GETFD => FdRegistry::with_fd(0, |__fd| {
-                    nix::fcntl::fcntl(__fd, nix::fcntl::FcntlArg::F_GETFD)
-                }),
-                ::libc::F_SETFD => {
-                    let __flags = nix::fcntl::FdFlag::from_bits_retain(i32::get(&&[][0]));
-                    FdRegistry::with_fd(0, |__fd| {
-                        nix::fcntl::fcntl(__fd, nix::fcntl::FcntlArg::F_SETFD(__flags))
-                    })
-                }
-                __cmd => panic!("fcntl: unsupported cmd {}", __cmd),
-            };
-            match __res {
-                Ok(__r) => __r,
-                Err(__e) => {
-                    libcc2rs::cpp2rust_errno().write(__e as i32);
-                    -1
-                }
-            }
-        } >= -1_i32) as i32)
-            != 0)
-    );
-    let duped: Value<i32> = Rc::new(RefCell::new({
-        let __res = match 0 {
-            ::libc::F_GETFL => FdRegistry::with_fd(0, |__fd| {
-                nix::fcntl::fcntl(__fd, nix::fcntl::FcntlArg::F_GETFL)
-            }),
-            ::libc::F_SETFL => {
-                let __flags = nix::fcntl::OFlag::from_bits_retain(i32::get(&&[(100).into()][0]));
-                FdRegistry::with_fd(0, |__fd| {
-                    nix::fcntl::fcntl(__fd, nix::fcntl::FcntlArg::F_SETFL(__flags))
-                })
-            }
-            ::libc::F_GETFD => FdRegistry::with_fd(0, |__fd| {
-                nix::fcntl::fcntl(__fd, nix::fcntl::FcntlArg::F_GETFD)
-            }),
-            ::libc::F_SETFD => {
-                let __flags = nix::fcntl::FdFlag::from_bits_retain(i32::get(&&[(100).into()][0]));
-                FdRegistry::with_fd(0, |__fd| {
-                    nix::fcntl::fcntl(__fd, nix::fcntl::FcntlArg::F_SETFD(__flags))
-                })
-            }
-            __cmd => panic!("fcntl: unsupported cmd {}", __cmd),
-        };
-        match __res {
-            Ok(__r) => __r,
-            Err(__e) => {
-                libcc2rs::cpp2rust_errno().write(__e as i32);
-                -1
-            }
-        }
-    }));
+    assert!((((libcc2rs::fcntl_refcount(0, 1, &[]) >= -1_i32) as i32) != 0));
+    let duped: Value<i32> = Rc::new(RefCell::new(libcc2rs::fcntl_refcount(
+        0,
+        0,
+        &[(100).into()],
+    )));
     assert!(((((*duped.borrow()) >= -1_i32) as i32) != 0));
     if ((((*duped.borrow()) >= 0) as i32) != 0) {
-        FdRegistry::close((*duped.borrow()));
+        libcc2rs::close_refcount((*duped.borrow()));
     }
 }
 pub fn test_ioctl_8() {
@@ -636,7 +453,7 @@ pub fn test_isatty_9() {
     );
 }
 pub fn test_geteuid_10() {
-    println!("{}", nix::unistd::geteuid().as_raw());
+    println!("{}", libcc2rs::geteuid_refcount());
 }
 pub fn test_gethostname_11() {
     let name: Value<Box<[u8]>> = Rc::new(RefCell::new(

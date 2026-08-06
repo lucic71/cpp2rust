@@ -89,6 +89,6 @@ fn main_0() -> i32 {
             != 0)
     );
     assert!(((((*err.borrow()) == 0) as i32) != 0));
-    assert!((((FdRegistry::close((*s.borrow())) == 0) as i32) != 0));
+    assert!((((libcc2rs::close_refcount((*s.borrow())) == 0) as i32) != 0));
     return 0;
 }

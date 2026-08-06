@@ -8,9 +8,8 @@ use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
 pub fn test_getpwuid_0() {
     let pw: Value<Ptr<libcc2rs::Passwd>> = Rc::new(RefCell::new(
-        match nix::unistd::User::from_uid(nix::unistd::Uid::from_raw(
-            nix::unistd::geteuid().as_raw(),
-        )) {
+        match nix::unistd::User::from_uid(nix::unistd::Uid::from_raw(libcc2rs::geteuid_refcount()))
+        {
             Ok(Some(__u)) => Ptr::alloc(Passwd::from_user(&__u)),
             Ok(None) => Ptr::null(),
             Err(__e) => {
@@ -23,7 +22,7 @@ pub fn test_getpwuid_0() {
     assert!(
         ((({
             let _lhs = (*pw.borrow()).with(|__v| (*__v).pw_uid);
-            _lhs == nix::unistd::geteuid().as_raw()
+            _lhs == libcc2rs::geteuid_refcount()
         }) as i32)
             != 0)
     );
@@ -67,7 +66,7 @@ pub fn test_getpwuid_r_2() {
             let __buflen = 4096usize;
             let __out = (result.as_pointer()).clone();
             match nix::unistd::User::from_uid(nix::unistd::Uid::from_raw(
-                nix::unistd::geteuid().as_raw(),
+                libcc2rs::geteuid_refcount(),
             )) {
                 Ok(Some(__u)) => {
                     let __strs: [Vec<u8>; 5] = [
@@ -117,12 +116,11 @@ pub fn test_getpwuid_r_2() {
         }) as i32)
             != 0)
     );
-    assert!(((((*pw.borrow()).pw_uid == nix::unistd::geteuid().as_raw()) as i32) != 0));
+    assert!(((((*pw.borrow()).pw_uid == libcc2rs::geteuid_refcount()) as i32) != 0));
     assert!(((((*pw.borrow()).pw_name.to_c_string_iterator().count() > 0_usize) as i32) != 0));
     let pw2: Value<Ptr<libcc2rs::Passwd>> = Rc::new(RefCell::new(
-        match nix::unistd::User::from_uid(nix::unistd::Uid::from_raw(
-            nix::unistd::geteuid().as_raw(),
-        )) {
+        match nix::unistd::User::from_uid(nix::unistd::Uid::from_raw(libcc2rs::geteuid_refcount()))
+        {
             Ok(Some(__u)) => Ptr::alloc(Passwd::from_user(&__u)),
             Ok(None) => Ptr::null(),
             Err(__e) => {
@@ -167,7 +165,7 @@ pub fn test_getpwuid_r_erange_3() {
             let __buflen = 1usize;
             let __out = (result.as_pointer()).clone();
             match nix::unistd::User::from_uid(nix::unistd::Uid::from_raw(
-                nix::unistd::geteuid().as_raw(),
+                libcc2rs::geteuid_refcount(),
             )) {
                 Ok(Some(__u)) => {
                     let __strs: [Vec<u8>; 5] = [

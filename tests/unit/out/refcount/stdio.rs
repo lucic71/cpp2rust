@@ -123,21 +123,8 @@ pub fn test_fileno_3() {
     ));
     assert!((((!((*fp.borrow()).is_null())) as i32) != 0));
     assert!(((((*fp.borrow()).with(|__f| __f.fd) > 2) as i32) != 0));
-    {
-        let __r = (*fp.borrow()).with(|__f| __f.close());
-        (*fp.borrow()).delete();
-        __r
-    };
-    assert!(
-        (((match nix::unistd::unlink((*file.borrow()).to_rust_string().as_str()) {
-            Ok(()) => 0,
-            Err(__e) => {
-                libcc2rs::cpp2rust_errno().write(__e as i32);
-                -1
-            }
-        } == 0) as i32)
-            != 0)
-    );
+    libcc2rs::fclose_refcount((*fp.borrow()).clone());
+    assert!((((libcc2rs::unlink_refcount((*file.borrow()).clone()) == 0) as i32) != 0));
 }
 pub fn main() {
     std::process::exit(main_0());

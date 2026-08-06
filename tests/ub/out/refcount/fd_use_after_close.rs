@@ -29,24 +29,15 @@ fn main_0() -> i32 {
             }
         }
     }));
-    FdRegistry::close((*fd.borrow()));
+    libcc2rs::close_refcount((*fd.borrow()));
     let buf: Value<Box<[u8]>> = Rc::new(RefCell::new(
         (0..4).map(|_| <u8>::default()).collect::<Box<[u8]>>(),
     ));
-    let n: Value<isize> = Rc::new(RefCell::new(
-        match FdRegistry::with_fd((*fd.borrow()), |__fd| {
-            ((buf.as_pointer() as Ptr<u8>) as Ptr<u8>)
-                .to_any()
-                .reinterpret_cast::<u8>()
-                .with_slice_mut(4usize, |__buf| nix::unistd::read(__fd, __buf))
-        }) {
-            Ok(__n) => __n as isize,
-            Err(__e) => {
-                libcc2rs::cpp2rust_errno().write(__e as i32);
-                -1
-            }
-        },
-    ));
+    let n: Value<isize> = Rc::new(RefCell::new(libcc2rs::read_refcount(
+        (*fd.borrow()),
+        ((buf.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any().clone(),
+        4usize,
+    )));
     return if ((((*n.borrow()) == (-1_i32 as isize)) as i32) != 0) {
         0
     } else {

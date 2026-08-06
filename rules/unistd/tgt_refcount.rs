@@ -4,7 +4,7 @@
 use libcc2rs::*;
 
 fn f1(a0: i32) -> i32 {
-    FdRegistry::close(a0)
+    libcc2rs::close_refcount(a0)
 }
 
 fn f2(a0: i32, a1: i64, a2: i32) -> i64 {
@@ -24,26 +24,11 @@ fn f2(a0: i32, a1: i64, a2: i32) -> i64 {
 }
 
 fn f3(a0: i32, a1: AnyPtr, a2: usize) -> isize {
-    match FdRegistry::with_fd(a0, |__fd| {
-        a1.reinterpret_cast::<u8>()
-            .with_slice_mut(a2, |__buf| nix::unistd::read(__fd, __buf))
-    }) {
-        Ok(__n) => __n as isize,
-        Err(__e) => {
-            libcc2rs::cpp2rust_errno().write(__e as i32);
-            -1
-        }
-    }
+    libcc2rs::read_refcount(a0, a1.clone(), a2)
 }
 
 fn f4(a0: Ptr<u8>) -> i32 {
-    match nix::unistd::unlink(a0.to_rust_string().as_str()) {
-        Ok(()) => 0,
-        Err(__e) => {
-            libcc2rs::cpp2rust_errno().write(__e as i32);
-            -1
-        }
-    }
+    libcc2rs::unlink_refcount(a0.clone())
 }
 
 fn f5(a0: Ptr<i32>) -> i32 {
@@ -62,13 +47,7 @@ fn f5(a0: Ptr<i32>) -> i32 {
 }
 
 fn f6(a0: i32, a1: i64) -> i32 {
-    match FdRegistry::with_fd(a0, |__fd| nix::unistd::ftruncate(__fd, a1)) {
-        Ok(()) => 0,
-        Err(__e) => {
-            libcc2rs::cpp2rust_errno().write(__e as i32);
-            -1
-        }
-    }
+    libcc2rs::ftruncate_refcount(a0, a1)
 }
 
 fn f7(a0: i32) -> i32 {
@@ -82,7 +61,7 @@ fn f7(a0: i32) -> i32 {
 }
 
 fn f8() -> u32 {
-    nix::unistd::geteuid().as_raw()
+    libcc2rs::geteuid_refcount()
 }
 
 fn f9(a0: Ptr<u8>, a1: usize) -> i32 {
@@ -106,26 +85,11 @@ fn f9(a0: Ptr<u8>, a1: usize) -> i32 {
 }
 
 fn f10(a0: i32, a1: AnyPtr, a2: usize) -> isize {
-    match FdRegistry::with_fd(a0, |__fd| {
-        a1.reinterpret_cast::<u8>()
-            .with_slice(a2, |__buf| nix::unistd::write(__fd, __buf))
-    }) {
-        Ok(__n) => __n as isize,
-        Err(__e) => {
-            libcc2rs::cpp2rust_errno().write(__e as i32);
-            -1
-        }
-    }
+    libcc2rs::write_refcount(a0, a1.clone(), a2)
 }
 
 fn f11(a0: Ptr<u8>) -> i32 {
-    match ::std::fs::remove_dir(a0.to_rust_string()) {
-        Ok(()) => 0,
-        Err(__e) => {
-            libcc2rs::cpp2rust_errno().write(__e.raw_os_error().unwrap_or(::libc::EIO));
-            -1
-        }
-    }
+    libcc2rs::rmdir_refcount(a0.clone())
 }
 
 fn f12(a0: Ptr<u8>, a1: ::libc::uid_t, a2: ::libc::gid_t) -> i32 {
@@ -158,4 +122,28 @@ fn f21() -> i32 {
 
 fn f22() -> u32 {
     nix::unistd::getuid().as_raw()
+}
+
+fn f13(a0: Ptr<u8>, a1: i32) -> i32 {
+    libcc2rs::access_refcount(a0.clone(), a1)
+}
+
+fn f14(a0: Ptr<u8>, a1: Ptr<u8>, a2: usize) -> isize {
+    libcc2rs::readlink_refcount(a0.clone(), a1.clone(), a2)
+}
+
+fn f16(a0: Ptr<u8>, a1: usize) -> Ptr<u8> {
+    libcc2rs::getcwd_refcount(a0.clone(), a1)
+}
+
+fn f19(a0: i32, a1: AnyPtr, a2: usize, a3: i64) -> isize {
+    libcc2rs::pread_refcount(a0, a1.clone(), a2, a3)
+}
+
+fn f20(a0: i32, a1: AnyPtr, a2: usize, a3: i64) -> isize {
+    libcc2rs::pwrite_refcount(a0, a1.clone(), a2, a3)
+}
+
+fn f23(a0: i32, a1: ::libc::uid_t, a2: ::libc::gid_t) -> i32 {
+    libcc2rs::fchown_refcount(a0, a1, a2)
 }

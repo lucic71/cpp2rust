@@ -29,8 +29,8 @@ fn main_0() -> i32 {
             }
         }
     }));
-    FdRegistry::close((*fd.borrow()));
-    return if (((FdRegistry::close((*fd.borrow())) == -1_i32) as i32) != 0) {
+    libcc2rs::close_refcount((*fd.borrow()));
+    return if (((libcc2rs::close_refcount((*fd.borrow())) == -1_i32) as i32) != 0) {
         0
     } else {
         1

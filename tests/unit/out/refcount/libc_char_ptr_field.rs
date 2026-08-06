@@ -11,9 +11,8 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     let pw: Value<Ptr<libcc2rs::Passwd>> = Rc::new(RefCell::new(
-        match nix::unistd::User::from_uid(nix::unistd::Uid::from_raw(
-            nix::unistd::geteuid().as_raw(),
-        )) {
+        match nix::unistd::User::from_uid(nix::unistd::Uid::from_raw(libcc2rs::geteuid_refcount()))
+        {
             Ok(Some(__u)) => Ptr::alloc(Passwd::from_user(&__u)),
             Ok(None) => Ptr::null(),
             Err(__e) => {
