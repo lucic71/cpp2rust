@@ -77,13 +77,16 @@ fn main_0() -> i32 {
             == 3_u32)
     );
     let x: Value<i32> = Rc::new(RefCell::new(4));
-    (m.as_pointer() as Ptr<BTreeMap<i16, Value<u32>>>)
-        .with_mut(|__v: &mut BTreeMap<i16, Value<u32>>| {
-            __v.entry(1_i16.clone())
-                .or_insert_with(|| Rc::new(RefCell::new(<u32>::default())))
-                .as_pointer()
-        })
-        .write(((*x.borrow()) as u32));
+    {
+        let __rhs = ((*x.borrow()) as u32);
+        (m.as_pointer() as Ptr<BTreeMap<i16, Value<u32>>>)
+            .with_mut(|__v: &mut BTreeMap<i16, Value<u32>>| {
+                __v.entry(1_i16.clone())
+                    .or_insert_with(|| Rc::new(RefCell::new(<u32>::default())))
+                    .as_pointer()
+            })
+            .write(__rhs)
+    };
     assert!(((*m.borrow()).len() == 3_usize));
     assert!(
         (((m.as_pointer() as Ptr<BTreeMap<i16, Value<u32>>>)
@@ -299,13 +302,16 @@ fn main_0() -> i32 {
         Rc::new(RefCell::new(1.try_into().expect("failed conversion"))),
     )));
     let value: Value<f64> = Rc::new(RefCell::new(2_f64));
-    (other_map.as_pointer() as Ptr<BTreeMap<(Value<i32>, Value<i64>), Value<f64>>>)
-        .with_mut(|__v: &mut BTreeMap<(Value<i32>, Value<i64>), Value<f64>>| {
-            __v.entry((*key0.borrow()).clone())
-                .or_insert_with(|| Rc::new(RefCell::new(<f64>::default())))
-                .as_pointer()
-        })
-        .write((*value.borrow()));
+    {
+        let __rhs = (*value.borrow());
+        (other_map.as_pointer() as Ptr<BTreeMap<(Value<i32>, Value<i64>), Value<f64>>>)
+            .with_mut(|__v: &mut BTreeMap<(Value<i32>, Value<i64>), Value<f64>>| {
+                __v.entry((*key0.borrow()).clone())
+                    .or_insert_with(|| Rc::new(RefCell::new(<f64>::default())))
+                    .as_pointer()
+            })
+            .write(__rhs)
+    };
     (*value.borrow_mut()) = ((other_map.as_pointer()
         as Ptr<BTreeMap<(Value<i32>, Value<i64>), Value<f64>>>)
         .with_mut(|__v: &mut BTreeMap<(Value<i32>, Value<i64>), Value<f64>>| {

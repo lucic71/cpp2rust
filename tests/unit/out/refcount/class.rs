@@ -100,7 +100,10 @@ impl RouteMethods for Ptr<Route> {
     fn SetCost(&self, new_cost: f64) -> f64 {
         let new_cost: Value<f64> = Rc::new(RefCell::new(new_cost));
         let old_cost: Value<f64> = Rc::new(RefCell::new(self.with(|__v| (*__v).cost)));
-        self.with_mut(|__v| __v.cost = (*new_cost.borrow()));
+        {
+            let __rhs = (*new_cost.borrow());
+            self.with_mut(|__v| __v.cost = __rhs)
+        };
         return (*old_cost.borrow());
     }
 }

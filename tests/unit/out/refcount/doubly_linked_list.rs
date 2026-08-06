@@ -20,11 +20,17 @@ pub trait NodeMethods {
 impl NodeMethods for Ptr<Node> {
     fn SetNext(&self, n: Ptr<Node>) {
         let n: Value<Ptr<Node>> = Rc::new(RefCell::new(n));
-        self.with_mut(|__v| __v.next = (*n.borrow()).clone());
+        {
+            let __rhs = (*n.borrow()).clone();
+            self.with_mut(|__v| __v.next = __rhs)
+        };
     }
     fn SetPrev(&self, p: Ptr<Node>) {
         let p: Value<Ptr<Node>> = Rc::new(RefCell::new(p));
-        self.with_mut(|__v| __v.prev = (*p.borrow()).clone());
+        {
+            let __rhs = (*p.borrow()).clone();
+            self.with_mut(|__v| __v.prev = __rhs)
+        };
     }
 }
 impl Clone for Node {
@@ -112,10 +118,16 @@ pub fn Delete_3(head: Ptr<Node>, val: i32) -> Ptr<Node> {
                 ((*curr.borrow()).with(|__v| (*__v).next.clone())).clone(),
             ));
             if !((*prev.borrow()).is_null()) {
-                (*prev.borrow()).with_mut(|__v| __v.next = (*next.borrow()).clone());
+                {
+                    let __rhs = (*next.borrow()).clone();
+                    (*prev.borrow()).with_mut(|__v| __v.next = __rhs)
+                };
             }
             if !((*next.borrow()).is_null()) {
-                (*next.borrow()).with_mut(|__v| __v.prev = (*prev.borrow()).clone());
+                {
+                    let __rhs = (*prev.borrow()).clone();
+                    (*next.borrow()).with_mut(|__v| __v.prev = __rhs)
+                };
             }
             if !((*prev.borrow()).is_null()) {
                 return (*head.borrow()).clone();

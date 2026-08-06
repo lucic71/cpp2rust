@@ -11,7 +11,10 @@ pub fn bump_0(arg: AnyPtr) -> i32 {
     let value: Value<Ptr<i32>> = Rc::new(RefCell::new((*arg.borrow()).reinterpret_cast::<i32>()));
     {
         let _ptr = (*value.borrow()).clone();
-        _ptr.write((_ptr.read()) + 1)
+        {
+            let __rhs = (_ptr.read()) + 1;
+            _ptr.write(__rhs)
+        }
     };
     return ((*value.borrow()).read());
 }

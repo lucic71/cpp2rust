@@ -32,7 +32,10 @@ pub fn configure_0(h: Ptr<handle>, op: i32, __args: &[VaArg]) -> i32 {
     (*ap.borrow_mut()) = VaList::new(__args);
     let onoff: Value<i32> = Rc::new(RefCell::new((*ap.borrow_mut()).arg::<i32>()));
     let pOut: Value<Ptr<i32>> = Rc::new(RefCell::new((*ap.borrow_mut()).arg::<Ptr<i32>>()));
-    (*h.borrow()).with_mut(|__v| __v.value = (*onoff.borrow()));
+    {
+        let __rhs = (*onoff.borrow());
+        (*h.borrow()).with_mut(|__v| __v.value = __rhs)
+    };
     if !(*pOut.borrow()).is_null() {
         {
             let __rhs = (*onoff.borrow());

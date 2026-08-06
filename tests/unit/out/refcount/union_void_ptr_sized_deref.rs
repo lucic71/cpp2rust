@@ -108,33 +108,42 @@ pub fn write_count_1(s: Ptr<Sink>, count: i64) {
         let __match_cond = ((*s.borrow()).with(|__v| (*__v).width) as u32);
         match __match_cond {
             __v if __v == ((Width_enum::W_64 as i32) as u32) => {
-                (((*s.borrow())
-                    .reinterpret_cast::<u8>()
-                    .offset(8usize)
-                    .reinterpret_cast::<AnyPtr>() as Ptr<AnyPtr>)
-                    .read())
-                .reinterpret_cast::<i64>()
-                .write((*count.borrow()));
+                {
+                    let __rhs = (*count.borrow());
+                    (((*s.borrow())
+                        .reinterpret_cast::<u8>()
+                        .offset(8usize)
+                        .reinterpret_cast::<AnyPtr>() as Ptr<AnyPtr>)
+                        .read())
+                    .reinterpret_cast::<i64>()
+                    .write(__rhs)
+                };
                 break 'switch;
             }
             __v if __v == ((Width_enum::W_32 as i32) as u32) => {
-                (((*s.borrow())
-                    .reinterpret_cast::<u8>()
-                    .offset(8usize)
-                    .reinterpret_cast::<AnyPtr>() as Ptr<AnyPtr>)
-                    .read())
-                .reinterpret_cast::<i32>()
-                .write(((*count.borrow()) as i32));
+                {
+                    let __rhs = ((*count.borrow()) as i32);
+                    (((*s.borrow())
+                        .reinterpret_cast::<u8>()
+                        .offset(8usize)
+                        .reinterpret_cast::<AnyPtr>() as Ptr<AnyPtr>)
+                        .read())
+                    .reinterpret_cast::<i32>()
+                    .write(__rhs)
+                };
                 break 'switch;
             }
             __v if __v == ((Width_enum::W_16 as i32) as u32) => {
-                (((*s.borrow())
-                    .reinterpret_cast::<u8>()
-                    .offset(8usize)
-                    .reinterpret_cast::<AnyPtr>() as Ptr<AnyPtr>)
-                    .read())
-                .reinterpret_cast::<i16>()
-                .write(((*count.borrow()) as i16));
+                {
+                    let __rhs = ((*count.borrow()) as i16);
+                    (((*s.borrow())
+                        .reinterpret_cast::<u8>()
+                        .offset(8usize)
+                        .reinterpret_cast::<AnyPtr>() as Ptr<AnyPtr>)
+                        .read())
+                    .reinterpret_cast::<i16>()
+                    .write(__rhs)
+                };
                 break 'switch;
             }
             _ => {}

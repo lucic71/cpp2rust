@@ -87,13 +87,14 @@ fn main_0() -> i32 {
         .reinterpret_cast::<i64>();
         (*h.borrow()).with_mut(|__v| __v.words = __rhs)
     };
-    (*h.borrow()).with_mut(|__v| {
-        __v.field = ((*o.borrow()).field_ptr(
+    {
+        let __rhs = ((*o.borrow()).field_ptr(
             0,
             |__v: &outer| ::std::slice::from_ref(&__v.in_),
             |__v: &mut outer| ::std::slice::from_mut(&mut __v.in_),
-        ))
-    });
+        ));
+        (*h.borrow()).with_mut(|__v| __v.field = __rhs)
+    };
     (*h.borrow())
         .with(|__v| (*__v).words.offset(((0) as isize)).clone())
         .write(11_i64);

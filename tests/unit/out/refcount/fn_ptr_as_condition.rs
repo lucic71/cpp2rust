@@ -10,7 +10,10 @@ pub fn double_it_0(x: Ptr<i32>) {
     let x: Value<Ptr<i32>> = Rc::new(RefCell::new(x));
     {
         let _ptr = (*x.borrow()).clone();
-        _ptr.write((_ptr.read()) * 2)
+        {
+            let __rhs = (_ptr.read()) * 2;
+            _ptr.write(__rhs)
+        }
     };
 }
 pub fn maybe_call_1(cb: FnPtr<fn(Ptr<i32>)>, x: Ptr<i32>) {

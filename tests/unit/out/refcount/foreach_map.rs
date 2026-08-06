@@ -14,13 +14,16 @@ fn main_0() -> i32 {
     let i: Value<i32> = Rc::new(RefCell::new(0));
     let k: Value<i32> = Rc::new(RefCell::new(100));
     'loop_: while ((*i.borrow()) < 100) {
-        (m.as_pointer() as Ptr<BTreeMap<i32, Value<f64>>>)
-            .with_mut(|__v: &mut BTreeMap<i32, Value<f64>>| {
-                __v.entry((*i.borrow()).clone())
-                    .or_insert_with(|| Rc::new(RefCell::new(<f64>::default())))
-                    .as_pointer()
-            })
-            .write((((*k.borrow()) as f64) / 2.0E+0));
+        {
+            let __rhs = (((*k.borrow()) as f64) / 2.0E+0);
+            (m.as_pointer() as Ptr<BTreeMap<i32, Value<f64>>>)
+                .with_mut(|__v: &mut BTreeMap<i32, Value<f64>>| {
+                    __v.entry((*i.borrow()).clone())
+                        .or_insert_with(|| Rc::new(RefCell::new(<f64>::default())))
+                        .as_pointer()
+                })
+                .write(__rhs)
+        };
         (*i.borrow_mut()).prefix_inc();
         (*k.borrow_mut()).prefix_dec();
     }

@@ -76,11 +76,14 @@ fn main_0() -> i32 {
         }
     };
     let u: Value<anon_0> = <Value<anon_0>>::default();
-    (u.as_pointer()
-        .reinterpret_cast::<u8>()
-        .offset(0usize)
-        .reinterpret_cast::<Ptr<pair>>() as Ptr<Ptr<pair>>)
-        .write(((arr.as_pointer() as Ptr<pair>).offset(1)));
+    {
+        let __rhs = ((arr.as_pointer() as Ptr<pair>).offset(1));
+        (u.as_pointer()
+            .reinterpret_cast::<u8>()
+            .offset(0usize)
+            .reinterpret_cast::<Ptr<pair>>() as Ptr<Ptr<pair>>)
+            .write(__rhs)
+    };
     let q: Value<Ptr<pair>> = Rc::new(RefCell::new(
         ((u.as_pointer()
             .reinterpret_cast::<u8>()

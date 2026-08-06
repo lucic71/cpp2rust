@@ -48,7 +48,10 @@ pub fn IncrementAll_0(s: Ptr<StackArray>) {
             let _ptr = s
                 .with(|__v| (*__v).arr[(*i.borrow()) as usize].clone())
                 .clone();
-            _ptr.write((_ptr.read()) + 1)
+            {
+                let __rhs = (_ptr.read()) + 1;
+                _ptr.write(__rhs)
+            }
         };
         (*i.borrow_mut()).prefix_inc();
     }

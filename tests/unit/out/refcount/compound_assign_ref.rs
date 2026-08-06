@@ -14,7 +14,10 @@ fn main_0() -> i32 {
     (*v.borrow_mut()).push(10);
     {
         let _ptr = (v.as_pointer() as Ptr<i32>).clone();
-        _ptr.write((_ptr.read()) + 5)
+        {
+            let __rhs = (_ptr.read()) + 5;
+            _ptr.write(__rhs)
+        }
     };
     assert!((((v.as_pointer() as Ptr<i32>).read()) == 15));
     return ((v.as_pointer() as Ptr<i32>).read());

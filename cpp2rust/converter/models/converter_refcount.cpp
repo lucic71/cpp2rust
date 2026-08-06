@@ -1015,7 +1015,8 @@ RsExpr *ConverterRefCount::NestPtrUse(RsExpr *node) {
 
 static bool MayReachOtherBorrow(RsExpr *node) {
   if (clang::isa<PtrWith>(node) || clang::isa<PtrRead>(node) ||
-      clang::isa<PtrWrite>(node) || clang::isa<Call>(node)) {
+      clang::isa<PtrWrite>(node) || clang::isa<Call>(node) ||
+      clang::isa<BorrowRead>(node) || clang::isa<BorrowWrite>(node)) {
     return true;
   }
   bool found = false;
@@ -1038,7 +1039,44 @@ static bool UsesClosureParam(RsExpr *node, const std::string &param) {
   return used;
 }
 
+RsExpr *ConverterRefCount::HoistBorrowedObject(Accessor *acc) {
+  auto *object = acc->object->IgnoreParens();
+  if (!clang::isa<Field>(object) && !clang::isa<Index>(object)) {
+    return nullptr;
+  }
+  if (!object->ContainsBorrow()) {
+    return nullptr;
+  }
+  auto *hoisted = acc->object;
+  acc->object = Text("__ptr");
+  return Cat(Text(keyword::kLet), Text("__ptr"), Text(token::kAssign), hoisted,
+             Text(".clone()"), Text(token::kSemiColon));
+}
+
+RsExpr *ConverterRefCount::HoistPtrWrite(PtrWrite *write) {
+  auto *obj_let = HoistBorrowedObject(write);
+  bool hoist_value = MayReachOtherBorrow(write->value);
+  if (!obj_let && !hoist_value) {
+    return nullptr;
+  }
+  std::vector<RsExpr *> parts;
+  if (obj_let) {
+    parts.push_back(obj_let);
+  }
+  if (hoist_value) {
+    auto *value = write->value;
+    write->value = Text("__rhs");
+    parts.push_back(Cat(Text(keyword::kLet), Text("__rhs"),
+                        Text(token::kAssign), value, Text(token::kSemiColon)));
+  }
+  parts.push_back(write);
+  return Braces(arena_.New<Concat>(std::move(parts)));
+}
+
 RsExpr *ConverterRefCount::HoistPtrUse(RsExpr *node) {
+  if (auto *write = clang::dyn_cast<PtrWrite>(node)) {
+    return HoistPtrWrite(write);
+  }
   auto *with = clang::dyn_cast<PtrWith>(node);
   if (!with) {
     return nullptr;
@@ -1073,14 +1111,24 @@ RsExpr *ConverterRefCount::HoistPtrUse(RsExpr *node) {
   } else if (auto *assign = clang::dyn_cast<CompoundAssign>(closure->body)) {
     right = &assign->right;
   }
-  if (!right || !MayReachOtherBorrow(*right) ||
-      UsesClosureParam(*right, closure->param)) {
+  bool hoist_rhs = right && MayReachOtherBorrow(*right) &&
+                   !UsesClosureParam(*right, closure->param);
+  auto *obj_let = with->is_mut ? HoistBorrowedObject(with) : nullptr;
+  if (!hoist_rhs && !obj_let) {
     return nullptr;
   }
-  auto *rhs = *right;
-  *right = Text("__rhs");
-  return Braces(Cat(Text(keyword::kLet), Text("__rhs"), Text(token::kAssign),
-                    rhs, Text(token::kSemiColon), node));
+  std::vector<RsExpr *> parts;
+  if (obj_let) {
+    parts.push_back(obj_let);
+  }
+  if (hoist_rhs) {
+    auto *rhs = *right;
+    *right = Text("__rhs");
+    parts.push_back(Cat(Text(keyword::kLet), Text("__rhs"),
+                        Text(token::kAssign), rhs, Text(token::kSemiColon)));
+  }
+  parts.push_back(node);
+  return Braces(arena_.New<Concat>(std::move(parts)));
 }
 
 RsExpr *
@@ -1163,8 +1211,8 @@ RsExpr *ConverterRefCount::VisitDeclRefExpr(clang::DeclRefExpr *expr) {
     return Cat(node, Text(".as_pointer()"));
   }
 
-  node =
-      Cat(Text("(*"), node, Text(isRValue() ? ".borrow())" : ".borrow_mut())"));
+  node = isRValue() ? static_cast<RsExpr *>(arena_.New<BorrowRead>(node))
+                    : arena_.New<BorrowWrite>(node);
 
   if (auto *var_decl = clang::dyn_cast<clang::VarDecl>(expr->getDecl())) {
     if (var_decl->getType()->isPointerType()) {

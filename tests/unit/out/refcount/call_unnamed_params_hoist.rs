@@ -32,7 +32,10 @@ pub fn total_1(x: Ptr<i32>, y: Ptr<i32>) -> i32 {
     let y: Value<Ptr<i32>> = Rc::new(RefCell::new(y));
     {
         let _ptr = (*x.borrow()).clone();
-        _ptr.write((_ptr.read()) + 1)
+        {
+            let __rhs = (_ptr.read()) + 1;
+            _ptr.write(__rhs)
+        }
     };
     return {
         let _lhs = ((*x.borrow()).read());

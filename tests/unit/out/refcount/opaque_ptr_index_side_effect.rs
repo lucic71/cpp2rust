@@ -39,7 +39,10 @@ pub fn store_0(p: AnyPtr, c: u8) {
     let p: Value<AnyPtr> = Rc::new(RefCell::new(p));
     let c: Value<u8> = Rc::new(RefCell::new(c));
     let b: Value<Ptr<bin>> = Rc::new(RefCell::new((*p.borrow()).reinterpret_cast::<bin>()));
-    (*b.borrow()).with_mut(|__v| __v.buf[(__v.idx.postfix_inc()) as usize] = (*c.borrow()));
+    {
+        let __rhs = (*c.borrow());
+        (*b.borrow()).with_mut(|__v| __v.buf[(__v.idx.postfix_inc()) as usize] = __rhs)
+    };
 }
 pub fn main() {
     libcc2rs::exit_refcount(main_0());

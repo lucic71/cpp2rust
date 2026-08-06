@@ -90,6 +90,13 @@ void DumpChildren(RsExpr *node, llvm::raw_ostream &os, unsigned depth) {
 
 } // namespace
 
+bool RsExpr::ContainsBorrow() {
+  bool found = false;
+  ForEachChild(
+      [&](RsExpr *&child) { found = found || child->ContainsBorrow(); });
+  return found;
+}
+
 void RsExpr::dump(llvm::raw_ostream &os, unsigned depth) {
   DumpHeader(this, os, depth);
   DumpChildren(this, os, depth);

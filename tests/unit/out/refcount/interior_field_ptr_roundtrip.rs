@@ -79,13 +79,14 @@ fn main_0() -> i32 {
     let h: Value<Ptr<holder>> = Rc::new(RefCell::new(
         libcc2rs::malloc_refcount(8usize).reinterpret_cast::<holder>(),
     ));
-    (*h.borrow()).with_mut(|__v| {
-        __v.p = ((*o.borrow()).field_ptr(
+    {
+        let __rhs = ((*o.borrow()).field_ptr(
             8,
             |__v: &outer| ::std::slice::from_ref(&__v.big),
             |__v: &mut outer| ::std::slice::from_mut(&mut __v.big),
-        ))
-    });
+        ));
+        (*h.borrow()).with_mut(|__v| __v.p = __rhs)
+    };
     assert!(
         ((((*h.borrow()).with(|__v| (*__v).p.clone().with(|__v| (*__v).a)) == 2_i64) as i32) != 0)
     );

@@ -161,14 +161,20 @@ fn main_0() -> i32 {
         let __rhs = (*x1.borrow());
         {
             let _ptr = r2.clone();
-            _ptr.write((_ptr.read()) + __rhs)
+            {
+                let __rhs = (_ptr.read()) + __rhs;
+                _ptr.write(__rhs)
+            }
         }
     };
     {
         let __rhs = (r1.read());
         {
             let _ptr = r3.clone();
-            _ptr.write((_ptr.read()) + __rhs)
+            {
+                let __rhs = (_ptr.read()) + __rhs;
+                _ptr.write(__rhs)
+            }
         }
     };
     let x4: Value<i32> = Rc::new(RefCell::new(
@@ -224,7 +230,10 @@ fn main_0() -> i32 {
     ));
     {
         let _ptr = ({ bar_2(x1.as_pointer()) }).clone();
-        _ptr.write((_ptr.read()) + 10)
+        {
+            let __rhs = (_ptr.read()) + 10;
+            _ptr.write(__rhs)
+        }
     };
     ({ bar_2(x1.as_pointer()) }).with_mut(|__v| __v.postfix_inc());
     let bar_out: Value<i32> = Rc::new(RefCell::new(
@@ -256,7 +265,10 @@ fn main_0() -> i32 {
             )
         })
         .clone();
-        _ptr.write((_ptr.read()) + 10)
+        {
+            let __rhs = (_ptr.read()) + 10;
+            _ptr.write(__rhs)
+        }
     };
     ({
         bar_2(
@@ -293,7 +305,10 @@ fn main_0() -> i32 {
     ({ ptr_1((x1.as_pointer())) }).with_mut(|__v| __v.prefix_inc());
     {
         let _ptr = ({ ptr_1((x1.as_pointer())) }).clone();
-        _ptr.write((_ptr.read()) + 1)
+        {
+            let __rhs = (_ptr.read()) + 1;
+            _ptr.write(__rhs)
+        }
     };
     ({
         ptr_1(
@@ -316,7 +331,10 @@ fn main_0() -> i32 {
             )
         })
         .clone();
-        _ptr.write((_ptr.read()) + 1)
+        {
+            let __rhs = (_ptr.read()) + 1;
+            _ptr.write(__rhs)
+        }
     };
     {
         let _ptr = ({
@@ -329,7 +347,10 @@ fn main_0() -> i32 {
             )
         })
         .clone();
-        _ptr.write((_ptr.read()) + 1)
+        {
+            let __rhs = (_ptr.read()) + 1;
+            _ptr.write(__rhs)
+        }
     };
     let ptr1: Value<i32> = Rc::new(RefCell::new(
         ({

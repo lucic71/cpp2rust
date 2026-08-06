@@ -90,28 +90,40 @@ pub fn convert_with_rhs_1() {
         let __rhs = (*x.borrow());
         {
             let _ptr = z.clone();
-            _ptr.write((_ptr.read()) + __rhs)
+            {
+                let __rhs = (_ptr.read()) + __rhs;
+                _ptr.write(__rhs)
+            }
         }
     };
     {
         let __rhs = (*y.borrow());
         {
             let _ptr = z.clone();
-            _ptr.write((_ptr.read()) + __rhs)
+            {
+                let __rhs = (_ptr.read()) + __rhs;
+                _ptr.write(__rhs)
+            }
         }
     };
     {
         let __rhs = ((*p.borrow()).read());
         {
             let _ptr = z.clone();
-            _ptr.write((_ptr.read()) + __rhs)
+            {
+                let __rhs = (_ptr.read()) + __rhs;
+                _ptr.write(__rhs)
+            }
         }
     };
     {
         let __rhs = ((*y.borrow()) + (*x.borrow()));
         {
             let _ptr = (*p.borrow()).clone();
-            _ptr.write((_ptr.read()) + __rhs)
+            {
+                let __rhs = (_ptr.read()) + __rhs;
+                _ptr.write(__rhs)
+            }
         }
     };
     {
@@ -121,7 +133,10 @@ pub fn convert_with_rhs_1() {
         };
         {
             let _ptr = (*p.borrow()).clone();
-            _ptr.write((_ptr.read()) + __rhs)
+            {
+                let __rhs = (_ptr.read()) + __rhs;
+                _ptr.write(__rhs)
+            }
         }
     };
     {
@@ -131,7 +146,10 @@ pub fn convert_with_rhs_1() {
         };
         {
             let _ptr = (*p.borrow()).clone();
-            _ptr.write((_ptr.read()) + __rhs)
+            {
+                let __rhs = (_ptr.read()) + __rhs;
+                _ptr.write(__rhs)
+            }
         }
     };
 }

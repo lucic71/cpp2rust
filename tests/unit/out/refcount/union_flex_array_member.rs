@@ -79,7 +79,10 @@ fn main_0() -> i32 {
         )
         .reinterpret_cast::<node>(),
     ));
-    (*n.borrow()).with_mut(|__v| __v.len = (*tail_size.borrow()));
+    {
+        let __rhs = (*tail_size.borrow());
+        (*n.borrow()).with_mut(|__v| __v.len = __rhs)
+    };
     let i: Value<usize> = Rc::new(RefCell::new(0_usize));
     'loop_: while ((((*i.borrow()) < (*tail_size.borrow())) as i32) != 0) {
         {

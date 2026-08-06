@@ -113,12 +113,18 @@ fn main_0() -> i32 {
     assert!((((*f1.borrow()).z.read()) == 2));
     let f2: Value<Foo> = Rc::new(RefCell::new((*f1.borrow()).clone()));
     (*f2.borrow_mut()).x.prefix_inc();
-    (*f2.borrow_mut()).y.with_mut(|__v| __v.prefix_inc());
+    {
+        let __ptr = (*f2.borrow_mut()).y.clone();
+        __ptr.with_mut(|__v| __v.prefix_inc())
+    };
     assert!(((*f2.borrow()).x == 2));
     assert!((((*f2.borrow()).y.read()) == 3));
     assert!(((*f1.borrow()).x == 1));
     assert!((((*f1.borrow()).y.read()) == 3));
-    (*f2.borrow()).z.with_mut(|__v| __v.prefix_inc());
+    {
+        let __ptr = (*f2.borrow()).z.clone();
+        __ptr.with_mut(|__v| __v.prefix_inc())
+    };
     assert!((((*f2.borrow()).y.read()) == 4));
     assert!({
         let _lhs = ((*f2.borrow()).z).clone();

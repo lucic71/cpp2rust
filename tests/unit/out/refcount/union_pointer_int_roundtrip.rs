@@ -68,11 +68,14 @@ fn main_0() -> i32 {
         }
     };
     let u: Value<anon_0> = <Value<anon_0>>::default();
-    (u.as_pointer()
-        .reinterpret_cast::<u8>()
-        .offset(0usize)
-        .reinterpret_cast::<Ptr<i32>>() as Ptr<Ptr<i32>>)
-        .write(((arr.as_pointer() as Ptr<i32>).offset(1)));
+    {
+        let __rhs = ((arr.as_pointer() as Ptr<i32>).offset(1));
+        (u.as_pointer()
+            .reinterpret_cast::<u8>()
+            .offset(0usize)
+            .reinterpret_cast::<Ptr<i32>>() as Ptr<Ptr<i32>>)
+            .write(__rhs)
+    };
     {
         let rhs_0 = (u
             .as_pointer()
@@ -151,11 +154,14 @@ fn main_0() -> i32 {
             == 10) as i32)
             != 0)
     );
-    (u.as_pointer()
-        .reinterpret_cast::<u8>()
-        .offset(0usize)
-        .reinterpret_cast::<Ptr<i32>>() as Ptr<Ptr<i32>>)
-        .write((arr.as_pointer() as Ptr<i32>).offset(((4) as isize)));
+    {
+        let __rhs = (arr.as_pointer() as Ptr<i32>).offset(((4) as isize));
+        (u.as_pointer()
+            .reinterpret_cast::<u8>()
+            .offset(0usize)
+            .reinterpret_cast::<Ptr<i32>>() as Ptr<Ptr<i32>>)
+            .write(__rhs)
+    };
     assert!(
         ((({
             let _lhs = ((u

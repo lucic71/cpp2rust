@@ -57,6 +57,8 @@ struct RsExpr {
 
   virtual void dump(llvm::raw_ostream &os, unsigned depth = 0);
 
+  virtual bool ContainsBorrow();
+
   virtual void ForEachChild(llvm::function_ref<void(RsExpr *&)>) {}
 
   RsExpr *IgnoreParens();
@@ -547,6 +549,8 @@ struct FieldPtr : Accessor {
 struct BorrowRead : Accessor {
   explicit BorrowRead(RsExpr *object) : Accessor(Kind::BorrowRead, object) {}
 
+  bool ContainsBorrow() override { return true; }
+
   static bool classof(const RsExpr *expr) {
     return expr->kind == Kind::BorrowRead;
   }
@@ -560,6 +564,8 @@ struct BorrowRead : Accessor {
 
 struct BorrowWrite : Accessor {
   explicit BorrowWrite(RsExpr *object) : Accessor(Kind::BorrowWrite, object) {}
+
+  bool ContainsBorrow() override { return true; }
 
   static bool classof(const RsExpr *expr) {
     return expr->kind == Kind::BorrowWrite;

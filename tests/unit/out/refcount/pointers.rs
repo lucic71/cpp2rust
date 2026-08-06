@@ -34,7 +34,10 @@ impl TestMethods for Ptr<Test> {
     fn update(&self, x: i32, y: i32) {
         let x: Value<i32> = Rc::new(RefCell::new(x));
         let y: Value<i32> = Rc::new(RefCell::new(y));
-        self.with_mut(|__v| __v.x = ((*x.borrow()) + (*y.borrow())));
+        {
+            let __rhs = ((*x.borrow()) + (*y.borrow()));
+            self.with_mut(|__v| __v.x = __rhs)
+        };
     }
 }
 impl Clone for Test {
@@ -82,7 +85,10 @@ fn main_0() -> i32 {
     (*t3.borrow()).with_mut(|__v| __v.x = 15);
     {
         let _ptr = ({ (*t3.borrow()).as_ptr() }).clone();
-        _ptr.write((_ptr.read()) + 10)
+        {
+            let __rhs = (_ptr.read()) + 10;
+            _ptr.write(__rhs)
+        }
     };
     return {
         let _lhs = {

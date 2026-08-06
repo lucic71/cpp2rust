@@ -18,7 +18,10 @@ pub trait NodeMethods {
 impl NodeMethods for Ptr<Node> {
     fn SetNext(&self, next: Ptr<Node>) {
         let next: Value<Ptr<Node>> = Rc::new(RefCell::new(next));
-        self.with_mut(|__v| __v.next = (*next.borrow()).clone());
+        {
+            let __rhs = (*next.borrow()).clone();
+            self.with_mut(|__v| __v.next = __rhs)
+        };
     }
 }
 impl Clone for Node {

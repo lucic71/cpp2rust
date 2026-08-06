@@ -103,6 +103,8 @@ public:
   RsExpr *NestPtrUse(RsExpr *node) override;
 
   RsExpr *HoistPtrUse(RsExpr *node) override;
+  RsExpr *HoistBorrowedObject(Accessor *acc);
+  RsExpr *HoistPtrWrite(PtrWrite *write);
 
   RsExpr *VisitConditionalOperator(clang::ConditionalOperator *expr) override;
 

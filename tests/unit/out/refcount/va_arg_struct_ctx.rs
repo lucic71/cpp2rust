@@ -33,7 +33,10 @@ pub fn set_error_0(ctx: Ptr<context>, fmt: Ptr<u8>, __args: &[VaArg]) {
     if ((*ctx.borrow()).with(|__v| (*__v).verbose) != 0) {
         let ap: Value<VaList> = Rc::new(RefCell::new(VaList::default()));
         (*ap.borrow_mut()) = VaList::new(__args);
-        (*ctx.borrow()).with_mut(|__v| __v.last_error = (*ap.borrow_mut()).arg::<i32>());
+        {
+            let __rhs = (*ap.borrow_mut()).arg::<i32>();
+            (*ctx.borrow()).with_mut(|__v| __v.last_error = __rhs)
+        };
     }
 }
 pub fn main() {
