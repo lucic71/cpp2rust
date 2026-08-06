@@ -39,6 +39,11 @@ macro_rules! impl_fn_addr {
             #[inline]
             fn fn_addr(&self) -> usize { *self as *const () as usize }
         }
+        #[allow(coherence_leak_check)]
+        impl<R $(, $a)*> FnAddr for fn($($a,)* &[crate::va_args::VaArg]) -> R {
+            #[inline]
+            fn fn_addr(&self) -> usize { *self as *const () as usize }
+        }
         impl_fn_addr!(@peel $($a)*);
     };
     (@peel) => {};
