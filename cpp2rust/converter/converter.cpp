@@ -3350,6 +3350,22 @@ RsExpr *Converter::VisitCXXThisExpr([[maybe_unused]] clang::CXXThisExpr *expr) {
   return Text(keyword::kSelfValue);
 }
 
+static bool IsZeroInitializer(clang::ASTContext &ctx,
+                              const clang::Expr *expr) {
+  if (clang::isa<clang::ImplicitValueInitExpr>(expr)) {
+    return true;
+  }
+  if (auto list = clang::dyn_cast<clang::InitListExpr>(expr)) {
+    return std::all_of(list->inits().begin(), list->inits().end(),
+                       [&](const clang::Expr *init) {
+                         return IsZeroInitializer(ctx, init);
+                       });
+  }
+  clang::Expr::EvalResult result;
+  return expr->EvaluateAsRValue(result, ctx) && result.Val.isInt() &&
+         result.Val.getInt() == 0;
+}
+
 RsExpr *Converter::VisitInitListExpr(clang::InitListExpr *expr) {
   if (auto form = expr->getSemanticForm())
     expr = form;
@@ -3364,6 +3380,11 @@ RsExpr *Converter::VisitInitListExpr(clang::InitListExpr *expr) {
     return GetDefaultAsString(qual_type);
   }
   if (qual_type->isRecordType()) {
+    if (IsZeroInitializer(ctx_, expr)) {
+      if (auto init = Mapper::MapInitializer(qual_type); !init.empty()) {
+        return Text(std::move(init));
+      }
+    }
     const auto *record = qual_type->getAsRecordDecl();
     if (record->getQualifiedNameAsString() == "std::array") {
       if (auto init = clang::dyn_cast<clang::InitListExpr>(expr->getInit(0))) {
