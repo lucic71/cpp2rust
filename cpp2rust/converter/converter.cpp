@@ -231,6 +231,10 @@ Converter::ConvertFunctionPointerType(const clang::FunctionProtoType *proto,
     parts.push_back(Convert(p_ty));
     parts.push_back(Text(','));
   }
+  if (proto->isVariadic()) {
+    parts.push_back(Text("&[VaArg]"));
+    parts.push_back(Text(','));
+  }
   parts.push_back(Text(')'));
   if (!proto->getReturnType()->isVoidType()) {
     parts.push_back(Text("->"));

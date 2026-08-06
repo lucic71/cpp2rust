@@ -214,8 +214,16 @@ pub unsafe fn write_unsafe(a0: i32, a1: *const ::std::ffi::c_void, a2: usize) ->
 /// # Safety
 ///
 /// Same contract as C's `fcntl`, restricted to the three-argument form.
-pub unsafe fn fcntl_unsafe(a0: i32, a1: i32, a2: *mut ::std::ffi::c_void) -> i32 {
-    unsafe { libc::fcntl(a0, a1, a2) }
+pub unsafe fn fcntl_unsafe(a0: i32, a1: i32, va: &[crate::VaArg]) -> i32 {
+    match va.first() {
+        None => unsafe { libc::fcntl(a0, a1) },
+        Some(crate::VaArg::Int(v)) => unsafe { libc::fcntl(a0, a1, *v) },
+        Some(crate::VaArg::UInt(v)) => unsafe { libc::fcntl(a0, a1, *v) },
+        Some(crate::VaArg::Long(v)) => unsafe { libc::fcntl(a0, a1, *v) },
+        Some(crate::VaArg::ULong(v)) => unsafe { libc::fcntl(a0, a1, *v) },
+        Some(crate::VaArg::RawPtr(v)) => unsafe { libc::fcntl(a0, a1, *v) },
+        Some(_) => panic!("fcntl_unsafe: unsupported variadic argument"),
+    }
 }
 
 /// # Safety
