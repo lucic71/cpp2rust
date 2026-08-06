@@ -167,6 +167,11 @@ bool RefersToUserDefinedDecl(const clang::Expr *expr) {
   } else if (const auto *ctor = llvm::dyn_cast<clang::CXXConstructExpr>(expr)) {
     decl = ctor->getConstructor();
   }
+  if (const auto *fn = llvm::dyn_cast_or_null<clang::FunctionDecl>(decl)) {
+    decl = fn->getDefinition() != nullptr
+               ? static_cast<const clang::Decl *>(fn->getDefinition())
+               : static_cast<const clang::Decl *>(fn->getCanonicalDecl());
+  }
   return decl && IsUserDefinedDecl(decl);
 }
 
