@@ -7,6 +7,8 @@
 #include <clang/Basic/OperatorKinds.h>
 
 #include <format>
+#include <optional>
+#include <vector>
 
 #include "compiler.h"
 #include "converter/converter_lib.h"
@@ -1816,6 +1818,48 @@ static bool IsZeroInitExpr(clang::ASTContext &ctx, const clang::Expr *expr) {
          result.Val.getInt() == 0;
 }
 
+static std::optional<std::vector<uint8_t>>
+GetConstantUnionBytes(clang::ASTContext &ctx, const clang::InitListExpr *expr) {
+  if (expr->getNumInits() != 1) {
+    return std::nullopt;
+  }
+  const auto *field = expr->getInitializedFieldInUnion();
+  if (!field) {
+    return std::nullopt;
+  }
+  const auto *init = expr->getInit(0)->IgnoreParenImpCasts();
+  uint64_t union_size = ctx.getTypeSize(expr->getType()) / 8;
+  std::vector<uint8_t> bytes;
+  if (const auto *str = clang::dyn_cast<clang::StringLiteral>(init);
+      str && str->getCharByteWidth() == 1) {
+    auto data = str->getString();
+    bytes.assign(data.begin(), data.end());
+  } else {
+    clang::Expr::EvalResult result;
+    if (!init->EvaluateAsRValue(result, ctx)) {
+      return std::nullopt;
+    }
+    uint64_t field_size = ctx.getTypeSize(field->getType()) / 8;
+    llvm::APInt value;
+    if (result.Val.isInt()) {
+      value = result.Val.getInt();
+    } else if (result.Val.isFloat()) {
+      value = result.Val.getFloat().bitcastToAPInt();
+    } else {
+      return std::nullopt;
+    }
+    value = value.zextOrTrunc(field_size * 8);
+    for (uint64_t i = 0; i < field_size; ++i) {
+      bytes.push_back(value.extractBitsAsZExtValue(8, i * 8));
+    }
+  }
+  if (bytes.size() > union_size) {
+    return std::nullopt;
+  }
+  bytes.resize(union_size, 0);
+  return bytes;
+}
+
 RsExpr *ConverterRefCount::VisitInitListExpr(clang::InitListExpr *expr) {
   if (auto form = expr->getSemanticForm())
     expr = form;
@@ -1843,11 +1887,20 @@ RsExpr *ConverterRefCount::VisitInitListExpr(clang::InitListExpr *expr) {
     }
 
     if (record->isUnion()) {
-      assert((expr->getNumInits() == 0 ||
-              IsZeroInitExpr(ctx_, expr->getInit(0))) &&
-             "unsupported non-zero union initializer");
       computed_expr_type_ = ComputedExprType::FreshValue;
-      return Text("Default::default()");
+      if (expr->getNumInits() == 0 || IsZeroInitExpr(ctx_, expr->getInit(0))) {
+        return Text("Default::default()");
+      }
+      auto bytes = GetConstantUnionBytes(ctx_, expr);
+      assert(bytes && "unsupported non-zero union initializer");
+      std::string list;
+      for (auto byte : *bytes) {
+        list += std::to_string(byte);
+        list += ',';
+      }
+      return Text(std::format(
+          "{} {{ __bytes: Rc::new(RefCell::new(Box::from([{}]))) }}",
+          GetRecordName(record), list));
     }
 
     std::vector<RsExpr *> fields;
