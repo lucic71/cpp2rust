@@ -1440,7 +1440,10 @@ impl RangeAllocator {
         Self {
             // Increase this if you need higher alignment. In general, malloc returns
             // 16-bits-aligned pointers, but that's not relevant for now.
-            cursor: 1,
+            //
+            // Don't start at 1 because some programs craft fake pointers in the low address space
+            // which would conflict with the cursor.
+            cursor: 1 << 32,
             bases: HashMap::new(),
         }
     }
