@@ -282,6 +282,7 @@ bool Converter::Convert(clang::Decl *decl) {
   }
   auto *node = ConvertDecl(decl);
   LowerNodes(node);
+  node->dump(log());
   *rs_code_ += node->print();
   return false;
 }

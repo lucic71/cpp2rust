@@ -18,6 +18,10 @@ namespace clang {
 class Expr;
 }
 
+namespace llvm {
+class raw_ostream;
+}
+
 namespace cpp2rust {
 
 struct PtrWith;
@@ -51,6 +55,8 @@ struct RsExpr {
 
   virtual std::string print() const = 0;
 
+  virtual void dump(llvm::raw_ostream &os, unsigned depth = 0);
+
   virtual void ForEachChild(llvm::function_ref<void(RsExpr *&)>) {}
 
   RsExpr *IgnoreParens();
@@ -79,6 +85,8 @@ struct Verbatim : RsExpr {
 
   std::string print() const override { return text; }
 
+  void dump(llvm::raw_ostream &os, unsigned depth = 0) override;
+
   std::string text;
 };
 
@@ -104,6 +112,8 @@ struct Concat : RsExpr {
   }
 
   std::vector<RsExpr *> parts;
+
+  void dump(llvm::raw_ostream &os, unsigned depth = 0) override;
 };
 
 struct Delim : RsExpr {
@@ -143,6 +153,8 @@ struct Delim : RsExpr {
   char open;
   char close;
   RsExpr *inner;
+
+  void dump(llvm::raw_ostream &os, unsigned depth = 0) override;
 };
 
 struct Unary : RsExpr {
@@ -179,6 +191,8 @@ struct Unary : RsExpr {
 
   Op op;
   RsExpr *operand;
+
+  void dump(llvm::raw_ostream &os, unsigned depth = 0) override;
 };
 
 struct Cast : RsExpr {
@@ -208,6 +222,8 @@ struct Cast : RsExpr {
 
   RsExpr *expr;
   RsExpr *type;
+
+  void dump(llvm::raw_ostream &os, unsigned depth = 0) override;
 };
 
 struct Call : RsExpr {
@@ -249,6 +265,8 @@ struct Call : RsExpr {
   RsExpr *callee;
   std::vector<RsExpr *> args;
   bool is_mut;
+
+  void dump(llvm::raw_ostream &os, unsigned depth = 0) override;
 };
 
 struct Closure : RsExpr {
@@ -277,6 +295,8 @@ struct Closure : RsExpr {
   std::string param;
   RsExpr *param_type;
   RsExpr *body;
+
+  void dump(llvm::raw_ostream &os, unsigned depth = 0) override;
 };
 
 inline std::string PrintWords(const std::vector<RsExpr *> &nodes) {
@@ -357,6 +377,8 @@ struct Fn : RsExpr {
   std::vector<RsExpr *> params;
   RsExpr *return_type;
   std::optional<std::vector<RsExpr *>> body;
+
+  void dump(llvm::raw_ostream &os, unsigned depth = 0) override;
 };
 
 struct Trait : RsExpr {
@@ -387,6 +409,8 @@ struct Trait : RsExpr {
   std::vector<RsExpr *> qualifiers;
   std::string name;
   std::vector<RsExpr *> items;
+
+  void dump(llvm::raw_ostream &os, unsigned depth = 0) override;
 };
 
 struct Impl : RsExpr {
@@ -424,6 +448,8 @@ struct Impl : RsExpr {
   std::string trait_name;
   RsExpr *self_type;
   std::vector<RsExpr *> items;
+
+  void dump(llvm::raw_ostream &os, unsigned depth = 0) override;
 };
 
 struct Accessor : RsExpr {
@@ -461,6 +487,8 @@ struct Field : Accessor {
   }
 
   std::string member;
+
+  void dump(llvm::raw_ostream &os, unsigned depth = 0) override;
 };
 
 struct Index : Accessor {
@@ -479,6 +507,8 @@ struct Index : Accessor {
   }
 
   RsExpr *index;
+
+  void dump(llvm::raw_ostream &os, unsigned depth = 0) override;
 };
 
 struct FieldPtr : Accessor {
@@ -510,6 +540,8 @@ struct FieldPtr : Accessor {
   std::string type_name;
   std::string field;
   bool container;
+
+  void dump(llvm::raw_ostream &os, unsigned depth = 0) override;
 };
 
 struct BorrowRead : Accessor {
@@ -522,6 +554,8 @@ struct BorrowRead : Accessor {
   std::string print() const override {
     return "(*" + object->print() + ".borrow()) ";
   }
+
+  void dump(llvm::raw_ostream &os, unsigned depth = 0) override;
 };
 
 struct BorrowWrite : Accessor {
@@ -534,6 +568,8 @@ struct BorrowWrite : Accessor {
   std::string print() const override {
     return "(*" + object->print() + ".borrow_mut()) ";
   }
+
+  void dump(llvm::raw_ostream &os, unsigned depth = 0) override;
 };
 
 struct PtrRead : Accessor {
@@ -548,6 +584,8 @@ struct PtrRead : Accessor {
   }
 
   RsExpr *Pointer() override { return object; }
+
+  void dump(llvm::raw_ostream &os, unsigned depth = 0) override;
 };
 
 struct PtrWrite : Accessor {
@@ -568,6 +606,8 @@ struct PtrWrite : Accessor {
   }
 
   RsExpr *value;
+
+  void dump(llvm::raw_ostream &os, unsigned depth = 0) override;
 };
 
 struct PtrWith : Accessor {
@@ -587,6 +627,8 @@ struct PtrWith : Accessor {
     fn(object);
     fn(closure);
   }
+
+  void dump(llvm::raw_ostream &os, unsigned depth = 0) override;
 
   bool is_mut;
   RsExpr *closure;
@@ -609,6 +651,8 @@ struct Assign : RsExpr {
 
   RsExpr *left;
   RsExpr *right;
+
+  void dump(llvm::raw_ostream &os, unsigned depth = 0) override;
 };
 
 struct CompoundAssign : RsExpr {
@@ -632,6 +676,8 @@ struct CompoundAssign : RsExpr {
   RsExpr *left;
   std::string op;
   RsExpr *right;
+
+  void dump(llvm::raw_ostream &os, unsigned depth = 0) override;
 };
 
 inline bool SameRendered(const RsExpr *lhs, const RsExpr *rhs) {
@@ -648,5 +694,7 @@ public:
 private:
   std::vector<std::unique_ptr<RsExpr>> pool_;
 };
+
+const char *KindName(RsExpr::Kind kind);
 
 } // namespace cpp2rust
