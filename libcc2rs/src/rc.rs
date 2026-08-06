@@ -1331,6 +1331,12 @@ impl PartialEq for AnyPtr {
     }
 }
 
+impl PartialOrd for AnyPtr {
+    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
+        self.to_int().partial_cmp(&other.to_int())
+    }
+}
+
 impl AnyPtr {
     pub fn memcpy(&self, src: &AnyPtr, len: usize) {
         let dst_u8 = self.ptr.as_bytes();
