@@ -415,6 +415,10 @@ RsExpr *Converter::EmitHoistedDecls(clang::CompoundStmt *body) {
   for (auto *child : body->body()) {
     if (auto *decl_stmt = clang::dyn_cast<clang::DeclStmt>(child)) {
       for (auto *decl : decl_stmt->decls()) {
+        if (auto *tag = clang::dyn_cast<clang::TagDecl>(decl)) {
+          parts.push_back(ConvertDecl(tag));
+          continue;
+        }
         auto *static_local = clang::dyn_cast<clang::VarDecl>(decl);
         if (static_local && static_local->isStaticLocal()) {
           parts.push_back(VisitVarDecl(static_local));
@@ -528,7 +532,8 @@ static bool NeedsFlattening(clang::CompoundStmt *body) {
 }
 
 static void CollectLocalDecls(clang::Stmt *stmt,
-                              std::vector<clang::VarDecl *> &out) {
+                              std::vector<clang::VarDecl *> &out,
+                              std::vector<clang::TagDecl *> &tags) {
   if (stmt == nullptr) {
     return;
   }
@@ -536,11 +541,15 @@ static void CollectLocalDecls(clang::Stmt *stmt,
     for (auto *decl : decl_stmt->decls()) {
       if (auto *var = clang::dyn_cast<clang::VarDecl>(decl)) {
         out.push_back(var);
+        continue;
+      }
+      if (auto *tag = clang::dyn_cast<clang::TagDecl>(decl)) {
+        tags.push_back(tag);
       }
     }
   }
   for (auto *child : stmt->children()) {
-    CollectLocalDecls(child, out);
+    CollectLocalDecls(child, out, tags);
   }
 }
 
@@ -551,7 +560,8 @@ RsExpr *Converter::TryConvertFlattenedBody(clang::CompoundStmt *body) {
   PushHoistedDecls push_hoisted(hoisted_decls_);
 
   std::vector<clang::VarDecl *> locals;
-  CollectLocalDecls(body, locals);
+  std::vector<clang::TagDecl *> local_tags;
+  CollectLocalDecls(body, locals, local_tags);
   std::unordered_map<std::string, unsigned> name_count;
   std::unordered_map<const clang::Decl *, std::string> renames;
   for (auto *var : locals) {
@@ -565,6 +575,9 @@ RsExpr *Converter::TryConvertFlattenedBody(clang::CompoundStmt *body) {
   SetLocalRenames(std::move(renames));
 
   std::vector<RsExpr *> hoisted;
+  for (auto *tag : local_tags) {
+    hoisted.push_back(ConvertDecl(tag));
+  }
   for (auto *var : locals) {
     if (var->isStaticLocal()) {
       hoisted.push_back(VisitVarDecl(var));
@@ -3861,6 +3874,10 @@ RsExpr *Converter::VisitSwitchStmt(clang::SwitchStmt *stmt) {
       continue;
     }
     for (auto *decl : decl_stmt->decls()) {
+      if (auto *tag = clang::dyn_cast<clang::TagDecl>(decl)) {
+        pre.push_back(ConvertDecl(tag));
+        continue;
+      }
       auto *var = clang::dyn_cast<clang::VarDecl>(decl);
       if (var == nullptr || !var->isLocalVarDecl() || IsGlobalVar(var)) {
         continue;
