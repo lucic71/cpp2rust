@@ -25,5 +25,20 @@ int main() {
   assert(sizeof("hello") - 1 == 5);
   assert(sizeof("") == 1);
   assert(sizeof("fifteen-bytes!!") - 1 == 15);
+
+  char bytes[4];
+  bytes[0] = 0xe2;
+  bytes[1] = 0x90;
+  bytes[2] = 0x80 + 1;
+  bytes[3] = 0;
+  assert(bytes[0] == (char)0xe2);
+  assert((unsigned char)bytes[0] == 226);
+  assert((unsigned char)bytes[1] == 144);
+  assert((unsigned char)bytes[2] == 129);
+
+  short wide = 0xffff;
+  assert(wide == -1);
+  unsigned char narrow = 300;
+  assert(narrow == 44);
   return 0;
 }

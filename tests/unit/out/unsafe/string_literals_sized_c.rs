@@ -41,5 +41,18 @@ unsafe fn main_0() -> i32 {
             == (15_usize)) as i32)
             != 0)
     );
+    let mut bytes: [libc::c_char; 4] = [(0 as libc::c_char); 4];
+    bytes[((0) as usize)] = (226u8 as libc::c_char);
+    bytes[((1) as usize)] = (144u8 as libc::c_char);
+    bytes[((2) as usize)] = (((128) + (1)) as libc::c_char);
+    bytes[((3) as usize)] = (0 as libc::c_char);
+    assert!(((((bytes[((0) as usize)] as i32) == ((226u8 as libc::c_char) as i32)) as i32) != 0));
+    assert!((((((bytes[((0) as usize)] as u8) as i32) == (226)) as i32) != 0));
+    assert!((((((bytes[((1) as usize)] as u8) as i32) == (144)) as i32) != 0));
+    assert!((((((bytes[((2) as usize)] as u8) as i32) == (129)) as i32) != 0));
+    let mut wide: i16 = (65535u16 as i16);
+    assert!(((((wide as i32) == (-1_i32)) as i32) != 0));
+    let mut narrow: u8 = (44u8 as u8);
+    assert!(((((narrow as i32) == (44)) as i32) != 0));
     return 0;
 }

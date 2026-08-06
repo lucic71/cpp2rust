@@ -33,5 +33,20 @@ fn main_0() -> i32 {
     assert!(((((6usize as usize).wrapping_sub(1_usize) == 5_usize) as i32) != 0));
     assert!((((1usize == 1_usize) as i32) != 0));
     assert!(((((16usize as usize).wrapping_sub(1_usize) == 15_usize) as i32) != 0));
+    let bytes: Value<Box<[u8]>> = Rc::new(RefCell::new(
+        (0..4).map(|_| <u8>::default()).collect::<Box<[u8]>>(),
+    ));
+    (*bytes.borrow_mut())[(0) as usize] = (226u8 as u8);
+    (*bytes.borrow_mut())[(1) as usize] = (144u8 as u8);
+    (*bytes.borrow_mut())[(2) as usize] = ((128 + 1) as u8);
+    (*bytes.borrow_mut())[(3) as usize] = 0_u8;
+    assert!((((((*bytes.borrow())[(0) as usize] as i32) == ((226u8 as u8) as i32)) as i32) != 0));
+    assert!(((((((*bytes.borrow())[(0) as usize] as u8) as i32) == 226) as i32) != 0));
+    assert!(((((((*bytes.borrow())[(1) as usize] as u8) as i32) == 144) as i32) != 0));
+    assert!(((((((*bytes.borrow())[(2) as usize] as u8) as i32) == 129) as i32) != 0));
+    let wide: Value<i16> = Rc::new(RefCell::new((65535u16 as i16)));
+    assert!((((((*wide.borrow()) as i32) == -1_i32) as i32) != 0));
+    let narrow: Value<u8> = Rc::new(RefCell::new((44u8 as u8)));
+    assert!((((((*narrow.borrow()) as i32) == 44) as i32) != 0));
     return 0;
 }

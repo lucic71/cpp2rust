@@ -151,7 +151,7 @@ unsafe fn main_0() -> i32 {
                 (c"%ld %lu %zu".as_ptr().cast_mut()).cast_const() as *const libc::c_char,
                 (-1_i64),
                 (1_u64),
-                (9 as usize),
+                (9_usize),
             )
         }) == (6)) as i32)
             != 0)

@@ -262,7 +262,7 @@ fn main_0() -> i32 {
         ((({
             let __s = libcc2rs::format_c(
                 &Ptr::from_string_literal(b"%ld %lu %zu").to_rust_string(),
-                &[(-1_i64).into(), (1_u64).into(), (9 as usize).into()],
+                &[(-1_i64).into(), (1_u64).into(), (9_usize).into()],
             );
             let __b = __s.as_bytes();
             if 32usize > 0 {

@@ -2464,6 +2464,16 @@ std::string Converter::getIntegerLiteral(clang::IntegerLiteral *expr,
         return init;
       }
     }
+    if (ty->isIntegerType()) {
+      unsigned bits = ctx_.getTypeSize(ty);
+      unsigned value_bits = ty->isSignedIntegerType() ? bits - 1 : bits;
+      if (expr->getValue().getActiveBits() > value_bits) {
+        return std::format(
+            "({}u{} as {})",
+            std::string(GetNumAsString(expr->getValue().zextOrTrunc(bits))),
+            bits, type_as_string);
+      }
+    }
     return getTypedLiteral(num_as_string.c_str(), type_as_string);
   }
 
@@ -2769,6 +2779,11 @@ RsExpr *Converter::VisitExplicitCastExpr(clang::ExplicitCastExpr *expr) {
         !sub_expr->getType()->isBooleanType()) {
       return Parens(
           Cat(ConvertExpr(sub_expr), Text(token::kDiff), Text(token::kZero)));
+    }
+    if (auto *literal = clang::dyn_cast<clang::IntegerLiteral>(sub_expr);
+        literal && type->isIntegerType() && !type->isBooleanType()) {
+      computed_expr_type_ = ComputedExprType::FreshValue;
+      return Text(getIntegerLiteral(literal, true, &type));
     }
     auto *inner = ConvertExpr(sub_expr);
     if (auto *unary_oper = clang::dyn_cast<clang::UnaryOperator>(sub_expr);

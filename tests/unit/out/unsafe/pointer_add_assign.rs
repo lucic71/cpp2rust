@@ -33,7 +33,7 @@ unsafe fn main_0() -> i32 {
     p = (p).wrapping_add(((1_u32 as u32) as usize));
     assert!((((*p) as i32) == (2)));
     let mut p: *mut libc::c_char = (&raw mut arr[((0) as usize)] as *mut libc::c_char);
-    p = (p).wrapping_add((((1 as i32) as i32) as usize));
+    p = (p).wrapping_add(((1_i32 as i32) as usize));
     assert!((((*p) as i32) == (2)));
     let mut p: *mut libc::c_char = (&raw mut arr[((0) as usize)] as *mut libc::c_char);
     p = (p).wrapping_add(((1_u64 as u64) as usize));
