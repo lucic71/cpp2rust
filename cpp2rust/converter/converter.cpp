@@ -2141,6 +2141,11 @@ RsExpr *Converter::VisitCallExpr(clang::CallExpr *expr) {
       node = GetMappedAsNode(expr, args, num_args, &ctx);
     };
     if (!node) {
+      llvm::errs() << "No rule body for mapped call: "
+                   << Mapper::ToString(expr->getCallee()) << " at "
+                   << expr->getExprLoc().printToString(ctx_.getSourceManager())
+                   << '\n';
+      assert(0);
       node = Text("");
     }
 
@@ -2429,6 +2434,11 @@ Converter::ConvertCallExpr(clang::CallExpr *expr) {
     auto ctx = CollectRefBindingTempArgs(expr);
     auto *node = GetMappedAsNode(expr, args, num_args, &ctx);
     if (!node) {
+      llvm::errs() << "No rule body for mapped call: "
+                   << Mapper::ToString(callee) << " at "
+                   << expr->getExprLoc().printToString(ctx_.getSourceManager())
+                   << '\n';
+      assert(0);
       node = Text("");
     }
     return {node, std::move(ctx)};

@@ -47,5 +47,26 @@ int main() {
   assert(strcmp(buf, "   42|42   |") == 0);
   assert(snprintf(buf, sizeof(buf), "%*d", -5, 42) == 5);
   assert(strcmp(buf, "42   ") == 0);
+
+  int first = 0, second = 0, third = 0;
+  assert(sscanf("40,25,3", "%d,%d,%d", &first, &second, &third) == 3);
+  assert(first == 40 && second == 25 && third == 3);
+  assert(sscanf("7,8", "%d,%d,%d", &first, &second, &third) == 2);
+  assert(first == 7 && second == 8);
+  assert(sscanf("junk", "%d,%d,%d", &first, &second, &third) == 0);
+
+  int hex = 0;
+  char word[8];
+  char ch = 0;
+  assert(sscanf("  ff word x", "%x %7s %c", &hex, word, &ch) == 3);
+  assert(hex == 255);
+  assert(strcmp(word, "word") == 0);
+  assert(ch == 'x');
+
+  long big = 0;
+  short small = 0;
+  assert(sscanf("123456789012 -7", "%ld %hd", &big, &small) == 2);
+  assert(big == 123456789012L);
+  assert(small == -7);
   return 0;
 }

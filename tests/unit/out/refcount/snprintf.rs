@@ -603,5 +603,104 @@ fn main_0() -> i32 {
         } == 0) as i32)
             != 0)
     );
+    let first: Value<i32> = Rc::new(RefCell::new(0));
+    let second: Value<i32> = Rc::new(RefCell::new(0));
+    let third: Value<i32> = Rc::new(RefCell::new(0));
+    assert!(
+        (((libcc2rs::scan_c(
+            &Ptr::from_string_literal(b"40,25,3").to_rust_string(),
+            &Ptr::from_string_literal(b"%d,%d,%d").to_rust_string(),
+            &[
+                (first.as_pointer()).into(),
+                (second.as_pointer()).into(),
+                (third.as_pointer()).into(),
+            ]
+        ) == 3) as i32)
+            != 0)
+    );
+    assert!(
+        ((((((((((*first.borrow()) == 40) as i32) != 0)
+            && ((((*second.borrow()) == 25) as i32) != 0)) as i32)
+            != 0)
+            && ((((*third.borrow()) == 3) as i32) != 0)) as i32)
+            != 0)
+    );
+    assert!(
+        (((libcc2rs::scan_c(
+            &Ptr::from_string_literal(b"7,8").to_rust_string(),
+            &Ptr::from_string_literal(b"%d,%d,%d").to_rust_string(),
+            &[
+                (first.as_pointer()).into(),
+                (second.as_pointer()).into(),
+                (third.as_pointer()).into(),
+            ]
+        ) == 2) as i32)
+            != 0)
+    );
+    assert!(
+        (((((((*first.borrow()) == 7) as i32) != 0) && ((((*second.borrow()) == 8) as i32) != 0))
+            as i32)
+            != 0)
+    );
+    assert!(
+        (((libcc2rs::scan_c(
+            &Ptr::from_string_literal(b"junk").to_rust_string(),
+            &Ptr::from_string_literal(b"%d,%d,%d").to_rust_string(),
+            &[
+                (first.as_pointer()).into(),
+                (second.as_pointer()).into(),
+                (third.as_pointer()).into(),
+            ]
+        ) == 0) as i32)
+            != 0)
+    );
+    let hex: Value<i32> = Rc::new(RefCell::new(0));
+    let word: Value<Box<[u8]>> = Rc::new(RefCell::new(
+        (0..8).map(|_| <u8>::default()).collect::<Box<[u8]>>(),
+    ));
+    let ch: Value<u8> = Rc::new(RefCell::new(0_u8));
+    assert!(
+        (((libcc2rs::scan_c(
+            &Ptr::from_string_literal(b"  ff word x").to_rust_string(),
+            &Ptr::from_string_literal(b"%x %7s %c").to_rust_string(),
+            &[
+                (hex.as_pointer()).into(),
+                (word.as_pointer() as Ptr::<u8>).into(),
+                (ch.as_pointer()).into(),
+            ]
+        ) == 3) as i32)
+            != 0)
+    );
+    assert!(((((*hex.borrow()) == 255) as i32) != 0));
+    assert!(
+        ((({
+            let mut __it1 = (word.as_pointer() as Ptr<u8>).to_c_string_iterator();
+            let mut __it2 = Ptr::from_string_literal(b"word").to_c_string_iterator();
+            loop {
+                let __c1 = __it1.next();
+                let __c2 = __it2.next();
+                if __c1 != __c2 {
+                    break (__c1.unwrap_or(0) as i32) - (__c2.unwrap_or(0) as i32);
+                }
+                if __c1.is_none() {
+                    break 0;
+                }
+            }
+        } == 0) as i32)
+            != 0)
+    );
+    assert!((((((*ch.borrow()) as i32) == ('x' as i32)) as i32) != 0));
+    let big: Value<i64> = Rc::new(RefCell::new(0_i64));
+    let small: Value<i16> = Rc::new(RefCell::new(0_i16));
+    assert!(
+        (((libcc2rs::scan_c(
+            &Ptr::from_string_literal(b"123456789012 -7").to_rust_string(),
+            &Ptr::from_string_literal(b"%ld %hd").to_rust_string(),
+            &[(big.as_pointer()).into(), (small.as_pointer()).into(),]
+        ) == 2) as i32)
+            != 0)
+    );
+    assert!(((((*big.borrow()) == 123456789012_i64) as i32) != 0));
+    assert!((((((*small.borrow()) as i32) == -7_i32) as i32) != 0));
     return 0;
 }

@@ -133,3 +133,157 @@ pub fn format_c(fmt: &str, va: &[VaArg]) -> String {
         Err(e) => panic!("format_c: cannot format {fmt:?}: {e:?}"),
     }
 }
+
+fn scan_int(inp: &[u8], base: u32, unsigned: bool) -> Option<(i64, usize)> {
+    let mut pos = 0;
+    let mut negative = false;
+    if pos < inp.len() && (inp[pos] == b'+' || inp[pos] == b'-') {
+        negative = inp[pos] == b'-';
+        pos += 1;
+    }
+    if base == 16 && (inp[pos..].starts_with(b"0x") || inp[pos..].starts_with(b"0X")) {
+        pos += 2;
+    }
+    let start = pos;
+    let mut value: i64 = 0;
+    while pos < inp.len() {
+        let Some(digit) = (inp[pos] as char).to_digit(base) else {
+            break;
+        };
+        value = value
+            .wrapping_mul(base as i64)
+            .wrapping_add(digit as i64);
+        pos += 1;
+    }
+    if pos == start {
+        return None;
+    }
+    if negative && !unsigned {
+        value = value.wrapping_neg();
+    }
+    Some((value, pos))
+}
+
+fn scan_store(arg: &VaArg, value: i64, length: u8) {
+    let VaArg::Ptr(p) = arg else {
+        panic!("scan_c: output argument must be a pointer");
+    };
+    match length {
+        1 => p.reinterpret_cast::<i16>().write(value as i16),
+        8 => p.reinterpret_cast::<i64>().write(value),
+        _ => p.reinterpret_cast::<i32>().write(value as i32),
+    }
+}
+
+pub fn scan_c(input: &str, fmt: &str, va: &[VaArg]) -> i32 {
+    let inp = input.as_bytes();
+    let f = fmt.as_bytes();
+    let mut ip = 0;
+    let mut fp = 0;
+    let mut matched = 0;
+    let mut next_arg = 0;
+    while fp < f.len() {
+        let c = f[fp];
+        if c.is_ascii_whitespace() {
+            fp += 1;
+            while ip < inp.len() && inp[ip].is_ascii_whitespace() {
+                ip += 1;
+            }
+            continue;
+        }
+        if c != b'%' {
+            if ip < inp.len() && inp[ip] == c {
+                ip += 1;
+                fp += 1;
+                continue;
+            }
+            break;
+        }
+        fp += 1;
+        if fp < f.len() && f[fp] == b'%' {
+            if ip < inp.len() && inp[ip] == b'%' {
+                ip += 1;
+                fp += 1;
+                continue;
+            }
+            break;
+        }
+        let mut width = 0_usize;
+        while fp < f.len() && f[fp].is_ascii_digit() {
+            width = width * 10 + (f[fp] - b'0') as usize;
+            fp += 1;
+        }
+        let mut length = 4_u8;
+        while fp < f.len() && (f[fp] == b'l' || f[fp] == b'h') {
+            length = match (length, f[fp]) {
+                (4, b'l') => 8,
+                (4, b'h') => 1,
+                (other, _) => other,
+            };
+            fp += 1;
+        }
+        if fp >= f.len() {
+            break;
+        }
+        let conv = f[fp];
+        fp += 1;
+        if conv != b'c' {
+            while ip < inp.len() && inp[ip].is_ascii_whitespace() {
+                ip += 1;
+            }
+        }
+        let end = match width {
+            0 => inp.len(),
+            w => inp.len().min(ip + w),
+        };
+        match conv {
+            b'd' | b'i' | b'u' => {
+                let Some((value, used)) = scan_int(&inp[ip..end], 10, conv == b'u') else {
+                    break;
+                };
+                scan_store(&va[next_arg], value, length);
+                ip += used;
+            }
+            b'x' | b'X' => {
+                let Some((value, used)) = scan_int(&inp[ip..end], 16, true) else {
+                    break;
+                };
+                scan_store(&va[next_arg], value, length);
+                ip += used;
+            }
+            b'c' => {
+                if ip >= inp.len() {
+                    break;
+                }
+                let VaArg::Ptr(p) = &va[next_arg] else {
+                    panic!("scan_c: output argument must be a pointer");
+                };
+                p.reinterpret_cast::<u8>().write(inp[ip]);
+                ip += 1;
+            }
+            b's' => {
+                let start = ip;
+                let mut stop = ip;
+                while stop < end && !inp[stop].is_ascii_whitespace() {
+                    stop += 1;
+                }
+                if stop == start {
+                    break;
+                }
+                let VaArg::Ptr(p) = &va[next_arg] else {
+                    panic!("scan_c: output argument must be a pointer");
+                };
+                let n = stop - start;
+                p.reinterpret_cast::<u8>().with_slice_mut(n + 1, |s| {
+                    s[..n].copy_from_slice(&inp[start..stop]);
+                    s[n] = 0;
+                });
+                ip = stop;
+            }
+            other => panic!("scan_c: unsupported conversion %{}", other as char),
+        }
+        matched += 1;
+        next_arg += 1;
+    }
+    matched
+}

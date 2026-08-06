@@ -335,5 +335,92 @@ unsafe fn main_0() -> i32 {
         )) == (0)) as i32)
             != 0)
     );
+    let mut first: i32 = 0;
+    let mut second: i32 = 0;
+    let mut third: i32 = 0;
+    assert!(
+        ((((unsafe {
+            libc::sscanf(
+                (c"40,25,3".as_ptr().cast_mut()).cast_const() as *const libc::c_char,
+                (c"%d,%d,%d".as_ptr().cast_mut()).cast_const() as *const libc::c_char,
+                (&raw mut first as *mut i32),
+                (&raw mut second as *mut i32),
+                (&raw mut third as *mut i32),
+            )
+        }) == (3)) as i32)
+            != 0)
+    );
+    assert!(
+        ((((((((((first) == (40)) as i32) != 0) && ((((second) == (25)) as i32) != 0)) as i32)
+            != 0)
+            && ((((third) == (3)) as i32) != 0)) as i32)
+            != 0)
+    );
+    assert!(
+        ((((unsafe {
+            libc::sscanf(
+                (c"7,8".as_ptr().cast_mut()).cast_const() as *const libc::c_char,
+                (c"%d,%d,%d".as_ptr().cast_mut()).cast_const() as *const libc::c_char,
+                (&raw mut first as *mut i32),
+                (&raw mut second as *mut i32),
+                (&raw mut third as *mut i32),
+            )
+        }) == (2)) as i32)
+            != 0)
+    );
+    assert!(
+        (((((((first) == (7)) as i32) != 0) && ((((second) == (8)) as i32) != 0)) as i32) != 0)
+    );
+    assert!(
+        ((((unsafe {
+            libc::sscanf(
+                (c"junk".as_ptr().cast_mut()).cast_const() as *const libc::c_char,
+                (c"%d,%d,%d".as_ptr().cast_mut()).cast_const() as *const libc::c_char,
+                (&raw mut first as *mut i32),
+                (&raw mut second as *mut i32),
+                (&raw mut third as *mut i32),
+            )
+        }) == (0)) as i32)
+            != 0)
+    );
+    let mut hex: i32 = 0;
+    let mut word: [libc::c_char; 8] = [(0 as libc::c_char); 8];
+    let mut ch: libc::c_char = (0 as libc::c_char);
+    assert!(
+        ((((unsafe {
+            libc::sscanf(
+                (c"  ff word x".as_ptr().cast_mut()).cast_const() as *const libc::c_char,
+                (c"%x %7s %c".as_ptr().cast_mut()).cast_const() as *const libc::c_char,
+                (&raw mut hex as *mut i32),
+                (word.as_mut_ptr()),
+                (&raw mut ch as *mut libc::c_char),
+            )
+        }) == (3)) as i32)
+            != 0)
+    );
+    assert!(((((hex) == (255)) as i32) != 0));
+    assert!(
+        ((((libc::strcmp(
+            (word.as_mut_ptr()).cast_const(),
+            (c"word".as_ptr().cast_mut()).cast_const()
+        )) == (0)) as i32)
+            != 0)
+    );
+    assert!(((((ch as i32) == ('x' as i32)) as i32) != 0));
+    let mut big: i64 = 0_i64;
+    let mut small: i16 = 0_i16;
+    assert!(
+        ((((unsafe {
+            libc::sscanf(
+                (c"123456789012 -7".as_ptr().cast_mut()).cast_const() as *const libc::c_char,
+                (c"%ld %hd".as_ptr().cast_mut()).cast_const() as *const libc::c_char,
+                (&raw mut big as *mut i64),
+                (&raw mut small as *mut i16),
+            )
+        }) == (2)) as i32)
+            != 0)
+    );
+    assert!(((((big) == (123456789012_i64)) as i32) != 0));
+    assert!(((((small as i32) == (-7_i32)) as i32) != 0));
     return 0;
 }

@@ -228,3 +228,7 @@ fn f35(a0: Ptr<CFile>, a1: Ptr<u8>, a2: VaList) -> i32 {
         false => -1,
     }
 }
+
+fn f32(a0: Ptr<u8>, a1: Ptr<u8>, va: &[VaArg]) -> i32 {
+    libcc2rs::scan_c(&a0.to_rust_string(), &a1.to_rust_string(), va)
+}
