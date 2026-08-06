@@ -2492,8 +2492,7 @@ RsExpr *ConverterRefCount::ConvertAssignment(clang::Expr *lhs, clang::Expr *rhs,
     parts.push_back(Text(token::kSemiColon));
     parts.push_back(ConvertFreshRValue(lhs));
   }
-  return Braces(arena_.New<Concat>(std::move(parts)),
-                !isVoid() || hoisted_rhs);
+  return Braces(arena_.New<Concat>(std::move(parts)), !isVoid() || hoisted_rhs);
 }
 
 RsExpr *

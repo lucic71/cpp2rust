@@ -3373,16 +3373,14 @@ RsExpr *Converter::VisitCXXThisExpr([[maybe_unused]] clang::CXXThisExpr *expr) {
   return Text(keyword::kSelfValue);
 }
 
-static bool IsZeroInitializer(clang::ASTContext &ctx,
-                              const clang::Expr *expr) {
+static bool IsZeroInitializer(clang::ASTContext &ctx, const clang::Expr *expr) {
   if (clang::isa<clang::ImplicitValueInitExpr>(expr)) {
     return true;
   }
   if (auto list = clang::dyn_cast<clang::InitListExpr>(expr)) {
-    return std::all_of(list->inits().begin(), list->inits().end(),
-                       [&](const clang::Expr *init) {
-                         return IsZeroInitializer(ctx, init);
-                       });
+    return std::all_of(
+        list->inits().begin(), list->inits().end(),
+        [&](const clang::Expr *init) { return IsZeroInitializer(ctx, init); });
   }
   clang::Expr::EvalResult result;
   return expr->EvaluateAsRValue(result, ctx) && result.Val.isInt() &&

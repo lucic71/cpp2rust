@@ -99,20 +99,14 @@ pub fn format_c(fmt: &str, va: &[VaArg]) -> String {
                     VaArg::Ptr(v) => Box::new(v.reinterpret_cast::<u8>().to_rust_string()),
                     VaArg::RawPtr(v) => {
                         let limit = match spec.precision {
-                            NumericParam::Literal(n) if n >= 0 && n != i32::MAX => {
-                                Some(n as usize)
-                            }
+                            NumericParam::Literal(n) if n >= 0 && n != i32::MAX => Some(n as usize),
                             _ => None,
                         };
                         let s = if let Some(n) = limit {
                             let p = *v as *const u8;
-                            let len = (0..n)
-                                .position(|i| unsafe { *p.add(i) } == 0)
-                                .unwrap_or(n);
-                            String::from_utf8_lossy(unsafe {
-                                std::slice::from_raw_parts(p, len)
-                            })
-                            .into_owned()
+                            let len = (0..n).position(|i| unsafe { *p.add(i) } == 0).unwrap_or(n);
+                            String::from_utf8_lossy(unsafe { std::slice::from_raw_parts(p, len) })
+                                .into_owned()
                         } else {
                             unsafe { std::ffi::CStr::from_ptr(*v as *const std::ffi::c_char) }
                                 .to_string_lossy()
