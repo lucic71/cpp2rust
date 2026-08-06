@@ -273,3 +273,69 @@ pub unsafe fn geteuid_unsafe() -> libc::uid_t {
 pub unsafe fn fclose_unsafe(a0: *mut libc::FILE) -> i32 {
     unsafe { libc::fclose(a0) }
 }
+
+/// # Safety
+///
+/// Same contract as C's `access`.
+pub unsafe fn access_unsafe(a0: *const libc::c_char, a1: i32) -> i32 {
+    unsafe { libc::access(a0, a1) }
+}
+
+/// # Safety
+///
+/// Same contract as C's `getcwd`.
+pub unsafe fn getcwd_unsafe(a0: *mut libc::c_char, a1: usize) -> *mut libc::c_char {
+    unsafe { libc::getcwd(a0, a1) }
+}
+
+/// # Safety
+///
+/// Same contract as C's `pread`.
+pub unsafe fn pread_unsafe(
+    a0: i32,
+    a1: *mut ::std::ffi::c_void,
+    a2: usize,
+    a3: libc::off_t,
+) -> isize {
+    unsafe { libc::pread(a0, a1, a2, a3) }
+}
+
+/// # Safety
+///
+/// Same contract as C's `pwrite`.
+pub unsafe fn pwrite_unsafe(
+    a0: i32,
+    a1: *const ::std::ffi::c_void,
+    a2: usize,
+    a3: libc::off_t,
+) -> isize {
+    unsafe { libc::pwrite(a0, a1, a2, a3) }
+}
+
+/// # Safety
+///
+/// Same contract as C's `fchmod`.
+pub unsafe fn fchmod_unsafe(a0: i32, a1: libc::mode_t) -> i32 {
+    unsafe { libc::fchmod(a0, a1) }
+}
+
+/// # Safety
+///
+/// Same contract as C's `fchown`.
+pub unsafe fn fchown_unsafe(a0: i32, a1: libc::uid_t, a2: libc::gid_t) -> i32 {
+    unsafe { libc::fchown(a0, a1, a2) }
+}
+
+/// # Safety
+///
+/// Same contract as C's `readlink`.
+pub unsafe fn readlink_unsafe(a0: *const libc::c_char, a1: *mut libc::c_char, a2: usize) -> isize {
+    unsafe { libc::readlink(a0, a1, a2) }
+}
+
+/// # Safety
+///
+/// Same contract as C's `lstat`.
+pub unsafe fn lstat_unsafe(a0: *const libc::c_char, a1: *mut libc::stat) -> i32 {
+    unsafe { libc::lstat(a0, a1) }
+}

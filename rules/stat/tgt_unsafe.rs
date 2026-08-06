@@ -26,9 +26,9 @@ unsafe fn f5(a0: i32, a1: *const libc::c_char, a2: *const ::libc::timespec, a3: 
 }
 
 unsafe fn f6(a0: *const libc::c_char, a1: *mut ::libc::stat) -> i32 {
-    libc::lstat(a0, a1)
+    libcc2rs::lstat_unsafe(a0, a1)
 }
 
 unsafe fn f7(a0: i32, a1: ::libc::mode_t) -> i32 {
-    libc::fchmod(a0, a1)
+    libcc2rs::fchmod_unsafe(a0, a1)
 }
