@@ -36,6 +36,8 @@ pub mod cstdlib_tgt_unsafe;
 pub mod cstring_tgt_refcount;
 #[path = r#"../cstring/tgt_unsafe.rs"#]
 pub mod cstring_tgt_unsafe;
+#[path = r#"../ctype/tgt_refcount.rs"#]
+pub mod ctype_tgt_refcount;
 #[path = r#"../ctype/tgt_unsafe.rs"#]
 pub mod ctype_tgt_unsafe;
 #[path = r#"../deque/tgt_refcount.rs"#]
@@ -120,6 +122,8 @@ pub mod poll_tgt_unsafe;
 pub mod pwd_tgt_refcount;
 #[path = r#"../pwd/tgt_unsafe.rs"#]
 pub mod pwd_tgt_unsafe;
+#[path = r#"../resource/tgt_refcount.rs"#]
+pub mod resource_tgt_refcount;
 #[path = r#"../resource/tgt_unsafe.rs"#]
 pub mod resource_tgt_unsafe;
 #[path = r#"../rustls/tgt_refcount.rs"#]
