@@ -1323,9 +1323,9 @@ std::string BitFieldAccessorCode(clang::ASTContext &ctx,
     if (!read.empty()) {
       read += " | ";
     }
-    read += std::format("(((self.{}[{}] as u64) >> {}) & {:#x}) << {}", storage,
-                        byte, lo - byte * 8, (1ULL << (hi - lo)) - 1,
-                        lo - bit_off);
+    read +=
+        std::format("(((self.{}[{}] as u64) >> {}) & {:#x}) << {}", storage,
+                    byte, lo - byte * 8, (1ULL << (hi - lo)) - 1, lo - bit_off);
     write += std::format("self.{0}[{1}] = (self.{0}[{1}] & !{2:#04x}u8) | "
                          "((((__v >> {3}) as u8) << {4}) & {2:#04x}u8);",
                          storage, byte, mask, lo - bit_off, lo - byte * 8);

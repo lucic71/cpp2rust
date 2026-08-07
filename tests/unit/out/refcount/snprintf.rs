@@ -15,11 +15,14 @@ fn main_0() -> i32 {
     ));
     assert!(
         ((({
-            let __s = libcc2rs::format_c(
-                &Ptr::from_string_literal(b"x=%d y=%u\0").to_rust_string(),
-                &[(-3_i32).into(), (7_u32).into()],
-            );
-            let __b = __s.as_bytes();
+            let __fmt: String = Ptr::from_string_literal(b"x=%d y=%u\0")
+                .to_c_string_iterator()
+                .map(|b| b as char)
+                .collect();
+            let __b: Vec<u8> = libcc2rs::format_c(&__fmt, &[(-3_i32).into(), (7_u32).into()])
+                .chars()
+                .map(|c| c as u32 as u8)
+                .collect();
             if 32usize > 0 {
                 let __n = ::std::cmp::min(__b.len(), 32usize - 1);
                 (buf.as_pointer() as Ptr<u8>).with_slice_mut(__n + 1, |__dst| {
@@ -50,11 +53,15 @@ fn main_0() -> i32 {
     );
     assert!(
         ((({
-            let __s = libcc2rs::format_c(
-                &Ptr::from_string_literal(b"%s\0").to_rust_string(),
-                &[(Ptr::from_string_literal(b"hello\0")).into()],
-            );
-            let __b = __s.as_bytes();
+            let __fmt: String = Ptr::from_string_literal(b"%s\0")
+                .to_c_string_iterator()
+                .map(|b| b as char)
+                .collect();
+            let __b: Vec<u8> =
+                libcc2rs::format_c(&__fmt, &[(Ptr::from_string_literal(b"hello\0")).into()])
+                    .chars()
+                    .map(|c| c as u32 as u8)
+                    .collect();
             if 4_usize > 0 {
                 let __n = ::std::cmp::min(__b.len(), 4_usize - 1);
                 (buf.as_pointer() as Ptr<u8>).with_slice_mut(__n + 1, |__dst| {
@@ -85,11 +92,15 @@ fn main_0() -> i32 {
     );
     assert!(
         ((({
-            let __s = libcc2rs::format_c(
-                &Ptr::from_string_literal(b"%05d|%x|%X\0").to_rust_string(),
-                &[(42).into(), (255).into(), (255).into()],
-            );
-            let __b = __s.as_bytes();
+            let __fmt: String = Ptr::from_string_literal(b"%05d|%x|%X\0")
+                .to_c_string_iterator()
+                .map(|b| b as char)
+                .collect();
+            let __b: Vec<u8> =
+                libcc2rs::format_c(&__fmt, &[(42).into(), (255).into(), (255).into()])
+                    .chars()
+                    .map(|c| c as u32 as u8)
+                    .collect();
             if 32usize > 0 {
                 let __n = ::std::cmp::min(__b.len(), 32usize - 1);
                 (buf.as_pointer() as Ptr<u8>).with_slice_mut(__n + 1, |__dst| {
@@ -120,11 +131,14 @@ fn main_0() -> i32 {
     );
     assert!(
         ((({
-            let __s = libcc2rs::format_c(
-                &Ptr::from_string_literal(b"%.2f\0").to_rust_string(),
-                &[(3.1415899999999999E+0).into()],
-            );
-            let __b = __s.as_bytes();
+            let __fmt: String = Ptr::from_string_literal(b"%.2f\0")
+                .to_c_string_iterator()
+                .map(|b| b as char)
+                .collect();
+            let __b: Vec<u8> = libcc2rs::format_c(&__fmt, &[(3.1415899999999999E+0).into()])
+                .chars()
+                .map(|c| c as u32 as u8)
+                .collect();
             if 32usize > 0 {
                 let __n = ::std::cmp::min(__b.len(), 32usize - 1);
                 (buf.as_pointer() as Ptr<u8>).with_slice_mut(__n + 1, |__dst| {
@@ -155,11 +169,15 @@ fn main_0() -> i32 {
     );
     assert!(
         ((({
-            let __s = libcc2rs::format_c(
-                &Ptr::from_string_literal(b"%-6s|\0").to_rust_string(),
-                &[(Ptr::from_string_literal(b"ab\0")).into()],
-            );
-            let __b = __s.as_bytes();
+            let __fmt: String = Ptr::from_string_literal(b"%-6s|\0")
+                .to_c_string_iterator()
+                .map(|b| b as char)
+                .collect();
+            let __b: Vec<u8> =
+                libcc2rs::format_c(&__fmt, &[(Ptr::from_string_literal(b"ab\0")).into()])
+                    .chars()
+                    .map(|c| c as u32 as u8)
+                    .collect();
             if 32usize > 0 {
                 let __n = ::std::cmp::min(__b.len(), 32usize - 1);
                 (buf.as_pointer() as Ptr<u8>).with_slice_mut(__n + 1, |__dst| {
@@ -190,11 +208,14 @@ fn main_0() -> i32 {
     );
     assert!(
         ((({
-            let __s = libcc2rs::format_c(
-                &Ptr::from_string_literal(b"%c%%\0").to_rust_string(),
-                &[(65).into()],
-            );
-            let __b = __s.as_bytes();
+            let __fmt: String = Ptr::from_string_literal(b"%c%%\0")
+                .to_c_string_iterator()
+                .map(|b| b as char)
+                .collect();
+            let __b: Vec<u8> = libcc2rs::format_c(&__fmt, &[(65).into()])
+                .chars()
+                .map(|c| c as u32 as u8)
+                .collect();
             if 32usize > 0 {
                 let __n = ::std::cmp::min(__b.len(), 32usize - 1);
                 (buf.as_pointer() as Ptr<u8>).with_slice_mut(__n + 1, |__dst| {
@@ -225,11 +246,14 @@ fn main_0() -> i32 {
     );
     assert!(
         ((({
-            let __s = libcc2rs::format_c(
-                &Ptr::from_string_literal(b"%+d % d\0").to_rust_string(),
-                &[(5).into(), (5).into()],
-            );
-            let __b = __s.as_bytes();
+            let __fmt: String = Ptr::from_string_literal(b"%+d % d\0")
+                .to_c_string_iterator()
+                .map(|b| b as char)
+                .collect();
+            let __b: Vec<u8> = libcc2rs::format_c(&__fmt, &[(5).into(), (5).into()])
+                .chars()
+                .map(|c| c as u32 as u8)
+                .collect();
             if 32usize > 0 {
                 let __n = ::std::cmp::min(__b.len(), 32usize - 1);
                 (buf.as_pointer() as Ptr<u8>).with_slice_mut(__n + 1, |__dst| {
@@ -260,11 +284,15 @@ fn main_0() -> i32 {
     );
     assert!(
         ((({
-            let __s = libcc2rs::format_c(
-                &Ptr::from_string_literal(b"%ld %lu %zu\0").to_rust_string(),
-                &[(-1_i64).into(), (1_u64).into(), (9_usize).into()],
-            );
-            let __b = __s.as_bytes();
+            let __fmt: String = Ptr::from_string_literal(b"%ld %lu %zu\0")
+                .to_c_string_iterator()
+                .map(|b| b as char)
+                .collect();
+            let __b: Vec<u8> =
+                libcc2rs::format_c(&__fmt, &[(-1_i64).into(), (1_u64).into(), (9_usize).into()])
+                    .chars()
+                    .map(|c| c as u32 as u8)
+                    .collect();
             if 32usize > 0 {
                 let __n = ::std::cmp::min(__b.len(), 32usize - 1);
                 (buf.as_pointer() as Ptr<u8>).with_slice_mut(__n + 1, |__dst| {
@@ -295,11 +323,14 @@ fn main_0() -> i32 {
     );
     assert!(
         ((({
-            let __s = libcc2rs::format_c(
-                &Ptr::from_string_literal(b"%e\0").to_rust_string(),
-                &[(1.2345678E+3).into()],
-            );
-            let __b = __s.as_bytes();
+            let __fmt: String = Ptr::from_string_literal(b"%e\0")
+                .to_c_string_iterator()
+                .map(|b| b as char)
+                .collect();
+            let __b: Vec<u8> = libcc2rs::format_c(&__fmt, &[(1.2345678E+3).into()])
+                .chars()
+                .map(|c| c as u32 as u8)
+                .collect();
             if 32usize > 0 {
                 let __n = ::std::cmp::min(__b.len(), 32usize - 1);
                 (buf.as_pointer() as Ptr<u8>).with_slice_mut(__n + 1, |__dst| {
@@ -330,11 +361,14 @@ fn main_0() -> i32 {
     );
     assert!(
         ((({
-            let __s = libcc2rs::format_c(
-                &Ptr::from_string_literal(b"%g\0").to_rust_string(),
-                &[(1.234567E+6).into()],
-            );
-            let __b = __s.as_bytes();
+            let __fmt: String = Ptr::from_string_literal(b"%g\0")
+                .to_c_string_iterator()
+                .map(|b| b as char)
+                .collect();
+            let __b: Vec<u8> = libcc2rs::format_c(&__fmt, &[(1.234567E+6).into()])
+                .chars()
+                .map(|c| c as u32 as u8)
+                .collect();
             if 32usize > 0 {
                 let __n = ::std::cmp::min(__b.len(), 32usize - 1);
                 (buf.as_pointer() as Ptr<u8>).with_slice_mut(__n + 1, |__dst| {
@@ -366,11 +400,14 @@ fn main_0() -> i32 {
     (*buf.borrow_mut())[(0) as usize] = (('Z' as i32) as u8);
     assert!(
         ((({
-            let __s = libcc2rs::format_c(
-                &Ptr::from_string_literal(b"%d\0").to_rust_string(),
-                &[(123).into()],
-            );
-            let __b = __s.as_bytes();
+            let __fmt: String = Ptr::from_string_literal(b"%d\0")
+                .to_c_string_iterator()
+                .map(|b| b as char)
+                .collect();
+            let __b: Vec<u8> = libcc2rs::format_c(&__fmt, &[(123).into()])
+                .chars()
+                .map(|c| c as u32 as u8)
+                .collect();
             if 0_usize > 0 {
                 let __n = ::std::cmp::min(__b.len(), 0_usize - 1);
                 (buf.as_pointer() as Ptr<u8>).with_slice_mut(__n + 1, |__dst| {
@@ -394,11 +431,14 @@ fn main_0() -> i32 {
     (*fmt.borrow_mut())[(5) as usize] = 0_u8;
     assert!(
         ((({
-            let __s = libcc2rs::format_c(
-                &(fmt.as_pointer() as Ptr<u8>).to_rust_string(),
-                &[(3.2599999999999998E+0).into()],
-            );
-            let __b = __s.as_bytes();
+            let __fmt: String = (fmt.as_pointer() as Ptr<u8>)
+                .to_c_string_iterator()
+                .map(|b| b as char)
+                .collect();
+            let __b: Vec<u8> = libcc2rs::format_c(&__fmt, &[(3.2599999999999998E+0).into()])
+                .chars()
+                .map(|c| c as u32 as u8)
+                .collect();
             if 32usize > 0 {
                 let __n = ::std::cmp::min(__b.len(), 32usize - 1);
                 (buf.as_pointer() as Ptr<u8>).with_slice_mut(__n + 1, |__dst| {
@@ -430,11 +470,17 @@ fn main_0() -> i32 {
     let segment: Value<Box<[u8]>> = Rc::new(RefCell::new(Box::from(*b"abcdef\0\0")));
     assert!(
         ((({
-            let __s = libcc2rs::format_c(
-                &Ptr::from_string_literal(b"<%.*s>\0").to_rust_string(),
+            let __fmt: String = Ptr::from_string_literal(b"<%.*s>\0")
+                .to_c_string_iterator()
+                .map(|b| b as char)
+                .collect();
+            let __b: Vec<u8> = libcc2rs::format_c(
+                &__fmt,
                 &[(3).into(), (segment.as_pointer() as Ptr<u8>).into()],
-            );
-            let __b = __s.as_bytes();
+            )
+            .chars()
+            .map(|c| c as u32 as u8)
+            .collect();
             if 32usize > 0 {
                 let __n = ::std::cmp::min(__b.len(), 32usize - 1);
                 (buf.as_pointer() as Ptr<u8>).with_slice_mut(__n + 1, |__dst| {
@@ -465,11 +511,17 @@ fn main_0() -> i32 {
     );
     assert!(
         ((({
-            let __s = libcc2rs::format_c(
-                &Ptr::from_string_literal(b"%.*s\0").to_rust_string(),
+            let __fmt: String = Ptr::from_string_literal(b"%.*s\0")
+                .to_c_string_iterator()
+                .map(|b| b as char)
+                .collect();
+            let __b: Vec<u8> = libcc2rs::format_c(
+                &__fmt,
                 &[(10).into(), (segment.as_pointer() as Ptr<u8>).into()],
-            );
-            let __b = __s.as_bytes();
+            )
+            .chars()
+            .map(|c| c as u32 as u8)
+            .collect();
             if 32usize > 0 {
                 let __n = ::std::cmp::min(__b.len(), 32usize - 1);
                 (buf.as_pointer() as Ptr<u8>).with_slice_mut(__n + 1, |__dst| {
@@ -500,11 +552,17 @@ fn main_0() -> i32 {
     );
     assert!(
         ((({
-            let __s = libcc2rs::format_c(
-                &Ptr::from_string_literal(b"%.*s\0").to_rust_string(),
+            let __fmt: String = Ptr::from_string_literal(b"%.*s\0")
+                .to_c_string_iterator()
+                .map(|b| b as char)
+                .collect();
+            let __b: Vec<u8> = libcc2rs::format_c(
+                &__fmt,
                 &[(-1_i32).into(), (segment.as_pointer() as Ptr<u8>).into()],
-            );
-            let __b = __s.as_bytes();
+            )
+            .chars()
+            .map(|c| c as u32 as u8)
+            .collect();
             if 32usize > 0 {
                 let __n = ::std::cmp::min(__b.len(), 32usize - 1);
                 (buf.as_pointer() as Ptr<u8>).with_slice_mut(__n + 1, |__dst| {
@@ -535,11 +593,15 @@ fn main_0() -> i32 {
     );
     assert!(
         ((({
-            let __s = libcc2rs::format_c(
-                &Ptr::from_string_literal(b"%*d|%-*d|\0").to_rust_string(),
-                &[(5).into(), (42).into(), (5).into(), (42).into()],
-            );
-            let __b = __s.as_bytes();
+            let __fmt: String = Ptr::from_string_literal(b"%*d|%-*d|\0")
+                .to_c_string_iterator()
+                .map(|b| b as char)
+                .collect();
+            let __b: Vec<u8> =
+                libcc2rs::format_c(&__fmt, &[(5).into(), (42).into(), (5).into(), (42).into()])
+                    .chars()
+                    .map(|c| c as u32 as u8)
+                    .collect();
             if 32usize > 0 {
                 let __n = ::std::cmp::min(__b.len(), 32usize - 1);
                 (buf.as_pointer() as Ptr<u8>).with_slice_mut(__n + 1, |__dst| {
@@ -570,11 +632,14 @@ fn main_0() -> i32 {
     );
     assert!(
         ((({
-            let __s = libcc2rs::format_c(
-                &Ptr::from_string_literal(b"%*d\0").to_rust_string(),
-                &[(-5_i32).into(), (42).into()],
-            );
-            let __b = __s.as_bytes();
+            let __fmt: String = Ptr::from_string_literal(b"%*d\0")
+                .to_c_string_iterator()
+                .map(|b| b as char)
+                .collect();
+            let __b: Vec<u8> = libcc2rs::format_c(&__fmt, &[(-5_i32).into(), (42).into()])
+                .chars()
+                .map(|c| c as u32 as u8)
+                .collect();
             if 32usize > 0 {
                 let __n = ::std::cmp::min(__b.len(), 32usize - 1);
                 (buf.as_pointer() as Ptr<u8>).with_slice_mut(__n + 1, |__dst| {

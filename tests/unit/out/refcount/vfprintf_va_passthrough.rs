@@ -12,12 +12,15 @@ pub fn emit_0(out: Ptr<CFile>, fmt: Ptr<u8>, __args: &[VaArg]) -> i32 {
     let ap: Value<VaList> = Rc::new(RefCell::new(VaList::default()));
     (*ap.borrow_mut()) = VaList::new(__args);
     let rc: Value<i32> = Rc::new(RefCell::new({
-        let __s = libcc2rs::format_c(
-            &(*fmt.borrow()).to_rust_string(),
-            (*ap.borrow()).remaining(),
-        );
-        let __bytes = __s.as_bytes();
-        match (*out.borrow()).with_mut(|__f| __f.write(__bytes)) == __bytes.len() {
+        let __fmt: String = (*fmt.borrow())
+            .to_c_string_iterator()
+            .map(|b| b as char)
+            .collect();
+        let __bytes: Vec<u8> = libcc2rs::format_c(&__fmt, (*ap.borrow()).remaining())
+            .chars()
+            .map(|c| c as u32 as u8)
+            .collect();
+        match (*out.borrow()).with_mut(|__f| __f.write(&__bytes)) == __bytes.len() {
             true => __bytes.len() as i32,
             false => -1,
         }
@@ -31,12 +34,15 @@ pub fn emit_after_skip_1(out: Ptr<CFile>, fmt: Ptr<u8>, __args: &[VaArg]) -> i32
     (*ap.borrow_mut()) = VaList::new(__args);
     let skipped: Value<i32> = Rc::new(RefCell::new((*ap.borrow_mut()).arg::<i32>()));
     let rc: Value<i32> = Rc::new(RefCell::new({
-        let __s = libcc2rs::format_c(
-            &(*fmt.borrow()).to_rust_string(),
-            (*ap.borrow()).remaining(),
-        );
-        let __bytes = __s.as_bytes();
-        match (*out.borrow()).with_mut(|__f| __f.write(__bytes)) == __bytes.len() {
+        let __fmt: String = (*fmt.borrow())
+            .to_c_string_iterator()
+            .map(|b| b as char)
+            .collect();
+        let __bytes: Vec<u8> = libcc2rs::format_c(&__fmt, (*ap.borrow()).remaining())
+            .chars()
+            .map(|c| c as u32 as u8)
+            .collect();
+        match (*out.borrow()).with_mut(|__f| __f.write(&__bytes)) == __bytes.len() {
             true => __bytes.len() as i32,
             false => -1,
         }

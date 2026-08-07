@@ -9,7 +9,7 @@ pub struct FdRegistry {
 }
 
 thread_local! {
-    static FD_REGISTRY: RefCell<FdRegistry> = RefCell::new(FdRegistry { fds: Vec::new() });
+    static FD_REGISTRY: RefCell<FdRegistry> = const { RefCell::new(FdRegistry { fds: Vec::new() }) };
 }
 
 impl FdRegistry {
@@ -97,7 +97,9 @@ impl FdRegistry {
                     (0, _) => nix::unistd::dup2_stdin(old).map(|()| None),
                     (1, _) => nix::unistd::dup2_stdout(old).map(|()| None),
                     (2, _) => nix::unistd::dup2_stderr(old).map(|()| None),
-                    (_, Some(mut owned)) => nix::unistd::dup2(old, &mut owned).map(|()| Some(owned)),
+                    (_, Some(mut owned)) => {
+                        nix::unistd::dup2(old, &mut owned).map(|()| Some(owned))
+                    }
                     (_, None) => {
                         let mut spares = Vec::new();
                         loop {

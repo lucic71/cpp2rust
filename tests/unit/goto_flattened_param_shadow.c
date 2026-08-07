@@ -4,12 +4,11 @@ static int dispatch(int op, int flags) {
   int r = 0;
 
   if (op == 1) {
-  from_op:
-    {
-      int flags;
-      flags = 7;
-      r += flags;
-    }
+  from_op: {
+    int flags;
+    flags = 7;
+    r += flags;
+  }
   } else {
     if (op == 2)
       goto from_op;

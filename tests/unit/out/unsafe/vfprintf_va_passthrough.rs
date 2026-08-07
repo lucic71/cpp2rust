@@ -14,10 +14,15 @@ pub unsafe fn emit_0(
     let mut ap: VaList = VaList::default();
     ap = VaList::new(__args);
     let mut rc: i32 = {
-        let __s = libcc2rs::format_c(
-            ::std::ffi::CStr::from_ptr(fmt).to_str().unwrap(),
-            ap.remaining(),
-        );
+        let __f: String = ::std::ffi::CStr::from_ptr(fmt)
+            .to_bytes()
+            .iter()
+            .map(|&b| b as char)
+            .collect();
+        let __s: Vec<u8> = libcc2rs::format_c(&__f, ap.remaining())
+            .chars()
+            .map(|c| c as u32 as u8)
+            .collect();
         libc::fwrite(__s.as_ptr() as *const libc::c_void, 1, __s.len(), out) as i32
     };
     return rc;
@@ -31,10 +36,15 @@ pub unsafe fn emit_after_skip_1(
     ap = VaList::new(__args);
     let mut skipped: i32 = ap.arg::<i32>();
     let mut rc: i32 = {
-        let __s = libcc2rs::format_c(
-            ::std::ffi::CStr::from_ptr(fmt).to_str().unwrap(),
-            ap.remaining(),
-        );
+        let __f: String = ::std::ffi::CStr::from_ptr(fmt)
+            .to_bytes()
+            .iter()
+            .map(|&b| b as char)
+            .collect();
+        let __s: Vec<u8> = libcc2rs::format_c(&__f, ap.remaining())
+            .chars()
+            .map(|c| c as u32 as u8)
+            .collect();
         libc::fwrite(__s.as_ptr() as *const libc::c_void, 1, __s.len(), out) as i32
     };
     return ((rc) + (skipped));

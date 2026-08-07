@@ -1761,7 +1761,7 @@ RsExpr *ConverterRefCount::ConvertBinaryOperator(clang::BinaryOperator *expr) {
       bf_op.remove_suffix(1);
     }
     if (auto *node = TryConvertBitFieldWrite(lhs, bf_op, rhs,
-                                            /*is_postfix=*/false)) {
+                                             /*is_postfix=*/false)) {
       return node;
     }
   }
