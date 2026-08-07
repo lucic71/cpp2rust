@@ -9,16 +9,16 @@ fn t2() -> ::libc::timeval {
     unsafe { std::mem::zeroed() }
 }
 
-fn t3() -> ::libc::timespec {
-    unsafe { std::mem::zeroed() }
+fn t3() -> libcc2rs::Timespec {
+    Default::default()
 }
 
 unsafe fn f1(a0: *mut ::libc::time_t) -> ::libc::time_t {
     libc::time(a0)
 }
 
-unsafe fn f2(a0: ::libc::clockid_t, a1: *mut ::libc::timespec) -> i32 {
-    libc::clock_gettime(a0, a1)
+unsafe fn f2(a0: ::libc::clockid_t, a1: *mut libcc2rs::Timespec) -> i32 {
+    libc::clock_gettime(a0, a1 as *mut ::libc::timespec)
 }
 
 unsafe fn f4(a0: *const ::libc::time_t, a1: *mut ::libc::tm) -> *mut ::libc::tm {
@@ -71,6 +71,6 @@ unsafe fn f12() -> ::libc::clock_t {
     (__ts.tv_sec * 1_000_000 + __ts.tv_nsec / 1_000) as ::libc::clock_t
 }
 
-unsafe fn f13(a0: *const ::libc::timespec, a1: *mut ::libc::timespec) -> i32 {
-    libc::nanosleep(a0, a1)
+unsafe fn f13(a0: *const libcc2rs::Timespec, a1: *mut libcc2rs::Timespec) -> i32 {
+    libc::nanosleep(a0 as *const ::libc::timespec, a1 as *mut ::libc::timespec)
 }

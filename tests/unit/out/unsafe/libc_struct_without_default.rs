@@ -55,7 +55,7 @@ unsafe fn main_0() -> i32 {
     assert!(((t.tm_year) == (124)));
     assert!(((t.tm_mon) == (5)));
     assert!(((t.tm_mday) == (15)));
-    let mut st: ::libc::stat = unsafe { std::mem::zeroed() };
+    let mut st: libcc2rs::Stat = Default::default();
     st.st_size = 1024_i64;
     assert!(((st.st_size) == (1024_i64)));
     let mut ud: UserDefined = <UserDefined>::default();
