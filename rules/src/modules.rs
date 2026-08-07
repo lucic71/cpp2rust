@@ -126,6 +126,10 @@ pub mod pwd_tgt_unsafe;
 pub mod resource_tgt_refcount;
 #[path = r#"../resource/tgt_unsafe.rs"#]
 pub mod resource_tgt_unsafe;
+#[path = r#"../resource_gnu/tgt_refcount.rs"#]
+pub mod resource_gnu_tgt_refcount;
+#[path = r#"../resource_gnu/tgt_unsafe.rs"#]
+pub mod resource_gnu_tgt_unsafe;
 #[path = r#"../rustls/tgt_refcount.rs"#]
 pub mod rustls_tgt_refcount;
 #[path = r#"../rustls/tgt_unsafe.rs"#]
