@@ -748,7 +748,7 @@ RsExpr *Converter::TryConvertFlattenedBody(clang::CompoundStmt *body) {
       }
       cases.push_back(
           Cat(Text("_ => "), Braces(go(default_label)), Text(token::kComma)));
-      emit(Cat(Text("match"), ConvertExpr(sw->getCond()),
+      emit(Cat(Text("match"), ConvertRValue(sw->getCond()),
                Braces(arena_.New<Concat>(std::move(cases)))));
 
       break_targets.push_back(exit);

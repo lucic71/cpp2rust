@@ -25,7 +25,37 @@ int dispatch(int kind, int v) {
   return acc;
 }
 
+int step(const char *p) {
+  int op = 0;
+  int acc = 0;
+
+  if (*p == '!') {
+    p++;
+    goto forced;
+  }
+
+  switch (op = *p++) {
+  case 'a':
+    acc = 1;
+    break;
+  case 'b':
+    acc = 2;
+  forced:
+    acc += 10;
+    break;
+  default:
+    acc = 100;
+    break;
+  }
+  return acc + op;
+}
+
 int main(void) {
+  assert(step("a") == 1 + 'a');
+  assert(step("b") == 12 + 'b');
+  assert(step("z") == 100 + 'z');
+  assert(step("!x") == 10);
+
   assert(dispatch(1, 5) == 6);
   assert(dispatch(2, 5) == 15);
   assert(dispatch(7, 5) == 999);
