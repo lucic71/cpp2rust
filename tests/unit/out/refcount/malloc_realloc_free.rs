@@ -48,7 +48,7 @@ fn main_0() -> i32 {
         (*grow.borrow()).offset(((1) as isize)).write(2);
         {
             let __rhs = libcc2rs::realloc_refcount(
-                ((*grow.borrow()).clone() as Ptr<i32>).to_any(),
+                ((*grow.borrow()).clone() as Ptr<i32>).to_any().clone(),
                 (4_usize).wrapping_mul((::std::mem::size_of::<i32>() as usize)),
             )
             .reinterpret_cast::<i32>();
