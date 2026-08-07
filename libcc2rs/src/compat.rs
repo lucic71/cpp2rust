@@ -57,8 +57,10 @@ pub fn cpp2rust_errno() -> Ptr<i32> {
     ERRNO.with(AsPointer::as_pointer)
 }
 
+type ExitHandlers = RefCell<Vec<crate::FnPtr<fn()>>>;
+
 thread_local! {
-    static EXIT_HANDLERS: RefCell<Vec<crate::FnPtr<fn()>>> = const { RefCell::new(Vec::new()) };
+    static EXIT_HANDLERS: ExitHandlers = const { RefCell::new(Vec::new()) };
 }
 
 pub fn atexit_refcount(a0: crate::FnPtr<fn()>) -> i32 {
@@ -74,8 +76,10 @@ pub fn exit_refcount(a0: i32) -> ! {
     std::process::exit(a0)
 }
 
+type SignalHandlers = RefCell<std::collections::HashMap<i32, crate::FnPtr<fn(i32)>>>;
+
 thread_local! {
-    static SIGNAL_HANDLERS: RefCell<std::collections::HashMap<i32, crate::FnPtr<fn(i32)>>> =
+    static SIGNAL_HANDLERS: SignalHandlers =
         RefCell::new(std::collections::HashMap::new());
 }
 
@@ -102,10 +106,9 @@ pub fn signal_refcount(a0: i32, a1: crate::FnPtr<fn(i32)>) -> crate::FnPtr<fn(i3
         nix::sys::signal::SigHandler::Handler(cpp2rust_signal_trampoline)
     };
     match unsafe { nix::sys::signal::signal(sig, handler) } {
-        Ok(_) => SIGNAL_HANDLERS.with(|handlers| match handlers.borrow_mut().insert(a0, a1) {
-            Some(previous) => previous,
-            None => crate::FnPtr::null(),
-        }),
+        Ok(_) => SIGNAL_HANDLERS
+            .with(|handlers| handlers.borrow_mut().insert(a0, a1))
+            .unwrap_or_default(),
         Err(e) => {
             cpp2rust_errno().write(e as i32);
             crate::FnPtr::from_int(usize::MAX)
