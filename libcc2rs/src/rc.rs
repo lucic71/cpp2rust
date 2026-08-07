@@ -1447,8 +1447,7 @@ struct RangeAllocator {
 impl RangeAllocator {
     fn new() -> Self {
         Self {
-            // Increase this if you need higher alignment. In general, malloc returns
-            // 16-bits-aligned pointers, but that's not relevant for now.
+            // Bases are 16-byte aligned.
             //
             // Don't start at 1 because some programs craft fake pointers in the low address space
             // which would conflict with the cursor.
@@ -1463,7 +1462,7 @@ impl RangeAllocator {
         {
             return base;
         }
-        let base = self.cursor;
+        let base = (self.cursor + 15) & !15;
         self.cursor = base + byte_len + 1;
         self.bases.insert(real_addr, (base, byte_len));
         base
