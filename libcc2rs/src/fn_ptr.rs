@@ -247,10 +247,16 @@ impl<T: 'static> ByteRepr for FnPtr<T> {
             };
         };
         let crate::rc::Registered::Fn(original) = entry else {
-            panic!("ub: cast of data address 0x{addr:x} to fn pointer");
+            return FnPtr {
+                kind: FnPtrKind::Dangling(addr),
+                _marker: PhantomData,
+            };
         };
         if base != addr {
-            panic!("ub: cast of interior address 0x{addr:x} to fn pointer");
+            return FnPtr {
+                kind: FnPtrKind::Dangling(addr),
+                _marker: PhantomData,
+            };
         }
         let current_cast = if Any::type_id(&*original) == TypeId::of::<T>() {
             Some(original.clone())
