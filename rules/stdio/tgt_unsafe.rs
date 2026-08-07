@@ -180,3 +180,23 @@ unsafe fn f39(
     }
     __b.len() as i32
 }
+
+unsafe fn f40() -> *mut ::libc::FILE {
+    libc::tmpfile()
+}
+
+unsafe fn f41(a0: *mut ::libc::FILE) {
+    libc::clearerr(a0)
+}
+
+unsafe fn f42(a0: *mut ::libc::FILE) -> i64 {
+    libc::ftello(a0)
+}
+
+unsafe fn f43(a0: *const libc::c_char) {
+    libc::perror(a0)
+}
+
+unsafe fn f44(a0: *const libc::c_char) -> i32 {
+    libc::remove(a0)
+}

@@ -120,3 +120,13 @@ int f38(int a0) { return putchar(a0); }
 int f39(char *a0, size_t a1, const char *a2, va_list ap) {
   return vsnprintf(a0, a1, a2, ap);
 }
+
+FILE *f40(void) { return tmpfile(); }
+
+void f41(FILE *stream) { return clearerr(stream); }
+
+off_t f42(FILE *stream) { return ftello(stream); }
+
+void f43(const char *s) { return perror(s); }
+
+int f44(const char *pathname) { return remove(pathname); }

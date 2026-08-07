@@ -270,3 +270,37 @@ fn f39(a0: Ptr<u8>, a1: usize, a2: Ptr<u8>, a3: VaList) -> i32 {
     }
     __b.len() as i32
 }
+
+fn f40() -> Ptr<CFile> {
+    panic!("tmpfile: temporary files are not supported in the refcount model")
+}
+
+fn f41(a0: Ptr<CFile>) {
+    a0.clone().with_mut(|__f| {
+        __f.err = false;
+        __f.eof = false;
+    });
+}
+
+fn f42(a0: Ptr<CFile>) -> i64 {
+    a0.clone().with(|__f| __f.tell())
+}
+
+fn f43(a0: Ptr<u8>) {
+    let __msg = format!(
+        "{}: {}\n",
+        a0.to_rust_string(),
+        nix::errno::Errno::from_raw(libcc2rs::cpp2rust_errno().read()).desc()
+    );
+    libcc2rs::c_stderr().with_mut(|__f| __f.write(__msg.as_bytes()));
+}
+
+fn f44(a0: Ptr<u8>) -> i32 {
+    match nix::unistd::unlink(a0.to_rust_string().as_str()) {
+        Ok(()) => 0,
+        Err(__e) => {
+            libcc2rs::cpp2rust_errno().write(__e as i32);
+            -1
+        }
+    }
+}
