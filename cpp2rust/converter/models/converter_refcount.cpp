@@ -1898,6 +1898,9 @@ GetConstantUnionBytes(clang::ASTContext &ctx, const clang::InitListExpr *expr) {
   std::vector<uint8_t> bytes;
   if (const auto *str = clang::dyn_cast<clang::StringLiteral>(init);
       str && str->getCharByteWidth() == 1) {
+    if (!field->getType()->isArrayType()) {
+      return std::nullopt;
+    }
     auto data = str->getString();
     bytes.assign(data.begin(), data.end());
   } else {
