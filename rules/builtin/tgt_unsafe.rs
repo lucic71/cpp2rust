@@ -89,3 +89,9 @@ unsafe fn f22(a0: *const libc::c_char) -> f32 {
 unsafe fn f23() {
     ::std::unreachable!()
 }
+
+unsafe fn f24(a0: i32, a1: i32, a2: *mut usize) -> bool {
+    let __prod = (a0 as i64) * (a1 as i64);
+    *a2 = __prod as usize;
+    usize::try_from(__prod).is_err()
+}
