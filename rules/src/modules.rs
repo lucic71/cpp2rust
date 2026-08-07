@@ -108,6 +108,8 @@ pub mod malloc_tgt_unsafe;
 pub mod map_tgt_refcount;
 #[path = r#"../map/tgt_unsafe.rs"#]
 pub mod map_tgt_unsafe;
+#[path = r#"../math/tgt_refcount.rs"#]
+pub mod math_tgt_refcount;
 #[path = r#"../math/tgt_unsafe.rs"#]
 pub mod math_tgt_unsafe;
 #[path = r#"../net_if/tgt_refcount.rs"#]
