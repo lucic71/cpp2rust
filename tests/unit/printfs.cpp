@@ -21,5 +21,21 @@ int main() {
   printf("%s\n", s.data());
   printf("%s\n", fn("foo").c_str());
   printf("%s\n", fn2(s).c_str());
+
+  int n = printf("%s", "1234");
+  assert(n == 4);
+  printf("\n");
+
+  int total = 0;
+  total += printf("%d", 42);
+  total += printf("%c", 'x');
+  printf("\n");
+  assert(total == 3);
+
+  while (n++ < 6) {
+    printf(" ");
+  }
+  assert(n == 7);
+  printf("\n");
   return 0;
 }

@@ -1335,6 +1335,9 @@ printf2fmt(std::string &format) {
 }
 
 RsExpr *ConverterRefCount::ConvertPrintf(clang::CallExpr *expr) {
+  if (!isVoid()) {
+    return nullptr;
+  }
   bool is_fprintf =
       Mapper::ToString(expr->getCallee()).starts_with("int fprintf");
   std::string format;

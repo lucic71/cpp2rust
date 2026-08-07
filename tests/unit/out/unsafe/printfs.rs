@@ -83,5 +83,24 @@ unsafe fn main_0() -> i32 {
             ((*(unsafe { fn2_1((&s as *const Vec<libc::c_char>)) })).as_ptr()),
         )
     });
+    let mut n: i32 =
+        (unsafe { libc::printf(c"%s".as_ptr() as *const libc::c_char, (c"1234".as_ptr())) });
+    assert!(((n) == (4)));
+    (unsafe { libc::printf(c"\n".as_ptr() as *const libc::c_char) });
+    let mut total: i32 = 0;
+    total += (unsafe { libc::printf(c"%d".as_ptr() as *const libc::c_char, (42)) });
+    total += (unsafe {
+        libc::printf(
+            c"%c".as_ptr() as *const libc::c_char,
+            (('x' as libc::c_char) as i32),
+        )
+    });
+    (unsafe { libc::printf(c"\n".as_ptr() as *const libc::c_char) });
+    assert!(((total) == (3)));
+    'loop_: while ((n.postfix_inc()) < (6)) {
+        (unsafe { libc::printf(c" ".as_ptr() as *const libc::c_char) });
+    }
+    assert!(((n) == (7)));
+    (unsafe { libc::printf(c"\n".as_ptr() as *const libc::c_char) });
     return 0;
 }
