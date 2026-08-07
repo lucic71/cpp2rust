@@ -3,7 +3,7 @@
 
 use proc_macro::TokenStream;
 use syn::parse::{Parse, ParseStream};
-use syn::{Expr, ExprBlock, Pat, parse_macro_input};
+use syn::{Expr, ExprBlock, Lifetime, Pat, Stmt, parse_macro_input};
 
 use crate::state_machine::{
     Arm, DispatchCase, GotoStateMachine, StateMachine, StateMachineNames, SwitchStateMachine,
@@ -32,6 +32,18 @@ pub fn expand(input: TokenStream) -> TokenStream {
         });
         cfg_arms.push(Arm { label, body });
     }
+    if let Some(target) = cfg_arms
+        .last()
+        .and_then(|a| pure_goto_target(&a.body))
+        .filter(|t| cfg_arms.iter().any(|a| a.label == *t))
+    {
+        let removed = cfg_arms.pop().unwrap();
+        for c in &mut cases {
+            if c.target == removed.label {
+                c.target = target.clone();
+            }
+        }
+    }
     SwitchStateMachine {
         goto: GotoStateMachine {
             names: StateMachineNames::fresh(),
@@ -42,6 +54,23 @@ pub fn expand(input: TokenStream) -> TokenStream {
     }
     .emit()
     .into()
+}
+
+fn pure_goto_target(body: &Expr) -> Option<String> {
+    let mac = match body {
+        Expr::Macro(m) => &m.mac,
+        Expr::Block(b) if b.block.stmts.len() == 1 => match &b.block.stmts[0] {
+            Stmt::Macro(sm) => &sm.mac,
+            _ => return None,
+        },
+        _ => return None,
+    };
+    if !mac.path.is_ident("goto") {
+        return None;
+    }
+    syn::parse2::<Lifetime>(mac.tokens.clone())
+        .ok()
+        .map(|l| l.ident.to_string())
 }
 
 struct SwitchInput {
