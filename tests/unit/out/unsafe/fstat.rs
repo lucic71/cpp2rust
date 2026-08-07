@@ -32,11 +32,7 @@ unsafe fn main_0() -> i32 {
     );
     let mut st: libcc2rs::Stat = Default::default();
     assert!(
-        ((((libcc2rs::fstat_unsafe(
-            fd,
-            (&raw mut st as *mut libcc2rs::Stat) as *mut ::libc::stat
-        )) == (0)) as i32)
-            != 0)
+        ((((libcc2rs::fstat_unsafe(fd, (&raw mut st as *mut libcc2rs::Stat))) == (0)) as i32) != 0)
     );
     assert!(((((st.st_size) == (5_i64)) as i32) != 0));
     assert!(((((libcc2rs::close_unsafe(fd)) == (0)) as i32) != 0));

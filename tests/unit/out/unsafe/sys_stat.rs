@@ -15,10 +15,7 @@ pub unsafe fn test_stat_0() {
     assert!(((((libcc2rs::fclose_unsafe(fp)) == (0)) as i32) != 0));
     let mut st: libcc2rs::Stat = Default::default();
     assert!(
-        ((((libcc2rs::stat_unsafe(
-            path,
-            (&raw mut st as *mut libcc2rs::Stat) as *mut ::libc::stat
-        )) == (0)) as i32)
+        ((((libcc2rs::stat_unsafe(path, (&raw mut st as *mut libcc2rs::Stat))) == (0)) as i32)
             != 0)
     );
     assert!(((((st.st_size) == (5_i64)) as i32) != 0));
@@ -35,11 +32,7 @@ pub unsafe fn test_fstat_1() {
     let mut fd: i32 = libc::fileno(fp);
     let mut st: libcc2rs::Stat = Default::default();
     assert!(
-        ((((libcc2rs::fstat_unsafe(
-            fd,
-            (&raw mut st as *mut libcc2rs::Stat) as *mut ::libc::stat
-        )) == (0)) as i32)
-            != 0)
+        ((((libcc2rs::fstat_unsafe(fd, (&raw mut st as *mut libcc2rs::Stat))) == (0)) as i32) != 0)
     );
     assert!(((((st.st_size) == (11_i64)) as i32) != 0));
     assert!(((((st.st_mtim.tv_sec) > (0_i64)) as i32) != 0));
@@ -58,10 +51,7 @@ pub unsafe fn test_timespec_members_3() {
     assert!(((((libcc2rs::fclose_unsafe(fp)) == (0)) as i32) != 0));
     let mut st: libcc2rs::Stat = Default::default();
     assert!(
-        ((((libcc2rs::stat_unsafe(
-            path,
-            (&raw mut st as *mut libcc2rs::Stat) as *mut ::libc::stat
-        )) == (0)) as i32)
+        ((((libcc2rs::stat_unsafe(path, (&raw mut st as *mut libcc2rs::Stat))) == (0)) as i32)
             != 0)
     );
     assert!(
