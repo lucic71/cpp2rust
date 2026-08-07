@@ -34,3 +34,7 @@ fn f28(a0: f64) -> i32 {
         false => 0,
     }
 }
+
+fn f29(a0: u32) -> AnyPtr {
+    AnyPtr::from_int(usize::MAX / 2)
+}

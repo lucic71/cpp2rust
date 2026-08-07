@@ -12,3 +12,4 @@ int f25(double x) { return __builtin_isnan(x); }
 int f26(double x) { return __builtin_isfinite(x); }
 int f27(double x) { return __builtin_signbit(x); }
 int f28(double x) { return __builtin_isinf_sign(x); }
+void *f29(unsigned int a0) { return __builtin_frame_address(0); }
