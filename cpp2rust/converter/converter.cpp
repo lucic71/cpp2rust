@@ -3311,12 +3311,25 @@ replaceNonUniformLibcField(clang::MemberExpr *expr) {
       {"stat", "st_atimespec", "tv_sec", "st_atime", ""},       // macOS
       {"stat", "st_atim", "tv_nsec", "st_atime_nsec", ""},      // Linux
       {"stat", "st_atimespec", "tv_nsec", "st_atime_nsec", ""}, // macOS
+      {"stat", "st_ctim", "tv_sec", "st_ctime", ""},            // Linux
+      {"stat", "st_ctimespec", "tv_sec", "st_ctime", ""},       // macOS
+      {"stat", "st_ctim", "tv_nsec", "st_ctime_nsec", ""},      // Linux
+      {"stat", "st_ctimespec", "tv_nsec", "st_ctime_nsec", ""}, // macOS
       {"in6_addr", "__in6_u", "__u6_addr8", "s6_addr", ""},
       {"in6_addr", "__in6_u", "__u6_addr32", "s6_addr", "[u32; 4]"},
   };
 
   auto getNamedIdentifierOrNull = [](auto *decl) {
     return decl && decl->getDeclName().isIdentifier() ? decl : nullptr;
+  };
+
+  static constexpr Mapping kWholeFields[] = {
+      {"stat", "", "st_atim", "st_atime", "::libc::timespec"},
+      {"stat", "", "st_atimespec", "st_atime", "::libc::timespec"},
+      {"stat", "", "st_mtim", "st_mtime", "::libc::timespec"},
+      {"stat", "", "st_mtimespec", "st_mtime", "::libc::timespec"},
+      {"stat", "", "st_ctim", "st_ctime", "::libc::timespec"},
+      {"stat", "", "st_ctimespec", "st_ctime", "::libc::timespec"},
   };
 
   if (auto leaf = getNamedIdentifierOrNull(expr->getMemberDecl())) {
@@ -3332,6 +3345,17 @@ replaceNonUniformLibcField(clang::MemberExpr *expr) {
               return {inner, m.replacement, m.cast};
             }
           }
+        }
+      }
+    }
+  }
+  if (auto *field = getNamedIdentifierOrNull(
+          clang::dyn_cast<clang::FieldDecl>(expr->getMemberDecl()))) {
+    if (getNamedIdentifierOrNull(field->getParent())) {
+      for (const auto &m : kWholeFields) {
+        if (field->getParent()->getName() == m.record &&
+            field->getName() == m.leaf_field) {
+          return {expr, m.replacement, m.cast};
         }
       }
     }
