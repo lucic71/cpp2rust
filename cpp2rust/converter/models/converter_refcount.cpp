@@ -1770,14 +1770,25 @@ RsExpr *ConverterRefCount::ConvertBinaryOperator(clang::BinaryOperator *expr) {
       assign && GetSafeTypeAsString(lhs_type) !=
                     GetSafeTypeAsString(assign->getComputationResultType())) {
     auto computation_result_type = assign->getComputationResultType();
+    bool hoist_lhs = lhs->HasSideEffects(ctx_);
+    RsExpr *lhs_binding =
+        hoist_lhs
+            ? Cat(Text(keyword::kLet), Text("__lhs"), Text(token::kAssign),
+                  ConvertAddrOf(lhs, ctx_.getPointerType(lhs->getType())),
+                  Text(token::kSemiColon))
+            : nullptr;
     RsExpr *value = nullptr;
     if (IsUnsignedArithOp(assign)) {
-      auto *lhs_node = ConvertRValue(lhs);
+      auto *lhs_node =
+          hoist_lhs ? Parens(arena_.New<Unary>(Unary::Op::Deref, Text("__lhs")))
+                    : ConvertRValue(lhs);
       auto *receiver = Parens(CastTo(lhs_node, computation_result_type));
       auto *arith = ConvertUnsignedArithBinaryOperator(expr, rhs, receiver);
       value = Parens(arith);
     } else {
-      auto *lhs_node = ConvertRValue(lhs);
+      auto *lhs_node =
+          hoist_lhs ? Parens(arena_.New<Unary>(Unary::Op::Deref, Text("__lhs")))
+                    : ConvertRValue(lhs);
       auto op = opcode_as_string;
       op.remove_suffix(1); // remove '=' from operator
       auto *rhs_node = ConvertRValue(rhs);
@@ -1789,29 +1800,59 @@ RsExpr *ConverterRefCount::ConvertBinaryOperator(clang::BinaryOperator *expr) {
     } else {
       value = CastTo(value, lhs_type);
     }
-    auto *assign_node = arena_.New<Assign>(ConvertLValue(lhs), Text("rhs_0"));
+    auto *assign_node = arena_.New<Assign>(
+        hoist_lhs ? Parens(arena_.New<Unary>(Unary::Op::Deref, Text("__lhs")))
+                  : ConvertLValue(lhs),
+        Text("rhs_0"));
     auto *node = Cat(Text(keyword::kLet), Text("rhs_0"), Text(token::kAssign),
                      value, Text(token::kSemiColon), assign_node);
     if (isRValue()) {
-      node = Cat(node, Text(token::kSemiColon), ConvertFreshRValue(lhs));
+      node = Cat(
+          node, Text(token::kSemiColon),
+          hoist_lhs ? Parens(arena_.New<Unary>(Unary::Op::Deref, Text("__lhs")))
+                    : ConvertFreshRValue(lhs));
+    }
+    if (lhs_binding != nullptr) {
+      node = Cat(lhs_binding, node);
     }
     return Braces(node);
   }
 
   if (IsUnsignedArithOp(expr)) {
+    bool hoist_lhs =
+        expr->isCompoundAssignmentOp() && lhs->HasSideEffects(ctx_);
+    RsExpr *lhs_binding =
+        hoist_lhs
+            ? Cat(Text(keyword::kLet), Text("__lhs"), Text(token::kAssign),
+                  ConvertAddrOf(lhs, ctx_.getPointerType(lhs->getType())),
+                  Text(token::kSemiColon))
+            : nullptr;
     RsExpr *operand = nullptr;
-    if (expr->isCompoundAssignmentOp() && lhs->isLValue()) {
+    if (hoist_lhs) {
+      operand =
+          Parens(Parens(arena_.New<Unary>(Unary::Op::Deref, Text("__lhs"))));
+    } else if (expr->isCompoundAssignmentOp() && lhs->isLValue()) {
       operand = Parens(ConvertRValue(lhs));
     } else {
       operand = Parens(ConvertUnsignedArithOperand(lhs, expr->getType()));
     }
     auto *arith = ConvertUnsignedArithBinaryOperator(expr, rhs, operand);
     if (expr->isCompoundAssignmentOp()) {
-      auto *assign_node = arena_.New<Assign>(ConvertLValue(lhs), Text("rhs_0"));
+      auto *assign_node = arena_.New<Assign>(
+          hoist_lhs ? Parens(arena_.New<Unary>(Unary::Op::Deref, Text("__lhs")))
+                    : ConvertLValue(lhs),
+          Text("rhs_0"));
       auto *node = Cat(Text(keyword::kLet), Text("rhs_0"), Text(token::kAssign),
                        arith, Text(token::kSemiColon), assign_node);
       if (isRValue()) {
-        node = Cat(node, Text(token::kSemiColon), ConvertFreshRValue(lhs));
+        node =
+            Cat(node, Text(token::kSemiColon),
+                hoist_lhs
+                    ? Parens(arena_.New<Unary>(Unary::Op::Deref, Text("__lhs")))
+                    : ConvertFreshRValue(lhs));
+      }
+      if (lhs_binding != nullptr) {
+        node = Cat(lhs_binding, node);
       }
       return Braces(node);
     }
@@ -2549,7 +2590,17 @@ RsExpr *ConverterRefCount::ConvertAssignment(clang::Expr *lhs, clang::Expr *rhs,
     rhs_node = Text("__rhs");
   }
 
-  auto *lhs_node = ConvertLValue(lhs);
+  bool hoist_lhs = !isVoid() && !yields_rhs && lhs->HasSideEffects(ctx_);
+  if (hoist_lhs) {
+    parts.push_back(Cat(Text(keyword::kLet), Text("__lhs"),
+                        Text(token::kAssign),
+                        ConvertAddrOf(lhs, ctx_.getPointerType(lhs->getType())),
+                        Text(token::kSemiColon)));
+  }
+
+  auto *lhs_node =
+      hoist_lhs ? Parens(arena_.New<Unary>(Unary::Op::Deref, Text("__lhs")))
+                : ConvertLValue(lhs);
   if (assign_operator == "=") {
     parts.push_back(arena_.New<Assign>(lhs_node, rhs_node));
   } else {
@@ -2559,7 +2610,13 @@ RsExpr *ConverterRefCount::ConvertAssignment(clang::Expr *lhs, clang::Expr *rhs,
 
   if (!isVoid()) {
     parts.push_back(Text(token::kSemiColon));
-    parts.push_back(yields_rhs ? Text("__rhs") : ConvertFreshRValue(lhs));
+    if (yields_rhs) {
+      parts.push_back(Text("__rhs"));
+    } else {
+      parts.push_back(
+          hoist_lhs ? Parens(arena_.New<Unary>(Unary::Op::Deref, Text("__lhs")))
+                    : ConvertFreshRValue(lhs));
+    }
   }
   return Braces(arena_.New<Concat>(std::move(parts)), !isVoid() || hoisted_rhs);
 }

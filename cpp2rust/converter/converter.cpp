@@ -1455,9 +1455,6 @@ RsExpr *Converter::ConvertCXXConstructorBody(clang::CXXConstructorDecl *decl) {
              Text(token::kSemiColon), body, Text("this"));
 }
 
-
-
-
 RsExpr *Converter::ConvertBitFieldBase(clang::MemberExpr *expr) {
   auto *base = expr->getBase();
   bool base_is_this =
@@ -1495,18 +1492,19 @@ RsExpr *Converter::TryConvertBitFieldWrite(clang::Expr *lhs,
 
   std::vector<RsExpr *> stmts;
   if (op == "=") {
-    stmts.push_back(Cat(Text(keyword::kLet), Text("__bf_v"), Text(token::kAssign),
-                        ConvertFreshRValue(rhs, field->getType()),
-                        Text(token::kSemiColon)));
+    stmts.push_back(Cat(
+        Text(keyword::kLet), Text("__bf_v"), Text(token::kAssign),
+        ConvertFreshRValue(rhs, field->getType()), Text(token::kSemiColon)));
   } else {
     stmts.push_back(Cat(Text(keyword::kLet), Text("__bf_old"),
                         Text(token::kAssign), ConvertBitFieldGet(member, field),
                         Text(token::kSemiColon)));
     auto *step = rhs != nullptr ? Parens(ConvertRValue(rhs, field->getType()))
                                 : Text("1");
-    stmts.push_back(Cat(Text(keyword::kLet), Text("__bf_v"), Text(token::kAssign),
-                        Parens(Cat(Text("__bf_old"), Text(std::string(op)), step)),
-                        Text(token::kSemiColon)));
+    stmts.push_back(
+        Cat(Text(keyword::kLet), Text("__bf_v"), Text(token::kAssign),
+            Parens(Cat(Text("__bf_old"), Text(std::string(op)), step)),
+            Text(token::kSemiColon)));
   }
   stmts.push_back(MethodCall(ConvertBitFieldBase(member), setter,
                              std::vector<RsExpr *>{Text("__bf_v")},
@@ -1543,18 +1541,17 @@ std::vector<RsExpr *> Converter::EmitRecordFields(clang::RecordDecl *decl) {
     if (it == run_of_front.end()) {
       continue;
     }
-    fields.push_back(Text(std::format("pub {}: [u8; {}],",
-                                      BitStorageName(it->second),
-                                      runs[it->second].byte_size)));
+    fields.push_back(
+        Text(std::format("pub {}: [u8; {}],", BitStorageName(it->second),
+                         runs[it->second].byte_size)));
   }
 
   return fields;
 }
 
-
 RsExpr *Converter::EmitRecordInitList(const clang::RecordDecl *record,
-                                     clang::InitListExpr *expr,
-                                     clang::QualType qual_type) {
+                                      clang::InitListExpr *expr,
+                                      clang::QualType qual_type) {
   std::vector<RsExpr *> fields;
   std::vector<RsExpr *> bit_inits;
   int i = 0;
@@ -3021,7 +3018,7 @@ RsExpr *Converter::ConvertBinaryOperator(clang::BinaryOperator *expr) {
       bf_op.remove_suffix(1);
     }
     if (auto *node = TryConvertBitFieldWrite(lhs, bf_op, rhs,
-                                            /*is_postfix=*/false)) {
+                                             /*is_postfix=*/false)) {
       return node;
     }
   }
@@ -3032,8 +3029,21 @@ RsExpr *Converter::ConvertBinaryOperator(clang::BinaryOperator *expr) {
       GetUnsafeTypeAsString(lhs_type) !=
           GetUnsafeTypeAsString(cmpd_assign_op->getComputationResultType())) {
     auto computation_result_type = cmpd_assign_op->getComputationResultType();
-    auto *lhs_node = ConvertExpr(lhs);
-    auto *lhs_again = ConvertExpr(lhs);
+    bool hoist_lhs = lhs->HasSideEffects(ctx_);
+    RsExpr *lhs_binding = nullptr;
+    RsExpr *lhs_node = nullptr;
+    RsExpr *lhs_again = nullptr;
+    if (hoist_lhs) {
+      lhs_binding =
+          Cat(Text(keyword::kLet), Text("__lhs"), Text(token::kAssign),
+              ConvertAddrOf(lhs, ctx_.getPointerType(lhs->getType())),
+              Text(token::kSemiColon));
+      lhs_node = Parens(arena_.New<Unary>(Unary::Op::Deref, Text("__lhs")));
+      lhs_again = Parens(arena_.New<Unary>(Unary::Op::Deref, Text("__lhs")));
+    } else {
+      lhs_node = ConvertExpr(lhs);
+      lhs_again = ConvertExpr(lhs);
+    }
     RsExpr *value = nullptr;
     if (IsUnsignedArithOp(cmpd_assign_op)) {
       auto *receiver = Parens(CastTo(lhs_again, computation_result_type));
@@ -3052,7 +3062,13 @@ RsExpr *Converter::ConvertBinaryOperator(clang::BinaryOperator *expr) {
     }
     auto *node = Cat(lhs_node, Text(token::kAssign), value);
     if (!isVoid()) {
-      node = Cat(node, Text(token::kSemiColon), ConvertRValue(lhs));
+      node = Cat(
+          node, Text(token::kSemiColon),
+          hoist_lhs ? Parens(arena_.New<Unary>(Unary::Op::Deref, Text("__lhs")))
+                    : ConvertRValue(lhs));
+    }
+    if (lhs_binding != nullptr) {
+      node = Cat(lhs_binding, node);
     }
     return Braces(node, !isVoid());
   }
@@ -3067,11 +3083,26 @@ RsExpr *Converter::ConvertBinaryOperator(clang::BinaryOperator *expr) {
     return isVoid() ? node : Braces(node, true);
   }
   if (IsUnsignedArithOp(expr)) {
+    bool hoist_lhs =
+        expr->isCompoundAssignmentOp() && lhs->HasSideEffects(ctx_);
+    RsExpr *lhs_binding = nullptr;
     RsExpr *prefix = nullptr;
     if (expr->isCompoundAssignmentOp()) {
-      prefix = Cat(ConvertExpr(lhs), Text(token::kAssign));
+      if (hoist_lhs) {
+        lhs_binding =
+            Cat(Text(keyword::kLet), Text("__lhs"), Text(token::kAssign),
+                ConvertAddrOf(lhs, ctx_.getPointerType(lhs->getType())),
+                Text(token::kSemiColon));
+        prefix = Cat(Parens(arena_.New<Unary>(Unary::Op::Deref, Text("__lhs"))),
+                     Text(token::kAssign));
+      } else {
+        prefix = Cat(ConvertExpr(lhs), Text(token::kAssign));
+      }
     }
-    auto *operand = Parens(ConvertUnsignedArithOperand(lhs, type));
+    auto *operand = Parens(ConvertUnsignedArithOperand(
+        lhs, type,
+        hoist_lhs ? Parens(arena_.New<Unary>(Unary::Op::Deref, Text("__lhs")))
+                  : nullptr));
     auto *arith = ConvertUnsignedArithBinaryOperator(expr, rhs, operand);
     if (!expr->isCompoundAssignmentOp()) {
       computed_expr_type_ = ComputedExprType::FreshValue;
@@ -3079,7 +3110,14 @@ RsExpr *Converter::ConvertBinaryOperator(clang::BinaryOperator *expr) {
     if (prefix) {
       auto *node = Cat(prefix, arith);
       if (!isVoid()) {
-        node = Cat(node, Text(token::kSemiColon), ConvertRValue(lhs));
+        node =
+            Cat(node, Text(token::kSemiColon),
+                hoist_lhs
+                    ? Parens(arena_.New<Unary>(Unary::Op::Deref, Text("__lhs")))
+                    : ConvertRValue(lhs));
+      }
+      if (lhs_binding != nullptr) {
+        node = Cat(lhs_binding, node);
       }
       return Braces(node, !isVoid());
     }
@@ -3089,12 +3127,31 @@ RsExpr *Converter::ConvertBinaryOperator(clang::BinaryOperator *expr) {
     if (expr->isCompoundAssignmentOp() &&
         expr->getLHS()->getType()->isPointerType() &&
         expr->getRHS()->getType()->isIntegralOrEnumerationType()) {
-      auto *lhs_node = ConvertExpr(lhs);
-      auto *operand = Parens(ConvertUnsignedArithOperand(lhs, type));
+      bool hoist_lhs = lhs->HasSideEffects(ctx_);
+      RsExpr *lhs_binding =
+          hoist_lhs
+              ? Cat(Text(keyword::kLet), Text("__lhs"), Text(token::kAssign),
+                    ConvertAddrOf(lhs, ctx_.getPointerType(lhs->getType())),
+                    Text(token::kSemiColon))
+              : nullptr;
+      auto *lhs_node =
+          hoist_lhs ? Parens(arena_.New<Unary>(Unary::Op::Deref, Text("__lhs")))
+                    : ConvertExpr(lhs);
+      auto *operand = Parens(ConvertUnsignedArithOperand(
+          lhs, type,
+          hoist_lhs ? Parens(arena_.New<Unary>(Unary::Op::Deref, Text("__lhs")))
+                    : nullptr));
       auto *arith = ConvertUnsignedArithBinaryOperator(expr, rhs, operand);
       auto *node = Cat(lhs_node, Text(token::kAssign), arith);
       if (!isVoid()) {
-        node = Cat(node, Text(token::kSemiColon), ConvertRValue(lhs));
+        node =
+            Cat(node, Text(token::kSemiColon),
+                hoist_lhs
+                    ? Parens(arena_.New<Unary>(Unary::Op::Deref, Text("__lhs")))
+                    : ConvertRValue(lhs));
+      }
+      if (lhs_binding != nullptr) {
+        node = Cat(lhs_binding, node);
       }
       return Braces(node, !isVoid());
     }
@@ -4398,12 +4455,13 @@ RsExpr *Converter::ConvertVarInit(clang::QualType qual_type,
 }
 
 RsExpr *Converter::ConvertUnsignedArithOperand(clang::Expr *expr,
-                                               clang::QualType type) {
+                                               clang::QualType type,
+                                               RsExpr *converted) {
   bool needs_cast = (expr->isIntegerConstantExpr(ctx_) &&
                      !clang::isa<clang::ImplicitCastExpr>(expr)) ||
                     Mapper::Map(expr->getType()) != Mapper::Map(type);
-  RsExpr *node = nullptr;
-  {
+  RsExpr *node = converted;
+  if (node == nullptr) {
     PushExprKind push(*this, ExprKind::RValue);
     node = ConvertExpr(expr);
   }
@@ -4489,6 +4547,19 @@ RsExpr *Converter::ConvertArraySubscript(clang::Expr *base, clang::Expr *idx,
 
 RsExpr *Converter::ConvertAssignment(clang::Expr *lhs, clang::Expr *rhs,
                                      std::string_view assign_operator) {
+  if (!isVoid() && assign_operator != "=" && lhs->HasSideEffects(ctx_)) {
+    auto *lhs_binding =
+        Cat(Text(keyword::kLet), Text("__lhs"), Text(token::kAssign),
+            ConvertAddrOf(lhs, ctx_.getPointerType(lhs->getType())),
+            Text(token::kSemiColon));
+    auto *rhs_node = ConvertFreshRValue(rhs, lhs->getType());
+    auto *node = Cat(
+        lhs_binding, Parens(arena_.New<Unary>(Unary::Op::Deref, Text("__lhs"))),
+        Text(std::string(assign_operator)), rhs_node, Text(token::kSemiColon),
+        Parens(arena_.New<Unary>(Unary::Op::Deref, Text("__lhs"))));
+    return Braces(node, true);
+  }
+
   RsExpr *lhs_node = nullptr;
   {
     PushInitType init_type(*this, lhs->getType());
@@ -4497,10 +4568,10 @@ RsExpr *Converter::ConvertAssignment(clang::Expr *lhs, clang::Expr *rhs,
   auto *rhs_node = ConvertFreshRValue(rhs, lhs->getType());
 
   if (!isVoid() && assign_operator == "=" && lhs->HasSideEffects(ctx_)) {
-    auto *node = Cat(Text(keyword::kLet), Text("__rhs"), Text(token::kAssign),
-                     rhs_node, Text(token::kSemiColon), lhs_node,
-                     Text(token::kAssign), Text("__rhs"),
-                     Text(token::kSemiColon), Text("__rhs"));
+    auto *node =
+        Cat(Text(keyword::kLet), Text("__rhs"), Text(token::kAssign), rhs_node,
+            Text(token::kSemiColon), lhs_node, Text(token::kAssign),
+            Text("__rhs"), Text(token::kSemiColon), Text("__rhs"));
     return Braces(node, true);
   }
 

@@ -541,7 +541,8 @@ protected:
   virtual RsExpr *ConvertVarInit(clang::QualType qual_type, clang::Expr *expr);
 
   virtual RsExpr *ConvertUnsignedArithOperand(clang::Expr *expr,
-                                              clang::QualType type);
+                                              clang::QualType type,
+                                              RsExpr *converted = nullptr);
 
   virtual RsExpr *ConvertEqualsNullPtr(clang::Expr *expr);
 
