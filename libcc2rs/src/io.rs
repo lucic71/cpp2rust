@@ -237,15 +237,15 @@ pub unsafe fn ftruncate_unsafe(a0: i32, a1: libc::off_t) -> i32 {
 /// # Safety
 ///
 /// Same contract as C's `stat`.
-pub unsafe fn stat_unsafe(a0: *const libc::c_char, a1: *mut libc::stat) -> i32 {
-    unsafe { libc::stat(a0, a1) }
+pub unsafe fn stat_unsafe(a0: *const libc::c_char, a1: *mut crate::Stat) -> i32 {
+    unsafe { libc::stat(a0, a1 as *mut libc::stat) }
 }
 
 /// # Safety
 ///
 /// Same contract as C's `fstat`.
-pub unsafe fn fstat_unsafe(a0: i32, a1: *mut libc::stat) -> i32 {
-    unsafe { libc::fstat(a0, a1) }
+pub unsafe fn fstat_unsafe(a0: i32, a1: *mut crate::Stat) -> i32 {
+    unsafe { libc::fstat(a0, a1 as *mut libc::stat) }
 }
 
 /// # Safety
@@ -352,8 +352,8 @@ pub unsafe fn readlink_unsafe(a0: *const libc::c_char, a1: *mut libc::c_char, a2
 /// # Safety
 ///
 /// Same contract as C's `lstat`.
-pub unsafe fn lstat_unsafe(a0: *const libc::c_char, a1: *mut libc::stat) -> i32 {
-    unsafe { libc::lstat(a0, a1) }
+pub unsafe fn lstat_unsafe(a0: *const libc::c_char, a1: *mut crate::Stat) -> i32 {
+    unsafe { libc::lstat(a0, a1 as *mut libc::stat) }
 }
 
 pub fn close_refcount(a0: i32) -> i32 {
