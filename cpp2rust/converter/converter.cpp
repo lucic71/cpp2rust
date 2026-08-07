@@ -2207,8 +2207,9 @@ RsExpr *Converter::ConvertFunctionToFunctionPointer(
   return Text(std::format("Some({})", Mapper::MapFunctionName(fn_decl)));
 }
 
-RsExpr *Converter::ConvertFunctionPointerPlaceholder(
-    clang::Expr *arg, std::string_view param_type) {
+RsExpr *
+Converter::ConvertFunctionPointerPlaceholder(clang::Expr *arg,
+                                             std::string_view param_type) {
   if (param_type.find("Option<") != std::string_view::npos) {
     return ConvertRValue(arg);
   }

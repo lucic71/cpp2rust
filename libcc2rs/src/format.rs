@@ -150,9 +150,7 @@ fn scan_int(inp: &[u8], base: u32, unsigned: bool) -> Option<(i64, usize)> {
         let Some(digit) = (inp[pos] as char).to_digit(base) else {
             break;
         };
-        value = value
-            .wrapping_mul(base as i64)
-            .wrapping_add(digit as i64);
+        value = value.wrapping_mul(base as i64).wrapping_add(digit as i64);
         pos += 1;
     }
     if pos == start {
@@ -325,7 +323,7 @@ pub fn strtoll_refcount(a0: Ptr<u8>, a1: Ptr<Ptr<u8>>, a2: i32) -> i64 {
         pos += 2;
     }
     let digits_start = pos;
-    while pos < b.len() && (b[pos] as char).to_digit(base).is_some() {
+    while pos < b.len() && (b[pos] as char).is_digit(base) {
         pos += 1;
     }
     if pos == digits_start {

@@ -102,11 +102,9 @@ pub fn signal_refcount(a0: i32, a1: crate::FnPtr<fn(i32)>) -> crate::FnPtr<fn(i3
         nix::sys::signal::SigHandler::Handler(cpp2rust_signal_trampoline)
     };
     match unsafe { nix::sys::signal::signal(sig, handler) } {
-        Ok(_) => SIGNAL_HANDLERS.with(|handlers| {
-            match handlers.borrow_mut().insert(a0, a1) {
-                Some(previous) => previous,
-                None => crate::FnPtr::null(),
-            }
+        Ok(_) => SIGNAL_HANDLERS.with(|handlers| match handlers.borrow_mut().insert(a0, a1) {
+            Some(previous) => previous,
+            None => crate::FnPtr::null(),
         }),
         Err(e) => {
             cpp2rust_errno().write(e as i32);
