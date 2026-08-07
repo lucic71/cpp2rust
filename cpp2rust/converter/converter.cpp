@@ -5,6 +5,7 @@
 
 #include <clang/AST/APValue.h>
 #include <clang/AST/ParentMapContext.h>
+#include <clang/AST/RecordLayout.h>
 #include <clang/Basic/LangOptions.h>
 #include <clang/Basic/SourceManager.h>
 #include <llvm/ADT/DenseMap.h>
@@ -1193,7 +1194,7 @@ RsExpr *Converter::EmitRustStructOrUnion(clang::RecordDecl *decl) {
 
   // Derived traits
   if (EmitsReprCForRecords()) {
-    parts.push_back(Text("#[repr(C)]"));
+    parts.push_back(Text(RecordReprAttr(ctx_, decl)));
   }
   auto attrs = GetStructAttributes(decl);
   Mapper::SetDerives(ctx_.getCanonicalTagType(decl),
@@ -1213,11 +1214,8 @@ RsExpr *Converter::EmitRustStructOrUnion(clang::RecordDecl *decl) {
   parts.push_back(Text(access));
   parts.push_back(Text(keyword::kStruct));
   parts.push_back(Text(GetRecordName(decl)));
-  std::vector<RsExpr *> fields;
-  for (auto *field : decl->fields()) {
-    fields.push_back(VisitFieldDecl(field));
-  }
-  parts.push_back(Braces(arena_.New<Concat>(std::move(fields))));
+  parts.push_back(Braces(arena_.New<Concat>(EmitRecordFields(decl))));
+  parts.push_back(EmitBitFieldAccessors(decl));
 
   // C++ method decls
   if (auto *cxx = clang::dyn_cast<clang::CXXRecordDecl>(decl)) {
@@ -1237,7 +1235,7 @@ RsExpr *Converter::EmitRustStructOrUnion(clang::RecordDecl *decl) {
 
 RsExpr *Converter::EmitRustUnion(clang::RecordDecl *decl) {
   std::vector<RsExpr *> parts;
-  parts.push_back(Text("#[repr(C)]"));
+  parts.push_back(Text(RecordReprAttr(ctx_, decl)));
   auto attrs = GetStructAttributes(decl);
   Mapper::SetDerives(ctx_.getCanonicalTagType(decl),
                      std::vector<std::string>(attrs.begin(), attrs.end()));
@@ -1252,11 +1250,8 @@ RsExpr *Converter::EmitRustUnion(clang::RecordDecl *decl) {
   parts.push_back(Text(keyword::kPub));
   parts.push_back(Text(keyword::kUnion));
   parts.push_back(Text(GetRecordName(decl)));
-  std::vector<RsExpr *> fields;
-  for (auto *field : decl->fields()) {
-    fields.push_back(VisitFieldDecl(field));
-  }
-  parts.push_back(Braces(arena_.New<Concat>(std::move(fields))));
+  parts.push_back(Braces(arena_.New<Concat>(EmitRecordFields(decl))));
+  parts.push_back(EmitBitFieldAccessors(decl));
 
   parts.push_back(AddDefaultTrait(decl));
   parts.push_back(AddByteReprTrait(decl));
@@ -1458,6 +1453,160 @@ RsExpr *Converter::ConvertCXXConstructorBody(clang::CXXConstructorDecl *decl) {
              Text(token::kAssign), Text("Self"),
              Braces(arena_.New<Concat>(std::move(inits))),
              Text(token::kSemiColon), body, Text("this"));
+}
+
+
+
+
+RsExpr *Converter::ConvertBitFieldBase(clang::MemberExpr *expr) {
+  auto *base = expr->getBase();
+  bool base_is_this =
+      clang::isa<clang::CXXThisExpr>(base->IgnoreCasts()) && ThisIsValue();
+  PushExprKind push(*this, ExprKind::LValue);
+  if (expr->isArrow() && !base_is_this) {
+    return ConvertArrow(base);
+  }
+  return ConvertExpr(base);
+}
+
+RsExpr *Converter::ConvertBitFieldGet(clang::MemberExpr *expr,
+                                      const clang::FieldDecl *field) {
+  return MethodCall(ConvertBitFieldBase(expr), GetNamedDeclAsString(field),
+                    std::vector<RsExpr *>{}, /*is_mut=*/false);
+}
+
+RsExpr *Converter::TryConvertBitFieldWrite(clang::Expr *lhs,
+                                           std::string_view op,
+                                           clang::Expr *rhs, bool is_postfix) {
+  const auto *field = AsBitField(lhs);
+  if (field == nullptr) {
+    return nullptr;
+  }
+  auto *member = clang::cast<clang::MemberExpr>(lhs->IgnoreParenImpCasts());
+  auto setter = std::format("set_{}", GetNamedDeclAsString(field));
+  computed_expr_type_ = ComputedExprType::FreshValue;
+
+  if (op == "=" && isVoid()) {
+    return MethodCall(
+        ConvertBitFieldBase(member), setter,
+        std::vector<RsExpr *>{ConvertFreshRValue(rhs, field->getType())},
+        /*is_mut=*/true);
+  }
+
+  std::vector<RsExpr *> stmts;
+  if (op == "=") {
+    stmts.push_back(Cat(Text(keyword::kLet), Text("__bf_v"), Text(token::kAssign),
+                        ConvertFreshRValue(rhs, field->getType()),
+                        Text(token::kSemiColon)));
+  } else {
+    stmts.push_back(Cat(Text(keyword::kLet), Text("__bf_old"),
+                        Text(token::kAssign), ConvertBitFieldGet(member, field),
+                        Text(token::kSemiColon)));
+    auto *step = rhs != nullptr ? Parens(ConvertRValue(rhs, field->getType()))
+                                : Text("1");
+    stmts.push_back(Cat(Text(keyword::kLet), Text("__bf_v"), Text(token::kAssign),
+                        Parens(Cat(Text("__bf_old"), Text(std::string(op)), step)),
+                        Text(token::kSemiColon)));
+  }
+  stmts.push_back(MethodCall(ConvertBitFieldBase(member), setter,
+                             std::vector<RsExpr *>{Text("__bf_v")},
+                             /*is_mut=*/true));
+  if (!isVoid()) {
+    stmts.push_back(Text(token::kSemiColon));
+    stmts.push_back(Text(is_postfix ? "__bf_old" : "__bf_v"));
+  }
+  return Braces(arena_.New<Concat>(std::move(stmts)), true);
+}
+
+std::vector<RsExpr *> Converter::EmitRecordFields(clang::RecordDecl *decl) {
+  auto runs = CollectBitFieldRuns(ctx_, decl);
+  if (runs.empty()) {
+    std::vector<RsExpr *> fields;
+    for (auto *field : decl->fields()) {
+      fields.push_back(VisitFieldDecl(field));
+    }
+    return fields;
+  }
+
+  llvm::DenseMap<const clang::FieldDecl *, unsigned> run_of_front;
+  for (unsigned i = 0; i < runs.size(); ++i) {
+    run_of_front[runs[i].fields.front()] = i;
+  }
+
+  std::vector<RsExpr *> fields;
+  for (auto *field : decl->fields()) {
+    if (!field->isBitField()) {
+      fields.push_back(VisitFieldDecl(field));
+      continue;
+    }
+    auto it = run_of_front.find(field);
+    if (it == run_of_front.end()) {
+      continue;
+    }
+    fields.push_back(Text(std::format("pub {}: [u8; {}],",
+                                      BitStorageName(it->second),
+                                      runs[it->second].byte_size)));
+  }
+
+  return fields;
+}
+
+
+RsExpr *Converter::EmitRecordInitList(const clang::RecordDecl *record,
+                                     clang::InitListExpr *expr,
+                                     clang::QualType qual_type) {
+  std::vector<RsExpr *> fields;
+  std::vector<RsExpr *> bit_inits;
+  int i = 0;
+  for (const auto *field : record->fields()) {
+    auto *init =
+        i < static_cast<int>(expr->getNumInits()) ? expr->getInit(i) : nullptr;
+    ++i;
+    if (!field->isBitField()) {
+      fields.push_back(Text(GetNamedDeclAsString(field)));
+      fields.push_back(Text(token::kColon));
+      fields.push_back(ConvertVarInit(field->getType(), init));
+      fields.push_back(Text(token::kComma));
+      continue;
+    }
+    if (init == nullptr || field->isUnnamedBitField()) {
+      continue;
+    }
+    bit_inits.push_back(
+        Text(std::format(".with_{}(", GetNamedDeclAsString(field))));
+    bit_inits.push_back(ConvertVarInit(field->getType(), init));
+    bit_inits.push_back(Text(')'));
+  }
+  auto runs = CollectBitFieldRuns(ctx_, record);
+  for (unsigned r = 0; r < runs.size(); ++r) {
+    fields.push_back(Text(
+        std::format("{}: [0u8; {}],", BitStorageName(r), runs[r].byte_size)));
+  }
+  auto *literal = Cat(Text(GetUnsafeTypeAsString(qual_type)),
+                      Braces(arena_.New<Concat>(std::move(fields))));
+  if (bit_inits.empty()) {
+    return literal;
+  }
+  return Cat(literal, arena_.New<Concat>(std::move(bit_inits)));
+}
+
+RsExpr *Converter::EmitBitFieldAccessors(clang::RecordDecl *decl) {
+  auto runs = CollectBitFieldRuns(ctx_, decl);
+  if (runs.empty()) {
+    return arena_.New<Verbatim>("");
+  }
+  std::vector<RsExpr *> accessors;
+  for (unsigned i = 0; i < runs.size(); ++i) {
+    for (const auto *field : runs[i].fields) {
+      if (field->isUnnamedBitField()) {
+        continue;
+      }
+      accessors.push_back(Text(BitFieldAccessorCode(
+          ctx_, field, runs[i], i, RenderType(field->getType()))));
+    }
+  }
+  return Cat(Text(keyword::kImpl), Text(GetRecordName(decl)),
+             Braces(arena_.New<Concat>(std::move(accessors))));
 }
 
 RsExpr *Converter::VisitFieldDecl(clang::FieldDecl *decl) {
@@ -2866,6 +3015,17 @@ RsExpr *Converter::ConvertBinaryOperator(clang::BinaryOperator *expr) {
   auto rhs_type = rhs->getType();
   std::string_view opcode_as_string = expr->getOpcodeStr();
 
+  if (expr->isAssignmentOp()) {
+    auto bf_op = opcode_as_string;
+    if (bf_op != "=") {
+      bf_op.remove_suffix(1);
+    }
+    if (auto *node = TryConvertBitFieldWrite(lhs, bf_op, rhs,
+                                            /*is_postfix=*/false)) {
+      return node;
+    }
+  }
+
   if (auto *cmpd_assign_op =
           llvm::dyn_cast<clang::CompoundAssignOperator>(expr);
       expr->isCompoundAssignmentOp() &&
@@ -3005,6 +3165,11 @@ bool Converter::IsReferenceType(const clang::Expr *expr) const {
 RsExpr *Converter::ConvertIncAndDec(clang::UnaryOperator *expr) {
   auto opcode = expr->getOpcode();
   auto *sub_expr = expr->getSubExpr();
+  if (auto *node = TryConvertBitFieldWrite(
+          expr->getSubExpr(), expr->isIncrementOp() ? "+" : "-",
+          /*rhs=*/nullptr, expr->isPostfix())) {
+    return node;
+  }
   const char *method = nullptr;
   switch (opcode) {
   case clang::UO_PostInc:
@@ -3370,6 +3535,10 @@ RsExpr *Converter::ConvertMemberExpr(clang::MemberExpr *expr) {
   }
 
   auto *member = expr->getMemberDecl();
+  if (const auto *bitfield = clang::dyn_cast<clang::FieldDecl>(member);
+      bitfield != nullptr && bitfield->isBitField()) {
+    return ConvertBitFieldGet(expr, bitfield);
+  }
   auto [inner, name_override, cast_override] = replaceNonUniformLibcField(expr);
   if (inner) {
     expr = inner;
@@ -3466,16 +3635,7 @@ RsExpr *Converter::VisitInitListExpr(clang::InitListExpr *expr) {
                      Text(token::kComma))));
     }
 
-    std::vector<RsExpr *> fields;
-    int i = 0;
-    for (const auto *field : record->fields()) {
-      fields.push_back(Text(GetNamedDeclAsString(field)));
-      fields.push_back(Text(token::kColon));
-      fields.push_back(ConvertVarInit(field->getType(), expr->getInit(i++)));
-      fields.push_back(Text(token::kComma));
-    }
-    return Cat(Text(GetUnsafeTypeAsString(qual_type)),
-               Braces(arena_.New<Concat>(std::move(fields))));
+    return EmitRecordInitList(record, expr, qual_type);
   }
   if (IsInitExprOfStringLiteral(expr)) {
     return ConvertExpr(expr->getInit(0)->IgnoreParenImpCasts());

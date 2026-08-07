@@ -30,6 +30,28 @@ enum class IteratorCategory {
 
 std::optional<IteratorCategory>
 GetStrongestIteratorCategory(clang::QualType type);
+
+struct BitFieldRun {
+  uint64_t start_bit = 0;
+  uint64_t start_byte = 0;
+  uint64_t byte_size = 0;
+  std::vector<const clang::FieldDecl *> fields;
+};
+
+std::string BitStorageName(unsigned run);
+
+const clang::FieldDecl *AsBitField(const clang::Expr *expr);
+
+std::vector<BitFieldRun> CollectBitFieldRuns(clang::ASTContext &ctx,
+                                             const clang::RecordDecl *decl);
+
+std::string RecordReprAttr(clang::ASTContext &ctx,
+                           const clang::RecordDecl *decl);
+
+std::string BitFieldAccessorCode(clang::ASTContext &ctx,
+                                 const clang::FieldDecl *field,
+                                 const BitFieldRun &run, unsigned run_idx,
+                                 const std::string &type_name);
 bool IsBuiltinConstantP(const clang::Expr *expr);
 
 bool IsGlobalVar(clang::VarDecl *decl);

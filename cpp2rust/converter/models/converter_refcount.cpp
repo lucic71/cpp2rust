@@ -565,60 +565,6 @@ RsExpr *ConverterRefCount::AddDropTrait(const clang::CXXRecordDecl *decl) {
              Text('}'));
 }
 
-RsExpr *
-ConverterRefCount::EmitBitFieldToBytes(const clang::FieldDecl *field,
-                                       const clang::ASTRecordLayout &layout) {
-  assert(!field->isUnnamedBitField());
-  auto bit_off = layout.getFieldOffset(field->getFieldIndex());
-  auto width = field->getBitWidthValue();
-
-  std::string stmts =
-      std::format("{{ let __v = self.{} as u64;", GetNamedDeclAsString(field));
-  for (auto byte = bit_off / 8; byte <= (bit_off + width - 1) / 8; ++byte) {
-    auto lo = std::max(bit_off, byte * 8);
-    auto hi = std::min(bit_off + width, byte * 8 + 8);
-    auto mask = ((1U << (hi - lo)) - 1) << (lo - byte * 8);
-    stmts += std::format(
-        "buf[{0}] = (buf[{0}] & !{1:#04x}u8) | ((((__v >> {2}) as u8) << {3}) "
-        "& {1:#04x}u8);",
-        byte, mask, lo - bit_off, lo - byte * 8);
-  }
-  return Text(stmts + '}');
-}
-
-RsExpr *
-ConverterRefCount::EmitBitFieldFromBytes(const clang::FieldDecl *field,
-                                         const clang::ASTRecordLayout &layout,
-                                         const std::string &storage_ty) {
-  assert(!field->isUnnamedBitField());
-  auto bit_off = layout.getFieldOffset(field->getFieldIndex());
-  auto width = field->getBitWidthValue();
-
-  std::string raw;
-  for (auto byte = bit_off / 8; byte <= (bit_off + width - 1) / 8; ++byte) {
-    auto lo = std::max(bit_off, byte * 8);
-    auto hi = std::min(bit_off + width, byte * 8 + 8);
-    if (!raw.empty()) {
-      raw += " | ";
-    }
-    raw += std::format("(((buf[{}] as u64 >> {}) & {:#x}) << {})", byte,
-                       lo - byte * 8, (1U << (hi - lo)) - 1, lo - bit_off);
-  }
-
-  std::string value;
-  if (field->getType()->isBooleanType()) {
-    value = std::format("({}) != 0", raw);
-  } else if (field->getType()->isSignedIntegerType()) {
-    value = std::format("(((({0}) << {1}) as i64) >> {1}) as {2}", raw,
-                        64 - width, storage_ty);
-  } else {
-    assert(field->getType()->isUnsignedIntegerType());
-    value = std::format("({}) as {}", raw, storage_ty);
-  }
-
-  return Text(std::format("{}: {},", GetNamedDeclAsString(field), value));
-}
-
 RsExpr *ConverterRefCount::AddByteReprTrait(const clang::RecordDecl *decl) {
   auto struct_name = GetRecordName(decl);
 
@@ -649,10 +595,16 @@ RsExpr *ConverterRefCount::AddByteReprTrait(const clang::RecordDecl *decl) {
       Text(std::format("fn byte_size() -> usize {{ {} }}",
                        ctx_.getTypeSize(ctx_.getCanonicalTagType(decl)) / 8)));
 
+  auto runs = CollectBitFieldRuns(ctx_, decl);
+
   std::vector<RsExpr *> to_bytes;
+  for (unsigned i = 0; i < runs.size(); ++i) {
+    to_bytes.push_back(Text(std::format(
+        "buf[{1}..{2}].copy_from_slice(&self.{0});", BitStorageName(i),
+        runs[i].start_byte, runs[i].start_byte + runs[i].byte_size)));
+  }
   for (auto *field : decl->fields()) {
     if (field->isBitField()) {
-      to_bytes.push_back(EmitBitFieldToBytes(field, layout));
       continue;
     }
     auto byte_off = layout.getFieldOffset(field->getFieldIndex()) / 8;
@@ -665,13 +617,17 @@ RsExpr *ConverterRefCount::AddByteReprTrait(const clang::RecordDecl *decl) {
   body.push_back(Braces(arena_.New<Concat>(std::move(to_bytes))));
 
   std::vector<RsExpr *> from_bytes;
+  for (unsigned i = 0; i < runs.size(); ++i) {
+    from_bytes.push_back(Text(std::format(
+        "{0}: buf[{1}..{2}].try_into().unwrap(),", BitStorageName(i),
+        runs[i].start_byte, runs[i].start_byte + runs[i].byte_size)));
+  }
   for (auto *field : decl->fields()) {
     PushConversionKind push(*this, ConversionKind::UnboxedField);
-    std::string storage_ty = RenderType(field->getType());
     if (field->isBitField()) {
-      from_bytes.push_back(EmitBitFieldFromBytes(field, layout, storage_ty));
       continue;
     }
+    std::string storage_ty = RenderType(field->getType());
     auto byte_off = layout.getFieldOffset(field->getFieldIndex()) / 8;
     auto byte_size = ctx_.getTypeSize(field->getType()) / 8;
     from_bytes.push_back(Text(std::format(
@@ -871,6 +827,11 @@ RsExpr *ConverterRefCount::VisitVarDecl(clang::VarDecl *decl) {
 RsExpr *ConverterRefCount::ConvertIncAndDec(clang::UnaryOperator *expr) {
   auto opcode = expr->getOpcode();
   auto *sub_expr = expr->getSubExpr();
+  if (auto *node = TryConvertBitFieldWrite(
+          expr->getSubExpr(), expr->isIncrementOp() ? "+" : "-",
+          /*rhs=*/nullptr, expr->isPostfix())) {
+    return node;
+  }
 
   const char *method = nullptr;
   switch (opcode) {
@@ -1794,6 +1755,17 @@ RsExpr *ConverterRefCount::ConvertBinaryOperator(clang::BinaryOperator *expr) {
   auto rhs_type = rhs->getType();
   std::string_view opcode_as_string = expr->getOpcodeStr();
 
+  if (expr->isAssignmentOp()) {
+    auto bf_op = opcode_as_string;
+    if (bf_op != "=") {
+      bf_op.remove_suffix(1);
+    }
+    if (auto *node = TryConvertBitFieldWrite(lhs, bf_op, rhs,
+                                            /*is_postfix=*/false)) {
+      return node;
+    }
+  }
+
   if (auto *assign = llvm::dyn_cast<clang::CompoundAssignOperator>(expr);
       assign && GetSafeTypeAsString(lhs_type) !=
                     GetSafeTypeAsString(assign->getComputationResultType())) {
@@ -2000,20 +1972,13 @@ RsExpr *ConverterRefCount::VisitInitListExpr(clang::InitListExpr *expr) {
           GetRecordName(record), list));
     }
 
-    std::vector<RsExpr *> fields;
+    RsExpr *node = nullptr;
     {
-      int i = 0;
       PushConversionKind push(*this, ConversionKind::UnboxedField);
-      for (const auto *field : record->fields()) {
-        fields.push_back(Text(GetNamedDeclAsString(field)));
-        fields.push_back(Text(token::kColon));
-        fields.push_back(ConvertVarInit(field->getType(), expr->getInit(i++)));
-        fields.push_back(Text(token::kComma));
-      }
+      node = EmitRecordInitList(record, expr, qual_type);
     }
     computed_expr_type_ = ComputedExprType::FreshValue;
-    return Cat(Text(GetUnsafeTypeAsString(qual_type)),
-               Braces(arena_.New<Concat>(std::move(fields))));
+    return node;
   }
 
   if (IsInitExprOfStringLiteral(expr)) {
@@ -2133,6 +2098,11 @@ RsExpr *ConverterRefCount::ConvertFieldPtr(clang::MemberExpr *expr,
 RsExpr *ConverterRefCount::VisitMemberExpr(clang::MemberExpr *expr) {
   auto *member = expr->getMemberDecl();
   bool known = Mapper::Contains(expr);
+
+  if (const auto *bitfield = clang::dyn_cast<clang::FieldDecl>(member);
+      bitfield != nullptr && bitfield->isBitField() && !isAddrOf()) {
+    return ConvertBitFieldGet(expr, bitfield);
+  }
 
   if (auto *method = clang::dyn_cast<clang::CXXMethodDecl>(member);
       method && !known) {

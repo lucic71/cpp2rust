@@ -15,10 +15,18 @@ struct shape_b {
   char fill[8];
 };
 
+struct shape_c {
+  uint16_t code;
+  unsigned f1 : 1;
+  unsigned f2 : 3;
+  unsigned f3 : 12;
+};
+
 struct Container {
   union {
     struct shape_a a;
     struct shape_b b;
+    struct shape_c c;
     char raw[256];
   } view;
 };
@@ -49,6 +57,24 @@ int main(void) {
 
   memset(&c, 0, sizeof(c));
   assert(c.view.b.code == 0);
+
+  assert(sizeof(struct shape_c) == 4);
+  assert(c.view.c.f1 == 0 && c.view.c.f2 == 0 && c.view.c.f3 == 0);
+
+  c.view.c.code = 2;
+  c.view.c.f1 = 1;
+  c.view.c.f2 = 5;
+  c.view.c.f3 = 0xABC;
+  assert(((unsigned char *)&c.view.raw)[2] == 0xCB);
+  assert(((unsigned char *)&c.view.raw)[3] == 0xAB);
+
+  memset(&c.view.raw[2], 0xFF, 2);
+  assert(c.view.c.f1 == 1 && c.view.c.f2 == 7 && c.view.c.f3 == 0xFFF);
+  assert(c.view.c.code == 2);
+
+  memset(&c, 0, sizeof(c));
+  assert(c.view.c.f1 == 0 && c.view.c.f2 == 0 && c.view.c.f3 == 0);
+  assert(c.view.c.code == 0);
 
   return 0;
 }

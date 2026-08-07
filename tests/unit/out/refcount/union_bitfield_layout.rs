@@ -6,48 +6,89 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[repr(C)]
+#[repr(C, align(4))]
 #[derive(Clone, Default)]
 pub struct packed_flags {
-    pub a: u32,
-    pub b: u32,
-    pub wide: u32,
-    pub sgn: i32,
+    pub __bits_0: [u8; 4],
     pub tail: u32,
+}
+impl packed_flags {
+    #[inline]
+    pub const fn a(&self) -> u32 {
+        ((((self.__bits_0[0] as u64) >> 0) & 0x1) << 0) as u32
+    }
+    #[inline]
+    pub const fn set_a(&mut self, v: u32) {
+        assert!(v <= 1, "bitfield a: value does not fit in 1 bits");
+        let __v = v as u64;
+        self.__bits_0[0] = (self.__bits_0[0] & !0x01u8) | ((((__v >> 0) as u8) << 0) & 0x01u8);
+    }
+    #[inline]
+    pub const fn with_a(mut self, v: u32) -> Self {
+        self.set_a(v);
+        self
+    }
+    #[inline]
+    pub const fn b(&self) -> u32 {
+        ((((self.__bits_0[0] as u64) >> 1) & 0x7) << 0) as u32
+    }
+    #[inline]
+    pub const fn set_b(&mut self, v: u32) {
+        assert!(v <= 7, "bitfield b: value does not fit in 3 bits");
+        let __v = v as u64;
+        self.__bits_0[0] = (self.__bits_0[0] & !0x0eu8) | ((((__v >> 0) as u8) << 1) & 0x0eu8);
+    }
+    #[inline]
+    pub const fn with_b(mut self, v: u32) -> Self {
+        self.set_b(v);
+        self
+    }
+    #[inline]
+    pub const fn wide(&self) -> u32 {
+        ((((self.__bits_0[0] as u64) >> 4) & 0xf) << 0
+            | (((self.__bits_0[1] as u64) >> 0) & 0xff) << 4
+            | (((self.__bits_0[2] as u64) >> 0) & 0xff) << 12) as u32
+    }
+    #[inline]
+    pub const fn set_wide(&mut self, v: u32) {
+        assert!(v <= 1048575, "bitfield wide: value does not fit in 20 bits");
+        let __v = v as u64;
+        self.__bits_0[0] = (self.__bits_0[0] & !0xf0u8) | ((((__v >> 0) as u8) << 4) & 0xf0u8);
+        self.__bits_0[1] = (self.__bits_0[1] & !0xffu8) | ((((__v >> 4) as u8) << 0) & 0xffu8);
+        self.__bits_0[2] = (self.__bits_0[2] & !0xffu8) | ((((__v >> 12) as u8) << 0) & 0xffu8);
+    }
+    #[inline]
+    pub const fn with_wide(mut self, v: u32) -> Self {
+        self.set_wide(v);
+        self
+    }
+    #[inline]
+    pub const fn sgn(&self) -> i32 {
+        (((((((self.__bits_0[3] as u64) >> 0) & 0xf) << 0) << 60) as i64) >> 60) as i32
+    }
+    #[inline]
+    pub const fn set_sgn(&mut self, v: i32) {
+        assert!(v >= -8 && v <= 7, "bitfield sgn: value out of range");
+        let __v = v as u64;
+        self.__bits_0[3] = (self.__bits_0[3] & !0x0fu8) | ((((__v >> 0) as u8) << 0) & 0x0fu8);
+    }
+    #[inline]
+    pub const fn with_sgn(mut self, v: i32) -> Self {
+        self.set_sgn(v);
+        self
+    }
 }
 impl ByteRepr for packed_flags {
     fn byte_size() -> usize {
         8
     }
     fn to_bytes(&self, buf: &mut [u8]) {
-        {
-            let __v = self.a as u64;
-            buf[0] = (buf[0] & !0x01u8) | ((((__v >> 0) as u8) << 0) & 0x01u8);
-        }
-        {
-            let __v = self.b as u64;
-            buf[0] = (buf[0] & !0x0eu8) | ((((__v >> 0) as u8) << 1) & 0x0eu8);
-        }
-        {
-            let __v = self.wide as u64;
-            buf[0] = (buf[0] & !0xf0u8) | ((((__v >> 0) as u8) << 4) & 0xf0u8);
-            buf[1] = (buf[1] & !0xffu8) | ((((__v >> 4) as u8) << 0) & 0xffu8);
-            buf[2] = (buf[2] & !0xffu8) | ((((__v >> 12) as u8) << 0) & 0xffu8);
-        }
-        {
-            let __v = self.sgn as u64;
-            buf[3] = (buf[3] & !0x0fu8) | ((((__v >> 0) as u8) << 0) & 0x0fu8);
-        }
+        buf[0..4].copy_from_slice(&self.__bits_0);
         self.tail.to_bytes(&mut buf[4..8]);
     }
     fn from_bytes(buf: &[u8]) -> Self {
         Self {
-            a: (((buf[0] as u64 >> 0) & 0x1) << 0) as u32,
-            b: (((buf[0] as u64 >> 1) & 0x7) << 0) as u32,
-            wide: ((((buf[0] as u64 >> 4) & 0xf) << 0)
-                | (((buf[1] as u64 >> 0) & 0xff) << 4)
-                | (((buf[2] as u64 >> 0) & 0xff) << 12)) as u32,
-            sgn: ((((((buf[3] as u64 >> 0) & 0xf) << 0) << 60) as i64) >> 60) as i32,
+            __bits_0: buf[0..4].try_into().unwrap(),
             tail: <u32>::from_bytes(&buf[4..8]),
         }
     }
@@ -105,22 +146,22 @@ fn main_0() -> i32 {
         .reinterpret_cast::<u8>()
         .offset(0usize)
         .reinterpret_cast::<packed_flags>() as Ptr<packed_flags>)
-        .with_mut(|__v| __v.a = 1_u32);
+        .with_mut(|__v| __v.set_a(1_u32));
     (v.as_pointer()
         .reinterpret_cast::<u8>()
         .offset(0usize)
         .reinterpret_cast::<packed_flags>() as Ptr<packed_flags>)
-        .with_mut(|__v| __v.b = 5_u32);
+        .with_mut(|__v| __v.set_b(5_u32));
     (v.as_pointer()
         .reinterpret_cast::<u8>()
         .offset(0usize)
         .reinterpret_cast::<packed_flags>() as Ptr<packed_flags>)
-        .with_mut(|__v| __v.wide = 703710_u32);
+        .with_mut(|__v| __v.set_wide(703710_u32));
     (v.as_pointer()
         .reinterpret_cast::<u8>()
         .offset(0usize)
         .reinterpret_cast::<packed_flags>() as Ptr<packed_flags>)
-        .with_mut(|__v| __v.sgn = -3_i32);
+        .with_mut(|__v| __v.set_sgn(-3_i32));
     (v.as_pointer()
         .reinterpret_cast::<u8>()
         .offset(0usize)
@@ -186,7 +227,7 @@ fn main_0() -> i32 {
         .reinterpret_cast::<u8>()
         .offset(0usize)
         .reinterpret_cast::<packed_flags>() as Ptr<packed_flags>)
-        .with_mut(|__v| __v.b = 2_u32);
+        .with_mut(|__v| __v.set_b(2_u32));
     assert!(
         (((((((v.as_pointer().reinterpret_cast::<u8>().offset(0usize) as Ptr<u8>) as Ptr::<u8>)
             .offset(((0) as isize))
@@ -200,7 +241,7 @@ fn main_0() -> i32 {
             .reinterpret_cast::<u8>()
             .offset(0usize)
             .reinterpret_cast::<packed_flags>() as Ptr<packed_flags>)
-            .with(|__v| (*__v).a) as i32)
+            .with(|__v| (*__v).a()) as i32)
             == 1) as i32)
             != 0)
     );
@@ -210,7 +251,7 @@ fn main_0() -> i32 {
             .reinterpret_cast::<u8>()
             .offset(0usize)
             .reinterpret_cast::<packed_flags>() as Ptr<packed_flags>)
-            .with(|__v| (*__v).wide) as i32)
+            .with(|__v| (*__v).wide()) as i32)
             == 703710) as i32)
             != 0)
     );
@@ -220,7 +261,7 @@ fn main_0() -> i32 {
             .reinterpret_cast::<u8>()
             .offset(0usize)
             .reinterpret_cast::<packed_flags>() as Ptr<packed_flags>)
-            .with(|__v| (*__v).sgn)
+            .with(|__v| (*__v).sgn())
             == -3_i32) as i32)
             != 0)
     );
@@ -258,7 +299,7 @@ fn main_0() -> i32 {
             .reinterpret_cast::<u8>()
             .offset(0usize)
             .reinterpret_cast::<packed_flags>() as Ptr<packed_flags>)
-            .with(|__v| (*__v).a) as i32)
+            .with(|__v| (*__v).a()) as i32)
             == 0) as i32)
             != 0)
     );
@@ -268,7 +309,7 @@ fn main_0() -> i32 {
             .reinterpret_cast::<u8>()
             .offset(0usize)
             .reinterpret_cast::<packed_flags>() as Ptr<packed_flags>)
-            .with(|__v| (*__v).b) as i32)
+            .with(|__v| (*__v).b()) as i32)
             == 6) as i32)
             != 0)
     );
@@ -278,7 +319,7 @@ fn main_0() -> i32 {
             .reinterpret_cast::<u8>()
             .offset(0usize)
             .reinterpret_cast::<packed_flags>() as Ptr<packed_flags>)
-            .with(|__v| (*__v).wide) as i32)
+            .with(|__v| (*__v).wide()) as i32)
             == 291) as i32)
             != 0)
     );
@@ -288,7 +329,7 @@ fn main_0() -> i32 {
             .reinterpret_cast::<u8>()
             .offset(0usize)
             .reinterpret_cast::<packed_flags>() as Ptr<packed_flags>)
-            .with(|__v| (*__v).sgn)
+            .with(|__v| (*__v).sgn())
             == -1_i32) as i32)
             != 0)
     );

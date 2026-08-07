@@ -47,13 +47,6 @@ public:
 
   RsExpr *AddByteReprTrait(const clang::RecordDecl *decl) override;
 
-  RsExpr *EmitBitFieldToBytes(const clang::FieldDecl *field,
-                              const clang::ASTRecordLayout &layout);
-
-  RsExpr *EmitBitFieldFromBytes(const clang::FieldDecl *field,
-                                const clang::ASTRecordLayout &layout,
-                                const std::string &storage_ty);
-
   bool RustSizeofMatchesCSizeof(clang::QualType ty) const override;
 
   RsExpr *AddDefaultTrait(const clang::RecordDecl *decl) override;

@@ -148,6 +148,22 @@ public:
 
   virtual RsExpr *VisitFieldDecl(clang::FieldDecl *decl);
 
+  RsExpr *ConvertBitFieldBase(clang::MemberExpr *expr);
+
+  RsExpr *ConvertBitFieldGet(clang::MemberExpr *expr,
+                             const clang::FieldDecl *field);
+
+  RsExpr *TryConvertBitFieldWrite(clang::Expr *lhs, std::string_view op,
+                                  clang::Expr *rhs, bool is_postfix);
+
+  std::vector<RsExpr *> EmitRecordFields(clang::RecordDecl *decl);
+
+  RsExpr *EmitRecordInitList(const clang::RecordDecl *record,
+                             clang::InitListExpr *expr,
+                             clang::QualType qual_type);
+
+  RsExpr *EmitBitFieldAccessors(clang::RecordDecl *decl);
+
   virtual RsExpr *VisitNamespaceDecl(clang::NamespaceDecl *decl);
 
   virtual RsExpr *VisitTypedefDecl(clang::TypedefDecl *decl);
