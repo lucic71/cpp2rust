@@ -304,3 +304,13 @@ fn f44(a0: Ptr<u8>) -> i32 {
         }
     }
 }
+
+fn f31(a0: Ptr<u8>, a1: Ptr<u8>, va: &[VaArg]) -> i32 {
+    let __s = libcc2rs::format_c(&a1.to_rust_string(), va);
+    let __b = __s.as_bytes();
+    a0.clone().with_slice_mut(__b.len() + 1, |__dst| {
+        __dst[..__b.len()].copy_from_slice(__b);
+        __dst[__b.len()] = 0;
+    });
+    __b.len() as i32
+}
