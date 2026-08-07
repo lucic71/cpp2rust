@@ -30,6 +30,16 @@ fn f6(a0: Ptr<u8>) -> Ptr<u8> {
     }
 }
 
+fn f7(a0: Ptr<u8>, a1: Ptr<u8>, a2: i32) -> i32 {
+    match a2 != 0 || ::std::env::var_os(a0.to_rust_string()).is_none() {
+        true => {
+            unsafe { ::std::env::set_var(a0.to_rust_string(), a1.to_rust_string()) };
+            0
+        }
+        false => 0,
+    }
+}
+
 fn f10(a0: Ptr<u8>, a1: Ptr<u8>) -> Ptr<u8> {
     let __resolved = a1.clone();
     match ::std::fs::canonicalize(a0.to_rust_string()) {
