@@ -52,27 +52,36 @@ unsafe fn main_0() -> i32 {
     });
     let mut in_: *mut ::libc::FILE = libcc2rs::stdin_unsafe();
     assert!(!((in_).is_null()));
-    printf(c"%s\n".as_ptr() as *const i8, c"printf".as_ptr());
-    printf(c"hello world".as_ptr() as *const i8);
+    (unsafe {
+        libc::printf(
+            c"%s\n".as_ptr() as *const libc::c_char,
+            (c"printf".as_ptr()),
+        )
+    });
+    (unsafe { libc::printf(c"hello world".as_ptr() as *const libc::c_char) });
     let mut s: Vec<libc::c_char> = {
         let s = c"a string".as_ptr();
         std::slice::from_raw_parts(s, (0..).take_while(|&i| *s.add(i) != 0).count() + 1).to_vec()
     };
-    printf(c"%s\n".as_ptr() as *const i8, s.as_mut_ptr());
-    printf(
-        c"%s\n".as_ptr() as *const i8,
-        (unsafe {
-            fn_0({
-                let s = c"foo".as_ptr();
-                std::slice::from_raw_parts(s, (0..).take_while(|&i| *s.add(i) != 0).count() + 1)
-                    .to_vec()
+    (unsafe { libc::printf(c"%s\n".as_ptr() as *const libc::c_char, (s.as_mut_ptr())) });
+    (unsafe {
+        libc::printf(
+            c"%s\n".as_ptr() as *const libc::c_char,
+            ((unsafe {
+                fn_0({
+                    let s = c"foo".as_ptr();
+                    std::slice::from_raw_parts(s, (0..).take_while(|&i| *s.add(i) != 0).count() + 1)
+                        .to_vec()
+                })
             })
-        })
-        .as_ptr(),
-    );
-    printf(
-        c"%s\n".as_ptr() as *const i8,
-        (*(unsafe { fn2_1((&s as *const Vec<libc::c_char>)) })).as_ptr(),
-    );
+            .as_ptr()),
+        )
+    });
+    (unsafe {
+        libc::printf(
+            c"%s\n".as_ptr() as *const libc::c_char,
+            ((*(unsafe { fn2_1((&s as *const Vec<libc::c_char>)) })).as_ptr()),
+        )
+    });
     return 0;
 }

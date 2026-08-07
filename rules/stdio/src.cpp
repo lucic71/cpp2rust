@@ -107,3 +107,8 @@ int f34(FILE *stream) { return pclose(stream); }
 int f35(FILE *stream, const char *format, va_list ap) {
   return vfprintf(stream, format, ap);
 }
+
+template <typename... Args>
+int f36(const char *a0, Args... args) {
+  return printf(a0, args...);
+}

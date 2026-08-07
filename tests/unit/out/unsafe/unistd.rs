@@ -265,16 +265,20 @@ pub unsafe fn test_ioctl_8() {
     );
 }
 pub unsafe fn test_isatty_9() {
-    printf(
-        (c"%d\n".as_ptr().cast_mut()).cast_const() as *const i8,
-        libc::isatty(0),
-    );
+    (unsafe {
+        libc::printf(
+            (c"%d\n".as_ptr().cast_mut()).cast_const() as *const libc::c_char,
+            (libc::isatty(0)),
+        )
+    });
 }
 pub unsafe fn test_geteuid_10() {
-    printf(
-        (c"%u\n".as_ptr().cast_mut()).cast_const() as *const i8,
-        libcc2rs::geteuid_unsafe(),
-    );
+    (unsafe {
+        libc::printf(
+            (c"%u\n".as_ptr().cast_mut()).cast_const() as *const libc::c_char,
+            (libcc2rs::geteuid_unsafe()),
+        )
+    });
 }
 pub unsafe fn test_gethostname_11() {
     let mut name: [libc::c_char; 256] = [(0 as libc::c_char); 256];
@@ -285,10 +289,12 @@ pub unsafe fn test_gethostname_11() {
         )) == (0)) as i32)
             != 0)
     );
-    printf(
-        (c"%s\n".as_ptr().cast_mut()).cast_const() as *const i8,
-        name.as_mut_ptr(),
-    );
+    (unsafe {
+        libc::printf(
+            (c"%s\n".as_ptr().cast_mut()).cast_const() as *const libc::c_char,
+            (name.as_mut_ptr()),
+        )
+    });
 }
 pub fn main() {
     unsafe {

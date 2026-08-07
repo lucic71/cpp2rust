@@ -232,3 +232,12 @@ fn f35(a0: Ptr<CFile>, a1: Ptr<u8>, a2: VaList) -> i32 {
 fn f32(a0: Ptr<u8>, a1: Ptr<u8>, va: &[VaArg]) -> i32 {
     libcc2rs::scan_c(&a0.to_rust_string(), &a1.to_rust_string(), va)
 }
+
+fn f36(a0: Ptr<u8>, va: &[VaArg]) -> i32 {
+    let __s = libcc2rs::format_c(&a0.to_rust_string(), va);
+    let __bytes = __s.as_bytes();
+    match libcc2rs::c_stdout().with_mut(|__f| __f.write(__bytes)) == __bytes.len() {
+        true => __bytes.len() as i32,
+        false => -1,
+    }
+}

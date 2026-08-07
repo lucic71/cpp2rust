@@ -11,10 +11,12 @@ pub unsafe fn on_signal_1(mut sig: i32) {
     got_0 = sig;
 }
 pub unsafe fn first_exit_2() {
-    printf((c"first\n".as_ptr().cast_mut()).cast_const() as *const i8);
+    (unsafe { libc::printf((c"first\n".as_ptr().cast_mut()).cast_const() as *const libc::c_char) });
 }
 pub unsafe fn second_exit_3() {
-    printf((c"second\n".as_ptr().cast_mut()).cast_const() as *const i8);
+    (unsafe {
+        libc::printf((c"second\n".as_ptr().cast_mut()).cast_const() as *const libc::c_char)
+    });
 }
 pub fn main() {
     unsafe {
@@ -64,6 +66,6 @@ unsafe fn main_0() -> i32 {
         ))) == (0)) as i32)
             != 0)
     );
-    printf((c"main\n".as_ptr().cast_mut()).cast_const() as *const i8);
+    (unsafe { libc::printf((c"main\n".as_ptr().cast_mut()).cast_const() as *const libc::c_char) });
     return 0;
 }

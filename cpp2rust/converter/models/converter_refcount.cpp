@@ -1224,7 +1224,8 @@ RsExpr *ConverterRefCount::VisitDeclRefExpr(clang::DeclRefExpr *expr) {
   return node;
 }
 
-static std::vector<const char *> printf2fmt(std::string &format) {
+static std::optional<std::vector<const char *>>
+printf2fmt(std::string &format) {
   std::vector<const char *> types;
   size_t pos = 0;
   while ((pos = format.find('%', pos)) != std::string::npos) {
@@ -1342,8 +1343,7 @@ static std::vector<const char *> printf2fmt(std::string &format) {
         }
       }
     }
-    llvm::errs() << "Unknown printf format: " << format << '\n';
-    assert(0);
+    return std::nullopt;
   }
   return types;
 }
@@ -1373,6 +1373,9 @@ RsExpr *ConverterRefCount::ConvertPrintf(clang::CallExpr *expr) {
     format.replace(format.size() - 3, 2, "");
   }
   auto types = printf2fmt(format);
+  if (!types) {
+    return nullptr;
+  }
 
   std::vector<RsExpr *> parts;
   parts.push_back(Text(macro));
@@ -1382,8 +1385,8 @@ RsExpr *ConverterRefCount::ConvertPrintf(clang::CallExpr *expr) {
   for (unsigned i = is_fprintf + 1, e = expr->getNumArgs(); i < e; ++i) {
     parts.push_back(Text(token::kComma));
     auto *arg = ConvertExpr(expr->getArg(i));
-    if (types[j]) {
-      arg = arena_.New<Cast>(arg, Text(types[j++]));
+    if ((*types)[j]) {
+      arg = arena_.New<Cast>(arg, Text((*types)[j++]));
     }
     parts.push_back(arg);
   }

@@ -149,3 +149,7 @@ unsafe fn f35(a0: *mut ::libc::FILE, a1: *const libc::c_char, a2: libcc2rs::VaLi
     );
     libc::fwrite(__s.as_ptr() as *const libc::c_void, 1, __s.len(), a0) as i32
 }
+
+unsafe extern "C" {
+    fn f36(a0: *const libc::c_char, ...) -> i32;
+}
