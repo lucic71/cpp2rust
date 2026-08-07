@@ -1705,6 +1705,9 @@ ConverterRefCount::VisitExplicitCastExpr(clang::ExplicitCastExpr *expr) {
       if (expr->getCastKind() == clang::CastKind::CK_PointerToIntegral) {
         auto *sub = ConvertExpr(expr->getSubExpr());
         computed_expr_type_ = ComputedExprType::FreshValue;
+        if (GetSafeTypeAsString(expr->getType()) != "usize") {
+          return Cat(sub, Text(".to_int()"), Text("as"), dst_type);
+        }
         return Cat(sub, Text(".to_int()"));
       }
       auto *sub = ConvertExpr(expr->getSubExpr());
