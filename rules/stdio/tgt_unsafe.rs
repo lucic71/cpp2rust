@@ -143,10 +143,15 @@ unsafe fn f34(a0: *mut ::libc::FILE) -> i32 {
 }
 
 unsafe fn f35(a0: *mut ::libc::FILE, a1: *const libc::c_char, a2: libcc2rs::VaList) -> i32 {
-    let __s = libcc2rs::format_c(
-        ::std::ffi::CStr::from_ptr(a1).to_str().unwrap(),
-        a2.remaining(),
-    );
+    let __f: String = ::std::ffi::CStr::from_ptr(a1)
+        .to_bytes()
+        .iter()
+        .map(|&b| b as char)
+        .collect();
+    let __s: Vec<u8> = libcc2rs::format_c(&__f, a2.remaining())
+        .chars()
+        .map(|c| c as u32 as u8)
+        .collect();
     libc::fwrite(__s.as_ptr() as *const libc::c_void, 1, __s.len(), a0) as i32
 }
 
@@ -168,11 +173,15 @@ unsafe fn f39(
     a2: *const libc::c_char,
     a3: libcc2rs::VaList,
 ) -> i32 {
-    let __s = libcc2rs::format_c(
-        ::std::ffi::CStr::from_ptr(a2).to_str().unwrap(),
-        a3.remaining(),
-    );
-    let __b = __s.as_bytes();
+    let __f: String = ::std::ffi::CStr::from_ptr(a2)
+        .to_bytes()
+        .iter()
+        .map(|&b| b as char)
+        .collect();
+    let __b: Vec<u8> = libcc2rs::format_c(&__f, a3.remaining())
+        .chars()
+        .map(|c| c as u32 as u8)
+        .collect();
     if a1 > 0 {
         let __n = ::std::cmp::min(__b.len(), a1 - 1);
         ::std::ptr::copy_nonoverlapping(__b.as_ptr(), a0 as *mut u8, __n);

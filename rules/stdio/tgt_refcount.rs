@@ -161,8 +161,11 @@ fn f20(a0: i32, a1: Ptr<u8>) -> Ptr<CFile> {
 }
 
 fn f21(a0: Ptr<u8>, a1: usize, a2: Ptr<u8>, va: &[VaArg]) -> i32 {
-    let __s = libcc2rs::format_c(&a2.to_rust_string(), va);
-    let __b = __s.as_bytes();
+    let __fmt: String = a2.to_c_string_iterator().map(|b| b as char).collect();
+    let __b: Vec<u8> = libcc2rs::format_c(&__fmt, va)
+        .chars()
+        .map(|c| c as u32 as u8)
+        .collect();
     if a1 > 0 {
         let __n = ::std::cmp::min(__b.len(), a1 - 1);
         a0.with_slice_mut(__n + 1, |__dst| {
@@ -192,9 +195,12 @@ fn f24(a0: Ptr<CFile>, a1: Ptr<u8>, a2: i32, a3: usize) -> i32 {
 }
 
 fn f29(a0: Ptr<CFile>, a1: Ptr<u8>, va: &[VaArg]) -> i32 {
-    let __s = libcc2rs::format_c(&a1.to_rust_string(), va);
-    let __bytes = __s.as_bytes();
-    match a0.with_mut(|__f| __f.write(__bytes)) == __bytes.len() {
+    let __fmt: String = a1.to_c_string_iterator().map(|b| b as char).collect();
+    let __bytes: Vec<u8> = libcc2rs::format_c(&__fmt, va)
+        .chars()
+        .map(|c| c as u32 as u8)
+        .collect();
+    match a0.with_mut(|__f| __f.write(&__bytes)) == __bytes.len() {
         true => __bytes.len() as i32,
         false => -1,
     }
@@ -221,9 +227,12 @@ fn f30(a0: Ptr<CFile>) {
 }
 
 fn f35(a0: Ptr<CFile>, a1: Ptr<u8>, a2: VaList) -> i32 {
-    let __s = libcc2rs::format_c(&a1.to_rust_string(), a2.remaining());
-    let __bytes = __s.as_bytes();
-    match a0.with_mut(|__f| __f.write(__bytes)) == __bytes.len() {
+    let __fmt: String = a1.to_c_string_iterator().map(|b| b as char).collect();
+    let __bytes: Vec<u8> = libcc2rs::format_c(&__fmt, a2.remaining())
+        .chars()
+        .map(|c| c as u32 as u8)
+        .collect();
+    match a0.with_mut(|__f| __f.write(&__bytes)) == __bytes.len() {
         true => __bytes.len() as i32,
         false => -1,
     }
@@ -234,9 +243,12 @@ fn f32(a0: Ptr<u8>, a1: Ptr<u8>, va: &[VaArg]) -> i32 {
 }
 
 fn f36(a0: Ptr<u8>, va: &[VaArg]) -> i32 {
-    let __s = libcc2rs::format_c(&a0.to_rust_string(), va);
-    let __bytes = __s.as_bytes();
-    match libcc2rs::c_stdout().with_mut(|__f| __f.write(__bytes)) == __bytes.len() {
+    let __fmt: String = a0.to_c_string_iterator().map(|b| b as char).collect();
+    let __bytes: Vec<u8> = libcc2rs::format_c(&__fmt, va)
+        .chars()
+        .map(|c| c as u32 as u8)
+        .collect();
+    match libcc2rs::c_stdout().with_mut(|__f| __f.write(&__bytes)) == __bytes.len() {
         true => __bytes.len() as i32,
         false => -1,
     }
@@ -259,8 +271,11 @@ fn f38(a0: i32) -> i32 {
 }
 
 fn f39(a0: Ptr<u8>, a1: usize, a2: Ptr<u8>, a3: VaList) -> i32 {
-    let __s = libcc2rs::format_c(&a2.to_rust_string(), a3.remaining());
-    let __b = __s.as_bytes();
+    let __fmt: String = a2.to_c_string_iterator().map(|b| b as char).collect();
+    let __b: Vec<u8> = libcc2rs::format_c(&__fmt, a3.remaining())
+        .chars()
+        .map(|c| c as u32 as u8)
+        .collect();
     if a1 > 0 {
         let __n = ::std::cmp::min(__b.len(), a1 - 1);
         a0.clone().with_slice_mut(__n + 1, |__dst| {
@@ -306,10 +321,13 @@ fn f44(a0: Ptr<u8>) -> i32 {
 }
 
 fn f31(a0: Ptr<u8>, a1: Ptr<u8>, va: &[VaArg]) -> i32 {
-    let __s = libcc2rs::format_c(&a1.to_rust_string(), va);
-    let __b = __s.as_bytes();
+    let __fmt: String = a1.to_c_string_iterator().map(|b| b as char).collect();
+    let __b: Vec<u8> = libcc2rs::format_c(&__fmt, va)
+        .chars()
+        .map(|c| c as u32 as u8)
+        .collect();
     a0.clone().with_slice_mut(__b.len() + 1, |__dst| {
-        __dst[..__b.len()].copy_from_slice(__b);
+        __dst[..__b.len()].copy_from_slice(&__b);
         __dst[__b.len()] = 0;
     });
     __b.len() as i32

@@ -96,23 +96,27 @@ pub fn format_c(fmt: &str, va: &[VaArg]) -> String {
                 },
                 ConversionType::Char => Box::new(i32::get(arg) as u8 as char),
                 ConversionType::String => match arg {
-                    VaArg::Ptr(v) => Box::new(v.reinterpret_cast::<u8>().to_rust_string()),
+                    VaArg::Ptr(v) => Box::new(
+                        v.reinterpret_cast::<u8>()
+                            .to_c_string_iterator()
+                            .map(|b| b as char)
+                            .collect::<String>(),
+                    ),
                     VaArg::RawPtr(v) => {
-                        let limit = match spec.precision {
-                            NumericParam::Literal(n) if n >= 0 && n != i32::MAX => Some(n as usize),
-                            _ => None,
+                        let p = *v as *const u8;
+                        let len = match spec.precision {
+                            NumericParam::Literal(n) if n >= 0 && n != i32::MAX => {
+                                let n = n as usize;
+                                (0..n).position(|i| unsafe { *p.add(i) } == 0).unwrap_or(n)
+                            }
+                            _ => (0..).position(|i| unsafe { *p.add(i) } == 0).unwrap(),
                         };
-                        let s = if let Some(n) = limit {
-                            let p = *v as *const u8;
-                            let len = (0..n).position(|i| unsafe { *p.add(i) } == 0).unwrap_or(n);
-                            String::from_utf8_lossy(unsafe { std::slice::from_raw_parts(p, len) })
-                                .into_owned()
-                        } else {
-                            unsafe { std::ffi::CStr::from_ptr(*v as *const std::ffi::c_char) }
-                                .to_string_lossy()
-                                .into_owned()
-                        };
-                        Box::new(s)
+                        Box::new(
+                            unsafe { std::slice::from_raw_parts(p, len) }
+                                .iter()
+                                .map(|&b| b as char)
+                                .collect::<String>(),
+                        )
                     }
                     _ => panic!("format_c: %s expects a string argument"),
                 },
