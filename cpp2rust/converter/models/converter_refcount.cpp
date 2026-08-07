@@ -1964,6 +1964,28 @@ RsExpr *ConverterRefCount::VisitInitListExpr(clang::InitListExpr *expr) {
         return Text("Default::default()");
       }
       auto bytes = GetConstantUnionBytes(ctx_, expr);
+      if (!bytes) {
+        const auto *field = expr->getInitializedFieldInUnion();
+        if (field && expr->getNumInits() == 1 &&
+            !field->getType()->isArrayType()) {
+          std::string union_ty;
+          {
+            PushConversionKind push(*this, ConversionKind::Unboxed);
+            union_ty = RenderType(qual_type);
+          }
+          auto *value = ConvertFreshRValue(expr->getInit(0), field->getType());
+          return Braces(Cat(
+              Text(keyword::kLet), Text("__u"), Text(token::kColon),
+              Text(union_ty), Text(token::kAssign), Text("Default::default()"),
+              Text(token::kSemiColon),
+              Text(std::format("__u.{}().write(", GetNamedDeclAsString(field))),
+              value, Text(")"), Text(token::kSemiColon), Text("__u")));
+        }
+        llvm::errs() << "Unsupported non-zero union initializer at "
+                     << expr->getExprLoc().printToString(
+                            ctx_.getSourceManager())
+                     << '\n';
+      }
       assert(bytes && "unsupported non-zero union initializer");
       std::string list;
       for (auto byte : *bytes) {

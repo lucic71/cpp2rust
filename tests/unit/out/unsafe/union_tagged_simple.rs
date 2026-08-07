@@ -41,6 +41,20 @@ pub struct Event {
     pub handle: *mut ::libc::c_void,
     pub payload: anon_0,
 }
+pub unsafe fn make_event_1(mut code: i32) -> Event {
+    return Event {
+        kind: Kind_enum::KIND_DONE,
+        handle: std::ptr::null_mut(),
+        payload: anon_0 { code: code },
+    };
+}
+pub unsafe fn make_ref_2(mut p: *mut ::libc::c_void) -> Event {
+    return Event {
+        kind: Kind_enum::KIND_NONE,
+        handle: std::ptr::null_mut(),
+        payload: anon_0 { obj: p },
+    };
+}
 pub fn main() {
     unsafe {
         std::process::exit(main_0() as i32);
@@ -60,6 +74,17 @@ unsafe fn main_0() -> i32 {
     m2.payload.obj = (((&raw mut dummy as *mut i32) as *mut i32) as *mut ::libc::c_void);
     assert!(
         ((((m2.payload.obj) == (((&raw mut dummy as *mut i32) as *mut i32) as *mut ::libc::c_void))
+            as i32)
+            != 0)
+    );
+    let mut m3: Event = (unsafe { make_event_1(((dummy) + (7))) });
+    assert!(((((m3.kind as u32) == ((Kind_enum::KIND_DONE as i32) as u32)) as i32) != 0));
+    assert!(((((m3.payload.code) == (7)) as i32) != 0));
+    let mut m4: Event = (unsafe {
+        make_ref_2((((&raw mut dummy as *mut i32) as *mut i32) as *mut ::libc::c_void))
+    });
+    assert!(
+        ((((m4.payload.obj) == (((&raw mut dummy as *mut i32) as *mut i32) as *mut ::libc::c_void))
             as i32)
             != 0)
     );

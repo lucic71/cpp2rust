@@ -96,6 +96,32 @@ impl ByteRepr for Event {
         }
     }
 }
+pub fn make_event_1(code: i32) -> Event {
+    let code: Value<i32> = Rc::new(RefCell::new(code));
+    return (Event {
+        kind: Kind_enum::KIND_DONE,
+        handle: AnyPtr::default(),
+        payload: {
+            let __u: anon_0 = Default::default();
+            __u.code().write((*code.borrow()));
+            __u
+        },
+    })
+    .clone();
+}
+pub fn make_ref_2(p: AnyPtr) -> Event {
+    let p: Value<AnyPtr> = Rc::new(RefCell::new(p));
+    return (Event {
+        kind: Kind_enum::KIND_NONE,
+        handle: AnyPtr::default(),
+        payload: {
+            let __u: anon_0 = Default::default();
+            __u.obj().write((*p.borrow()).clone());
+            __u
+        },
+    })
+    .clone();
+}
 pub fn main() {
     libcc2rs::exit_refcount(main_0());
 }
@@ -133,6 +159,36 @@ fn main_0() -> i32 {
     assert!(
         ((({
             let _lhs = ((m2
+                .as_pointer()
+                .reinterpret_cast::<u8>()
+                .offset(16usize)
+                .reinterpret_cast::<AnyPtr>() as Ptr<AnyPtr>)
+                .read())
+            .clone();
+            _lhs == ((dummy.as_pointer()) as Ptr<i32>).to_any()
+        }) as i32)
+            != 0)
+    );
+    let m3: Value<Event> = Rc::new(RefCell::new(({ make_event_1(((*dummy.borrow()) + 7)) })));
+    assert!(
+        (((((*m3.borrow()).kind as u32) == ((Kind_enum::KIND_DONE as i32) as u32)) as i32) != 0)
+    );
+    assert!(
+        (((((m3
+            .as_pointer()
+            .reinterpret_cast::<u8>()
+            .offset(16usize)
+            .reinterpret_cast::<i32>() as Ptr<i32>)
+            .read())
+            == 7) as i32)
+            != 0)
+    );
+    let m4: Value<Event> = Rc::new(RefCell::new(
+        ({ make_ref_2(((dummy.as_pointer()) as Ptr<i32>).to_any()) }),
+    ));
+    assert!(
+        ((({
+            let _lhs = ((m4
                 .as_pointer()
                 .reinterpret_cast::<u8>()
                 .offset(16usize)
