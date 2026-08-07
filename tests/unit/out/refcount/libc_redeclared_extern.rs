@@ -20,7 +20,7 @@ pub struct sink {
 impl Default for sink {
     fn default() -> Self {
         sink {
-            in_: Ptr::null(),
+            in_: Ptr::<CFile>::null(),
             closer: FnPtr::<fn(Ptr<CFile>) -> i32>::null(),
         }
     }
@@ -83,7 +83,7 @@ fn main_0() -> i32 {
         &Ptr::from_string_literal(b"r\0").to_rust_string(),
     ) {
         Some(__f) => Ptr::alloc(__f),
-        None => Ptr::null(),
+        None => Ptr::<CFile>::null(),
     };
     assert!((((!(((*k.borrow()).in_).is_null())) as i32) != 0));
     (*k.borrow_mut()).closer = FnPtr::<fn(Ptr<CFile>) -> i32>::new(libcc2rs::fclose_refcount);

@@ -118,7 +118,7 @@ pub fn test_fileno_3() {
             &Ptr::from_string_literal(b"wb\0").to_rust_string(),
         ) {
             Some(__f) => Ptr::alloc(__f),
-            None => Ptr::null(),
+            None => Ptr::<CFile>::null(),
         },
     ));
     assert!((((!((*fp.borrow()).is_null())) as i32) != 0));

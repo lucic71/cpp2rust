@@ -56,7 +56,7 @@ fn main_0() -> i32 {
             &Ptr::from_string_literal(b"wb\0").to_rust_string(),
         ) {
             Some(__f) => Ptr::alloc(__f),
-            None => Ptr::null(),
+            None => Ptr::<CFile>::null(),
         },
     ));
     assert!((((!((*fp.borrow()).is_null())) as i32) != 0));
@@ -86,7 +86,7 @@ fn main_0() -> i32 {
         &Ptr::from_string_literal(b"rb\0").to_rust_string(),
     ) {
         Some(__f) => Ptr::alloc(__f),
-        None => Ptr::null(),
+        None => Ptr::<CFile>::null(),
     };
     assert!((((!((*fp.borrow()).is_null())) as i32) != 0));
     let buf: Value<Box<[u8]>> = Rc::new(RefCell::new(Box::new([

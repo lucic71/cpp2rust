@@ -58,7 +58,7 @@ pub fn print_tm_1(t: i64) {
                 }
                 Err(_) => {
                     libcc2rs::cpp2rust_errno().write(::libc::EOVERFLOW);
-                    Ptr::null()
+                    Ptr::<Tm>::null()
                 }
             }
         })
@@ -113,7 +113,7 @@ pub fn print_local_tm_3(t: i64) {
                 }
                 Err(_) => {
                     libcc2rs::cpp2rust_errno().write(::libc::EOVERFLOW);
-                    Ptr::null()
+                    Ptr::<Tm>::null()
                 }
             }
         })
@@ -156,7 +156,7 @@ pub fn test_strftime_5() {
                 }
                 Err(_) => {
                     libcc2rs::cpp2rust_errno().write(::libc::EOVERFLOW);
-                    Ptr::null()
+                    Ptr::<Tm>::null()
                 }
             }
         })

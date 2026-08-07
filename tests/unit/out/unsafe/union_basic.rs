@@ -26,7 +26,7 @@ unsafe fn main_0() -> i32 {
     let mut u: basic = <basic>::default();
     u.i = 42;
     assert!(((u.i) == (42)));
-    u.f = 3.140000105E+0;
-    assert!(((u.f) == (3.140000105E+0)));
+    u.f = 3.1400001E+0;
+    assert!(((u.f) == (3.1400001E+0)));
     return 0;
 }

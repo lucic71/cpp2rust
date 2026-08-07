@@ -66,14 +66,14 @@ fn main_0() -> i32 {
         .reinterpret_cast::<u8>()
         .offset(0usize)
         .reinterpret_cast::<f32>() as Ptr<f32>)
-        .write(3.140000105E+0);
+        .write(3.1400001E+0);
     assert!(
         (((u.as_pointer()
             .reinterpret_cast::<u8>()
             .offset(0usize)
             .reinterpret_cast::<f32>() as Ptr<f32>)
             .read())
-            == 3.140000105E+0)
+            == 3.1400001E+0)
     );
     return 0;
 }

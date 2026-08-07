@@ -10,6 +10,6 @@ pub fn main() {
     libcc2rs::exit_refcount(main_0());
 }
 fn main_0() -> i32 {
-    let file_ptr: Value<Ptr<CFile>> = Rc::new(RefCell::new(Ptr::null()));
+    let file_ptr: Value<Ptr<CFile>> = Rc::new(RefCell::new(Ptr::<CFile>::null()));
     return 0;
 }

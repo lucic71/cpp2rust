@@ -128,7 +128,8 @@ unsafe fn main_0() -> i32 {
     );
     s = (c"3.14".as_ptr().cast_mut()).cast_const();
     assert!(
-        (((((((libc::strtod(s, (&raw mut end as *mut *mut libc::c_char))) == (3.14E+0)) as i32)
+        (((((((libc::strtod(s, (&raw mut end as *mut *mut libc::c_char)))
+            == (3.1400000000000001E+0)) as i32)
             != 0)
             && (((((((end as usize) - (s as usize)) / ::std::mem::size_of::<libc::c_char>())
                 as i64)
@@ -187,7 +188,7 @@ unsafe fn main_0() -> i32 {
         ((((libc::strtod(
             (c"+0.375e-1".as_ptr().cast_mut()).cast_const(),
             std::ptr::null_mut()
-        )) == (3.75E-2)) as i32)
+        )) == (3.7499999999999999E-2)) as i32)
             != 0)
     );
     return 0;

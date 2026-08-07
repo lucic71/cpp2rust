@@ -16,7 +16,7 @@ pub fn test_fputc_fputs_0() {
             &Ptr::from_string_literal(b"wb\0").to_rust_string(),
         ) {
             Some(__f) => Ptr::alloc(__f),
-            None => Ptr::null(),
+            None => Ptr::<CFile>::null(),
         },
     ));
     assert!((((!((*fp.borrow()).is_null())) as i32) != 0));
@@ -48,7 +48,7 @@ pub fn test_fputc_fputs_0() {
         &Ptr::from_string_literal(b"rb\0").to_rust_string(),
     ) {
         Some(__f) => Ptr::alloc(__f),
-        None => Ptr::null(),
+        None => Ptr::<CFile>::null(),
     };
     assert!((((!((*fp.borrow()).is_null())) as i32) != 0));
     let buf: Value<Box<[u8]>> = Rc::new(RefCell::new(Box::new([
@@ -114,7 +114,7 @@ pub fn test_fgets_getc_2() {
             &Ptr::from_string_literal(b"wb\0").to_rust_string(),
         ) {
             Some(__f) => Ptr::alloc(__f),
-            None => Ptr::null(),
+            None => Ptr::<CFile>::null(),
         },
     ));
     assert!((((!((*fp.borrow()).is_null())) as i32) != 0));
@@ -136,7 +136,7 @@ pub fn test_fgets_getc_2() {
         &Ptr::from_string_literal(b"rb\0").to_rust_string(),
     ) {
         Some(__f) => Ptr::alloc(__f),
-        None => Ptr::null(),
+        None => Ptr::<CFile>::null(),
     };
     assert!((((!((*fp.borrow()).is_null())) as i32) != 0));
     let buf: Value<Box<[u8]>> = Rc::new(RefCell::new(
@@ -147,7 +147,7 @@ pub fn test_fgets_getc_2() {
             let __buf = (buf.as_pointer() as Ptr<u8>).clone();
             let __n = 8;
             if __n <= 0 {
-                Ptr::null()
+                Ptr::<u8>::null()
             } else {
                 let __max = (__n - 1) as usize;
                 let mut __dst = __buf.clone();
@@ -168,7 +168,7 @@ pub fn test_fgets_getc_2() {
                     __f.err
                 });
                 if __failed || __count == 0 {
-                    Ptr::null()
+                    Ptr::<u8>::null()
                 } else {
                     __dst.write(0);
                     __buf
@@ -191,7 +191,7 @@ pub fn test_fgets_getc_2() {
             let __buf = (buf.as_pointer() as Ptr<u8>).clone();
             let __n = 4;
             if __n <= 0 {
-                Ptr::null()
+                Ptr::<u8>::null()
             } else {
                 let __max = (__n - 1) as usize;
                 let mut __dst = __buf.clone();
@@ -212,7 +212,7 @@ pub fn test_fgets_getc_2() {
                     __f.err
                 });
                 if __failed || __count == 0 {
-                    Ptr::null()
+                    Ptr::<u8>::null()
                 } else {
                     __dst.write(0);
                     __buf
@@ -234,7 +234,7 @@ pub fn test_fgets_getc_2() {
             let __buf = (buf.as_pointer() as Ptr<u8>).clone();
             let __n = 8;
             if __n <= 0 {
-                Ptr::null()
+                Ptr::<u8>::null()
             } else {
                 let __max = (__n - 1) as usize;
                 let mut __dst = __buf.clone();
@@ -255,7 +255,7 @@ pub fn test_fgets_getc_2() {
                     __f.err
                 });
                 if __failed || __count == 0 {
-                    Ptr::null()
+                    Ptr::<u8>::null()
                 } else {
                     __dst.write(0);
                     __buf
@@ -277,7 +277,7 @@ pub fn test_fgets_getc_2() {
             let __buf = (buf.as_pointer() as Ptr<u8>).clone();
             let __n = 8;
             if __n <= 0 {
-                Ptr::null()
+                Ptr::<u8>::null()
             } else {
                 let __max = (__n - 1) as usize;
                 let mut __dst = __buf.clone();
@@ -298,7 +298,7 @@ pub fn test_fgets_getc_2() {
                     __f.err
                 });
                 if __failed || __count == 0 {
-                    Ptr::null()
+                    Ptr::<u8>::null()
                 } else {
                     __dst.write(0);
                     __buf
@@ -322,7 +322,7 @@ pub fn test_freopen_3() {
             &Ptr::from_string_literal(b"wb\0").to_rust_string(),
         ) {
             Some(__f) => Ptr::alloc(__f),
-            None => Ptr::null(),
+            None => Ptr::<CFile>::null(),
         },
     ));
     assert!((((!((*fp.borrow()).is_null())) as i32) != 0));
@@ -355,7 +355,7 @@ pub fn test_freopen_3() {
                 __stream.write(__f);
                 __stream
             }
-            None => Ptr::null(),
+            None => Ptr::<CFile>::null(),
         }
     }));
     assert!((((!((*fp2.borrow()).is_null())) as i32) != 0));
@@ -399,7 +399,7 @@ pub fn test_fseeko_4() {
             &Ptr::from_string_literal(b"wb\0").to_rust_string(),
         ) {
             Some(__f) => Ptr::alloc(__f),
-            None => Ptr::null(),
+            None => Ptr::<CFile>::null(),
         },
     ));
     assert!((((!((*fp.borrow()).is_null())) as i32) != 0));
@@ -421,7 +421,7 @@ pub fn test_fseeko_4() {
         &Ptr::from_string_literal(b"rb\0").to_rust_string(),
     ) {
         Some(__f) => Ptr::alloc(__f),
-        None => Ptr::null(),
+        None => Ptr::<CFile>::null(),
     };
     assert!((((!((*fp.borrow()).is_null())) as i32) != 0));
     assert!(
@@ -490,7 +490,7 @@ pub fn test_rename_5() {
             &Ptr::from_string_literal(b"wb\0").to_rust_string(),
         ) {
             Some(__f) => Ptr::alloc(__f),
-            None => Ptr::null(),
+            None => Ptr::<CFile>::null(),
         },
     ));
     assert!((((!((*fp.borrow()).is_null())) as i32) != 0));
@@ -526,7 +526,7 @@ pub fn test_rename_5() {
             &Ptr::from_string_literal(b"rb\0").to_rust_string()
         ) {
             Some(__f) => Ptr::alloc(__f),
-            None => Ptr::null(),
+            None => Ptr::<CFile>::null(),
         })
         .is_null()) as i32)
             != 0)
@@ -536,7 +536,7 @@ pub fn test_rename_5() {
         &Ptr::from_string_literal(b"rb\0").to_rust_string(),
     ) {
         Some(__f) => Ptr::alloc(__f),
-        None => Ptr::null(),
+        None => Ptr::<CFile>::null(),
     };
     assert!((((!((*fp.borrow()).is_null())) as i32) != 0));
     assert!((((libcc2rs::fclose_refcount((*fp.borrow()).clone()) == 0) as i32) != 0));
@@ -565,7 +565,7 @@ pub fn test_setvbuf_6() {
             &Ptr::from_string_literal(b"wb\0").to_rust_string(),
         ) {
             Some(__f) => Ptr::alloc(__f),
-            None => Ptr::null(),
+            None => Ptr::<CFile>::null(),
         },
     ));
     assert!((((!((*fp.borrow()).is_null())) as i32) != 0));

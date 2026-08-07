@@ -92,7 +92,7 @@ pub fn fft_3(a: Ptr<Option<Value<Box<[Complex]>>>>, N: i32) -> Option<Value<Box<
     let i: Value<i32> = Rc::new(RefCell::new(0));
     'loop_: while ((*i.borrow()) < (*N.borrow())) {
         let alpha: Value<f64> = Rc::new(RefCell::new(
-            ((((-2_i32 as f64) * 3.141592654E+0) * ((*i.borrow()) as f64))
+            ((((-2_i32 as f64) * 3.1415926535897931E+0) * ((*i.borrow()) as f64))
                 / ((*N.borrow()) as f64)),
         ));
         (*(*w.borrow()).as_ref().unwrap().borrow_mut())[((*i.borrow()) as usize) as usize] =

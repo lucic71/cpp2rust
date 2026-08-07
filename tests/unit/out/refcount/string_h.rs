@@ -171,7 +171,7 @@ pub fn test_strchr_4() {
                 if __t == 0 {
                     __s.offset(__s.to_c_string_iterator().count())
                 } else {
-                    Ptr::null()
+                    Ptr::<u8>::null()
                 }
             }
         }
@@ -188,7 +188,7 @@ pub fn test_strchr_4() {
                     if __t == 0 {
                         __s.offset(__s.to_c_string_iterator().count())
                     } else {
-                        Ptr::null()
+                        Ptr::<u8>::null()
                     }
                 }
             }
@@ -594,7 +594,7 @@ pub fn test_strrchr_9() {
                 if __t == 0 {
                     __s.offset(__s.to_c_string_iterator().count())
                 } else {
-                    Ptr::null()
+                    Ptr::<u8>::null()
                 }
             }
         }
@@ -623,7 +623,7 @@ pub fn test_strrchr_9() {
                     if __t == 0 {
                         __s.offset(__s.to_c_string_iterator().count())
                     } else {
-                        Ptr::null()
+                        Ptr::<u8>::null()
                     }
                 }
             }
@@ -652,7 +652,7 @@ pub fn test_strrchr_9() {
                     if __t == 0 {
                         __s.offset(__s.to_c_string_iterator().count())
                     } else {
-                        Ptr::null()
+                        Ptr::<u8>::null()
                     }
                 }
             }
@@ -762,7 +762,7 @@ pub fn test_strstr_12() {
                 break __p;
             }
             if __p.read() == 0 {
-                break Ptr::null();
+                break Ptr::<u8>::null();
             }
             __p += 1;
         }
@@ -788,7 +788,7 @@ pub fn test_strstr_12() {
                     break __p;
                 }
                 if __p.read() == 0 {
-                    break Ptr::null();
+                    break Ptr::<u8>::null();
                 }
                 __p += 1;
             }
@@ -817,7 +817,7 @@ pub fn test_strstr_12() {
                     break __p;
                 }
                 if __p.read() == 0 {
-                    break Ptr::null();
+                    break Ptr::<u8>::null();
                 }
                 __p += 1;
             }
@@ -835,7 +835,7 @@ pub fn test_strpbrk_13() {
             .position(|__c| __set.to_c_string_iterator().any(|__r| __r == __c))
         {
             Some(__i) => __s.offset(__i),
-            None => Ptr::null(),
+            None => Ptr::<u8>::null(),
         }
     }));
     assert!((((!((*r.borrow()).is_null())) as i32) != 0));
@@ -855,7 +855,7 @@ pub fn test_strpbrk_13() {
                 .position(|__c| __set.to_c_string_iterator().any(|__r| __r == __c))
             {
                 Some(__i) => __s.offset(__i),
-                None => Ptr::null(),
+                None => Ptr::<u8>::null(),
             }
         })
         .is_null()) as i32)
@@ -876,7 +876,7 @@ pub fn test_strpbrk_13() {
                 .position(|__c| __set.to_c_string_iterator().any(|__r| __r == __c))
             {
                 Some(__i) => __s.offset(__i),
-                None => Ptr::null(),
+                None => Ptr::<u8>::null(),
             }
         } == ((buf.as_pointer() as Ptr<u8>).offset(1))) as i32)
             != 0)

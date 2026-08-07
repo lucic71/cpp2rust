@@ -14,10 +14,10 @@ fn main_0() -> i32 {
         match nix::unistd::User::from_uid(nix::unistd::Uid::from_raw(libcc2rs::geteuid_refcount()))
         {
             Ok(Some(__u)) => Ptr::alloc(Passwd::from_user(&__u)),
-            Ok(None) => Ptr::null(),
+            Ok(None) => Ptr::<Passwd>::null(),
             Err(__e) => {
                 libcc2rs::cpp2rust_errno().write(__e as i32);
-                Ptr::null()
+                Ptr::<Passwd>::null()
             }
         },
     ));
@@ -38,13 +38,13 @@ fn main_0() -> i32 {
             Ok(__dir) => Ptr::alloc(CDir::from_dir(__dir)),
             Err(__e) => {
                 libcc2rs::cpp2rust_errno().write(__e as i32);
-                Ptr::null()
+                Ptr::<CDir>::null()
             }
         }
         .with(|__d| {
             let __i = __d.pos.get();
             if __i >= __d.entries.len() {
-                Ptr::null()
+                Ptr::<Dirent>::null()
             } else {
                 __d.pos.set(__i + 1);
                 let __e = &__d.entries[__i];

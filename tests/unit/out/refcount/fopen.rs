@@ -18,7 +18,7 @@ fn main_0() -> i32 {
             &(*mode.borrow()).to_rust_string(),
         ) {
             Some(__f) => Ptr::alloc(__f),
-            None => Ptr::null(),
+            None => Ptr::<CFile>::null(),
         },
     ));
     return 0;

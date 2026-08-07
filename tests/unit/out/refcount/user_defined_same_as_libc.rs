@@ -11,7 +11,7 @@ pub fn fopen_0(path: Ptr<u8>, mode: Ptr<u8>) -> Ptr<CFile> {
     let mode: Value<Ptr<u8>> = Rc::new(RefCell::new(mode));
     (*path.borrow()).clone();
     (*mode.borrow()).clone();
-    return Ptr::null();
+    return Ptr::<CFile>::null();
 }
 pub fn main() {
     libcc2rs::exit_refcount(main_0());

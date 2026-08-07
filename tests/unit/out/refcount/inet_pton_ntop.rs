@@ -243,11 +243,11 @@ fn main_0() -> i32 {
                     }
                     Some(_) => {
                         libcc2rs::cpp2rust_errno().write(::libc::ENOSPC);
-                        Ptr::null()
+                        Ptr::<u8>::null()
                     }
                     None => {
                         libcc2rs::cpp2rust_errno().write(::libc::EAFNOSUPPORT);
-                        Ptr::null()
+                        Ptr::<u8>::null()
                     }
                 }
             }
@@ -314,11 +314,11 @@ fn main_0() -> i32 {
                     }
                     Some(_) => {
                         libcc2rs::cpp2rust_errno().write(::libc::ENOSPC);
-                        Ptr::null()
+                        Ptr::<u8>::null()
                     }
                     None => {
                         libcc2rs::cpp2rust_errno().write(::libc::EAFNOSUPPORT);
-                        Ptr::null()
+                        Ptr::<u8>::null()
                     }
                 }
             }
@@ -365,11 +365,11 @@ fn main_0() -> i32 {
                 }
                 Some(_) => {
                     libcc2rs::cpp2rust_errno().write(::libc::ENOSPC);
-                    Ptr::null()
+                    Ptr::<u8>::null()
                 }
                 None => {
                     libcc2rs::cpp2rust_errno().write(::libc::EAFNOSUPPORT);
-                    Ptr::null()
+                    Ptr::<u8>::null()
                 }
             }
         })

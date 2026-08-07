@@ -115,7 +115,7 @@ fn main_0() -> i32 {
     (*s.borrow_mut()) = Ptr::from_string_literal(b"3.14\0");
     assert!(
         ((((((libcc2rs::strtod_refcount((*s.borrow()).clone(), (end.as_pointer()).clone())
-            == 3.14E+0) as i32)
+            == 3.1400000000000001E+0) as i32)
             != 0)
             && ((((((*end.borrow()).clone() - (*s.borrow()).clone()) as i64) == 4_i64) as i32)
                 != 0)) as i32)
@@ -173,7 +173,7 @@ fn main_0() -> i32 {
         (((libcc2rs::strtod_refcount(
             Ptr::from_string_literal(b"+0.375e-1\0").clone(),
             Ptr::<Ptr::<u8>>::null().clone()
-        ) == 3.75E-2) as i32)
+        ) == 3.7499999999999999E-2) as i32)
             != 0)
     );
     return 0;

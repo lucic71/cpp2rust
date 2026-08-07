@@ -178,11 +178,11 @@ fn main_0() -> i32 {
     let c: Value<cb> = Rc::new(RefCell::new(cb {
         ctx: (<AnyPtr>::from_int(((99) as i64) as usize)),
     }));
-    assert!(((((((*c.borrow()).ctx).to_int() as i32) == 99) as i32) != 0));
+    assert!(((((((*c.borrow()).ctx).to_int() as i64 as i32) == 99) as i32) != 0));
     let m: Value<AnyPtr> = Rc::new(RefCell::new(
         (<AnyPtr>::from_int(((-1_i32) as i64) as usize)),
     ));
-    assert!((((((*m.borrow()).to_int() as i32) == -1_i32) as i32) != 0));
+    assert!((((((*m.borrow()).to_int() as i64 as i32) == -1_i32) as i32) != 0));
     assert!((((!((*m.borrow()).is_null())) as i32) != 0));
     (*c.borrow_mut()).ctx = (AnyPtr::default());
     assert!((((((*c.borrow()).ctx).is_null()) as i32) != 0));

@@ -51,7 +51,7 @@ pub fn test_lseek_1() {
             &Ptr::from_string_literal(b"wb\0").to_rust_string(),
         ) {
             Some(__f) => Ptr::alloc(__f),
-            None => Ptr::null(),
+            None => Ptr::<CFile>::null(),
         },
     ));
     assert!((((!((*fp.borrow()).is_null())) as i32) != 0));
@@ -70,7 +70,7 @@ pub fn test_lseek_1() {
         &Ptr::from_string_literal(b"rb\0").to_rust_string(),
     ) {
         Some(__f) => Ptr::alloc(__f),
-        None => Ptr::null(),
+        None => Ptr::<CFile>::null(),
     };
     assert!((((!((*fp.borrow()).is_null())) as i32) != 0));
     let fd: Value<i32> = Rc::new(RefCell::new((*fp.borrow()).with(|__f| __f.fd)));
@@ -154,7 +154,7 @@ pub fn test_read_2() {
             &Ptr::from_string_literal(b"wb\0").to_rust_string(),
         ) {
             Some(__f) => Ptr::alloc(__f),
-            None => Ptr::null(),
+            None => Ptr::<CFile>::null(),
         },
     ));
     assert!((((!((*fp.borrow()).is_null())) as i32) != 0));
@@ -173,7 +173,7 @@ pub fn test_read_2() {
         &Ptr::from_string_literal(b"rb\0").to_rust_string(),
     ) {
         Some(__f) => Ptr::alloc(__f),
-        None => Ptr::null(),
+        None => Ptr::<CFile>::null(),
     };
     assert!((((!((*fp.borrow()).is_null())) as i32) != 0));
     let fd: Value<i32> = Rc::new(RefCell::new((*fp.borrow()).with(|__f| __f.fd)));
@@ -228,7 +228,7 @@ pub fn test_unlink_3() {
             &Ptr::from_string_literal(b"wb\0").to_rust_string(),
         ) {
             Some(__f) => Ptr::alloc(__f),
-            None => Ptr::null(),
+            None => Ptr::<CFile>::null(),
         },
     ));
     assert!((((!((*fp.borrow()).is_null())) as i32) != 0));
@@ -314,7 +314,7 @@ pub fn test_ftruncate_5() {
             &Ptr::from_string_literal(b"wb\0").to_rust_string(),
         ) {
             Some(__f) => Ptr::alloc(__f),
-            None => Ptr::null(),
+            None => Ptr::<CFile>::null(),
         },
     ));
     assert!((((!((*fp.borrow()).is_null())) as i32) != 0));
@@ -336,7 +336,7 @@ pub fn test_ftruncate_5() {
         &Ptr::from_string_literal(b"rb\0").to_rust_string(),
     ) {
         Some(__f) => Ptr::alloc(__f),
-        None => Ptr::null(),
+        None => Ptr::<CFile>::null(),
     };
     assert!((((!((*fp.borrow()).is_null())) as i32) != 0));
     (*fd.borrow_mut()) = (*fp.borrow()).with(|__f| __f.fd);

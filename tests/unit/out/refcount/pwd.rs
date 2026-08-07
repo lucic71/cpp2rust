@@ -11,10 +11,10 @@ pub fn test_getpwuid_0() {
         match nix::unistd::User::from_uid(nix::unistd::Uid::from_raw(libcc2rs::geteuid_refcount()))
         {
             Ok(Some(__u)) => Ptr::alloc(Passwd::from_user(&__u)),
-            Ok(None) => Ptr::null(),
+            Ok(None) => Ptr::<Passwd>::null(),
             Err(__e) => {
                 libcc2rs::cpp2rust_errno().write(__e as i32);
-                Ptr::null()
+                Ptr::<Passwd>::null()
             }
         },
     ));
@@ -42,10 +42,10 @@ pub fn test_getpwuid_missing_1() {
     let pw: Value<Ptr<libcc2rs::Passwd>> = Rc::new(RefCell::new(
         match nix::unistd::User::from_uid(nix::unistd::Uid::from_raw(2147483646_u32)) {
             Ok(Some(__u)) => Ptr::alloc(Passwd::from_user(&__u)),
-            Ok(None) => Ptr::null(),
+            Ok(None) => Ptr::<Passwd>::null(),
             Err(__e) => {
                 libcc2rs::cpp2rust_errno().write(__e as i32);
-                Ptr::null()
+                Ptr::<Passwd>::null()
             }
         },
     ));
@@ -78,7 +78,7 @@ pub fn test_getpwuid_r_2() {
                     ];
                     let __needed: usize = __strs.iter().map(|__s| __s.len() + 1).sum();
                     if __needed > __buflen {
-                        __out.write(Ptr::null());
+                        __out.write(Ptr::<Passwd>::null());
                         ::libc::ERANGE
                     } else {
                         let mut __ptrs: Vec<Ptr<u8>> = Vec::new();
@@ -98,11 +98,11 @@ pub fn test_getpwuid_r_2() {
                     }
                 }
                 Ok(None) => {
-                    __out.write(Ptr::null());
+                    __out.write(Ptr::<Passwd>::null());
                     0
                 }
                 Err(__e) => {
-                    __out.write(Ptr::null());
+                    __out.write(Ptr::<Passwd>::null());
                     __e as i32
                 }
             }
@@ -122,10 +122,10 @@ pub fn test_getpwuid_r_2() {
         match nix::unistd::User::from_uid(nix::unistd::Uid::from_raw(libcc2rs::geteuid_refcount()))
         {
             Ok(Some(__u)) => Ptr::alloc(Passwd::from_user(&__u)),
-            Ok(None) => Ptr::null(),
+            Ok(None) => Ptr::<Passwd>::null(),
             Err(__e) => {
                 libcc2rs::cpp2rust_errno().write(__e as i32);
-                Ptr::null()
+                Ptr::<Passwd>::null()
             }
         },
     ));
@@ -177,7 +177,7 @@ pub fn test_getpwuid_r_erange_3() {
                     ];
                     let __needed: usize = __strs.iter().map(|__s| __s.len() + 1).sum();
                     if __needed > __buflen {
-                        __out.write(Ptr::null());
+                        __out.write(Ptr::<Passwd>::null());
                         ::libc::ERANGE
                     } else {
                         let mut __ptrs: Vec<Ptr<u8>> = Vec::new();
@@ -197,11 +197,11 @@ pub fn test_getpwuid_r_erange_3() {
                     }
                 }
                 Ok(None) => {
-                    __out.write(Ptr::null());
+                    __out.write(Ptr::<Passwd>::null());
                     0
                 }
                 Err(__e) => {
-                    __out.write(Ptr::null());
+                    __out.write(Ptr::<Passwd>::null());
                     __e as i32
                 }
             }

@@ -16,7 +16,7 @@ pub fn test_stat_0() {
             &Ptr::from_string_literal(b"wb\0").to_rust_string(),
         ) {
             Some(__f) => Ptr::alloc(__f),
-            None => Ptr::null(),
+            None => Ptr::<CFile>::null(),
         },
     ));
     assert!((((!((*fp.borrow()).is_null())) as i32) != 0));
@@ -50,7 +50,7 @@ pub fn test_fstat_1() {
             &Ptr::from_string_literal(b"wb\0").to_rust_string(),
         ) {
             Some(__f) => Ptr::alloc(__f),
-            None => Ptr::null(),
+            None => Ptr::<CFile>::null(),
         },
     ));
     assert!((((!((*fp.borrow()).is_null())) as i32) != 0));
@@ -91,7 +91,7 @@ pub fn test_timespec_members_3() {
             &Ptr::from_string_literal(b"wb\0").to_rust_string(),
         ) {
             Some(__f) => Ptr::alloc(__f),
-            None => Ptr::null(),
+            None => Ptr::<CFile>::null(),
         },
     ));
     assert!((((!((*fp.borrow()).is_null())) as i32) != 0));
