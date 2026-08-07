@@ -4,7 +4,7 @@
 use libcc2rs::*;
 
 fn t1() -> Ptr<libcc2rs::CDir> {
-    Ptr::null()
+    Ptr::<libcc2rs::CDir>::null()
 }
 
 fn t2() -> libcc2rs::Dirent {
@@ -20,7 +20,7 @@ fn f1(a0: Ptr<u8>) -> Ptr<CDir> {
         Ok(__dir) => Ptr::alloc(CDir::from_dir(__dir)),
         Err(__e) => {
             libcc2rs::cpp2rust_errno().write(__e as i32);
-            Ptr::null()
+            Ptr::<CDir>::null()
         }
     }
 }
@@ -29,7 +29,7 @@ fn f2(a0: Ptr<CDir>) -> Ptr<Dirent> {
     a0.with(|__d| {
         let __i = __d.pos.get();
         if __i >= __d.entries.len() {
-            Ptr::null()
+            Ptr::<Dirent>::null()
         } else {
             __d.pos.set(__i + 1);
             let __e = &__d.entries[__i];

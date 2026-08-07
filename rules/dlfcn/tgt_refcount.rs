@@ -16,5 +16,5 @@ fn f3(a0: AnyPtr) -> i32 {
 }
 
 fn f4() -> Ptr<u8> {
-    Ptr::null()
+    Ptr::<u8>::null()
 }

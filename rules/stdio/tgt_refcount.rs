@@ -4,13 +4,13 @@
 use libcc2rs::*;
 
 fn t1() -> Ptr<CFile> {
-    Ptr::null()
+    Ptr::<CFile>::null()
 }
 
 fn f1(a0: Ptr<u8>, a1: Ptr<u8>) -> Ptr<CFile> {
     match CFile::open(&a0.to_rust_string(), &a1.to_rust_string()) {
         Some(__f) => Ptr::alloc(__f),
-        None => Ptr::null(),
+        None => Ptr::<CFile>::null(),
     }
 }
 
@@ -102,7 +102,7 @@ fn f17(a0: Ptr<u8>, a1: i32, a2: Ptr<CFile>) -> Ptr<u8> {
     let __buf = a0.clone();
     let __n = a1;
     if __n <= 0 {
-        Ptr::null()
+        Ptr::<u8>::null()
     } else {
         let __max = (__n - 1) as usize;
         let mut __dst = __buf.clone();
@@ -123,7 +123,7 @@ fn f17(a0: Ptr<u8>, a1: i32, a2: Ptr<CFile>) -> Ptr<u8> {
             __f.err
         });
         if __failed || __count == 0 {
-            Ptr::null()
+            Ptr::<u8>::null()
         } else {
             __dst.write(0);
             __buf
@@ -145,7 +145,7 @@ fn f18(a0: Ptr<u8>, a1: Ptr<u8>, a2: Ptr<CFile>) -> Ptr<CFile> {
             __stream.write(__f);
             __stream
         }
-        None => Ptr::null(),
+        None => Ptr::<CFile>::null(),
     }
 }
 

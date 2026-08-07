@@ -10,7 +10,7 @@ fn t1() -> Vec<u8> {
 }
 
 fn t2() -> Ptr<u8> {
-    Ptr::null()
+    Ptr::<u8>::null()
 }
 
 fn f1(a0: Vec<u8>, a1: usize, a2: usize) -> Vec<u8> {

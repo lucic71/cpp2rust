@@ -53,11 +53,11 @@ fn f6(a0: i32, a1: AnyPtr, a2: Ptr<u8>, a3: u32) -> Ptr<u8> {
         }
         Some(_) => {
             libcc2rs::cpp2rust_errno().write(::libc::ENOSPC);
-            Ptr::null()
+            Ptr::<u8>::null()
         }
         None => {
             libcc2rs::cpp2rust_errno().write(::libc::EAFNOSUPPORT);
-            Ptr::null()
+            Ptr::<u8>::null()
         }
     }
 }

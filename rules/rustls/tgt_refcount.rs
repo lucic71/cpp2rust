@@ -4,15 +4,15 @@
 use libcc2rs::*;
 
 fn t1() -> Ptr<libcc2rs::RustlsConnection> {
-    Ptr::null()
+    Ptr::<libcc2rs::RustlsConnection>::null()
 }
 
 fn t2() -> Ptr<libcc2rs::RustlsConnection> {
-    Ptr::null()
+    Ptr::<libcc2rs::RustlsConnection>::null()
 }
 
 fn t3() -> Ptr<libcc2rs::RustlsCertificate> {
-    Ptr::null()
+    Ptr::<libcc2rs::RustlsCertificate>::null()
 }
 
 fn t4() -> libcc2rs::RustlsStr {
@@ -64,43 +64,43 @@ fn f56(a0: u32, a1: Ptr<u8>, a2: usize, a3: Ptr<usize>) {
 }
 
 fn t8() -> Ptr<libcc2rs::RustlsClientConfig> {
-    Ptr::null()
+    Ptr::<libcc2rs::RustlsClientConfig>::null()
 }
 
 fn t9() -> Ptr<libcc2rs::RustlsClientConfig> {
-    Ptr::null()
+    Ptr::<libcc2rs::RustlsClientConfig>::null()
 }
 
 fn t10() -> Ptr<libcc2rs::RustlsClientConfigBuilder> {
-    Ptr::null()
+    Ptr::<libcc2rs::RustlsClientConfigBuilder>::null()
 }
 
 fn t11() -> Ptr<libcc2rs::RustlsClientConfigBuilder> {
-    Ptr::null()
+    Ptr::<libcc2rs::RustlsClientConfigBuilder>::null()
 }
 
 fn t12() -> Ptr<libcc2rs::RustlsCertifiedKey> {
-    Ptr::null()
+    Ptr::<libcc2rs::RustlsCertifiedKey>::null()
 }
 
 fn t13() -> Ptr<libcc2rs::RustlsCertifiedKey> {
-    Ptr::null()
+    Ptr::<libcc2rs::RustlsCertifiedKey>::null()
 }
 
 fn t14() -> Ptr<libcc2rs::RustlsCryptoProvider> {
-    Ptr::null()
+    Ptr::<libcc2rs::RustlsCryptoProvider>::null()
 }
 
 fn t15() -> Ptr<libcc2rs::RustlsCryptoProvider> {
-    Ptr::null()
+    Ptr::<libcc2rs::RustlsCryptoProvider>::null()
 }
 
 fn t16() -> Ptr<libcc2rs::RustlsCryptoProviderBuilder> {
-    Ptr::null()
+    Ptr::<libcc2rs::RustlsCryptoProviderBuilder>::null()
 }
 
 fn t17() -> Ptr<libcc2rs::RustlsCryptoProviderBuilder> {
-    Ptr::null()
+    Ptr::<libcc2rs::RustlsCryptoProviderBuilder>::null()
 }
 
 fn t28() -> libcc2rs::RustlsSliceBytes {
@@ -112,43 +112,43 @@ fn t29() -> libcc2rs::RustlsVerifyServerCertParams {
 }
 
 fn t18() -> Ptr<libcc2rs::RustlsRootCertStore> {
-    Ptr::null()
+    Ptr::<libcc2rs::RustlsRootCertStore>::null()
 }
 
 fn t19() -> Ptr<libcc2rs::RustlsRootCertStore> {
-    Ptr::null()
+    Ptr::<libcc2rs::RustlsRootCertStore>::null()
 }
 
 fn t20() -> Ptr<libcc2rs::RustlsRootCertStoreBuilder> {
-    Ptr::null()
+    Ptr::<libcc2rs::RustlsRootCertStoreBuilder>::null()
 }
 
 fn t21() -> Ptr<libcc2rs::RustlsRootCertStoreBuilder> {
-    Ptr::null()
+    Ptr::<libcc2rs::RustlsRootCertStoreBuilder>::null()
 }
 
 fn t22() -> Ptr<libcc2rs::RustlsServerCertVerifier> {
-    Ptr::null()
+    Ptr::<libcc2rs::RustlsServerCertVerifier>::null()
 }
 
 fn t23() -> Ptr<libcc2rs::RustlsServerCertVerifier> {
-    Ptr::null()
+    Ptr::<libcc2rs::RustlsServerCertVerifier>::null()
 }
 
 fn t24() -> Ptr<libcc2rs::RustlsWebPkiServerCertVerifierBuilder> {
-    Ptr::null()
+    Ptr::<libcc2rs::RustlsWebPkiServerCertVerifierBuilder>::null()
 }
 
 fn t25() -> Ptr<libcc2rs::RustlsWebPkiServerCertVerifierBuilder> {
-    Ptr::null()
+    Ptr::<libcc2rs::RustlsWebPkiServerCertVerifierBuilder>::null()
 }
 
 fn t26() -> Ptr<libcc2rs::RustlsSupportedCiphersuite> {
-    Ptr::null()
+    Ptr::<libcc2rs::RustlsSupportedCiphersuite>::null()
 }
 
 fn t27() -> Ptr<libcc2rs::RustlsSupportedCiphersuite> {
-    Ptr::null()
+    Ptr::<libcc2rs::RustlsSupportedCiphersuite>::null()
 }
 
 fn f7(

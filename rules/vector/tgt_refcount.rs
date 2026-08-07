@@ -6,7 +6,7 @@ use std::cell::RefCell;
 use std::rc::Rc;
 
 fn t2<T1>() -> Ptr<T1> {
-    Ptr::null()
+    Ptr::<T1>::null()
 }
 
 fn t3<T1>() -> Vec<Value<Vec<T1>>> {
@@ -14,17 +14,17 @@ fn t3<T1>() -> Vec<Value<Vec<T1>>> {
 }
 
 fn t4<T1>() -> Ptr<T1> {
-    Ptr::null()
+    Ptr::<T1>::null()
 }
 
 #[cfg(target_os = "linux")]
 fn t6<T1>() -> Ptr<T1> {
-    Ptr::null()
+    Ptr::<T1>::null()
 }
 
 #[cfg(target_os = "linux")]
 fn t7<T1>() -> Ptr<T1> {
-    Ptr::null()
+    Ptr::<T1>::null()
 }
 
 fn f1<T1: ByteRepr>(a0: Ptr<Vec<T1>>, a1: Ptr<T1>) -> Ptr<T1> {

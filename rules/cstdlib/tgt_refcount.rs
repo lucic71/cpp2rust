@@ -26,7 +26,7 @@ fn f6(a0: Ptr<u8>) -> Ptr<u8> {
             __bytes.push(0);
             Ptr::alloc_array(__bytes.into_boxed_slice())
         }
-        Err(_) => Ptr::null(),
+        Err(_) => Ptr::<u8>::null(),
     }
 }
 
@@ -55,7 +55,7 @@ fn f10(a0: Ptr<u8>, a1: Ptr<u8>) -> Ptr<u8> {
         }
         Err(__e) => {
             libcc2rs::cpp2rust_errno().write(__e.raw_os_error().unwrap_or(::libc::EIO));
-            Ptr::null()
+            Ptr::<u8>::null()
         }
     }
 }
@@ -163,7 +163,7 @@ fn f40(a0: Ptr<u8>) -> Ptr<u8> {
     match __name.ends_with("XXXXXX") {
         false => {
             libcc2rs::cpp2rust_errno().write(::libc::EINVAL);
-            Ptr::null()
+            Ptr::<u8>::null()
         }
         true => {
             let __base = __name.len() - 6;
@@ -173,7 +173,7 @@ fn f40(a0: Ptr<u8>) -> Ptr<u8> {
                 .unwrap_or(0)
                 ^ ((::std::process::id() as u64) << 32);
             let mut __attempt = 0;
-            let mut __ret = Ptr::null();
+            let mut __ret = Ptr::<u8>::null();
             while __attempt < 100 && __ret.is_null() {
                 let mut __n = __seed;
                 __name.truncate(__base);
@@ -208,7 +208,7 @@ fn f40(a0: Ptr<u8>) -> Ptr<u8> {
             match __ret.is_null() && __attempt < 101 {
                 true => {
                     libcc2rs::cpp2rust_errno().write(::libc::EEXIST);
-                    Ptr::null()
+                    Ptr::<u8>::null()
                 }
                 false => __ret,
             }

@@ -31,7 +31,7 @@ fn f5(a0: Ptr<u8>, a1: i32) -> Ptr<u8> {
             if __t == 0 {
                 __s.offset(__s.to_c_string_iterator().count())
             } else {
-                Ptr::null()
+                Ptr::<u8>::null()
             }
         }
     }
@@ -101,7 +101,7 @@ fn f11(a0: Ptr<u8>, a1: i32) -> Ptr<u8> {
             if __t == 0 {
                 __s.offset(__s.to_c_string_iterator().count())
             } else {
-                Ptr::null()
+                Ptr::<u8>::null()
             }
         }
     }
@@ -137,7 +137,7 @@ fn f18(a0: Ptr<u8>, a1: Ptr<u8>) -> Ptr<u8> {
             break __p;
         }
         if __p.read() == 0 {
-            break Ptr::null();
+            break Ptr::<u8>::null();
         }
         __p += 1;
     }
@@ -151,7 +151,7 @@ fn f21(a0: Ptr<u8>, a1: Ptr<u8>) -> Ptr<u8> {
         .position(|__c| __set.to_c_string_iterator().any(|__r| __r == __c))
     {
         Some(__i) => __s.offset(__i),
-        None => Ptr::null(),
+        None => Ptr::<u8>::null(),
     }
 }
 
@@ -229,7 +229,7 @@ fn f6(a0: Ptr<u8>, a1: i32) -> Ptr<u8> {
             if __t == 0 {
                 __s.offset(__s.to_c_string_iterator().count())
             } else {
-                Ptr::null()
+                Ptr::<u8>::null()
             }
         }
     }
@@ -264,7 +264,7 @@ fn f13(a0: Ptr<u8>, a1: i32) -> Ptr<u8> {
             if __t == 0 {
                 __s.offset(__s.to_c_string_iterator().count())
             } else {
-                Ptr::null()
+                Ptr::<u8>::null()
             }
         }
     }
@@ -284,7 +284,7 @@ fn f14(a0: Ptr<u8>, a1: i32) -> Ptr<u8> {
             if __t == 0 {
                 __s.offset(__s.to_c_string_iterator().count())
             } else {
-                Ptr::null()
+                Ptr::<u8>::null()
             }
         }
     }
@@ -302,7 +302,7 @@ fn f19(a0: Ptr<u8>, a1: Ptr<u8>) -> Ptr<u8> {
             break __p;
         }
         if __p.read() == 0 {
-            break Ptr::null();
+            break Ptr::<u8>::null();
         }
         __p += 1;
     }
@@ -320,7 +320,7 @@ fn f20(a0: Ptr<u8>, a1: Ptr<u8>) -> Ptr<u8> {
             break __p;
         }
         if __p.read() == 0 {
-            break Ptr::null();
+            break Ptr::<u8>::null();
         }
         __p += 1;
     }
@@ -334,7 +334,7 @@ fn f22(a0: Ptr<u8>, a1: Ptr<u8>) -> Ptr<u8> {
         .position(|__c| __set.to_c_string_iterator().any(|__r| __r == __c))
     {
         Some(__i) => __s.offset(__i),
-        None => Ptr::null(),
+        None => Ptr::<u8>::null(),
     }
 }
 
@@ -346,7 +346,7 @@ fn f23(a0: Ptr<u8>, a1: Ptr<u8>) -> Ptr<u8> {
         .position(|__c| __set.to_c_string_iterator().any(|__r| __r == __c))
     {
         Some(__i) => __s.offset(__i),
-        None => Ptr::null(),
+        None => Ptr::<u8>::null(),
     }
 }
 

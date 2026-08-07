@@ -58,7 +58,7 @@ fn f4(a0: Ptr<::libc::time_t>, a1: Ptr<Tm>) -> Ptr<Tm> {
         }
         Err(_) => {
             libcc2rs::cpp2rust_errno().write(::libc::EOVERFLOW);
-            Ptr::null()
+            Ptr::<Tm>::null()
         }
     }
 }
@@ -80,7 +80,7 @@ fn f5(a0: Ptr<::libc::time_t>, a1: Ptr<Tm>) -> Ptr<Tm> {
         }
         Err(_) => {
             libcc2rs::cpp2rust_errno().write(::libc::EOVERFLOW);
-            Ptr::null()
+            Ptr::<Tm>::null()
         }
     }
 }

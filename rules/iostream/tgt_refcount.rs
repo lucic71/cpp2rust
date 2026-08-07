@@ -6,11 +6,11 @@ use std::os::fd::AsFd;
 
 // TODO: t2 and t3 should be translated to Ptr<dyn Traits>
 fn t2() -> Ptr<std::fs::File> {
-    Ptr::null()
+    Ptr::<std::fs::File>::null()
 }
 
 fn t3() -> Ptr<std::fs::File> {
-    Ptr::null()
+    Ptr::<std::fs::File>::null()
 }
 
 fn f1() -> ::std::fs::File {

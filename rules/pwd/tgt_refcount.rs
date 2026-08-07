@@ -23,7 +23,7 @@ fn f2(a0: u32, a1: Ptr<Passwd>, a2: Ptr<u8>, a3: usize, a4: Ptr<Ptr<Passwd>>) ->
             ];
             let __needed: usize = __strs.iter().map(|__s| __s.len() + 1).sum();
             if __needed > __buflen {
-                __out.write(Ptr::null());
+                __out.write(Ptr::<Passwd>::null());
                 ::libc::ERANGE
             } else {
                 let mut __ptrs: Vec<Ptr<u8>> = Vec::new();
@@ -43,11 +43,11 @@ fn f2(a0: u32, a1: Ptr<Passwd>, a2: Ptr<u8>, a3: usize, a4: Ptr<Ptr<Passwd>>) ->
             }
         }
         Ok(None) => {
-            __out.write(Ptr::null());
+            __out.write(Ptr::<Passwd>::null());
             0
         }
         Err(__e) => {
-            __out.write(Ptr::null());
+            __out.write(Ptr::<Passwd>::null());
             __e as i32
         }
     }
@@ -56,10 +56,10 @@ fn f2(a0: u32, a1: Ptr<Passwd>, a2: Ptr<u8>, a3: usize, a4: Ptr<Ptr<Passwd>>) ->
 fn f1(a0: u32) -> Ptr<Passwd> {
     match nix::unistd::User::from_uid(nix::unistd::Uid::from_raw(a0)) {
         Ok(Some(__u)) => Ptr::alloc(Passwd::from_user(&__u)),
-        Ok(None) => Ptr::null(),
+        Ok(None) => Ptr::<Passwd>::null(),
         Err(__e) => {
             libcc2rs::cpp2rust_errno().write(__e as i32);
-            Ptr::null()
+            Ptr::<Passwd>::null()
         }
     }
 }
