@@ -577,6 +577,9 @@ RsExpr *Converter::TryConvertFlattenedBody(clang::CompoundStmt *body) {
   CollectLocalDecls(body, locals, local_tags);
   std::unordered_map<std::string, unsigned> name_count;
   std::unordered_map<const clang::Decl *, std::string> renames;
+  for (auto *param : curr_function_->parameters()) {
+    ++name_count[param->getName().str()];
+  }
   for (auto *var : locals) {
     if (var->isStaticLocal() || IsGlobalVar(var) || var->getName().empty()) {
       continue;
