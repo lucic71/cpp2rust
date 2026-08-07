@@ -606,7 +606,9 @@ ConverterRefCount::EmitBitFieldFromBytes(const clang::FieldDecl *field,
   }
 
   std::string value;
-  if (field->getType()->isSignedIntegerType()) {
+  if (field->getType()->isBooleanType()) {
+    value = std::format("({}) != 0", raw);
+  } else if (field->getType()->isSignedIntegerType()) {
     value = std::format("(((({0}) << {1}) as i64) >> {1}) as {2}", raw,
                         64 - width, storage_ty);
   } else {
