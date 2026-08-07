@@ -40,23 +40,29 @@ unsafe fn main_0() -> i32 {
     let mut y: i32 = 5;
     &(y);
     let mut z: i32 = {
-        &(y);
-        7
+        {
+            &(y);
+            7
+        }
     };
     assert!(((z) == (7)));
     let mut counter: i32 = 0;
     let mut w: i32 = {
-        &(counter);
-        counter = 3;
-        counter
+        {
+            &(counter);
+            counter = 3;
+            counter
+        }
     };
     assert!(((w) == (3)));
     assert!(((counter) == (3)));
     &(unsafe { bump_and_return_4() });
     assert!(((side_effect_counter_3) == (1)));
     let mut v: i32 = {
-        &(unsafe { bump_and_return_4() });
-        99
+        {
+            &(unsafe { bump_and_return_4() });
+            99
+        }
     };
     assert!(((side_effect_counter_3) == (2)));
     assert!(((v) == (99)));
@@ -69,8 +75,10 @@ unsafe fn main_0() -> i32 {
     (&(err = 42));
     assert!(((err) == (42)));
     let mut chosen: i32 = {
-        &(err = 7);
-        123
+        {
+            &(err = 7);
+            123
+        }
     };
     assert!(((err) == (7)));
     assert!(((chosen) == (123)));

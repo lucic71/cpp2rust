@@ -20,5 +20,18 @@ int main() {
     assert(b == 2);
   }
 
+  unsigned short hf = 0;
+  double d = 0.5;
+  if (hf = (unsigned short)(d * 4), d == (double)hf / 4) {
+    assert(hf == 2);
+  } else {
+    assert(0);
+  }
+
+  int n = 0;
+  while (n = n + 1, n < 3) {
+  }
+  assert(n == 3);
+
   return 0;
 }

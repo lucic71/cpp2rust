@@ -82,23 +82,29 @@ fn main_0() -> i32 {
     let y: Value<i32> = Rc::new(RefCell::new(5));
     (*y.borrow_mut());
     let z: Value<i32> = Rc::new(RefCell::new({
-        (*y.borrow_mut());
-        7
+        {
+            (*y.borrow_mut());
+            7
+        }
     }));
     assert!(((*z.borrow()) == 7));
     let counter: Value<i32> = Rc::new(RefCell::new(0));
     let w: Value<i32> = Rc::new(RefCell::new({
-        (*counter.borrow_mut());
-        (*counter.borrow_mut()) = 3;
-        (*counter.borrow())
+        {
+            (*counter.borrow_mut());
+            (*counter.borrow_mut()) = 3;
+            (*counter.borrow())
+        }
     }));
     assert!(((*w.borrow()) == 3));
     assert!(((*counter.borrow()) == 3));
     ({ bump_and_return_4() });
     assert!(((*side_effect_counter_3.with(Value::clone).borrow()) == 1));
     let v: Value<i32> = Rc::new(RefCell::new({
-        ({ bump_and_return_4() });
-        99
+        {
+            ({ bump_and_return_4() });
+            99
+        }
     }));
     assert!(((*side_effect_counter_3.with(Value::clone).borrow()) == 2));
     assert!(((*v.borrow()) == 99));
@@ -111,8 +117,10 @@ fn main_0() -> i32 {
     ((*err.borrow_mut()) = 42);
     assert!(((*err.borrow()) == 42));
     let chosen: Value<i32> = Rc::new(RefCell::new({
-        ((*err.borrow_mut()) = 7);
-        123
+        {
+            ((*err.borrow_mut()) = 7);
+            123
+        }
     }));
     assert!(((*err.borrow()) == 7));
     assert!(((*chosen.borrow()) == 123));

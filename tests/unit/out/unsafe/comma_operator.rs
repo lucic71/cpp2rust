@@ -14,34 +14,58 @@ pub fn main() {
 unsafe fn main_0() -> i32 {
     let mut x: i32 = 1;
     let mut y: i32 = {
-        x = 2;
-        ((x) + (1))
+        {
+            x = 2;
+            ((x) + (1))
+        }
     };
     assert!(((x) == (2)));
     assert!(((y) == (3)));
     let mut z: i32 = {
-        1;
-        2;
-        3
+        {
+            1;
+            2;
+            3
+        }
     };
     assert!(((z) == (3)));
     let mut counter: i32 = 0;
     let mut w: i32 = {
-        counter.postfix_inc();
-        counter.postfix_inc();
-        counter
+        {
+            counter.postfix_inc();
+            counter.postfix_inc();
+            counter
+        }
     };
     assert!(((counter) == (2)));
     assert!(((w) == (2)));
     let mut a: i32 = 0;
     let mut b: i32 = 0;
     if {
-        a = 1;
-        b = 2;
-        (((a) + (b)) > (0))
+        {
+            a = 1;
+            b = 2;
+            (((a) + (b)) > (0))
+        }
     } {
         assert!(((a) == (1)));
         assert!(((b) == (2)));
     }
+    let mut hf: u16 = 0_u16;
+    let mut d: f64 = 5.0E-1;
+    if {
+        hf = (((d) * (4_f64)) as u16);
+        ((d) == ((hf as f64) / (4_f64)))
+    } {
+        assert!(((hf as i32) == (2)));
+    } else {
+        assert!((0 != 0));
+    }
+    let mut n: i32 = 0;
+    'loop_: while {
+        n = ((n) + (1));
+        ((n) < (3))
+    } {}
+    assert!(((n) == (3)));
     return 0;
 }

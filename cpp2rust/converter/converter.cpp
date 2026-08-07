@@ -2872,7 +2872,8 @@ RsExpr *Converter::ConvertBinaryOperator(clang::BinaryOperator *expr) {
       lhs_node = ConvertExpr(lhs);
     }
     auto *rhs_node = ConvertExpr(rhs);
-    return Cat(lhs_node, Text(token::kSemiColon), rhs_node);
+    auto *node = Cat(lhs_node, Text(token::kSemiColon), rhs_node);
+    return isVoid() ? node : Braces(node, true);
   }
   if (IsUnsignedArithOp(expr)) {
     RsExpr *prefix = nullptr;
