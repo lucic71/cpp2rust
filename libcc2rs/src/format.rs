@@ -288,11 +288,7 @@ pub fn scan_c(input: &str, fmt: &str, va: &[VaArg]) -> i32 {
 
 use crate::rc::Ptr;
 
-fn scan_int_prefix(
-    a0: &Ptr<u8>,
-    a1: &Ptr<Ptr<u8>>,
-    base_arg: i32,
-) -> Option<(String, u32, bool)> {
+fn scan_int_prefix(a0: &Ptr<u8>, a1: &Ptr<Ptr<u8>>, base_arg: i32) -> Option<(String, u32, bool)> {
     let s = a0.to_rust_string();
     let b = s.as_bytes();
     let mut pos = 0;
@@ -327,7 +323,7 @@ fn scan_int_prefix(
         pos += 2;
     }
     let digits_start = pos;
-    while pos < b.len() && (b[pos] as char).to_digit(base).is_some() {
+    while pos < b.len() && (b[pos] as char).is_digit(base) {
         pos += 1;
     }
     if pos == digits_start {
