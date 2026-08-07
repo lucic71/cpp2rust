@@ -1950,7 +1950,7 @@ RsExpr *ConverterRefCount::VisitInitListExpr(clang::InitListExpr *expr) {
     if (record->isUnion()) {
       computed_expr_type_ = ComputedExprType::FreshValue;
       if (expr->getNumInits() == 0 || IsZeroInitExpr(ctx_, expr->getInit(0))) {
-        return Text("Default::default()");
+        return GetDefaultAsString(qual_type);
       }
       auto bytes = GetConstantUnionBytes(ctx_, expr);
       if (!bytes) {

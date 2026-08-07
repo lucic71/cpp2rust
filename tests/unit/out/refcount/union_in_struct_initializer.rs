@@ -90,12 +90,12 @@ thread_local!(
         Item {
             kind: 1,
             handler: FnPtr::<fn(i32) -> i32>::new(double_it_1),
-            u: Default::default(),
+            u: <anon_0>::default(),
         },
         Item {
             kind: 2,
             handler: FnPtr::<fn(i32) -> i32>::new(negate_2),
-            u: Default::default(),
+            u: <anon_0>::default(),
         },
     ])));
 );
