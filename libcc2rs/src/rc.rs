@@ -1146,12 +1146,18 @@ impl Ptr<u8> {
     }
 
     pub fn memcpy(&self, src: &Self, len: usize) {
+        if len == 0 {
+            return;
+        }
         let mut buf = vec![0u8; len];
         src.with_slice(len, |s| buf.copy_from_slice(s));
         self.with_slice_mut(len, |dst| dst.copy_from_slice(&buf));
     }
 
     pub fn memset(&self, value: u8, num: usize) {
+        if num == 0 {
+            return;
+        }
         self.with_slice_mut(num, |dst| dst.fill(value));
     }
 
