@@ -191,7 +191,7 @@ fn f27(a0: i32) -> i32 {
 }
 
 fn f28(a0: i32, a1: i32) -> i32 {
-    panic!("dup2: fd renumbering is not supported in the refcount model")
+    FdRegistry::dup2(a0, a1)
 }
 
 fn f29(a0: i32) -> i64 {
