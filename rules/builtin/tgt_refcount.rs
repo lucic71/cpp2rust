@@ -3,33 +3,13 @@
 
 use libcc2rs::*;
 
-fn f9(a0: i64, a1: i64, a2: Ptr<i64>) -> bool {
-    let (val, ovf) = a0.overflowing_mul(a1);
-    a2.write(val);
-    ovf
-}
-fn f10(a0: i64, a1: i64, a2: Ptr<i64>) -> bool {
-    let (val, ovf) = a0.overflowing_mul(a1);
-    a2.write(val);
-    ovf
-}
 fn f12(a0: i64, a1: i64, a2: Ptr<i64>) -> bool {
-    let (val, ovf) = a0.overflowing_mul(a1);
-    a2.write(val);
-    ovf
-}
-fn f13(a0: i64, a1: i64, a2: Ptr<i64>) -> bool {
-    let (val, ovf) = a0.overflowing_mul(a1);
-    a2.write(val);
-    ovf
+    let __wide = (a0 as i128).wrapping_mul(a1 as i128);
+    a2.clone().write(__wide as _);
+    (a0 as i128).checked_mul(a1 as i128).is_none() || (a2.read() as i128) != __wide
 }
 
 fn f17(a0: AnyPtr, va: &[VaArg]) {
     ();
 }
 
-fn f24(a0: i32, a1: i32, a2: Ptr<usize>) -> bool {
-    let __prod = (a0 as i64) * (a1 as i64);
-    a2.clone().write(__prod as usize);
-    usize::try_from(__prod).is_err()
-}

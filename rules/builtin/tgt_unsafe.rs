@@ -25,30 +25,15 @@ unsafe fn f7(a0: u64) -> i32 {
 unsafe fn f8(a0: u64) -> i32 {
     a0.count_ones() as i32
 }
-unsafe fn f9(a0: i64, a1: i64, a2: *mut i64) -> bool {
-    let (val, ovf) = a0.overflowing_mul(a1);
-    *a2 = val;
-    ovf
-}
-unsafe fn f10(a0: i64, a1: i64, a2: *mut i64) -> bool {
-    let (val, ovf) = a0.overflowing_mul(a1);
-    *a2 = val;
-    ovf
-}
 #[cfg(any(target_arch = "x86_64", target_arch = "x86"))]
 unsafe fn f11() {
     std::hint::spin_loop();
 }
 
 unsafe fn f12(a0: i64, a1: i64, a2: *mut i64) -> bool {
-    let (val, ovf) = a0.overflowing_mul(a1);
-    *a2 = val;
-    ovf
-}
-unsafe fn f13(a0: i64, a1: i64, a2: *mut i64) -> bool {
-    let (val, ovf) = a0.overflowing_mul(a1);
-    *a2 = val;
-    ovf
+    let __wide = (a0 as i128).wrapping_mul(a1 as i128);
+    *a2 = __wide as _;
+    (a0 as i128).checked_mul(a1 as i128).is_none() || (*a2 as i128) != __wide
 }
 unsafe fn f14(a0: u64) -> u64 {
     a0.swap_bytes()
@@ -90,8 +75,3 @@ unsafe fn f23() {
     ::std::unreachable!()
 }
 
-unsafe fn f24(a0: i32, a1: i32, a2: *mut usize) -> bool {
-    let __prod = (a0 as i64) * (a1 as i64);
-    *a2 = __prod as usize;
-    usize::try_from(__prod).is_err()
-}
