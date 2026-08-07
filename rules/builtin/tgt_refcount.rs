@@ -24,3 +24,13 @@ fn f26(a0: f64) -> i32 {
 fn f27(a0: f64) -> i32 {
     a0.is_sign_negative() as i32
 }
+
+fn f28(a0: f64) -> i32 {
+    match a0.is_infinite() {
+        true => match a0.is_sign_negative() {
+            true => -1,
+            false => 1,
+        },
+        false => 0,
+    }
+}

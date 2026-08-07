@@ -11,3 +11,4 @@ void f23(void) { return __builtin_unreachable(); }
 int f25(double x) { return __builtin_isnan(x); }
 int f26(double x) { return __builtin_isfinite(x); }
 int f27(double x) { return __builtin_signbit(x); }
+int f28(double x) { return __builtin_isinf_sign(x); }
