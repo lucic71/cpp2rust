@@ -416,6 +416,32 @@ RsExpr *Converter::VisitFunctionDecl(clang::FunctionDecl *decl) {
   return arena_.New<Concat>(std::move(parts));
 }
 
+void Converter::RenameFlattenedDuplicates(
+    const std::vector<clang::CompoundStmt *> &flattened) {
+  std::unordered_map<std::string, unsigned> name_count;
+  std::unordered_map<const clang::Decl *, std::string> renames;
+  for (auto *compound : flattened) {
+    for (auto *child : compound->body()) {
+      auto *decl_stmt = clang::dyn_cast<clang::DeclStmt>(child);
+      if (decl_stmt == nullptr) {
+        continue;
+      }
+      for (auto *decl : decl_stmt->decls()) {
+        auto *var = clang::dyn_cast<clang::VarDecl>(decl);
+        if (var == nullptr || !var->isLocalVarDecl() || var->isStaticLocal() ||
+            IsGlobalVar(var) || var->getName().empty()) {
+          continue;
+        }
+        if (auto seen = name_count[var->getName().str()]++; seen > 0) {
+          renames.emplace(var,
+                          std::format("{}__{}", var->getName().str(), seen));
+        }
+      }
+    }
+  }
+  AddLocalRenames(renames);
+}
+
 RsExpr *Converter::EmitHoistedDecls(clang::CompoundStmt *body) {
   std::vector<RsExpr *> parts;
   for (auto *child : body->body()) {
@@ -3846,6 +3872,39 @@ RsExpr *Converter::VisitSwitchStmt(clang::SwitchStmt *stmt) {
                                           ? BreakTarget::FallthroughSwitch
                                           : BreakTarget::Switch);
 
+  std::vector<RsExpr *> pre;
+  for (auto *child : body->body()) {
+    if (clang::isa<clang::SwitchCase>(child) ||
+        clang::isa<clang::LabelStmt>(child)) {
+      break;
+    }
+    auto *decl_stmt = clang::dyn_cast<clang::DeclStmt>(child);
+    if (decl_stmt == nullptr) {
+      continue;
+    }
+    for (auto *decl : decl_stmt->decls()) {
+      if (auto *tag = clang::dyn_cast<clang::TagDecl>(decl)) {
+        pre.push_back(ConvertDecl(tag));
+        continue;
+      }
+      auto *var = clang::dyn_cast<clang::VarDecl>(decl);
+      if (var == nullptr || !var->isLocalVarDecl() || IsGlobalVar(var)) {
+        continue;
+      }
+      hoisted_decls_.insert(var);
+      auto [header, proceed] = ConvertVarDeclSkipInit(var);
+      if (proceed) {
+        pre.push_back(Cat(header, Text(token::kAssign),
+                          ConvertVarDefaultInit(var->getType()),
+                          Text(token::kSemiColon)));
+      }
+    }
+  }
+  RenameFlattenedDuplicates(flattened);
+  for (auto *compound : flattened) {
+    pre.push_back(EmitHoistedDecls(compound));
+  }
+
   std::vector<RsExpr *> parts;
   if (needs_switch_macro) {
     auto *cond = ConvertRValue(stmt->getCond());
@@ -3895,37 +3954,6 @@ RsExpr *Converter::VisitSwitchStmt(clang::SwitchStmt *stmt) {
   auto *result = needs_switch_macro ? Cat(Text("switch!"), Parens(node))
                                     : Cat(Text("'switch:"), Braces(node));
 
-  std::vector<RsExpr *> pre;
-  for (auto *child : body->body()) {
-    if (clang::isa<clang::SwitchCase>(child) ||
-        clang::isa<clang::LabelStmt>(child)) {
-      break;
-    }
-    auto *decl_stmt = clang::dyn_cast<clang::DeclStmt>(child);
-    if (decl_stmt == nullptr) {
-      continue;
-    }
-    for (auto *decl : decl_stmt->decls()) {
-      if (auto *tag = clang::dyn_cast<clang::TagDecl>(decl)) {
-        pre.push_back(ConvertDecl(tag));
-        continue;
-      }
-      auto *var = clang::dyn_cast<clang::VarDecl>(decl);
-      if (var == nullptr || !var->isLocalVarDecl() || IsGlobalVar(var)) {
-        continue;
-      }
-      hoisted_decls_.insert(var);
-      auto [header, proceed] = ConvertVarDeclSkipInit(var);
-      if (proceed) {
-        pre.push_back(Cat(header, Text(token::kAssign),
-                          ConvertVarDefaultInit(var->getType()),
-                          Text(token::kSemiColon)));
-      }
-    }
-  }
-  for (auto *compound : flattened) {
-    pre.push_back(EmitHoistedDecls(compound));
-  }
   if (pre.empty()) {
     return result;
   }

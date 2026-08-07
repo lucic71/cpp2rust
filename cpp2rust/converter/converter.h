@@ -94,6 +94,8 @@ public:
   RsExpr *TryConvertFlattenedBody(clang::CompoundStmt *body);
 
   RsExpr *EmitHoistedDecls(clang::CompoundStmt *body);
+  void RenameFlattenedDuplicates(
+      const std::vector<clang::CompoundStmt *> &flattened);
 
   virtual RsExpr *VisitFunctionTemplateDecl(clang::FunctionTemplateDecl *decl);
 

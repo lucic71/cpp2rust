@@ -13,7 +13,7 @@ pub fn route_0(op: i32, v: i32) -> i32 {
     let base: Value<i32> = <Value<i32>>::default();
     switch!(match (*op.borrow()) {
         __v if __v == 1 => {
-            let base: Value<i32> = Rc::new(RefCell::new(((*v.borrow()) * 10)));
+            *base.borrow_mut() = ((*v.borrow()) * 10);
             if ((((*v.borrow()) > 3) as i32) != 0) {
                 (*out.borrow_mut()) = ((*base.borrow()) + 1);
                 goto!('tail);

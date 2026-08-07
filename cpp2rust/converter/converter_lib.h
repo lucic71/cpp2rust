@@ -105,6 +105,9 @@ std::string GetNamedDeclAsString(const clang::NamedDecl *decl);
 void SetLocalRenames(
     std::unordered_map<const clang::Decl *, std::string> renames);
 
+void AddLocalRenames(
+    const std::unordered_map<const clang::Decl *, std::string> &renames);
+
 std::string DisambiguateAnonymousTag(const clang::TagDecl *tag);
 
 const char *AccessSpecifierAsString(clang::AccessSpecifier spec);

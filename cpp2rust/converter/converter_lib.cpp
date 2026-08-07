@@ -504,6 +504,11 @@ void SetLocalRenames(
   local_renames = std::move(renames);
 }
 
+void AddLocalRenames(
+    const std::unordered_map<const clang::Decl *, std::string> &renames) {
+  local_renames.insert(renames.begin(), renames.end());
+}
+
 std::string GetNamedDeclAsString(const clang::NamedDecl *decl) {
   if (auto it = local_renames.find(decl); it != local_renames.end()) {
     return it->second;
