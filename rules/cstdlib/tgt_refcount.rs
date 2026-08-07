@@ -158,7 +158,62 @@ fn f39(a0: Ptr<u8>) -> i32 {
 }
 
 fn f40(a0: Ptr<u8>) -> Ptr<u8> {
-    panic!("mkdtemp: temporary directory creation is not supported in the refcount model")
+    let __tmpl = a0.clone();
+    let mut __name = __tmpl.to_rust_string();
+    match __name.ends_with("XXXXXX") {
+        false => {
+            libcc2rs::cpp2rust_errno().write(::libc::EINVAL);
+            Ptr::null()
+        }
+        true => {
+            let __base = __name.len() - 6;
+            let mut __seed = ::std::time::SystemTime::now()
+                .duration_since(::std::time::UNIX_EPOCH)
+                .map(|__d| __d.as_nanos() as u64)
+                .unwrap_or(0)
+                ^ ((::std::process::id() as u64) << 32);
+            let mut __attempt = 0;
+            let mut __ret = Ptr::null();
+            while __attempt < 100 && __ret.is_null() {
+                let mut __n = __seed;
+                __name.truncate(__base);
+                let mut __i = 0;
+                while __i < 6 {
+                    __name.push(char::from_digit((__n % 36) as u32, 36).unwrap());
+                    __n /= 36;
+                    __i += 1;
+                }
+                match ::std::fs::create_dir(&__name) {
+                    Ok(()) => {
+                        __tmpl.with_slice_mut(__name.len(), |__s| {
+                            __s.copy_from_slice(__name.as_bytes())
+                        });
+                        __ret = __tmpl.clone();
+                    }
+                    Err(__e) => match __e.kind() == ::std::io::ErrorKind::AlreadyExists {
+                        true => {
+                            __seed = __seed
+                                .wrapping_mul(6364136223846793005)
+                                .wrapping_add(__attempt + 1);
+                        }
+                        false => {
+                            libcc2rs::cpp2rust_errno()
+                                .write(__e.raw_os_error().unwrap_or(::libc::EIO));
+                            __attempt = 100;
+                        }
+                    },
+                }
+                __attempt += 1;
+            }
+            match __ret.is_null() && __attempt < 101 {
+                true => {
+                    libcc2rs::cpp2rust_errno().write(::libc::EEXIST);
+                    Ptr::null()
+                }
+                false => __ret,
+            }
+        }
+    }
 }
 
 fn f41(a0: Ptr<u8>) -> i32 {
