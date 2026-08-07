@@ -100,6 +100,10 @@ pub mod limits_tgt_unsafe;
 pub mod locale_tgt_refcount;
 #[path = r#"../locale/tgt_unsafe.rs"#]
 pub mod locale_tgt_unsafe;
+#[path = r#"../malloc/tgt_refcount.rs"#]
+pub mod malloc_tgt_refcount;
+#[path = r#"../malloc/tgt_unsafe.rs"#]
+pub mod malloc_tgt_unsafe;
 #[path = r#"../map/tgt_refcount.rs"#]
 pub mod map_tgt_refcount;
 #[path = r#"../map/tgt_unsafe.rs"#]
