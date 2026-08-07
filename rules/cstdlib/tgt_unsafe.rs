@@ -102,3 +102,15 @@ unsafe fn f37(a0: *const libc::c_char, a1: *mut *mut libc::c_char, a2: i32) -> i
 unsafe fn f38(a0: *const libc::c_char, a1: *mut *mut libc::c_char, a2: i32) -> u64 {
     libc::strtoul(a0, a1, a2)
 }
+
+unsafe fn f39(a0: *mut libc::c_char) -> i32 {
+    libc::mkstemp(a0)
+}
+
+unsafe fn f40(a0: *mut libc::c_char) -> *mut libc::c_char {
+    libc::mkdtemp(a0)
+}
+
+unsafe fn f41(a0: *const libc::c_char) -> i32 {
+    libc::unsetenv(a0)
+}

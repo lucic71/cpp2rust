@@ -1,6 +1,7 @@
 // Copyright (c) 2022-present INESC-ID.
 // Distributed under the MIT license that can be found in the LICENSE file.
 
+#include <grp.h>
 #include <unistd.h>
 
 int f1(int fd) { return close(fd); }
@@ -66,3 +67,21 @@ void f24(int status) { return _exit(status); }
 int f25(const char *pathname, char *const argv[], char *const envp[]) {
   return execve(pathname, argv, envp);
 }
+
+pid_t f26(void) { return fork(); }
+
+int f27(int oldfd) { return dup(oldfd); }
+
+int f28(int oldfd, int newfd) { return dup2(oldfd, newfd); }
+
+long f29(int name) { return sysconf(name); }
+
+int f30(void) { return _SC_OPEN_MAX; }
+
+int f31(uid_t uid) { return setuid(uid); }
+
+int f32(gid_t gid) { return setgid(gid); }
+
+int f33(size_t size, const gid_t *list) { return setgroups(size, list); }
+
+char **f34(void) { return environ; }

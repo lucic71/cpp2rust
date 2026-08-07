@@ -6,3 +6,5 @@
 void (*f3(int signum, void (*handler)(int)))(int) {
   return signal(signum, handler);
 }
+
+int f4(pid_t pid, int sig) { return kill(pid, sig); }

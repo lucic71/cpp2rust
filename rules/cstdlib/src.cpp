@@ -50,3 +50,9 @@ long f37(const char *nptr, char **endptr, int base) {
 unsigned long f38(const char *nptr, char **endptr, int base) {
   return strtoul(nptr, endptr, base);
 }
+
+int f39(char *tmpl) { return mkstemp(tmpl); }
+
+char *f40(char *tmpl) { return mkdtemp(tmpl); }
+
+int f41(const char *name) { return unsetenv(name); }

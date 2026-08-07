@@ -142,3 +142,16 @@ fn f37(a0: Ptr<u8>, a1: Ptr<Ptr<u8>>, a2: i32) -> i64 {
 fn f38(a0: Ptr<u8>, a1: Ptr<Ptr<u8>>, a2: i32) -> u64 {
     libcc2rs::strtoul_refcount(a0.clone(), a1.clone(), a2)
 }
+
+fn f39(a0: Ptr<u8>) -> i32 {
+    panic!("mkstemp: temporary file creation is not supported in the refcount model")
+}
+
+fn f40(a0: Ptr<u8>) -> Ptr<u8> {
+    panic!("mkdtemp: temporary directory creation is not supported in the refcount model")
+}
+
+fn f41(a0: Ptr<u8>) -> i32 {
+    unsafe { ::std::env::remove_var(a0.to_rust_string()) };
+    0
+}

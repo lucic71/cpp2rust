@@ -108,3 +108,39 @@ unsafe fn f25(
         a2 as *const *const libc::c_char,
     )
 }
+
+unsafe fn f26() -> i32 {
+    libc::fork()
+}
+
+unsafe fn f27(a0: i32) -> i32 {
+    libc::dup(a0)
+}
+
+unsafe fn f28(a0: i32, a1: i32) -> i32 {
+    libc::dup2(a0, a1)
+}
+
+unsafe fn f29(a0: i32) -> i64 {
+    libc::sysconf(a0)
+}
+
+unsafe fn f30() -> i32 {
+    ::libc::_SC_OPEN_MAX
+}
+
+unsafe fn f31(a0: u32) -> i32 {
+    libc::setuid(a0)
+}
+
+unsafe fn f32(a0: u32) -> i32 {
+    libc::setgid(a0)
+}
+
+unsafe fn f33(a0: usize, a1: *const u32) -> i32 {
+    libc::setgroups(a0, a1)
+}
+
+unsafe fn f34() -> *mut *mut libc::c_char {
+    libcc2rs::cpp2rust_environ_unsafe()
+}

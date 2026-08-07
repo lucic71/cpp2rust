@@ -22,3 +22,7 @@ fn f2(a0: i32) -> i32 {
         }
     }
 }
+
+fn f4(a0: i32, a1: i32) -> i32 {
+    panic!("kill: signalling other processes is not supported in the refcount model")
+}

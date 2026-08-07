@@ -19,3 +19,7 @@ unsafe fn f3(a0: i32, a1: Option<unsafe fn(i32)>) -> Option<unsafe fn(i32)> {
         __prev => Some(std::mem::transmute::<usize, unsafe fn(i32)>(__prev)),
     }
 }
+
+unsafe fn f4(a0: i32, a1: i32) -> i32 {
+    libc::kill(a0, a1)
+}

@@ -175,3 +175,68 @@ fn f24(a0: i32) {
 fn f25(a0: Ptr<u8>, a1: Ptr<Ptr<u8>>, a2: Ptr<Ptr<u8>>) -> i32 {
     panic!("execve: process replacement is not supported in the refcount model")
 }
+
+fn f26() -> i32 {
+    panic!("fork: child processes are not supported in the refcount model")
+}
+
+fn f27(a0: i32) -> i32 {
+    match FdRegistry::with_fd(a0, |__fd| nix::unistd::dup(__fd)) {
+        Ok(__new) => FdRegistry::register(__new),
+        Err(__e) => {
+            libcc2rs::cpp2rust_errno().write(__e as i32);
+            -1
+        }
+    }
+}
+
+fn f28(a0: i32, a1: i32) -> i32 {
+    panic!("dup2: fd renumbering is not supported in the refcount model")
+}
+
+fn f29(a0: i32) -> i64 {
+    match nix::unistd::sysconf(match a0 {
+        ::libc::_SC_OPEN_MAX => nix::unistd::SysconfVar::OPEN_MAX,
+        ::libc::_SC_PAGESIZE => nix::unistd::SysconfVar::PAGE_SIZE,
+        _ => panic!("sysconf: unsupported name"),
+    }) {
+        Ok(Some(__v)) => __v,
+        Ok(None) => -1,
+        Err(__e) => {
+            libcc2rs::cpp2rust_errno().write(__e as i32);
+            -1
+        }
+    }
+}
+
+fn f30() -> i32 {
+    ::libc::_SC_OPEN_MAX
+}
+
+fn f31(a0: u32) -> i32 {
+    match nix::unistd::setuid(nix::unistd::Uid::from_raw(a0)) {
+        Ok(()) => 0,
+        Err(__e) => {
+            libcc2rs::cpp2rust_errno().write(__e as i32);
+            -1
+        }
+    }
+}
+
+fn f32(a0: u32) -> i32 {
+    match nix::unistd::setgid(nix::unistd::Gid::from_raw(a0)) {
+        Ok(()) => 0,
+        Err(__e) => {
+            libcc2rs::cpp2rust_errno().write(__e as i32);
+            -1
+        }
+    }
+}
+
+fn f33(a0: usize, a1: Ptr<u32>) -> i32 {
+    panic!("setgroups: supplementary groups are not supported in the refcount model")
+}
+
+fn f34() -> Ptr<Ptr<u8>> {
+    libcc2rs::cpp2rust_environ()
+}

@@ -48,6 +48,10 @@ pub mod deque_tgt_unsafe;
 pub mod dirent_tgt_refcount;
 #[path = r#"../dirent/tgt_unsafe.rs"#]
 pub mod dirent_tgt_unsafe;
+#[path = r#"../dlfcn/tgt_refcount.rs"#]
+pub mod dlfcn_tgt_refcount;
+#[path = r#"../dlfcn/tgt_unsafe.rs"#]
+pub mod dlfcn_tgt_unsafe;
 #[path = r#"../errno/tgt_refcount.rs"#]
 pub mod errno_tgt_refcount;
 #[path = r#"../errno/tgt_unsafe.rs"#]
