@@ -12,7 +12,7 @@ fn f3(a0: usize) -> AnyPtr {
 }
 
 fn f4(a0: AnyPtr, a1: usize) -> AnyPtr {
-    libcc2rs::realloc_refcount(a0, a1)
+    libcc2rs::realloc_refcount(a0.clone(), a1)
 }
 
 fn f5(a0: usize, a1: usize) -> AnyPtr {
