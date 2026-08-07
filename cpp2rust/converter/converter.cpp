@@ -3895,7 +3895,7 @@ RsExpr *Converter::VisitSwitchStmt(clang::SwitchStmt *stmt) {
 
   std::vector<RsExpr *> parts;
   if (needs_switch_macro) {
-    auto *cond = ConvertExpr(stmt->getCond());
+    auto *cond = ConvertRValue(stmt->getCond());
     parts.push_back(Text("match"));
     parts.push_back(cond);
   } else {
