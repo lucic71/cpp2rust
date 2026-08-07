@@ -20,6 +20,33 @@ unsafe fn main_0() -> i32 {
         p
     };
     assert!(((((q) == (buf.as_mut_ptr().offset(((1) as isize)))) as i32) != 0));
+    let mut src: [libc::c_char; 2] = [
+        (('a' as i32) as libc::c_char),
+        (('b' as i32) as libc::c_char),
+    ];
+    let mut dst: [libc::c_char; 2] = [
+        (('x' as i32) as libc::c_char),
+        (('y' as i32) as libc::c_char),
+    ];
+    let mut s: *mut libc::c_char = src.as_mut_ptr();
+    let mut d: *mut libc::c_char = dst.as_mut_ptr();
+    let mut last: libc::c_char = {
+        let __rhs = (*s.postfix_inc());
+        (*d.postfix_inc()) = __rhs;
+        __rhs
+    };
+    assert!(((((last as i32) == ('a' as i32)) as i32) != 0));
+    assert!(
+        (((((((d) == (dst.as_mut_ptr().offset(((1) as isize)))) as i32) != 0)
+            && ((((s) == (src.as_mut_ptr().offset(((1) as isize)))) as i32) != 0))
+            as i32)
+            != 0)
+    );
+    assert!(
+        (((((((dst[((0) as usize)] as i32) == ('a' as i32)) as i32) != 0)
+            && ((((dst[((1) as usize)] as i32) == ('y' as i32)) as i32) != 0)) as i32)
+            != 0)
+    );
     let mut out: libc::c_char = (0 as libc::c_char);
     'switch: {
         let __match_cond = (({

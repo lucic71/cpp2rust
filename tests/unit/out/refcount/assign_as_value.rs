@@ -26,6 +26,41 @@ fn main_0() -> i32 {
         }) as i32)
             != 0)
     );
+    let src: Value<Box<[u8]>> = Rc::new(RefCell::new(Box::new([
+        (('a' as i32) as u8),
+        (('b' as i32) as u8),
+    ])));
+    let dst: Value<Box<[u8]>> = Rc::new(RefCell::new(Box::new([
+        (('x' as i32) as u8),
+        (('y' as i32) as u8),
+    ])));
+    let s: Value<Ptr<u8>> = Rc::new(RefCell::new((src.as_pointer() as Ptr<u8>)));
+    let d: Value<Ptr<u8>> = Rc::new(RefCell::new((dst.as_pointer() as Ptr<u8>)));
+    let last: Value<u8> = Rc::new(RefCell::new({
+        let __rhs = ((*s.borrow_mut()).postfix_inc().read());
+        (*d.borrow_mut()).postfix_inc().write(__rhs);
+        __rhs
+    }));
+    assert!((((((*last.borrow()) as i32) == ('a' as i32)) as i32) != 0));
+    assert!(
+        (((((({
+            let _lhs = (*d.borrow()).clone();
+            _lhs == (dst.as_pointer() as Ptr<u8>).offset(((1) as isize))
+        }) as i32)
+            != 0)
+            && ((({
+                let _lhs = (*s.borrow()).clone();
+                _lhs == (src.as_pointer() as Ptr<u8>).offset(((1) as isize))
+            }) as i32)
+                != 0)) as i32)
+            != 0)
+    );
+    assert!(
+        ((((((((*dst.borrow())[(0) as usize] as i32) == ('a' as i32)) as i32) != 0)
+            && (((((*dst.borrow())[(1) as usize] as i32) == ('y' as i32)) as i32) != 0))
+            as i32)
+            != 0)
+    );
     let out: Value<u8> = <Value<u8>>::default();
     'switch: {
         let __match_cond = (({

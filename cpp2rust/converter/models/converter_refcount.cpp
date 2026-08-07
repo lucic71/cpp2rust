@@ -2566,7 +2566,9 @@ RsExpr *ConverterRefCount::ConvertAssignment(clang::Expr *lhs, clang::Expr *rhs,
   auto *rhs_node = ConvertFreshRValue(rhs, lhs->getType());
 
   std::vector<RsExpr *> parts;
-  bool hoisted_rhs = MayCauseBorrowMutError(lhs, rhs);
+  bool yields_rhs =
+      !isVoid() && assign_operator == "=" && lhs->HasSideEffects(ctx_);
+  bool hoisted_rhs = yields_rhs || MayCauseBorrowMutError(lhs, rhs);
   if (hoisted_rhs) {
     parts.push_back(Cat(Text(keyword::kLet), Text("__rhs"),
                         Text(token::kAssign), rhs_node,
@@ -2584,7 +2586,7 @@ RsExpr *ConverterRefCount::ConvertAssignment(clang::Expr *lhs, clang::Expr *rhs,
 
   if (!isVoid()) {
     parts.push_back(Text(token::kSemiColon));
-    parts.push_back(ConvertFreshRValue(lhs));
+    parts.push_back(yields_rhs ? Text("__rhs") : ConvertFreshRValue(lhs));
   }
   return Braces(arena_.New<Concat>(std::move(parts)), !isVoid() || hoisted_rhs);
 }

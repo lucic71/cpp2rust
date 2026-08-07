@@ -4303,6 +4303,14 @@ RsExpr *Converter::ConvertAssignment(clang::Expr *lhs, clang::Expr *rhs,
   }
   auto *rhs_node = ConvertFreshRValue(rhs, lhs->getType());
 
+  if (!isVoid() && assign_operator == "=" && lhs->HasSideEffects(ctx_)) {
+    auto *node = Cat(Text(keyword::kLet), Text("__rhs"), Text(token::kAssign),
+                     rhs_node, Text(token::kSemiColon), lhs_node,
+                     Text(token::kAssign), Text("__rhs"),
+                     Text(token::kSemiColon), Text("__rhs"));
+    return Braces(node, true);
+  }
+
   auto *node = Cat(lhs_node, Text(std::string(assign_operator)), rhs_node);
   if (!isVoid()) {
     node = Cat(node, Text(token::kSemiColon), ConvertRValue(lhs));
