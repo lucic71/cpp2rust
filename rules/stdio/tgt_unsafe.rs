@@ -153,3 +153,7 @@ unsafe fn f35(a0: *mut ::libc::FILE, a1: *const libc::c_char, a2: libcc2rs::VaLi
 unsafe extern "C" {
     fn f36(a0: *const libc::c_char, ...) -> i32;
 }
+
+unsafe fn f37(a0: i32, a1: *mut ::libc::FILE) -> i32 {
+    libc::fputc(a0, a1)
+}

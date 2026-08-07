@@ -241,3 +241,11 @@ fn f36(a0: Ptr<u8>, va: &[VaArg]) -> i32 {
         false => -1,
     }
 }
+
+fn f37(a0: i32, a1: Ptr<CFile>) -> i32 {
+    let __c = a0 as u8;
+    match a1.clone().with_mut(|__f| __f.write(&[__c])) {
+        1 => __c as i32,
+        _ => -1,
+    }
+}

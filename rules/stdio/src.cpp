@@ -112,3 +112,5 @@ template <typename... Args>
 int f36(const char *a0, Args... args) {
   return printf(a0, args...);
 }
+
+int f37(int a0, FILE *a1) { return putc(a0, a1); }
