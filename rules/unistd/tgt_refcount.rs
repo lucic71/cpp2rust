@@ -234,7 +234,19 @@ fn f32(a0: u32) -> i32 {
 }
 
 fn f33(a0: usize, a1: Ptr<u32>) -> i32 {
-    panic!("setgroups: supplementary groups are not supported in the refcount model")
+    let mut __gids = Vec::with_capacity(a0);
+    let mut __i = 0;
+    while __i < a0 {
+        __gids.push(nix::unistd::Gid::from_raw(a1.clone().offset(__i).read()));
+        __i += 1;
+    }
+    match nix::unistd::setgroups(&__gids) {
+        Ok(()) => 0,
+        Err(__e) => {
+            libcc2rs::cpp2rust_errno().write(__e as i32);
+            -1
+        }
+    }
 }
 
 fn f34() -> Ptr<Ptr<u8>> {
