@@ -1636,6 +1636,12 @@ impl AnyPtr {
     }
 }
 
+impl fmt::Debug for AnyPtr {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "{:#x}", self.to_int())
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
