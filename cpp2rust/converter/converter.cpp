@@ -458,9 +458,16 @@ RsExpr *Converter::ConvertGotoBlock(clang::CompoundStmt *body) {
     if (auto *label = clang::dyn_cast<clang::LabelStmt>(child)) {
       block.push_back(Braces(arena_.New<Concat>(std::move(arm))));
       arm.clear();
-      block.push_back(
-          Text(std::format("'{}: ", label->getDecl()->getName().str())));
-      arm.push_back(ConvertFullStmt(label->getSubStmt()));
+      clang::Stmt *inner = label;
+      while (auto *nested = clang::dyn_cast<clang::LabelStmt>(inner)) {
+        block.push_back(
+            Text(std::format("'{}: ", nested->getDecl()->getName().str())));
+        if (clang::isa<clang::LabelStmt>(nested->getSubStmt())) {
+          block.push_back(Braces(Text("")));
+        }
+        inner = nested->getSubStmt();
+      }
+      arm.push_back(ConvertFullStmt(inner));
     } else {
       arm.push_back(ConvertFullStmt(child));
     }
