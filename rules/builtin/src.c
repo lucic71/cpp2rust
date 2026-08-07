@@ -1,3 +1,5 @@
+#include <stddef.h>
+
 int f12(long a, long b, long *r) { return __builtin_mul_overflow(a, b, r); }
 unsigned long long f14(unsigned long long x) { return __builtin_bswap64(x); }
 int f15(unsigned long long x) { return __builtin_ctzll(x); }
@@ -13,3 +15,4 @@ int f26(double x) { return __builtin_isfinite(x); }
 int f27(double x) { return __builtin_signbit(x); }
 int f28(double x) { return __builtin_isinf_sign(x); }
 void *f29(unsigned int a0) { return __builtin_frame_address(0); }
+void *f30(size_t a0) { return __builtin_alloca(a0); }
