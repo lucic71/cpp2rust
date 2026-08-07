@@ -98,7 +98,7 @@ unsafe fn f28(a0: f64) -> i32 {
 }
 
 unsafe fn f29(a0: u32) -> *mut ::libc::c_void {
-    (usize::MAX / 2) as *mut ::libc::c_void
+    ::stacker::remaining_stack().unwrap() as *mut ::libc::c_void
 }
 
 unsafe fn f30(a0: usize) -> *mut ::libc::c_void {

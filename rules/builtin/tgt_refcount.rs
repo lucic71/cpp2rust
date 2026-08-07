@@ -36,7 +36,7 @@ fn f28(a0: f64) -> i32 {
 }
 
 fn f29(a0: u32) -> AnyPtr {
-    AnyPtr::from_int(usize::MAX / 2)
+    AnyPtr::from_int(::stacker::remaining_stack().unwrap())
 }
 
 fn f30(a0: usize) -> AnyPtr {

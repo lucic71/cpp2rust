@@ -16,3 +16,4 @@ rustls-ffi = { version = "0.15.3", default-features = false }
 nix = { version = "0.30", features = ["socket", "net", "fs", "poll", "time", "user", "dir", "term", "event", "hostname", "resource", "process", "uio", "signal"] }
 jiff = "0.2"
 xattr = "1"
+stacker = "0.1"
