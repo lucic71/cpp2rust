@@ -1347,6 +1347,12 @@ RsExpr *ConverterRefCount::ConvertPrintf(clang::CallExpr *expr) {
   } else {
     return nullptr;
   }
+  for (size_t i = 0; i < format.size(); ++i) {
+    if (format[i] == '{' || format[i] == '}') {
+      format.insert(i, 1, format[i]);
+      ++i;
+    }
+  }
   bool ends_newline = format.ends_with("\\n\"");
 
   const char *macro = nullptr;
