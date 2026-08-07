@@ -167,3 +167,11 @@ fn f17(a0: Ptr<u8>) -> i32 {
         }
     }
 }
+
+fn f24(a0: i32) {
+    ::std::process::exit(a0)
+}
+
+fn f25(a0: Ptr<u8>, a1: Ptr<Ptr<u8>>, a2: Ptr<Ptr<u8>>) -> i32 {
+    panic!("execve: process replacement is not supported in the refcount model")
+}

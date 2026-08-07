@@ -92,3 +92,19 @@ unsafe fn f22() -> ::libc::uid_t {
 unsafe fn f23(a0: i32, a1: ::libc::uid_t, a2: ::libc::gid_t) -> i32 {
     libcc2rs::fchown_unsafe(a0, a1, a2)
 }
+
+unsafe fn f24(a0: i32) {
+    libc::_exit(a0)
+}
+
+unsafe fn f25(
+    a0: *const libc::c_char,
+    a1: *const *mut libc::c_char,
+    a2: *const *mut libc::c_char,
+) -> i32 {
+    libc::execve(
+        a0,
+        a1 as *const *const libc::c_char,
+        a2 as *const *const libc::c_char,
+    )
+}

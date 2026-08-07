@@ -39,34 +39,42 @@ pub fn test_mul_overflow_long_8() {
     let r: Value<i64> = Rc::new(RefCell::new(0_i64));
     assert!(
         ((!{
-            let (val, ovf) = 3_i64.overflowing_mul(7_i64);
-            (r.as_pointer()).write(val);
-            ovf
+            let __wide = (3_i64 as i128).wrapping_mul(7_i64 as i128);
+            (r.as_pointer()).clone().write(__wide as _);
+            (3_i64 as i128).checked_mul(7_i64 as i128).is_none()
+                || ((r.as_pointer()).read() as i128) != __wide
         } as i32)
             != 0)
     );
     assert!(((((*r.borrow()) == 21_i64) as i32) != 0));
     assert!({
-        let (val, ovf) = 9223372036854775807_i64.overflowing_mul(2_i64);
-        (r.as_pointer()).write(val);
-        ovf
+        let __wide = (9223372036854775807_i64 as i128).wrapping_mul(2_i64 as i128);
+        (r.as_pointer()).clone().write(__wide as _);
+        (9223372036854775807_i64 as i128)
+            .checked_mul(2_i64 as i128)
+            .is_none()
+            || ((r.as_pointer()).read() as i128) != __wide
     });
 }
 pub fn test_mul_overflow_long_long_9() {
     let r: Value<i64> = Rc::new(RefCell::new(0_i64));
     assert!(
         ((!{
-            let (val, ovf) = 1000_i64.overflowing_mul(1000_i64);
-            (r.as_pointer()).write(val);
-            ovf
+            let __wide = (1000_i64 as i128).wrapping_mul(1000_i64 as i128);
+            (r.as_pointer()).clone().write(__wide as _);
+            (1000_i64 as i128).checked_mul(1000_i64 as i128).is_none()
+                || ((r.as_pointer()).read() as i128) != __wide
         } as i32)
             != 0)
     );
     assert!(((((*r.borrow()) == 1000000_i64) as i32) != 0));
     assert!({
-        let (val, ovf) = 9223372036854775807_i64.overflowing_mul(2_i64);
-        (r.as_pointer()).write(val);
-        ovf
+        let __wide = (9223372036854775807_i64 as i128).wrapping_mul(2_i64 as i128);
+        (r.as_pointer()).clone().write(__wide as _);
+        (9223372036854775807_i64 as i128)
+            .checked_mul(2_i64 as i128)
+            .is_none()
+            || ((r.as_pointer()).read() as i128) != __wide
     });
 }
 pub fn main() {

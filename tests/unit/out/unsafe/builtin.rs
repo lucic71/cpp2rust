@@ -39,34 +39,42 @@ pub unsafe fn test_mul_overflow_long_8() {
     let mut r: i64 = 0_i64;
     assert!(
         ((!{
-            let (val, ovf) = 3_i64.overflowing_mul(7_i64);
-            *(&raw mut r as *mut i64) = val;
-            ovf
+            let __wide = (3_i64 as i128).wrapping_mul(7_i64 as i128);
+            *(&raw mut r as *mut i64) = __wide as _;
+            (3_i64 as i128).checked_mul(7_i64 as i128).is_none()
+                || (*(&raw mut r as *mut i64) as i128) != __wide
         } as i32)
             != 0)
     );
     assert!(((((r) == (21_i64)) as i32) != 0));
     assert!({
-        let (val, ovf) = 9223372036854775807_i64.overflowing_mul(2_i64);
-        *(&raw mut r as *mut i64) = val;
-        ovf
+        let __wide = (9223372036854775807_i64 as i128).wrapping_mul(2_i64 as i128);
+        *(&raw mut r as *mut i64) = __wide as _;
+        (9223372036854775807_i64 as i128)
+            .checked_mul(2_i64 as i128)
+            .is_none()
+            || (*(&raw mut r as *mut i64) as i128) != __wide
     });
 }
 pub unsafe fn test_mul_overflow_long_long_9() {
     let mut r: i64 = 0_i64;
     assert!(
         ((!{
-            let (val, ovf) = 1000_i64.overflowing_mul(1000_i64);
-            *(&raw mut r as *mut i64) = val;
-            ovf
+            let __wide = (1000_i64 as i128).wrapping_mul(1000_i64 as i128);
+            *(&raw mut r as *mut i64) = __wide as _;
+            (1000_i64 as i128).checked_mul(1000_i64 as i128).is_none()
+                || (*(&raw mut r as *mut i64) as i128) != __wide
         } as i32)
             != 0)
     );
     assert!(((((r) == (1000000_i64)) as i32) != 0));
     assert!({
-        let (val, ovf) = 9223372036854775807_i64.overflowing_mul(2_i64);
-        *(&raw mut r as *mut i64) = val;
-        ovf
+        let __wide = (9223372036854775807_i64 as i128).wrapping_mul(2_i64 as i128);
+        *(&raw mut r as *mut i64) = __wide as _;
+        (9223372036854775807_i64 as i128)
+            .checked_mul(2_i64 as i128)
+            .is_none()
+            || (*(&raw mut r as *mut i64) as i128) != __wide
     });
 }
 pub fn main() {

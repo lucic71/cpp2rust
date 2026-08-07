@@ -178,6 +178,10 @@ pub mod unistd_tgt_unsafe;
 pub mod vector_tgt_refcount;
 #[path = r#"../vector/tgt_unsafe.rs"#]
 pub mod vector_tgt_unsafe;
+#[path = r#"../wait/tgt_refcount.rs"#]
+pub mod wait_tgt_refcount;
+#[path = r#"../wait/tgt_unsafe.rs"#]
+pub mod wait_tgt_unsafe;
 #[path = r#"../xattr/tgt_refcount.rs"#]
 pub mod xattr_tgt_refcount;
 #[path = r#"../xattr/tgt_unsafe.rs"#]

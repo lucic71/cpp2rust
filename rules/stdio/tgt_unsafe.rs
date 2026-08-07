@@ -157,3 +157,21 @@ unsafe extern "C" {
 unsafe fn f37(a0: i32, a1: *mut ::libc::FILE) -> i32 {
     libc::fputc(a0, a1)
 }
+
+unsafe fn f38(a0: i32) -> i32 {
+    libc::putchar(a0)
+}
+
+unsafe fn f39(a0: *mut libc::c_char, a1: usize, a2: *const libc::c_char, a3: libcc2rs::VaList) -> i32 {
+    let __s = libcc2rs::format_c(
+        ::std::ffi::CStr::from_ptr(a2).to_str().unwrap(),
+        a3.remaining(),
+    );
+    let __b = __s.as_bytes();
+    if a1 > 0 {
+        let __n = ::std::cmp::min(__b.len(), a1 - 1);
+        ::std::ptr::copy_nonoverlapping(__b.as_ptr(), a0 as *mut u8, __n);
+        *a0.add(__n) = 0;
+    }
+    __b.len() as i32
+}

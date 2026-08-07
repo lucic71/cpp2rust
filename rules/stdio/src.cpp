@@ -114,3 +114,9 @@ int f36(const char *a0, Args... args) {
 }
 
 int f37(int a0, FILE *a1) { return putc(a0, a1); }
+
+int f38(int a0) { return putchar(a0); }
+
+int f39(char *a0, size_t a1, const char *a2, va_list ap) {
+  return vsnprintf(a0, a1, a2, ap);
+}

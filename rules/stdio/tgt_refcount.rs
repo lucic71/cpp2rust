@@ -249,3 +249,24 @@ fn f37(a0: i32, a1: Ptr<CFile>) -> i32 {
         _ => -1,
     }
 }
+
+fn f38(a0: i32) -> i32 {
+    let __c = a0 as u8;
+    match libcc2rs::c_stdout().with_mut(|__f| __f.write(&[__c])) {
+        1 => __c as i32,
+        _ => -1,
+    }
+}
+
+fn f39(a0: Ptr<u8>, a1: usize, a2: Ptr<u8>, a3: VaList) -> i32 {
+    let __s = libcc2rs::format_c(&a2.to_rust_string(), a3.remaining());
+    let __b = __s.as_bytes();
+    if a1 > 0 {
+        let __n = ::std::cmp::min(__b.len(), a1 - 1);
+        a0.clone().with_slice_mut(__n + 1, |__dst| {
+            __dst[..__n].copy_from_slice(&__b[..__n]);
+            __dst[__n] = 0;
+        });
+    }
+    __b.len() as i32
+}

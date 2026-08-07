@@ -13,3 +13,15 @@ fn f17(a0: AnyPtr, va: &[VaArg]) {
     ();
 }
 
+
+fn f25(a0: f64) -> i32 {
+    a0.is_nan() as i32
+}
+
+fn f26(a0: f64) -> i32 {
+    a0.is_finite() as i32
+}
+
+fn f27(a0: f64) -> i32 {
+    a0.is_sign_negative() as i32
+}

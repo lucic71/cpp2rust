@@ -13,3 +13,15 @@ unsafe fn f3(a0: f64) -> f64 {
 unsafe fn f4(a0: f64) -> f64 {
     a0.abs()
 }
+unsafe fn f5(a0: f64) -> f64 {
+    a0.trunc()
+}
+unsafe fn f6(a0: f64) -> f64 {
+    a0.floor()
+}
+unsafe fn f7(a0: f64, a1: f64) -> f64 {
+    a0 % a1
+}
+unsafe fn f8(a0: f64) -> f64 {
+    a0.ceil()
+}

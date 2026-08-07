@@ -75,3 +75,15 @@ unsafe fn f23() {
     ::std::unreachable!()
 }
 
+
+unsafe fn f25(a0: f64) -> i32 {
+    a0.is_nan() as i32
+}
+
+unsafe fn f26(a0: f64) -> i32 {
+    a0.is_finite() as i32
+}
+
+unsafe fn f27(a0: f64) -> i32 {
+    a0.is_sign_negative() as i32
+}

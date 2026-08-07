@@ -60,3 +60,9 @@ pid_t f21(void) { return getpid(); }
 uid_t f22(void) { return getuid(); }
 
 int f23(int fd, uid_t owner, gid_t group) { return fchown(fd, owner, group); }
+
+void f24(int status) { return _exit(status); }
+
+int f25(const char *pathname, char *const argv[], char *const envp[]) {
+  return execve(pathname, argv, envp);
+}
