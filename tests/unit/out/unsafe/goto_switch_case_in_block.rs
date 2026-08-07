@@ -30,9 +30,12 @@ pub unsafe fn route_0(mut op: i32, mut v: i32) -> i32 {
             out = -v;
             break;
         }
-        _ => {
+        __v if false => '__default_1: {
             out = 99;
             break;
+        }
+        _ => {
+            goto!('__default_1);
         }
     });
     return out;

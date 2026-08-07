@@ -31,9 +31,12 @@ pub fn classify_0(kind: i32, x: i32) -> i32 {
             (*len.borrow_mut()) = 50;
             goto!('finish_width);
         }
-        _ => {
+        __v if false => '__default_1: {
             (*width.borrow_mut()) = -1_i32;
             break;
+        }
+        _ => {
+            goto!('__default_1);
         }
     });
     return (*width.borrow());

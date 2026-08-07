@@ -32,9 +32,12 @@ pub fn route_0(op: i32, v: i32) -> i32 {
             (*out.borrow_mut()) = -(*v.borrow());
             break;
         }
-        _ => {
+        __v if false => '__default_1: {
             (*out.borrow_mut()) = 99;
             break;
+        }
+        _ => {
+            goto!('__default_1);
         }
     });
     return (*out.borrow());

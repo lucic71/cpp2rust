@@ -35,7 +35,7 @@ pub fn dispatch_0(kind: i32, v: i32) -> i32 {
                     goto!('__f4_case);
                 }
                 _ => {
-                    goto!('__f5_case);
+                    goto!('__default_1);
                 }
             }
         }
@@ -50,7 +50,7 @@ pub fn dispatch_0(kind: i32, v: i32) -> i32 {
             (*acc.borrow_mut()) = ((*scaled.borrow()) + (*v.borrow()));
             goto!('__f2_swexit);
         }
-        '__f5_case: {
+        '__default_1: {
             (*acc.borrow_mut()) = 999;
             goto!('__f2_swexit);
         }
@@ -88,7 +88,7 @@ pub fn step_1(p: Ptr<u8>) -> i32 {
                     goto!('__f4_case);
                 }
                 _ => {
-                    goto!('__f5_case);
+                    goto!('__default_3);
                 }
             }
         }
@@ -103,7 +103,7 @@ pub fn step_1(p: Ptr<u8>) -> i32 {
             (*acc.borrow_mut()) += 10;
             goto!('__f2_swexit);
         }
-        '__f5_case: {
+        '__default_3: {
             (*acc.borrow_mut()) = 100;
             goto!('__f2_swexit);
         }

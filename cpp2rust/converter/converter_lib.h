@@ -204,7 +204,7 @@ clang::Expr *NormalizeToBool(clang::Expr *expr, clang::ASTContext &ctx);
 
 struct SwitchArm {
   std::vector<clang::Stmt *> body;
-  llvm::StringRef label;
+  std::string label;
   clang::SwitchCase *head;
   bool is_default_case;
   bool has_fallthrough;

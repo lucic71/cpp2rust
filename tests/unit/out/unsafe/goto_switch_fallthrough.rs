@@ -19,9 +19,12 @@ pub unsafe fn sm_0(mut n: i32) -> i32 {
                     ret += 10;
                     goto!('out);
                 }
-                _ => {
+                __v if false => '__default_1: {
                     ret += 100;
                     break;
+                }
+                _ => {
+                    goto!('__default_1);
                 }
             });
             ret += 1000;
@@ -50,9 +53,12 @@ pub unsafe fn scan_1(mut p: *const libc::c_char) -> i32 {
                     ret += 10;
                     goto!('out);
                 }
-                _ => {
+                __v if false => '__default_3: {
                     ret = 100;
                     break;
+                }
+                _ => {
+                    goto!('__default_3);
                 }
             });
             ret += 1000;

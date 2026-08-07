@@ -29,9 +29,12 @@ pub unsafe fn classify_0(mut kind: i32, mut x: i32) -> i32 {
             len = 50;
             goto!('finish_width);
         }
-        _ => {
+        __v if false => '__default_1: {
             width = -1_i32;
             break;
+        }
+        _ => {
+            goto!('__default_1);
         }
     });
     return width;

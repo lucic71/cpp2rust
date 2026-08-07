@@ -20,9 +20,12 @@ pub fn sm_0(n: i32) -> i32 {
                     (*ret.borrow_mut()) += 10;
                     goto!('out);
                 }
-                _ => {
+                __v if false => '__default_1: {
                     (*ret.borrow_mut()) += 100;
                     break;
+                }
+                _ => {
+                    goto!('__default_1);
                 }
             });
             (*ret.borrow_mut()) += 1000;
@@ -52,9 +55,12 @@ pub fn scan_1(p: Ptr<u8>) -> i32 {
                     (*ret.borrow_mut()) += 10;
                     goto!('out);
                 }
-                _ => {
+                __v if false => '__default_3: {
                     (*ret.borrow_mut()) = 100;
                     break;
+                }
+                _ => {
+                    goto!('__default_3);
                 }
             });
             (*ret.borrow_mut()) += 1000;

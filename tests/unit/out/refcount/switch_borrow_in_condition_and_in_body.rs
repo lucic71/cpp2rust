@@ -10,8 +10,11 @@ pub fn borrow_in_condition_and_in_body_0(x: i32) -> i32 {
     let x: Value<i32> = Rc::new(RefCell::new(x));
     switch!(match (*x.borrow()) {
         __v if __v == 0 => {}
-        _ => {
+        __v if false => '__default_1: {
             return ((*x.borrow()) + 1);
+        }
+        _ => {
+            goto!('__default_1);
         }
     });
     panic!("ub: non-void function does not return a value")

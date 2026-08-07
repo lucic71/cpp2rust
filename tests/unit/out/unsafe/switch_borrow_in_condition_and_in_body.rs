@@ -9,8 +9,11 @@ use std::rc::Rc;
 pub unsafe fn borrow_in_condition_and_in_body_0(mut x: i32) -> i32 {
     switch!(match x {
         __v if __v == 0 => {}
-        _ => {
+        __v if false => '__default_1: {
             return ((x) + (1));
+        }
+        _ => {
+            goto!('__default_1);
         }
     });
     panic!("ub: non-void function does not return a value")

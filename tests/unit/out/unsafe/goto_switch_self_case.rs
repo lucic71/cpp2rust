@@ -17,9 +17,12 @@ pub unsafe fn sm_0(mut n: i32) -> i32 {
             steps += 10;
             goto!('target);
         }
-        _ => {
+        __v if false => '__default_1: {
             steps = -1_i32;
             break;
+        }
+        _ => {
+            goto!('__default_1);
         }
     });
     return steps;

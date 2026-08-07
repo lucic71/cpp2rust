@@ -30,7 +30,7 @@ pub unsafe fn dispatch_0(mut kind: i32, mut v: i32) -> i32 {
                     goto!('__f4_case);
                 }
                 _ => {
-                    goto!('__f5_case);
+                    goto!('__default_1);
                 }
             }
         }
@@ -45,7 +45,7 @@ pub unsafe fn dispatch_0(mut kind: i32, mut v: i32) -> i32 {
             acc = ((scaled) + (v));
             goto!('__f2_swexit);
         }
-        '__f5_case: {
+        '__default_1: {
             acc = 999;
             goto!('__f2_swexit);
         }
@@ -82,7 +82,7 @@ pub unsafe fn step_1(mut p: *const libc::c_char) -> i32 {
                     goto!('__f4_case);
                 }
                 _ => {
-                    goto!('__f5_case);
+                    goto!('__default_3);
                 }
             }
         }
@@ -97,7 +97,7 @@ pub unsafe fn step_1(mut p: *const libc::c_char) -> i32 {
             acc += 10;
             goto!('__f2_swexit);
         }
-        '__f5_case: {
+        '__default_3: {
             acc = 100;
             goto!('__f2_swexit);
         }

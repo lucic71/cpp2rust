@@ -15,9 +15,12 @@ pub unsafe fn stacked_with_inner_fallthrough_0(mut x: i32, mut flag: i32) -> i32
                 break;
             };
         }
-        _ => {
+        __v if false => '__default_1: {
             r = 999;
             break;
+        }
+        _ => {
+            goto!('__default_1);
         }
     });
     return r;

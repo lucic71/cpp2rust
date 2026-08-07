@@ -493,7 +493,7 @@ static void ScanGotoScopes(
       std::vector<clang::CompoundStmt *> flattened;
       for (const auto &arm : AnalyzeSwitchArms(sw_body, &flattened)) {
         if (!arm.label.empty()) {
-          owner.emplace(arm.label.str(), sw_body);
+          owner.emplace(arm.label, sw_body);
         }
       }
       transparent.insert(flattened.begin(), flattened.end());
@@ -729,7 +729,7 @@ RsExpr *Converter::TryConvertFlattenedBody(clang::CompoundStmt *body) {
       auto exit = fresh("swexit");
       std::vector<std::string> labels;
       for (const auto &arm : sw_arms) {
-        labels.push_back(arm.label.empty() ? fresh("case") : arm.label.str());
+        labels.push_back(arm.label.empty() ? fresh("case") : arm.label);
       }
 
       std::string default_label = exit;
@@ -3818,7 +3818,7 @@ RsExpr *Converter::EmitSwitchArm(const SwitchArm &arm, bool is_default) {
     parts.push_back(ConvertSwitchCaseCondition(arm.head));
   }
   if (!arm.label.empty()) {
-    parts.push_back(Text(std::format("'{}: ", arm.label.str())));
+    parts.push_back(Text(std::format("'{}: ", arm.label)));
   }
   std::vector<RsExpr *> body;
   for (auto *t : arm.body) {
@@ -3858,18 +3858,33 @@ RsExpr *Converter::VisitSwitchStmt(clang::SwitchStmt *stmt) {
 
   std::vector<RsExpr *> match_arms;
   const SwitchArm *default_arm = nullptr;
+  std::string default_label;
   for (const auto &arm : arms) {
     if (arm.is_default_case) {
       default_arm = &arm;
+      if (!needs_switch_macro) {
+        continue;
+      }
+      default_label = arm.label;
+      std::vector<RsExpr *> body;
+      for (auto *t : arm.body) {
+        body.push_back(ConvertFullStmt(t));
+      }
+      match_arms.push_back(Cat(
+          Text(std::format("__v if false => '{}: ", default_label)),
+          Braces(arena_.New<Concat>(std::move(body))), Text(token::kComma)));
       continue;
     }
     match_arms.push_back(EmitSwitchArm(arm, /*is_default=*/false));
   }
 
-  if (default_arm) {
-    match_arms.push_back(EmitSwitchArm(*default_arm, /*is_default=*/true));
-  } else {
+  if (default_arm == nullptr) {
     match_arms.push_back(Text(R"( _ => {})"));
+  } else if (needs_switch_macro) {
+    match_arms.push_back(
+        Text(std::format("_ => {{ goto!('{}); }},", default_label)));
+  } else {
+    match_arms.push_back(EmitSwitchArm(*default_arm, /*is_default=*/true));
   }
 
   parts.push_back(Braces(arena_.New<Concat>(std::move(match_arms))));

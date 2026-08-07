@@ -23,9 +23,12 @@ pub fn fallthrough_chain_0(x: i32) -> i32 {
             (*r.borrow_mut()) += 8;
             break;
         }
-        _ => {
+        __v if false => '__default_1: {
             (*r.borrow_mut()) = -1_i32;
             break;
+        }
+        _ => {
+            goto!('__default_1);
         }
     });
     return (*r.borrow());

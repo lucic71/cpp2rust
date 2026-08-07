@@ -1128,18 +1128,18 @@ AccumulateSwitchStmt(std::vector<SwitchArm> &arms, clang::Stmt *s,
     auto *compound = clang::dyn_cast<clang::CompoundStmt>(last);
     if (compound && flattened && HasInteriorSwitchEntry(compound)) {
       flattened->push_back(compound);
-      arms.emplace_back(std::vector<clang::Stmt *>{}, label, sc,
+      arms.emplace_back(std::vector<clang::Stmt *>{}, label.str(), sc,
                         CaseChainHasDefault(sc), /*has_fallthrough=*/false);
       FlattenCaseCompound(arms, compound, flattened);
       return;
     }
-    arms.emplace_back(std::vector<clang::Stmt *>{last}, label, sc,
+    arms.emplace_back(std::vector<clang::Stmt *>{last}, label.str(), sc,
                       CaseChainHasDefault(sc),
                       /*has_fallthrough=*/false);
     return;
   }
   if (!label.empty()) {
-    arms.emplace_back(std::vector<clang::Stmt *>{inner}, label,
+    arms.emplace_back(std::vector<clang::Stmt *>{inner}, label.str(),
                       /*head=*/nullptr, /*is_default_case=*/false,
                       /*has_fallthrough=*/false);
     return;
@@ -1160,6 +1160,18 @@ AnalyzeSwitchArms(clang::CompoundStmt *body,
   for (SwitchArm &arm : arms) {
     arm.has_fallthrough =
         arm.body.empty() || SwitchCaseHasFallthrough(arm.body.back());
+  }
+
+  bool needs_labels = std::ranges::any_of(arms, [](const SwitchArm &arm) {
+    return !arm.label.empty() || arm.has_fallthrough;
+  });
+  if (needs_labels) {
+    static size_t default_label_counter = 0;
+    for (SwitchArm &arm : arms) {
+      if (arm.is_default_case && arm.label.empty()) {
+        arm.label = std::format("__default_{}", default_label_counter++);
+      }
+    }
   }
   return arms;
 }

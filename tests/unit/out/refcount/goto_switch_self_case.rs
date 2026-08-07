@@ -18,9 +18,12 @@ pub fn sm_0(n: i32) -> i32 {
             (*steps.borrow_mut()) += 10;
             goto!('target);
         }
-        _ => {
+        __v if false => '__default_1: {
             (*steps.borrow_mut()) = -1_i32;
             break;
+        }
+        _ => {
+            goto!('__default_1);
         }
     });
     return (*steps.borrow());

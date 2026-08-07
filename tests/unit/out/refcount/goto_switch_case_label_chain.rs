@@ -23,9 +23,12 @@ pub fn pick_0(op: i32, x: i32) -> i32 {
             (*r.borrow_mut()) = ((*t.borrow()) + 1);
             break;
         }
-        _ => {
+        __v if false => '__default_1: {
             (*r.borrow_mut()) = -1_i32;
             break;
+        }
+        _ => {
+            goto!('__default_1);
         }
     });
     return (*r.borrow());
