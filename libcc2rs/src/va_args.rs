@@ -103,7 +103,7 @@ macro_rules! impl_va_arg_get {
     )*};
 }
 
-impl_va_arg_get!(int: i8, i16, i32, i64, u8, u16, u32, u64);
+impl_va_arg_get!(int: i8, i16, i32, i64, isize, u8, u16, u32, u64, usize);
 impl_va_arg_get!(float: f32, f64);
 
 impl<T> VaArgGet for *mut T {
