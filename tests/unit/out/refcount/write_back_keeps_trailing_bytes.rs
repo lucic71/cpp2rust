@@ -48,7 +48,7 @@ fn main_0() -> i32 {
             as Ptr<u8>)
             .to_any()
             .memcpy(
-                &Ptr::from_string_literal(b"abcdefg").to_any(),
+                &Ptr::from_string_literal(b"abcdefg\0").to_any(),
                 8_usize as usize,
             );
         ((((*h.borrow()).reinterpret_cast::<u8>().offset(4usize) as Ptr<u8>) as Ptr<u8>) as Ptr<u8>)
@@ -62,7 +62,7 @@ fn main_0() -> i32 {
             let mut __it1 = (((*h.borrow()).reinterpret_cast::<u8>().offset(4usize) as Ptr<u8>)
                 as Ptr<u8>)
                 .to_c_string_iterator();
-            let mut __it2 = Ptr::from_string_literal(b"abcdefg").to_c_string_iterator();
+            let mut __it2 = Ptr::from_string_literal(b"abcdefg\0").to_c_string_iterator();
             loop {
                 let __c1 = __it1.next();
                 let __c2 = __it2.next();

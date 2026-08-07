@@ -20,8 +20,8 @@ fn main_0() -> i32 {
     let fp: Value<Ptr<CFile>> = Rc::new(RefCell::new(
         ({
             fopen_0(
-                Ptr::from_string_literal(b"irrelevant-file"),
-                Ptr::from_string_literal(b"r"),
+                Ptr::from_string_literal(b"irrelevant-file\0"),
+                Ptr::from_string_literal(b"r\0"),
             )
         }),
     ));

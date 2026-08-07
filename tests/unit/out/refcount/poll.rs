@@ -31,7 +31,7 @@ fn main_0() -> i32 {
     assert!(
         (((libcc2rs::write_refcount(
             (*fds.borrow())[(1) as usize],
-            Ptr::from_string_literal(b"x").to_any().clone(),
+            Ptr::from_string_literal(b"x\0").to_any().clone(),
             1_usize
         ) == 1_isize) as i32)
             != 0)

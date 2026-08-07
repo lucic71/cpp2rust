@@ -10,8 +10,8 @@ pub fn main() {
     libcc2rs::exit_refcount(main_0());
 }
 fn main_0() -> i32 {
-    let fname: Value<Ptr<u8>> = Rc::new(RefCell::new(Ptr::from_string_literal(b"testfile.txt")));
-    let mode: Value<Ptr<u8>> = Rc::new(RefCell::new(Ptr::from_string_literal(b"rb")));
+    let fname: Value<Ptr<u8>> = Rc::new(RefCell::new(Ptr::from_string_literal(b"testfile.txt\0")));
+    let mode: Value<Ptr<u8>> = Rc::new(RefCell::new(Ptr::from_string_literal(b"rb\0")));
     let file_ptr: Value<Ptr<CFile>> = Rc::new(RefCell::new(
         match CFile::open(
             &(*fname.borrow()).to_rust_string(),

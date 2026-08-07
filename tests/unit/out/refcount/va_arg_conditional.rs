@@ -22,12 +22,12 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     assert!(
-        (((({ conditional_log_0(1, Ptr::from_string_literal(b"%d"), &[(42).into(),]) }) == 42)
+        (((({ conditional_log_0(1, Ptr::from_string_literal(b"%d\0"), &[(42).into(),]) }) == 42)
             as i32)
             != 0)
     );
     assert!(
-        (((({ conditional_log_0(0, Ptr::from_string_literal(b"%d"), &[(99).into(),]) }) == -1_i32)
+        (((({ conditional_log_0(0, Ptr::from_string_literal(b"%d\0"), &[(99).into(),]) }) == -1_i32)
             as i32)
             != 0)
     );

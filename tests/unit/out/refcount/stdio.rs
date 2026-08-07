@@ -31,7 +31,7 @@ pub fn test_fputc_0() {
 }
 pub fn test_fputs_1() {
     {
-        let __bytes: Vec<u8> = Ptr::from_string_literal(b"hello")
+        let __bytes: Vec<u8> = Ptr::from_string_literal(b"hello\0")
             .to_c_string_iterator()
             .collect();
         match libcc2rs::c_stdout().with_mut(|__f| __f.write(&__bytes)) == __bytes.len() {
@@ -46,7 +46,7 @@ pub fn test_fputs_1() {
             _ => -1,
         }
     };
-    let s: Value<Ptr<u8>> = Rc::new(RefCell::new(Ptr::from_string_literal(b"from variable")));
+    let s: Value<Ptr<u8>> = Rc::new(RefCell::new(Ptr::from_string_literal(b"from variable\0")));
     {
         let __bytes: Vec<u8> = (*s.borrow()).to_c_string_iterator().collect();
         match libcc2rs::c_stdout().with_mut(|__f| __f.write(&__bytes)) == __bytes.len() {
@@ -86,7 +86,7 @@ pub fn test_fputs_1() {
 }
 pub fn test_puts_2() {
     {
-        let mut __bytes: Vec<u8> = Ptr::from_string_literal(b"puts hello")
+        let mut __bytes: Vec<u8> = Ptr::from_string_literal(b"puts hello\0")
             .to_c_string_iterator()
             .collect();
         __bytes.push(b'\n');
@@ -95,7 +95,7 @@ pub fn test_puts_2() {
             false => -1,
         }
     };
-    let s: Value<Ptr<u8>> = Rc::new(RefCell::new(Ptr::from_string_literal(b"puts variable")));
+    let s: Value<Ptr<u8>> = Rc::new(RefCell::new(Ptr::from_string_literal(b"puts variable\0")));
     {
         let mut __bytes: Vec<u8> = (*s.borrow()).to_c_string_iterator().collect();
         __bytes.push(b'\n');
@@ -110,12 +110,12 @@ pub fn test_fileno_3() {
     assert!((((libcc2rs::c_stdout().with(|__f| __f.fd) == 1) as i32) != 0));
     assert!((((libcc2rs::c_stderr().with(|__f| __f.fd) == 2) as i32) != 0));
     let file: Value<Ptr<u8>> = Rc::new(RefCell::new(Ptr::from_string_literal(
-        b"cpp2rust_fileno_test.tmp",
+        b"cpp2rust_fileno_test.tmp\0",
     )));
     let fp: Value<Ptr<CFile>> = Rc::new(RefCell::new(
         match CFile::open(
             &(*file.borrow()).to_rust_string(),
-            &Ptr::from_string_literal(b"wb").to_rust_string(),
+            &Ptr::from_string_literal(b"wb\0").to_rust_string(),
         ) {
             Some(__f) => Ptr::alloc(__f),
             None => Ptr::null(),

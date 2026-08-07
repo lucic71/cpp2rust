@@ -122,7 +122,7 @@ fn main_0() -> i32 {
         })
     };
     {
-        let __rhs = libcc2rs::strdup_refcount(Ptr::from_string_literal(b"alpha").clone());
+        let __rhs = libcc2rs::strdup_refcount(Ptr::from_string_literal(b"alpha\0").clone());
         (*h.borrow())
             .with(|__v| {
                 ((*__v)
@@ -151,7 +151,7 @@ fn main_0() -> i32 {
                 })
                 .read())
             .to_c_string_iterator();
-            let mut __it2 = Ptr::from_string_literal(b"alpha").to_c_string_iterator();
+            let mut __it2 = Ptr::from_string_literal(b"alpha\0").to_c_string_iterator();
             loop {
                 let __c1 = __it1.next();
                 let __c2 = __it2.next();

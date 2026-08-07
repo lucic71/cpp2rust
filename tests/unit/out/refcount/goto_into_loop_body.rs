@@ -68,10 +68,10 @@ pub fn main() {
     libcc2rs::exit_refcount(main_0());
 }
 fn main_0() -> i32 {
-    assert!((((({ scan_0(Ptr::from_string_literal(b""), 0) }) == 0) as i32) != 0));
-    assert!((((({ scan_0(Ptr::from_string_literal(b"(()"), 0) }) == 22) as i32) != 0));
-    assert!((((({ scan_0(Ptr::from_string_literal(b"ab(cd"), 0) }) == 11) as i32) != 0));
-    assert!((((({ scan_0(Ptr::from_string_literal(b""), 1) }) == 11) as i32) != 0));
-    assert!((((({ scan_0(Ptr::from_string_literal(b"(((((("), 0) }) == 44) as i32) != 0));
+    assert!((((({ scan_0(Ptr::from_string_literal(b"\0"), 0) }) == 0) as i32) != 0));
+    assert!((((({ scan_0(Ptr::from_string_literal(b"(()\0"), 0) }) == 22) as i32) != 0));
+    assert!((((({ scan_0(Ptr::from_string_literal(b"ab(cd\0"), 0) }) == 11) as i32) != 0));
+    assert!((((({ scan_0(Ptr::from_string_literal(b"\0"), 1) }) == 11) as i32) != 0));
+    assert!((((({ scan_0(Ptr::from_string_literal(b"((((((\0"), 0) }) == 44) as i32) != 0));
     return 0;
 }

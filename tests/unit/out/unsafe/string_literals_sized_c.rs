@@ -50,6 +50,20 @@ unsafe fn main_0() -> i32 {
     assert!((((((bytes[((0) as usize)] as u8) as i32) == (226)) as i32) != 0));
     assert!((((((bytes[((1) as usize)] as u8) as i32) == (144)) as i32) != 0));
     assert!((((((bytes[((2) as usize)] as u8) as i32) == (129)) as i32) != 0));
+    assert!(
+        (((((*c"Z".as_ptr().cast_mut().offset(((0) as isize))) as i32) == ('Z' as i32)) as i32)
+            != 0)
+    );
+    assert!((((((*c"Z".as_ptr().cast_mut().offset(((1) as isize))) as i32) == (0)) as i32) != 0));
+    assert!((((((*c"ab".as_ptr().cast_mut().offset(((2) as isize))) as i32) == (0)) as i32) != 0));
+    assert!(
+        (((((*c"ab".as_ptr().cast_mut().offset(((1) as isize))) as i32) == ('b' as i32)) as i32)
+            != 0)
+    );
+    let mut i: i32 = 1;
+    assert!((((((*c"Z".as_ptr().cast_mut().offset(((i) as isize))) as i32) == (0)) as i32) != 0));
+    let mut p: *const libc::c_char = (c"Z".as_ptr().cast_mut()).cast_const();
+    assert!((((((*p.offset(((1) as isize))) as i32) == (0)) as i32) != 0));
     let mut wide: i16 = (65535u16 as i16);
     assert!(((((wide as i32) == (-1_i32)) as i32) != 0));
     let mut narrow: u8 = (44u8 as u8);

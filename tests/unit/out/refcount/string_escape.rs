@@ -11,7 +11,7 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     let special: Value<Ptr<u8>> = Rc::new(RefCell::new(Ptr::from_string_literal(
-        b"\x07\x08\t\n\x0b\x0c\r !\"#$%&\'()*+,-./:;<=>?@[\\]^_`{|}~\xff",
+        b"\x07\x08\t\n\x0b\x0c\r !\"#$%&\'()*+,-./:;<=>?@[\\]^_`{|}~\xff\0",
     )));
     thread_local!(
         static expected_0: Value<Box<[u8]>> = Rc::new(RefCell::new(Box::new([

@@ -124,7 +124,7 @@ fn main_0() -> i32 {
         .reinterpret_cast::<u8>()
         .offset(8usize)
         .reinterpret_cast::<Ptr<u8>>() as Ptr<Ptr<u8>>)
-        .write(Ptr::from_string_literal(b"hello"));
+        .write(Ptr::from_string_literal(b"hello\0"));
     assert!(
         ((((((c
             .as_pointer()

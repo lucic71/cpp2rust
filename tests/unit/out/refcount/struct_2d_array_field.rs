@@ -77,7 +77,7 @@ fn main_0() -> i32 {
                 .read())
             .as_pointer()) as Ptr<u8>)
                 .to_c_string_iterator();
-            let mut __it2 = Ptr::from_string_literal(b"alpha").to_c_string_iterator();
+            let mut __it2 = Ptr::from_string_literal(b"alpha\0").to_c_string_iterator();
             loop {
                 let __c1 = __it1.next();
                 let __c2 = __it2.next();
@@ -109,7 +109,7 @@ fn main_0() -> i32 {
                 .read())
             .as_pointer()) as Ptr<u8>)
                 .to_c_string_iterator();
-            let mut __it2 = Ptr::from_string_literal(b"alpha").to_c_string_iterator();
+            let mut __it2 = Ptr::from_string_literal(b"alpha\0").to_c_string_iterator();
             loop {
                 let __c1 = __it1.next();
                 let __c2 = __it2.next();
@@ -134,7 +134,7 @@ fn main_0() -> i32 {
                 .read())
             .as_pointer()) as Ptr<u8>)
                 .to_c_string_iterator();
-            let mut __it2 = Ptr::from_string_literal(b"beta").to_c_string_iterator();
+            let mut __it2 = Ptr::from_string_literal(b"beta\0").to_c_string_iterator();
             loop {
                 let __c1 = __it1.next();
                 let __c2 = __it2.next();
@@ -173,7 +173,7 @@ fn main_0() -> i32 {
                 .read())
             .as_pointer()) as Ptr<u8>)
                 .to_c_string_iterator();
-            let mut __it2 = Ptr::from_string_literal(b"three").to_c_string_iterator();
+            let mut __it2 = Ptr::from_string_literal(b"three\0").to_c_string_iterator();
             loop {
                 let __c1 = __it1.next();
                 let __c2 = __it2.next();
@@ -199,7 +199,7 @@ fn main_0() -> i32 {
                 .read())
             .as_pointer()) as Ptr<u8>)
                 .to_c_string_iterator();
-            let mut __it2 = Ptr::from_string_literal(b"Two").to_c_string_iterator();
+            let mut __it2 = Ptr::from_string_literal(b"Two\0").to_c_string_iterator();
             loop {
                 let __c1 = __it1.next();
                 let __c2 = __it2.next();
@@ -224,7 +224,7 @@ fn main_0() -> i32 {
                 .read())
             .as_pointer()) as Ptr<u8>)
                 .to_c_string_iterator();
-            let mut __it2 = Ptr::from_string_literal(b"one").to_c_string_iterator();
+            let mut __it2 = Ptr::from_string_literal(b"one\0").to_c_string_iterator();
             loop {
                 let __c1 = __it1.next();
                 let __c2 = __it2.next();

@@ -11,7 +11,7 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     let path: Value<Ptr<u8>> = Rc::new(RefCell::new(Ptr::from_string_literal(
-        b"cpp2rust_fstat_test.tmp",
+        b"cpp2rust_fstat_test.tmp\0",
     )));
     let fd: Value<i32> = Rc::new(RefCell::new({
         let __mode = match &[(420).into()].first() {
@@ -36,7 +36,7 @@ fn main_0() -> i32 {
     assert!(
         (((libcc2rs::write_refcount(
             (*fd.borrow()),
-            Ptr::from_string_literal(b"hello").to_any().clone(),
+            Ptr::from_string_literal(b"hello\0").to_any().clone(),
             5_usize
         ) == 5_isize) as i32)
             != 0)

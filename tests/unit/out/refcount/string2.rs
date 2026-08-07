@@ -11,7 +11,7 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     let arr: Value<Vec<u8>> = Rc::new(RefCell::new(
-        Ptr::from_string_literal(b"foo")
+        Ptr::from_string_literal(b"foo\0")
             .to_c_string_iterator()
             .chain(std::iter::once(0))
             .collect::<Vec<u8>>(),
@@ -28,7 +28,7 @@ fn main_0() -> i32 {
             .iter()
             .copied()
             .take((*arr.borrow()).len().saturating_sub(1))
-            .eq(Ptr::from_string_literal(b"fbo").to_c_string_iterator())
+            .eq(Ptr::from_string_literal(b"fbo\0").to_c_string_iterator())
     );
     return 0;
 }

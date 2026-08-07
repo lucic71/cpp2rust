@@ -11,7 +11,7 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     let path: Value<Ptr<u8>> = Rc::new(RefCell::new(Ptr::from_string_literal(
-        b"cpp2rust_lseek_ftruncate_test.tmp",
+        b"cpp2rust_lseek_ftruncate_test.tmp\0",
     )));
     let fd: Value<i32> = Rc::new(RefCell::new({
         let __mode = match &[(420).into()].first() {
@@ -36,7 +36,7 @@ fn main_0() -> i32 {
     assert!(
         (((libcc2rs::write_refcount(
             (*fd.borrow()),
-            Ptr::from_string_literal(b"hello world").to_any().clone(),
+            Ptr::from_string_literal(b"hello world\0").to_any().clone(),
             11_usize
         ) == 11_isize) as i32)
             != 0)
@@ -103,7 +103,7 @@ fn main_0() -> i32 {
     assert!(
         ((({
             let mut __it1 = (buf.as_pointer() as Ptr<u8>).to_c_string_iterator();
-            let mut __it2 = Ptr::from_string_literal(b"world").to_c_string_iterator();
+            let mut __it2 = Ptr::from_string_literal(b"world\0").to_c_string_iterator();
             loop {
                 let __c1 = __it1.next();
                 let __c2 = __it2.next();

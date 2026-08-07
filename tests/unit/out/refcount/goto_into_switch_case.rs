@@ -117,10 +117,14 @@ pub fn main() {
     libcc2rs::exit_refcount(main_0());
 }
 fn main_0() -> i32 {
-    assert!((((({ step_1(Ptr::from_string_literal(b"a")) }) == (1 + ('a' as i32))) as i32) != 0));
-    assert!((((({ step_1(Ptr::from_string_literal(b"b")) }) == (12 + ('b' as i32))) as i32) != 0));
-    assert!((((({ step_1(Ptr::from_string_literal(b"z")) }) == (100 + ('z' as i32))) as i32) != 0));
-    assert!((((({ step_1(Ptr::from_string_literal(b"!x")) }) == 10) as i32) != 0));
+    assert!((((({ step_1(Ptr::from_string_literal(b"a\0")) }) == (1 + ('a' as i32))) as i32) != 0));
+    assert!(
+        (((({ step_1(Ptr::from_string_literal(b"b\0")) }) == (12 + ('b' as i32))) as i32) != 0)
+    );
+    assert!(
+        (((({ step_1(Ptr::from_string_literal(b"z\0")) }) == (100 + ('z' as i32))) as i32) != 0)
+    );
+    assert!((((({ step_1(Ptr::from_string_literal(b"!x\0")) }) == 10) as i32) != 0));
     assert!((((({ dispatch_0(1, 5) }) == 6) as i32) != 0));
     assert!((((({ dispatch_0(2, 5) }) == 15) as i32) != 0));
     assert!((((({ dispatch_0(7, 5) }) == 999) as i32) != 0));

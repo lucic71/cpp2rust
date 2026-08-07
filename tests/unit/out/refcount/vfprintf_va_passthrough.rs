@@ -48,12 +48,12 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     let path: Value<Ptr<u8>> = Rc::new(RefCell::new(Ptr::from_string_literal(
-        b"cpp2rust_vfprintf.tmp",
+        b"cpp2rust_vfprintf.tmp\0",
     )));
     let fp: Value<Ptr<CFile>> = Rc::new(RefCell::new(
         match CFile::open(
             &(*path.borrow()).to_rust_string(),
-            &Ptr::from_string_literal(b"wb").to_rust_string(),
+            &Ptr::from_string_literal(b"wb\0").to_rust_string(),
         ) {
             Some(__f) => Ptr::alloc(__f),
             None => Ptr::null(),
@@ -64,8 +64,8 @@ fn main_0() -> i32 {
         (((({
             emit_0(
                 (*fp.borrow()).clone(),
-                Ptr::from_string_literal(b"%s=%d\n"),
-                &[(Ptr::from_string_literal(b"count")).into(), (42).into()],
+                Ptr::from_string_literal(b"%s=%d\n\0"),
+                &[(Ptr::from_string_literal(b"count\0")).into(), (42).into()],
             )
         }) == 9) as i32)
             != 0)
@@ -74,7 +74,7 @@ fn main_0() -> i32 {
         (((({
             emit_after_skip_1(
                 (*fp.borrow()).clone(),
-                Ptr::from_string_literal(b"%c%d\n"),
+                Ptr::from_string_literal(b"%c%d\n\0"),
                 &[(100).into(), ('x' as i32).into(), (7).into()],
             )
         }) == 103) as i32)
@@ -83,7 +83,7 @@ fn main_0() -> i32 {
     assert!((((libcc2rs::fclose_refcount((*fp.borrow()).clone()) == 0) as i32) != 0));
     (*fp.borrow_mut()) = match CFile::open(
         &(*path.borrow()).to_rust_string(),
-        &Ptr::from_string_literal(b"rb").to_rust_string(),
+        &Ptr::from_string_literal(b"rb\0").to_rust_string(),
     ) {
         Some(__f) => Ptr::alloc(__f),
         None => Ptr::null(),
@@ -137,7 +137,7 @@ fn main_0() -> i32 {
         (((((buf.as_pointer() as Ptr::<u8>) as Ptr::<u8>)
             .to_any()
             .memcmp(
-                &Ptr::from_string_literal(b"count=42\nx7\n").to_any(),
+                &Ptr::from_string_literal(b"count=42\nx7\n\0").to_any(),
                 12_usize
             )
             == 0) as i32)

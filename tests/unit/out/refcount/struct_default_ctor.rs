@@ -16,7 +16,7 @@ pub struct WOFF2Params {
 impl WOFF2Params {
     pub fn WOFF2Params() -> Self {
         let mut this = Self {
-            extended_metadata: Ptr::from_string_literal(b"")
+            extended_metadata: Ptr::from_string_literal(b"\0")
                 .to_c_string_iterator()
                 .chain(std::iter::once(0))
                 .collect::<Vec<u8>>(),

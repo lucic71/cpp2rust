@@ -29,10 +29,10 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     let items: Value<Box<[Ptr<u8>]>> = Rc::new(RefCell::new(Box::new([
-        Ptr::from_string_literal(b"pear"),
-        Ptr::from_string_literal(b"apple"),
-        Ptr::from_string_literal(b"fig"),
-        Ptr::from_string_literal(b"date"),
+        Ptr::from_string_literal(b"pear\0"),
+        Ptr::from_string_literal(b"apple\0"),
+        Ptr::from_string_literal(b"fig\0"),
+        Ptr::from_string_literal(b"date\0"),
     ])));
     {
         let __base = (items.as_pointer() as Ptr<Ptr<u8>>)
@@ -71,7 +71,7 @@ fn main_0() -> i32 {
     assert!(
         ((({
             let mut __it1 = (*items.borrow())[(0) as usize].to_c_string_iterator();
-            let mut __it2 = Ptr::from_string_literal(b"apple").to_c_string_iterator();
+            let mut __it2 = Ptr::from_string_literal(b"apple\0").to_c_string_iterator();
             loop {
                 let __c1 = __it1.next();
                 let __c2 = __it2.next();
@@ -88,7 +88,7 @@ fn main_0() -> i32 {
     assert!(
         ((({
             let mut __it1 = (*items.borrow())[(1) as usize].to_c_string_iterator();
-            let mut __it2 = Ptr::from_string_literal(b"date").to_c_string_iterator();
+            let mut __it2 = Ptr::from_string_literal(b"date\0").to_c_string_iterator();
             loop {
                 let __c1 = __it1.next();
                 let __c2 = __it2.next();
@@ -105,7 +105,7 @@ fn main_0() -> i32 {
     assert!(
         ((({
             let mut __it1 = (*items.borrow())[(2) as usize].to_c_string_iterator();
-            let mut __it2 = Ptr::from_string_literal(b"fig").to_c_string_iterator();
+            let mut __it2 = Ptr::from_string_literal(b"fig\0").to_c_string_iterator();
             loop {
                 let __c1 = __it1.next();
                 let __c2 = __it2.next();
@@ -122,7 +122,7 @@ fn main_0() -> i32 {
     assert!(
         ((({
             let mut __it1 = (*items.borrow())[(3) as usize].to_c_string_iterator();
-            let mut __it2 = Ptr::from_string_literal(b"pear").to_c_string_iterator();
+            let mut __it2 = Ptr::from_string_literal(b"pear\0").to_c_string_iterator();
             loop {
                 let __c1 = __it1.next();
                 let __c2 = __it2.next();

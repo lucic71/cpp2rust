@@ -8,9 +8,9 @@ use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
 thread_local!(
     pub static names_0: Value<Box<[Ptr<u8>]>> = Rc::new(RefCell::new(Box::new([
-        Ptr::from_string_literal(b"alpha"),
-        Ptr::from_string_literal(b"beta"),
-        Ptr::from_string_literal(b"gamma"),
+        Ptr::from_string_literal(b"alpha\0"),
+        Ptr::from_string_literal(b"beta\0"),
+        Ptr::from_string_literal(b"gamma\0"),
         Ptr::<u8>::null(),
     ])));
 );
@@ -48,7 +48,7 @@ fn main_0() -> i32 {
     assert!(
         ((({
             let mut __it1 = ((*copy.borrow()).offset(((0) as isize)).read()).to_c_string_iterator();
-            let mut __it2 = Ptr::from_string_literal(b"alpha").to_c_string_iterator();
+            let mut __it2 = Ptr::from_string_literal(b"alpha\0").to_c_string_iterator();
             loop {
                 let __c1 = __it1.next();
                 let __c2 = __it2.next();
@@ -65,7 +65,7 @@ fn main_0() -> i32 {
     assert!(
         ((({
             let mut __it1 = ((*copy.borrow()).offset(((1) as isize)).read()).to_c_string_iterator();
-            let mut __it2 = Ptr::from_string_literal(b"beta").to_c_string_iterator();
+            let mut __it2 = Ptr::from_string_literal(b"beta\0").to_c_string_iterator();
             loop {
                 let __c1 = __it1.next();
                 let __c2 = __it2.next();
@@ -82,7 +82,7 @@ fn main_0() -> i32 {
     assert!(
         ((({
             let mut __it1 = ((*copy.borrow()).offset(((2) as isize)).read()).to_c_string_iterator();
-            let mut __it2 = Ptr::from_string_literal(b"gamma").to_c_string_iterator();
+            let mut __it2 = Ptr::from_string_literal(b"gamma\0").to_c_string_iterator();
             loop {
                 let __c1 = __it1.next();
                 let __c2 = __it2.next();

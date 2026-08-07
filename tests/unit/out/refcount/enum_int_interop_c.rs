@@ -55,17 +55,17 @@ thread_local!(
 thread_local!(
     pub static entries_3: Value<Box<[Entry]>> = Rc::new(RefCell::new(Box::new([
         Entry {
-            name: Ptr::from_string_literal(b"first"),
+            name: Ptr::from_string_literal(b"first\0"),
             color: Color_RED,
             opt: Option_OPT_NONE,
         },
         Entry {
-            name: Ptr::from_string_literal(b"second"),
+            name: Ptr::from_string_literal(b"second\0"),
             color: Color_GREEN,
             opt: Option_OPT_A,
         },
         Entry {
-            name: Ptr::from_string_literal(b"third"),
+            name: Ptr::from_string_literal(b"third\0"),
             color: Color_BLUE,
             opt: Option_OPT_C,
         },
@@ -233,9 +233,9 @@ fn main_0() -> i32 {
             != 0)
     );
     let names: Value<Box<[Ptr<u8>]>> = Rc::new(RefCell::new(Box::new([
-        Ptr::from_string_literal(b"red"),
-        Ptr::from_string_literal(b"green"),
-        Ptr::from_string_literal(b"blue"),
+        Ptr::from_string_literal(b"red\0"),
+        Ptr::from_string_literal(b"green\0"),
+        Ptr::from_string_literal(b"blue\0"),
     ])));
     let idx: Value<Color> = Rc::new(RefCell::new(Color_GREEN));
     assert!(

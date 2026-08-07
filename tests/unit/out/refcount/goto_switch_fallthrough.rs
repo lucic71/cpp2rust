@@ -72,10 +72,14 @@ fn main_0() -> i32 {
     assert!((((({ sm_0(0) }) == 11) as i32) != 0));
     assert!((((({ sm_0(1) }) == 10) as i32) != 0));
     assert!((((({ sm_0(9) }) == 1100) as i32) != 0));
-    assert!((((({ scan_1(Ptr::from_string_literal(b"a")) }) == (11 + ('a' as i32))) as i32) != 0));
-    assert!((((({ scan_1(Ptr::from_string_literal(b"b")) }) == (10 + ('b' as i32))) as i32) != 0));
     assert!(
-        (((({ scan_1(Ptr::from_string_literal(b"z")) }) == (1100 + ('z' as i32))) as i32) != 0)
+        (((({ scan_1(Ptr::from_string_literal(b"a\0")) }) == (11 + ('a' as i32))) as i32) != 0)
+    );
+    assert!(
+        (((({ scan_1(Ptr::from_string_literal(b"b\0")) }) == (10 + ('b' as i32))) as i32) != 0)
+    );
+    assert!(
+        (((({ scan_1(Ptr::from_string_literal(b"z\0")) }) == (1100 + ('z' as i32))) as i32) != 0)
     );
     return 0;
 }

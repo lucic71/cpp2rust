@@ -63,7 +63,7 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     let p: Value<Ptr<peer>> = Rc::new(RefCell::new(
-        ({ peer_create_0(Ptr::from_string_literal(b"example.com")) }),
+        ({ peer_create_0(Ptr::from_string_literal(b"example.com\0")) }),
     ));
     assert!(((((*p.borrow()).with(|__v| (*__v).port) == 443) as i32) != 0));
     assert!(
@@ -71,7 +71,7 @@ fn main_0() -> i32 {
             let mut __it1 = (((*p.borrow()).reinterpret_cast::<u8>().offset(4usize) as Ptr<u8>)
                 as Ptr<u8>)
                 .to_c_string_iterator();
-            let mut __it2 = Ptr::from_string_literal(b"example.com").to_c_string_iterator();
+            let mut __it2 = Ptr::from_string_literal(b"example.com\0").to_c_string_iterator();
             loop {
                 let __c1 = __it1.next();
                 let __c2 = __it2.next();
@@ -107,7 +107,7 @@ fn main_0() -> i32 {
             let mut __it1 = (((*p.borrow()).reinterpret_cast::<u8>().offset(4usize) as Ptr<u8>)
                 as Ptr<u8>)
                 .to_c_string_iterator();
-            let mut __it2 = Ptr::from_string_literal(b"Example.com").to_c_string_iterator();
+            let mut __it2 = Ptr::from_string_literal(b"Example.com\0").to_c_string_iterator();
             loop {
                 let __c1 = __it1.next();
                 let __c2 = __it2.next();
@@ -128,7 +128,7 @@ fn main_0() -> i32 {
     assert!(
         ((({
             let mut __it1 = (*h.borrow()).to_c_string_iterator();
-            let mut __it2 = Ptr::from_string_literal(b"com").to_c_string_iterator();
+            let mut __it2 = Ptr::from_string_literal(b"com\0").to_c_string_iterator();
             loop {
                 let __c1 = __it1.next();
                 let __c2 = __it2.next();

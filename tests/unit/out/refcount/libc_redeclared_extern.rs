@@ -45,10 +45,14 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     assert!((((({ fileno_0((libcc2rs::c_stdout()).clone()) }) == 42) as i32) != 0));
-    let s: Value<Ptr<u8>> = Rc::new(RefCell::new(Ptr::from_string_literal(b"hello")));
+    let s: Value<Ptr<u8>> = Rc::new(RefCell::new(Ptr::from_string_literal(b"hello\0")));
     assert!(((((*s.borrow()).to_c_string_iterator().count() == 5_usize) as i32) != 0));
     assert!(
-        (((Ptr::from_string_literal(b"").to_c_string_iterator().count() == 0_usize) as i32) != 0)
+        (((Ptr::from_string_literal(b"\0")
+            .to_c_string_iterator()
+            .count()
+            == 0_usize) as i32)
+            != 0)
     );
     let tty: Value<i32> = Rc::new(RefCell::new(
         match FdRegistry::with_fd(1, |__fd| nix::unistd::isatty(__fd)) {
@@ -62,8 +66,8 @@ fn main_0() -> i32 {
     assert!(((((*tty.borrow()) == 0) as i32) != 0));
     let k: Value<sink> = <Value<sink>>::default();
     (*k.borrow_mut()).in_ = libcc2rs::popen_refcount(
-        Ptr::from_string_literal(b"exit 7").clone(),
-        Ptr::from_string_literal(b"r").clone(),
+        Ptr::from_string_literal(b"exit 7\0").clone(),
+        Ptr::from_string_literal(b"r\0").clone(),
     );
     assert!((((!(((*k.borrow()).in_).is_null())) as i32) != 0));
     (*k.borrow_mut()).closer = FnPtr::<fn(Ptr<CFile>) -> i32>::new(libcc2rs::pclose_refcount);
@@ -75,8 +79,8 @@ fn main_0() -> i32 {
             != 0)
     );
     (*k.borrow_mut()).in_ = match CFile::open(
-        &Ptr::from_string_literal(b"/dev/null").to_rust_string(),
-        &Ptr::from_string_literal(b"r").to_rust_string(),
+        &Ptr::from_string_literal(b"/dev/null\0").to_rust_string(),
+        &Ptr::from_string_literal(b"r\0").to_rust_string(),
     ) {
         Some(__f) => Ptr::alloc(__f),
         None => Ptr::null(),

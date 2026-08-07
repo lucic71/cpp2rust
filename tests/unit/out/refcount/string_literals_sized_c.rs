@@ -44,6 +44,14 @@ fn main_0() -> i32 {
     assert!(((((((*bytes.borrow())[(0) as usize] as u8) as i32) == 226) as i32) != 0));
     assert!(((((((*bytes.borrow())[(1) as usize] as u8) as i32) == 144) as i32) != 0));
     assert!(((((((*bytes.borrow())[(2) as usize] as u8) as i32) == 129) as i32) != 0));
+    assert!(((((b"Z\0"[(0) as usize] as i32) == ('Z' as i32)) as i32) != 0));
+    assert!(((((b"Z\0"[(1) as usize] as i32) == 0) as i32) != 0));
+    assert!(((((b"ab\0"[(2) as usize] as i32) == 0) as i32) != 0));
+    assert!(((((b"ab\0"[(1) as usize] as i32) == ('b' as i32)) as i32) != 0));
+    let i: Value<i32> = Rc::new(RefCell::new(1));
+    assert!(((((b"Z\0"[(*i.borrow()) as usize] as i32) == 0) as i32) != 0));
+    let p: Value<Ptr<u8>> = Rc::new(RefCell::new(Ptr::from_string_literal(b"Z\0")));
+    assert!(((((((*p.borrow()).offset(((1) as isize)).read()) as i32) == 0) as i32) != 0));
     let wide: Value<i16> = Rc::new(RefCell::new((65535u16 as i16)));
     assert!((((((*wide.borrow()) as i32) == -1_i32) as i32) != 0));
     let narrow: Value<u8> = Rc::new(RefCell::new((44u8 as u8)));

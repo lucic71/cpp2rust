@@ -171,7 +171,7 @@ pub fn test_strftime_5() {
             let __dt = (tm.as_pointer()).with(|__tm| __tm.to_civil());
             let __text = match __dt {
                 Ok(__d) => jiff::fmt::strtime::format(
-                    Ptr::from_string_literal(b"%Y-%m-%d %H:%M:%S")
+                    Ptr::from_string_literal(b"%Y-%m-%d %H:%M:%S\0")
                         .to_rust_string()
                         .as_str(),
                     __d,
@@ -197,7 +197,7 @@ pub fn test_strftime_5() {
             let __dt = (tm.as_pointer()).with(|__tm| __tm.to_civil());
             let __text = match __dt {
                 Ok(__d) => jiff::fmt::strtime::format(
-                    Ptr::from_string_literal(b"%a, %d %b %Y %T")
+                    Ptr::from_string_literal(b"%a, %d %b %Y %T\0")
                         .to_rust_string()
                         .as_str(),
                     __d,
@@ -223,7 +223,7 @@ pub fn test_strftime_5() {
             let __dt = (tm.as_pointer()).with(|__tm| __tm.to_civil());
             let __text = match __dt {
                 Ok(__d) => jiff::fmt::strtime::format(
-                    Ptr::from_string_literal(b"day %j 100%%")
+                    Ptr::from_string_literal(b"day %j 100%%\0")
                         .to_rust_string()
                         .as_str(),
                     __d,
@@ -249,7 +249,7 @@ pub fn test_strftime_5() {
             let __dt = (tm.as_pointer()).with(|__tm| __tm.to_civil());
             let __text = match __dt {
                 Ok(__d) => jiff::fmt::strtime::format(
-                    Ptr::from_string_literal(b"%e").to_rust_string().as_str(),
+                    Ptr::from_string_literal(b"%e\0").to_rust_string().as_str(),
                     __d,
                 )
                 .unwrap_or_default(),
@@ -276,7 +276,7 @@ pub fn test_strftime_5() {
             let __dt = (tm.as_pointer()).with(|__tm| __tm.to_civil());
             let __text = match __dt {
                 Ok(__d) => jiff::fmt::strtime::format(
-                    Ptr::from_string_literal(b"%Y-%m-%d")
+                    Ptr::from_string_literal(b"%Y-%m-%d\0")
                         .to_rust_string()
                         .as_str(),
                     __d,

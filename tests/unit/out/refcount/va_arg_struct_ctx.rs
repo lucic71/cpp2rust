@@ -49,7 +49,7 @@ fn main_0() -> i32 {
     ({
         set_error_0(
             (ctx.as_pointer()),
-            Ptr::from_string_literal(b"error %d"),
+            Ptr::from_string_literal(b"error %d\0"),
             &[(42).into()],
         )
     });
@@ -58,7 +58,7 @@ fn main_0() -> i32 {
     ({
         set_error_0(
             (ctx.as_pointer()),
-            Ptr::from_string_literal(b"error %d"),
+            Ptr::from_string_literal(b"error %d\0"),
             &[(99).into()],
         )
     });

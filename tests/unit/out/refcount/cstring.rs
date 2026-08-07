@@ -127,7 +127,7 @@ pub fn test_memmove_3() {
     );
 }
 pub fn test_strchr_4() {
-    let s: Value<Ptr<u8>> = Rc::new(RefCell::new(Ptr::from_string_literal(b"hello world")));
+    let s: Value<Ptr<u8>> = Rc::new(RefCell::new(Ptr::from_string_literal(b"hello world\0")));
     let r: Value<Ptr<u8>> = Rc::new(RefCell::new({
         let __s = (*s.borrow()).clone();
         let __t = (('w' as u8) as i32) as u8;
@@ -163,15 +163,20 @@ pub fn test_strchr_4() {
     );
 }
 pub fn test_strlen_5() {
-    assert!((Ptr::from_string_literal(b"").to_c_string_iterator().count() == 0_usize));
     assert!(
-        (Ptr::from_string_literal(b"hello")
+        (Ptr::from_string_literal(b"\0")
+            .to_c_string_iterator()
+            .count()
+            == 0_usize)
+    );
+    assert!(
+        (Ptr::from_string_literal(b"hello\0")
             .to_c_string_iterator()
             .count()
             == 5_usize)
     );
     assert!(
-        (Ptr::from_string_literal(b"hello world")
+        (Ptr::from_string_literal(b"hello world\0")
             .to_c_string_iterator()
             .count()
             == 11_usize)
@@ -180,8 +185,8 @@ pub fn test_strlen_5() {
 pub fn test_strcmp_6() {
     assert!(
         ({
-            let mut __it1 = Ptr::from_string_literal(b"abc").to_c_string_iterator();
-            let mut __it2 = Ptr::from_string_literal(b"abc").to_c_string_iterator();
+            let mut __it1 = Ptr::from_string_literal(b"abc\0").to_c_string_iterator();
+            let mut __it2 = Ptr::from_string_literal(b"abc\0").to_c_string_iterator();
             loop {
                 let __c1 = __it1.next();
                 let __c2 = __it2.next();
@@ -196,8 +201,8 @@ pub fn test_strcmp_6() {
     );
     assert!(
         ({
-            let mut __it1 = Ptr::from_string_literal(b"abc").to_c_string_iterator();
-            let mut __it2 = Ptr::from_string_literal(b"abd").to_c_string_iterator();
+            let mut __it1 = Ptr::from_string_literal(b"abc\0").to_c_string_iterator();
+            let mut __it2 = Ptr::from_string_literal(b"abd\0").to_c_string_iterator();
             loop {
                 let __c1 = __it1.next();
                 let __c2 = __it2.next();
@@ -212,8 +217,8 @@ pub fn test_strcmp_6() {
     );
     assert!(
         ({
-            let mut __it1 = Ptr::from_string_literal(b"abd").to_c_string_iterator();
-            let mut __it2 = Ptr::from_string_literal(b"abc").to_c_string_iterator();
+            let mut __it1 = Ptr::from_string_literal(b"abd\0").to_c_string_iterator();
+            let mut __it2 = Ptr::from_string_literal(b"abc\0").to_c_string_iterator();
             loop {
                 let __c1 = __it1.next();
                 let __c2 = __it2.next();
@@ -226,8 +231,8 @@ pub fn test_strcmp_6() {
             }
         } > 0)
     );
-    let p: Value<Ptr<u8>> = Rc::new(RefCell::new(Ptr::from_string_literal(b"abc")));
-    let q: Value<Ptr<u8>> = Rc::new(RefCell::new(Ptr::from_string_literal(b"abd")));
+    let p: Value<Ptr<u8>> = Rc::new(RefCell::new(Ptr::from_string_literal(b"abc\0")));
+    let q: Value<Ptr<u8>> = Rc::new(RefCell::new(Ptr::from_string_literal(b"abd\0")));
     let buf: Value<Box<[u8]>> = Rc::new(RefCell::new(Box::new([
         ('a' as u8),
         ('b' as u8),
@@ -287,10 +292,10 @@ pub fn test_strncmp_7() {
     assert!(
         ({
             let __n = 3_usize;
-            let mut __it1 = Ptr::from_string_literal(b"abcdef")
+            let mut __it1 = Ptr::from_string_literal(b"abcdef\0")
                 .to_c_string_iterator()
                 .take(__n);
-            let mut __it2 = Ptr::from_string_literal(b"abcxyz")
+            let mut __it2 = Ptr::from_string_literal(b"abcxyz\0")
                 .to_c_string_iterator()
                 .take(__n);
             loop {
@@ -308,10 +313,10 @@ pub fn test_strncmp_7() {
     assert!(
         ({
             let __n = 4_usize;
-            let mut __it1 = Ptr::from_string_literal(b"abcdef")
+            let mut __it1 = Ptr::from_string_literal(b"abcdef\0")
                 .to_c_string_iterator()
                 .take(__n);
-            let mut __it2 = Ptr::from_string_literal(b"abcxyz")
+            let mut __it2 = Ptr::from_string_literal(b"abcxyz\0")
                 .to_c_string_iterator()
                 .take(__n);
             loop {
@@ -329,10 +334,10 @@ pub fn test_strncmp_7() {
     assert!(
         ({
             let __n = 4_usize;
-            let mut __it1 = Ptr::from_string_literal(b"abcxyz")
+            let mut __it1 = Ptr::from_string_literal(b"abcxyz\0")
                 .to_c_string_iterator()
                 .take(__n);
-            let mut __it2 = Ptr::from_string_literal(b"abcdef")
+            let mut __it2 = Ptr::from_string_literal(b"abcdef\0")
                 .to_c_string_iterator()
                 .take(__n);
             loop {
@@ -347,8 +352,8 @@ pub fn test_strncmp_7() {
             }
         } > 0)
     );
-    let p: Value<Ptr<u8>> = Rc::new(RefCell::new(Ptr::from_string_literal(b"abcdef")));
-    let q: Value<Ptr<u8>> = Rc::new(RefCell::new(Ptr::from_string_literal(b"abcxyz")));
+    let p: Value<Ptr<u8>> = Rc::new(RefCell::new(Ptr::from_string_literal(b"abcdef\0")));
+    let q: Value<Ptr<u8>> = Rc::new(RefCell::new(Ptr::from_string_literal(b"abcxyz\0")));
     let buf: Value<Box<[u8]>> = Rc::new(RefCell::new(Box::new([
         ('a' as u8),
         ('b' as u8),
@@ -477,7 +482,7 @@ pub fn test_memchr_8() {
     });
 }
 pub fn test_strrchr_9() {
-    let s: Value<Ptr<u8>> = Rc::new(RefCell::new(Ptr::from_string_literal(b"hello world")));
+    let s: Value<Ptr<u8>> = Rc::new(RefCell::new(Ptr::from_string_literal(b"hello world\0")));
     let r: Value<Ptr<u8>> = Rc::new(RefCell::new({
         let __s = (*s.borrow()).clone();
         let __t = (('l' as u8) as i32) as u8;
@@ -555,13 +560,13 @@ pub fn test_strrchr_9() {
 }
 pub fn test_strdup_10() {
     let d: Value<Ptr<u8>> = Rc::new(RefCell::new(libcc2rs::strdup_refcount(
-        Ptr::from_string_literal(b"hello").clone(),
+        Ptr::from_string_literal(b"hello\0").clone(),
     )));
     assert!(!((*d.borrow()).is_null()));
     assert!(
         ({
             let mut __it1 = (*d.borrow()).to_c_string_iterator();
-            let mut __it2 = Ptr::from_string_literal(b"hello").to_c_string_iterator();
+            let mut __it2 = Ptr::from_string_literal(b"hello\0").to_c_string_iterator();
             loop {
                 let __c1 = __it1.next();
                 let __c2 = __it2.next();
@@ -575,7 +580,7 @@ pub fn test_strdup_10() {
         } == 0)
     );
     libcc2rs::free_refcount(((*d.borrow()).clone() as Ptr<u8>).to_any().clone());
-    let p: Value<Ptr<u8>> = Rc::new(RefCell::new(Ptr::from_string_literal(b"world")));
+    let p: Value<Ptr<u8>> = Rc::new(RefCell::new(Ptr::from_string_literal(b"world\0")));
     let buf: Value<Box<[u8]>> = Rc::new(RefCell::new(Box::new([
         ('a' as u8),
         ('b' as u8),
@@ -628,8 +633,8 @@ pub fn test_strdup_10() {
 pub fn test_strcspn_11() {
     assert!(
         ({
-            let __set = Ptr::from_string_literal(b"el").clone();
-            Ptr::from_string_literal(b"hello")
+            let __set = Ptr::from_string_literal(b"el\0").clone();
+            Ptr::from_string_literal(b"hello\0")
                 .to_c_string_iterator()
                 .take_while(|__c| !__set.to_c_string_iterator().any(|__r| __r == *__c))
                 .count()
@@ -637,8 +642,8 @@ pub fn test_strcspn_11() {
     );
     assert!(
         ({
-            let __set = Ptr::from_string_literal(b"xyz").clone();
-            Ptr::from_string_literal(b"abc")
+            let __set = Ptr::from_string_literal(b"xyz\0").clone();
+            Ptr::from_string_literal(b"abc\0")
                 .to_c_string_iterator()
                 .take_while(|__c| !__set.to_c_string_iterator().any(|__r| __r == *__c))
                 .count()
@@ -646,15 +651,15 @@ pub fn test_strcspn_11() {
     );
     assert!(
         ({
-            let __set = Ptr::from_string_literal(b"abc").clone();
-            Ptr::from_string_literal(b"")
+            let __set = Ptr::from_string_literal(b"abc\0").clone();
+            Ptr::from_string_literal(b"\0")
                 .to_c_string_iterator()
                 .take_while(|__c| !__set.to_c_string_iterator().any(|__r| __r == *__c))
                 .count()
         } == 0_usize)
     );
-    let s: Value<Ptr<u8>> = Rc::new(RefCell::new(Ptr::from_string_literal(b"hello")));
-    let rej: Value<Ptr<u8>> = Rc::new(RefCell::new(Ptr::from_string_literal(b"el")));
+    let s: Value<Ptr<u8>> = Rc::new(RefCell::new(Ptr::from_string_literal(b"hello\0")));
+    let rej: Value<Ptr<u8>> = Rc::new(RefCell::new(Ptr::from_string_literal(b"el\0")));
     assert!(
         ({
             let __set = (*rej.borrow()).clone();
@@ -668,8 +673,8 @@ pub fn test_strcspn_11() {
 pub fn test_strspn_12() {
     assert!(
         ({
-            let __set = Ptr::from_string_literal(b"hel").clone();
-            Ptr::from_string_literal(b"hello")
+            let __set = Ptr::from_string_literal(b"hel\0").clone();
+            Ptr::from_string_literal(b"hello\0")
                 .to_c_string_iterator()
                 .take_while(|__c| __set.to_c_string_iterator().any(|__r| __r == *__c))
                 .count()
@@ -677,8 +682,8 @@ pub fn test_strspn_12() {
     );
     assert!(
         ({
-            let __set = Ptr::from_string_literal(b"xyz").clone();
-            Ptr::from_string_literal(b"abc")
+            let __set = Ptr::from_string_literal(b"xyz\0").clone();
+            Ptr::from_string_literal(b"abc\0")
                 .to_c_string_iterator()
                 .take_while(|__c| __set.to_c_string_iterator().any(|__r| __r == *__c))
                 .count()
@@ -686,15 +691,15 @@ pub fn test_strspn_12() {
     );
     assert!(
         ({
-            let __set = Ptr::from_string_literal(b"a").clone();
-            Ptr::from_string_literal(b"aaa")
+            let __set = Ptr::from_string_literal(b"a\0").clone();
+            Ptr::from_string_literal(b"aaa\0")
                 .to_c_string_iterator()
                 .take_while(|__c| __set.to_c_string_iterator().any(|__r| __r == *__c))
                 .count()
         } == 3_usize)
     );
-    let s: Value<Ptr<u8>> = Rc::new(RefCell::new(Ptr::from_string_literal(b"hello")));
-    let acc: Value<Ptr<u8>> = Rc::new(RefCell::new(Ptr::from_string_literal(b"hel")));
+    let s: Value<Ptr<u8>> = Rc::new(RefCell::new(Ptr::from_string_literal(b"hello\0")));
+    let acc: Value<Ptr<u8>> = Rc::new(RefCell::new(Ptr::from_string_literal(b"hel\0")));
     assert!(
         ({
             let __set = (*acc.borrow()).clone();
@@ -706,9 +711,9 @@ pub fn test_strspn_12() {
     );
 }
 pub fn test_strstr_13() {
-    let h: Value<Ptr<u8>> = Rc::new(RefCell::new(Ptr::from_string_literal(b"hello world")));
+    let h: Value<Ptr<u8>> = Rc::new(RefCell::new(Ptr::from_string_literal(b"hello world\0")));
     let r: Value<Ptr<u8>> = Rc::new(RefCell::new({
-        let __needle = Ptr::from_string_literal(b"world").clone();
+        let __needle = Ptr::from_string_literal(b"world\0").clone();
         let mut __p = (*h.borrow()).clone();
         loop {
             let mut __h = __p.to_c_string_iterator();
@@ -731,7 +736,7 @@ pub fn test_strstr_13() {
     });
     assert!(
         ({
-            let __needle = Ptr::from_string_literal(b"xyz").clone();
+            let __needle = Ptr::from_string_literal(b"xyz\0").clone();
             let mut __p = (*h.borrow()).clone();
             loop {
                 let mut __h = __p.to_c_string_iterator();
@@ -759,7 +764,7 @@ pub fn test_strstr_13() {
     ])));
     assert!(
         ({
-            let __needle = Ptr::from_string_literal(b"ll").clone();
+            let __needle = Ptr::from_string_literal(b"ll\0").clone();
             let mut __p = (buf.as_pointer() as Ptr<u8>).clone();
             loop {
                 let mut __h = __p.to_c_string_iterator();
@@ -778,10 +783,10 @@ pub fn test_strstr_13() {
     );
 }
 pub fn test_strpbrk_14() {
-    let s: Value<Ptr<u8>> = Rc::new(RefCell::new(Ptr::from_string_literal(b"hello world")));
+    let s: Value<Ptr<u8>> = Rc::new(RefCell::new(Ptr::from_string_literal(b"hello world\0")));
     let r: Value<Ptr<u8>> = Rc::new(RefCell::new({
         let __s = (*s.borrow()).clone();
-        let __set = Ptr::from_string_literal(b"wo").clone();
+        let __set = Ptr::from_string_literal(b"wo\0").clone();
         match __s
             .to_c_string_iterator()
             .position(|__c| __set.to_c_string_iterator().any(|__r| __r == __c))
@@ -798,7 +803,7 @@ pub fn test_strpbrk_14() {
     assert!(
         ({
             let __s = (*s.borrow()).clone();
-            let __set = Ptr::from_string_literal(b"xyz").clone();
+            let __set = Ptr::from_string_literal(b"xyz\0").clone();
             match __s
                 .to_c_string_iterator()
                 .position(|__c| __set.to_c_string_iterator().any(|__r| __r == __c))
@@ -818,7 +823,7 @@ pub fn test_strpbrk_14() {
     assert!(
         ({
             let __s = (buf.as_pointer() as Ptr<u8>).clone();
-            let __set = Ptr::from_string_literal(b"b").clone();
+            let __set = Ptr::from_string_literal(b"b\0").clone();
             match __s
                 .to_c_string_iterator()
                 .position(|__c| __set.to_c_string_iterator().any(|__r| __r == __c))
@@ -832,10 +837,10 @@ pub fn test_strpbrk_14() {
 pub fn test_strcasecmp_15() {
     assert!(
         ({
-            let mut __it1 = Ptr::from_string_literal(b"HELLO")
+            let mut __it1 = Ptr::from_string_literal(b"HELLO\0")
                 .to_c_string_iterator()
                 .map(|__c| __c.to_ascii_lowercase());
-            let mut __it2 = Ptr::from_string_literal(b"hello")
+            let mut __it2 = Ptr::from_string_literal(b"hello\0")
                 .to_c_string_iterator()
                 .map(|__c| __c.to_ascii_lowercase());
             loop {
@@ -852,10 +857,10 @@ pub fn test_strcasecmp_15() {
     );
     assert!(
         ({
-            let mut __it1 = Ptr::from_string_literal(b"abc")
+            let mut __it1 = Ptr::from_string_literal(b"abc\0")
                 .to_c_string_iterator()
                 .map(|__c| __c.to_ascii_lowercase());
-            let mut __it2 = Ptr::from_string_literal(b"abd")
+            let mut __it2 = Ptr::from_string_literal(b"abd\0")
                 .to_c_string_iterator()
                 .map(|__c| __c.to_ascii_lowercase());
             loop {
@@ -872,10 +877,10 @@ pub fn test_strcasecmp_15() {
     );
     assert!(
         ({
-            let mut __it1 = Ptr::from_string_literal(b"abd")
+            let mut __it1 = Ptr::from_string_literal(b"abd\0")
                 .to_c_string_iterator()
                 .map(|__c| __c.to_ascii_lowercase());
-            let mut __it2 = Ptr::from_string_literal(b"abc")
+            let mut __it2 = Ptr::from_string_literal(b"abc\0")
                 .to_c_string_iterator()
                 .map(|__c| __c.to_ascii_lowercase());
             loop {
@@ -890,8 +895,8 @@ pub fn test_strcasecmp_15() {
             }
         } > 0)
     );
-    let p: Value<Ptr<u8>> = Rc::new(RefCell::new(Ptr::from_string_literal(b"FOO")));
-    let q: Value<Ptr<u8>> = Rc::new(RefCell::new(Ptr::from_string_literal(b"foo")));
+    let p: Value<Ptr<u8>> = Rc::new(RefCell::new(Ptr::from_string_literal(b"FOO\0")));
+    let q: Value<Ptr<u8>> = Rc::new(RefCell::new(Ptr::from_string_literal(b"foo\0")));
     assert!(
         ({
             let mut __it1 = (*p.borrow())

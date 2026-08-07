@@ -16,7 +16,7 @@ fn main_0() -> i32 {
     assert!(
         ((({
             let __s = libcc2rs::format_c(
-                &Ptr::from_string_literal(b"x=%d y=%u").to_rust_string(),
+                &Ptr::from_string_literal(b"x=%d y=%u\0").to_rust_string(),
                 &[(-3_i32).into(), (7_u32).into()],
             );
             let __b = __s.as_bytes();
@@ -34,7 +34,7 @@ fn main_0() -> i32 {
     assert!(
         ((({
             let mut __it1 = (buf.as_pointer() as Ptr<u8>).to_c_string_iterator();
-            let mut __it2 = Ptr::from_string_literal(b"x=-3 y=7").to_c_string_iterator();
+            let mut __it2 = Ptr::from_string_literal(b"x=-3 y=7\0").to_c_string_iterator();
             loop {
                 let __c1 = __it1.next();
                 let __c2 = __it2.next();
@@ -51,8 +51,8 @@ fn main_0() -> i32 {
     assert!(
         ((({
             let __s = libcc2rs::format_c(
-                &Ptr::from_string_literal(b"%s").to_rust_string(),
-                &[(Ptr::from_string_literal(b"hello")).into()],
+                &Ptr::from_string_literal(b"%s\0").to_rust_string(),
+                &[(Ptr::from_string_literal(b"hello\0")).into()],
             );
             let __b = __s.as_bytes();
             if 4_usize > 0 {
@@ -69,7 +69,7 @@ fn main_0() -> i32 {
     assert!(
         ((({
             let mut __it1 = (buf.as_pointer() as Ptr<u8>).to_c_string_iterator();
-            let mut __it2 = Ptr::from_string_literal(b"hel").to_c_string_iterator();
+            let mut __it2 = Ptr::from_string_literal(b"hel\0").to_c_string_iterator();
             loop {
                 let __c1 = __it1.next();
                 let __c2 = __it2.next();
@@ -86,7 +86,7 @@ fn main_0() -> i32 {
     assert!(
         ((({
             let __s = libcc2rs::format_c(
-                &Ptr::from_string_literal(b"%05d|%x|%X").to_rust_string(),
+                &Ptr::from_string_literal(b"%05d|%x|%X\0").to_rust_string(),
                 &[(42).into(), (255).into(), (255).into()],
             );
             let __b = __s.as_bytes();
@@ -104,7 +104,7 @@ fn main_0() -> i32 {
     assert!(
         ((({
             let mut __it1 = (buf.as_pointer() as Ptr<u8>).to_c_string_iterator();
-            let mut __it2 = Ptr::from_string_literal(b"00042|ff|FF").to_c_string_iterator();
+            let mut __it2 = Ptr::from_string_literal(b"00042|ff|FF\0").to_c_string_iterator();
             loop {
                 let __c1 = __it1.next();
                 let __c2 = __it2.next();
@@ -121,7 +121,7 @@ fn main_0() -> i32 {
     assert!(
         ((({
             let __s = libcc2rs::format_c(
-                &Ptr::from_string_literal(b"%.2f").to_rust_string(),
+                &Ptr::from_string_literal(b"%.2f\0").to_rust_string(),
                 &[(3.14159E+0).into()],
             );
             let __b = __s.as_bytes();
@@ -139,7 +139,7 @@ fn main_0() -> i32 {
     assert!(
         ((({
             let mut __it1 = (buf.as_pointer() as Ptr<u8>).to_c_string_iterator();
-            let mut __it2 = Ptr::from_string_literal(b"3.14").to_c_string_iterator();
+            let mut __it2 = Ptr::from_string_literal(b"3.14\0").to_c_string_iterator();
             loop {
                 let __c1 = __it1.next();
                 let __c2 = __it2.next();
@@ -156,8 +156,8 @@ fn main_0() -> i32 {
     assert!(
         ((({
             let __s = libcc2rs::format_c(
-                &Ptr::from_string_literal(b"%-6s|").to_rust_string(),
-                &[(Ptr::from_string_literal(b"ab")).into()],
+                &Ptr::from_string_literal(b"%-6s|\0").to_rust_string(),
+                &[(Ptr::from_string_literal(b"ab\0")).into()],
             );
             let __b = __s.as_bytes();
             if 32usize > 0 {
@@ -174,7 +174,7 @@ fn main_0() -> i32 {
     assert!(
         ((({
             let mut __it1 = (buf.as_pointer() as Ptr<u8>).to_c_string_iterator();
-            let mut __it2 = Ptr::from_string_literal(b"ab    |").to_c_string_iterator();
+            let mut __it2 = Ptr::from_string_literal(b"ab    |\0").to_c_string_iterator();
             loop {
                 let __c1 = __it1.next();
                 let __c2 = __it2.next();
@@ -191,7 +191,7 @@ fn main_0() -> i32 {
     assert!(
         ((({
             let __s = libcc2rs::format_c(
-                &Ptr::from_string_literal(b"%c%%").to_rust_string(),
+                &Ptr::from_string_literal(b"%c%%\0").to_rust_string(),
                 &[(65).into()],
             );
             let __b = __s.as_bytes();
@@ -209,7 +209,7 @@ fn main_0() -> i32 {
     assert!(
         ((({
             let mut __it1 = (buf.as_pointer() as Ptr<u8>).to_c_string_iterator();
-            let mut __it2 = Ptr::from_string_literal(b"A%").to_c_string_iterator();
+            let mut __it2 = Ptr::from_string_literal(b"A%\0").to_c_string_iterator();
             loop {
                 let __c1 = __it1.next();
                 let __c2 = __it2.next();
@@ -226,7 +226,7 @@ fn main_0() -> i32 {
     assert!(
         ((({
             let __s = libcc2rs::format_c(
-                &Ptr::from_string_literal(b"%+d % d").to_rust_string(),
+                &Ptr::from_string_literal(b"%+d % d\0").to_rust_string(),
                 &[(5).into(), (5).into()],
             );
             let __b = __s.as_bytes();
@@ -244,7 +244,7 @@ fn main_0() -> i32 {
     assert!(
         ((({
             let mut __it1 = (buf.as_pointer() as Ptr<u8>).to_c_string_iterator();
-            let mut __it2 = Ptr::from_string_literal(b"+5  5").to_c_string_iterator();
+            let mut __it2 = Ptr::from_string_literal(b"+5  5\0").to_c_string_iterator();
             loop {
                 let __c1 = __it1.next();
                 let __c2 = __it2.next();
@@ -261,7 +261,7 @@ fn main_0() -> i32 {
     assert!(
         ((({
             let __s = libcc2rs::format_c(
-                &Ptr::from_string_literal(b"%ld %lu %zu").to_rust_string(),
+                &Ptr::from_string_literal(b"%ld %lu %zu\0").to_rust_string(),
                 &[(-1_i64).into(), (1_u64).into(), (9_usize).into()],
             );
             let __b = __s.as_bytes();
@@ -279,7 +279,7 @@ fn main_0() -> i32 {
     assert!(
         ((({
             let mut __it1 = (buf.as_pointer() as Ptr<u8>).to_c_string_iterator();
-            let mut __it2 = Ptr::from_string_literal(b"-1 1 9").to_c_string_iterator();
+            let mut __it2 = Ptr::from_string_literal(b"-1 1 9\0").to_c_string_iterator();
             loop {
                 let __c1 = __it1.next();
                 let __c2 = __it2.next();
@@ -296,7 +296,7 @@ fn main_0() -> i32 {
     assert!(
         ((({
             let __s = libcc2rs::format_c(
-                &Ptr::from_string_literal(b"%e").to_rust_string(),
+                &Ptr::from_string_literal(b"%e\0").to_rust_string(),
                 &[(1.2345678E+3).into()],
             );
             let __b = __s.as_bytes();
@@ -314,7 +314,7 @@ fn main_0() -> i32 {
     assert!(
         ((({
             let mut __it1 = (buf.as_pointer() as Ptr<u8>).to_c_string_iterator();
-            let mut __it2 = Ptr::from_string_literal(b"1.234568e+03").to_c_string_iterator();
+            let mut __it2 = Ptr::from_string_literal(b"1.234568e+03\0").to_c_string_iterator();
             loop {
                 let __c1 = __it1.next();
                 let __c2 = __it2.next();
@@ -331,7 +331,7 @@ fn main_0() -> i32 {
     assert!(
         ((({
             let __s = libcc2rs::format_c(
-                &Ptr::from_string_literal(b"%g").to_rust_string(),
+                &Ptr::from_string_literal(b"%g\0").to_rust_string(),
                 &[(1.234567E+6).into()],
             );
             let __b = __s.as_bytes();
@@ -349,7 +349,7 @@ fn main_0() -> i32 {
     assert!(
         ((({
             let mut __it1 = (buf.as_pointer() as Ptr<u8>).to_c_string_iterator();
-            let mut __it2 = Ptr::from_string_literal(b"1.23457e+06").to_c_string_iterator();
+            let mut __it2 = Ptr::from_string_literal(b"1.23457e+06\0").to_c_string_iterator();
             loop {
                 let __c1 = __it1.next();
                 let __c2 = __it2.next();
@@ -367,7 +367,7 @@ fn main_0() -> i32 {
     assert!(
         ((({
             let __s = libcc2rs::format_c(
-                &Ptr::from_string_literal(b"%d").to_rust_string(),
+                &Ptr::from_string_literal(b"%d\0").to_rust_string(),
                 &[(123).into()],
             );
             let __b = __s.as_bytes();
@@ -413,7 +413,7 @@ fn main_0() -> i32 {
     assert!(
         ((({
             let mut __it1 = (buf.as_pointer() as Ptr<u8>).to_c_string_iterator();
-            let mut __it2 = Ptr::from_string_literal(b"  3.3").to_c_string_iterator();
+            let mut __it2 = Ptr::from_string_literal(b"  3.3\0").to_c_string_iterator();
             loop {
                 let __c1 = __it1.next();
                 let __c2 = __it2.next();
@@ -431,7 +431,7 @@ fn main_0() -> i32 {
     assert!(
         ((({
             let __s = libcc2rs::format_c(
-                &Ptr::from_string_literal(b"<%.*s>").to_rust_string(),
+                &Ptr::from_string_literal(b"<%.*s>\0").to_rust_string(),
                 &[(3).into(), (segment.as_pointer() as Ptr<u8>).into()],
             );
             let __b = __s.as_bytes();
@@ -449,7 +449,7 @@ fn main_0() -> i32 {
     assert!(
         ((({
             let mut __it1 = (buf.as_pointer() as Ptr<u8>).to_c_string_iterator();
-            let mut __it2 = Ptr::from_string_literal(b"<abc>").to_c_string_iterator();
+            let mut __it2 = Ptr::from_string_literal(b"<abc>\0").to_c_string_iterator();
             loop {
                 let __c1 = __it1.next();
                 let __c2 = __it2.next();
@@ -466,7 +466,7 @@ fn main_0() -> i32 {
     assert!(
         ((({
             let __s = libcc2rs::format_c(
-                &Ptr::from_string_literal(b"%.*s").to_rust_string(),
+                &Ptr::from_string_literal(b"%.*s\0").to_rust_string(),
                 &[(10).into(), (segment.as_pointer() as Ptr<u8>).into()],
             );
             let __b = __s.as_bytes();
@@ -484,7 +484,7 @@ fn main_0() -> i32 {
     assert!(
         ((({
             let mut __it1 = (buf.as_pointer() as Ptr<u8>).to_c_string_iterator();
-            let mut __it2 = Ptr::from_string_literal(b"abcdef").to_c_string_iterator();
+            let mut __it2 = Ptr::from_string_literal(b"abcdef\0").to_c_string_iterator();
             loop {
                 let __c1 = __it1.next();
                 let __c2 = __it2.next();
@@ -501,7 +501,7 @@ fn main_0() -> i32 {
     assert!(
         ((({
             let __s = libcc2rs::format_c(
-                &Ptr::from_string_literal(b"%.*s").to_rust_string(),
+                &Ptr::from_string_literal(b"%.*s\0").to_rust_string(),
                 &[(-1_i32).into(), (segment.as_pointer() as Ptr<u8>).into()],
             );
             let __b = __s.as_bytes();
@@ -519,7 +519,7 @@ fn main_0() -> i32 {
     assert!(
         ((({
             let mut __it1 = (buf.as_pointer() as Ptr<u8>).to_c_string_iterator();
-            let mut __it2 = Ptr::from_string_literal(b"abcdef").to_c_string_iterator();
+            let mut __it2 = Ptr::from_string_literal(b"abcdef\0").to_c_string_iterator();
             loop {
                 let __c1 = __it1.next();
                 let __c2 = __it2.next();
@@ -536,7 +536,7 @@ fn main_0() -> i32 {
     assert!(
         ((({
             let __s = libcc2rs::format_c(
-                &Ptr::from_string_literal(b"%*d|%-*d|").to_rust_string(),
+                &Ptr::from_string_literal(b"%*d|%-*d|\0").to_rust_string(),
                 &[(5).into(), (42).into(), (5).into(), (42).into()],
             );
             let __b = __s.as_bytes();
@@ -554,7 +554,7 @@ fn main_0() -> i32 {
     assert!(
         ((({
             let mut __it1 = (buf.as_pointer() as Ptr<u8>).to_c_string_iterator();
-            let mut __it2 = Ptr::from_string_literal(b"   42|42   |").to_c_string_iterator();
+            let mut __it2 = Ptr::from_string_literal(b"   42|42   |\0").to_c_string_iterator();
             loop {
                 let __c1 = __it1.next();
                 let __c2 = __it2.next();
@@ -571,7 +571,7 @@ fn main_0() -> i32 {
     assert!(
         ((({
             let __s = libcc2rs::format_c(
-                &Ptr::from_string_literal(b"%*d").to_rust_string(),
+                &Ptr::from_string_literal(b"%*d\0").to_rust_string(),
                 &[(-5_i32).into(), (42).into()],
             );
             let __b = __s.as_bytes();
@@ -589,7 +589,7 @@ fn main_0() -> i32 {
     assert!(
         ((({
             let mut __it1 = (buf.as_pointer() as Ptr<u8>).to_c_string_iterator();
-            let mut __it2 = Ptr::from_string_literal(b"42   ").to_c_string_iterator();
+            let mut __it2 = Ptr::from_string_literal(b"42   \0").to_c_string_iterator();
             loop {
                 let __c1 = __it1.next();
                 let __c2 = __it2.next();
@@ -608,8 +608,8 @@ fn main_0() -> i32 {
     let third: Value<i32> = Rc::new(RefCell::new(0));
     assert!(
         (((libcc2rs::scan_c(
-            &Ptr::from_string_literal(b"40,25,3").to_rust_string(),
-            &Ptr::from_string_literal(b"%d,%d,%d").to_rust_string(),
+            &Ptr::from_string_literal(b"40,25,3\0").to_rust_string(),
+            &Ptr::from_string_literal(b"%d,%d,%d\0").to_rust_string(),
             &[
                 (first.as_pointer()).into(),
                 (second.as_pointer()).into(),
@@ -627,8 +627,8 @@ fn main_0() -> i32 {
     );
     assert!(
         (((libcc2rs::scan_c(
-            &Ptr::from_string_literal(b"7,8").to_rust_string(),
-            &Ptr::from_string_literal(b"%d,%d,%d").to_rust_string(),
+            &Ptr::from_string_literal(b"7,8\0").to_rust_string(),
+            &Ptr::from_string_literal(b"%d,%d,%d\0").to_rust_string(),
             &[
                 (first.as_pointer()).into(),
                 (second.as_pointer()).into(),
@@ -644,8 +644,8 @@ fn main_0() -> i32 {
     );
     assert!(
         (((libcc2rs::scan_c(
-            &Ptr::from_string_literal(b"junk").to_rust_string(),
-            &Ptr::from_string_literal(b"%d,%d,%d").to_rust_string(),
+            &Ptr::from_string_literal(b"junk\0").to_rust_string(),
+            &Ptr::from_string_literal(b"%d,%d,%d\0").to_rust_string(),
             &[
                 (first.as_pointer()).into(),
                 (second.as_pointer()).into(),
@@ -661,8 +661,8 @@ fn main_0() -> i32 {
     let ch: Value<u8> = Rc::new(RefCell::new(0_u8));
     assert!(
         (((libcc2rs::scan_c(
-            &Ptr::from_string_literal(b"  ff word x").to_rust_string(),
-            &Ptr::from_string_literal(b"%x %7s %c").to_rust_string(),
+            &Ptr::from_string_literal(b"  ff word x\0").to_rust_string(),
+            &Ptr::from_string_literal(b"%x %7s %c\0").to_rust_string(),
             &[
                 (hex.as_pointer()).into(),
                 (word.as_pointer() as Ptr::<u8>).into(),
@@ -675,7 +675,7 @@ fn main_0() -> i32 {
     assert!(
         ((({
             let mut __it1 = (word.as_pointer() as Ptr<u8>).to_c_string_iterator();
-            let mut __it2 = Ptr::from_string_literal(b"word").to_c_string_iterator();
+            let mut __it2 = Ptr::from_string_literal(b"word\0").to_c_string_iterator();
             loop {
                 let __c1 = __it1.next();
                 let __c2 = __it2.next();
@@ -694,8 +694,8 @@ fn main_0() -> i32 {
     let small: Value<i16> = Rc::new(RefCell::new(0_i16));
     assert!(
         (((libcc2rs::scan_c(
-            &Ptr::from_string_literal(b"123456789012 -7").to_rust_string(),
-            &Ptr::from_string_literal(b"%ld %hd").to_rust_string(),
+            &Ptr::from_string_literal(b"123456789012 -7\0").to_rust_string(),
+            &Ptr::from_string_literal(b"%ld %hd\0").to_rust_string(),
             &[(big.as_pointer()).into(), (small.as_pointer()).into(),]
         ) == 2) as i32)
             != 0)

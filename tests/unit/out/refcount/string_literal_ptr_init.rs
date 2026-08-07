@@ -45,12 +45,12 @@ pub fn probe_two_0() -> i32 {
 thread_local!(
     pub static table_1: Value<Box<[label]>> = Rc::new(RefCell::new(Box::new([
         label {
-            name: Ptr::from_string_literal(b"first"),
+            name: Ptr::from_string_literal(b"first\0"),
             probe: FnPtr::<fn() -> i32>::null(),
             mask: (1 << 4),
         },
         label {
-            name: Ptr::from_string_literal(b"second"),
+            name: Ptr::from_string_literal(b"second\0"),
             probe: (FnPtr::<fn() -> i32>::new(probe_two_0)),
             mask: (1 << 5),
         },
@@ -93,8 +93,9 @@ fn main_0() -> i32 {
             != 0)
     );
     assert!(((((*table_1.with(Value::clone).borrow())[(1) as usize].mask == 32) as i32) != 0));
-    let tail: Value<Ptr<u8>> =
-        Rc::new(RefCell::new((Ptr::from_string_literal(b"ab.cd").offset(2))));
+    let tail: Value<Ptr<u8>> = Rc::new(RefCell::new(
+        (Ptr::from_string_literal(b"ab.cd\0").offset(2)),
+    ));
     assert!(
         ((((((*tail.borrow()).offset(((0) as isize)).read()) as i32) == ('.' as i32)) as i32) != 0)
     );
@@ -110,7 +111,7 @@ fn main_0() -> i32 {
             .clone()
             .to_any()
     } else {
-        Ptr::from_string_literal(b"").to_any()
+        Ptr::from_string_literal(b"\0").to_any()
     }));
     assert!(
         (((((((*p.borrow()).reinterpret_cast::<u8>())
@@ -125,7 +126,7 @@ fn main_0() -> i32 {
             .clone()
             .to_any()
     } else {
-        Ptr::from_string_literal(b"").to_any()
+        Ptr::from_string_literal(b"\0").to_any()
     };
     assert!(
         (((((((*p.borrow()).reinterpret_cast::<u8>())

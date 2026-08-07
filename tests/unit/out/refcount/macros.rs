@@ -23,15 +23,15 @@ pub fn main() {
 fn main_0() -> i32 {
     println!(
         "{} {} {}",
-        Ptr::from_string_literal(b"macros.cpp"),
+        Ptr::from_string_literal(b"macros.cpp\0"),
         8,
-        Ptr::from_string_literal(b"main")
+        Ptr::from_string_literal(b"main\0")
     );
     ({
         log_0(
-            Ptr::from_string_literal(b"macros.cpp"),
+            Ptr::from_string_literal(b"macros.cpp\0"),
             9,
-            Ptr::from_string_literal(b"main"),
+            Ptr::from_string_literal(b"main\0"),
         )
     });
     return 0;

@@ -36,6 +36,17 @@ int main() {
   assert((unsigned char)bytes[1] == 144);
   assert((unsigned char)bytes[2] == 129);
 
+  assert("Z"[0] == 'Z');
+  assert("Z"[1] == 0);
+  assert("ab"[2] == 0);
+  assert("ab"[1] == 'b');
+
+  int i = 1;
+  assert("Z"[i] == 0);
+
+  const char *p = "Z";
+  assert(p[1] == 0);
+
   short wide = 0xffff;
   assert(wide == -1);
   unsigned char narrow = 300;

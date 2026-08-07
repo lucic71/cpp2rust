@@ -20,8 +20,8 @@ pub fn test_ipv4_literal_0() {
         Rc::new(RefCell::new(Ptr::<libcc2rs::Addrinfo>::null()));
     assert!(
         ((({
-            let __node = Ptr::from_string_literal(b"127.0.0.1").clone();
-            let __service = Ptr::from_string_literal(b"8080").clone();
+            let __node = Ptr::from_string_literal(b"127.0.0.1\0").clone();
+            let __service = Ptr::from_string_literal(b"8080\0").clone();
             let __hints = (hints.as_pointer()).clone();
             let __out = (res.as_pointer()).clone();
             let __family = if __hints.is_null() {
@@ -183,8 +183,8 @@ pub fn test_ipv6_literal_1() {
         Rc::new(RefCell::new(Ptr::<libcc2rs::Addrinfo>::null()));
     assert!(
         ((({
-            let __node = Ptr::from_string_literal(b"::1").clone();
-            let __service = Ptr::from_string_literal(b"443").clone();
+            let __node = Ptr::from_string_literal(b"::1\0").clone();
+            let __service = Ptr::from_string_literal(b"443\0").clone();
             let __hints = (hints.as_pointer()).clone();
             let __out = (res.as_pointer()).clone();
             let __family = if __hints.is_null() {
@@ -340,8 +340,8 @@ pub fn test_null_hints_2() {
         Rc::new(RefCell::new(Ptr::<libcc2rs::Addrinfo>::null()));
     assert!(
         ((({
-            let __node = Ptr::from_string_literal(b"127.0.0.1").clone();
-            let __service = Ptr::from_string_literal(b"80").clone();
+            let __node = Ptr::from_string_literal(b"127.0.0.1\0").clone();
+            let __service = Ptr::from_string_literal(b"80\0").clone();
             let __hints = Ptr::<libcc2rs::Addrinfo>::null().clone();
             let __out = (res.as_pointer()).clone();
             let __family = if __hints.is_null() {

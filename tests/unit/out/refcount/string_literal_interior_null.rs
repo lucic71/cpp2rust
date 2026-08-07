@@ -19,14 +19,14 @@ pub fn sum_bytes_0(buf: Ptr<u8>, len: u32) -> i32 {
 }
 thread_local!(
     pub static g_packet_1: Value<Ptr<u8>> =
-        Rc::new(RefCell::new(Ptr::from_string_literal(b"\x01\0")));
+        Rc::new(RefCell::new(Ptr::from_string_literal(b"\x01\0\0")));
 );
 pub fn main() {
     libcc2rs::exit_refcount(main_0());
 }
 fn main_0() -> i32 {
     let a: Value<i32> = Rc::new(RefCell::new(
-        ({ sum_bytes_0(Ptr::from_string_literal(b"\x01\0"), 2_u32) }),
+        ({ sum_bytes_0(Ptr::from_string_literal(b"\x01\0\0"), 2_u32) }),
     ));
     let b: Value<i32> = Rc::new(RefCell::new(
         ({ sum_bytes_0((*g_packet_1.with(Value::clone).borrow()).clone(), 2_u32) }),
@@ -34,11 +34,11 @@ fn main_0() -> i32 {
     assert!(((*a.borrow()) == (*b.borrow())));
     assert!(((*a.borrow()) == 1));
     let c: Value<i32> = Rc::new(RefCell::new(
-        ((b"\r\n.\r\n"[(0) as usize] as i32) + (b"\r\n.\r\n"[(3) as usize] as i32)),
+        ((b"\r\n.\r\n\0"[(0) as usize] as i32) + (b"\r\n.\r\n\0"[(3) as usize] as i32)),
     ));
     assert!(((*c.borrow()) == ((('\r' as u8) as i32) + (('\r' as u8) as i32))));
     let idx: Value<i32> = Rc::new(RefCell::new(1));
-    let d: Value<i32> = Rc::new(RefCell::new((b"abcd"[(*idx.borrow()) as usize] as i32)));
+    let d: Value<i32> = Rc::new(RefCell::new((b"abcd\0"[(*idx.borrow()) as usize] as i32)));
     assert!(((*d.borrow()) == (('b' as u8) as i32)));
     return 0;
 }

@@ -1477,7 +1477,7 @@ RsExpr *ConverterRefCount::VisitStringLiteral(clang::StringLiteral *expr) {
     return Text(
         std::format("Box::from(*b{})", GetEscapedStringLiteral(expr, pad)));
   }
-  return Text(std::format("b{}", GetEscapedStringLiteral(expr, 0)));
+  return Text(std::format("b{}", GetEscapedStringLiteral(expr, 1)));
 }
 
 RsExpr *

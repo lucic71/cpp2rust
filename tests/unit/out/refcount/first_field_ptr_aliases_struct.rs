@@ -87,7 +87,7 @@ fn main_0() -> i32 {
         (((*h.borrow()).with(|__v| (*__v).err.clone())).clone() as Ptr<u8>)
             .to_any()
             .memcpy(
-                &Ptr::from_string_literal(b"boom").to_any(),
+                &Ptr::from_string_literal(b"boom\0").to_any(),
                 5_usize as usize,
             );
         (((*h.borrow()).with(|__v| (*__v).err.clone())).clone() as Ptr<u8>)
@@ -107,7 +107,7 @@ fn main_0() -> i32 {
                     .clone()
             }) as Ptr<u8>)
                 .to_c_string_iterator();
-            let mut __it2 = Ptr::from_string_literal(b"boom").to_c_string_iterator();
+            let mut __it2 = Ptr::from_string_literal(b"boom\0").to_c_string_iterator();
             loop {
                 let __c1 = __it1.next();
                 let __c2 = __it2.next();

@@ -36,8 +36,8 @@ fn main_0() -> i32 {
     ));
     (*p.borrow()).with_mut(|__v| {
         __v.a = match CFile::open(
-            &Ptr::from_string_literal(b"/dev/null").to_rust_string(),
-            &Ptr::from_string_literal(b"w").to_rust_string(),
+            &Ptr::from_string_literal(b"/dev/null\0").to_rust_string(),
+            &Ptr::from_string_literal(b"w\0").to_rust_string(),
         ) {
             Some(__f) => Ptr::alloc(__f),
             None => Ptr::null(),
@@ -45,8 +45,8 @@ fn main_0() -> i32 {
     });
     (*p.borrow()).with_mut(|__v| {
         __v.b = match CFile::open(
-            &Ptr::from_string_literal(b"/dev/null").to_rust_string(),
-            &Ptr::from_string_literal(b"w").to_rust_string(),
+            &Ptr::from_string_literal(b"/dev/null\0").to_rust_string(),
+            &Ptr::from_string_literal(b"w\0").to_rust_string(),
         ) {
             Some(__f) => Ptr::alloc(__f),
             None => Ptr::null(),

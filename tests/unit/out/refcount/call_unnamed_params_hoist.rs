@@ -46,8 +46,8 @@ pub fn main() {
     libcc2rs::exit_refcount(main_0());
 }
 fn main_0() -> i32 {
-    let s: Value<Ptr<u8>> = Rc::new(RefCell::new(Ptr::from_string_literal(b"abc")));
-    let t: Value<Ptr<u8>> = Rc::new(RefCell::new(Ptr::from_string_literal(b"bcd")));
+    let s: Value<Ptr<u8>> = Rc::new(RefCell::new(Ptr::from_string_literal(b"abc\0")));
+    let t: Value<Ptr<u8>> = Rc::new(RefCell::new(Ptr::from_string_literal(b"bcd\0")));
     let n: Value<i32> = Rc::new(RefCell::new(5));
     let v: Value<i32> = Rc::new(RefCell::new(4));
     assert!(

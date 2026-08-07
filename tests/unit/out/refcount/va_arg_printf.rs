@@ -38,11 +38,11 @@ pub fn main() {
     libcc2rs::exit_refcount(main_0());
 }
 fn main_0() -> i32 {
-    let dummy: Value<Ptr<u8>> = Rc::new(RefCell::new(Ptr::from_string_literal(b"dummy")));
+    let dummy: Value<Ptr<u8>> = Rc::new(RefCell::new(Ptr::from_string_literal(b"dummy\0")));
     assert!(
         (((({
             logf_1(
-                Ptr::from_string_literal(b"hello %d %d"),
+                Ptr::from_string_literal(b"hello %d %d\0"),
                 &[
                     (10).into(),
                     ((*dummy.borrow()).to_c_string_iterator().count()).into(),
@@ -54,7 +54,7 @@ fn main_0() -> i32 {
     assert!(
         (((({
             logf_1(
-                Ptr::from_string_literal(b"x %d %d"),
+                Ptr::from_string_literal(b"x %d %d\0"),
                 &[(1).into(), (2).into()],
             )
         }) == 3) as i32)
@@ -63,7 +63,7 @@ fn main_0() -> i32 {
     assert!(
         (((({
             lenf_2(
-                Ptr::from_string_literal(b"%s"),
+                Ptr::from_string_literal(b"%s\0"),
                 &[((*dummy.borrow()).clone()).into()],
             )
         }) == 5) as i32)
@@ -72,12 +72,12 @@ fn main_0() -> i32 {
     assert!(
         (((({
             lenf_2(
-                Ptr::from_string_literal(b"%s"),
+                Ptr::from_string_literal(b"%s\0"),
                 &[
                     (if ((((*dummy.borrow()).offset(((0) as isize)).read()) as i32) != 0) {
                         (*dummy.borrow()).clone()
                     } else {
-                        Ptr::from_string_literal(b"")
+                        Ptr::from_string_literal(b"\0")
                     })
                     .into(),
                 ],

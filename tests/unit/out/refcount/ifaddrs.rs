@@ -154,7 +154,7 @@ fn main_0() -> i32 {
     };
     assert!(
         (((match nix::net::if_::if_nametoindex(
-            Ptr::from_string_literal(b"cpp2rust_no_such_if")
+            Ptr::from_string_literal(b"cpp2rust_no_such_if\0")
                 .to_rust_string()
                 .as_str()
         ) {
