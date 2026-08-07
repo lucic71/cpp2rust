@@ -69,36 +69,10 @@ impl ByteRepr for Node {
         }
     }
 }
-#[derive(Clone, Copy, PartialEq, Debug, Default)]
-#[repr(u32)]
-pub enum Color {
-    #[default]
-    RED = 0,
-    GREEN = 1,
-    BLUE = 2,
-}
-impl From<i32> for Color {
-    fn from(n: i32) -> Color {
-        match n {
-            0 => Color::RED,
-            1 => Color::GREEN,
-            2 => Color::BLUE,
-            _ => panic!("invalid Color value: {}", n),
-        }
-    }
-}
-libcc2rs::impl_enum_inc_dec!(Color);
-impl ByteRepr for Color {
-    fn byte_size() -> usize {
-        4
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        (*self as i32).to_bytes(buf);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        <Color>::from(i32::from_bytes(buf))
-    }
-}
+pub type Color = u32;
+pub const Color_RED: Color = 0;
+pub const Color_GREEN: Color = 1;
+pub const Color_BLUE: Color = 2;
 #[repr(C)]
 #[derive(Clone, Default)]
 pub struct Inner {
@@ -173,15 +147,15 @@ fn main_0() -> i32 {
     assert!(((((*b.borrow()).next.with(|__v| (*__v).value) == 1) as i32) != 0));
     let c: Value<Container> = Rc::new(RefCell::new(Container {
         inner: Inner { a: 5, b: 6 },
-        color: Color::GREEN,
+        color: Color_GREEN,
         count: 42,
     }));
     assert!(((((*c.borrow()).inner.a == 5) as i32) != 0));
     assert!(((((*c.borrow()).inner.b == 6) as i32) != 0));
-    assert!((((((*c.borrow()).color as u32) == ((Color::GREEN as i32) as u32)) as i32) != 0));
+    assert!((((((*c.borrow()).color as u32) == ((Color_GREEN as i32) as u32)) as i32) != 0));
     assert!(((((*c.borrow()).count == 42) as i32) != 0));
     let c2: Value<Container> = <Value<Container>>::default();
-    (*c2.borrow_mut()).color = Color::BLUE;
+    (*c2.borrow_mut()).color = Color_BLUE;
     assert!((((((*c2.borrow()).color as u32) == 2_u32) as i32) != 0));
     return 0;
 }

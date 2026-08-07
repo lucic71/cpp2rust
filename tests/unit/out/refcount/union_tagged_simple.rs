@@ -6,34 +6,9 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Clone, Copy, PartialEq, Debug, Default)]
-#[repr(u32)]
-pub enum Kind_enum {
-    #[default]
-    KIND_NONE = 0,
-    KIND_DONE = 1,
-}
-impl From<i32> for Kind_enum {
-    fn from(n: i32) -> Kind_enum {
-        match n {
-            0 => Kind_enum::KIND_NONE,
-            1 => Kind_enum::KIND_DONE,
-            _ => panic!("invalid Kind_enum value: {}", n),
-        }
-    }
-}
-libcc2rs::impl_enum_inc_dec!(Kind_enum);
-impl ByteRepr for Kind_enum {
-    fn byte_size() -> usize {
-        4
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        (*self as i32).to_bytes(buf);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        <Kind_enum>::from(i32::from_bytes(buf))
-    }
-}
+pub type Kind_enum = u32;
+pub const Kind_enum_KIND_NONE: Kind_enum = 0;
+pub const Kind_enum_KIND_DONE: Kind_enum = 1;
 pub struct anon_0 {
     __bytes: Value<Box<[u8]>>,
 }
@@ -99,7 +74,7 @@ impl ByteRepr for Event {
 pub fn make_event_1(code: i32) -> Event {
     let code: Value<i32> = Rc::new(RefCell::new(code));
     return (Event {
-        kind: Kind_enum::KIND_DONE,
+        kind: Kind_enum_KIND_DONE,
         handle: AnyPtr::default(),
         payload: {
             let __u: anon_0 = Default::default();
@@ -112,7 +87,7 @@ pub fn make_event_1(code: i32) -> Event {
 pub fn make_ref_2(p: AnyPtr) -> Event {
     let p: Value<AnyPtr> = Rc::new(RefCell::new(p));
     return (Event {
-        kind: Kind_enum::KIND_NONE,
+        kind: Kind_enum_KIND_NONE,
         handle: AnyPtr::default(),
         payload: {
             let __u: anon_0 = Default::default();
@@ -128,7 +103,7 @@ pub fn main() {
 fn main_0() -> i32 {
     let dummy: Value<i32> = Rc::new(RefCell::new(0));
     let m1: Value<Event> = <Value<Event>>::default();
-    (*m1.borrow_mut()).kind = Kind_enum::KIND_DONE;
+    (*m1.borrow_mut()).kind = Kind_enum_KIND_DONE;
     (*m1.borrow_mut()).handle = ((dummy.as_pointer()) as Ptr<i32>).to_any();
     (m1.as_pointer()
         .reinterpret_cast::<u8>()
@@ -136,7 +111,7 @@ fn main_0() -> i32 {
         .reinterpret_cast::<i32>() as Ptr<i32>)
         .write(42);
     assert!(
-        (((((*m1.borrow()).kind as u32) == ((Kind_enum::KIND_DONE as i32) as u32)) as i32) != 0)
+        (((((*m1.borrow()).kind as u32) == ((Kind_enum_KIND_DONE as i32) as u32)) as i32) != 0)
     );
     assert!(
         (((((m1
@@ -149,7 +124,7 @@ fn main_0() -> i32 {
             != 0)
     );
     let m2: Value<Event> = <Value<Event>>::default();
-    (*m2.borrow_mut()).kind = Kind_enum::KIND_NONE;
+    (*m2.borrow_mut()).kind = Kind_enum_KIND_NONE;
     (*m2.borrow_mut()).handle = ((dummy.as_pointer()) as Ptr<i32>).to_any();
     (m2.as_pointer()
         .reinterpret_cast::<u8>()
@@ -171,7 +146,7 @@ fn main_0() -> i32 {
     );
     let m3: Value<Event> = Rc::new(RefCell::new(({ make_event_1(((*dummy.borrow()) + 7)) })));
     assert!(
-        (((((*m3.borrow()).kind as u32) == ((Kind_enum::KIND_DONE as i32) as u32)) as i32) != 0)
+        (((((*m3.borrow()).kind as u32) == ((Kind_enum_KIND_DONE as i32) as u32)) as i32) != 0)
     );
     assert!(
         (((((m3

@@ -413,9 +413,7 @@ public:
 
   virtual RsExpr *VisitEnumDecl(clang::EnumDecl *decl);
 
-  virtual RsExpr *AddFromImpl(clang::EnumDecl *decl);
-
-  virtual RsExpr *AddIncDecImpls(clang::EnumDecl *decl);
+  virtual std::string EnumeratorName(const clang::EnumConstantDecl *decl) const;
 
   virtual RsExpr *VisitCXXDefaultArgExpr(clang::CXXDefaultArgExpr *expr);
 
@@ -492,10 +490,6 @@ protected:
   }
 
   RsExpr *CastTo(RsExpr *expr, clang::QualType qual_type) {
-    if (qual_type->isEnumeralType()) {
-      return Cat(Text(GetUnsafeTypeAsString(qual_type) + "::from"),
-                 Parens(arena_.New<Cast>(expr, Text("i32"))));
-    }
     return arena_.New<Cast>(expr, Text(GetUnsafeTypeAsString(qual_type)));
   }
 
@@ -585,8 +579,6 @@ protected:
   RsExpr *EmitDefaultStructLiteral(const clang::RecordDecl *decl);
 
   virtual RsExpr *AddByteReprTrait(const clang::RecordDecl *decl);
-
-  virtual RsExpr *AddByteReprTrait(const clang::EnumDecl *decl);
 
   virtual RsExpr *
   ConvertUnsignedArithBinaryOperator(clang::BinaryOperator *binary_operator,

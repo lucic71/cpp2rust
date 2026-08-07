@@ -13,7 +13,6 @@ fn f17(a0: AnyPtr, va: &[VaArg]) {
     ();
 }
 
-
 fn f25(a0: f64) -> i32 {
     a0.is_nan() as i32
 }

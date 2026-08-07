@@ -6,36 +6,10 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Clone, Copy, PartialEq, Debug, Default)]
-#[repr(u32)]
-pub enum Width_enum {
-    #[default]
-    W_64 = 0,
-    W_32 = 1,
-    W_16 = 2,
-}
-impl From<i32> for Width_enum {
-    fn from(n: i32) -> Width_enum {
-        match n {
-            0 => Width_enum::W_64,
-            1 => Width_enum::W_32,
-            2 => Width_enum::W_16,
-            _ => panic!("invalid Width_enum value: {}", n),
-        }
-    }
-}
-libcc2rs::impl_enum_inc_dec!(Width_enum);
-impl ByteRepr for Width_enum {
-    fn byte_size() -> usize {
-        4
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        (*self as i32).to_bytes(buf);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        <Width_enum>::from(i32::from_bytes(buf))
-    }
-}
+pub type Width_enum = u32;
+pub const Width_enum_W_64: Width_enum = 0;
+pub const Width_enum_W_32: Width_enum = 1;
+pub const Width_enum_W_16: Width_enum = 2;
 pub struct anon_0 {
     __bytes: Value<Box<[u8]>>,
 }
@@ -107,7 +81,7 @@ pub fn write_count_1(s: Ptr<Sink>, count: i64) {
     'switch: {
         let __match_cond = ((*s.borrow()).with(|__v| (*__v).width) as u32);
         match __match_cond {
-            __v if __v == ((Width_enum::W_64 as i32) as u32) => {
+            __v if __v == ((Width_enum_W_64 as i32) as u32) => {
                 {
                     let __rhs = (*count.borrow());
                     (((*s.borrow())
@@ -120,7 +94,7 @@ pub fn write_count_1(s: Ptr<Sink>, count: i64) {
                 };
                 break 'switch;
             }
-            __v if __v == ((Width_enum::W_32 as i32) as u32) => {
+            __v if __v == ((Width_enum_W_32 as i32) as u32) => {
                 {
                     let __rhs = ((*count.borrow()) as i32);
                     (((*s.borrow())
@@ -133,7 +107,7 @@ pub fn write_count_1(s: Ptr<Sink>, count: i64) {
                 };
                 break 'switch;
             }
-            __v if __v == ((Width_enum::W_16 as i32) as u32) => {
+            __v if __v == ((Width_enum_W_16 as i32) as u32) => {
                 {
                     let __rhs = ((*count.borrow()) as i16);
                     (((*s.borrow())
@@ -158,7 +132,7 @@ fn main_0() -> i32 {
     let buf32: Value<i32> = Rc::new(RefCell::new(0));
     let buf16: Value<i16> = Rc::new(RefCell::new(0_i16));
     let s: Value<Sink> = <Value<Sink>>::default();
-    (*s.borrow_mut()).width = Width_enum::W_64;
+    (*s.borrow_mut()).width = Width_enum_W_64;
     (s.as_pointer()
         .reinterpret_cast::<u8>()
         .offset(8usize)
@@ -166,7 +140,7 @@ fn main_0() -> i32 {
         .write(((buf64.as_pointer()) as Ptr<i64>).to_any());
     ({ write_count_1((s.as_pointer()), 1234605616436508552_i64) });
     assert!(((((*buf64.borrow()) == 1234605616436508552_i64) as i32) != 0));
-    (*s.borrow_mut()).width = Width_enum::W_32;
+    (*s.borrow_mut()).width = Width_enum_W_32;
     (s.as_pointer()
         .reinterpret_cast::<u8>()
         .offset(8usize)
@@ -174,7 +148,7 @@ fn main_0() -> i32 {
         .write(((buf32.as_pointer()) as Ptr<i32>).to_any());
     ({ write_count_1((s.as_pointer()), 305419896_i64) });
     assert!(((((*buf32.borrow()) == 305419896) as i32) != 0));
-    (*s.borrow_mut()).width = Width_enum::W_16;
+    (*s.borrow_mut()).width = Width_enum_W_16;
     (s.as_pointer()
         .reinterpret_cast::<u8>()
         .offset(8usize)

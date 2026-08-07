@@ -2620,15 +2620,14 @@ RsExpr *Converter::VisitCXXBoolLiteralExpr(clang::CXXBoolLiteralExpr *expr) {
 
 RsExpr *Converter::ConvertIntegerToEnumeralCast(clang::Expr *to,
                                                 clang::Expr *from) {
-  // Short circuit `Enum::from(X as i32)` to `X`
+  // Short circuit `(X as i32) as Enum` to `X`
   if (auto ref =
           clang::dyn_cast<clang::DeclRefExpr>(from->IgnoreParenImpCasts())) {
     if (auto ec = clang::dyn_cast<clang::EnumConstantDecl>(ref->getDecl())) {
       auto src_enum = clang::dyn_cast<clang::EnumDecl>(ec->getDeclContext());
       auto dst_enum = to->getType()->getAs<clang::EnumType>();
       if (src_enum && dst_enum && dst_enum->getDecl() == src_enum) {
-        return Text(std::format("{}::{}", GetRecordName(src_enum),
-                                std::string_view(ec->getName())));
+        return Text(EnumeratorName(ec));
       }
     }
   }
@@ -2637,8 +2636,7 @@ RsExpr *Converter::ConvertIntegerToEnumeralCast(clang::Expr *to,
   if (!from->getType()->isSpecificBuiltinType(clang::BuiltinType::Int)) {
     inner = arena_.New<Cast>(from_node, Text("i32"));
   }
-  return Cat(Text(GetUnsafeTypeAsString(to->getType()) + "::from"),
-             Parens(inner));
+  return Parens(CastTo(Parens(inner), to->getType()));
 }
 
 RsExpr *Converter::ConvertIntegralToBooleanCast(clang::ImplicitCastExpr *expr) {
@@ -2653,12 +2651,7 @@ RsExpr *Converter::ConvertIntegralToBooleanCast(clang::ImplicitCastExpr *expr) {
     }
   }
 
-  RsExpr *zero = nullptr;
-  if (sub_expr->getType()->isEnumeralType()) {
-    zero = Text(GetUnsafeTypeAsString(sub_expr->getType()) + "::from(0)");
-  } else /* sub_expr->getType()->isIntegerType() */ {
-    zero = Text(token::kZero);
-  }
+  RsExpr *zero = Text(token::kZero);
   return Parens(Cat(ConvertExpr(sub_expr), Text(token::kDiff), zero));
 }
 
@@ -3141,14 +3134,11 @@ RsExpr *Converter::ConvertDeclRefExpr(clang::DeclRefExpr *expr) {
   }
 
   if (auto enum_constant = clang::dyn_cast<clang::EnumConstantDecl>(decl)) {
-    auto qualified = std::format("{}::{}",
-                                 GetRecordName(clang::dyn_cast<clang::EnumDecl>(
-                                     enum_constant->getDeclContext())),
-                                 std::string_view(enum_constant->getName()));
+    auto name = EnumeratorName(enum_constant);
     if (!expr->getType()->isEnumeralType()) {
-      return Text(std::format("({} as i32)", qualified));
+      return Text(std::format("({} as i32)", name));
     }
-    return Text(std::move(qualified));
+    return Text(std::move(name));
   }
 
   if (IsGlobalVar(expr)) {
@@ -3706,8 +3696,6 @@ RsExpr *Converter::VisitOffsetOfExpr(clang::OffsetOfExpr *expr) {
                   member_path));
 }
 
-static constexpr const char *kZeroEnumerator = "_ZERO_";
-
 RsExpr *Converter::VisitEnumDecl(clang::EnumDecl *decl) {
 
   ENSURE(decl_ids_.insert(GetID(decl)).second);
@@ -3718,59 +3706,26 @@ RsExpr *Converter::VisitEnumDecl(clang::EnumDecl *decl) {
   Mapper::AddRuleForUserDefinedType(decl);
   Mapper::SetDerives(ctx_.getCanonicalTagType(decl),
                      {"Clone", "Copy", "PartialEq", "Debug", "Default"});
+  auto name = GetRecordName(decl);
   std::vector<RsExpr *> parts;
-  parts.push_back(Text("#[derive(Clone, Copy, PartialEq, Debug, Default)]"));
-  parts.push_back(Text(std::format(
-      "#[repr({})]", GetUnsafeTypeAsString(decl->getIntegerType()))));
-  parts.push_back(Text(std::format("pub enum {}", GetRecordName(decl))));
-  std::vector<RsExpr *> enumerators;
-  if (!HasZeroEnumerator(decl)) {
-    enumerators.push_back(Text("#[default]"));
-    enumerators.push_back(Text(std::format("{} = 0,", kZeroEnumerator)));
-  }
+  parts.push_back(
+      Text(std::format("pub type {} = {};", name,
+                       GetUnsafeTypeAsString(decl->getIntegerType()))));
   for (auto e : decl->enumerators()) {
     llvm::SmallVector<char, 32> init;
     e->getInitVal().toString(init, 10);
-    if (enumerators.empty()) {
-      enumerators.push_back(Text("#[default]"));
-    }
-    enumerators.push_back(
-        Text(std::format("{} = {},", std::string_view(e->getName()),
+    parts.push_back(
+        Text(std::format("pub const {}: {} = {};", EnumeratorName(e), name,
                          std::string_view(init.data(), init.size()))));
   }
-  parts.push_back(Braces(arena_.New<Concat>(std::move(enumerators))));
-
-  parts.push_back(AddFromImpl(decl));
-  parts.push_back(AddIncDecImpls(decl));
-  parts.push_back(AddByteReprTrait(decl));
   return arena_.New<Concat>(std::move(parts));
 }
 
-RsExpr *Converter::AddFromImpl(clang::EnumDecl *decl) {
-  auto name = GetRecordName(decl);
-  std::vector<RsExpr *> arms;
-  if (!HasZeroEnumerator(decl)) {
-    arms.push_back(Text(std::format("0 => {}::{},", name, kZeroEnumerator)));
-  }
-  for (auto e : decl->enumerators()) {
-    llvm::SmallVector<char, 32> init;
-    e->getInitVal().toString(init, 10);
-    arms.push_back(Text(std::format("{} => {}::{},",
-                                    std::string_view(init.data(), init.size()),
-                                    name, std::string_view(e->getName()))));
-  }
-  arms.push_back(
-      Text(std::format("_ => panic!(\"invalid {} value: {{}}\", n),", name)));
-
-  return Cat(Text(std::format("impl From<i32> for {}", name)),
-             Braces(Cat(Text(std::format("fn from(n: i32) -> {}", name)),
-                        Braces(Cat(Text("match n"), Braces(arena_.New<Concat>(
-                                                        std::move(arms))))))));
-}
-
-RsExpr *Converter::AddIncDecImpls(clang::EnumDecl *decl) {
-  return Text(
-      std::format("libcc2rs::impl_enum_inc_dec!({});", GetRecordName(decl)));
+std::string
+Converter::EnumeratorName(const clang::EnumConstantDecl *decl) const {
+  auto *enum_decl = clang::cast<clang::EnumDecl>(decl->getDeclContext());
+  return std::format("{}_{}", GetRecordName(enum_decl),
+                     std::string_view(decl->getName()));
 }
 
 RsExpr *Converter::VisitCXXDefaultArgExpr(clang::CXXDefaultArgExpr *expr) {
@@ -4106,9 +4061,7 @@ RsExpr *Converter::GetDefaultAsStringFallback(clang::QualType qual_type) {
 
   if (qual_type->isEnumeralType()) {
     auto enum_decl = qual_type->castAs<clang::EnumType>()->getDecl();
-    return Text(std::format(
-        "{}::{}", GetRecordName(enum_decl),
-        std::string_view(enum_decl->enumerator_begin()->getName())));
+    return Text(EnumeratorName(*enum_decl->enumerator_begin()));
   }
 
   return Cat(Text('<'), Convert(qual_type), Text(">::default()"));
@@ -4632,10 +4585,6 @@ RsExpr *Converter::EmitDefaultStructLiteral(const clang::RecordDecl *decl) {
 }
 
 RsExpr *Converter::AddByteReprTrait(const clang::RecordDecl *decl) {
-  return Text("");
-}
-
-RsExpr *Converter::AddByteReprTrait(const clang::EnumDecl *decl) {
   return Text("");
 }
 

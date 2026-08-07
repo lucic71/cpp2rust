@@ -6,40 +6,12 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Clone, Copy, PartialEq, Debug, Default)]
-#[repr(u32)]
-pub enum Tag_enum {
-    #[default]
-    T_NUM_S = 0,
-    T_NUM_U = 1,
-    T_TEXT = 2,
-    T_FLOAT = 3,
-    T_REF = 4,
-}
-impl From<i32> for Tag_enum {
-    fn from(n: i32) -> Tag_enum {
-        match n {
-            0 => Tag_enum::T_NUM_S,
-            1 => Tag_enum::T_NUM_U,
-            2 => Tag_enum::T_TEXT,
-            3 => Tag_enum::T_FLOAT,
-            4 => Tag_enum::T_REF,
-            _ => panic!("invalid Tag_enum value: {}", n),
-        }
-    }
-}
-libcc2rs::impl_enum_inc_dec!(Tag_enum);
-impl ByteRepr for Tag_enum {
-    fn byte_size() -> usize {
-        4
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        (*self as i32).to_bytes(buf);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        <Tag_enum>::from(i32::from_bytes(buf))
-    }
-}
+pub type Tag_enum = u32;
+pub const Tag_enum_T_NUM_S: Tag_enum = 0;
+pub const Tag_enum_T_NUM_U: Tag_enum = 1;
+pub const Tag_enum_T_TEXT: Tag_enum = 2;
+pub const Tag_enum_T_FLOAT: Tag_enum = 3;
+pub const Tag_enum_T_REF: Tag_enum = 4;
 pub struct anon_0 {
     __bytes: Value<Box<[u8]>>,
 }
@@ -113,7 +85,7 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     let a: Value<Slot> = <Value<Slot>>::default();
-    (*a.borrow_mut()).tag = Tag_enum::T_NUM_S;
+    (*a.borrow_mut()).tag = Tag_enum_T_NUM_S;
     (a.as_pointer()
         .reinterpret_cast::<u8>()
         .offset(8usize)
@@ -130,7 +102,7 @@ fn main_0() -> i32 {
             != 0)
     );
     let b: Value<Slot> = <Value<Slot>>::default();
-    (*b.borrow_mut()).tag = Tag_enum::T_NUM_U;
+    (*b.borrow_mut()).tag = Tag_enum_T_NUM_U;
     (b.as_pointer()
         .reinterpret_cast::<u8>()
         .offset(8usize)
@@ -147,7 +119,7 @@ fn main_0() -> i32 {
             != 0)
     );
     let c: Value<Slot> = <Value<Slot>>::default();
-    (*c.borrow_mut()).tag = Tag_enum::T_TEXT;
+    (*c.borrow_mut()).tag = Tag_enum_T_TEXT;
     (c.as_pointer()
         .reinterpret_cast::<u8>()
         .offset(8usize)
@@ -165,7 +137,7 @@ fn main_0() -> i32 {
             != 0)
     );
     let d: Value<Slot> = <Value<Slot>>::default();
-    (*d.borrow_mut()).tag = Tag_enum::T_FLOAT;
+    (*d.borrow_mut()).tag = Tag_enum_T_FLOAT;
     (d.as_pointer()
         .reinterpret_cast::<u8>()
         .offset(8usize)
@@ -183,7 +155,7 @@ fn main_0() -> i32 {
     );
     let x: Value<i32> = Rc::new(RefCell::new(0));
     let e: Value<Slot> = <Value<Slot>>::default();
-    (*e.borrow_mut()).tag = Tag_enum::T_REF;
+    (*e.borrow_mut()).tag = Tag_enum_T_REF;
     (e.as_pointer()
         .reinterpret_cast::<u8>()
         .offset(8usize)

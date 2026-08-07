@@ -684,20 +684,6 @@ RsExpr *ConverterRefCount::AddByteReprTrait(const clang::RecordDecl *decl) {
              Braces(arena_.New<Concat>(std::move(body))));
 }
 
-RsExpr *ConverterRefCount::AddByteReprTrait(const clang::EnumDecl *decl) {
-  auto name = GetRecordName(decl);
-  auto byte_size = ctx_.getTypeSize(decl->getIntegerType()) / 8;
-  return Cat(
-      Text(std::format("impl ByteRepr for {}", name)),
-      Braces(
-          Cat(Text(std::format("fn byte_size() -> usize {{ {} }}", byte_size)),
-              Text("fn to_bytes(&self, buf: &mut [u8]) { (*self as i32)"
-                   ".to_bytes(buf); }"),
-              Text(std::format("fn from_bytes(buf: &[u8]) -> Self {{ "
-                               "<{}>::from(i32::from_bytes(buf)) }}",
-                               name)))));
-}
-
 bool ConverterRefCount::IsMethodOnPtr(clang::CXXMethodDecl *method) {
   return IsTranslatableMethod(method) && !method->isStatic() &&
          !clang::isa<clang::CXXConstructorDecl>(method) &&

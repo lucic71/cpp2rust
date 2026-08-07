@@ -162,7 +162,12 @@ unsafe fn f38(a0: i32) -> i32 {
     libc::putchar(a0)
 }
 
-unsafe fn f39(a0: *mut libc::c_char, a1: usize, a2: *const libc::c_char, a3: libcc2rs::VaList) -> i32 {
+unsafe fn f39(
+    a0: *mut libc::c_char,
+    a1: usize,
+    a2: *const libc::c_char,
+    a3: libcc2rs::VaList,
+) -> i32 {
     let __s = libcc2rs::format_c(
         ::std::ffi::CStr::from_ptr(a2).to_str().unwrap(),
         a3.remaining(),

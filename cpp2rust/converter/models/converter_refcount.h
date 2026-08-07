@@ -47,8 +47,6 @@ public:
 
   RsExpr *AddByteReprTrait(const clang::RecordDecl *decl) override;
 
-  RsExpr *AddByteReprTrait(const clang::EnumDecl *decl) override;
-
   RsExpr *EmitBitFieldToBytes(const clang::FieldDecl *field,
                               const clang::ASTRecordLayout &layout);
 

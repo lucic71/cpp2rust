@@ -1,9 +1,11 @@
-// panic-ub
+#include <assert.h>
 
 enum color { RED, GREEN, BLUE };
 
 int main() {
   enum color c = BLUE;
   c++;
-  return c == RED ? 0 : 1;
+  assert(c == (enum color)3);
+  assert(c != RED);
+  return c == (enum color)3 ? 0 : 1;
 }

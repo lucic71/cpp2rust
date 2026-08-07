@@ -6,36 +6,10 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Clone, Copy, PartialEq, Debug, Default)]
-#[repr(u32)]
-pub enum widget_enum {
-    #[default]
-    MODE_IDLE = 0,
-    MODE_ACTIVE = 1,
-    MODE_DONE = 2,
-}
-impl From<i32> for widget_enum {
-    fn from(n: i32) -> widget_enum {
-        match n {
-            0 => widget_enum::MODE_IDLE,
-            1 => widget_enum::MODE_ACTIVE,
-            2 => widget_enum::MODE_DONE,
-            _ => panic!("invalid widget_enum value: {}", n),
-        }
-    }
-}
-libcc2rs::impl_enum_inc_dec!(widget_enum);
-impl ByteRepr for widget_enum {
-    fn byte_size() -> usize {
-        4
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        (*self as i32).to_bytes(buf);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        <widget_enum>::from(i32::from_bytes(buf))
-    }
-}
+pub type widget_enum = u32;
+pub const widget_enum_MODE_IDLE: widget_enum = 0;
+pub const widget_enum_MODE_ACTIVE: widget_enum = 1;
+pub const widget_enum_MODE_DONE: widget_enum = 2;
 #[repr(C)]
 #[derive(Clone, Default)]
 pub struct widget {
@@ -154,34 +128,9 @@ impl ByteRepr for slot_union {
         }
     }
 }
-#[derive(Clone, Copy, PartialEq, Debug, Default)]
-#[repr(u32)]
-pub enum slot {
-    #[default]
-    SLOT_A = 0,
-    SLOT_B = 1,
-}
-impl From<i32> for slot {
-    fn from(n: i32) -> slot {
-        match n {
-            0 => slot::SLOT_A,
-            1 => slot::SLOT_B,
-            _ => panic!("invalid slot value: {}", n),
-        }
-    }
-}
-libcc2rs::impl_enum_inc_dec!(slot);
-impl ByteRepr for slot {
-    fn byte_size() -> usize {
-        4
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        (*self as i32).to_bytes(buf);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        <slot>::from(i32::from_bytes(buf))
-    }
-}
+pub type slot = u32;
+pub const slot_SLOT_A: slot = 0;
+pub const slot_SLOT_B: slot = 1;
 #[repr(C)]
 #[derive(Clone, Default)]
 pub struct Inner {
@@ -239,7 +188,7 @@ impl ByteRepr for Inner_struct {
 pub fn is_active_0(w: Ptr<widget>) -> i32 {
     let w: Value<Ptr<widget>> = Rc::new(RefCell::new(w));
     return ((((*w.borrow()).with(|__v| (*__v).mode) as u32)
-        == ((widget_enum::MODE_ACTIVE as i32) as u32)) as i32);
+        == ((widget_enum_MODE_ACTIVE as i32) as u32)) as i32);
 }
 pub fn main() {
     libcc2rs::exit_refcount(main_0());
@@ -247,11 +196,11 @@ pub fn main() {
 fn main_0() -> i32 {
     let w: Value<widget> = <Value<widget>>::default();
     (*w.borrow_mut()).id = 7;
-    (*w.borrow_mut()).mode = widget_enum::MODE_ACTIVE;
+    (*w.borrow_mut()).mode = widget_enum_MODE_ACTIVE;
     assert!((({ is_active_0((w.as_pointer())) }) != 0));
-    (*w.borrow_mut()).mode = widget_enum::MODE_DONE;
+    (*w.borrow_mut()).mode = widget_enum_MODE_DONE;
     assert!(
-        (((((*w.borrow()).mode as u32) == ((widget_enum::MODE_DONE as i32) as u32)) as i32) != 0)
+        (((((*w.borrow()).mode as u32) == ((widget_enum_MODE_DONE as i32) as u32)) as i32) != 0)
     );
     let p: Value<point_struct> = <Value<point_struct>>::default();
     (*p.borrow_mut()).x = 3;
@@ -289,8 +238,8 @@ fn main_0() -> i32 {
             == 9) as i32)
             != 0)
     );
-    let e: Value<slot> = Rc::new(RefCell::new(slot::SLOT_B));
-    assert!((((((*e.borrow()) as u32) == ((slot::SLOT_B as i32) as u32)) as i32) != 0));
+    let e: Value<slot> = Rc::new(RefCell::new(slot_SLOT_B));
+    assert!((((((*e.borrow()) as u32) == ((slot_SLOT_B as i32) as u32)) as i32) != 0));
     let inner_tag: Value<Inner> = <Value<Inner>>::default();
     (*inner_tag.borrow_mut()).tag_field = 11;
     assert!(((((*inner_tag.borrow()).tag_field == 11) as i32) != 0));
