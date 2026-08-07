@@ -3044,6 +3044,10 @@ RsExpr *Converter::VisitUnaryOperator(clang::UnaryOperator *expr) {
       }
       return Cat(Text(token::kMinus), Text(getIntegerLiteral(literal, true)));
     }
+    if (expr->getType()->isUnsignedIntegerType()) {
+      computed_expr_type_ = ComputedExprType::FreshValue;
+      return Cat(Parens(ConvertExpr(sub_expr)), Text(".wrapping_neg()"));
+    }
     [[fallthrough]];
   default: {
     auto *node = ConvertExpr(sub_expr);
