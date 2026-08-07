@@ -57,6 +57,40 @@ pub fn cpp2rust_errno() -> Ptr<i32> {
     ERRNO.with(AsPointer::as_pointer)
 }
 
+type Environ = Value<Vec<Ptr<u8>>>;
+
+thread_local! {
+    static ENVIRON: Environ = Rc::new(RefCell::new(build_environ()));
+}
+
+fn build_environ() -> Vec<Ptr<u8>> {
+    let mut entries: Vec<Ptr<u8>> = std::env::vars()
+        .map(|(key, value)| {
+            let mut bytes = format!("{key}={value}").into_bytes();
+            bytes.push(0);
+            Ptr::alloc_array(bytes.into_boxed_slice())
+        })
+        .collect();
+    entries.push(Ptr::null());
+    entries
+}
+
+pub fn cpp2rust_environ() -> Ptr<Ptr<u8>> {
+    ENVIRON.with(AsPointer::as_pointer)
+}
+
+unsafe extern "C" {
+    #[link_name = "environ"]
+    static mut LIBC_ENVIRON: *mut *mut ::std::ffi::c_char;
+}
+
+/// # Safety
+///
+/// Returns libc's `environ`, valid for the process lifetime.
+pub unsafe fn cpp2rust_environ_unsafe() -> *mut *mut ::std::ffi::c_char {
+    unsafe { LIBC_ENVIRON }
+}
+
 type ExitHandlers = RefCell<Vec<crate::FnPtr<fn()>>>;
 
 thread_local! {
