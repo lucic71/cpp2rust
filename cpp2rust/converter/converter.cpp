@@ -892,9 +892,11 @@ Converter::ConvertVarDeclSkipInit(clang::VarDecl *decl) {
 
   std::vector<RsExpr *> parts;
   if (decl->isFileVarDecl()) {
+    auto *init_decl = decl->getInitializingDeclaration();
     if ((decl->isThisDeclarationADefinition() ==
              clang::VarDecl::DeclarationOnly &&
          !decl->hasInit()) ||
+        (!decl->hasInit() && init_decl != nullptr && init_decl->hasInit()) ||
         !globals_.insert(name).second) {
       return {Text(""), false};
     }
