@@ -161,3 +161,7 @@ unsafe fn f30(a0: *mut libc::c_char, a1: *const libc::c_char) -> *mut libc::c_ch
 unsafe fn f31(a0: i32) -> *mut libc::c_char {
     libc::strerror(a0)
 }
+
+unsafe fn f32(a0: *mut libc::c_char, a1: *const libc::c_char, a2: usize) -> *mut libc::c_char {
+    libc::strncpy(a0, a1, a2)
+}

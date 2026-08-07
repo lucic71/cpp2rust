@@ -402,3 +402,13 @@ fn f31(a0: i32) -> Ptr<u8> {
     __bytes.push(0);
     Ptr::alloc_array(__bytes.into_boxed_slice())
 }
+
+fn f32(a0: Ptr<u8>, a1: Ptr<u8>, a2: usize) -> Ptr<u8> {
+    let __ret = a0.clone();
+    let __src: Vec<u8> = a1.to_c_string_iterator().take(a2).collect();
+    a0.with_slice_mut(a2, |__dst| {
+        __dst[..__src.len()].copy_from_slice(&__src);
+        __dst[__src.len()..].fill(0);
+    });
+    __ret
+}

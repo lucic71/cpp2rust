@@ -60,3 +60,7 @@ void f29(void *s, size_t n) { return explicit_bzero(s, n); }
 char *f30(char *dest, const char *src) { return strcpy(dest, src); }
 
 char *f31(int errnum) { return strerror(errnum); }
+
+char *f32(char *dest, const char *src, size_t n) {
+  return strncpy(dest, src, n);
+}
