@@ -134,3 +134,11 @@ fn f13(a0: Ptr<u8>, a1: Ptr<Ptr<u8>>) -> f64 {
 fn f14(a0: Ptr<u8>, a1: Ptr<Ptr<u8>>, a2: i32) -> i64 {
     libcc2rs::strtoll_refcount(a0.clone(), a1.clone(), a2)
 }
+
+fn f37(a0: Ptr<u8>, a1: Ptr<Ptr<u8>>, a2: i32) -> i64 {
+    libcc2rs::strtoll_refcount(a0.clone(), a1.clone(), a2)
+}
+
+fn f38(a0: Ptr<u8>, a1: Ptr<Ptr<u8>>, a2: i32) -> u64 {
+    libcc2rs::strtoul_refcount(a0.clone(), a1.clone(), a2)
+}

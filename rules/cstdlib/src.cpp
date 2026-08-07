@@ -42,3 +42,11 @@ double f13(const char *nptr, char **endptr) { return strtod(nptr, endptr); }
 long long f14(const char *nptr, char **endptr, int base) {
   return strtoll(nptr, endptr, base);
 }
+
+long f37(const char *nptr, char **endptr, int base) {
+  return strtol(nptr, endptr, base);
+}
+
+unsigned long f38(const char *nptr, char **endptr, int base) {
+  return strtoul(nptr, endptr, base);
+}

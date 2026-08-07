@@ -94,3 +94,11 @@ unsafe fn f15(a0: Option<unsafe fn()>) -> i32 {
         a0.expect("atexit: null handler") as *const (),
     ))
 }
+
+unsafe fn f37(a0: *const libc::c_char, a1: *mut *mut libc::c_char, a2: i32) -> i64 {
+    libc::strtol(a0, a1, a2)
+}
+
+unsafe fn f38(a0: *const libc::c_char, a1: *mut *mut libc::c_char, a2: i32) -> u64 {
+    libc::strtoul(a0, a1, a2)
+}

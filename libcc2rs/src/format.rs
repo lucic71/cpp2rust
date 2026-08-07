@@ -288,7 +288,11 @@ pub fn scan_c(input: &str, fmt: &str, va: &[VaArg]) -> i32 {
 
 use crate::rc::Ptr;
 
-pub fn strtoll_refcount(a0: Ptr<u8>, a1: Ptr<Ptr<u8>>, a2: i32) -> i64 {
+fn scan_int_prefix(
+    a0: &Ptr<u8>,
+    a1: &Ptr<Ptr<u8>>,
+    base_arg: i32,
+) -> Option<(String, u32, bool)> {
     let s = a0.to_rust_string();
     let b = s.as_bytes();
     let mut pos = 0;
@@ -300,8 +304,7 @@ pub fn strtoll_refcount(a0: Ptr<u8>, a1: Ptr<Ptr<u8>>, a2: i32) -> i64 {
         negative = b[pos] == b'-';
         pos += 1;
     }
-    let mut base = a2 as u32;
-    let mut after_zero = None;
+    let mut base = base_arg as u32;
     if base == 0 {
         if b[pos..].starts_with(b"0x") || b[pos..].starts_with(b"0X") {
             base = 16;
@@ -316,38 +319,39 @@ pub fn strtoll_refcount(a0: Ptr<u8>, a1: Ptr<Ptr<u8>>, a2: i32) -> i64 {
         if !a1.is_null() {
             a1.write(a0.clone());
         }
-        return 0;
+        return None;
     }
+    let mut after_zero = None;
     if base == 16 && (b[pos..].starts_with(b"0x") || b[pos..].starts_with(b"0X")) {
         after_zero = Some(pos + 1);
         pos += 2;
     }
     let digits_start = pos;
-    while pos < b.len() && (b[pos] as char).is_digit(base) {
+    while pos < b.len() && (b[pos] as char).to_digit(base).is_some() {
         pos += 1;
     }
     if pos == digits_start {
-        match after_zero {
-            Some(end) => {
-                if !a1.is_null() {
-                    a1.write(a0.clone().offset(end as isize));
-                }
-                return 0;
-            }
-            None => {
-                if !a1.is_null() {
-                    a1.write(a0.clone());
-                }
-                return 0;
-            }
+        if !a1.is_null() {
+            a1.write(match after_zero {
+                Some(end) => a0.clone().offset(end as isize),
+                None => a0.clone(),
+            });
         }
+        return None;
     }
     if !a1.is_null() {
         a1.write(a0.clone().offset(pos as isize));
     }
+    Some((s[digits_start..pos].to_string(), base, negative))
+}
+
+pub fn strtoll_refcount(a0: Ptr<u8>, a1: Ptr<Ptr<u8>>, a2: i32) -> i64 {
+    let Some((digits, base, negative)) = scan_int_prefix(&a0, &a1, a2) else {
+        return 0;
+    };
     let num = match negative {
-        true => format!("-{}", &s[digits_start..pos]),
-        false => s[digits_start..pos].to_string(),
+        true => format!("-{digits}"),
+        false => digits,
     };
     match i64::from_str_radix(&num, base) {
         Ok(value) => value,
@@ -357,6 +361,22 @@ pub fn strtoll_refcount(a0: Ptr<u8>, a1: Ptr<Ptr<u8>>, a2: i32) -> i64 {
                 std::num::IntErrorKind::NegOverflow => i64::MIN,
                 _ => i64::MAX,
             }
+        }
+    }
+}
+
+pub fn strtoul_refcount(a0: Ptr<u8>, a1: Ptr<Ptr<u8>>, a2: i32) -> u64 {
+    let Some((digits, base, negative)) = scan_int_prefix(&a0, &a1, a2) else {
+        return 0;
+    };
+    match u64::from_str_radix(&digits, base) {
+        Ok(value) => match negative {
+            true => value.wrapping_neg(),
+            false => value,
+        },
+        Err(_) => {
+            crate::cpp2rust_errno().write(::libc::ERANGE);
+            u64::MAX
         }
     }
 }
