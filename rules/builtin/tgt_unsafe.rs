@@ -85,3 +85,7 @@ unsafe fn f21() -> f32 {
 unsafe fn f22(a0: *const libc::c_char) -> f32 {
     f32::NAN
 }
+
+unsafe fn f23() {
+    ::std::unreachable!()
+}

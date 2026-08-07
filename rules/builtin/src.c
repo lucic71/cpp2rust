@@ -8,3 +8,4 @@ double f19(double x) { return __builtin_floor(x); }
 int f20(unsigned long long x) { return __builtin_clzll(x); }
 float f21(void) { return __builtin_inff(); }
 float f22(const char *s) { return __builtin_nanf(s); }
+void f23(void) { return __builtin_unreachable(); }
