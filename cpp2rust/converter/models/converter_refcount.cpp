@@ -308,7 +308,7 @@ RsExpr *ConverterRefCount::ConvertObject(clang::Expr *expr) {
   auto *node = ConvertExpr(expr);
   if (expr->getType()->isPointerType()) {
     computed_expr_type_ = ComputedExprType::FreshPointer;
-    return Cat(node, Text(".to_strong().as_pointer()"));
+    return arena_.New<PtrView>(node, expr->getType()->getPointeeType());
   }
   return node;
 }
@@ -1036,9 +1036,13 @@ RsExpr *ConverterRefCount::HoistPtrUse(RsExpr *node) {
     if (body_with->is_mut &&
         UsesClosureParam(body_with->object, closure->param) &&
         !UsesClosureParam(body_with->closure, closure->param)) {
+      auto *object = body_with->object;
+      if (clang::isa<Field>(object)) {
+        object = Cat(Parens(object), Text(".clone()"));
+      }
       auto *obj_read = arena_.New<PtrWith>(
           with->object, with->is_mut,
-          arena_.New<Closure>(closure->param, nullptr, body_with->object));
+          arena_.New<Closure>(closure->param, nullptr, object));
       RsExpr *inner_with =
           arena_.New<PtrWith>(Text("__obj"), true, body_with->closure);
       if (auto *hoisted = HoistPtrUse(inner_with)) {
@@ -1501,7 +1505,9 @@ ConverterRefCount::VisitImplicitCastExpr(clang::ImplicitCastExpr *expr) {
       } else {
         auto *ptr = ConvertFreshPointer(sub_expr);
         auto *type_node = Convert(sub_expr->getType());
-        node = Cat(arena_.New<Cast>(ptr, type_node), Text(".to_any()"));
+        node = Cat(arena_.New<Cast>(ptr, type_node,
+                                    sub_expr->getType()->getPointeeType()),
+                   Text(".to_any()"));
       }
       computed_expr_type_ = ComputedExprType::FreshPointer;
       return node;
@@ -1548,7 +1554,8 @@ ConverterRefCount::VisitImplicitCastExpr(clang::ImplicitCastExpr *expr) {
     PushConversionKind push(*this, ConversionKind::Unboxed);
     auto *ptr = ConvertPointer(sub_expr);
     auto *type_node = Convert(expr->getType());
-    return arena_.New<Cast>(ptr, type_node);
+    return arena_.New<Cast>(ptr, type_node,
+                            expr->getType()->getPointeeType());
   }
 
   if (expr->getCastKind() == clang::CastKind::CK_NullToPointer) {
@@ -2128,12 +2135,14 @@ RsExpr *ConverterRefCount::ConvertFieldPtr(clang::MemberExpr *expr,
 
   const auto &layout = ctx_.getASTRecordLayout(field->getParent());
   auto byte_off = layout.getFieldOffset(field->getFieldIndex()) / 8;
-  bool container =
-      field->getType()->isArrayType() || IsBoxedType(field->getType());
 
   computed_expr_type_ = ComputedExprType::FreshPointer;
-  return arena_.New<FieldPtr>(parent, byte_off, std::move(base_type_name),
-                              GetNamedDeclAsString(field), container);
+  bool array = field->getType()->isArrayType();
+  auto *node = arena_.New<FieldPtr>(
+      parent, byte_off, std::move(base_type_name), GetNamedDeclAsString(field),
+      field->getType(), !array && IsBoxedType(field->getType()));
+  node->element = array;
+  return node;
 }
 
 RsExpr *ConverterRefCount::VisitMemberExpr(clang::MemberExpr *expr) {
@@ -2325,7 +2334,9 @@ ConverterRefCount::VisitCXXForRangeStmtVector(clang::CXXForRangeStmt *stmt) {
       Text("'loop_:"), Text(keyword::kFor),
       Text(stmt->getLoopVariable()->getType().isConstQualified() ? "" : "mut"),
       Text(loop_var_name), Text(keyword::kIn),
-      arena_.New<Cast>(range_init, ptr_type), Braces(Cat(shadow, body)));
+      arena_.New<Cast>(range_init, ptr_type,
+                       loop_var->getType().getNonReferenceType()),
+      Braces(Cat(shadow, body)));
 }
 
 RsExpr *
@@ -2734,10 +2745,12 @@ RsExpr *ConverterRefCount::ConvertCXXOperatorCallExpr(
       auto *object = ConvertObject(expr->getArg(0));
       auto *ptr_type = ConvertPtrType(expr->getArg(0)->getType());
       auto *idx = ConvertSubscriptIndex(expr->getArg(1));
-      return arena_.New<Unary>(Unary::Op::Deref,
-                               MethodCall(arena_.New<Cast>(object, ptr_type),
-                                          "offset", std::vector<RsExpr *>{idx},
-                                          /*is_mut=*/false));
+      return arena_.New<Unary>(
+          Unary::Op::Deref,
+          MethodCall(arena_.New<Cast>(object, ptr_type,
+                                      expr->getType().getNonReferenceType()),
+                     "offset", std::vector<RsExpr *>{idx},
+                     /*is_mut=*/false));
     }
 
     RsExpr *offset = nullptr;
@@ -2746,8 +2759,10 @@ RsExpr *ConverterRefCount::ConvertCXXOperatorCallExpr(
       auto *object = ConvertObject(expr->getArg(0));
       auto *ptr_type = ConvertPtrType(expr->getArg(0)->getType());
       auto *idx = ConvertSubscriptIndex(expr->getArg(1));
-      offset = MethodCall(arena_.New<Cast>(object, ptr_type), "offset",
-                          std::vector<RsExpr *>{idx}, /*is_mut=*/false);
+      offset = MethodCall(arena_.New<Cast>(object, ptr_type,
+                                           expr->getType().getNonReferenceType()),
+                          "offset", std::vector<RsExpr *>{idx},
+                          /*is_mut=*/false);
     }
 
     auto *node = offset;
@@ -2831,7 +2846,7 @@ RsExpr *ConverterRefCount::ConvertArraySubscript(clang::Expr *base,
       auto *base_node = ConvertExpr(base->IgnoreImplicit());
       auto *ptr_type = ConvertPtrType(base->IgnoreImplicit()->getType());
       auto *idx_node = ConvertSubscriptIndex(idx);
-      node = MethodCall(arena_.New<Cast>(base_node, ptr_type), "offset",
+      node = MethodCall(arena_.New<Cast>(base_node, ptr_type, type), "offset",
                         std::vector<RsExpr *>{idx_node}, /*is_mut=*/false);
     }
 
@@ -2932,7 +2947,7 @@ RsExpr *ConverterRefCount::ConvertDeref(clang::Expr *expr) {
   if (isObject()) {
     if (IsBoxedType(pointee_type)) {
       computed_expr_type_ = ComputedExprType::FreshPointer;
-      return Cat(node, Text(".to_strong().as_pointer()"));
+      return arena_.New<PtrView>(node, pointee_type);
     }
   }
   return node;
@@ -2989,7 +3004,7 @@ ConverterRefCount::emplace_back_emit_push_open(clang::CXXMemberCallExpr *call) {
   if (obj_type->isPointerType()) {
     obj_type = obj_type->getPointeeType();
   }
-  auto *object = ConvertObject(obj);
+  auto *object = ConvertFreshObject(obj);
   auto *type_node = Convert(obj_type.getNonReferenceType());
   return Cat(object, Text(".with_mut("),
              arena_.New<Closure>("__v", Cat(Text("&mut"), type_node),

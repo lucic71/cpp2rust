@@ -62,6 +62,7 @@ struct TypeInfo {
   std::string type;
   bool is_refcount_pointer = false;
   bool is_unsafe_pointer = false;
+  bool pointee_is_container = false;
 
   bool is_pointer() const { return is_refcount_pointer || is_unsafe_pointer; }
 

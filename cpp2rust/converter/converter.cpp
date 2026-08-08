@@ -4546,7 +4546,8 @@ RsExpr *Converter::ConvertVarInit(clang::QualType qual_type,
   }
   if (qual_type->isReferenceType() && !IsReferenceType(expr)) {
     auto *value = arena_.New<Concat>(std::move(parts));
-    return arena_.New<Cast>(value, Convert(qual_type));
+    return arena_.New<Cast>(value, Convert(qual_type),
+                            qual_type.getNonReferenceType());
   }
   return arena_.New<Concat>(std::move(parts));
 }
@@ -5164,7 +5165,8 @@ RsExpr *Converter::ConvertPlaceholder(clang::Expr *expr, clang::Expr *arg,
 
   if (ph_ctx.declared_in_rule_as_rust_ptr && arg->getType()->isArrayType()) {
     auto *node = ConvertFreshPointer(arg);
-    return arena_.New<Cast>(node, Text(ph_ctx.param_type));
+    return arena_.New<Cast>(node, Text(ph_ctx.param_type),
+                            GetContainerElementType(arg->getType()));
   }
 
   if (ph_ctx.needs_materialization()) {
@@ -5180,7 +5182,13 @@ RsExpr *Converter::ConvertPlaceholder(clang::Expr *expr, clang::Expr *arg,
 
   if (ph_ctx.needs_pointer_receiver()) {
     auto *node = ConvertFreshObject(arg);
-    return arena_.New<Cast>(node, Text(ph_ctx.param_type));
+    auto pointee = arg->getType()->isPointerType()
+                       ? arg->getType()->getPointeeType()
+                       : arg->getType().getNonReferenceType();
+    return arena_.New<Cast>(node, Text(ph_ctx.param_type),
+                            ph_ctx.declared_pointee_is_container
+                                ? pointee
+                                : GetContainerElementType(pointee));
   }
 
   if (ph_ctx.needs_object_receiver()) {
@@ -5267,6 +5275,8 @@ RsExpr *Converter::ConvertIRFragment(
           .maps_to_rust_ptr = Mapper::MapsToPointer(arg->getType()),
           .declared_in_rule_as_rust_ptr =
               Mapper::ParamIsPointer(GetCalleeOrExpr(expr), arg_idx),
+          .declared_pointee_is_container =
+              Mapper::ParamPointeeIsContainer(GetCalleeOrExpr(expr), arg_idx),
           .is_index_base = ph->is_index_base,
       };
       parts.push_back(ConvertPlaceholder(expr, arg, ph_ctx));

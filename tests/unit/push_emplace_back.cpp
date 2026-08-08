@@ -1,4 +1,3 @@
-// no-compile: refcount
 #include <cassert>
 #include <cstdint>
 #include <vector>

@@ -715,6 +715,19 @@ GetTemplateArgs(clang::QualType qual_type, clang::Expr *expr) {
   return GetTemplateArgs(qual_type);
 }
 
+clang::QualType GetContainerElementType(clang::QualType qual_type) {
+  auto type = qual_type.getNonReferenceType();
+  if (type->isArrayType()) {
+    return type->getAsArrayTypeUnsafe()->getElementType();
+  }
+  if (auto args = GetTemplateArgs(type);
+      args && !args->empty() &&
+      (*args)[0].getKind() == clang::TemplateArgument::Type) {
+    return (*args)[0].getAsType();
+  }
+  return {};
+}
+
 clang::Expr *GetCallObject(clang::CallExpr *expr) {
   if (auto *member = clang::dyn_cast<clang::MemberExpr>(
           expr->getCallee()->IgnoreParenImpCasts())) {

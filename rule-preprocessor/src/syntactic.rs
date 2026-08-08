@@ -3,7 +3,9 @@
 
 use cfg_expr::Expression;
 use cfg_expr::expr::{Predicate, TargetPredicate};
-use ra_ap_syntax::ast::{HasAttrs, HasGenericParams, HasName, HasTypeBounds};
+use ra_ap_syntax::ast::{
+    HasAttrs, HasGenericArgs, HasGenericParams, HasName, HasTypeBounds,
+};
 use ra_ap_syntax::{AstNode, SyntaxKind, ast, match_ast};
 use std::collections::{BTreeMap, HashMap};
 use std::path::{Path, PathBuf};
@@ -38,6 +40,41 @@ fn pointer_flags(ty: &ast::Type) -> (bool, bool) {
         "type cannot be both refcount and unsafe pointer"
     );
     flags
+}
+
+fn is_container_type(ty: &ast::Type) -> bool {
+    let ast::Type::PathType(path) = ty else {
+        return false;
+    };
+    path.path()
+        .and_then(|p| p.segment())
+        .and_then(|s| s.name_ref())
+        .is_some_and(|name| name.text() == "Vec" || name.text() == "Box")
+}
+
+fn pointee_is_container(ty: &ast::Type) -> bool {
+    match ty {
+        ast::Type::RefType(r) => r.ty().is_some_and(|inner| pointee_is_container(&inner)),
+        ast::Type::PathType(path) => {
+            let Some(segment) = path.path().and_then(|p| p.segment()) else {
+                return false;
+            };
+            if !segment.name_ref().is_some_and(|name| name.text() == "Ptr") {
+                return false;
+            }
+            segment
+                .generic_arg_list()
+                .into_iter()
+                .flat_map(|args| args.generic_args())
+                .any(|arg| match arg {
+                    ast::GenericArg::TypeArg(arg) => {
+                        arg.ty().is_some_and(|inner| is_container_type(&inner))
+                    }
+                    _ => false,
+                })
+        }
+        _ => false,
+    }
 }
 
 fn is_va_args_type(ty: &ast::Type) -> bool {
@@ -293,6 +330,7 @@ struct ParamInfo {
     ty: String,
     is_refcount_pointer: bool,
     is_unsafe_pointer: bool,
+    pointee_is_container: bool,
     is_mut_ref: bool,
     is_va_args: bool,
 }
@@ -334,6 +372,7 @@ impl<'a> FnIrBuilder<'a> {
                 ty: ty.syntax().text().to_string(),
                 is_refcount_pointer,
                 is_unsafe_pointer,
+                pointee_is_container: pointee_is_container(&ty),
                 is_mut_ref: matches!(&ty, ast::Type::RefType(r) if r.mut_token().is_some()),
                 is_va_args,
             });
@@ -352,6 +391,7 @@ impl<'a> FnIrBuilder<'a> {
                 ty: ty_str,
                 is_refcount_pointer,
                 is_unsafe_pointer,
+                pointee_is_container: pointee_is_container(&ty),
                 derives: Vec::new(),
             })
         }
@@ -521,6 +561,7 @@ impl<'a> FnIrBuilder<'a> {
                         ty: p.ty.clone(),
                         is_refcount_pointer: p.is_refcount_pointer,
                         is_unsafe_pointer: p.is_unsafe_pointer,
+                        pointee_is_container: p.pointee_is_container,
                         derives: Vec::new(),
                     },
                 )
@@ -601,6 +642,7 @@ impl<'a> TypeIrBuilder<'a> {
                 ty: ty.syntax().text().to_string(),
                 is_refcount_pointer,
                 is_unsafe_pointer,
+                pointee_is_container: pointee_is_container(&ty),
                 derives: Vec::new(),
             },
         }

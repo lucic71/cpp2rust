@@ -24,6 +24,8 @@ TypeInfo ParseTypeInfoJSON(const llvm::json::Object &obj) {
     info.is_refcount_pointer = *v;
   if (auto v = obj.getBoolean("is_unsafe_pointer"))
     info.is_unsafe_pointer = *v;
+  if (auto v = obj.getBoolean("pointee_is_container"))
+    info.pointee_is_container = *v;
   assert(!(info.is_refcount_pointer && info.is_unsafe_pointer));
   if (auto *arr = obj.getArray("derives")) {
     for (const auto &elem : *arr) {

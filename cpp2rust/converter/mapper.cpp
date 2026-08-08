@@ -771,6 +771,10 @@ bool ParamIsPointer(const clang::Expr *expr, unsigned index) {
   return GetParamInfo(expr, index).is_pointer();
 }
 
+bool ParamPointeeIsContainer(const clang::Expr *expr, unsigned index) {
+  return GetParamInfo(expr, index).pointee_is_container;
+}
+
 clang::QualType GetTypeForDecl(const clang::NamedDecl *decl) {
   if (const auto *spec =
           llvm::dyn_cast<clang::ClassTemplateSpecializationDecl>(decl)) {

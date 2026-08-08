@@ -8,6 +8,23 @@
 
 namespace cpp2rust {
 
+Cast::Cast(RsExpr *expr, RsExpr *type, clang::QualType pointee)
+    : RsExpr(Kind::Cast), expr(expr), type(type) {
+  if (pointee.isNull()) {
+    return;
+  }
+  auto wanted = pointee.getCanonicalType().getUnqualifiedType();
+  if (auto *ptr_view = expr->Find<PtrView>()) {
+    ptr_view->element =
+        wanted != ptr_view->view_type.getCanonicalType().getUnqualifiedType();
+    return;
+  }
+  if (auto *field_ptr = expr->Find<FieldPtr>(); field_ptr && field_ptr->container) {
+    field_ptr->element =
+        wanted != field_ptr->field_type.getCanonicalType().getUnqualifiedType();
+  }
+}
+
 RsExpr *RsExpr::IgnoreParens() {
   auto *node = this;
   while (auto *delim = llvm::dyn_cast<Delim>(node)) {
@@ -59,6 +76,8 @@ const char *KindName(RsExpr::Kind kind) {
     return "Index";
   case RsExpr::Kind::FieldPtr:
     return "FieldPtr";
+  case RsExpr::Kind::PtrView:
+    return "PtrView";
   case RsExpr::Kind::BitField:
     return "BitField";
   case RsExpr::Kind::BorrowRead:
@@ -190,10 +209,16 @@ void Index::dump(llvm::raw_ostream &os, unsigned depth) {
   DumpChildren(this, os, depth);
 }
 
+void PtrView::dump(llvm::raw_ostream &os, unsigned depth) {
+  DumpHeader(this, os, depth,
+             view_type.getAsString() + (element ? " element" : ""));
+  DumpChildren(this, os, depth);
+}
+
 void FieldPtr::dump(llvm::raw_ostream &os, unsigned depth) {
   DumpHeader(this, os, depth,
-             type_name + "::" + field + " @" + std::to_string(offset) +
-                 (container ? " container" : ""));
+             type_name + "::" + field + ": " + field_type.getAsString() + " @" +
+                 std::to_string(offset) + (element ? " element" : ""));
   DumpChildren(this, os, depth);
 }
 

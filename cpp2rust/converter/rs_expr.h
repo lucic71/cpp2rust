@@ -3,6 +3,7 @@
 // Copyright (c) 2022-present INESC-ID.
 // Distributed under the MIT license that can be found in the LICENSE file.
 
+#include <clang/AST/Type.h>
 #include <llvm/ADT/STLFunctionalExtras.h>
 
 #include <cstdint>
@@ -43,6 +44,7 @@ struct RsExpr {
     Field,
     Index,
     FieldPtr,
+    PtrView,
     BitField,
     BorrowRead,
     BorrowWrite,
@@ -63,6 +65,19 @@ struct RsExpr {
   virtual void ForEachChild(llvm::function_ref<void(RsExpr *&)>) {}
 
   RsExpr *IgnoreParens();
+
+  template <typename T> T *Find() {
+    if (auto *node = llvm::dyn_cast<T>(this)) {
+      return node;
+    }
+    T *found = nullptr;
+    ForEachChild([&](RsExpr *&child) {
+      if (found == nullptr) {
+        found = child->Find<T>();
+      }
+    });
+    return found;
+  }
 
   virtual RsExpr *Pointer() { return nullptr; }
 
@@ -199,8 +214,7 @@ struct Unary : RsExpr {
 };
 
 struct Cast : RsExpr {
-  Cast(RsExpr *expr, RsExpr *type)
-      : RsExpr(Kind::Cast), expr(expr), type(type) {}
+  Cast(RsExpr *expr, RsExpr *type, clang::QualType pointee = {});
 
   static bool classof(const RsExpr *e) { return e->kind == Kind::Cast; }
 
@@ -542,22 +556,22 @@ struct Index : Accessor {
 
 struct FieldPtr : Accessor {
   FieldPtr(RsExpr *object, size_t offset, std::string type_name,
-           std::string field, bool container)
+           std::string field, clang::QualType field_type, bool container)
       : Accessor(Kind::FieldPtr, object), offset(offset),
         type_name(std::move(type_name)), field(std::move(field)),
-        container(container) {}
+        field_type(field_type), container(container) {}
 
   static bool classof(const RsExpr *expr) {
     return expr->kind == Kind::FieldPtr;
   }
 
   std::string print() const override {
-    auto get = container
+    auto get = element
                    ? std::format("|__v: &{}| &__v.{}[..]", type_name, field)
                    : std::format("|__v: &{}| ::std::slice::from_ref(&__v.{})",
                                  type_name, field);
     auto get_mut =
-        container
+        element
             ? std::format("|__v: &mut {}| &mut __v.{}[..]", type_name, field)
             : std::format("|__v: &mut {}| ::std::slice::from_mut(&mut __v.{})",
                           type_name, field);
@@ -568,7 +582,28 @@ struct FieldPtr : Accessor {
   size_t offset;
   std::string type_name;
   std::string field;
+  clang::QualType field_type;
   bool container;
+  bool element = false;
+
+  void dump(llvm::raw_ostream &os, unsigned depth = 0) override;
+};
+
+struct PtrView : Accessor {
+  PtrView(RsExpr *object, clang::QualType view_type)
+      : Accessor(Kind::PtrView, object), view_type(view_type) {}
+
+  static bool classof(const RsExpr *expr) {
+    return expr->kind == Kind::PtrView;
+  }
+
+  std::string print() const override {
+    return object->print() +
+           (element ? ".to_strong().as_pointer()" : ".clone()");
+  }
+
+  clang::QualType view_type;
+  bool element = false;
 
   void dump(llvm::raw_ostream &os, unsigned depth = 0) override;
 };

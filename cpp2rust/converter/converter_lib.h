@@ -165,6 +165,8 @@ GetNestedStructs(const clang::CXXRecordDecl *decl);
 std::optional<clang::ArrayRef<clang::TemplateArgument>>
 GetTemplateArgs(clang::QualType qual_type, clang::Expr *expr = nullptr);
 
+clang::QualType GetContainerElementType(clang::QualType qual_type);
+
 template <class UnaryFunction>
 void ForEachTemplateArgument(
     clang::ArrayRef<clang::TemplateArgument> template_arguments,
