@@ -61,6 +61,8 @@ public:
 
   static bool IsMethodOnPtr(clang::CXXMethodDecl *method);
 
+  RsExpr *TryEmitShadowedMethodCall(CallInfo &info) override;
+
   bool MethodHasVisibility(clang::CXXMethodDecl *decl) override;
 
   RsExpr *EmitOutOfLineMethod(clang::CXXMethodDecl *decl,

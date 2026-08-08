@@ -2670,6 +2670,10 @@ std::vector<RsExpr *> Converter::CollectArgNodes(const CallInfo &info) {
 RsExpr *Converter::EmitCall(CallInfo &&info) {
   auto *hoisted = EmitHoistedArgs(info);
 
+  if (auto *call = TryEmitShadowedMethodCall(info)) {
+    return Cat(hoisted, call);
+  }
+
   RsExpr *callee_node = nullptr;
   if (info.is_fn_ptr_call) {
     callee_node = EmitFnPtrCall(GetCallee(info.expr));

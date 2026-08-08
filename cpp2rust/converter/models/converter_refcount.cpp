@@ -7,6 +7,7 @@
 #include <clang/Basic/OperatorKinds.h>
 
 #include <algorithm>
+#include <ranges>
 #include <format>
 #include <optional>
 #include <vector>
@@ -650,6 +651,40 @@ bool ConverterRefCount::IsMethodOnPtr(clang::CXXMethodDecl *method) {
 
 bool ConverterRefCount::MethodHasVisibility(clang::CXXMethodDecl *decl) {
   return !IsMethodOnPtr(decl);
+}
+
+static bool IsShadowedByPtrMethod(std::string_view name) {
+  static constexpr std::string_view kPtrMethods[] = {
+      "address", "alloc", "alloc_array", "delete", "delete_array", "field_ptr",
+      "from_int", "from_string_literal", "get_offset", "is_empty", "is_null",
+      "len", "memcmp", "memcpy", "memset", "null", "offset", "read",
+      "reinterpret_cast", "slice_until", "sort", "sort_with_cmp", "to_any",
+      "to_c_string_iterator", "to_end", "to_int", "to_last", "to_rust_string",
+      "to_string_iterator", "to_strong", "with", "with_mut", "with_slice",
+      "with_slice_mut", "write", "write_all", "write_fmt"};
+  return std::ranges::find(kPtrMethods, name) != std::ranges::end(kPtrMethods);
+}
+
+RsExpr *ConverterRefCount::TryEmitShadowedMethodCall(CallInfo &info) {
+  auto *member_call = clang::dyn_cast<clang::CXXMemberCallExpr>(info.expr);
+  if (!member_call) {
+    return nullptr;
+  }
+  auto *method = member_call->getMethodDecl();
+  if (!method || !IsMethodOnPtr(method)) {
+    return nullptr;
+  }
+  auto name = IsOverloadedMethod(method) ? GetOverloadedFunctionName(method)
+                                        : GetNamedDeclAsString(method);
+  if (!IsShadowedByPtrMethod(name)) {
+    return nullptr;
+  }
+  auto *receiver = ConvertPointer(member_call->getImplicitObjectArgument());
+  auto args = CollectArgNodes(info);
+  args.insert(args.begin(), Cat(Text(token::kRef), Parens(receiver)));
+  auto trait = std::format("{}Methods", GetRecordName(method->getParent()));
+  return arena_.New<Call>(Text(std::format("{}::{}", trait, name)),
+                          std::move(args));
 }
 
 RsExpr *ConverterRefCount::EmitOutOfLineMethod(clang::CXXMethodDecl *decl,

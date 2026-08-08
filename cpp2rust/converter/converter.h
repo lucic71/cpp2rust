@@ -308,6 +308,8 @@ public:
 
   RsExpr *EmitCall(CallInfo &&info);
 
+  virtual RsExpr *TryEmitShadowedMethodCall(CallInfo &info) { return nullptr; }
+
   RsExpr *ConvertGenericCallExpr(clang::CallExpr *expr);
 
   virtual RsExpr *EmitFnPtrCall(clang::Expr *callee);
