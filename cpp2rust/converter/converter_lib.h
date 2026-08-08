@@ -40,18 +40,23 @@ struct BitFieldRun {
 
 std::string BitStorageName(unsigned run);
 
-const clang::FieldDecl *AsBitField(const clang::Expr *expr);
-
 std::vector<BitFieldRun> CollectBitFieldRuns(clang::ASTContext &ctx,
                                              const clang::RecordDecl *decl);
 
 std::string RecordReprAttr(clang::ASTContext &ctx,
                            const clang::RecordDecl *decl);
 
-std::string BitFieldAccessorCode(clang::ASTContext &ctx,
-                                 const clang::FieldDecl *field,
-                                 const BitFieldRun &run, unsigned run_idx,
-                                 const std::string &type_name);
+const clang::FieldDecl *AsBitFieldMember(const clang::Expr *expr);
+
+unsigned BitFieldRunIndex(const std::vector<BitFieldRun> &runs,
+                          const clang::FieldDecl *field);
+
+std::string BitFieldSpec(clang::ASTContext &ctx, const clang::FieldDecl *field,
+                         const BitFieldRun &run, const std::string &type_name);
+
+clang::QualType BitFieldPromotedType(clang::ASTContext &ctx,
+                                     const clang::FieldDecl *field);
+
 bool IsBuiltinConstantP(const clang::Expr *expr);
 
 bool IsGlobalVar(clang::VarDecl *decl);

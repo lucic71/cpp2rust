@@ -8,58 +8,12 @@ use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 #[repr(C, align(4))]
 #[derive(Copy, Clone, Default)]
+#[bitfields(__bits_0 { a: u32 @ 0..1 unsigned, b: u32 @ 1..4 unsigned }, __bits_1 { c: u32 @ 0..1 unsigned })]
 pub struct flags {
     pub tag: u8,
     pub __bits_0: [u8; 1],
     pub x: i32,
     pub __bits_1: [u8; 1],
-}
-impl flags {
-    #[inline]
-    pub const fn a(&self) -> u32 {
-        ((((self.__bits_0[0] as u64) >> 0) & 0x1) << 0) as u32
-    }
-    #[inline]
-    pub const fn set_a(&mut self, v: u32) {
-        assert!(v <= 1, "bitfield a: value does not fit in 1 bits");
-        let __v = v as u64;
-        self.__bits_0[0] = (self.__bits_0[0] & !0x01u8) | ((((__v >> 0) as u8) << 0) & 0x01u8);
-    }
-    #[inline]
-    pub const fn with_a(mut self, v: u32) -> Self {
-        self.set_a(v);
-        self
-    }
-    #[inline]
-    pub const fn b(&self) -> u32 {
-        ((((self.__bits_0[0] as u64) >> 1) & 0x7) << 0) as u32
-    }
-    #[inline]
-    pub const fn set_b(&mut self, v: u32) {
-        assert!(v <= 7, "bitfield b: value does not fit in 3 bits");
-        let __v = v as u64;
-        self.__bits_0[0] = (self.__bits_0[0] & !0x0eu8) | ((((__v >> 0) as u8) << 1) & 0x0eu8);
-    }
-    #[inline]
-    pub const fn with_b(mut self, v: u32) -> Self {
-        self.set_b(v);
-        self
-    }
-    #[inline]
-    pub const fn c(&self) -> u32 {
-        ((((self.__bits_1[0] as u64) >> 0) & 0x1) << 0) as u32
-    }
-    #[inline]
-    pub const fn set_c(&mut self, v: u32) {
-        assert!(v <= 1, "bitfield c: value does not fit in 1 bits");
-        let __v = v as u64;
-        self.__bits_1[0] = (self.__bits_1[0] & !0x01u8) | ((((__v >> 0) as u8) << 0) & 0x01u8);
-    }
-    #[inline]
-    pub const fn with_c(mut self, v: u32) -> Self {
-        self.set_c(v);
-        self
-    }
 }
 #[repr(C)]
 #[derive(Copy, Clone, Default)]
@@ -69,56 +23,25 @@ pub struct outer {
 }
 #[repr(C, align(4))]
 #[derive(Copy, Clone, Default)]
+#[bitfields(__bits_0 { s: i32 @ 0..3 signed, u: u32 @ 3..8 unsigned, wide: u32 @ 8..20 unsigned })]
 pub struct mixed_sign {
     pub __bits_0: [u8; 3],
 }
-impl mixed_sign {
-    #[inline]
-    pub const fn s(&self) -> i32 {
-        (((((((self.__bits_0[0] as u64) >> 0) & 0x7) << 0) << 61) as i64) >> 61) as i32
-    }
-    #[inline]
-    pub const fn set_s(&mut self, v: i32) {
-        assert!(v >= -4 && v <= 3, "bitfield s: value out of range");
-        let __v = v as u64;
-        self.__bits_0[0] = (self.__bits_0[0] & !0x07u8) | ((((__v >> 0) as u8) << 0) & 0x07u8);
-    }
-    #[inline]
-    pub const fn with_s(mut self, v: i32) -> Self {
-        self.set_s(v);
-        self
-    }
-    #[inline]
-    pub const fn u(&self) -> u32 {
-        ((((self.__bits_0[0] as u64) >> 3) & 0x1f) << 0) as u32
-    }
-    #[inline]
-    pub const fn set_u(&mut self, v: u32) {
-        assert!(v <= 31, "bitfield u: value does not fit in 5 bits");
-        let __v = v as u64;
-        self.__bits_0[0] = (self.__bits_0[0] & !0xf8u8) | ((((__v >> 0) as u8) << 3) & 0xf8u8);
-    }
-    #[inline]
-    pub const fn with_u(mut self, v: u32) -> Self {
-        self.set_u(v);
-        self
-    }
-    #[inline]
-    pub const fn wide(&self) -> u32 {
-        ((((self.__bits_0[1] as u64) >> 0) & 0xff) << 0
-            | (((self.__bits_0[2] as u64) >> 0) & 0xf) << 8) as u32
-    }
-    #[inline]
-    pub const fn set_wide(&mut self, v: u32) {
-        assert!(v <= 4095, "bitfield wide: value does not fit in 12 bits");
-        let __v = v as u64;
-        self.__bits_0[1] = (self.__bits_0[1] & !0xffu8) | ((((__v >> 0) as u8) << 0) & 0xffu8);
-        self.__bits_0[2] = (self.__bits_0[2] & !0x0fu8) | ((((__v >> 8) as u8) << 0) & 0x0fu8);
-    }
-    #[inline]
-    pub const fn with_wide(mut self, v: u32) -> Self {
-        self.set_wide(v);
-        self
+#[repr(C, align(8))]
+#[derive(Copy, Clone)]
+#[bitfields(__bits_0 { flag: u32 @ 0..1 unsigned, kind: u32 @ 1..4 unsigned })]
+pub struct with_fn_ptr {
+    pub fn_: Option<unsafe fn()>,
+    pub __bits_0: [u8; 1],
+    pub n: i32,
+}
+impl Default for with_fn_ptr {
+    fn default() -> Self {
+        with_fn_ptr {
+            fn_: None,
+            n: 0_i32,
+            __bits_0: [0u8; 1],
+        }
     }
 }
 pub static mut g_0: flags = unsafe {
@@ -201,19 +124,15 @@ unsafe fn main_0() -> i32 {
     );
     {
         let __bf_old = f.b();
-        let __bf_v = (__bf_old + 1);
-        f.set_b(__bf_v)
+        f.set_b((((__bf_old as i32) + ((1) as i32)) as u32));
+        __bf_old
     };
     assert!(
         (((((((f.b() as i32) == (6)) as i32) != 0) && ((((f.a() as i32) == (1)) as i32) != 0))
             as i32)
             != 0)
     );
-    {
-        let __bf_old = f.b();
-        let __bf_v = (__bf_old + (1));
-        f.set_b(__bf_v)
-    };
+    f.set_b((((f.b() as i32) + 1) as u32));
     assert!(
         (((((((f.b() as i32) == (7)) as i32) != 0) && ((((f.a() as i32) == (1)) as i32) != 0))
             as i32)
@@ -326,6 +245,94 @@ unsafe fn main_0() -> i32 {
             as i32)
             != 0)
             && ((((m.wide() as i32) == (2748)) as i32) != 0)) as i32)
+            != 0)
+    );
+    m.set_s(1);
+    m.set_s((((m.s() as i32) - ((3) as i32)) as i32));
+    assert!(
+        (((((((m.s()) == (-2_i32)) as i32) != 0) && ((((m.u() as i32) == (31)) as i32) != 0))
+            as i32)
+            != 0)
+    );
+    f.set_a(1_u32);
+    f.set_b(5_u32);
+    assert!(((((!(f.a() != 0) as i32) == (0)) as i32) != 0));
+    assert!(((((!(f.c() != 0) as i32) == (1)) as i32) != 0));
+    assert!(((((!(f.b() as i32)) == (!5)) as i32) != 0));
+    assert!(((((-(f.b() as i32)) == (-5_i32)) as i32) != 0));
+    assert!(((((f.b() as i32) == (5)) as i32) != 0));
+    if (f.b() != 0) {
+        assert!(((((f.b() as i32) == (5)) as i32) != 0));
+    }
+    let mut step: u8 = 2_u8;
+    f.set_b(1_u32);
+    f.set_b((((f.b() as i32) + (step as i32)) as u32));
+    assert!(((((f.b() as i32) == (3)) as i32) != 0));
+    f.set_b((((f.b() as i32) << 1) as u32));
+    assert!(((((f.b() as i32) == (6)) as i32) != 0));
+    f.set_b((((f.b() as i32) & ((!1_u32) as i32)) as u32));
+    assert!(((((f.b() as i32) == (6)) as i32) != 0));
+    f.set_b((((f.b() as i32) - (g_0.tag as i32)) as u32));
+    assert!(
+        (((((((f.b() as i32) == (4)) as i32) != 0) && ((((f.a() as i32) == (1)) as i32) != 0))
+            as i32)
+            != 0)
+    );
+    let mut t: i32 = (({
+        f.set_b(3_u32);
+        f.b()
+    }) as i32);
+    assert!(
+        (((((((t) == (3)) as i32) != 0) && ((((f.b() as i32) == (3)) as i32) != 0)) as i32) != 0)
+    );
+    let mut u: i32 = ({
+        let __bf_old = f.b();
+        f.set_b((((__bf_old as i32) + ((1) as i32)) as u32));
+        __bf_old
+    } as i32);
+    assert!(
+        (((((((u) == (3)) as i32) != 0) && ((((f.b() as i32) == (4)) as i32) != 0)) as i32) != 0)
+    );
+    let mut v: i32 = ({
+        let __bf_new = (((f.b() as i32) + ((1) as i32)) as u32);
+        f.set_b(__bf_new);
+        __bf_new
+    } as i32);
+    assert!(
+        (((((((v) == (5)) as i32) != 0) && ((((f.b() as i32) == (5)) as i32) != 0)) as i32) != 0)
+    );
+    let mut w: with_fn_ptr = <with_fn_ptr>::default();
+    {
+        let byte_0 = (((&raw mut w as *mut with_fn_ptr) as *mut with_fn_ptr) as *mut ::libc::c_void)
+            as *mut u8;
+        for offset in 0..::std::mem::size_of::<with_fn_ptr>() {
+            *byte_0.offset(offset as isize) = 0 as u8;
+        }
+        (((&raw mut w as *mut with_fn_ptr) as *mut with_fn_ptr) as *mut ::libc::c_void)
+    };
+    assert!(
+        (((((((((((((w.fn_).is_none()) as i32) != 0) && ((((w.flag() as i32) == (0)) as i32) != 0))
+            as i32)
+            != 0)
+            && ((((w.kind() as i32) == (0)) as i32) != 0)) as i32)
+            != 0)
+            && ((((w.n) == (0)) as i32) != 0)) as i32)
+            != 0)
+    );
+    w.set_flag(1_u32);
+    w.set_kind(5_u32);
+    w.n = -7_i32;
+    assert!(
+        ((((((((((w.flag() as i32) == (1)) as i32) != 0)
+            && ((((w.kind() as i32) == (5)) as i32) != 0)) as i32)
+            != 0)
+            && ((((w.n) == (-7_i32)) as i32) != 0)) as i32)
+            != 0)
+    );
+    assert!(
+        ((((::std::mem::offset_of!(with_fn_ptr, n))
+            == ((::std::mem::size_of::<*mut ::libc::c_void>() as usize).wrapping_add(4_usize)))
+            as i32)
             != 0)
     );
     return 0;

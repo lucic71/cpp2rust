@@ -827,11 +827,6 @@ RsExpr *ConverterRefCount::VisitVarDecl(clang::VarDecl *decl) {
 RsExpr *ConverterRefCount::ConvertIncAndDec(clang::UnaryOperator *expr) {
   auto opcode = expr->getOpcode();
   auto *sub_expr = expr->getSubExpr();
-  if (auto *node = TryConvertBitFieldWrite(
-          expr->getSubExpr(), expr->isIncrementOp() ? "+" : "-",
-          /*rhs=*/nullptr, expr->isPostfix())) {
-    return node;
-  }
 
   const char *method = nullptr;
   switch (opcode) {
@@ -1755,22 +1750,12 @@ RsExpr *ConverterRefCount::ConvertBinaryOperator(clang::BinaryOperator *expr) {
   auto rhs_type = rhs->getType();
   std::string_view opcode_as_string = expr->getOpcodeStr();
 
-  if (expr->isAssignmentOp()) {
-    auto bf_op = opcode_as_string;
-    if (bf_op != "=") {
-      bf_op.remove_suffix(1);
-    }
-    if (auto *node = TryConvertBitFieldWrite(lhs, bf_op, rhs,
-                                             /*is_postfix=*/false)) {
-      return node;
-    }
-  }
-
   if (auto *assign = llvm::dyn_cast<clang::CompoundAssignOperator>(expr);
       assign && GetSafeTypeAsString(lhs_type) !=
                     GetSafeTypeAsString(assign->getComputationResultType())) {
     auto computation_result_type = assign->getComputationResultType();
-    bool hoist_lhs = lhs->HasSideEffects(ctx_);
+    bool hoist_lhs =
+        lhs->HasSideEffects(ctx_) && AsBitFieldMember(lhs) == nullptr;
     RsExpr *lhs_binding =
         hoist_lhs
             ? Cat(Text(keyword::kLet), Text("__lhs"), Text(token::kAssign),
@@ -2141,8 +2126,8 @@ RsExpr *ConverterRefCount::VisitMemberExpr(clang::MemberExpr *expr) {
   bool known = Mapper::Contains(expr);
 
   if (const auto *bitfield = clang::dyn_cast<clang::FieldDecl>(member);
-      bitfield != nullptr && bitfield->isBitField() && !isAddrOf()) {
-    return ConvertBitFieldGet(expr, bitfield);
+      bitfield != nullptr && bitfield->isBitField()) {
+    return ConvertBitFieldMember(expr, bitfield);
   }
 
   if (auto *method = clang::dyn_cast<clang::CXXMethodDecl>(member);
@@ -2590,7 +2575,8 @@ RsExpr *ConverterRefCount::ConvertAssignment(clang::Expr *lhs, clang::Expr *rhs,
     rhs_node = Text("__rhs");
   }
 
-  bool hoist_lhs = !isVoid() && !yields_rhs && lhs->HasSideEffects(ctx_);
+  bool hoist_lhs = !isVoid() && !yields_rhs && lhs->HasSideEffects(ctx_) &&
+                   AsBitFieldMember(lhs) == nullptr;
   if (hoist_lhs) {
     parts.push_back(Cat(Text(keyword::kLet), Text("__lhs"),
                         Text(token::kAssign),
@@ -2601,12 +2587,7 @@ RsExpr *ConverterRefCount::ConvertAssignment(clang::Expr *lhs, clang::Expr *rhs,
   auto *lhs_node =
       hoist_lhs ? Parens(arena_.New<Unary>(Unary::Op::Deref, Text("__lhs")))
                 : ConvertLValue(lhs);
-  if (assign_operator == "=") {
-    parts.push_back(arena_.New<Assign>(lhs_node, rhs_node));
-  } else {
-    parts.push_back(arena_.New<CompoundAssign>(
-        lhs_node, std::string(assign_operator), rhs_node));
-  }
+  parts.push_back(MakeAssignment(lhs_node, assign_operator, rhs_node));
 
   if (!isVoid()) {
     parts.push_back(Text(token::kSemiColon));

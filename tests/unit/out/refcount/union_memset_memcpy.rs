@@ -74,58 +74,10 @@ impl ByteRepr for shape_b {
 }
 #[repr(C, align(4))]
 #[derive(Clone, Default)]
+#[bitfields(__bits_0 { f1: u32 @ 0..1 unsigned, f2: u32 @ 1..4 unsigned, f3: u32 @ 4..16 unsigned })]
 pub struct shape_c {
     pub code: u16,
     pub __bits_0: [u8; 2],
-}
-impl shape_c {
-    #[inline]
-    pub const fn f1(&self) -> u32 {
-        ((((self.__bits_0[0] as u64) >> 0) & 0x1) << 0) as u32
-    }
-    #[inline]
-    pub const fn set_f1(&mut self, v: u32) {
-        assert!(v <= 1, "bitfield f1: value does not fit in 1 bits");
-        let __v = v as u64;
-        self.__bits_0[0] = (self.__bits_0[0] & !0x01u8) | ((((__v >> 0) as u8) << 0) & 0x01u8);
-    }
-    #[inline]
-    pub const fn with_f1(mut self, v: u32) -> Self {
-        self.set_f1(v);
-        self
-    }
-    #[inline]
-    pub const fn f2(&self) -> u32 {
-        ((((self.__bits_0[0] as u64) >> 1) & 0x7) << 0) as u32
-    }
-    #[inline]
-    pub const fn set_f2(&mut self, v: u32) {
-        assert!(v <= 7, "bitfield f2: value does not fit in 3 bits");
-        let __v = v as u64;
-        self.__bits_0[0] = (self.__bits_0[0] & !0x0eu8) | ((((__v >> 0) as u8) << 1) & 0x0eu8);
-    }
-    #[inline]
-    pub const fn with_f2(mut self, v: u32) -> Self {
-        self.set_f2(v);
-        self
-    }
-    #[inline]
-    pub const fn f3(&self) -> u32 {
-        ((((self.__bits_0[0] as u64) >> 4) & 0xf) << 0
-            | (((self.__bits_0[1] as u64) >> 0) & 0xff) << 4) as u32
-    }
-    #[inline]
-    pub const fn set_f3(&mut self, v: u32) {
-        assert!(v <= 4095, "bitfield f3: value does not fit in 12 bits");
-        let __v = v as u64;
-        self.__bits_0[0] = (self.__bits_0[0] & !0xf0u8) | ((((__v >> 0) as u8) << 4) & 0xf0u8);
-        self.__bits_0[1] = (self.__bits_0[1] & !0xffu8) | ((((__v >> 4) as u8) << 0) & 0xffu8);
-    }
-    #[inline]
-    pub const fn with_f3(mut self, v: u32) -> Self {
-        self.set_f3(v);
-        self
-    }
 }
 impl ByteRepr for shape_c {
     fn byte_size() -> usize {

@@ -120,6 +120,8 @@ public:
 
   virtual RsExpr *VisitCXXRecordDecl(clang::CXXRecordDecl *decl);
 
+  RsExpr *EmitNestedEnums(clang::RecordDecl *decl);
+
   virtual RsExpr *EmitRustStructOrUnion(clang::RecordDecl *decl);
 
   virtual RsExpr *EmitRustUnion(clang::RecordDecl *decl);
@@ -148,13 +150,15 @@ public:
 
   virtual RsExpr *VisitFieldDecl(clang::FieldDecl *decl);
 
-  RsExpr *ConvertBitFieldBase(clang::MemberExpr *expr);
+  RsExpr *ConvertBitFieldMember(clang::MemberExpr *expr,
+                                const clang::FieldDecl *field);
 
-  RsExpr *ConvertBitFieldGet(clang::MemberExpr *expr,
-                             const clang::FieldDecl *field);
+  RsExpr *BitFieldArith(BitField *field, std::string_view op, RsExpr *old,
+                        RsExpr *rhs);
 
-  RsExpr *TryConvertBitFieldWrite(clang::Expr *lhs, std::string_view op,
-                                  clang::Expr *rhs, bool is_postfix);
+  RsExpr *LowerBitFieldStore(BitField *field, RsExpr *value);
+
+  virtual bool BitFieldStoreNeedsTemp() const { return false; }
 
   std::vector<RsExpr *> EmitRecordFields(clang::RecordDecl *decl);
 
@@ -162,7 +166,7 @@ public:
                              clang::InitListExpr *expr,
                              clang::QualType qual_type);
 
-  RsExpr *EmitBitFieldAccessors(clang::RecordDecl *decl);
+  RsExpr *EmitBitFieldsAttr(clang::RecordDecl *decl);
 
   virtual RsExpr *VisitNamespaceDecl(clang::NamespaceDecl *decl);
 
@@ -471,6 +475,8 @@ protected:
 
   void LowerNodes(RsExpr *&node);
 
+  RsExpr *LowerBitField(RsExpr *node);
+
   virtual RsExpr *LowerPtrUse([[maybe_unused]] RsExpr *node) { return nullptr; }
 
   virtual RsExpr *NestPtrUse([[maybe_unused]] RsExpr *node) { return nullptr; }
@@ -556,6 +562,8 @@ protected:
 
   RsExpr *EmitFlexibleArrayElementPtr(clang::Expr *array, clang::Expr *idx,
                                       bool is_mut);
+
+  RsExpr *MakeAssignment(RsExpr *lhs, std::string_view op, RsExpr *rhs);
 
   virtual RsExpr *ConvertAssignment(clang::Expr *lhs, clang::Expr *rhs,
                                     std::string_view assign_operator);

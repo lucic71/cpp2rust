@@ -49,6 +49,8 @@ public:
 
   bool RustSizeofMatchesCSizeof(clang::QualType ty) const override;
 
+  bool BitFieldStoreNeedsTemp() const override { return true; }
+
   RsExpr *AddDefaultTrait(const clang::RecordDecl *decl) override;
 
   RsExpr *AddDefaultTraitForUnion(const clang::RecordDecl *decl) override;

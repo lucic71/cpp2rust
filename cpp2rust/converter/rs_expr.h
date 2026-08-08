@@ -43,6 +43,7 @@ struct RsExpr {
     Field,
     Index,
     FieldPtr,
+    BitField,
     BorrowRead,
     BorrowWrite,
     PtrRead,
@@ -489,6 +490,32 @@ struct Field : Accessor {
   }
 
   std::string member;
+
+  void dump(llvm::raw_ostream &os, unsigned depth = 0) override;
+};
+
+struct BitField : Accessor {
+  BitField(RsExpr *object, std::string member, std::string type_name,
+           std::string promoted_name, bool base_has_side_effects)
+      : Accessor(Kind::BitField, object), member(std::move(member)),
+        type_name(std::move(type_name)),
+        promoted_name(std::move(promoted_name)),
+        base_has_side_effects(base_has_side_effects) {}
+
+  static bool classof(const RsExpr *expr) {
+    return expr->kind == Kind::BitField;
+  }
+
+  std::string print() const override {
+    return object->print() + '.' + member + "() ";
+  }
+
+  std::string Setter() const { return "set_" + member; }
+
+  std::string member;
+  std::string type_name;
+  std::string promoted_name;
+  bool base_has_side_effects;
 
   void dump(llvm::raw_ostream &os, unsigned depth = 0) override;
 };

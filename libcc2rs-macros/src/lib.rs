@@ -3,6 +3,7 @@
 
 use proc_macro::TokenStream;
 
+mod bitfields;
 mod goto;
 mod state_machine;
 mod switch;
@@ -70,6 +71,11 @@ pub fn switch(input: TokenStream) -> TokenStream {
 #[proc_macro]
 pub fn goto_block(input: TokenStream) -> TokenStream {
     goto::expand(input)
+}
+
+#[proc_macro_attribute]
+pub fn bitfields(args: TokenStream, item: TokenStream) -> TokenStream {
+    bitfields::expand(args, item)
 }
 
 #[proc_macro]

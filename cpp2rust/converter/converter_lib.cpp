@@ -1250,17 +1250,6 @@ std::string BitStorageName(unsigned run) {
   return std::format("__bits_{}", run);
 }
 
-const clang::FieldDecl *AsBitField(const clang::Expr *expr) {
-  const auto *member =
-      clang::dyn_cast<clang::MemberExpr>(expr->IgnoreParenImpCasts());
-  if (member == nullptr) {
-    return nullptr;
-  }
-  const auto *field =
-      clang::dyn_cast<clang::FieldDecl>(member->getMemberDecl());
-  return field != nullptr && field->isBitField() ? field : nullptr;
-}
-
 std::vector<BitFieldRun> CollectBitFieldRuns(clang::ASTContext &ctx,
                                              const clang::RecordDecl *decl) {
   std::vector<BitFieldRun> runs;
@@ -1279,6 +1268,9 @@ std::vector<BitFieldRun> CollectBitFieldRuns(clang::ASTContext &ctx,
     run.start_bit = layout.getFieldOffset(it->getFieldIndex());
     uint64_t end_bit = run.start_bit;
     while (it != decl->field_end() && it->isBitField()) {
+      if (it->isUnnamedBitField()) {
+        llvm::report_fatal_error("unnamed bit-fields are not supported");
+      }
       auto bit_off = layout.getFieldOffset(it->getFieldIndex());
       end_bit = std::max(end_bit, bit_off + it->getBitWidthValue());
       run.fields.push_back(*it);
@@ -1303,67 +1295,57 @@ std::string RecordReprAttr(clang::ASTContext &ctx,
                      ctx.getTypeAlign(ctx.getCanonicalTagType(decl)) / 8);
 }
 
-std::string BitFieldAccessorCode(clang::ASTContext &ctx,
-                                 const clang::FieldDecl *field,
-                                 const BitFieldRun &run, unsigned run_idx,
-                                 const std::string &type_name) {
-  auto storage = BitStorageName(run_idx);
-  auto name = GetNamedDeclAsString(field);
+const clang::FieldDecl *AsBitFieldMember(const clang::Expr *expr) {
+  const auto *member =
+      clang::dyn_cast<clang::MemberExpr>(expr->IgnoreParenImpCasts());
+  if (member == nullptr) {
+    return nullptr;
+  }
+  const auto *field =
+      clang::dyn_cast<clang::FieldDecl>(member->getMemberDecl());
+  return field != nullptr && field->isBitField() ? field : nullptr;
+}
+
+unsigned BitFieldRunIndex(const std::vector<BitFieldRun> &runs,
+                          const clang::FieldDecl *field) {
+  for (unsigned i = 0; i < runs.size(); ++i) {
+    const auto &fields = runs[i].fields;
+    if (std::ranges::find(fields, field) != fields.end()) {
+      return i;
+    }
+  }
+  assert(false && "bit-field does not belong to any run");
+  return 0;
+}
+
+std::string BitFieldSpec(clang::ASTContext &ctx, const clang::FieldDecl *field,
+                         const BitFieldRun &run,
+                         const std::string &type_name) {
   const auto &layout = ctx.getASTRecordLayout(field->getParent());
+  auto lo = layout.getFieldOffset(field->getFieldIndex()) - run.start_byte * 8;
+  return std::format("{}: {} @ {}..{} {}", GetNamedDeclAsString(field),
+                     type_name, lo, lo + field->getBitWidthValue(),
+                     field->getType()->isSignedIntegerOrEnumerationType()
+                         ? "signed"
+                         : "unsigned");
+}
+
+clang::QualType BitFieldPromotedType(clang::ASTContext &ctx,
+                                     const clang::FieldDecl *field) {
+  auto type = field->getType();
+  if (type->isBooleanType()) {
+    return type;
+  }
   auto width = field->getBitWidthValue();
-  auto bit_off =
-      layout.getFieldOffset(field->getFieldIndex()) - run.start_byte * 8;
-
-  std::string read;
-  std::string write;
-  for (auto byte = bit_off / 8; byte <= (bit_off + width - 1) / 8; ++byte) {
-    auto lo = std::max(bit_off, byte * 8);
-    auto hi = std::min(bit_off + width, byte * 8 + 8);
-    auto mask = ((1U << (hi - lo)) - 1) << (lo - byte * 8);
-    if (!read.empty()) {
-      read += " | ";
-    }
-    read +=
-        std::format("(((self.{}[{}] as u64) >> {}) & {:#x}) << {}", storage,
-                    byte, lo - byte * 8, (1ULL << (hi - lo)) - 1, lo - bit_off);
-    write += std::format("self.{0}[{1}] = (self.{0}[{1}] & !{2:#04x}u8) | "
-                         "((((__v >> {3}) as u8) << {4}) & {2:#04x}u8);",
-                         storage, byte, mask, lo - bit_off, lo - byte * 8);
+  auto int_width = ctx.getIntWidth(ctx.IntTy);
+  bool is_signed = type->isSignedIntegerOrEnumerationType();
+  if (width < int_width || (width == int_width && is_signed)) {
+    return ctx.IntTy;
   }
-
-  std::string value;
-  if (field->getType()->isBooleanType()) {
-    value = std::format("({}) != 0", read);
-  } else if (field->getType()->isSignedIntegerType()) {
-    value = std::format("(((({0}) << {1}) as i64) >> {1}) as {2}", read,
-                        64 - width, type_name);
-  } else {
-    value = std::format("({}) as {}", read, type_name);
+  if (width == int_width) {
+    return ctx.UnsignedIntTy;
   }
-
-  std::string guard;
-  if (!field->getType()->isBooleanType() &&
-      width < ctx.getTypeSize(field->getType())) {
-    if (field->getType()->isSignedIntegerType()) {
-      guard = std::format(
-          "assert!(v >= -{0} && v <= {1}, \"bitfield {2}: value out of "
-          "range\");",
-          1LL << (width - 1), (1LL << (width - 1)) - 1, name);
-    } else {
-      guard = std::format(
-          "assert!(v <= {0}, \"bitfield {1}: value does not fit in {2} "
-          "bits\");",
-          (1ULL << width) - 1, name, width);
-    }
-  }
-
-  return std::format(
-      "#[inline] pub const fn {0}(&self) -> {1} {{ {2} }}"
-      "#[inline] pub const fn set_{0}(&mut self, v: {1}) {{ {3} let __v = v as "
-      "u64; {4} }}"
-      "#[inline] pub const fn with_{0}(mut self, v: {1}) -> Self {{ "
-      "self.set_{0}(v); self }}",
-      name, type_name, value, guard, write);
+  return is_signed ? ctx.LongLongTy : ctx.UnsignedLongLongTy;
 }
 
 } // namespace cpp2rust

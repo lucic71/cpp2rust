@@ -59,6 +59,8 @@ const char *KindName(RsExpr::Kind kind) {
     return "Index";
   case RsExpr::Kind::FieldPtr:
     return "FieldPtr";
+  case RsExpr::Kind::BitField:
+    return "BitField";
   case RsExpr::Kind::BorrowRead:
     return "BorrowRead";
   case RsExpr::Kind::BorrowWrite:
@@ -175,6 +177,11 @@ void Impl::dump(llvm::raw_ostream &os, unsigned depth) {
 
 void Field::dump(llvm::raw_ostream &os, unsigned depth) {
   DumpHeader(this, os, depth, '.' + member);
+  DumpChildren(this, os, depth);
+}
+
+void BitField::dump(llvm::raw_ostream &os, unsigned depth) {
+  DumpHeader(this, os, depth, '.' + member + "(): " + type_name);
   DumpChildren(this, os, depth);
 }
 

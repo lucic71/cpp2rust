@@ -1,0 +1,17 @@
+error: bit-field `b` overlaps `a` at bit 2
+ --> tests/ui/bitfield_ranges.rs:7:48
+  |
+7 | #[bitfields(__bits_0 { a: i32 @ 0..4 unsigned, b: i32 @ 2..6 unsigned })]
+  |                                                ^
+
+error: bit-field `wide` ends at bit 20 but `__bits_0` only holds 8 bits
+  --> tests/ui/bitfield_ranges.rs:13:24
+   |
+13 | #[bitfields(__bits_0 { wide: i32 @ 0..20 unsigned })]
+   |                        ^^^^
+
+error: no field named `__bits_1` in this record
+  --> tests/ui/bitfield_ranges.rs:19:13
+   |
+19 | #[bitfields(__bits_1 { a: i32 @ 0..1 unsigned })]
+   |             ^^^^^^^^

@@ -8,58 +8,12 @@ use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
 #[repr(C, align(4))]
 #[derive(Clone, Default)]
+#[bitfields(__bits_0 { a: u32 @ 0..1 unsigned, b: u32 @ 1..4 unsigned }, __bits_1 { c: u32 @ 0..1 unsigned })]
 pub struct flags {
     pub tag: u8,
     pub __bits_0: [u8; 1],
     pub x: i32,
     pub __bits_1: [u8; 1],
-}
-impl flags {
-    #[inline]
-    pub const fn a(&self) -> u32 {
-        ((((self.__bits_0[0] as u64) >> 0) & 0x1) << 0) as u32
-    }
-    #[inline]
-    pub const fn set_a(&mut self, v: u32) {
-        assert!(v <= 1, "bitfield a: value does not fit in 1 bits");
-        let __v = v as u64;
-        self.__bits_0[0] = (self.__bits_0[0] & !0x01u8) | ((((__v >> 0) as u8) << 0) & 0x01u8);
-    }
-    #[inline]
-    pub const fn with_a(mut self, v: u32) -> Self {
-        self.set_a(v);
-        self
-    }
-    #[inline]
-    pub const fn b(&self) -> u32 {
-        ((((self.__bits_0[0] as u64) >> 1) & 0x7) << 0) as u32
-    }
-    #[inline]
-    pub const fn set_b(&mut self, v: u32) {
-        assert!(v <= 7, "bitfield b: value does not fit in 3 bits");
-        let __v = v as u64;
-        self.__bits_0[0] = (self.__bits_0[0] & !0x0eu8) | ((((__v >> 0) as u8) << 1) & 0x0eu8);
-    }
-    #[inline]
-    pub const fn with_b(mut self, v: u32) -> Self {
-        self.set_b(v);
-        self
-    }
-    #[inline]
-    pub const fn c(&self) -> u32 {
-        ((((self.__bits_1[0] as u64) >> 0) & 0x1) << 0) as u32
-    }
-    #[inline]
-    pub const fn set_c(&mut self, v: u32) {
-        assert!(v <= 1, "bitfield c: value does not fit in 1 bits");
-        let __v = v as u64;
-        self.__bits_1[0] = (self.__bits_1[0] & !0x01u8) | ((((__v >> 0) as u8) << 0) & 0x01u8);
-    }
-    #[inline]
-    pub const fn with_c(mut self, v: u32) -> Self {
-        self.set_c(v);
-        self
-    }
 }
 impl ByteRepr for flags {
     fn byte_size() -> usize {
@@ -103,57 +57,9 @@ impl ByteRepr for outer {
 }
 #[repr(C, align(4))]
 #[derive(Clone, Default)]
+#[bitfields(__bits_0 { s: i32 @ 0..3 signed, u: u32 @ 3..8 unsigned, wide: u32 @ 8..20 unsigned })]
 pub struct mixed_sign {
     pub __bits_0: [u8; 3],
-}
-impl mixed_sign {
-    #[inline]
-    pub const fn s(&self) -> i32 {
-        (((((((self.__bits_0[0] as u64) >> 0) & 0x7) << 0) << 61) as i64) >> 61) as i32
-    }
-    #[inline]
-    pub const fn set_s(&mut self, v: i32) {
-        assert!(v >= -4 && v <= 3, "bitfield s: value out of range");
-        let __v = v as u64;
-        self.__bits_0[0] = (self.__bits_0[0] & !0x07u8) | ((((__v >> 0) as u8) << 0) & 0x07u8);
-    }
-    #[inline]
-    pub const fn with_s(mut self, v: i32) -> Self {
-        self.set_s(v);
-        self
-    }
-    #[inline]
-    pub const fn u(&self) -> u32 {
-        ((((self.__bits_0[0] as u64) >> 3) & 0x1f) << 0) as u32
-    }
-    #[inline]
-    pub const fn set_u(&mut self, v: u32) {
-        assert!(v <= 31, "bitfield u: value does not fit in 5 bits");
-        let __v = v as u64;
-        self.__bits_0[0] = (self.__bits_0[0] & !0xf8u8) | ((((__v >> 0) as u8) << 3) & 0xf8u8);
-    }
-    #[inline]
-    pub const fn with_u(mut self, v: u32) -> Self {
-        self.set_u(v);
-        self
-    }
-    #[inline]
-    pub const fn wide(&self) -> u32 {
-        ((((self.__bits_0[1] as u64) >> 0) & 0xff) << 0
-            | (((self.__bits_0[2] as u64) >> 0) & 0xf) << 8) as u32
-    }
-    #[inline]
-    pub const fn set_wide(&mut self, v: u32) {
-        assert!(v <= 4095, "bitfield wide: value does not fit in 12 bits");
-        let __v = v as u64;
-        self.__bits_0[1] = (self.__bits_0[1] & !0xffu8) | ((((__v >> 0) as u8) << 0) & 0xffu8);
-        self.__bits_0[2] = (self.__bits_0[2] & !0x0fu8) | ((((__v >> 8) as u8) << 0) & 0x0fu8);
-    }
-    #[inline]
-    pub const fn with_wide(mut self, v: u32) -> Self {
-        self.set_wide(v);
-        self
-    }
 }
 impl ByteRepr for mixed_sign {
     fn byte_size() -> usize {
@@ -165,6 +71,40 @@ impl ByteRepr for mixed_sign {
     fn from_bytes(buf: &[u8]) -> Self {
         Self {
             __bits_0: buf[0..3].try_into().unwrap(),
+        }
+    }
+}
+#[repr(C, align(8))]
+#[derive(Clone)]
+#[bitfields(__bits_0 { flag: u32 @ 0..1 unsigned, kind: u32 @ 1..4 unsigned })]
+pub struct with_fn_ptr {
+    pub fn_: FnPtr<fn()>,
+    pub __bits_0: [u8; 1],
+    pub n: i32,
+}
+impl Default for with_fn_ptr {
+    fn default() -> Self {
+        with_fn_ptr {
+            fn_: FnPtr::<fn()>::null(),
+            n: <i32>::default(),
+            __bits_0: [0u8; 1],
+        }
+    }
+}
+impl ByteRepr for with_fn_ptr {
+    fn byte_size() -> usize {
+        16
+    }
+    fn to_bytes(&self, buf: &mut [u8]) {
+        buf[8..9].copy_from_slice(&self.__bits_0);
+        self.fn_.to_bytes(&mut buf[0..8]);
+        self.n.to_bytes(&mut buf[12..16]);
+    }
+    fn from_bytes(buf: &[u8]) -> Self {
+        Self {
+            __bits_0: buf[8..9].try_into().unwrap(),
+            fn_: <FnPtr<fn()>>::from_bytes(&buf[0..8]),
+            n: <i32>::from_bytes(&buf[12..16]),
         }
     }
 }
@@ -250,8 +190,11 @@ fn main_0() -> i32 {
     );
     {
         let __bf_old = (*f.borrow_mut()).b();
-        let __bf_v = (__bf_old + 1);
-        (*f.borrow_mut()).set_b(__bf_v)
+        {
+            let __bf_v = (((__bf_old as i32) + ((1) as i32)) as u32);
+            (*f.borrow_mut()).set_b(__bf_v)
+        };
+        __bf_old
     };
     assert!(
         ((((((((*f.borrow_mut()).b() as i32) == 6) as i32) != 0)
@@ -259,9 +202,8 @@ fn main_0() -> i32 {
             != 0)
     );
     {
-        let __bf_old = (*f.borrow_mut()).b();
-        let __bf_v = (__bf_old + (1));
-        (*f.borrow_mut()).set_b(__bf_v)
+        let rhs_0 = ((((*f.borrow_mut()).b() as i32) + 1) as u32);
+        (*f.borrow_mut()).set_b(rhs_0)
     };
     assert!(
         ((((((((*f.borrow_mut()).b() as i32) == 7) as i32) != 0)
@@ -350,7 +292,10 @@ fn main_0() -> i32 {
             .memset((0) as u8, 4usize as usize);
         ((m.as_pointer()) as Ptr<mixed_sign>).to_any().clone()
     };
-    (*m.borrow_mut()).set_s(-4_i32);
+    {
+        let __bf_v = -4_i32;
+        (*m.borrow_mut()).set_s(__bf_v)
+    };
     assert!(((((*m.borrow_mut()).s() == -4_i32) as i32) != 0));
     (*m.borrow_mut()).set_s(3);
     assert!(((((*m.borrow_mut()).s() == 3) as i32) != 0));
@@ -368,7 +313,10 @@ fn main_0() -> i32 {
             && ((((*m.borrow_mut()).s() == 3) as i32) != 0)) as i32)
             != 0)
     );
-    (*m.borrow_mut()).set_s(-1_i32);
+    {
+        let __bf_v = -1_i32;
+        (*m.borrow_mut()).set_s(__bf_v)
+    };
     assert!(
         ((((((((((*m.borrow_mut()).s() == -1_i32) as i32) != 0)
             && (((((*m.borrow_mut()).u() as i32) == 31) as i32) != 0)) as i32)
@@ -376,5 +324,117 @@ fn main_0() -> i32 {
             && (((((*m.borrow_mut()).wide() as i32) == 2748) as i32) != 0)) as i32)
             != 0)
     );
+    (*m.borrow_mut()).set_s(1);
+    {
+        let __bf_v = ((((*m.borrow_mut()).s() as i32) - ((3) as i32)) as i32);
+        (*m.borrow_mut()).set_s(__bf_v)
+    };
+    assert!(
+        (((((((*m.borrow_mut()).s() == -2_i32) as i32) != 0)
+            && (((((*m.borrow_mut()).u() as i32) == 31) as i32) != 0)) as i32)
+            != 0)
+    );
+    (*f.borrow_mut()).set_a(1_u32);
+    (*f.borrow_mut()).set_b(5_u32);
+    assert!(((((!((*f.borrow_mut()).a() != 0) as i32) == 0) as i32) != 0));
+    assert!(((((!((*f.borrow_mut()).c() != 0) as i32) == 1) as i32) != 0));
+    assert!((((!((*f.borrow_mut()).b() as i32) == !5) as i32) != 0));
+    assert!((((-((*f.borrow_mut()).b() as i32) == -5_i32) as i32) != 0));
+    assert!((((((*f.borrow_mut()).b() as i32) == 5) as i32) != 0));
+    if ((*f.borrow_mut()).b() != 0) {
+        assert!((((((*f.borrow_mut()).b() as i32) == 5) as i32) != 0));
+    }
+    let step: Value<u8> = Rc::new(RefCell::new(2_u8));
+    (*f.borrow_mut()).set_b(1_u32);
+    {
+        let rhs_0 = ((((*f.borrow_mut()).b() as i32) + ((*step.borrow()) as i32)) as u32);
+        (*f.borrow_mut()).set_b(rhs_0)
+    };
+    assert!((((((*f.borrow_mut()).b() as i32) == 3) as i32) != 0));
+    {
+        let rhs_0 = ((((*f.borrow_mut()).b() as i32) << 1) as u32);
+        (*f.borrow_mut()).set_b(rhs_0)
+    };
+    assert!((((((*f.borrow_mut()).b() as i32) == 6) as i32) != 0));
+    {
+        let __bf_v = ((((*f.borrow_mut()).b() as i32) & ((!1_u32) as i32)) as u32);
+        (*f.borrow_mut()).set_b(__bf_v)
+    };
+    assert!((((((*f.borrow_mut()).b() as i32) == 6) as i32) != 0));
+    {
+        let rhs_0 = ((((*f.borrow_mut()).b() as i32)
+            - ((*g_0.with(Value::clone).borrow()).tag as i32)) as u32);
+        (*f.borrow_mut()).set_b(rhs_0)
+    };
+    assert!(
+        ((((((((*f.borrow_mut()).b() as i32) == 4) as i32) != 0)
+            && (((((*f.borrow_mut()).a() as i32) == 1) as i32) != 0)) as i32)
+            != 0)
+    );
+    let t: Value<i32> = Rc::new(RefCell::new(
+        (({
+            (*f.borrow_mut()).set_b(3_u32);
+            (*f.borrow_mut()).b()
+        }) as i32),
+    ));
+    assert!(
+        (((((((*t.borrow()) == 3) as i32) != 0)
+            && (((((*f.borrow_mut()).b() as i32) == 3) as i32) != 0)) as i32)
+            != 0)
+    );
+    let u: Value<i32> = Rc::new(RefCell::new(
+        ({
+            let __bf_old = (*f.borrow_mut()).b();
+            {
+                let __bf_v = (((__bf_old as i32) + ((1) as i32)) as u32);
+                (*f.borrow_mut()).set_b(__bf_v)
+            };
+            __bf_old
+        } as i32),
+    ));
+    assert!(
+        (((((((*u.borrow()) == 3) as i32) != 0)
+            && (((((*f.borrow_mut()).b() as i32) == 4) as i32) != 0)) as i32)
+            != 0)
+    );
+    let v: Value<i32> = Rc::new(RefCell::new(
+        ({
+            let __bf_new = ((((*f.borrow_mut()).b() as i32) + ((1) as i32)) as u32);
+            (*f.borrow_mut()).set_b(__bf_new);
+            __bf_new
+        } as i32),
+    ));
+    assert!(
+        (((((((*v.borrow()) == 5) as i32) != 0)
+            && (((((*f.borrow_mut()).b() as i32) == 5) as i32) != 0)) as i32)
+            != 0)
+    );
+    let w: Value<with_fn_ptr> = <Value<with_fn_ptr>>::default();
+    {
+        ((w.as_pointer()) as Ptr<with_fn_ptr>)
+            .to_any()
+            .memset((0) as u8, 16usize as usize);
+        ((w.as_pointer()) as Ptr<with_fn_ptr>).to_any().clone()
+    };
+    assert!(
+        ((((((((((((((*w.borrow()).fn_).is_null()) as i32) != 0)
+            && (((((*w.borrow_mut()).flag() as i32) == 0) as i32) != 0)) as i32)
+            != 0)
+            && (((((*w.borrow_mut()).kind() as i32) == 0) as i32) != 0)) as i32)
+            != 0)
+            && ((((*w.borrow()).n == 0) as i32) != 0)) as i32)
+            != 0)
+    );
+    (*w.borrow_mut()).set_flag(1_u32);
+    (*w.borrow_mut()).set_kind(5_u32);
+    (*w.borrow_mut()).n = -7_i32;
+    assert!(
+        (((((((((((*w.borrow_mut()).flag() as i32) == 1) as i32) != 0)
+            && (((((*w.borrow_mut()).kind() as i32) == 5) as i32) != 0)) as i32)
+            != 0)
+            && ((((*w.borrow()).n == -7_i32) as i32) != 0)) as i32)
+            != 0)
+    );
+    assert!((((12_usize == (8usize as usize).wrapping_add(4_usize)) as i32) != 0));
     return 0;
 }

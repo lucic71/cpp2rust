@@ -21,6 +21,13 @@ struct mixed_sign {
   unsigned wide : 12;
 };
 
+struct with_fn_ptr {
+  void (*fn)(void);
+  unsigned flag : 1;
+  unsigned kind : 3;
+  int n;
+};
+
 static struct flags g = {2, 1, 5, 7, 0};
 
 int main(void) {
@@ -86,6 +93,48 @@ int main(void) {
   assert(m.wide == 0xABC && m.u == 31 && m.s == 3);
   m.s = -1;
   assert(m.s == -1 && m.u == 31 && m.wide == 0xABC);
+
+  m.s = 1;
+  m.s -= 3;
+  assert(m.s == -2 && m.u == 31);
+
+  f.a = 1;
+  f.b = 5;
+  assert((!f.a) == 0);
+  assert((!f.c) == 1);
+  assert(~f.b == ~5);
+  assert(-f.b == -5);
+  assert(f.b == 5);
+  if (f.b) {
+    assert(f.b == 5);
+  }
+
+  unsigned char step = 2;
+  f.b = 1;
+  f.b += step;
+  assert(f.b == 3);
+  f.b <<= 1;
+  assert(f.b == 6);
+  f.b &= ~1u;
+  assert(f.b == 6);
+  f.b -= g.tag;
+  assert(f.b == 4 && f.a == 1);
+
+  int t = (f.b = 3);
+  assert(t == 3 && f.b == 3);
+  int u = f.b++;
+  assert(u == 3 && f.b == 4);
+  int v = ++f.b;
+  assert(v == 5 && f.b == 5);
+
+  struct with_fn_ptr w;
+  memset(&w, 0, sizeof(w));
+  assert(w.fn == 0 && w.flag == 0 && w.kind == 0 && w.n == 0);
+  w.flag = 1;
+  w.kind = 5;
+  w.n = -7;
+  assert(w.flag == 1 && w.kind == 5 && w.n == -7);
+  assert(offsetof(struct with_fn_ptr, n) == sizeof(void *) + 4);
 
   return 0;
 }

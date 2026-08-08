@@ -8,75 +8,10 @@ use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
 #[repr(C, align(4))]
 #[derive(Clone, Default)]
+#[bitfields(__bits_0 { a: u32 @ 0..1 unsigned, b: u32 @ 1..4 unsigned, wide: u32 @ 4..24 unsigned, sgn: i32 @ 24..28 signed })]
 pub struct packed_flags {
     pub __bits_0: [u8; 4],
     pub tail: u32,
-}
-impl packed_flags {
-    #[inline]
-    pub const fn a(&self) -> u32 {
-        ((((self.__bits_0[0] as u64) >> 0) & 0x1) << 0) as u32
-    }
-    #[inline]
-    pub const fn set_a(&mut self, v: u32) {
-        assert!(v <= 1, "bitfield a: value does not fit in 1 bits");
-        let __v = v as u64;
-        self.__bits_0[0] = (self.__bits_0[0] & !0x01u8) | ((((__v >> 0) as u8) << 0) & 0x01u8);
-    }
-    #[inline]
-    pub const fn with_a(mut self, v: u32) -> Self {
-        self.set_a(v);
-        self
-    }
-    #[inline]
-    pub const fn b(&self) -> u32 {
-        ((((self.__bits_0[0] as u64) >> 1) & 0x7) << 0) as u32
-    }
-    #[inline]
-    pub const fn set_b(&mut self, v: u32) {
-        assert!(v <= 7, "bitfield b: value does not fit in 3 bits");
-        let __v = v as u64;
-        self.__bits_0[0] = (self.__bits_0[0] & !0x0eu8) | ((((__v >> 0) as u8) << 1) & 0x0eu8);
-    }
-    #[inline]
-    pub const fn with_b(mut self, v: u32) -> Self {
-        self.set_b(v);
-        self
-    }
-    #[inline]
-    pub const fn wide(&self) -> u32 {
-        ((((self.__bits_0[0] as u64) >> 4) & 0xf) << 0
-            | (((self.__bits_0[1] as u64) >> 0) & 0xff) << 4
-            | (((self.__bits_0[2] as u64) >> 0) & 0xff) << 12) as u32
-    }
-    #[inline]
-    pub const fn set_wide(&mut self, v: u32) {
-        assert!(v <= 1048575, "bitfield wide: value does not fit in 20 bits");
-        let __v = v as u64;
-        self.__bits_0[0] = (self.__bits_0[0] & !0xf0u8) | ((((__v >> 0) as u8) << 4) & 0xf0u8);
-        self.__bits_0[1] = (self.__bits_0[1] & !0xffu8) | ((((__v >> 4) as u8) << 0) & 0xffu8);
-        self.__bits_0[2] = (self.__bits_0[2] & !0xffu8) | ((((__v >> 12) as u8) << 0) & 0xffu8);
-    }
-    #[inline]
-    pub const fn with_wide(mut self, v: u32) -> Self {
-        self.set_wide(v);
-        self
-    }
-    #[inline]
-    pub const fn sgn(&self) -> i32 {
-        (((((((self.__bits_0[3] as u64) >> 0) & 0xf) << 0) << 60) as i64) >> 60) as i32
-    }
-    #[inline]
-    pub const fn set_sgn(&mut self, v: i32) {
-        assert!(v >= -8 && v <= 7, "bitfield sgn: value out of range");
-        let __v = v as u64;
-        self.__bits_0[3] = (self.__bits_0[3] & !0x0fu8) | ((((__v >> 0) as u8) << 0) & 0x0fu8);
-    }
-    #[inline]
-    pub const fn with_sgn(mut self, v: i32) -> Self {
-        self.set_sgn(v);
-        self
-    }
 }
 impl ByteRepr for packed_flags {
     fn byte_size() -> usize {
@@ -157,11 +92,14 @@ fn main_0() -> i32 {
         .offset(0usize)
         .reinterpret_cast::<packed_flags>() as Ptr<packed_flags>)
         .with_mut(|__v| __v.set_wide(703710_u32));
-    (v.as_pointer()
-        .reinterpret_cast::<u8>()
-        .offset(0usize)
-        .reinterpret_cast::<packed_flags>() as Ptr<packed_flags>)
-        .with_mut(|__v| __v.set_sgn(-3_i32));
+    {
+        let __bf_v = -3_i32;
+        (v.as_pointer()
+            .reinterpret_cast::<u8>()
+            .offset(0usize)
+            .reinterpret_cast::<packed_flags>() as Ptr<packed_flags>)
+            .with_mut(|__v| __v.set_sgn(__bf_v))
+    };
     (v.as_pointer()
         .reinterpret_cast::<u8>()
         .offset(0usize)
