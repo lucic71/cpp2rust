@@ -263,9 +263,11 @@ fn range_assert(field: &BitField) -> TokenStream2 {
     let width = field.width();
     let name = field.name.to_string();
     if let Some((bits, signed)) = accessor_bits(&field.ty)
-        && width >= bits && signed == field.signed {
-            return quote! {};
-        }
+        && width >= bits
+        && signed == field.signed
+    {
+        return quote! {};
+    }
     if field.signed {
         let (min, max) = if width == 64 {
             (i64::MIN, i64::MAX)
