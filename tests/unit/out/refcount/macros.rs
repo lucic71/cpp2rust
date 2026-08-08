@@ -10,23 +10,29 @@ pub fn log_0(file: Ptr<u8>, line: i32, func: Ptr<u8>) {
     let file: Value<Ptr<u8>> = Rc::new(RefCell::new(file));
     let line: Value<i32> = Rc::new(RefCell::new(line));
     let func: Value<Ptr<u8>> = Rc::new(RefCell::new(func));
-    println!(
-        "{} {} {}",
-        (*file.borrow()),
-        (*line.borrow()),
-        (*func.borrow())
-    );
+    {
+        println!(
+            "{} {} {}",
+            (*file.borrow()),
+            (*line.borrow()),
+            (*func.borrow())
+        );
+        let _ = ::std::io::Write::flush(&mut ::std::io::stdout());
+    };
 }
 pub fn main() {
     libcc2rs::exit_refcount(main_0());
 }
 fn main_0() -> i32 {
-    println!(
-        "{} {} {}",
-        Ptr::from_string_literal(b"macros.cpp\0"),
-        8,
-        Ptr::from_string_literal(b"main\0")
-    );
+    {
+        println!(
+            "{} {} {}",
+            Ptr::from_string_literal(b"macros.cpp\0"),
+            8,
+            Ptr::from_string_literal(b"main\0")
+        );
+        let _ = ::std::io::Write::flush(&mut ::std::io::stdout());
+    };
     ({
         log_0(
             Ptr::from_string_literal(b"macros.cpp\0"),

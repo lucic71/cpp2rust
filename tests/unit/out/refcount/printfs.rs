@@ -23,38 +23,62 @@ pub fn main() {
     libcc2rs::exit_refcount(main_0());
 }
 fn main_0() -> i32 {
-    println!("{}", Ptr::from_string_literal(b"fprintf stdout\0"));
-    println!("{} {} {}", 1, 2_u32, 3_i64);
-    print!("hello world");
+    {
+        println!("{}", Ptr::from_string_literal(b"fprintf stdout\0"));
+        let _ = ::std::io::Write::flush(&mut ::std::io::stdout());
+    };
+    {
+        println!("{} {} {}", 1, 2_u32, 3_i64);
+        let _ = ::std::io::Write::flush(&mut ::std::io::stdout());
+    };
+    {
+        print!("hello world");
+        let _ = ::std::io::Write::flush(&mut ::std::io::stdout());
+    };
     let in_: Value<Ptr<CFile>> = Rc::new(RefCell::new((libcc2rs::c_stdin()).clone()));
     assert!(!((*in_.borrow()).is_null()));
-    println!("{}", Ptr::from_string_literal(b"printf\0"));
-    print!("hello world");
+    {
+        println!("{}", Ptr::from_string_literal(b"printf\0"));
+        let _ = ::std::io::Write::flush(&mut ::std::io::stdout());
+    };
+    {
+        print!("hello world");
+        let _ = ::std::io::Write::flush(&mut ::std::io::stdout());
+    };
     let s: Value<Vec<u8>> = Rc::new(RefCell::new(
         Ptr::from_string_literal(b"a string\0")
             .to_c_string_iterator()
             .chain(std::iter::once(0))
             .collect::<Vec<u8>>(),
     ));
-    println!("{}", (s.as_pointer() as Ptr<u8>));
-    println!(
-        "{}",
-        (Rc::new(RefCell::new(
-            ({
-                fn_0(
-                    Ptr::from_string_literal(b"foo\0")
-                        .to_c_string_iterator()
-                        .chain(std::iter::once(0))
-                        .collect::<Vec<u8>>(),
-                )
-            })
-        ))
-        .as_pointer() as Ptr<u8>)
-    );
-    println!(
-        "{}",
-        (({ fn2_1(s.as_pointer()) }).to_strong().as_pointer() as Ptr<u8>)
-    );
+    {
+        println!("{}", (s.as_pointer() as Ptr<u8>));
+        let _ = ::std::io::Write::flush(&mut ::std::io::stdout());
+    };
+    {
+        println!(
+            "{}",
+            (Rc::new(RefCell::new(
+                ({
+                    fn_0(
+                        Ptr::from_string_literal(b"foo\0")
+                            .to_c_string_iterator()
+                            .chain(std::iter::once(0))
+                            .collect::<Vec<u8>>(),
+                    )
+                })
+            ))
+            .as_pointer() as Ptr<u8>)
+        );
+        let _ = ::std::io::Write::flush(&mut ::std::io::stdout());
+    };
+    {
+        println!(
+            "{}",
+            (({ fn2_1(s.as_pointer()) }).to_strong().as_pointer() as Ptr<u8>)
+        );
+        let _ = ::std::io::Write::flush(&mut ::std::io::stdout());
+    };
     let n: Value<i32> = Rc::new(RefCell::new({
         let __fmt: String = Ptr::from_string_literal(b"%s\0")
             .to_c_string_iterator()
@@ -71,7 +95,10 @@ fn main_0() -> i32 {
         }
     }));
     assert!(((*n.borrow()) == 4));
-    println!("");
+    {
+        println!("");
+        let _ = ::std::io::Write::flush(&mut ::std::io::stdout());
+    };
     let total: Value<i32> = Rc::new(RefCell::new(0));
     (*total.borrow_mut()) += {
         let __fmt: String = Ptr::from_string_literal(b"%d\0")
@@ -101,12 +128,21 @@ fn main_0() -> i32 {
             false => -1,
         }
     };
-    println!("");
+    {
+        println!("");
+        let _ = ::std::io::Write::flush(&mut ::std::io::stdout());
+    };
     assert!(((*total.borrow()) == 3));
     'loop_: while ((*n.borrow_mut()).postfix_inc() < 6) {
-        print!(" ");
+        {
+            print!(" ");
+            let _ = ::std::io::Write::flush(&mut ::std::io::stdout());
+        };
     }
     assert!(((*n.borrow()) == 7));
-    println!("");
+    {
+        println!("");
+        let _ = ::std::io::Write::flush(&mut ::std::io::stdout());
+    };
     return 0;
 }

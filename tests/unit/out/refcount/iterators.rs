@@ -20,18 +20,27 @@ fn main_0() -> i32 {
         c.with_mut(|__v| __v.prefix_inc());
     }
     'loop_: for mut c in x.as_pointer().to_string_iterator() as StringIterator<u8> {
-        println!("{}", (((c.read()) as i32) as u8 as char));
+        {
+            println!("{}", (((c.read()) as i32) as u8 as char));
+            let _ = ::std::io::Write::flush(&mut ::std::io::stdout());
+        };
     }
     'loop_: for mut c in x.as_pointer().to_string_iterator() as StringIterator<u8> {
         let c: Value<u8> = Rc::new(RefCell::new((c.read()).clone()));
-        println!("{}", (((*c.borrow()) as i32) as u8 as char));
+        {
+            println!("{}", (((*c.borrow()) as i32) as u8 as char));
+            let _ = ::std::io::Write::flush(&mut ::std::io::stdout());
+        };
     }
     let v: Value<Vec<Ptr<i32>>> = Rc::new(RefCell::new(Vec::new()));
     (*v.borrow_mut()).push(Ptr::alloc(2));
     (*v.borrow_mut()).push(Ptr::alloc(3));
     'loop_: for mut p in (v.as_pointer() as Ptr<Ptr<i32>>) {
         let p: Value<Ptr<i32>> = Rc::new(RefCell::new((p.read()).clone()));
-        println!("{}", ((*p.borrow()).read()));
+        {
+            println!("{}", ((*p.borrow()).read()));
+            let _ = ::std::io::Write::flush(&mut ::std::io::stdout());
+        };
     }
     return 0;
 }

@@ -90,6 +90,9 @@ fn main_0() -> i32 {
             != 0)
     );
     assert!((((libcc2rs::pclose_refcount((*out.borrow()).clone()) == 0) as i32) != 0));
-    print!("{}", (buf.as_pointer() as Ptr::<u8>));
+    {
+        print!("{}", (buf.as_pointer() as Ptr::<u8>));
+        let _ = ::std::io::Write::flush(&mut ::std::io::stdout());
+    };
     return 0;
 }

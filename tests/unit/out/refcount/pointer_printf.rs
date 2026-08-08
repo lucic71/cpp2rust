@@ -12,6 +12,9 @@ pub fn main() {
 fn main_0() -> i32 {
     let a: Value<i32> = Rc::new(RefCell::new(1));
     let p: Value<Ptr<i32>> = Rc::new(RefCell::new((a.as_pointer())));
-    print!("{:?} {}", (*p.borrow()), ((*p.borrow()).read()));
+    {
+        print!("{:?} {}", (*p.borrow()), ((*p.borrow()).read()));
+        let _ = ::std::io::Write::flush(&mut ::std::io::stdout());
+    };
     return 0;
 }

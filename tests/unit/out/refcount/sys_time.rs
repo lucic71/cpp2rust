@@ -65,20 +65,23 @@ pub fn print_tm_1(t: i64) {
         .is_null())) as i32)
             != 0)
     );
-    println!(
-        "{}-{}-{} {}:{}:{} wday={} yday={} {} gmtoff={} isdst={}",
-        (*tm.borrow()).tm_year,
-        (*tm.borrow()).tm_mon,
-        (*tm.borrow()).tm_mday,
-        (*tm.borrow()).tm_hour,
-        (*tm.borrow()).tm_min,
-        (*tm.borrow()).tm_sec,
-        (*tm.borrow()).tm_wday,
-        (*tm.borrow()).tm_yday,
-        (*tm.borrow()).tm_zone,
-        (*tm.borrow()).tm_gmtoff,
-        (*tm.borrow()).tm_isdst
-    );
+    {
+        println!(
+            "{}-{}-{} {}:{}:{} wday={} yday={} {} gmtoff={} isdst={}",
+            (*tm.borrow()).tm_year,
+            (*tm.borrow()).tm_mon,
+            (*tm.borrow()).tm_mday,
+            (*tm.borrow()).tm_hour,
+            (*tm.borrow()).tm_min,
+            (*tm.borrow()).tm_sec,
+            (*tm.borrow()).tm_wday,
+            (*tm.borrow()).tm_yday,
+            (*tm.borrow()).tm_zone,
+            (*tm.borrow()).tm_gmtoff,
+            (*tm.borrow()).tm_isdst
+        );
+        let _ = ::std::io::Write::flush(&mut ::std::io::stdout());
+    };
 }
 pub fn test_gmtime_r_2() {
     ({ print_tm_1(0_i64) });
@@ -120,20 +123,23 @@ pub fn print_local_tm_3(t: i64) {
         .is_null())) as i32)
             != 0)
     );
-    println!(
-        "{}-{}-{} {}:{}:{} wday={} yday={} {} gmtoff={} isdst={}",
-        (*tm.borrow()).tm_year,
-        (*tm.borrow()).tm_mon,
-        (*tm.borrow()).tm_mday,
-        (*tm.borrow()).tm_hour,
-        (*tm.borrow()).tm_min,
-        (*tm.borrow()).tm_sec,
-        (*tm.borrow()).tm_wday,
-        (*tm.borrow()).tm_yday,
-        (*tm.borrow()).tm_zone,
-        (*tm.borrow()).tm_gmtoff,
-        (*tm.borrow()).tm_isdst
-    );
+    {
+        println!(
+            "{}-{}-{} {}:{}:{} wday={} yday={} {} gmtoff={} isdst={}",
+            (*tm.borrow()).tm_year,
+            (*tm.borrow()).tm_mon,
+            (*tm.borrow()).tm_mday,
+            (*tm.borrow()).tm_hour,
+            (*tm.borrow()).tm_min,
+            (*tm.borrow()).tm_sec,
+            (*tm.borrow()).tm_wday,
+            (*tm.borrow()).tm_yday,
+            (*tm.borrow()).tm_zone,
+            (*tm.borrow()).tm_gmtoff,
+            (*tm.borrow()).tm_isdst
+        );
+        let _ = ::std::io::Write::flush(&mut ::std::io::stdout());
+    };
 }
 pub fn test_localtime_r_4() {
     ({ print_local_tm_3(0_i64) });
@@ -191,7 +197,10 @@ pub fn test_strftime_5() {
         } > 0_usize) as i32)
             != 0)
     );
-    println!("{}", (buf.as_pointer() as Ptr::<u8>));
+    {
+        println!("{}", (buf.as_pointer() as Ptr::<u8>));
+        let _ = ::std::io::Write::flush(&mut ::std::io::stdout());
+    };
     assert!(
         ((({
             let __dt = (tm.as_pointer()).with(|__tm| __tm.to_civil());
@@ -217,7 +226,10 @@ pub fn test_strftime_5() {
         } > 0_usize) as i32)
             != 0)
     );
-    println!("{}", (buf.as_pointer() as Ptr::<u8>));
+    {
+        println!("{}", (buf.as_pointer() as Ptr::<u8>));
+        let _ = ::std::io::Write::flush(&mut ::std::io::stdout());
+    };
     assert!(
         ((({
             let __dt = (tm.as_pointer()).with(|__tm| __tm.to_civil());
@@ -243,7 +255,10 @@ pub fn test_strftime_5() {
         } > 0_usize) as i32)
             != 0)
     );
-    println!("{}", (buf.as_pointer() as Ptr::<u8>));
+    {
+        println!("{}", (buf.as_pointer() as Ptr::<u8>));
+        let _ = ::std::io::Write::flush(&mut ::std::io::stdout());
+    };
     assert!(
         ((({
             let __dt = (tm.as_pointer()).with(|__tm| __tm.to_civil());
@@ -267,7 +282,10 @@ pub fn test_strftime_5() {
         } > 0_usize) as i32)
             != 0)
     );
-    println!("{}", (buf.as_pointer() as Ptr::<u8>));
+    {
+        println!("{}", (buf.as_pointer() as Ptr::<u8>));
+        let _ = ::std::io::Write::flush(&mut ::std::io::stdout());
+    };
     let small: Value<Box<[u8]>> = Rc::new(RefCell::new(
         (0..4).map(|_| <u8>::default()).collect::<Box<[u8]>>(),
     ));

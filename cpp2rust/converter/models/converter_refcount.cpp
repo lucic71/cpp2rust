@@ -1321,11 +1321,14 @@ RsExpr *ConverterRefCount::ConvertPrintf(clang::CallExpr *expr) {
   bool ends_newline = format.ends_with("\\n\"");
 
   const char *macro = nullptr;
+  const char *stream = nullptr;
   auto fd = is_fprintf ? Mapper::ToString(expr->getArg(0)) : "stdout";
   if (fd == "stdout" || fd == "__stdoutp") {
     macro = ends_newline ? "println!(" : "print!(";
+    stream = "stdout";
   } else if (fd == "stderr" || fd == "__stderrp") {
     macro = ends_newline ? "eprintln!(" : "eprint!(";
+    stream = "stderr";
   } else {
     return nullptr;
   }
@@ -1338,6 +1341,7 @@ RsExpr *ConverterRefCount::ConvertPrintf(clang::CallExpr *expr) {
   }
 
   std::vector<RsExpr *> parts;
+  parts.push_back(Text("{ "));
   parts.push_back(Text(macro));
   parts.push_back(Text(std::move(format)));
 
@@ -1351,6 +1355,9 @@ RsExpr *ConverterRefCount::ConvertPrintf(clang::CallExpr *expr) {
     parts.push_back(arg);
   }
   parts.push_back(Text(')'));
+  parts.push_back(Text(std::string("; let _ = ::std::io::Write::flush(&mut "
+                                   "::std::io::") +
+                       stream + "()); }"));
   return arena_.New<Concat>(std::move(parts));
 }
 

@@ -35,7 +35,10 @@ pub fn test_getpwuid_0() {
             != 0)
     );
     assert!((((!(((*pw.borrow()).with(|__v| (*__v).pw_dir.clone())).is_null())) as i32) != 0));
-    println!("{}", (*pw.borrow()).with(|__v| (*__v).pw_name.clone()));
+    {
+        println!("{}", (*pw.borrow()).with(|__v| (*__v).pw_name.clone()));
+        let _ = ::std::io::Write::flush(&mut ::std::io::stdout());
+    };
 }
 pub fn test_getpwuid_missing_1() {
     libcc2rs::cpp2rust_errno().write(0);
@@ -149,7 +152,10 @@ pub fn test_getpwuid_r_2() {
         } == 0) as i32)
             != 0)
     );
-    println!("{}", (*pw.borrow()).pw_name);
+    {
+        println!("{}", (*pw.borrow()).pw_name);
+        let _ = ::std::io::Write::flush(&mut ::std::io::stdout());
+    };
 }
 pub fn test_getpwuid_r_erange_3() {
     let pw: Value<libcc2rs::Passwd> = Rc::new(RefCell::new(Default::default()));

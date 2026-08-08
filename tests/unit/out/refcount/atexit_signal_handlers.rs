@@ -14,10 +14,16 @@ pub fn on_signal_1(sig: i32) {
     (*got_0.with(Value::clone).borrow_mut()) = (*sig.borrow());
 }
 pub fn first_exit_2() {
-    println!("first");
+    {
+        println!("first");
+        let _ = ::std::io::Write::flush(&mut ::std::io::stdout());
+    };
 }
 pub fn second_exit_3() {
-    println!("second");
+    {
+        println!("second");
+        let _ = ::std::io::Write::flush(&mut ::std::io::stdout());
+    };
 }
 pub fn main() {
     libcc2rs::exit_refcount(main_0());
@@ -80,6 +86,9 @@ fn main_0() -> i32 {
     assert!(
         (((libcc2rs::atexit_refcount(FnPtr::<fn()>::new(second_exit_3).clone()) == 0) as i32) != 0)
     );
-    println!("main");
+    {
+        println!("main");
+        let _ = ::std::io::Write::flush(&mut ::std::io::stdout());
+    };
     return 0;
 }

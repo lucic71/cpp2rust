@@ -444,19 +444,25 @@ pub fn test_ioctl_8() {
     );
 }
 pub fn test_isatty_9() {
-    println!(
-        "{}",
-        match FdRegistry::with_fd(0, |__fd| nix::unistd::isatty(__fd)) {
-            Ok(__tty) => __tty as i32,
-            Err(__e) => {
-                libcc2rs::cpp2rust_errno().write(__e as i32);
-                0
+    {
+        println!(
+            "{}",
+            match FdRegistry::with_fd(0, |__fd| nix::unistd::isatty(__fd)) {
+                Ok(__tty) => __tty as i32,
+                Err(__e) => {
+                    libcc2rs::cpp2rust_errno().write(__e as i32);
+                    0
+                }
             }
-        }
-    );
+        );
+        let _ = ::std::io::Write::flush(&mut ::std::io::stdout());
+    };
 }
 pub fn test_geteuid_10() {
-    println!("{}", libcc2rs::geteuid_refcount());
+    {
+        println!("{}", libcc2rs::geteuid_refcount());
+        let _ = ::std::io::Write::flush(&mut ::std::io::stdout());
+    };
 }
 pub fn test_gethostname_11() {
     let name: Value<Box<[u8]>> = Rc::new(RefCell::new(
@@ -482,7 +488,10 @@ pub fn test_gethostname_11() {
         } == 0) as i32)
             != 0)
     );
-    println!("{}", (name.as_pointer() as Ptr::<u8>));
+    {
+        println!("{}", (name.as_pointer() as Ptr::<u8>));
+        let _ = ::std::io::Write::flush(&mut ::std::io::stdout());
+    };
 }
 pub fn main() {
     libcc2rs::exit_refcount(main_0());
