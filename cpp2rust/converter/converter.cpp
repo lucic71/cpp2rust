@@ -10,6 +10,7 @@
 #include <clang/Basic/SourceManager.h>
 #include <llvm/ADT/DenseMap.h>
 #include <llvm/Support/ConvertUTF.h>
+#include <llvm/Support/ErrorHandling.h>
 
 #include <algorithm>
 #include <format>
@@ -1159,21 +1160,30 @@ RsExpr *Converter::VisitRecordDecl(clang::RecordDecl *decl) {
     return arena_.New<Verbatim>("");
   }
 
+  auto *nested_enums = EmitNestedEnums(decl);
+
   if (!record_decls_.MarkDefined(GetRecordName(decl))) {
-    return arena_.New<Verbatim>("");
+    return nested_enums;
   }
 
   Mapper::AddRuleForUserDefinedType(decl);
-  return EmitRustStructOrUnion(decl);
+  return Cat(nested_enums, EmitRustStructOrUnion(decl));
+}
+
+RsExpr *Converter::EmitNestedEnums(clang::RecordDecl *decl) {
+  std::vector<RsExpr *> parts;
+  for (auto *d : decl->decls()) {
+    if (auto enum_decl = llvm::dyn_cast<clang::EnumDecl>(d);
+        enum_decl && !decl_ids_.contains(GetID(enum_decl))) {
+      parts.push_back(VisitEnumDecl(enum_decl));
+    }
+  }
+  return arena_.New<Concat>(std::move(parts));
 }
 
 RsExpr *Converter::EmitRustStructOrUnion(clang::RecordDecl *decl) {
   std::vector<RsExpr *> parts;
-  // Enums and static variables. In rust they live outside the record
   for (auto *d : decl->decls()) {
-    if (auto *enum_decl = llvm::dyn_cast<clang::EnumDecl>(d)) {
-      parts.push_back(VisitEnumDecl(enum_decl));
-    }
     if (auto *var_decl = clang::dyn_cast<clang::VarDecl>(d)) {
       parts.push_back(VisitVarDecl(var_decl));
     }
@@ -1272,11 +1282,13 @@ RsExpr *Converter::VisitCXXRecordDecl(clang::CXXRecordDecl *decl) {
   decl->dump(log());
 
   Mapper::AddRuleForUserDefinedType(decl);
-  if (!IsConvertibleCXXRecordDecl(decl)) {
-    return arena_.New<Verbatim>("");
-  }
 
   std::vector<RsExpr *> parts;
+  parts.push_back(EmitNestedEnums(decl));
+  if (!IsConvertibleCXXRecordDecl(decl)) {
+    return arena_.New<Concat>(std::move(parts));
+  }
+
   if (decl->isStruct() || decl->isClass()) {
     for (auto c : GetTemplateInstantiatedCtors(decl)) {
       if (!decl_ids_.contains(GetID(c))) {

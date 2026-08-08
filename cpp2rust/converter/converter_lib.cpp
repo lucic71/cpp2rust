@@ -8,6 +8,7 @@
 #include <clang/AST/ParentMapContext.h>
 #include <clang/AST/RecordLayout.h>
 #include <clang/Basic/SourceManager.h>
+#include <llvm/Support/ErrorHandling.h>
 
 #include <algorithm>
 #include <array>

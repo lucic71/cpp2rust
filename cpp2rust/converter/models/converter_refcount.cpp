@@ -1891,10 +1891,11 @@ GetConstantUnionBytes(clang::ASTContext &ctx, const clang::InitListExpr *expr) {
   if (!field) {
     return std::nullopt;
   }
-  const auto *init = expr->getInit(0)->IgnoreParenImpCasts();
+  const auto *init = expr->getInit(0)->IgnoreParens();
   uint64_t union_size = ctx.getTypeSize(expr->getType()) / 8;
   std::vector<uint8_t> bytes;
-  if (const auto *str = clang::dyn_cast<clang::StringLiteral>(init);
+  if (const auto *str =
+          clang::dyn_cast<clang::StringLiteral>(init->IgnoreImpCasts());
       str && str->getCharByteWidth() == 1) {
     if (!field->getType()->isArrayType()) {
       return std::nullopt;
