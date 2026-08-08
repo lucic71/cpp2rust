@@ -636,10 +636,15 @@ pub fn fclose_refcount(a0: Ptr<CFile>) -> i32 {
     r
 }
 
-pub fn popen_refcount(_a0: Ptr<u8>, _a1: Ptr<u8>) -> Ptr<CFile> {
-    panic!("popen: popen streams are not supported in the refcount model");
+pub fn popen_refcount(a0: Ptr<u8>, a1: Ptr<u8>) -> Ptr<CFile> {
+    match CFile::popen(&a0.to_rust_string(), &a1.to_rust_string()) {
+        Some(__f) => Ptr::alloc(__f),
+        None => Ptr::<CFile>::null(),
+    }
 }
 
-pub fn pclose_refcount(_a0: Ptr<CFile>) -> i32 {
-    panic!("pclose: popen streams are not supported in the refcount model");
+pub fn pclose_refcount(a0: Ptr<CFile>) -> i32 {
+    let r = a0.with(|f| f.pclose());
+    a0.delete();
+    r
 }

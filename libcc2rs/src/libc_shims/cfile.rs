@@ -2,6 +2,13 @@
 // Distributed under the MIT license that can be found in the LICENSE file.
 
 use crate::FdRegistry;
+use std::cell::RefCell;
+use std::collections::BTreeMap;
+
+thread_local! {
+    static POPEN_CHILDREN: RefCell<BTreeMap<i32, std::process::Child>> =
+        RefCell::new(BTreeMap::new());
+}
 
 pub struct CFile {
     pub fd: i32,
@@ -92,6 +99,63 @@ impl CFile {
         }
         crate::cpp2rust_errno().write(Errno::EEXIST as i32);
         None
+    }
+
+    pub fn popen(command: &str, mode: &str) -> Option<CFile> {
+        use std::process::{Command, Stdio};
+
+        let reading = match mode.chars().next() {
+            Some('r') => true,
+            Some('w') => false,
+            _ => panic!("popen: unsupported mode {:?}", mode),
+        };
+
+        let mut cmd = Command::new("/bin/sh");
+        cmd.arg("-c").arg(command);
+        if reading {
+            cmd.stdout(Stdio::piped());
+        } else {
+            cmd.stdin(Stdio::piped());
+        }
+
+        let mut child = match cmd.spawn() {
+            Ok(child) => child,
+            Err(e) => {
+                let errno = e.raw_os_error().unwrap_or(nix::errno::Errno::ENOENT as i32);
+                crate::cpp2rust_errno().write(errno);
+                return None;
+            }
+        };
+
+        let pipe: std::os::fd::OwnedFd = if reading {
+            child.stdout.take()?.into()
+        } else {
+            child.stdin.take()?.into()
+        };
+
+        let fd = FdRegistry::register(pipe);
+        POPEN_CHILDREN.with(|children| children.borrow_mut().insert(fd, child));
+        Some(CFile::new(fd))
+    }
+
+    pub fn pclose(&self) -> i32 {
+        use std::os::unix::process::ExitStatusExt;
+
+        let child = POPEN_CHILDREN.with(|children| children.borrow_mut().remove(&self.fd));
+        FdRegistry::close(self.fd);
+
+        let Some(mut child) = child else {
+            crate::cpp2rust_errno().write(nix::errno::Errno::ECHILD as i32);
+            return -1;
+        };
+        match child.wait() {
+            Ok(status) => status.into_raw(),
+            Err(e) => {
+                let errno = e.raw_os_error().unwrap_or(nix::errno::Errno::ECHILD as i32);
+                crate::cpp2rust_errno().write(errno);
+                -1
+            }
+        }
     }
 
     pub fn read(&mut self, buf: &mut [u8]) -> usize {
