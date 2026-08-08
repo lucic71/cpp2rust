@@ -2192,7 +2192,12 @@ bool Converter::GetFmtArg(clang::Expr *arg, std::string &fmt,
   } else if (arg_str.contains("std::dec")) {
     fmt_trait = "";
   } else if (arg_str.contains("Setw")) {
-    auto *width_call = clang::dyn_cast<clang::CallExpr>(arg->IgnoreImplicit());
+    auto width_expr = arg->IgnoreImplicit();
+    if (auto ctor = clang::dyn_cast<clang::CXXConstructExpr>(width_expr);
+        ctor && ctor->getNumArgs() == 1) {
+      width_expr = ctor->getArg(0)->IgnoreImplicit();
+    }
+    auto width_call = clang::dyn_cast<clang::CallExpr>(width_expr);
     assert(width_call && "Setw expression is not a call");
     clang::Expr::EvalResult width;
     bool is_const_width = width_call->getArg(0)->EvaluateAsInt(width, ctx_);
