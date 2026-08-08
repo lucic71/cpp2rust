@@ -1032,10 +1032,6 @@ RsExpr *ConverterRefCount::HoistPtrUse(RsExpr *node) {
   if (!closure) {
     return nullptr;
   }
-  if (auto *inner = HoistPtrUse(closure->body)) {
-    closure->body = inner;
-    return nullptr;
-  }
   if (auto *body_with = clang::dyn_cast<PtrWith>(closure->body)) {
     if (body_with->is_mut &&
         UsesClosureParam(body_with->object, closure->param) &&
@@ -1043,11 +1039,19 @@ RsExpr *ConverterRefCount::HoistPtrUse(RsExpr *node) {
       auto *obj_read = arena_.New<PtrWith>(
           with->object, with->is_mut,
           arena_.New<Closure>(closure->param, nullptr, body_with->object));
-      return Braces(
-          Cat(Text(keyword::kLet), Text("__obj"), Text(token::kAssign),
-              obj_read, Text(token::kSemiColon),
-              arena_.New<PtrWith>(Text("__obj"), true, body_with->closure)));
+      RsExpr *inner_with =
+          arena_.New<PtrWith>(Text("__obj"), true, body_with->closure);
+      if (auto *hoisted = HoistPtrUse(inner_with)) {
+        inner_with = hoisted;
+      }
+      return Braces(Cat(Text(keyword::kLet), Text("__obj"),
+                        Text(token::kAssign), obj_read, Text(token::kSemiColon),
+                        inner_with));
     }
+  }
+  if (auto *inner = HoistPtrUse(closure->body)) {
+    closure->body = inner;
+    return nullptr;
   }
   if (!with->is_mut) {
     return nullptr;
