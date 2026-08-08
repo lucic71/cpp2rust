@@ -146,7 +146,7 @@ pub unsafe fn test_memmove_3() {
     ];
     let mut r: *mut ::libc::c_void = {
         if 4_usize != 0 {
-            ::std::ptr::copy_nonoverlapping(
+            ::std::ptr::copy(
                 ((buf.as_mut_ptr() as *const libc::c_char) as *const ::libc::c_void),
                 ((buf.as_mut_ptr().offset(((1) as isize)) as *mut libc::c_char)
                     as *mut ::libc::c_void),

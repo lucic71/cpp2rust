@@ -145,11 +145,16 @@ pub(crate) fn slice_write_bytes<S: ByteRepr>(slice: &mut [S], byte_offset: usize
     let elem_size = S::byte_size();
     let mut elem_buf = vec![0u8; elem_size];
     let first_elem = byte_offset / elem_size;
-    let num_elem = data.len().div_ceil(elem_size);
+    let last_elem = (byte_offset + data.len()).div_ceil(elem_size);
     if first_elem >= slice.len() {
         panic!("ub: OOB write");
     }
-    for (elem_idx, elem) in slice.iter_mut().enumerate().skip(first_elem).take(num_elem) {
+    for (elem_idx, elem) in slice
+        .iter_mut()
+        .enumerate()
+        .skip(first_elem)
+        .take(last_elem - first_elem)
+    {
         let elem_byte_start = elem_idx * elem_size;
         elem.to_bytes(&mut elem_buf);
         let overlap_start = byte_offset.max(elem_byte_start) - elem_byte_start;

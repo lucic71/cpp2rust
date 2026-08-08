@@ -31,7 +31,7 @@ unsafe fn f3(a0: *const u8, a1: *const u8, a2: usize) -> i32 {
 
 unsafe fn f4(a0: *mut u8, a1: *const u8, a2: usize) -> *mut u8 {
     if a2 != 0 {
-        ::std::ptr::copy_nonoverlapping(a1, a0, a2 as usize)
+        ::std::ptr::copy(a1, a0, a2 as usize)
     }
     a0
 }
