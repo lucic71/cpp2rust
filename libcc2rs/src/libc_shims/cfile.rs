@@ -10,10 +10,15 @@ thread_local! {
         RefCell::new(BTreeMap::new());
 }
 
+const RBUF_SIZE: usize = 4096;
+
 pub struct CFile {
     pub fd: i32,
     pub eof: bool,
     pub err: bool,
+    rbuf: Box<[u8; RBUF_SIZE]>,
+    rlen: usize,
+    rpos: usize,
 }
 
 impl CFile {
@@ -22,7 +27,51 @@ impl CFile {
             fd,
             eof: false,
             err: false,
+            rbuf: Box::new([0; RBUF_SIZE]),
+            rlen: 0,
+            rpos: 0,
         }
+    }
+
+    fn unread(&self) -> usize {
+        self.rlen - self.rpos
+    }
+
+    fn fill(&mut self) -> usize {
+        let fd = self.fd;
+        self.rlen = 0;
+        self.rpos = 0;
+        loop {
+            let buf = &mut self.rbuf[..];
+            match FdRegistry::with_fd(fd, |b| nix::unistd::read(b, buf)) {
+                Ok(0) => {
+                    self.eof = true;
+                    return 0;
+                }
+                Ok(k) => {
+                    self.rlen = k;
+                    return k;
+                }
+                Err(nix::errno::Errno::EINTR) => {}
+                Err(e) => {
+                    self.err = true;
+                    crate::cpp2rust_errno().write(e as i32);
+                    return 0;
+                }
+            }
+        }
+    }
+
+    fn discard_read_buffer(&mut self) {
+        let unread = self.unread();
+        if unread > 0 {
+            let fd = self.fd;
+            let _ = FdRegistry::with_fd(fd, |b| {
+                nix::unistd::lseek(b, -(unread as i64), nix::unistd::Whence::SeekCur)
+            });
+        }
+        self.rlen = 0;
+        self.rpos = 0;
     }
 
     pub fn open(path: &str, mode: &str) -> Option<CFile> {
@@ -161,24 +210,19 @@ impl CFile {
     pub fn read(&mut self, buf: &mut [u8]) -> usize {
         let mut n = 0;
         while n < buf.len() {
-            match FdRegistry::with_fd(self.fd, |b| nix::unistd::read(b, &mut buf[n..])) {
-                Ok(0) => {
-                    self.eof = true;
-                    break;
-                }
-                Ok(k) => n += k,
-                Err(nix::errno::Errno::EINTR) => {}
-                Err(e) => {
-                    self.err = true;
-                    crate::cpp2rust_errno().write(e as i32);
-                    break;
-                }
+            if self.rpos == self.rlen && self.fill() == 0 {
+                break;
             }
+            let k = self.unread().min(buf.len() - n);
+            buf[n..n + k].copy_from_slice(&self.rbuf[self.rpos..self.rpos + k]);
+            self.rpos += k;
+            n += k;
         }
         n
     }
 
     pub fn write(&mut self, buf: &[u8]) -> usize {
+        self.discard_read_buffer();
         let mut n = 0;
         while n < buf.len() {
             match FdRegistry::with_fd(self.fd, |b| nix::unistd::write(b, &buf[n..])) {
@@ -205,6 +249,12 @@ impl CFile {
             2 => nix::unistd::Whence::SeekEnd,
             other => panic!("fseek: unsupported whence {}", other),
         };
+        let offset = match whence {
+            1 => offset - self.unread() as i64,
+            _ => offset,
+        };
+        self.rlen = 0;
+        self.rpos = 0;
         match FdRegistry::with_fd(self.fd, |b| nix::unistd::lseek(b, offset, w)) {
             Ok(off) => {
                 self.eof = false;
@@ -221,7 +271,7 @@ impl CFile {
         match FdRegistry::with_fd(self.fd, |b| {
             nix::unistd::lseek(b, 0, nix::unistd::Whence::SeekCur)
         }) {
-            Ok(off) => off,
+            Ok(off) => off - self.unread() as i64,
             Err(e) => {
                 crate::cpp2rust_errno().write(e as i32);
                 -1
