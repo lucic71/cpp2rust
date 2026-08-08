@@ -238,7 +238,10 @@ impl CFile {
     }
 
     pub fn close(&self) -> i32 {
-        FdRegistry::close(self.fd)
+        match self.fd {
+            0..=2 => 0,
+            fd => FdRegistry::close(fd),
+        }
     }
 }
 
