@@ -1,14 +1,13 @@
 // Copyright (c) 2022-present INESC-ID.
 // Distributed under the MIT license that can be found in the LICENSE file.
 
-// panic: refcount
+// panic-ub: refcount
 #include <cstdint>
 
-// Read past the end of a u32 viewed as u8
+// Write past the end of a u32 viewed as u8
 int main() {
   uint32_t val = 0x04030201;
   uint8_t *bytes = reinterpret_cast<uint8_t *>(&val);
-  uint8_t x = bytes[4];
-  (void)x;
+  bytes[4] = 0xFF;
   return 0;
 }

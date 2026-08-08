@@ -1,7 +1,7 @@
 // Copyright (c) 2022-present INESC-ID.
 // Distributed under the MIT license that can be found in the LICENSE file.
 
-// panic: refcount
+// panic-ub: refcount
 #include <cstdint>
 
 // Reinterpret a single u8 as u32 - only 1 byte available, need 4.
