@@ -718,6 +718,9 @@ RsExpr *ConverterRefCount::ConvertRecordMethods(clang::CXXRecordDecl *decl) {
 
 Fn::Receiver
 ConverterRefCount::GetMethodReceiver(const clang::CXXMethodDecl *decl) {
+  if (decl->isVirtual()) {
+    return Converter::GetMethodReceiver(decl);
+  }
   return Fn::Receiver::Ref;
 }
 
