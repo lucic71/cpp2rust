@@ -68,6 +68,166 @@ fn main_0() -> i32 {
             != 0)
     );
     assert!((((((*buf.borrow())[(6) as usize] as i32) == 0) as i32) != 0));
+    assert!(
+        ((({
+            let __fmt: String = Ptr::from_string_literal(b"%.*s\0")
+                .to_c_string_iterator()
+                .map(|b| b as char)
+                .collect();
+            let __b: Vec<u8> =
+                libcc2rs::format_c(&__fmt, &[(3).into(), ((*high.borrow()).clone()).into()])
+                    .chars()
+                    .map(|c| c as u32 as u8)
+                    .collect();
+            if 32usize > 0 {
+                let __n = ::std::cmp::min(__b.len(), 32usize - 1);
+                (buf.as_pointer() as Ptr<u8>).with_slice_mut(__n + 1, |__dst| {
+                    __dst[..__n].copy_from_slice(&__b[..__n]);
+                    __dst[__n] = 0;
+                });
+            }
+            __b.len() as i32
+        } == 3) as i32)
+            != 0)
+    );
+    assert!(
+        (((((buf.as_pointer() as Ptr::<u8>) as Ptr::<u8>)
+            .to_any()
+            .memcmp(
+                &Ptr::from_string_literal(b"\x81\xff\xc4\0").to_any(),
+                3_usize
+            )
+            == 0) as i32)
+            != 0)
+    );
+    assert!((((((*buf.borrow())[(3) as usize] as i32) == 0) as i32) != 0));
+    assert!(
+        ((({
+            let __fmt: String = Ptr::from_string_literal(b"[%.*s]\0")
+                .to_c_string_iterator()
+                .map(|b| b as char)
+                .collect();
+            let __b: Vec<u8> =
+                libcc2rs::format_c(&__fmt, &[(2).into(), ((*high.borrow()).clone()).into()])
+                    .chars()
+                    .map(|c| c as u32 as u8)
+                    .collect();
+            if 32usize > 0 {
+                let __n = ::std::cmp::min(__b.len(), 32usize - 1);
+                (buf.as_pointer() as Ptr<u8>).with_slice_mut(__n + 1, |__dst| {
+                    __dst[..__n].copy_from_slice(&__b[..__n]);
+                    __dst[__n] = 0;
+                });
+            }
+            __b.len() as i32
+        } == 4) as i32)
+            != 0)
+    );
+    assert!(
+        (((((buf.as_pointer() as Ptr::<u8>) as Ptr::<u8>)
+            .to_any()
+            .memcmp(&Ptr::from_string_literal(b"[\x81\xff]\0").to_any(), 4_usize)
+            == 0) as i32)
+            != 0)
+    );
+    assert!(
+        ((({
+            let __fmt: String = Ptr::from_string_literal(b"%.2s\0")
+                .to_c_string_iterator()
+                .map(|b| b as char)
+                .collect();
+            let __b: Vec<u8> = libcc2rs::format_c(&__fmt, &[((*high.borrow()).clone()).into()])
+                .chars()
+                .map(|c| c as u32 as u8)
+                .collect();
+            if 32usize > 0 {
+                let __n = ::std::cmp::min(__b.len(), 32usize - 1);
+                (buf.as_pointer() as Ptr<u8>).with_slice_mut(__n + 1, |__dst| {
+                    __dst[..__n].copy_from_slice(&__b[..__n]);
+                    __dst[__n] = 0;
+                });
+            }
+            __b.len() as i32
+        } == 2) as i32)
+            != 0)
+    );
+    assert!(
+        (((((buf.as_pointer() as Ptr::<u8>) as Ptr::<u8>)
+            .to_any()
+            .memcmp(&Ptr::from_string_literal(b"\x81\xff\0").to_any(), 2_usize)
+            == 0) as i32)
+            != 0)
+    );
+    assert!(
+        ((({
+            let __fmt: String = Ptr::from_string_literal(b"%.16s\0")
+                .to_c_string_iterator()
+                .map(|b| b as char)
+                .collect();
+            let __b: Vec<u8> = libcc2rs::format_c(&__fmt, &[((*high.borrow()).clone()).into()])
+                .chars()
+                .map(|c| c as u32 as u8)
+                .collect();
+            if 32usize > 0 {
+                let __n = ::std::cmp::min(__b.len(), 32usize - 1);
+                (buf.as_pointer() as Ptr<u8>).with_slice_mut(__n + 1, |__dst| {
+                    __dst[..__n].copy_from_slice(&__b[..__n]);
+                    __dst[__n] = 0;
+                });
+            }
+            __b.len() as i32
+        } == 3) as i32)
+            != 0)
+    );
+    assert!(
+        (((((buf.as_pointer() as Ptr::<u8>) as Ptr::<u8>)
+            .to_any()
+            .memcmp(
+                &Ptr::from_string_literal(b"\x81\xff\xc4\0").to_any(),
+                3_usize
+            )
+            == 0) as i32)
+            != 0)
+    );
+    let unterminated: Value<Box<[u8]>> = Rc::new(RefCell::new(Box::new([
+        ((b'\x81' as i32) as u8),
+        ((b'\xff' as i32) as u8),
+        ((b'\xc4' as i32) as u8),
+    ])));
+    assert!(
+        ((({
+            let __fmt: String = Ptr::from_string_literal(b"%.*s\0")
+                .to_c_string_iterator()
+                .map(|b| b as char)
+                .collect();
+            let __b: Vec<u8> = libcc2rs::format_c(
+                &__fmt,
+                &[(3).into(), (unterminated.as_pointer() as Ptr<u8>).into()],
+            )
+            .chars()
+            .map(|c| c as u32 as u8)
+            .collect();
+            if 32usize > 0 {
+                let __n = ::std::cmp::min(__b.len(), 32usize - 1);
+                (buf.as_pointer() as Ptr<u8>).with_slice_mut(__n + 1, |__dst| {
+                    __dst[..__n].copy_from_slice(&__b[..__n]);
+                    __dst[__n] = 0;
+                });
+            }
+            __b.len() as i32
+        } == 3) as i32)
+            != 0)
+    );
+    assert!(
+        (((((buf.as_pointer() as Ptr::<u8>) as Ptr::<u8>)
+            .to_any()
+            .memcmp(
+                &Ptr::from_string_literal(b"\x81\xff\xc4\0").to_any(),
+                3_usize
+            )
+            == 0) as i32)
+            != 0)
+    );
     let path: Value<Ptr<u8>> = Rc::new(RefCell::new(Ptr::from_string_literal(
         b"cpp2rust_high_bytes.tmp\0",
     )));
@@ -83,12 +243,14 @@ fn main_0() -> i32 {
     assert!((((!((*fp.borrow()).is_null())) as i32) != 0));
     assert!(
         (((({
+            let _va0 = (*high.borrow()).clone();
+            let _va3 = (*high.borrow()).clone();
             emit_0(
                 (*fp.borrow()).clone(),
-                Ptr::from_string_literal(b"%s%c\n\0"),
-                &[((*high.borrow()).clone()).into(), (128).into()],
+                Ptr::from_string_literal(b"%s%c%.*s\n\0"),
+                &[(_va0).into(), (128).into(), (2).into(), (_va3).into()],
             )
-        }) == 5) as i32)
+        }) == 7) as i32)
             != 0)
     );
     assert!((((libcc2rs::fclose_refcount((*fp.borrow()).clone()) == 0) as i32) != 0));
@@ -125,15 +287,15 @@ fn main_0() -> i32 {
             let __a2 = 16usize;
             let __a3 = (*fp.borrow()).clone();
             libcc2rs::fread_refcount(__a0, __a1, __a2, __a3)
-        } == 5_usize) as i32)
+        } == 7_usize) as i32)
             != 0)
     );
     assert!(
         (((((rd.as_pointer() as Ptr::<u8>) as Ptr::<u8>)
             .to_any()
             .memcmp(
-                &Ptr::from_string_literal(b"\x81\xff\xc4\x80\n\0").to_any(),
-                5_usize
+                &Ptr::from_string_literal(b"\x81\xff\xc4\x80\x81\xff\n\0").to_any(),
+                7_usize
             )
             == 0) as i32)
             != 0)

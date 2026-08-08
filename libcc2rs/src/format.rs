@@ -61,13 +61,13 @@ fn expand_star_params(fmt: &str, va: &[VaArg]) -> (String, Vec<VaArg>) {
 
 pub fn format_c(fmt: &str, va: &[VaArg]) -> String {
     let (fmt, va) = expand_star_params(fmt, va);
-    let elements = match parse_format_string(&fmt) {
+    let mut elements = match parse_format_string(&fmt) {
         Ok(elements) => elements,
         Err(e) => panic!("format_c: cannot parse {fmt:?}: {e:?}"),
     };
     let mut args: Vec<Box<dyn Printf>> = Vec::new();
     let mut pos = 0;
-    for element in &elements {
+    for element in &mut elements {
         if let FormatElement::Format(spec) = element {
             if spec.conversion_type == ConversionType::PercentSign {
                 continue;
@@ -95,31 +95,47 @@ pub fn format_c(fmt: &str, va: &[VaArg]) -> String {
                     }
                 },
                 ConversionType::Char => Box::new(i32::get(arg) as u8 as char),
-                ConversionType::String => match arg {
-                    VaArg::Ptr(v) => Box::new(
-                        v.reinterpret_cast::<u8>()
-                            .to_c_string_iterator()
-                            .map(|b| b as char)
-                            .collect::<String>(),
-                    ),
-                    VaArg::RawPtr(v) => {
-                        let p = *v as *const u8;
-                        let len = match spec.precision {
-                            NumericParam::Literal(n) if n >= 0 && n != i32::MAX => {
-                                let n = n as usize;
-                                (0..n).position(|i| unsafe { *p.add(i) } == 0).unwrap_or(n)
+                ConversionType::String => {
+                    // C measures %s precision in bytes of the source string, and
+                    // %.*s need not be NUL-terminated. Apply it here on the raw
+                    // bytes and clear it afterwards: the formatter measures its
+                    // own precision against the UTF-8 length of the latin-1
+                    // decoded String, where every source byte >= 0x80 costs two.
+                    let limit = match spec.precision {
+                        NumericParam::Literal(n) if n >= 0 && n != i32::MAX => Some(n as usize),
+                        _ => None,
+                    };
+                    spec.precision = NumericParam::Literal(i32::MAX);
+                    match arg {
+                        VaArg::Ptr(v) => {
+                            let it = v.reinterpret_cast::<u8>().to_c_string_iterator();
+                            match limit {
+                                Some(n) => {
+                                    Box::new(it.take(n).map(|b| b as char).collect::<String>())
+                                        as Box<dyn Printf>
+                                }
+                                None => Box::new(it.map(|b| b as char).collect::<String>())
+                                    as Box<dyn Printf>,
                             }
-                            _ => (0..).position(|i| unsafe { *p.add(i) } == 0).unwrap(),
-                        };
-                        Box::new(
-                            unsafe { std::slice::from_raw_parts(p, len) }
-                                .iter()
-                                .map(|&b| b as char)
-                                .collect::<String>(),
-                        )
+                        }
+                        VaArg::RawPtr(v) => {
+                            let p = *v as *const u8;
+                            let len = match limit {
+                                Some(n) => {
+                                    (0..n).position(|i| unsafe { *p.add(i) } == 0).unwrap_or(n)
+                                }
+                                None => (0..).position(|i| unsafe { *p.add(i) } == 0).unwrap(),
+                            };
+                            Box::new(
+                                unsafe { std::slice::from_raw_parts(p, len) }
+                                    .iter()
+                                    .map(|&b| b as char)
+                                    .collect::<String>(),
+                            ) as Box<dyn Printf>
+                        }
+                        _ => panic!("format_c: %s expects a string argument"),
                     }
-                    _ => panic!("format_c: %s expects a string argument"),
-                },
+                }
                 ConversionType::DecFloatLower
                 | ConversionType::DecFloatUpper
                 | ConversionType::SciFloatLower

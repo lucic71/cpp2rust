@@ -70,18 +70,194 @@ unsafe fn main_0() -> i32 {
             != 0)
     );
     assert!(((((buf[((6) as usize)] as i32) == (0)) as i32) != 0));
+    assert!(
+        ((((unsafe {
+            libc::snprintf(
+                buf.as_mut_ptr() as *mut libc::c_char,
+                ::std::mem::size_of::<[libc::c_char; 32]>() as usize,
+                (c"%.*s".as_ptr().cast_mut()).cast_const() as *const libc::c_char,
+                (3),
+                (high),
+            )
+        }) == (3)) as i32)
+            != 0)
+    );
+    assert!(
+        (((({
+            let sa = core::slice::from_raw_parts(
+                ((buf.as_mut_ptr() as *const libc::c_char) as *const ::libc::c_void) as *const u8,
+                3_usize as usize,
+            );
+            let sb = core::slice::from_raw_parts(
+                ((c"\x81\xff\xc4".as_ptr().cast_mut() as *const libc::c_char)
+                    as *const ::libc::c_void) as *const u8,
+                3_usize as usize,
+            );
+            let mut diff = 0_i32;
+            for (x, y) in sa.iter().zip(sb.iter()) {
+                if x != y {
+                    diff = (*x as i32) - (*y as i32);
+                    break;
+                }
+            }
+            diff
+        }) == (0)) as i32)
+            != 0)
+    );
+    assert!(((((buf[((3) as usize)] as i32) == (0)) as i32) != 0));
+    assert!(
+        ((((unsafe {
+            libc::snprintf(
+                buf.as_mut_ptr() as *mut libc::c_char,
+                ::std::mem::size_of::<[libc::c_char; 32]>() as usize,
+                (c"[%.*s]".as_ptr().cast_mut()).cast_const() as *const libc::c_char,
+                (2),
+                (high),
+            )
+        }) == (4)) as i32)
+            != 0)
+    );
+    assert!(
+        (((({
+            let sa = core::slice::from_raw_parts(
+                ((buf.as_mut_ptr() as *const libc::c_char) as *const ::libc::c_void) as *const u8,
+                4_usize as usize,
+            );
+            let sb = core::slice::from_raw_parts(
+                ((c"[\x81\xff]".as_ptr().cast_mut() as *const libc::c_char)
+                    as *const ::libc::c_void) as *const u8,
+                4_usize as usize,
+            );
+            let mut diff = 0_i32;
+            for (x, y) in sa.iter().zip(sb.iter()) {
+                if x != y {
+                    diff = (*x as i32) - (*y as i32);
+                    break;
+                }
+            }
+            diff
+        }) == (0)) as i32)
+            != 0)
+    );
+    assert!(
+        ((((unsafe {
+            libc::snprintf(
+                buf.as_mut_ptr() as *mut libc::c_char,
+                ::std::mem::size_of::<[libc::c_char; 32]>() as usize,
+                (c"%.2s".as_ptr().cast_mut()).cast_const() as *const libc::c_char,
+                (high),
+            )
+        }) == (2)) as i32)
+            != 0)
+    );
+    assert!(
+        (((({
+            let sa = core::slice::from_raw_parts(
+                ((buf.as_mut_ptr() as *const libc::c_char) as *const ::libc::c_void) as *const u8,
+                2_usize as usize,
+            );
+            let sb = core::slice::from_raw_parts(
+                ((c"\x81\xff".as_ptr().cast_mut() as *const libc::c_char) as *const ::libc::c_void)
+                    as *const u8,
+                2_usize as usize,
+            );
+            let mut diff = 0_i32;
+            for (x, y) in sa.iter().zip(sb.iter()) {
+                if x != y {
+                    diff = (*x as i32) - (*y as i32);
+                    break;
+                }
+            }
+            diff
+        }) == (0)) as i32)
+            != 0)
+    );
+    assert!(
+        ((((unsafe {
+            libc::snprintf(
+                buf.as_mut_ptr() as *mut libc::c_char,
+                ::std::mem::size_of::<[libc::c_char; 32]>() as usize,
+                (c"%.16s".as_ptr().cast_mut()).cast_const() as *const libc::c_char,
+                (high),
+            )
+        }) == (3)) as i32)
+            != 0)
+    );
+    assert!(
+        (((({
+            let sa = core::slice::from_raw_parts(
+                ((buf.as_mut_ptr() as *const libc::c_char) as *const ::libc::c_void) as *const u8,
+                3_usize as usize,
+            );
+            let sb = core::slice::from_raw_parts(
+                ((c"\x81\xff\xc4".as_ptr().cast_mut() as *const libc::c_char)
+                    as *const ::libc::c_void) as *const u8,
+                3_usize as usize,
+            );
+            let mut diff = 0_i32;
+            for (x, y) in sa.iter().zip(sb.iter()) {
+                if x != y {
+                    diff = (*x as i32) - (*y as i32);
+                    break;
+                }
+            }
+            diff
+        }) == (0)) as i32)
+            != 0)
+    );
+    let unterminated: [libc::c_char; 3] = [
+        ((b'\x81' as i32) as libc::c_char),
+        ((b'\xff' as i32) as libc::c_char),
+        ((b'\xc4' as i32) as libc::c_char),
+    ];
+    assert!(
+        ((((unsafe {
+            libc::snprintf(
+                buf.as_mut_ptr() as *mut libc::c_char,
+                ::std::mem::size_of::<[libc::c_char; 32]>() as usize,
+                (c"%.*s".as_ptr().cast_mut()).cast_const() as *const libc::c_char,
+                (3),
+                (unterminated.as_ptr()),
+            )
+        }) == (3)) as i32)
+            != 0)
+    );
+    assert!(
+        (((({
+            let sa = core::slice::from_raw_parts(
+                ((buf.as_mut_ptr() as *const libc::c_char) as *const ::libc::c_void) as *const u8,
+                3_usize as usize,
+            );
+            let sb = core::slice::from_raw_parts(
+                ((c"\x81\xff\xc4".as_ptr().cast_mut() as *const libc::c_char)
+                    as *const ::libc::c_void) as *const u8,
+                3_usize as usize,
+            );
+            let mut diff = 0_i32;
+            for (x, y) in sa.iter().zip(sb.iter()) {
+                if x != y {
+                    diff = (*x as i32) - (*y as i32);
+                    break;
+                }
+            }
+            diff
+        }) == (0)) as i32)
+            != 0)
+    );
     let mut path: *const libc::c_char =
         (c"cpp2rust_high_bytes.tmp".as_ptr().cast_mut()).cast_const();
     let mut fp: *mut ::libc::FILE = libc::fopen(path, (c"wb".as_ptr().cast_mut()).cast_const());
     assert!((((!((fp).is_null())) as i32) != 0));
     assert!(
         ((((unsafe {
+            let _va0 = high;
+            let _va3 = high;
             emit_0(
                 fp,
-                (c"%s%c\n".as_ptr().cast_mut()).cast_const(),
-                &[(high).into(), (128).into()],
+                (c"%s%c%.*s\n".as_ptr().cast_mut()).cast_const(),
+                &[(_va0).into(), (128).into(), (2).into(), (_va3).into()],
             )
-        }) == (5)) as i32)
+        }) == (7)) as i32)
             != 0)
     );
     assert!(((((libcc2rs::fclose_unsafe(fp)) == (0)) as i32) != 0));
@@ -111,19 +287,19 @@ unsafe fn main_0() -> i32 {
             1_usize,
             ::std::mem::size_of::<[libc::c_char; 16]>(),
             fp
-        )) == (5_usize)) as i32)
+        )) == (7_usize)) as i32)
             != 0)
     );
     assert!(
         (((({
             let sa = core::slice::from_raw_parts(
                 ((rd.as_mut_ptr() as *const libc::c_char) as *const ::libc::c_void) as *const u8,
-                5_usize as usize,
+                7_usize as usize,
             );
             let sb = core::slice::from_raw_parts(
-                ((c"\x81\xff\xc4\x80\n".as_ptr().cast_mut() as *const libc::c_char)
+                ((c"\x81\xff\xc4\x80\x81\xff\n".as_ptr().cast_mut() as *const libc::c_char)
                     as *const ::libc::c_void) as *const u8,
-                5_usize as usize,
+                7_usize as usize,
             );
             let mut diff = 0_i32;
             for (x, y) in sa.iter().zip(sb.iter()) {
