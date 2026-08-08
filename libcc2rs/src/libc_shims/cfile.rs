@@ -49,19 +49,49 @@ impl CFile {
     }
 
     pub fn tmpfile() -> Option<CFile> {
+        use nix::errno::Errno;
         use nix::fcntl::OFlag;
         use nix::sys::stat::Mode;
+
+        let mode = Mode::S_IRUSR | Mode::S_IWUSR;
+
         match nix::fcntl::open(
             "/tmp",
             OFlag::O_TMPFILE | OFlag::O_RDWR | OFlag::O_EXCL,
-            Mode::S_IRUSR | Mode::S_IWUSR,
+            mode,
         ) {
-            Ok(ofd) => Some(CFile::new(FdRegistry::register(ofd))),
+            Ok(ofd) => return Some(CFile::new(FdRegistry::register(ofd))),
+            Err(Errno::EOPNOTSUPP) | Err(Errno::EISDIR) => {}
             Err(e) => {
                 crate::cpp2rust_errno().write(e as i32);
-                None
+                return None;
             }
         }
+
+        let pid = std::process::id();
+        let nanos = std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH)
+            .map_or(0, |d| d.subsec_nanos());
+        for seq in 0..32 {
+            let path = format!("/tmp/tmpf{pid:x}.{nanos:x}.{seq:x}");
+            match nix::fcntl::open(
+                path.as_str(),
+                OFlag::O_RDWR | OFlag::O_CREAT | OFlag::O_EXCL,
+                mode,
+            ) {
+                Ok(ofd) => {
+                    let _ = nix::unistd::unlink(path.as_str());
+                    return Some(CFile::new(FdRegistry::register(ofd)));
+                }
+                Err(Errno::EEXIST) => {}
+                Err(e) => {
+                    crate::cpp2rust_errno().write(e as i32);
+                    return None;
+                }
+            }
+        }
+        crate::cpp2rust_errno().write(Errno::EEXIST as i32);
+        None
     }
 
     pub fn read(&mut self, buf: &mut [u8]) -> usize {

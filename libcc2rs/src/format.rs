@@ -96,11 +96,6 @@ pub fn format_c(fmt: &str, va: &[VaArg]) -> String {
                 },
                 ConversionType::Char => Box::new(i32::get(arg) as u8 as char),
                 ConversionType::String => {
-                    // C measures %s precision in bytes of the source string, and
-                    // %.*s need not be NUL-terminated. Apply it here on the raw
-                    // bytes and clear it afterwards: the formatter measures its
-                    // own precision against the UTF-8 length of the latin-1
-                    // decoded String, where every source byte >= 0x80 costs two.
                     let limit = match spec.precision {
                         NumericParam::Literal(n) if n >= 0 && n != i32::MAX => Some(n as usize),
                         _ => None,
