@@ -73,10 +73,7 @@ fn main_0() -> i32 {
         let _ = ::std::io::Write::flush(&mut ::std::io::stdout());
     };
     {
-        println!(
-            "{}",
-            (({ fn2_1(s.as_pointer()) }).to_strong().as_pointer() as Ptr<u8>)
-        );
+        println!("{}", (({ fn2_1(s.as_pointer()) }).elems() as Ptr<u8>));
         let _ = ::std::io::Write::flush(&mut ::std::io::stdout());
     };
     let n: Value<i32> = Rc::new(RefCell::new({

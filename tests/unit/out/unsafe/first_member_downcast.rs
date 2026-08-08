@@ -32,6 +32,6 @@ unsafe fn main_0() -> i32 {
     let mut back: *mut derived = (b as *mut derived);
     assert!(((((back) == (d)) as i32) != 0));
     assert!((((((*back).value) == (7_usize)) as i32) != 0));
-    libcc2rs::free_unsafe(((d as *mut derived) as *mut ::libc::c_void));
+    libcc2rs::free_unsafe(((back as *mut derived) as *mut ::libc::c_void));
     return 0;
 }

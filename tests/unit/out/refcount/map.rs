@@ -409,6 +409,60 @@ fn main_0() -> i32 {
         });
         (*last.borrow_mut()) = (*pair.first().borrow());
     }
+    let owned: Value<BTreeMap<u32, Value<i32>>> = Rc::new(RefCell::new(BTreeMap::new()));
+    let through: Value<Ptr<BTreeMap<u32, Value<i32>>>> =
+        Rc::new(RefCell::new((owned.as_pointer())));
+    ((*through.borrow()).clone() as Ptr<BTreeMap<u32, Value<i32>>>)
+        .with_mut(|__v: &mut BTreeMap<u32, Value<i32>>| {
+            __v.entry(7_u32.clone())
+                .or_insert_with(|| Rc::new(RefCell::new(<i32>::default())))
+                .as_pointer()
+        })
+        .write(70);
+    assert!(
+        RefcountMapIter::find_key(
+            ((*through.borrow()).clone() as Ptr<BTreeMap<u32, Value<i32>>>),
+            &7_u32
+        ) != RefcountMapIter::end(((*through.borrow()).clone() as Ptr<BTreeMap<u32, Value<i32>>>))
+    );
+    {
+        let __rhs = ((((*through.borrow()).clone() as Ptr<BTreeMap<u32, Value<i32>>>)
+            .with_mut(|__v: &mut BTreeMap<u32, Value<i32>>| {
+                __v.entry(7_u32.clone())
+                    .or_insert_with(|| Rc::new(RefCell::new(<i32>::default())))
+                    .as_pointer()
+            })
+            .read())
+            + 1);
+        ((*through.borrow()).clone() as Ptr<BTreeMap<u32, Value<i32>>>)
+            .with_mut(|__v: &mut BTreeMap<u32, Value<i32>>| {
+                __v.entry(8_u32.clone())
+                    .or_insert_with(|| Rc::new(RefCell::new(<i32>::default())))
+                    .as_pointer()
+            })
+            .write(__rhs)
+    };
+    assert!(((*owned.borrow()).len() == 2_usize));
+    assert!(
+        (((owned.as_pointer() as Ptr<BTreeMap<u32, Value<i32>>>)
+            .with_mut(|__v: &mut BTreeMap<u32, Value<i32>>| {
+                __v.entry(7_u32.clone())
+                    .or_insert_with(|| Rc::new(RefCell::new(<i32>::default())))
+                    .as_pointer()
+            })
+            .read())
+            == 70)
+    );
+    assert!(
+        (((owned.as_pointer() as Ptr<BTreeMap<u32, Value<i32>>>)
+            .with_mut(|__v: &mut BTreeMap<u32, Value<i32>>| {
+                __v.entry(8_u32.clone())
+                    .or_insert_with(|| Rc::new(RefCell::new(<i32>::default())))
+                    .as_pointer()
+            })
+            .read())
+            == 71)
+    );
     (*k.borrow_mut()) = 0;
     let value_0: Ptr<u32> = (*m.borrow())
         .get(&((*k.borrow()) as i16))

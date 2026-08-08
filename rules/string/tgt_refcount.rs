@@ -122,7 +122,7 @@ fn f26(a0: Ptr<Vec<u8>>, a1: usize) -> Ptr<u8> {
     if a1 as usize >= a0.with(|__v: &Vec<u8>| __v.len().saturating_sub(1)) {
         panic!("out of bounds access")
     } else {
-        (a0.to_strong().as_pointer() as Ptr<u8>).offset(a1 as isize)
+        a0.elems().offset(a1 as isize)
     }
 }
 

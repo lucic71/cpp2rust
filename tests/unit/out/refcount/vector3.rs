@@ -53,13 +53,13 @@ fn main_0() -> i32 {
         .write(6);
     'loop_: for mut v2 in (v.as_pointer() as Ptr<Value<Vec<i32>>>) {
         let v2: Ptr<Vec<i32>> = (v2.read()).as_pointer();
-        'loop_: for mut i in (v2.to_strong().as_pointer() as Ptr<i32>) {
+        'loop_: for mut i in (v2.elems() as Ptr<i32>) {
             i.with_mut(|__v| __v.prefix_inc());
         }
     }
     'loop_: for mut v2 in (v.as_pointer() as Ptr<Value<Vec<i32>>>) {
         let v2: Ptr<Vec<i32>> = (v2.read()).as_pointer();
-        'loop_: for mut i in (v2.to_strong().as_pointer() as Ptr<i32>) {
+        'loop_: for mut i in (v2.elems() as Ptr<i32>) {
             let i: Value<i32> = Rc::new(RefCell::new((i.read()).clone()));
             {
                 println!("{}", ((*i.borrow()) + 3));

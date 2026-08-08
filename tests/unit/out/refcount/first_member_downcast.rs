@@ -72,6 +72,6 @@ fn main_0() -> i32 {
             != 0)
     );
     assert!(((((*back.borrow()).with(|__v| (*__v).value) == 7_usize) as i32) != 0));
-    libcc2rs::free_refcount(((*d.borrow()).clone() as Ptr<derived>).to_any().clone());
+    libcc2rs::free_refcount(((*back.borrow()).clone() as Ptr<derived>).to_any().clone());
     return 0;
 }

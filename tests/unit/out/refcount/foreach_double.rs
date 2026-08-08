@@ -70,7 +70,7 @@ fn main_0() -> i32 {
     });
     'loop_: for mut row in (m.as_pointer() as Ptr<Value<Vec<i32>>>) {
         let row: Ptr<Vec<i32>> = (row.read()).as_pointer();
-        'loop_: for mut col in (row.to_strong().as_pointer() as Ptr<i32>) {
+        'loop_: for mut col in (row.elems() as Ptr<i32>) {
             {
                 let __rhs = (col.read());
                 (*square.borrow_mut()) += __rhs

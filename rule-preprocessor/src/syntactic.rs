@@ -47,7 +47,10 @@ fn is_container_type(ty: &ast::Type) -> bool {
     path.path()
         .and_then(|p| p.segment())
         .and_then(|s| s.name_ref())
-        .is_some_and(|name| name.text() == "Vec" || name.text() == "Box")
+        .is_some_and(|name| {
+            let name = name.text();
+            name == "Vec" || name == "Box" || name == "BTreeMap" || name == "HashMap"
+        })
 }
 
 fn pointee_is_container(ty: &ast::Type) -> bool {

@@ -201,7 +201,7 @@ pub fn nested_emplace_move_5(bw: Ptr<Writer>) {
 pub fn self_ref_push_6(comps: Ptr<Vec<Chunk>>) {
     let comps: Value<Ptr<Vec<Chunk>>> = Rc::new(RefCell::new(comps));
     {
-        let a0_clone = (((*comps.borrow()).to_strong().as_pointer() as Ptr<Chunk>).read()).clone();
+        let a0_clone = (((*comps.borrow()).elems() as Ptr<Chunk>).read()).clone();
         (*comps.borrow()).with_mut(|__v: &mut Vec<Chunk>| __v.push(a0_clone))
     };
 }

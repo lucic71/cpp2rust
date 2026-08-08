@@ -366,6 +366,15 @@ ConverterRefCount::MaterializeTemp(const std::string &binding_name,
   return {binding, Text(std::format("{}.as_pointer()", binding_name))};
 }
 
+clang::QualType
+ConverterRefCount::PtrPointeeType(clang::CXXOperatorCallExpr *expr) {
+  auto container = expr->getArg(0)->getType().getNonReferenceType();
+  if (IsBoxedType(container)) {
+    return expr->getType().getNonReferenceType();
+  }
+  return container;
+}
+
 RsExpr *ConverterRefCount::ConvertPtrType(clang::QualType type) {
   RsExpr *inner = nullptr;
   // decays into Ptr; remove the outer type Vec<>
@@ -1206,7 +1215,7 @@ RsExpr *ConverterRefCount::VisitDeclRefExpr(clang::DeclRefExpr *expr) {
     if (isObject()) {
       if (IsBoxedType(ref->getPointeeType())) {
         computed_expr_type_ = ComputedExprType::FreshPointer;
-        return Cat(node, Text(".to_strong().as_pointer()"));
+        return arena_.New<PtrView>(node, ref->getPointeeType());
       }
     }
 
@@ -1494,7 +1503,7 @@ RsExpr *ConverterRefCount::VisitCallExpr(clang::CallExpr *expr) {
   }
 
   if (isObject()) {
-    return Cat(call, Text(".to_strong().as_pointer()"));
+    return arena_.New<PtrView>(call, ty.getNonReferenceType());
   }
 
   auto *node = wrap_bindings(call);
@@ -2812,8 +2821,7 @@ RsExpr *ConverterRefCount::ConvertCXXOperatorCallExpr(
       auto *idx = ConvertSubscriptIndex(expr->getArg(1));
       return arena_.New<Unary>(
           Unary::Op::Deref,
-          MethodCall(arena_.New<Cast>(object, ptr_type,
-                                      expr->getType().getNonReferenceType()),
+          MethodCall(arena_.New<Cast>(object, ptr_type, PtrPointeeType(expr)),
                      "offset", std::vector<RsExpr *>{idx},
                      /*is_mut=*/false));
     }
@@ -2825,8 +2833,7 @@ RsExpr *ConverterRefCount::ConvertCXXOperatorCallExpr(
       auto *ptr_type = ConvertPtrType(expr->getArg(0)->getType());
       auto *idx = ConvertSubscriptIndex(expr->getArg(1));
       offset =
-          MethodCall(arena_.New<Cast>(object, ptr_type,
-                                      expr->getType().getNonReferenceType()),
+          MethodCall(arena_.New<Cast>(object, ptr_type, PtrPointeeType(expr)),
                      "offset", std::vector<RsExpr *>{idx},
                      /*is_mut=*/false);
     }

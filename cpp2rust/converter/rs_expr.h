@@ -598,8 +598,7 @@ struct PtrView : Accessor {
   }
 
   std::string print() const override {
-    return object->print() +
-           (element ? ".to_strong().as_pointer()" : ".clone()");
+    return object->print() + (element ? ".elems()" : ".clone()");
   }
 
   clang::QualType view_type;

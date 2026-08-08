@@ -26,26 +26,27 @@ struct ReinterpretedView {
     elem_byte_size: usize,
 }
 
-struct FieldView<P, F> {
+struct FieldProjection<P, F> {
     parent: Ptr<P>,
     field_byte_offset: usize,
     get: fn(&P) -> &[F],
     get_mut: fn(&mut P) -> &mut [F],
 }
 
-trait FieldAccess<F> {
+trait Projection<F> {
     fn address(&self) -> usize;
     fn is_dangling(&self) -> bool;
     fn with_dyn(&self, index: usize, f: &mut dyn FnMut(&F));
     fn with_mut_dyn(&self, index: usize, f: &mut dyn FnMut(&mut F));
     fn read_bytes_dyn(&self, byte_offset: usize, buf: &mut [u8]);
     fn write_bytes_dyn(&self, byte_offset: usize, data: &[u8]);
+    fn len_dyn(&self) -> usize;
     fn total_byte_len_dyn(&self) -> usize;
     fn base_addr_dyn(&self) -> usize;
     fn widen_any(&self) -> Option<AnyPtr>;
 }
 
-impl<P: ByteRepr + 'static, F: ByteRepr> FieldAccess<F> for FieldView<P, F> {
+impl<P: ByteRepr + 'static, F: ByteRepr> Projection<F> for FieldProjection<P, F> {
     fn address(&self) -> usize {
         self.parent
             .kind
@@ -76,8 +77,12 @@ impl<P: ByteRepr + 'static, F: ByteRepr> FieldAccess<F> for FieldView<P, F> {
             .with_mut(|p| slice_write_bytes((self.get_mut)(p), byte_offset, data));
     }
 
+    fn len_dyn(&self) -> usize {
+        self.parent.with(|p| (self.get)(p).len())
+    }
+
     fn total_byte_len_dyn(&self) -> usize {
-        self.parent.with(|p| (self.get)(p).len()) * F::byte_size()
+        self.len_dyn() * F::byte_size()
     }
 
     fn base_addr_dyn(&self) -> usize {
@@ -93,11 +98,61 @@ impl<P: ByteRepr + 'static, F: ByteRepr> FieldAccess<F> for FieldView<P, F> {
     }
 }
 
-struct FieldOriginalAlloc<F> {
-    view: Rc<dyn FieldAccess<F>>,
+struct ElemsProjection<C, F> {
+    parent: Ptr<C>,
+    get: fn(&C) -> &[F],
+    get_mut: fn(&mut C) -> &mut [F],
 }
 
-impl<F: ByteRepr> FieldOriginalAlloc<F> {
+impl<C: ByteRepr + 'static, F: ByteRepr> Projection<F> for ElemsProjection<C, F> {
+    fn address(&self) -> usize {
+        self.parent.address()
+    }
+
+    fn is_dangling(&self) -> bool {
+        self.parent.kind.is_dangling()
+    }
+
+    fn with_dyn(&self, index: usize, f: &mut dyn FnMut(&F)) {
+        self.parent.with(|c| f(&(self.get)(c)[index]));
+    }
+
+    fn with_mut_dyn(&self, index: usize, f: &mut dyn FnMut(&mut F)) {
+        self.parent.with_mut(|c| f(&mut (self.get_mut)(c)[index]));
+    }
+
+    fn read_bytes_dyn(&self, byte_offset: usize, buf: &mut [u8]) {
+        self.parent
+            .with(|c| slice_read_bytes((self.get)(c), byte_offset, buf));
+    }
+
+    fn write_bytes_dyn(&self, byte_offset: usize, data: &[u8]) {
+        self.parent
+            .with_mut(|c| slice_write_bytes((self.get_mut)(c), byte_offset, data));
+    }
+
+    fn len_dyn(&self) -> usize {
+        self.parent.with(|c| (self.get)(c).len())
+    }
+
+    fn total_byte_len_dyn(&self) -> usize {
+        self.len_dyn() * F::byte_size()
+    }
+
+    fn base_addr_dyn(&self) -> usize {
+        self.parent.address()
+    }
+
+    fn widen_any(&self) -> Option<AnyPtr> {
+        None
+    }
+}
+
+struct ProjectedOriginalAlloc<F> {
+    view: Rc<dyn Projection<F>>,
+}
+
+impl<F: ByteRepr> ProjectedOriginalAlloc<F> {
     fn parent_bytes(&self, byte_offset: usize, len: usize) -> Option<Ptr<u8>> {
         if byte_offset + len <= self.view.total_byte_len_dyn() {
             return None;
@@ -107,7 +162,7 @@ impl<F: ByteRepr> FieldOriginalAlloc<F> {
     }
 }
 
-impl<F: ByteRepr> OriginalAlloc for FieldOriginalAlloc<F> {
+impl<F: ByteRepr> OriginalAlloc for ProjectedOriginalAlloc<F> {
     fn base_addr(&self) -> Option<usize> {
         Some(self.view.base_addr_dyn())
     }
@@ -140,6 +195,10 @@ impl<F: ByteRepr> OriginalAlloc for FieldOriginalAlloc<F> {
     }
 
     fn delete(&self) {
+        if let Some(parent) = self.view.widen_any() {
+            parent.reinterpret_cast::<u8>().delete_array();
+            return;
+        }
         panic!("ub: cannot delete a field pointer");
     }
 
@@ -158,7 +217,7 @@ enum PtrKind<T> {
     HeapArray(Weak<RefCell<Box<[T]>>>),
     Vec(Weak<RefCell<Vec<T>>>),
     Reinterpreted(Rc<ReinterpretedView>),
-    FieldPtr(Rc<dyn FieldAccess<T>>),
+    Projected(Rc<dyn Projection<T>>),
     Dangling(SyntheticAddr),
 }
 
@@ -174,7 +233,7 @@ impl<T> fmt::Debug for PtrKind<T> {
             PtrKind::Reinterpreted(data) => {
                 write!(f, "Reinterpreted(0x{:x})", data.alloc.address())
             }
-            PtrKind::FieldPtr(view) => write!(f, "FieldPtr(0x{:x})", view.address()),
+            PtrKind::Projected(view) => write!(f, "Projected(0x{:x})", view.address()),
             PtrKind::Dangling(addr) => write!(f, "Dangling(0x{addr:x})"),
         }
     }
@@ -190,7 +249,7 @@ impl<T> Clone for PtrKind<T> {
             PtrKind::StackArray(weak) => PtrKind::StackArray(weak.clone()),
             PtrKind::HeapArray(weak) => PtrKind::HeapArray(weak.clone()),
             PtrKind::Reinterpreted(data) => PtrKind::Reinterpreted(Rc::clone(data)),
-            PtrKind::FieldPtr(view) => PtrKind::FieldPtr(Rc::clone(view)),
+            PtrKind::Projected(view) => PtrKind::Projected(Rc::clone(view)),
             PtrKind::Dangling(addr) => PtrKind::Dangling(*addr),
         }
     }
@@ -204,13 +263,13 @@ impl<T> PtrKind<T> {
             PtrKind::Vec(w) => w.as_ptr() as usize,
             PtrKind::StackArray(w) | PtrKind::HeapArray(w) => w.as_ptr() as usize,
             PtrKind::Reinterpreted(data) => data.alloc.address(),
-            PtrKind::FieldPtr(view) => view.address(),
+            PtrKind::Projected(view) => view.address(),
             PtrKind::Dangling(addr) => *addr,
         }
     }
 
     fn is_derived(&self) -> bool {
-        matches!(self, PtrKind::Reinterpreted(_) | PtrKind::FieldPtr(_))
+        matches!(self, PtrKind::Reinterpreted(_) | PtrKind::Projected(_))
     }
 
     fn is_dangling(&self) -> bool {
@@ -220,7 +279,7 @@ impl<T> PtrKind<T> {
             PtrKind::Vec(w) => w.strong_count() == 0,
             PtrKind::StackArray(w) | PtrKind::HeapArray(w) => w.strong_count() == 0,
             PtrKind::Reinterpreted(data) => data.alloc.is_dangling(),
-            PtrKind::FieldPtr(view) => view.is_dangling(),
+            PtrKind::Projected(view) => view.is_dangling(),
             PtrKind::Dangling(_) => true,
         }
     }
@@ -365,7 +424,7 @@ impl<T> Ptr<T> {
                 weak.upgrade().expect("ub: dangling pointer").borrow().len()
             }
             PtrKind::Reinterpreted(data) => data.alloc.total_byte_len() / data.elem_byte_size,
-            PtrKind::FieldPtr(_) => 1,
+            PtrKind::Projected(view) => view.len_dyn(),
             PtrKind::Dangling(_) => 0,
         }
     }
@@ -386,7 +445,7 @@ impl<T> Ptr<T> {
                 .borrow()
                 .is_empty(),
             PtrKind::Reinterpreted(data) => self.offset >= data.alloc.total_byte_len(),
-            PtrKind::FieldPtr(_) => false,
+            PtrKind::Projected(view) => view.len_dyn() == 0,
             PtrKind::Dangling(_) => true,
         }
     }
@@ -476,8 +535,8 @@ impl<T> Ptr<T> {
                 src_byte_off,
             ),
             PtrKind::Reinterpreted(data) => (Rc::clone(&data.alloc), self.offset),
-            PtrKind::FieldPtr(view) => (
-                Rc::new(FieldOriginalAlloc {
+            PtrKind::Projected(view) => (
+                Rc::new(ProjectedOriginalAlloc {
                     view: Rc::clone(view),
                 }),
                 src_byte_off,
@@ -514,7 +573,7 @@ impl<T: ByteRepr> Ptr<T> {
     fn base_addr(&self) -> usize {
         match &self.kind {
             PtrKind::Dangling(addr) => return *addr,
-            PtrKind::FieldPtr(view) => return view.base_addr_dyn(),
+            PtrKind::Projected(view) => return view.base_addr_dyn(),
             PtrKind::Reinterpreted(data) => {
                 if let Some(base) = data.alloc.base_addr() {
                     return base;
@@ -599,7 +658,7 @@ impl<T> Ptr<T> {
                 val.to_bytes(&mut new);
                 write_changed_bytes(&*data.alloc, self.offset, &old, &new);
             }
-            PtrKind::FieldPtr(view) => view.with_mut_dyn(self.offset, f),
+            PtrKind::Projected(view) => view.with_mut_dyn(self.offset, f),
             PtrKind::Dangling(_) => panic!("ub: dangling pointer"),
         }
     }
@@ -642,7 +701,7 @@ impl<T> Ptr<T> {
                 let val = T::from_bytes(&buf);
                 f(&val)
             }
-            PtrKind::FieldPtr(view) => view.with_dyn(self.offset, f),
+            PtrKind::Projected(view) => view.with_dyn(self.offset, f),
             PtrKind::Dangling(_) => panic!("ub: dangling pointer"),
         }
     }
@@ -657,12 +716,52 @@ impl<T: ByteRepr> Ptr<T> {
     ) -> Ptr<F> {
         Ptr {
             offset: 0,
-            kind: PtrKind::FieldPtr(Rc::new(FieldView {
+            kind: PtrKind::Projected(Rc::new(FieldProjection {
                 parent: self.clone(),
                 field_byte_offset,
                 get,
                 get_mut,
             })),
+        }
+    }
+}
+
+impl<T: ByteRepr + 'static> Ptr<Vec<T>> {
+    pub fn elems(&self) -> Ptr<T> {
+        match &self.kind {
+            PtrKind::Null => Ptr::null(),
+            PtrKind::StackSingle(weak) | PtrKind::HeapSingle(weak) => Ptr {
+                offset: 0,
+                kind: PtrKind::Vec(weak.clone()),
+            },
+            _ => Ptr {
+                offset: 0,
+                kind: PtrKind::Projected(Rc::new(ElemsProjection {
+                    parent: self.clone(),
+                    get: |c: &Vec<T>| &c[..],
+                    get_mut: |c: &mut Vec<T>| &mut c[..],
+                })),
+            },
+        }
+    }
+}
+
+impl<T: ByteRepr + 'static> Ptr<Box<[T]>> {
+    pub fn elems(&self) -> Ptr<T> {
+        match &self.kind {
+            PtrKind::Null => Ptr::null(),
+            PtrKind::StackSingle(weak) | PtrKind::HeapSingle(weak) => Ptr {
+                offset: 0,
+                kind: PtrKind::StackArray(weak.clone()),
+            },
+            _ => Ptr {
+                offset: 0,
+                kind: PtrKind::Projected(Rc::new(ElemsProjection {
+                    parent: self.clone(),
+                    get: |c: &Box<[T]>| &c[..],
+                    get_mut: |c: &mut Box<[T]>| &mut c[..],
+                })),
+            },
         }
     }
 }
@@ -699,7 +798,7 @@ impl<T: std::cmp::Ord> Ptr<T> {
                 (*strong.borrow_mut())[self.get_offset()..last].sort();
             }
             PtrKind::Dangling(_) => panic!("ub: dangling pointer"),
-            PtrKind::Reinterpreted(_) | PtrKind::FieldPtr(_) => {
+            PtrKind::Reinterpreted(_) | PtrKind::Projected(_) => {
                 panic!("sorting not supported for this pointer kind")
             }
         }
@@ -745,7 +844,7 @@ impl<T: Clone> Ptr<T> {
                 sort(&mut borrow, self.get_offset(), last, &mut cmp);
             }
             PtrKind::Dangling(_) => panic!("ub: dangling pointer"),
-            PtrKind::Reinterpreted(_) | PtrKind::FieldPtr(_) => {
+            PtrKind::Reinterpreted(_) | PtrKind::Projected(_) => {
                 panic!("sorting not supported for this pointer kind")
             }
         }
@@ -1025,7 +1124,7 @@ impl<T> ToOwnedOption<T, T> for Ptr<T> {
             PtrKind::Vec(_) => panic!("Can't own a vector"),
             PtrKind::HeapArray(_) => panic!("Can't own an array variable as single"),
             PtrKind::Reinterpreted(_) => panic!("Can't own a reinterpreted pointer"),
-            PtrKind::FieldPtr(_) => panic!("Can't own a field pointer"),
+            PtrKind::Projected(_) => panic!("Can't own a field pointer"),
             PtrKind::Dangling(_) => panic!("ub: dangling pointer"),
         }
     }
@@ -1053,7 +1152,7 @@ impl<T> ToOwnedOption<T, Box<[T]>> for Ptr<T> {
             PtrKind::Vec(_) => panic!("Can't own a vector"),
             PtrKind::HeapSingle(_) => panic!("Can't own a single variable as an array"),
             PtrKind::Reinterpreted(_) => panic!("Can't own a reinterpreted pointer"),
-            PtrKind::FieldPtr(_) => panic!("Can't own a field pointer"),
+            PtrKind::Projected(_) => panic!("Can't own a field pointer"),
             PtrKind::Dangling(_) => panic!("ub: dangling pointer"),
         }
     }
@@ -1071,7 +1170,7 @@ impl<T> fmt::Debug for Ptr<T> {
             }
             PtrKind::Vec(w) => (Weak::as_ptr(w) as usize).wrapping_add(self.byte_offset()),
             PtrKind::Reinterpreted(data) => data.alloc.address().wrapping_add(self.byte_offset()),
-            PtrKind::FieldPtr(view) => view.address().wrapping_add(self.byte_offset()),
+            PtrKind::Projected(view) => view.address().wrapping_add(self.byte_offset()),
             PtrKind::Dangling(addr) => *addr,
         };
         write!(f, "0x{:x}", addr)
@@ -1130,7 +1229,7 @@ impl Ptr<u8> {
                 data.alloc.write_bytes(off, &buf);
                 r
             }
-            PtrKind::FieldPtr(view) => {
+            PtrKind::Projected(view) => {
                 let mut buf = vec![0u8; len];
                 view.read_bytes_dyn(off, &mut buf);
                 let r = f(&mut buf);
@@ -1166,7 +1265,7 @@ impl Ptr<u8> {
                 data.alloc.read_bytes(off, &mut buf);
                 f(&buf)
             }
-            PtrKind::FieldPtr(view) => {
+            PtrKind::Projected(view) => {
                 let mut buf = vec![0u8; len];
                 view.read_bytes_dyn(off, &mut buf);
                 f(&buf)
@@ -1240,7 +1339,7 @@ impl Ptr<u8> {
                 data.alloc.read_bytes(start, &mut buf);
                 buf
             }
-            PtrKind::FieldPtr(_) => panic!("slice_until not supported for field pointers"),
+            PtrKind::Projected(_) => panic!("slice_until not supported for field pointers"),
             PtrKind::Dangling(_) => panic!("ub: dangling pointer"),
         }
     }

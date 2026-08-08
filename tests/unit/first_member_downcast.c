@@ -21,6 +21,6 @@ int main(void) {
   assert(back == d);
   assert(back->value == 7);
 
-  free(d);
+  free(back);
   return 0;
 }

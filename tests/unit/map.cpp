@@ -92,6 +92,15 @@ int main() {
     assert(pair.second == pair.first % 2);
     last = pair.first;
   }
+  std::map<unsigned, int> owned;
+  std::map<unsigned, int> *through = &owned;
+  (*through)[7] = 70;
+  assert(through->find(7) != through->end());
+  (*through)[8] = (*through)[7] + 1;
+  assert(owned.size() == 2);
+  assert(owned[7] == 70);
+  assert(owned[8] == 71);
+
   k = 0;
   const auto &value_0 = m.at(k);
   return m.size() + x1 + x2 + x3 + x4 + x5 + value_0;

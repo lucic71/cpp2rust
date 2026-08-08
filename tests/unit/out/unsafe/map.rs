@@ -137,6 +137,19 @@ unsafe fn main_0() -> i32 {
         assert!(((*pair.second() as i32) == ((*pair.first()) % (2))));
         last = *pair.first();
     }
+    let mut owned: BTreeMap<u32, Box<i32>> = BTreeMap::new();
+    let mut through: *mut BTreeMap<u32, Box<i32>> =
+        (&raw mut owned as *mut BTreeMap<u32, Box<i32>>);
+    (*(*through).entry(7_u32).or_default().as_mut()) = 70;
+    assert!(
+        UnsafeMapIterator::find_key(&(*through) as *const BTreeMap<u32, Box<i32>>, &7_u32)
+            != UnsafeMapIterator::end(&(*through) as *const BTreeMap<u32, Box<i32>>)
+    );
+    (*(*through).entry(8_u32).or_default().as_mut()) =
+        ((*(*through).entry(7_u32).or_default().as_mut()) + (1));
+    assert!(((owned.len()) == (2_usize)));
+    assert!(((*owned.entry(7_u32).or_default().as_mut()) == (70)));
+    assert!(((*owned.entry(8_u32).or_default().as_mut()) == (71)));
     k = 0;
     let value_0: *const u32 = (m.get(&(k as i16)).expect("out of range!").as_ref() as *const u32);
     return ((((((((m.len()).wrapping_add((x1 as usize))).wrapping_add((x2 as usize)))

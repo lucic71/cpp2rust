@@ -261,6 +261,8 @@ private:
       std::optional<clang::QualType> implicit_convert_to = {}) override;
   RsExpr *ConvertFreshPointer(clang::Expr *expr) override;
 
+  clang::QualType PtrPointeeType(clang::CXXOperatorCallExpr *expr);
+
   RsExpr *ConvertPtrType(clang::QualType type);
   RsExpr *ConvertPointeeType(clang::QualType ptr_type) override;
 

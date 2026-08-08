@@ -45,11 +45,9 @@ fn main_0() -> i32 {
     (*v.borrow_mut()).push(20);
     let p: Value<Ptr<Vec<i32>>> = Rc::new(RefCell::new((v.as_pointer())));
     let a: Value<i32> = Rc::new(RefCell::new(
-        ((((*p.borrow()).to_strong().as_pointer()) as Ptr<i32>)
-            .offset(0_usize)
-            .read()),
+        ((((*p.borrow()).elems()) as Ptr<i32>).offset(0_usize).read()),
     ));
-    (((*p.borrow()).to_strong().as_pointer()) as Ptr<i32>)
+    (((*p.borrow()).elems()) as Ptr<i32>)
         .offset(1_usize)
         .write(30);
     let h: Value<Holder> = Rc::new(RefCell::new(<Holder>::default()));
@@ -73,12 +71,7 @@ fn main_0() -> i32 {
         .offset(1_usize)
         .write(60);
     assert!(((*a.borrow()) == 10));
-    assert!(
-        (((((*p.borrow()).to_strong().as_pointer()) as Ptr<i32>)
-            .offset(1_usize)
-            .read())
-            == 30)
-    );
+    assert!((((((*p.borrow()).elems()) as Ptr<i32>).offset(1_usize).read()) == 30));
     assert!(((*b.borrow()) == 40));
     assert!(
         ((((*hp.borrow()).field_ptr(
@@ -90,16 +83,7 @@ fn main_0() -> i32 {
             .read())
             == 60)
     );
-    ({
-        write_through_0(
-            (((*p.borrow()).to_strong().as_pointer() as Ptr<i32>).offset(0_usize as isize)),
-        )
-    });
-    assert!(
-        (((((*p.borrow()).to_strong().as_pointer()) as Ptr<i32>)
-            .offset(0_usize)
-            .read())
-            == 42)
-    );
+    ({ write_through_0((((*p.borrow()).elems() as Ptr<i32>).offset(0_usize as isize))) });
+    assert!((((((*p.borrow()).elems()) as Ptr<i32>).offset(0_usize).read()) == 42));
     return 0;
 }
