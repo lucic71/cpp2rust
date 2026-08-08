@@ -19,7 +19,8 @@ Cast::Cast(RsExpr *expr, RsExpr *type, clang::QualType pointee)
         wanted != ptr_view->view_type.getCanonicalType().getUnqualifiedType();
     return;
   }
-  if (auto *field_ptr = expr->Find<FieldPtr>(); field_ptr && field_ptr->container) {
+  if (auto *field_ptr = expr->Find<FieldPtr>();
+      field_ptr && field_ptr->container) {
     field_ptr->element =
         wanted != field_ptr->field_type.getCanonicalType().getUnqualifiedType();
   }

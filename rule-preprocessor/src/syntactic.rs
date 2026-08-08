@@ -3,9 +3,7 @@
 
 use cfg_expr::Expression;
 use cfg_expr::expr::{Predicate, TargetPredicate};
-use ra_ap_syntax::ast::{
-    HasAttrs, HasGenericArgs, HasGenericParams, HasName, HasTypeBounds,
-};
+use ra_ap_syntax::ast::{HasAttrs, HasGenericArgs, HasGenericParams, HasName, HasTypeBounds};
 use ra_ap_syntax::{AstNode, SyntaxKind, ast, match_ast};
 use std::collections::{BTreeMap, HashMap};
 use std::path::{Path, PathBuf};

@@ -7,9 +7,9 @@
 #include <clang/Basic/OperatorKinds.h>
 
 #include <algorithm>
-#include <ranges>
 #include <format>
 #include <optional>
+#include <ranges>
 #include <vector>
 
 #include "compiler.h"
@@ -654,14 +654,43 @@ bool ConverterRefCount::MethodHasVisibility(clang::CXXMethodDecl *decl) {
 }
 
 static bool IsShadowedByPtrMethod(std::string_view name) {
-  static constexpr std::string_view kPtrMethods[] = {
-      "address", "alloc", "alloc_array", "delete", "delete_array", "field_ptr",
-      "from_int", "from_string_literal", "get_offset", "is_empty", "is_null",
-      "len", "memcmp", "memcpy", "memset", "null", "offset", "read",
-      "reinterpret_cast", "slice_until", "sort", "sort_with_cmp", "to_any",
-      "to_c_string_iterator", "to_end", "to_int", "to_last", "to_rust_string",
-      "to_string_iterator", "to_strong", "with", "with_mut", "with_slice",
-      "with_slice_mut", "write", "write_all", "write_fmt"};
+  static constexpr std::string_view kPtrMethods[] = {"address",
+                                                     "alloc",
+                                                     "alloc_array",
+                                                     "delete",
+                                                     "delete_array",
+                                                     "field_ptr",
+                                                     "from_int",
+                                                     "from_string_literal",
+                                                     "get_offset",
+                                                     "is_empty",
+                                                     "is_null",
+                                                     "len",
+                                                     "memcmp",
+                                                     "memcpy",
+                                                     "memset",
+                                                     "null",
+                                                     "offset",
+                                                     "read",
+                                                     "reinterpret_cast",
+                                                     "slice_until",
+                                                     "sort",
+                                                     "sort_with_cmp",
+                                                     "to_any",
+                                                     "to_c_string_iterator",
+                                                     "to_end",
+                                                     "to_int",
+                                                     "to_last",
+                                                     "to_rust_string",
+                                                     "to_string_iterator",
+                                                     "to_strong",
+                                                     "with",
+                                                     "with_mut",
+                                                     "with_slice",
+                                                     "with_slice_mut",
+                                                     "write",
+                                                     "write_all",
+                                                     "write_fmt"};
   return std::ranges::find(kPtrMethods, name) != std::ranges::end(kPtrMethods);
 }
 
@@ -675,7 +704,7 @@ RsExpr *ConverterRefCount::TryEmitShadowedMethodCall(CallInfo &info) {
     return nullptr;
   }
   auto name = IsOverloadedMethod(method) ? GetOverloadedFunctionName(method)
-                                        : GetNamedDeclAsString(method);
+                                         : GetNamedDeclAsString(method);
   if (!IsShadowedByPtrMethod(name)) {
     return nullptr;
   }
@@ -1589,8 +1618,7 @@ ConverterRefCount::VisitImplicitCastExpr(clang::ImplicitCastExpr *expr) {
     PushConversionKind push(*this, ConversionKind::Unboxed);
     auto *ptr = ConvertPointer(sub_expr);
     auto *type_node = Convert(expr->getType());
-    return arena_.New<Cast>(ptr, type_node,
-                            expr->getType()->getPointeeType());
+    return arena_.New<Cast>(ptr, type_node, expr->getType()->getPointeeType());
   }
 
   if (expr->getCastKind() == clang::CastKind::CK_NullToPointer) {
@@ -2794,10 +2822,11 @@ RsExpr *ConverterRefCount::ConvertCXXOperatorCallExpr(
       auto *object = ConvertObject(expr->getArg(0));
       auto *ptr_type = ConvertPtrType(expr->getArg(0)->getType());
       auto *idx = ConvertSubscriptIndex(expr->getArg(1));
-      offset = MethodCall(arena_.New<Cast>(object, ptr_type,
-                                           expr->getType().getNonReferenceType()),
-                          "offset", std::vector<RsExpr *>{idx},
-                          /*is_mut=*/false);
+      offset =
+          MethodCall(arena_.New<Cast>(object, ptr_type,
+                                      expr->getType().getNonReferenceType()),
+                     "offset", std::vector<RsExpr *>{idx},
+                     /*is_mut=*/false);
     }
 
     auto *node = offset;

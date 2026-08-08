@@ -7,7 +7,7 @@ use std::collections::BTreeMap;
 
 thread_local! {
     static POPEN_CHILDREN: RefCell<BTreeMap<i32, std::process::Child>> =
-        RefCell::new(BTreeMap::new());
+        const { RefCell::new(BTreeMap::new()) };
 }
 
 const RBUF_SIZE: usize = 4096;

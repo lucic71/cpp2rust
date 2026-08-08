@@ -439,13 +439,11 @@ impl<T> Ptr<T> {
             return Ptr::null();
         }
 
-        if self.offset == 0 {
-            if let PtrKind::FieldPtr(view) = &self.kind {
-                if let Some(parent) = view.widen_any() {
+        if self.offset == 0
+            && let PtrKind::FieldPtr(view) = &self.kind
+                && let Some(parent) = view.widen_any() {
                     return parent.reinterpret_cast::<U>();
                 }
-            }
-        }
 
         let src_byte_off = self.offset.wrapping_mul(T::byte_size());
         let (alloc, abs_byte_off): (Rc<dyn OriginalAlloc>, usize) = match &self.kind {
