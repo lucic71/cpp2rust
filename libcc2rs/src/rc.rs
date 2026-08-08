@@ -97,20 +97,41 @@ struct FieldOriginalAlloc<F> {
     view: Rc<dyn FieldAccess<F>>,
 }
 
+impl<F: ByteRepr> FieldOriginalAlloc<F> {
+    fn parent_bytes(&self, byte_offset: usize, len: usize) -> Option<Ptr<u8>> {
+        if byte_offset + len <= self.view.total_byte_len_dyn() {
+            return None;
+        }
+        let parent = self.view.widen_any()?;
+        Some(parent.reinterpret_cast::<u8>().offset(byte_offset))
+    }
+}
+
 impl<F: ByteRepr> OriginalAlloc for FieldOriginalAlloc<F> {
     fn base_addr(&self) -> Option<usize> {
         Some(self.view.base_addr_dyn())
     }
 
     fn read_bytes(&self, byte_offset: usize, buf: &mut [u8]) {
+        if let Some(bytes) = self.parent_bytes(byte_offset, buf.len()) {
+            bytes.with_slice(buf.len(), |src| buf.copy_from_slice(src));
+            return;
+        }
         self.view.read_bytes_dyn(byte_offset, buf);
     }
 
     fn write_bytes(&self, byte_offset: usize, data: &[u8]) {
+        if let Some(bytes) = self.parent_bytes(byte_offset, data.len()) {
+            bytes.with_slice_mut(data.len(), |dst| dst.copy_from_slice(data));
+            return;
+        }
         self.view.write_bytes_dyn(byte_offset, data);
     }
 
     fn total_byte_len(&self) -> usize {
+        if let Some(parent) = self.view.widen_any() {
+            return parent.reinterpret_cast::<u8>().len();
+        }
         self.view.total_byte_len_dyn()
     }
 
@@ -438,12 +459,6 @@ impl<T> Ptr<T> {
         if self.is_null() {
             return Ptr::null();
         }
-
-        if self.offset == 0
-            && let PtrKind::FieldPtr(view) = &self.kind
-                && let Some(parent) = view.widen_any() {
-                    return parent.reinterpret_cast::<U>();
-                }
 
         let src_byte_off = self.offset.wrapping_mul(T::byte_size());
         let (alloc, abs_byte_off): (Rc<dyn OriginalAlloc>, usize) = match &self.kind {
