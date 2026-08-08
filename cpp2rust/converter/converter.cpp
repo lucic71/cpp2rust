@@ -2531,25 +2531,39 @@ Converter::CallInfo Converter::CollectCallInfo(clang::CallExpr *expr) {
 
   if (info.is_variadic) {
     for (unsigned i = num_named_params; i < num_args; ++i) {
-      info.variadic_args.push_back(expr->getArg(i + arg_begin));
+      auto *arg = expr->getArg(i + arg_begin);
+      info.variadic_args.push_back(CallArg{
+          .param_name = std::format("_va{}", i - num_named_params),
+          .expr = arg,
+          .has_default = false,
+          .kind = (IsLiteral(arg) || info.is_libc_passthrough) ? Kind::Inline
+                                                              : Kind::Hoisted,
+      });
     }
   }
 
   // Inline arguments that don't alias
   clang::Expr *receiver = GetCallObject(expr);
+  std::vector<CallArg *> all_args;
   for (auto &ca : info.args) {
-    if (ca.kind != Kind::Hoisted) {
+    all_args.push_back(&ca);
+  }
+  for (auto &ca : info.variadic_args) {
+    all_args.push_back(&ca);
+  }
+  for (auto *ca : all_args) {
+    if (ca->kind != Kind::Hoisted) {
       continue;
     }
-    bool aliases = receiver && ArgsMayAlias(ca.expr, receiver);
-    for (const auto &other : info.args) {
-      if (&other != &ca && ArgsMayAlias(ca.expr, other.expr)) {
+    bool aliases = receiver && ArgsMayAlias(ca->expr, receiver);
+    for (const auto *other : all_args) {
+      if (other != ca && ArgsMayAlias(ca->expr, other->expr)) {
         aliases = true;
         break;
       }
     }
     if (!aliases) {
-      ca.kind = Kind::Inline;
+      ca->kind = Kind::Inline;
     }
   }
 
@@ -2589,6 +2603,13 @@ RsExpr *Converter::EmitHoistedArgs(CallInfo &info) {
       break;
     }
   }
+  for (auto &ca : info.variadic_args) {
+    if (ca.kind == Kind::Hoisted) {
+      parts.push_back(Text(std::format("let {} =", ca.param_name)));
+      parts.push_back(ConvertVariadicArg(ca.expr));
+      parts.push_back(Text(";"));
+    }
+  }
   return arena_.New<Concat>(std::move(parts));
 }
 
@@ -2626,8 +2647,10 @@ std::vector<RsExpr *> Converter::CollectArgNodes(const CallInfo &info) {
 
   if (info.is_variadic) {
     std::vector<RsExpr *> va_parts;
-    for (auto *arg : info.variadic_args) {
-      auto *node = Parens(ConvertVariadicArg(arg));
+    for (const auto &ca : info.variadic_args) {
+      auto *node = ca.kind == Kind::Hoisted
+                       ? Parens(Text(ca.param_name))
+                       : Parens(ConvertVariadicArg(ca.expr));
       if (!info.is_libc_passthrough) {
         node = Cat(node, Text(".into()"));
       }
