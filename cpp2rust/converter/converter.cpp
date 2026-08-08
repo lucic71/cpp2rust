@@ -341,6 +341,9 @@ RsExpr *Converter::ConvertDecl(clang::Decl *decl) {
     return arena_.New<Concat>(std::move(parts));
   }
   case clang::Decl::TypeAlias:
+  case clang::Decl::UsingDirective:
+  case clang::Decl::Using:
+  case clang::Decl::UsingShadow:
   case clang::Decl::Empty:
     return arena_.New<Verbatim>("");
   default:
