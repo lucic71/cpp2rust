@@ -8,18 +8,39 @@
 
 namespace cpp2rust {
 
+static RsExpr *CastOperand(RsExpr *expr) {
+  if (auto *delim = llvm::dyn_cast<Delim>(expr); delim && delim->open == '(') {
+    return CastOperand(delim->inner);
+  }
+  if (auto *concat = llvm::dyn_cast<Concat>(expr)) {
+    RsExpr *value = nullptr;
+    for (auto *part : concat->parts) {
+      if (llvm::isa<Verbatim>(part)) {
+        continue;
+      }
+      if (value != nullptr) {
+        return expr;
+      }
+      value = part;
+    }
+    return value != nullptr ? CastOperand(value) : expr;
+  }
+  return expr;
+}
+
 Cast::Cast(RsExpr *expr, RsExpr *type, clang::QualType pointee)
     : RsExpr(Kind::Cast), expr(expr), type(type) {
   if (pointee.isNull()) {
     return;
   }
   auto wanted = pointee.getCanonicalType().getUnqualifiedType();
-  if (auto *ptr_view = expr->Find<PtrView>()) {
+  auto *operand = CastOperand(expr);
+  if (auto *ptr_view = llvm::dyn_cast<PtrView>(operand)) {
     ptr_view->element =
         wanted != ptr_view->view_type.getCanonicalType().getUnqualifiedType();
     return;
   }
-  if (auto *field_ptr = expr->Find<FieldPtr>();
+  if (auto *field_ptr = llvm::dyn_cast<FieldPtr>(operand);
       field_ptr && field_ptr->container) {
     field_ptr->element =
         wanted != field_ptr->field_type.getCanonicalType().getUnqualifiedType();
