@@ -44,8 +44,8 @@ static bool IsBoxedType(clang::QualType type) {
 }
 
 static bool NeedsMutAccess(const clang::CXXMethodDecl *method,
-                           clang::QualType base_type) {
-  return !method->isConst() && IsBoxedType(base_type);
+                           bool base_is_indirect) {
+  return !method->isConst() && !base_is_indirect;
 }
 
 static bool IsPointerType(clang::QualType type) {
@@ -2136,20 +2136,15 @@ RsExpr *ConverterRefCount::VisitMemberExpr(clang::MemberExpr *expr) {
 
   if (auto *method = clang::dyn_cast<clang::CXXMethodDecl>(member);
       method && !known) {
-    // User-defined types have Value<T> fields; the struct itself is read-only
-    // and only needs an immutable borrow. Non-user-defined types (STL)
-    // need a mutable borrow for non-const methods
-    auto base_type = expr->getBase()->getType().getNonReferenceType();
-    if (base_type->isPointerType()) {
-      base_type = base_type->getPointeeType();
-    }
     if (IsMethodOnPtr(method)) {
       auto *receiver = ConvertPointer(expr->getBase());
       auto name = IsOverloadedMethod(method) ? GetOverloadedFunctionName(method)
                                              : GetNamedDeclAsString(method);
       return arena_.New<Field>(receiver, std::move(name));
     }
-    bool needs_mut = NeedsMutAccess(method, base_type);
+    auto base_type = expr->getBase()->getType();
+    bool needs_mut = NeedsMutAccess(method, base_type->isPointerType() ||
+                                                base_type->isReferenceType());
     PushExprKind push(*this, needs_mut ? ExprKind::LValue : ExprKind::RValue);
     return Converter::ConvertMemberExpr(expr);
   }
