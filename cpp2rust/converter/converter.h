@@ -7,6 +7,7 @@
 #include <clang/Sema/Sema.h>
 
 #include <functional>
+#include <map>
 #include <optional>
 #include <string>
 #include <unordered_map>
@@ -52,6 +53,8 @@ public:
   virtual std::string EmitFilePreamble();
 
   static std::string EmitOpaqueRecords();
+
+  static std::string EmitDeferredImpls();
 
   virtual RsExpr *Convert(clang::QualType qual_type);
 
@@ -831,6 +834,8 @@ protected:
     std::unordered_map<std::string, bool> entries_;
   };
   static RecordIndex record_decls_;
+
+  static std::map<std::string, std::string> deferred_impls_;
 
   enum class ExprKind : uint8_t {
     Callee,

@@ -722,10 +722,12 @@ RsExpr *ConverterRefCount::EmitOutOfLineMethod(clang::CXXMethodDecl *decl,
     return Converter::EmitOutOfLineMethod(decl, inner);
   }
   auto *record = decl->getParent();
-  return arena_.New<Impl>(
-      std::vector<RsExpr *>{}, std::format("{}Methods", GetRecordName(record)),
-      Convert(ctx_.getPointerType(ctx_.getCanonicalTagType(record))),
-      std::vector<RsExpr *>{inner});
+  auto *self_type =
+      Convert(ctx_.getPointerType(ctx_.getCanonicalTagType(record)));
+  LowerNodes(inner);
+  deferred_impls_[std::format("impl {}Methods for {}", GetRecordName(record),
+                              self_type->print())] += inner->print();
+  return arena_.New<Verbatim>("");
 }
 
 bool ConverterRefCount::ThisIsValue() const {
@@ -756,24 +758,24 @@ RsExpr *ConverterRefCount::ConvertRecordMethods(clang::CXXRecordDecl *decl) {
   if (!ptr_methods.empty()) {
     auto trait_name = std::format("{}Methods", struct_name);
 
+    auto *self_type =
+        Convert(ctx_.getPointerType(ctx_.getCanonicalTagType(decl)));
+    auto impl_header =
+        std::format("impl {} for {}", trait_name, self_type->print());
+
     std::vector<RsExpr *> declarations;
-    std::vector<RsExpr *> definitions;
     for (auto *method : ptr_methods) {
       declarations.push_back(ConvertMethodItem(method, false, false));
       if (method->isThisDeclarationADefinition()) {
-        definitions.push_back(ConvertMethodItem(method, false, true));
+        auto *definition = ConvertMethodItem(method, false, true);
+        LowerNodes(definition);
+        deferred_impls_[impl_header] += definition->print();
       }
     }
 
     parts.push_back(
         arena_.New<Trait>(std::vector<RsExpr *>{Text(keyword::kPub)},
                           trait_name, std::move(declarations)));
-    if (!definitions.empty()) {
-      parts.push_back(arena_.New<Impl>(
-          std::vector<RsExpr *>{}, trait_name,
-          Convert(ctx_.getPointerType(ctx_.getCanonicalTagType(decl))),
-          std::move(definitions)));
-    }
   }
 
   parts.push_back(ConvertVirtualMethods(decl));

@@ -29,6 +29,7 @@ std::unordered_set<std::string> Converter::decl_ids_;
 std::unordered_set<std::string> Converter::globals_;
 std::unordered_set<std::string> Converter::abstract_structs_;
 Converter::RecordIndex Converter::record_decls_;
+std::map<std::string, std::string> Converter::deferred_impls_;
 
 RsExpr *Converter::ConvertUniquePtrDeref(clang::CXXOperatorCallExpr *expr) {
   bool is_star = expr->getOperator() == clang::OverloadedOperatorKind::OO_Star;
@@ -66,6 +67,14 @@ std::string Converter::EmitOpaqueRecords() {
     out += std::format(
         "impl ByteRepr for {} {{ fn byte_size() -> usize {{ 0 }} }}\n", name);
   });
+  return out;
+}
+
+std::string Converter::EmitDeferredImpls() {
+  std::string out;
+  for (const auto &[header, items] : deferred_impls_) {
+    out += std::format("{} {{{}}}\n", header, items);
+  }
   return out;
 }
 
