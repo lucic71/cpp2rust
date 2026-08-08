@@ -42,9 +42,10 @@ trait FieldAccess<F> {
     fn write_bytes_dyn(&self, byte_offset: usize, data: &[u8]);
     fn total_byte_len_dyn(&self) -> usize;
     fn base_addr_dyn(&self) -> usize;
+    fn widen_any(&self) -> Option<AnyPtr>;
 }
 
-impl<P: ByteRepr, F: ByteRepr> FieldAccess<F> for FieldView<P, F> {
+impl<P: ByteRepr + 'static, F: ByteRepr> FieldAccess<F> for FieldView<P, F> {
     fn address(&self) -> usize {
         self.parent
             .kind
@@ -81,6 +82,14 @@ impl<P: ByteRepr, F: ByteRepr> FieldAccess<F> for FieldView<P, F> {
 
     fn base_addr_dyn(&self) -> usize {
         self.parent.address().wrapping_add(self.field_byte_offset)
+    }
+
+    fn widen_any(&self) -> Option<AnyPtr> {
+        if self.field_byte_offset == 0 {
+            Some(self.parent.to_any())
+        } else {
+            None
+        }
     }
 }
 
@@ -428,6 +437,14 @@ impl<T> Ptr<T> {
 
         if self.is_null() {
             return Ptr::null();
+        }
+
+        if self.offset == 0 {
+            if let PtrKind::FieldPtr(view) = &self.kind {
+                if let Some(parent) = view.widen_any() {
+                    return parent.reinterpret_cast::<U>();
+                }
+            }
         }
 
         let src_byte_off = self.offset.wrapping_mul(T::byte_size());
