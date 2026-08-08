@@ -631,8 +631,11 @@ pub fn readlink_refcount(a0: Ptr<u8>, a1: Ptr<u8>, a2: usize) -> isize {
 }
 
 pub fn fclose_refcount(a0: Ptr<CFile>) -> i32 {
+    let fd = a0.with(|f| f.fd);
     let r = a0.with(|f| f.close());
-    a0.delete();
+    if fd > 2 {
+        a0.delete();
+    }
     r
 }
 
