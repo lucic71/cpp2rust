@@ -17,22 +17,6 @@ pub trait NodeMethods {
     fn SetNext(&self, n: Ptr<Node>);
     fn SetPrev(&self, p: Ptr<Node>);
 }
-impl NodeMethods for Ptr<Node> {
-    fn SetNext(&self, n: Ptr<Node>) {
-        let n: Value<Ptr<Node>> = Rc::new(RefCell::new(n));
-        {
-            let __rhs = (*n.borrow()).clone();
-            self.with_mut(|__v| __v.next = __rhs)
-        };
-    }
-    fn SetPrev(&self, p: Ptr<Node>) {
-        let p: Value<Ptr<Node>> = Rc::new(RefCell::new(p));
-        {
-            let __rhs = (*p.borrow()).clone();
-            self.with_mut(|__v| __v.prev = __rhs)
-        };
-    }
-}
 impl Clone for Node {
     fn clone(&self) -> Self {
         let mut this = Self {
@@ -325,4 +309,20 @@ fn main_0() -> i32 {
             .clone()
     });
     return 0;
+}
+impl NodeMethods for Ptr<Node> {
+    fn SetNext(&self, n: Ptr<Node>) {
+        let n: Value<Ptr<Node>> = Rc::new(RefCell::new(n));
+        {
+            let __rhs = (*n.borrow()).clone();
+            self.with_mut(|__v| __v.next = __rhs)
+        };
+    }
+    fn SetPrev(&self, p: Ptr<Node>) {
+        let p: Value<Ptr<Node>> = Rc::new(RefCell::new(p));
+        {
+            let __rhs = (*p.borrow()).clone();
+            self.with_mut(|__v| __v.prev = __rhs)
+        };
+    }
 }

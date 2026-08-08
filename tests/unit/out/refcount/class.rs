@@ -20,49 +20,6 @@ pub trait PairMethods {
     fn SetFirst(&self, new_first: i32) -> i32;
     fn SetSecond(&self, new_second: i32) -> i32;
 }
-impl PairMethods for Ptr<Pair> {
-    fn NOP(&self) {}
-    fn GetFirst(&self) -> i32 {
-        return self.with(|__v| (*__v).first);
-    }
-    fn GetSecond(&self) -> i32 {
-        return self.with(|__v| (*__v).second);
-    }
-    fn Set(&self, field: Ptr<i32>, new_val: i32) -> i32 {
-        let new_val: Value<i32> = Rc::new(RefCell::new(new_val));
-        ({ self.NOP() });
-        let old_val: Value<i32> = Rc::new(RefCell::new((field.read())));
-        {
-            let __rhs = (*new_val.borrow());
-            field.write(__rhs)
-        };
-        return (*old_val.borrow());
-    }
-    fn SetFirst(&self, new_first: i32) -> i32 {
-        let new_first: Value<i32> = Rc::new(RefCell::new(new_first));
-        return (({ self.GetFirst() })
-            + ({
-                let _field: Ptr<i32> = self.field_ptr(
-                    0,
-                    |__v: &Pair| ::std::slice::from_ref(&__v.first),
-                    |__v: &mut Pair| ::std::slice::from_mut(&mut __v.first),
-                );
-                self.Set(_field, (*new_first.borrow()))
-            }));
-    }
-    fn SetSecond(&self, new_second: i32) -> i32 {
-        let new_second: Value<i32> = Rc::new(RefCell::new(new_second));
-        return (({ self.GetSecond() })
-            + ({
-                let _field: Ptr<i32> = self.field_ptr(
-                    4,
-                    |__v: &Pair| ::std::slice::from_ref(&__v.second),
-                    |__v: &mut Pair| ::std::slice::from_mut(&mut __v.second),
-                );
-                self.Set(_field, (*new_second.borrow()))
-            }));
-    }
-}
 impl Clone for Pair {
     fn clone(&self) -> Self {
         let mut this = Self {
@@ -95,17 +52,6 @@ pub struct Route {
 }
 pub trait RouteMethods {
     fn SetCost(&self, new_cost: f64) -> f64;
-}
-impl RouteMethods for Ptr<Route> {
-    fn SetCost(&self, new_cost: f64) -> f64 {
-        let new_cost: Value<f64> = Rc::new(RefCell::new(new_cost));
-        let old_cost: Value<f64> = Rc::new(RefCell::new(self.with(|__v| (*__v).cost)));
-        {
-            let __rhs = (*new_cost.borrow());
-            self.with_mut(|__v| __v.cost = __rhs)
-        };
-        return (*old_cost.borrow());
-    }
 }
 impl Clone for Route {
     fn clone(&self) -> Self {
@@ -201,4 +147,58 @@ fn main_0() -> i32 {
     return ((((({ RandomRoute_0(route1.as_pointer()) }) + ({ RandomRoute_0(route2.as_pointer()) }))
         as f64)
         + (*old_cost.borrow())) as i32);
+}
+impl PairMethods for Ptr<Pair> {
+    fn NOP(&self) {}
+    fn GetFirst(&self) -> i32 {
+        return self.with(|__v| (*__v).first);
+    }
+    fn GetSecond(&self) -> i32 {
+        return self.with(|__v| (*__v).second);
+    }
+    fn Set(&self, field: Ptr<i32>, new_val: i32) -> i32 {
+        let new_val: Value<i32> = Rc::new(RefCell::new(new_val));
+        ({ self.NOP() });
+        let old_val: Value<i32> = Rc::new(RefCell::new((field.read())));
+        {
+            let __rhs = (*new_val.borrow());
+            field.write(__rhs)
+        };
+        return (*old_val.borrow());
+    }
+    fn SetFirst(&self, new_first: i32) -> i32 {
+        let new_first: Value<i32> = Rc::new(RefCell::new(new_first));
+        return (({ self.GetFirst() })
+            + ({
+                let _field: Ptr<i32> = self.field_ptr(
+                    0,
+                    |__v: &Pair| ::std::slice::from_ref(&__v.first),
+                    |__v: &mut Pair| ::std::slice::from_mut(&mut __v.first),
+                );
+                self.Set(_field, (*new_first.borrow()))
+            }));
+    }
+    fn SetSecond(&self, new_second: i32) -> i32 {
+        let new_second: Value<i32> = Rc::new(RefCell::new(new_second));
+        return (({ self.GetSecond() })
+            + ({
+                let _field: Ptr<i32> = self.field_ptr(
+                    4,
+                    |__v: &Pair| ::std::slice::from_ref(&__v.second),
+                    |__v: &mut Pair| ::std::slice::from_mut(&mut __v.second),
+                );
+                self.Set(_field, (*new_second.borrow()))
+            }));
+    }
+}
+impl RouteMethods for Ptr<Route> {
+    fn SetCost(&self, new_cost: f64) -> f64 {
+        let new_cost: Value<f64> = Rc::new(RefCell::new(new_cost));
+        let old_cost: Value<f64> = Rc::new(RefCell::new(self.with(|__v| (*__v).cost)));
+        {
+            let __rhs = (*new_cost.borrow());
+            self.with_mut(|__v| __v.cost = __rhs)
+        };
+        return (*old_cost.borrow());
+    }
 }

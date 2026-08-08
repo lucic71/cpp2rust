@@ -23,34 +23,6 @@ pub trait PairMethods {
     fn as_ref(&self) -> Ptr<i32>;
     fn as_ptr(&self) -> Ptr<i32>;
 }
-impl PairMethods for Ptr<Pair> {
-    fn method(&self) {
-        self.with_mut(|__v| __v.x.postfix_inc());
-        self.with_mut(|__v| __v.y.prefix_inc());
-        self.with_mut(|__v| __v.a[(4) as usize] = 1);
-        self.with(|__v| (*__v).r.clone()).write(1);
-        self.with_mut(|__v| __v.p = Ptr::<i32>::null());
-        self.with_mut(|__v| __v.pair = Ptr::<Pair>::null());
-        self.with_mut(|__v| __v.ap[(0) as usize] = Ptr::<i32>::null());
-    }
-    fn as_val(&self) -> i32 {
-        return self.with(|__v| (*__v).x);
-    }
-    fn as_ref(&self) -> Ptr<i32> {
-        return self.field_ptr(
-            0,
-            |__v: &Pair| ::std::slice::from_ref(&__v.x),
-            |__v: &mut Pair| ::std::slice::from_mut(&mut __v.x),
-        );
-    }
-    fn as_ptr(&self) -> Ptr<i32> {
-        return (self.field_ptr(
-            0,
-            |__v: &Pair| ::std::slice::from_ref(&__v.x),
-            |__v: &mut Pair| ::std::slice::from_mut(&mut __v.x),
-        ));
-    }
-}
 impl Clone for Pair {
     fn clone(&self) -> Self {
         let mut this = Self {
@@ -329,4 +301,32 @@ fn main_0() -> i32 {
     let ptr2ptr_1: Value<Ptr<Ptr<i32>>> = Rc::new(RefCell::new((px1.as_pointer())));
     let ptr2ptr_2: Value<Ptr<Ptr<Pair>>> = Rc::new(RefCell::new((py1.as_pointer())));
     return 0;
+}
+impl PairMethods for Ptr<Pair> {
+    fn method(&self) {
+        self.with_mut(|__v| __v.x.postfix_inc());
+        self.with_mut(|__v| __v.y.prefix_inc());
+        self.with_mut(|__v| __v.a[(4) as usize] = 1);
+        self.with(|__v| (*__v).r.clone()).write(1);
+        self.with_mut(|__v| __v.p = Ptr::<i32>::null());
+        self.with_mut(|__v| __v.pair = Ptr::<Pair>::null());
+        self.with_mut(|__v| __v.ap[(0) as usize] = Ptr::<i32>::null());
+    }
+    fn as_val(&self) -> i32 {
+        return self.with(|__v| (*__v).x);
+    }
+    fn as_ref(&self) -> Ptr<i32> {
+        return self.field_ptr(
+            0,
+            |__v: &Pair| ::std::slice::from_ref(&__v.x),
+            |__v: &mut Pair| ::std::slice::from_mut(&mut __v.x),
+        );
+    }
+    fn as_ptr(&self) -> Ptr<i32> {
+        return (self.field_ptr(
+            0,
+            |__v: &Pair| ::std::slice::from_ref(&__v.x),
+            |__v: &mut Pair| ::std::slice::from_mut(&mut __v.x),
+        ));
+    }
 }

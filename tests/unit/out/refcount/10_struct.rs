@@ -45,34 +45,6 @@ pub struct Graph {
 pub trait GraphMethods {
     fn push(&self, src: u32, dst: u32);
 }
-impl GraphMethods for Ptr<Graph> {
-    fn push(&self, src: u32, dst: u32) {
-        let src: Value<u32> = Rc::new(RefCell::new(src));
-        let dst: Value<u32> = Rc::new(RefCell::new(dst));
-        {
-            let __rhs = Ptr::alloc(GraphNode {
-                dst: (*dst.borrow()),
-                next: (self
-                    .with(|__v| (*__v).adj.offset(((*src.borrow()) as isize)).clone())
-                    .read())
-                .clone(),
-            });
-            self.with(|__v| (*__v).adj.offset(((*src.borrow()) as isize)).clone())
-                .write(__rhs)
-        };
-        {
-            let __rhs = Ptr::alloc(GraphNode {
-                dst: (*src.borrow()),
-                next: (self
-                    .with(|__v| (*__v).adj.offset(((*dst.borrow()) as isize)).clone())
-                    .read())
-                .clone(),
-            });
-            self.with(|__v| (*__v).adj.offset(((*dst.borrow()) as isize)).clone())
-                .write(__rhs)
-        };
-    }
-}
 impl Clone for Graph {
     fn clone(&self) -> Self {
         let mut this = Self {
@@ -106,4 +78,32 @@ fn main_0() -> i32 {
         adj: Ptr::<Ptr<GraphNode>>::null(),
     }));
     return 0;
+}
+impl GraphMethods for Ptr<Graph> {
+    fn push(&self, src: u32, dst: u32) {
+        let src: Value<u32> = Rc::new(RefCell::new(src));
+        let dst: Value<u32> = Rc::new(RefCell::new(dst));
+        {
+            let __rhs = Ptr::alloc(GraphNode {
+                dst: (*dst.borrow()),
+                next: (self
+                    .with(|__v| (*__v).adj.offset(((*src.borrow()) as isize)).clone())
+                    .read())
+                .clone(),
+            });
+            self.with(|__v| (*__v).adj.offset(((*src.borrow()) as isize)).clone())
+                .write(__rhs)
+        };
+        {
+            let __rhs = Ptr::alloc(GraphNode {
+                dst: (*src.borrow()),
+                next: (self
+                    .with(|__v| (*__v).adj.offset(((*dst.borrow()) as isize)).clone())
+                    .read())
+                .clone(),
+            });
+            self.with(|__v| (*__v).adj.offset(((*dst.borrow()) as isize)).clone())
+                .write(__rhs)
+        };
+    }
 }

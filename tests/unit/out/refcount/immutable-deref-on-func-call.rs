@@ -14,12 +14,6 @@ pub struct Item {
 pub trait ItemMethods {
     fn foo(&self, other: Ptr<Item>);
 }
-impl ItemMethods for Ptr<Item> {
-    fn foo(&self, other: Ptr<Item>) {
-        let other: Value<Ptr<Item>> = Rc::new(RefCell::new(other));
-        (*other.borrow()).with_mut(|__v| __v.value = 10);
-    }
-}
 impl Clone for Item {
     fn clone(&self) -> Self {
         let mut this = Self { value: self.value };
@@ -68,4 +62,10 @@ fn main_0() -> i32 {
     ));
     (*arr.borrow()).delete_array();
     return (*result.borrow());
+}
+impl ItemMethods for Ptr<Item> {
+    fn foo(&self, other: Ptr<Item>) {
+        let other: Value<Ptr<Item>> = Rc::new(RefCell::new(other));
+        (*other.borrow()).with_mut(|__v| __v.value = 10);
+    }
 }

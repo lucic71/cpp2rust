@@ -19,40 +19,6 @@ pub trait MyContainer_int_Methods {
     fn pop_back(&self);
     fn push_back(&self, item: Ptr<i32>);
 }
-impl MyContainer_int_Methods for Ptr<MyContainer_int_> {
-    fn empty(&self) -> bool {
-        return self.with(|__v| (*__v).vec_.clone()).is_empty();
-    }
-    fn size(&self) -> usize {
-        return self.with(|__v| (*__v).vec_.clone()).len();
-    }
-    fn back_const(&self) -> Ptr<i32> {
-        return (self.field_ptr(
-            0,
-            |__v: &MyContainer_int_| &__v.vec_[..],
-            |__v: &mut MyContainer_int_| &mut __v.vec_[..],
-        ) as Ptr<i32>)
-            .to_last();
-    }
-    fn back(&self) -> Ptr<i32> {
-        return (self.field_ptr(
-            0,
-            |__v: &MyContainer_int_| &__v.vec_[..],
-            |__v: &mut MyContainer_int_| &mut __v.vec_[..],
-        ) as Ptr<i32>)
-            .to_last();
-    }
-    fn pop_back(&self) {
-        self.with_mut(|__v| __v.vec_.pop());
-        return;
-    }
-    fn push_back(&self, item: Ptr<i32>) {
-        {
-            let a0_clone = (item.read()).clone();
-            self.with_mut(|__v| __v.vec_.push(a0_clone))
-        };
-    }
-}
 impl Clone for MyContainer_int_ {
     fn clone(&self) -> Self {
         let mut this = Self {
@@ -87,40 +53,6 @@ pub trait MyContainer_char_Methods {
     fn pop_back(&self);
     fn push_back(&self, item: Ptr<u8>);
 }
-impl MyContainer_char_Methods for Ptr<MyContainer_char_> {
-    fn empty(&self) -> bool {
-        return self.with(|__v| (*__v).vec_.clone()).is_empty();
-    }
-    fn size(&self) -> usize {
-        return self.with(|__v| (*__v).vec_.clone()).len();
-    }
-    fn back_const(&self) -> Ptr<u8> {
-        return (self.field_ptr(
-            0,
-            |__v: &MyContainer_char_| &__v.vec_[..],
-            |__v: &mut MyContainer_char_| &mut __v.vec_[..],
-        ) as Ptr<u8>)
-            .to_last();
-    }
-    fn back(&self) -> Ptr<u8> {
-        return (self.field_ptr(
-            0,
-            |__v: &MyContainer_char_| &__v.vec_[..],
-            |__v: &mut MyContainer_char_| &mut __v.vec_[..],
-        ) as Ptr<u8>)
-            .to_last();
-    }
-    fn pop_back(&self) {
-        self.with_mut(|__v| __v.vec_.pop());
-        return;
-    }
-    fn push_back(&self, item: Ptr<u8>) {
-        {
-            let a0_clone = (item.read()).clone();
-            self.with_mut(|__v| __v.vec_.push(a0_clone))
-        };
-    }
-}
 impl Clone for MyContainer_char_ {
     fn clone(&self) -> Self {
         let mut this = Self {
@@ -154,40 +86,6 @@ pub trait MyContainer_float_Methods {
     fn back(&self) -> Ptr<f32>;
     fn pop_back(&self);
     fn push_back(&self, item: Ptr<f32>);
-}
-impl MyContainer_float_Methods for Ptr<MyContainer_float_> {
-    fn empty(&self) -> bool {
-        return self.with(|__v| (*__v).vec_.clone()).is_empty();
-    }
-    fn size(&self) -> usize {
-        return self.with(|__v| (*__v).vec_.clone()).len();
-    }
-    fn back_const(&self) -> Ptr<f32> {
-        return (self.field_ptr(
-            0,
-            |__v: &MyContainer_float_| &__v.vec_[..],
-            |__v: &mut MyContainer_float_| &mut __v.vec_[..],
-        ) as Ptr<f32>)
-            .to_last();
-    }
-    fn back(&self) -> Ptr<f32> {
-        return (self.field_ptr(
-            0,
-            |__v: &MyContainer_float_| &__v.vec_[..],
-            |__v: &mut MyContainer_float_| &mut __v.vec_[..],
-        ) as Ptr<f32>)
-            .to_last();
-    }
-    fn pop_back(&self) {
-        self.with_mut(|__v| __v.vec_.pop());
-        return;
-    }
-    fn push_back(&self, item: Ptr<f32>) {
-        {
-            let a0_clone = (item.read()).clone();
-            self.with_mut(|__v| __v.vec_.push(a0_clone))
-        };
-    }
 }
 impl Clone for MyContainer_float_ {
     fn clone(&self) -> Self {
@@ -250,4 +148,106 @@ fn main_0() -> i32 {
     ({ fmc.as_pointer().pop_back() });
     assert!(({ fmc.as_pointer().empty() }));
     return 0;
+}
+impl MyContainer_char_Methods for Ptr<MyContainer_char_> {
+    fn empty(&self) -> bool {
+        return self.with(|__v| (*__v).vec_.clone()).is_empty();
+    }
+    fn size(&self) -> usize {
+        return self.with(|__v| (*__v).vec_.clone()).len();
+    }
+    fn back_const(&self) -> Ptr<u8> {
+        return (self.field_ptr(
+            0,
+            |__v: &MyContainer_char_| &__v.vec_[..],
+            |__v: &mut MyContainer_char_| &mut __v.vec_[..],
+        ) as Ptr<u8>)
+            .to_last();
+    }
+    fn back(&self) -> Ptr<u8> {
+        return (self.field_ptr(
+            0,
+            |__v: &MyContainer_char_| &__v.vec_[..],
+            |__v: &mut MyContainer_char_| &mut __v.vec_[..],
+        ) as Ptr<u8>)
+            .to_last();
+    }
+    fn pop_back(&self) {
+        self.with_mut(|__v| __v.vec_.pop());
+        return;
+    }
+    fn push_back(&self, item: Ptr<u8>) {
+        {
+            let a0_clone = (item.read()).clone();
+            self.with_mut(|__v| __v.vec_.push(a0_clone))
+        };
+    }
+}
+impl MyContainer_float_Methods for Ptr<MyContainer_float_> {
+    fn empty(&self) -> bool {
+        return self.with(|__v| (*__v).vec_.clone()).is_empty();
+    }
+    fn size(&self) -> usize {
+        return self.with(|__v| (*__v).vec_.clone()).len();
+    }
+    fn back_const(&self) -> Ptr<f32> {
+        return (self.field_ptr(
+            0,
+            |__v: &MyContainer_float_| &__v.vec_[..],
+            |__v: &mut MyContainer_float_| &mut __v.vec_[..],
+        ) as Ptr<f32>)
+            .to_last();
+    }
+    fn back(&self) -> Ptr<f32> {
+        return (self.field_ptr(
+            0,
+            |__v: &MyContainer_float_| &__v.vec_[..],
+            |__v: &mut MyContainer_float_| &mut __v.vec_[..],
+        ) as Ptr<f32>)
+            .to_last();
+    }
+    fn pop_back(&self) {
+        self.with_mut(|__v| __v.vec_.pop());
+        return;
+    }
+    fn push_back(&self, item: Ptr<f32>) {
+        {
+            let a0_clone = (item.read()).clone();
+            self.with_mut(|__v| __v.vec_.push(a0_clone))
+        };
+    }
+}
+impl MyContainer_int_Methods for Ptr<MyContainer_int_> {
+    fn empty(&self) -> bool {
+        return self.with(|__v| (*__v).vec_.clone()).is_empty();
+    }
+    fn size(&self) -> usize {
+        return self.with(|__v| (*__v).vec_.clone()).len();
+    }
+    fn back_const(&self) -> Ptr<i32> {
+        return (self.field_ptr(
+            0,
+            |__v: &MyContainer_int_| &__v.vec_[..],
+            |__v: &mut MyContainer_int_| &mut __v.vec_[..],
+        ) as Ptr<i32>)
+            .to_last();
+    }
+    fn back(&self) -> Ptr<i32> {
+        return (self.field_ptr(
+            0,
+            |__v: &MyContainer_int_| &__v.vec_[..],
+            |__v: &mut MyContainer_int_| &mut __v.vec_[..],
+        ) as Ptr<i32>)
+            .to_last();
+    }
+    fn pop_back(&self) {
+        self.with_mut(|__v| __v.vec_.pop());
+        return;
+    }
+    fn push_back(&self, item: Ptr<i32>) {
+        {
+            let a0_clone = (item.read()).clone();
+            self.with_mut(|__v| __v.vec_.push(a0_clone))
+        };
+    }
 }

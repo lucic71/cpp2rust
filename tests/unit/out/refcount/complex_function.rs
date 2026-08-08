@@ -49,11 +49,6 @@ pub struct X2 {
 pub trait X2Methods {
     fn get(&self) -> Ptr<X1>;
 }
-impl X2Methods for Ptr<X2> {
-    fn get(&self) -> Ptr<X1> {
-        return (self.with(|__v| (*__v).v.clone())).clone();
-    }
-}
 impl Clone for X2 {
     fn clone(&self) -> Self {
         let mut this = Self {
@@ -70,11 +65,6 @@ pub struct X3 {
 }
 pub trait X3Methods {
     fn get(&self) -> Ptr<X2>;
-}
-impl X3Methods for Ptr<X3> {
-    fn get(&self) -> Ptr<X2> {
-        return (self.with(|__v| (*__v).v.clone())).clone();
-    }
 }
 impl Clone for X3 {
     fn clone(&self) -> Self {
@@ -104,15 +94,6 @@ pub struct X4 {
 }
 pub trait X4Methods {
     fn get(&self) -> Ptr<X3>;
-}
-impl X4Methods for Ptr<X4> {
-    fn get(&self) -> Ptr<X3> {
-        return self.field_ptr(
-            0,
-            |__v: &X4| ::std::slice::from_ref(&__v.v),
-            |__v: &mut X4| ::std::slice::from_mut(&mut __v.v),
-        );
-    }
 }
 impl Clone for X4 {
     fn clone(&self) -> Self {
@@ -438,4 +419,23 @@ fn main_0() -> i32 {
         })
         .read()))
         + ({ foo_0(({ ({ ({ d.as_pointer().get() }).get() }).get() }).with(|__v| (*__v).v)) }));
+}
+impl X2Methods for Ptr<X2> {
+    fn get(&self) -> Ptr<X1> {
+        return (self.with(|__v| (*__v).v.clone())).clone();
+    }
+}
+impl X3Methods for Ptr<X3> {
+    fn get(&self) -> Ptr<X2> {
+        return (self.with(|__v| (*__v).v.clone())).clone();
+    }
+}
+impl X4Methods for Ptr<X4> {
+    fn get(&self) -> Ptr<X3> {
+        return self.field_ptr(
+            0,
+            |__v: &X4| ::std::slice::from_ref(&__v.v),
+            |__v: &mut X4| ::std::slice::from_mut(&mut __v.v),
+        );
+    }
 }

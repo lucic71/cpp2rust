@@ -17,29 +17,6 @@ pub trait TestMethods {
     fn as_ptr(&self) -> Ptr<i32>;
     fn update(&self, x: i32, y: i32);
 }
-impl TestMethods for Ptr<Test> {
-    fn inc(&self) {
-        self.with_mut(|__v| __v.x.postfix_inc());
-    }
-    fn dec(&self) {
-        self.with_mut(|__v| __v.x.postfix_dec());
-    }
-    fn as_ptr(&self) -> Ptr<i32> {
-        return (self.field_ptr(
-            0,
-            |__v: &Test| ::std::slice::from_ref(&__v.x),
-            |__v: &mut Test| ::std::slice::from_mut(&mut __v.x),
-        ));
-    }
-    fn update(&self, x: i32, y: i32) {
-        let x: Value<i32> = Rc::new(RefCell::new(x));
-        let y: Value<i32> = Rc::new(RefCell::new(y));
-        {
-            let __rhs = ((*x.borrow()) + (*y.borrow()));
-            self.with_mut(|__v| __v.x = __rhs)
-        };
-    }
-}
 impl Clone for Test {
     fn clone(&self) -> Self {
         let mut this = Self { x: self.x };
@@ -97,4 +74,27 @@ fn main_0() -> i32 {
         };
         _lhs + (*t1.borrow()).x
     };
+}
+impl TestMethods for Ptr<Test> {
+    fn inc(&self) {
+        self.with_mut(|__v| __v.x.postfix_inc());
+    }
+    fn dec(&self) {
+        self.with_mut(|__v| __v.x.postfix_dec());
+    }
+    fn as_ptr(&self) -> Ptr<i32> {
+        return (self.field_ptr(
+            0,
+            |__v: &Test| ::std::slice::from_ref(&__v.x),
+            |__v: &mut Test| ::std::slice::from_mut(&mut __v.x),
+        ));
+    }
+    fn update(&self, x: i32, y: i32) {
+        let x: Value<i32> = Rc::new(RefCell::new(x));
+        let y: Value<i32> = Rc::new(RefCell::new(y));
+        {
+            let __rhs = ((*x.borrow()) + (*y.borrow()));
+            self.with_mut(|__v| __v.x = __rhs)
+        };
+    }
 }

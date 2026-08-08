@@ -14,16 +14,6 @@ pub struct SafePointer {
 pub trait SafePointerMethods {
     fn inc(&self);
 }
-impl SafePointerMethods for Ptr<SafePointer> {
-    fn inc(&self) {
-        (*self
-            .with(|__v| (*__v).ptr.clone())
-            .as_ref()
-            .unwrap()
-            .borrow_mut())
-        .prefix_inc();
-    }
-}
 impl ByteRepr for SafePointer {
     fn byte_size() -> usize {
         8
@@ -68,19 +58,6 @@ impl ByteRepr for Pair {
             x: <i32>::from_bytes(&buf[0..4]),
             y: <i32>::from_bytes(&buf[4..8]),
         }
-    }
-}
-impl PairMethods for Ptr<Pair> {
-    fn inc(&self, k: i32) {
-        let k: Value<i32> = Rc::new(RefCell::new(k));
-        {
-            let __rhs = (*k.borrow());
-            self.with_mut(|__v| __v.x += __rhs)
-        };
-        {
-            let __rhs = (*k.borrow());
-            self.with_mut(|__v| __v.y += __rhs)
-        };
     }
 }
 pub fn DoStuffWithSafePointer_0(safe_ptr: Ptr<Option<Value<SafePointer>>>) {
@@ -289,4 +266,27 @@ fn main_0() -> i32 {
         })))));
     ({ DoStuffWithSafePointer_0(safe_ptr.as_pointer()) });
     return ({ Consume_1((*safe_ptr.borrow_mut()).take()) });
+}
+impl PairMethods for Ptr<Pair> {
+    fn inc(&self, k: i32) {
+        let k: Value<i32> = Rc::new(RefCell::new(k));
+        {
+            let __rhs = (*k.borrow());
+            self.with_mut(|__v| __v.x += __rhs)
+        };
+        {
+            let __rhs = (*k.borrow());
+            self.with_mut(|__v| __v.y += __rhs)
+        };
+    }
+}
+impl SafePointerMethods for Ptr<SafePointer> {
+    fn inc(&self) {
+        (*self
+            .with(|__v| (*__v).ptr.clone())
+            .as_ref()
+            .unwrap()
+            .borrow_mut())
+        .prefix_inc();
+    }
 }

@@ -29,22 +29,6 @@ pub trait StructWithCtorMethods {
     fn x1(&self) -> Ptr<i32>;
     fn x2(&self) -> Ptr<i32>;
 }
-impl StructWithCtorMethods for Ptr<StructWithCtor> {
-    fn x1(&self) -> Ptr<i32> {
-        return self.field_ptr(
-            0,
-            |__v: &StructWithCtor| ::std::slice::from_ref(&__v.x1_),
-            |__v: &mut StructWithCtor| ::std::slice::from_mut(&mut __v.x1_),
-        );
-    }
-    fn x2(&self) -> Ptr<i32> {
-        return self.field_ptr(
-            4,
-            |__v: &StructWithCtor| ::std::slice::from_ref(&__v.x2_),
-            |__v: &mut StructWithCtor| ::std::slice::from_mut(&mut __v.x2_),
-        );
-    }
-}
 impl Clone for StructWithCtor {
     fn clone(&self) -> Self {
         let mut this = Self {
@@ -82,4 +66,20 @@ fn main_0() -> i32 {
     return (((((({ foo_0(x.as_pointer()) }).read()) == 3)
         && ((({ struct_with_ctor.as_pointer().x1() }).read()) == 2))
         && ((({ struct_with_ctor.as_pointer().x2() }).read()) == 1)) as i32);
+}
+impl StructWithCtorMethods for Ptr<StructWithCtor> {
+    fn x1(&self) -> Ptr<i32> {
+        return self.field_ptr(
+            0,
+            |__v: &StructWithCtor| ::std::slice::from_ref(&__v.x1_),
+            |__v: &mut StructWithCtor| ::std::slice::from_mut(&mut __v.x1_),
+        );
+    }
+    fn x2(&self) -> Ptr<i32> {
+        return self.field_ptr(
+            4,
+            |__v: &StructWithCtor| ::std::slice::from_ref(&__v.x2_),
+            |__v: &mut StructWithCtor| ::std::slice::from_mut(&mut __v.x2_),
+        );
+    }
 }

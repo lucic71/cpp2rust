@@ -38,11 +38,6 @@ pub struct Cat {}
 pub trait CatMethods {
     fn meow(&self) -> bool;
 }
-impl CatMethods for Ptr<Cat> {
-    fn meow(&self) -> bool {
-        return true;
-    }
-}
 impl Animal for Cat {
     fn bark(&self) -> bool {
         return false;
@@ -80,4 +75,9 @@ fn main_0() -> i32 {
         ({ (*animal.borrow()).with(|__v| (*__v).bark().clone()) }),
     ));
     return (((*eat1.borrow()) && (!(*eat2.borrow()))) as i32);
+}
+impl CatMethods for Ptr<Cat> {
+    fn meow(&self) -> bool {
+        return true;
+    }
 }

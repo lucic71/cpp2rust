@@ -15,11 +15,6 @@ pub struct C {}
 pub trait CMethods {
     fn get(&self) -> i32;
 }
-impl CMethods for Ptr<C> {
-    fn get(&self) -> i32 {
-        return (*inner_const_0.with(Value::clone).borrow());
-    }
-}
 impl Clone for C {
     fn clone(&self) -> Self {
         let mut this = Self {};
@@ -64,4 +59,9 @@ fn main_0() -> i32 {
     assert!((({ c.as_pointer().get() }) == 1));
     assert!(((*inner_const_1.with(Value::clone).borrow()) == 2));
     return 0;
+}
+impl CMethods for Ptr<C> {
+    fn get(&self) -> i32 {
+        return (*inner_const_0.with(Value::clone).borrow());
+    }
 }

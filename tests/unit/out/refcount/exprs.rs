@@ -40,22 +40,6 @@ pub trait YMethods {
     fn foo(&self) -> Ptr<X>;
     fn ptr(&self) -> Ptr<X>;
 }
-impl YMethods for Ptr<Y> {
-    fn foo(&self) -> Ptr<X> {
-        return self.field_ptr(
-            0,
-            |__v: &Y| ::std::slice::from_ref(&__v.x),
-            |__v: &mut Y| ::std::slice::from_mut(&mut __v.x),
-        );
-    }
-    fn ptr(&self) -> Ptr<X> {
-        return (self.field_ptr(
-            0,
-            |__v: &Y| ::std::slice::from_ref(&__v.x),
-            |__v: &mut Y| ::std::slice::from_mut(&mut __v.x),
-        ));
-    }
-}
 impl Clone for Y {
     fn clone(&self) -> Self {
         let mut this = Self {
@@ -142,4 +126,20 @@ fn main_0() -> i32 {
     ({ y.as_pointer().ptr() }).with_mut(|__v| __v.x = 1);
     ({ y.as_pointer().ptr() }).with_mut(|__v| __v.x = 50);
     return (*x.borrow()).x;
+}
+impl YMethods for Ptr<Y> {
+    fn foo(&self) -> Ptr<X> {
+        return self.field_ptr(
+            0,
+            |__v: &Y| ::std::slice::from_ref(&__v.x),
+            |__v: &mut Y| ::std::slice::from_mut(&mut __v.x),
+        );
+    }
+    fn ptr(&self) -> Ptr<X> {
+        return (self.field_ptr(
+            0,
+            |__v: &Y| ::std::slice::from_ref(&__v.x),
+            |__v: &mut Y| ::std::slice::from_mut(&mut __v.x),
+        ));
+    }
 }

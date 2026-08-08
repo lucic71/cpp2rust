@@ -15,15 +15,6 @@ pub struct Node {
 pub trait NodeMethods {
     fn SetNext(&self, next: Ptr<Node>);
 }
-impl NodeMethods for Ptr<Node> {
-    fn SetNext(&self, next: Ptr<Node>) {
-        let next: Value<Ptr<Node>> = Rc::new(RefCell::new(next));
-        {
-            let __rhs = (*next.borrow()).clone();
-            self.with_mut(|__v| __v.next = __rhs)
-        };
-    }
-}
 impl Clone for Node {
     fn clone(&self) -> Self {
         let mut this = Self {
@@ -190,4 +181,13 @@ fn main_0() -> i32 {
         && (({ Find_0((*head.borrow()).clone(), 3) }).with(|__v| (*__v).val) == 1))
         && ((({ Find_0((*head.borrow()).clone(), 4) }).with(|__v| (*__v).val) == -1_i32)
             && (({ Find_0((*head.borrow()).clone(), 5) }).is_null()))) as i32);
+}
+impl NodeMethods for Ptr<Node> {
+    fn SetNext(&self, next: Ptr<Node>) {
+        let next: Value<Ptr<Node>> = Rc::new(RefCell::new(next));
+        {
+            let __rhs = (*next.borrow()).clone();
+            self.with_mut(|__v| __v.next = __rhs)
+        };
+    }
 }
