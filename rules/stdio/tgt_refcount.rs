@@ -287,7 +287,10 @@ fn f39(a0: Ptr<u8>, a1: usize, a2: Ptr<u8>, a3: VaList) -> i32 {
 }
 
 fn f40() -> Ptr<CFile> {
-    panic!("tmpfile: temporary files are not supported in the refcount model")
+    match CFile::tmpfile() {
+        Some(__f) => Ptr::alloc(__f),
+        None => Ptr::<CFile>::null(),
+    }
 }
 
 fn f41(a0: Ptr<CFile>) {

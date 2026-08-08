@@ -165,7 +165,67 @@ fn f38(a0: Ptr<u8>, a1: Ptr<Ptr<u8>>, a2: i32) -> u64 {
 }
 
 fn f39(a0: Ptr<u8>) -> i32 {
-    panic!("mkstemp: temporary file creation is not supported in the refcount model")
+    let __tmpl = a0.clone();
+    let mut __name = __tmpl.to_rust_string();
+    match __name.ends_with("XXXXXX") {
+        false => {
+            libcc2rs::cpp2rust_errno().write(::libc::EINVAL);
+            -1
+        }
+        true => {
+            let __base = __name.len() - 6;
+            let mut __seed = ::std::time::SystemTime::now()
+                .duration_since(::std::time::UNIX_EPOCH)
+                .map(|__d| __d.as_nanos() as u64)
+                .unwrap_or(0)
+                ^ ((::std::process::id() as u64) << 32);
+            let mut __attempt = 0;
+            let mut __fd = -1;
+            while __attempt < 100 && __fd < 0 {
+                let mut __n = __seed;
+                __name.truncate(__base);
+                let mut __i = 0;
+                while __i < 6 {
+                    __name.push(char::from_digit((__n % 36) as u32, 36).unwrap());
+                    __n /= 36;
+                    __i += 1;
+                }
+                match nix::fcntl::open(
+                    __name.as_str(),
+                    nix::fcntl::OFlag::O_CREAT
+                        | nix::fcntl::OFlag::O_EXCL
+                        | nix::fcntl::OFlag::O_RDWR,
+                    nix::sys::stat::Mode::S_IRUSR | nix::sys::stat::Mode::S_IWUSR,
+                ) {
+                    Ok(__ofd) => {
+                        __tmpl.with_slice_mut(__name.len(), |__s| {
+                            __s.copy_from_slice(__name.as_bytes())
+                        });
+                        __fd = FdRegistry::register(__ofd);
+                    }
+                    Err(__e) => match __e == nix::errno::Errno::EEXIST {
+                        true => {
+                            __seed = __seed
+                                .wrapping_mul(6364136223846793005)
+                                .wrapping_add(__attempt + 1);
+                        }
+                        false => {
+                            libcc2rs::cpp2rust_errno().write(__e as i32);
+                            __attempt = 100;
+                        }
+                    },
+                }
+                __attempt += 1;
+            }
+            match __fd < 0 && __attempt < 101 {
+                true => {
+                    libcc2rs::cpp2rust_errno().write(::libc::EEXIST);
+                    -1
+                }
+                false => __fd,
+            }
+        }
+    }
 }
 
 fn f40(a0: Ptr<u8>) -> Ptr<u8> {

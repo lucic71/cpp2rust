@@ -48,6 +48,22 @@ impl CFile {
         }
     }
 
+    pub fn tmpfile() -> Option<CFile> {
+        use nix::fcntl::OFlag;
+        use nix::sys::stat::Mode;
+        match nix::fcntl::open(
+            "/tmp",
+            OFlag::O_TMPFILE | OFlag::O_RDWR | OFlag::O_EXCL,
+            Mode::S_IRUSR | Mode::S_IWUSR,
+        ) {
+            Ok(ofd) => Some(CFile::new(FdRegistry::register(ofd))),
+            Err(e) => {
+                crate::cpp2rust_errno().write(e as i32);
+                None
+            }
+        }
+    }
+
     pub fn read(&mut self, buf: &mut [u8]) -> usize {
         let mut n = 0;
         while n < buf.len() {
