@@ -8,8 +8,8 @@ use syn::parse::{Parse, ParseStream};
 use syn::punctuated::Punctuated;
 use syn::spanned::Spanned;
 use syn::{
-    braced, parse_macro_input, Data, DeriveInput, Error, Expr, Field, Ident, Lit, LitInt, Result,
-    Token, Type,
+    Data, DeriveInput, Error, Expr, Field, Ident, Lit, LitInt, Result, Token, Type, braced,
+    parse_macro_input,
 };
 
 // Describes one storage array of a record and the bit-fields packed into it:
@@ -262,11 +262,10 @@ fn range_assert(field: &BitField) -> TokenStream2 {
     }
     let width = field.width();
     let name = field.name.to_string();
-    if let Some((bits, signed)) = accessor_bits(&field.ty) {
-        if width >= bits && signed == field.signed {
+    if let Some((bits, signed)) = accessor_bits(&field.ty)
+        && width >= bits && signed == field.signed {
             return quote! {};
         }
-    }
     if field.signed {
         let (min, max) = if width == 64 {
             (i64::MIN, i64::MAX)
@@ -280,7 +279,11 @@ fn range_assert(field: &BitField) -> TokenStream2 {
             assert!(v >= #min && v <= #max, #message);
         };
     }
-    let max = Literal::u64_unsuffixed(if width == 64 { u64::MAX } else { (1u64 << width) - 1 });
+    let max = Literal::u64_unsuffixed(if width == 64 {
+        u64::MAX
+    } else {
+        (1u64 << width) - 1
+    });
     let message = format!("bit-field {name} does not fit in {width} bits");
     quote! {
         #[allow(unused_comparisons)]
@@ -418,7 +421,11 @@ mod tests {
                 seen |= span.value_mask() << span.shift_in_value;
             }
             let width = hi - lo;
-            let expected = if width == 64 { u64::MAX } else { (1u64 << width) - 1 };
+            let expected = if width == 64 {
+                u64::MAX
+            } else {
+                (1u64 << width) - 1
+            };
             assert_eq!(seen, expected, "range {lo}..{hi}");
         }
     }

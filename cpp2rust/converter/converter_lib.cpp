@@ -1320,8 +1320,7 @@ unsigned BitFieldRunIndex(const std::vector<BitFieldRun> &runs,
 }
 
 std::string BitFieldSpec(clang::ASTContext &ctx, const clang::FieldDecl *field,
-                         const BitFieldRun &run,
-                         const std::string &type_name) {
+                         const BitFieldRun &run, const std::string &type_name) {
   const auto &layout = ctx.getASTRecordLayout(field->getParent());
   auto lo = layout.getFieldOffset(field->getFieldIndex()) - run.start_byte * 8;
   return std::format("{}: {} @ {}..{} {}", GetNamedDeclAsString(field),

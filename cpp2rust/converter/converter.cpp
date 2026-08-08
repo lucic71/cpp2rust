@@ -1479,9 +1479,9 @@ RsExpr *Converter::BitFieldArith(BitField *field, std::string_view op,
     return Parens(Cat(old, Text(std::string(op)), Parens(rhs)));
   }
   auto *promoted = Parens(arena_.New<Cast>(old, Text(field->promoted_name)));
-  auto *value = Parens(Cat(promoted, Text(std::string(op)),
-                           Parens(arena_.New<Cast>(Parens(rhs),
-                                                   Text(field->promoted_name)))));
+  auto *value = Parens(
+      Cat(promoted, Text(std::string(op)),
+          Parens(arena_.New<Cast>(Parens(rhs), Text(field->promoted_name)))));
   return Parens(arena_.New<Cast>(value, Text(field->type_name)));
 }
 
@@ -1522,8 +1522,8 @@ RsExpr *Converter::LowerBitField(RsExpr *node) {
     RejectSideEffectingBase(field);
     std::string_view op = assign->op;
     op.remove_suffix(1);
-    return LowerBitFieldStore(
-        field, BitFieldArith(field, op, field, assign->right));
+    return LowerBitFieldStore(field,
+                              BitFieldArith(field, op, field, assign->right));
   }
 
   auto *call = clang::dyn_cast<Call>(node);
@@ -1543,7 +1543,8 @@ RsExpr *Converter::LowerBitField(RsExpr *node) {
   if (callee->member == "postfix_inc" || callee->member == "prefix_inc") {
     op = "+";
     is_postfix = callee->member == "postfix_inc";
-  } else if (callee->member == "postfix_dec" || callee->member == "prefix_dec") {
+  } else if (callee->member == "postfix_dec" ||
+             callee->member == "prefix_dec") {
     op = "-";
     is_postfix = callee->member == "postfix_dec";
   } else {
@@ -1552,12 +1553,10 @@ RsExpr *Converter::LowerBitField(RsExpr *node) {
   RejectSideEffectingBase(field);
 
   const char *local = is_postfix ? "__bf_old" : "__bf_new";
-  auto *bound = is_postfix
-                    ? static_cast<RsExpr *>(field)
-                    : BitFieldArith(field, op, field, Text("1"));
-  auto *stored = is_postfix
-                     ? BitFieldArith(field, op, Text(local), Text("1"))
-                     : Text(local);
+  auto *bound = is_postfix ? static_cast<RsExpr *>(field)
+                           : BitFieldArith(field, op, field, Text("1"));
+  auto *stored = is_postfix ? BitFieldArith(field, op, Text(local), Text("1"))
+                            : Text(local);
   return Braces(Cat(Text(keyword::kLet), Text(local), Text(token::kAssign),
                     bound, Text(token::kSemiColon),
                     LowerBitFieldStore(field, stored), Text(token::kSemiColon),
@@ -2537,7 +2536,7 @@ Converter::CallInfo Converter::CollectCallInfo(clang::CallExpr *expr) {
           .expr = arg,
           .has_default = false,
           .kind = (IsLiteral(arg) || info.is_libc_passthrough) ? Kind::Inline
-                                                              : Kind::Hoisted,
+                                                               : Kind::Hoisted,
       });
     }
   }
@@ -3776,13 +3775,12 @@ RsExpr *Converter::VisitInitListExpr(clang::InitListExpr *expr) {
       if (field->isBitField()) {
         auto runs = CollectBitFieldRuns(ctx_, record);
         auto run = BitFieldRunIndex(runs, field);
-        return Cat(Text(GetUnsafeTypeAsString(qual_type)),
-                   Braces(Text(std::format("{}: [0u8; {}],",
-                                           BitStorageName(run),
-                                           runs[run].byte_size))),
-                   Text(std::format(".with_{}(", GetNamedDeclAsString(field))),
-                   ConvertVarInit(field->getType(), expr->getInit(0)),
-                   Text(')'));
+        return Cat(
+            Text(GetUnsafeTypeAsString(qual_type)),
+            Braces(Text(std::format("{}: [0u8; {}],", BitStorageName(run),
+                                    runs[run].byte_size))),
+            Text(std::format(".with_{}(", GetNamedDeclAsString(field))),
+            ConvertVarInit(field->getType(), expr->getInit(0)), Text(')'));
       }
       return Cat(
           Text(GetUnsafeTypeAsString(qual_type)),
@@ -4662,13 +4660,13 @@ RsExpr *Converter::ConvertAssignment(clang::Expr *lhs, clang::Expr *rhs,
             ConvertAddrOf(lhs, ctx_.getPointerType(lhs->getType())),
             Text(token::kSemiColon));
     auto *rhs_node = ConvertFreshRValue(rhs, lhs->getType());
-    auto *node = Cat(
-        lhs_binding,
-        MakeAssignment(
-            Parens(arena_.New<Unary>(Unary::Op::Deref, Text("__lhs"))),
-            assign_operator, rhs_node),
-        Text(token::kSemiColon),
-        Parens(arena_.New<Unary>(Unary::Op::Deref, Text("__lhs"))));
+    auto *node =
+        Cat(lhs_binding,
+            MakeAssignment(
+                Parens(arena_.New<Unary>(Unary::Op::Deref, Text("__lhs"))),
+                assign_operator, rhs_node),
+            Text(token::kSemiColon),
+            Parens(arena_.New<Unary>(Unary::Op::Deref, Text("__lhs"))));
     return Braces(node, true);
   }
 
