@@ -41,6 +41,12 @@ struct RsExpr {
     Conditional,
     Binary,
     Literal,
+    Let,
+    Return,
+    If,
+    Loop,
+    Break,
+    Continue,
     Assign,
     CompoundAssign,
     Fn,
@@ -403,6 +409,153 @@ struct Literal : RsExpr {
 
   std::string text;
   Category category;
+
+  void dump(llvm::raw_ostream &os, unsigned depth = 0) override;
+};
+
+struct Let : RsExpr {
+  Let(std::string name, bool is_mut, RsExpr *type, RsExpr *init)
+      : RsExpr(Kind::Let), name(std::move(name)), is_mut(is_mut), type(type),
+        init(init) {}
+
+  static bool classof(const RsExpr *e) { return e->kind == Kind::Let; }
+
+  std::string print() const override {
+    std::string result = "let ";
+    if (is_mut) {
+      result += "mut ";
+    }
+    result += name;
+    if (type != nullptr) {
+      result += ": " + type->print();
+    }
+    if (init != nullptr) {
+      result += " = " + init->print();
+    }
+    return result + "; ";
+  }
+
+  void ForEachChild(llvm::function_ref<void(RsExpr *&)> fn) override {
+    if (type != nullptr) {
+      fn(type);
+    }
+    if (init != nullptr) {
+      fn(init);
+    }
+  }
+
+  std::string name;
+  bool is_mut;
+  RsExpr *type;
+  RsExpr *init;
+
+  void dump(llvm::raw_ostream &os, unsigned depth = 0) override;
+};
+
+struct Return : RsExpr {
+  explicit Return(RsExpr *value) : RsExpr(Kind::Return), value(value) {}
+
+  static bool classof(const RsExpr *e) { return e->kind == Kind::Return; }
+
+  std::string print() const override {
+    return value != nullptr ? "return " + value->print() : "return ";
+  }
+
+  void ForEachChild(llvm::function_ref<void(RsExpr *&)> fn) override {
+    if (value != nullptr) {
+      fn(value);
+    }
+  }
+
+  RsExpr *value;
+
+  void dump(llvm::raw_ostream &os, unsigned depth = 0) override;
+};
+
+struct If : RsExpr {
+  If(RsExpr *cond, RsExpr *then, RsExpr *els)
+      : RsExpr(Kind::If), cond(cond), then(then), els(els) {}
+
+  static bool classof(const RsExpr *e) { return e->kind == Kind::If; }
+
+  std::string print() const override {
+    std::string result = "if " + cond->print() + "{ " + then->print() + "} ";
+    if (els != nullptr) {
+      result += "else " + els->print();
+    }
+    return result;
+  }
+
+  void ForEachChild(llvm::function_ref<void(RsExpr *&)> fn) override {
+    fn(cond);
+    fn(then);
+    if (els != nullptr) {
+      fn(els);
+    }
+  }
+
+  RsExpr *cond;
+  RsExpr *then;
+  RsExpr *els;
+
+  void dump(llvm::raw_ostream &os, unsigned depth = 0) override;
+};
+
+struct Loop : RsExpr {
+  Loop(std::string label, std::string keyword, RsExpr *header, RsExpr *body)
+      : RsExpr(Kind::Loop), label(std::move(label)),
+        keyword(std::move(keyword)), header(header), body(body) {}
+
+  static bool classof(const RsExpr *e) { return e->kind == Kind::Loop; }
+
+  std::string print() const override {
+    std::string result;
+    if (!label.empty()) {
+      result += label + ": ";
+    }
+    return result + keyword + ' ' + header->print() + "{ " + body->print() +
+           "} ";
+  }
+
+  void ForEachChild(llvm::function_ref<void(RsExpr *&)> fn) override {
+    fn(header);
+    fn(body);
+  }
+
+  std::string label;
+  std::string keyword;
+  RsExpr *header;
+  RsExpr *body;
+
+  void dump(llvm::raw_ostream &os, unsigned depth = 0) override;
+};
+
+struct Break : RsExpr {
+  explicit Break(std::string label)
+      : RsExpr(Kind::Break), label(std::move(label)) {}
+
+  static bool classof(const RsExpr *e) { return e->kind == Kind::Break; }
+
+  std::string print() const override {
+    return label.empty() ? "break " : "break " + label + ' ';
+  }
+
+  std::string label;
+
+  void dump(llvm::raw_ostream &os, unsigned depth = 0) override;
+};
+
+struct Continue : RsExpr {
+  explicit Continue(std::string label)
+      : RsExpr(Kind::Continue), label(std::move(label)) {}
+
+  static bool classof(const RsExpr *e) { return e->kind == Kind::Continue; }
+
+  std::string print() const override {
+    return label.empty() ? "continue " : "continue " + label + ' ';
+  }
+
+  std::string label;
 
   void dump(llvm::raw_ostream &os, unsigned depth = 0) override;
 };

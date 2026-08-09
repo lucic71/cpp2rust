@@ -79,6 +79,18 @@ const char *KindName(RsExpr::Kind kind) {
     return "Binary";
   case RsExpr::Kind::Literal:
     return "Literal";
+  case RsExpr::Kind::Let:
+    return "Let";
+  case RsExpr::Kind::Return:
+    return "Return";
+  case RsExpr::Kind::If:
+    return "If";
+  case RsExpr::Kind::Loop:
+    return "Loop";
+  case RsExpr::Kind::Break:
+    return "Break";
+  case RsExpr::Kind::Continue:
+    return "Continue";
   case RsExpr::Kind::Assign:
     return "Assign";
   case RsExpr::Kind::CompoundAssign:
@@ -206,6 +218,34 @@ void Closure::dump(llvm::raw_ostream &os, unsigned depth) {
 void Conditional::dump(llvm::raw_ostream &os, unsigned depth) {
   DumpHeader(this, os, depth);
   DumpChildren(this, os, depth);
+}
+
+void Let::dump(llvm::raw_ostream &os, unsigned depth) {
+  DumpHeader(this, os, depth, (is_mut ? "mut " : "") + name);
+  DumpChildren(this, os, depth);
+}
+
+void Return::dump(llvm::raw_ostream &os, unsigned depth) {
+  DumpHeader(this, os, depth);
+  DumpChildren(this, os, depth);
+}
+
+void If::dump(llvm::raw_ostream &os, unsigned depth) {
+  DumpHeader(this, os, depth);
+  DumpChildren(this, os, depth);
+}
+
+void Loop::dump(llvm::raw_ostream &os, unsigned depth) {
+  DumpHeader(this, os, depth, label.empty() ? keyword : label + ": " + keyword);
+  DumpChildren(this, os, depth);
+}
+
+void Break::dump(llvm::raw_ostream &os, unsigned depth) {
+  DumpHeader(this, os, depth, label);
+}
+
+void Continue::dump(llvm::raw_ostream &os, unsigned depth) {
+  DumpHeader(this, os, depth, label);
 }
 
 void Binary::dump(llvm::raw_ostream &os, unsigned depth) {

@@ -1512,12 +1512,12 @@ RsExpr *Converter::BitFieldArith(BitField *field, std::string_view op,
 
 RsExpr *Converter::LowerBitFieldStore(BitField *field, RsExpr *value) {
   if (BitFieldStoreNeedsTemp() && !clang::isa<Verbatim, Literal>(value)) {
-    return Braces(Cat(Text(keyword::kLet), Text("__bf_v"), Text(token::kAssign),
-                      value, Text(token::kSemiColon),
-                      MethodCall(field->object, field->Setter(),
-                                 std::vector<RsExpr *>{Text("__bf_v")},
-                                 /*is_mut=*/true)),
-                  true);
+    return Braces(
+        Cat(arena_.New<Let>("__bf_v", /*is_mut=*/false, nullptr, value),
+            MethodCall(field->object, field->Setter(),
+                       std::vector<RsExpr *>{Text("__bf_v")},
+                       /*is_mut=*/true)),
+        true);
   }
   return MethodCall(field->object, field->Setter(),
                     std::vector<RsExpr *>{value}, /*is_mut=*/true);
@@ -1582,8 +1582,7 @@ RsExpr *Converter::LowerBitField(RsExpr *node) {
                            : BitFieldArith(field, op, field, Text("1"));
   auto *stored = is_postfix ? BitFieldArith(field, op, Text(local), Text("1"))
                             : Text(local);
-  return Braces(Cat(Text(keyword::kLet), Text(local), Text(token::kAssign),
-                    bound, Text(token::kSemiColon),
+  return Braces(Cat(arena_.New<Let>(local, /*is_mut=*/false, nullptr, bound),
                     LowerBitFieldStore(field, stored), Text(token::kSemiColon),
                     Text(local)),
                 true);
@@ -1847,10 +1846,10 @@ RsExpr *Converter::VisitReturnStmt(clang::ReturnStmt *stmt) {
   auto return_type = curr_function_->getReturnType();
   if (!return_type->isVoidType()) {
     auto *init = ConvertVarInit(return_type, stmt->getRetValue());
-    return Cat(Text(keyword::kReturn), init);
+    return arena_.New<Return>(init);
   }
   auto *value = ConvertExpr(stmt->getRetValue());
-  return Cat(value, Text(token::kSemiColon), Text(keyword::kReturn),
+  return Cat(value, Text(token::kSemiColon), arena_.New<Return>(nullptr),
              Text(token::kSemiColon));
 }
 
@@ -1866,16 +1865,15 @@ RsExpr *Converter::ConvertCondition(clang::Expr *cond) {
 
 RsExpr *Converter::VisitIfStmt(clang::IfStmt *stmt) {
   auto *cond = ConvertCondition(stmt->getCond());
-  auto *then = Braces(ConvertFullStmt(stmt->getThen()));
-  auto *node = Cat(Text(keyword::kIf), cond, then);
+  auto *then = ConvertFullStmt(stmt->getThen());
+  RsExpr *els = nullptr;
   if (stmt->hasElseStorage()) {
-    auto *els = ConvertFullStmt(stmt->getElse());
+    els = ConvertFullStmt(stmt->getElse());
     if (!clang::isa<clang::IfStmt>(stmt->getElse())) {
       els = Braces(els);
     }
-    node = Cat(node, Text(keyword::kElse), els);
   }
-  return node;
+  return arena_.New<If>(cond, then, els);
 }
 
 RsExpr *Converter::VisitWhileStmt(clang::WhileStmt *stmt) {
@@ -1884,7 +1882,7 @@ RsExpr *Converter::VisitWhileStmt(clang::WhileStmt *stmt) {
   curr_for_inc_.emplace_back(nullptr);
   auto *body = ConvertFullStmt(stmt->getBody());
   curr_for_inc_.pop_back();
-  return Cat(Text("'loop_:"), Text(keyword::kWhile), cond, Braces(body));
+  return arena_.New<Loop>("'loop_", keyword::kWhile, cond, body);
 }
 
 RsExpr *Converter::VisitDoStmt(clang::DoStmt *stmt) {
@@ -1894,12 +1892,14 @@ RsExpr *Converter::VisitDoStmt(clang::DoStmt *stmt) {
   curr_for_inc_.emplace_back(nullptr);
   auto *body = ConvertFullStmt(stmt->getBody());
   curr_for_inc_.pop_back();
-  return Cat(Text(keyword::kLet), Text("mut"), Text(control_var),
-             Text(token::kAssign), Text(keyword::kTrue),
-             Text(token::kSemiColon), Text("'loop_:"), Text(keyword::kWhile),
-             Text(control_var), Text("||"), Parens(cond),
-             Braces(Cat(Text(control_var), Text(token::kAssign),
-                        Text(keyword::kFalse), Text(token::kSemiColon), body)));
+  auto *header =
+      arena_.New<Binary>(clang::BO_LOr, Text(control_var), Parens(cond));
+  return Cat(arena_.New<Let>(control_var, /*is_mut=*/true, nullptr,
+                             Text(keyword::kTrue)),
+             arena_.New<Loop>("'loop_", keyword::kWhile, header,
+                              Cat(arena_.New<Assign>(Text(control_var),
+                                                     Text(keyword::kFalse)),
+                                  Text(token::kSemiColon), body)));
 }
 
 RsExpr *Converter::VisitForStmt(clang::ForStmt *stmt) {
@@ -1915,8 +1915,8 @@ RsExpr *Converter::VisitForStmt(clang::ForStmt *stmt) {
   auto *body = ConvertFullStmt(stmt->getBody());
   curr_for_inc_.pop_back();
   auto *inc = Cat(ConvertExpr(stmt->getInc()), Text(token::kSemiColon));
-  return Cat(init, Text("'loop_:"), Text(keyword::kWhile), cond,
-             Braces(Cat(body, inc)));
+  return Cat(init,
+             arena_.New<Loop>("'loop_", keyword::kWhile, cond, Cat(body, inc)));
 }
 
 RsExpr *Converter::ConvertLoopVariable(clang::VarDecl *decl,
@@ -1979,9 +1979,11 @@ RsExpr *Converter::VisitCXXForRangeStmtMap(clang::CXXForRangeStmt *stmt) {
   auto *range_init = ConvertExpr(stmt->getRangeInit());
   auto *body = ConvertForRangeBody(stmt, loop_var);
 
-  return Cat(Text("'loop_:"), Text(keyword::kFor), Text(loop_var_name),
-             Text(keyword::kIn), Text("UnsafeMapIterator::begin(&"), range_init,
-             Text(std::format(" as *const {})", map_type)), Braces(body));
+  return arena_.New<Loop>("'loop_", keyword::kFor,
+                          Cat(Text(loop_var_name), Text(keyword::kIn),
+                              Text("UnsafeMapIterator::begin(&"), range_init,
+                              Text(std::format(" as *const {})", map_type))),
+                          body);
 }
 
 RsExpr *Converter::VisitCXXForRangeStmtString(clang::CXXForRangeStmt *stmt) {
@@ -2000,28 +2002,22 @@ RsExpr *Converter::VisitCXXForRangeStmtIndexBased(clang::CXXForRangeStmt *stmt,
   auto *range_init = ConvertExpr(stmt->getRangeInit());
   auto *range = Parens(Cat(range_init, Text(token::kDot), Text(len_suffix)));
 
-  std::vector<RsExpr *> body_parts;
-  body_parts.push_back(Text(keyword::kLet));
   auto loop_var_type = loop_var->getType();
-  if (!loop_var_type.isConstQualified()) {
-    body_parts.push_back(Text(keyword_mut_));
-  }
-  body_parts.push_back(Text(loop_var_name));
-  body_parts.push_back(Text(token::kAssign));
-  body_parts.push_back(ConvertLoopVariable(loop_var, stmt->getRangeInit()));
-  body_parts.push_back(Text(token::kSemiColon));
-  body_parts.push_back(ConvertForRangeBody(stmt));
+  auto *shadow =
+      arena_.New<Let>(loop_var_name, !loop_var_type.isConstQualified(), nullptr,
+                      ConvertLoopVariable(loop_var, stmt->getRangeInit()));
+  auto *body = Cat(shadow, ConvertForRangeBody(stmt));
 
-  return Cat(Text("'loop_:"), Text(keyword::kFor), Text(loop_var_name),
-             Text(keyword::kIn), Text("0.."), range,
-             Braces(arena_.New<Concat>(std::move(body_parts))));
+  return arena_.New<Loop>(
+      "'loop_", keyword::kFor,
+      Cat(Text(loop_var_name), Text(keyword::kIn), Text("0.."), range), body);
 }
 
 RsExpr *Converter::VisitBreakStmt([[maybe_unused]] clang::BreakStmt *stmt) {
   if (isSwitchBreak()) {
-    return Cat(Text(keyword::kBreak), Text("'switch"));
+    return arena_.New<Break>("'switch");
   }
-  return Text(keyword::kBreak);
+  return arena_.New<Break>("");
 }
 
 RsExpr *
@@ -2031,8 +2027,7 @@ Converter::VisitContinueStmt([[maybe_unused]] clang::ContinueStmt *stmt) {
     parts.push_back(ConvertExpr(curr_for_inc_.back()));
     parts.push_back(Text(token::kSemiColon));
   }
-  parts.push_back(Text(keyword::kContinue));
-  parts.push_back(Text("'loop_"));
+  parts.push_back(arena_.New<Continue>("'loop_"));
   return arena_.New<Concat>(std::move(parts));
 }
 
@@ -3159,10 +3154,9 @@ RsExpr *Converter::ConvertBinaryOperator(clang::BinaryOperator *expr) {
     RsExpr *lhs_node = nullptr;
     RsExpr *lhs_again = nullptr;
     if (hoist_lhs) {
-      lhs_binding =
-          Cat(Text(keyword::kLet), Text("__lhs"), Text(token::kAssign),
-              ConvertAddrOf(lhs, ctx_.getPointerType(lhs->getType())),
-              Text(token::kSemiColon));
+      lhs_binding = arena_.New<Let>(
+          "__lhs", /*is_mut=*/false, nullptr,
+          ConvertAddrOf(lhs, ctx_.getPointerType(lhs->getType())));
       lhs_node = Parens(arena_.New<Unary>(Unary::Op::Deref, Text("__lhs")));
       lhs_again = Parens(arena_.New<Unary>(Unary::Op::Deref, Text("__lhs")));
     } else {
@@ -3216,10 +3210,9 @@ RsExpr *Converter::ConvertBinaryOperator(clang::BinaryOperator *expr) {
     RsExpr *assign_target = nullptr;
     if (expr->isCompoundAssignmentOp()) {
       if (hoist_lhs) {
-        lhs_binding =
-            Cat(Text(keyword::kLet), Text("__lhs"), Text(token::kAssign),
-                ConvertAddrOf(lhs, ctx_.getPointerType(lhs->getType())),
-                Text(token::kSemiColon));
+        lhs_binding = arena_.New<Let>(
+            "__lhs", /*is_mut=*/false, nullptr,
+            ConvertAddrOf(lhs, ctx_.getPointerType(lhs->getType())));
         assign_target =
             Parens(arena_.New<Unary>(Unary::Op::Deref, Text("__lhs")));
       } else {
@@ -3257,9 +3250,9 @@ RsExpr *Converter::ConvertBinaryOperator(clang::BinaryOperator *expr) {
       bool hoist_lhs = lhs->HasSideEffects(ctx_);
       RsExpr *lhs_binding =
           hoist_lhs
-              ? Cat(Text(keyword::kLet), Text("__lhs"), Text(token::kAssign),
-                    ConvertAddrOf(lhs, ctx_.getPointerType(lhs->getType())),
-                    Text(token::kSemiColon))
+              ? static_cast<RsExpr *>(arena_.New<Let>(
+                    "__lhs", /*is_mut=*/false, nullptr,
+                    ConvertAddrOf(lhs, ctx_.getPointerType(lhs->getType()))))
               : nullptr;
       auto *lhs_node =
           hoist_lhs ? Parens(arena_.New<Unary>(Unary::Op::Deref, Text("__lhs")))
@@ -4689,10 +4682,9 @@ RsExpr *Converter::ConvertAssignment(clang::Expr *lhs, clang::Expr *rhs,
   bool is_bitfield = AsBitFieldMember(lhs) != nullptr;
   if (!is_bitfield && !isVoid() && assign_operator != "=" &&
       lhs->HasSideEffects(ctx_)) {
-    auto *lhs_binding =
-        Cat(Text(keyword::kLet), Text("__lhs"), Text(token::kAssign),
-            ConvertAddrOf(lhs, ctx_.getPointerType(lhs->getType())),
-            Text(token::kSemiColon));
+    auto *lhs_binding = arena_.New<Let>(
+        "__lhs", /*is_mut=*/false, nullptr,
+        ConvertAddrOf(lhs, ctx_.getPointerType(lhs->getType())));
     auto *rhs_node = ConvertFreshRValue(rhs, lhs->getType());
     auto *node =
         Cat(lhs_binding,
@@ -4712,10 +4704,10 @@ RsExpr *Converter::ConvertAssignment(clang::Expr *lhs, clang::Expr *rhs,
   auto *rhs_node = ConvertFreshRValue(rhs, lhs->getType());
 
   if (!isVoid() && assign_operator == "=" && lhs->HasSideEffects(ctx_)) {
-    auto *node = Cat(Text(keyword::kLet), Text("__rhs"), Text(token::kAssign),
-                     rhs_node, Text(token::kSemiColon),
-                     MakeAssignment(lhs_node, "=", Text("__rhs")),
-                     Text(token::kSemiColon), Text("__rhs"));
+    auto *node =
+        Cat(arena_.New<Let>("__rhs", /*is_mut=*/false, nullptr, rhs_node),
+            MakeAssignment(lhs_node, "=", Text("__rhs")),
+            Text(token::kSemiColon), Text("__rhs"));
     return Braces(node, true);
   }
 

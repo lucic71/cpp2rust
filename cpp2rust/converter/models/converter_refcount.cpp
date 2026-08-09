@@ -960,8 +960,8 @@ RsExpr *ConverterRefCount::LowerPtrUse(RsExpr *node) {
       op.remove_suffix(1); // remove '='
       auto *value = Cat(arena_.New<PtrRead>(Text("_ptr")),
                         Text(std::string(op)), assign->right);
-      return Braces(Cat(Text(keyword::kLet), Text("_ptr"), Text(token::kAssign),
-                        arena_.New<Clone>(ptr), Text(token::kSemiColon),
+      return Braces(Cat(arena_.New<Let>("_ptr", /*is_mut=*/false, nullptr,
+                                        arena_.New<Clone>(ptr)),
                         arena_.New<PtrWrite>(Text("_ptr"), value)));
     }
     if (auto *ptr = assign->left->TakePtr(Text("__v"))) {
@@ -1077,8 +1077,8 @@ RsExpr *ConverterRefCount::HoistBorrowedObject(Accessor *acc) {
   }
   auto *hoisted = acc->object;
   acc->object = Text("__ptr");
-  return Cat(Text(keyword::kLet), Text("__ptr"), Text(token::kAssign),
-             arena_.New<Clone>(hoisted), Text(token::kSemiColon));
+  return arena_.New<Let>("__ptr", /*is_mut=*/false, nullptr,
+                         arena_.New<Clone>(hoisted));
 }
 
 RsExpr *ConverterRefCount::HoistPtrWrite(PtrWrite *write) {
@@ -1094,8 +1094,7 @@ RsExpr *ConverterRefCount::HoistPtrWrite(PtrWrite *write) {
   if (hoist_value) {
     auto *value = write->value;
     write->value = Text("__rhs");
-    parts.push_back(Cat(Text(keyword::kLet), Text("__rhs"),
-                        Text(token::kAssign), value, Text(token::kSemiColon)));
+    parts.push_back(arena_.New<Let>("__rhs", /*is_mut=*/false, nullptr, value));
   }
   parts.push_back(write);
   return Braces(arena_.New<Concat>(std::move(parts)));
@@ -1129,9 +1128,9 @@ RsExpr *ConverterRefCount::HoistPtrUse(RsExpr *node) {
       if (auto *hoisted = HoistPtrUse(inner_with)) {
         inner_with = hoisted;
       }
-      return Braces(Cat(Text(keyword::kLet), Text("__obj"),
-                        Text(token::kAssign), obj_read, Text(token::kSemiColon),
-                        inner_with));
+      return Braces(
+          Cat(arena_.New<Let>("__obj", /*is_mut=*/false, nullptr, obj_read),
+              inner_with));
     }
   }
   if (auto *inner = HoistPtrUse(closure->body)) {
@@ -1160,8 +1159,7 @@ RsExpr *ConverterRefCount::HoistPtrUse(RsExpr *node) {
   if (hoist_rhs) {
     auto *rhs = *right;
     *right = Text("__rhs");
-    parts.push_back(Cat(Text(keyword::kLet), Text("__rhs"),
-                        Text(token::kAssign), rhs, Text(token::kSemiColon)));
+    parts.push_back(arena_.New<Let>("__rhs", /*is_mut=*/false, nullptr, rhs));
   }
   parts.push_back(node);
   return Braces(arena_.New<Concat>(std::move(parts)));
@@ -1858,9 +1856,9 @@ RsExpr *ConverterRefCount::ConvertBinaryOperator(clang::BinaryOperator *expr) {
         lhs->HasSideEffects(ctx_) && AsBitFieldMember(lhs) == nullptr;
     RsExpr *lhs_binding =
         hoist_lhs
-            ? Cat(Text(keyword::kLet), Text("__lhs"), Text(token::kAssign),
-                  ConvertAddrOf(lhs, ctx_.getPointerType(lhs->getType())),
-                  Text(token::kSemiColon))
+            ? static_cast<RsExpr *>(arena_.New<Let>(
+                  "__lhs", /*is_mut=*/false, nullptr,
+                  ConvertAddrOf(lhs, ctx_.getPointerType(lhs->getType()))))
             : nullptr;
     RsExpr *value = nullptr;
     if (IsUnsignedArithOp(assign)) {
@@ -1890,8 +1888,8 @@ RsExpr *ConverterRefCount::ConvertBinaryOperator(clang::BinaryOperator *expr) {
         hoist_lhs ? Parens(arena_.New<Unary>(Unary::Op::Deref, Text("__lhs")))
                   : ConvertLValue(lhs),
         Text("rhs_0"));
-    auto *node = Cat(Text(keyword::kLet), Text("rhs_0"), Text(token::kAssign),
-                     value, Text(token::kSemiColon), assign_node);
+    auto *node = Cat(arena_.New<Let>("rhs_0", /*is_mut=*/false, nullptr, value),
+                     assign_node);
     if (isRValue()) {
       node = Cat(
           node, Text(token::kSemiColon),
@@ -1909,9 +1907,9 @@ RsExpr *ConverterRefCount::ConvertBinaryOperator(clang::BinaryOperator *expr) {
         expr->isCompoundAssignmentOp() && lhs->HasSideEffects(ctx_);
     RsExpr *lhs_binding =
         hoist_lhs
-            ? Cat(Text(keyword::kLet), Text("__lhs"), Text(token::kAssign),
-                  ConvertAddrOf(lhs, ctx_.getPointerType(lhs->getType())),
-                  Text(token::kSemiColon))
+            ? static_cast<RsExpr *>(arena_.New<Let>(
+                  "__lhs", /*is_mut=*/false, nullptr,
+                  ConvertAddrOf(lhs, ctx_.getPointerType(lhs->getType()))))
             : nullptr;
     RsExpr *operand = nullptr;
     if (hoist_lhs) {
@@ -1928,8 +1926,9 @@ RsExpr *ConverterRefCount::ConvertBinaryOperator(clang::BinaryOperator *expr) {
           hoist_lhs ? Parens(arena_.New<Unary>(Unary::Op::Deref, Text("__lhs")))
                     : ConvertLValue(lhs),
           Text("rhs_0"));
-      auto *node = Cat(Text(keyword::kLet), Text("rhs_0"), Text(token::kAssign),
-                       arith, Text(token::kSemiColon), assign_node);
+      auto *node =
+          Cat(arena_.New<Let>("rhs_0", /*is_mut=*/false, nullptr, arith),
+              assign_node);
       if (isRValue()) {
         node =
             Cat(node, Text(token::kSemiColon),
@@ -2364,9 +2363,11 @@ ConverterRefCount::VisitCXXForRangeStmtMap(clang::CXXForRangeStmt *stmt) {
 
   auto *body = ConvertForRangeBody(stmt, loop_var);
 
-  return Cat(Text("'loop_:"), Text(keyword::kFor), Text(loop_var_name),
-             Text(keyword::kIn), Text("RefcountMapIter::begin("), range_init,
-             Text(')'), Braces(Cat(shadow, body)));
+  return arena_.New<Loop>("'loop_", keyword::kFor,
+                          Cat(Text(loop_var_name), Text(keyword::kIn),
+                              Text("RefcountMapIter::begin("), range_init,
+                              Text(')')),
+                          Cat(shadow, body));
 }
 
 RsExpr *
@@ -2409,13 +2410,14 @@ ConverterRefCount::VisitCXXForRangeStmtVector(clang::CXXForRangeStmt *stmt) {
 
   auto *body = ConvertForRangeBody(stmt);
 
-  return Cat(
-      Text("'loop_:"), Text(keyword::kFor),
-      Text(stmt->getLoopVariable()->getType().isConstQualified() ? "" : "mut"),
-      Text(loop_var_name), Text(keyword::kIn),
-      arena_.New<Cast>(range_init, ptr_type,
-                       loop_var->getType().getNonReferenceType()),
-      Braces(Cat(shadow, body)));
+  return arena_.New<Loop>(
+      "'loop_", keyword::kFor,
+      Cat(Text(stmt->getLoopVariable()->getType().isConstQualified() ? ""
+                                                                     : "mut"),
+          Text(loop_var_name), Text(keyword::kIn),
+          arena_.New<Cast>(range_init, ptr_type,
+                           loop_var->getType().getNonReferenceType())),
+      Cat(shadow, body));
 }
 
 RsExpr *
@@ -2431,12 +2433,14 @@ ConverterRefCount::VisitCXXForRangeStmtString(clang::CXXForRangeStmt *stmt) {
                                        Unary::Op::Deref, Text(loop_var_name))));
   auto *body = ConvertForRangeBody(stmt);
 
-  return Cat(
-      Text("'loop_:"), Text(keyword::kFor),
-      Text(stmt->getLoopVariable()->getType().isConstQualified() ? "" : "mut"),
-      Text(loop_var_name), Text(keyword::kIn), range_init,
-      Text(".to_string_iterator() as StringIterator<"), iter_type, Text('>'),
-      Braces(Cat(shadow, body)));
+  return arena_.New<Loop>(
+      "'loop_", keyword::kFor,
+      Cat(Text(stmt->getLoopVariable()->getType().isConstQualified() ? ""
+                                                                     : "mut"),
+          Text(loop_var_name), Text(keyword::kIn), range_init,
+          Text(".to_string_iterator() as StringIterator<"), iter_type,
+          Text('>')),
+      Cat(shadow, body));
 }
 
 RsExpr *
@@ -2668,19 +2672,17 @@ RsExpr *ConverterRefCount::ConvertAssignment(clang::Expr *lhs, clang::Expr *rhs,
       !isVoid() && assign_operator == "=" && lhs->HasSideEffects(ctx_);
   bool hoisted_rhs = yields_rhs || MayCauseBorrowMutError(lhs, rhs);
   if (hoisted_rhs) {
-    parts.push_back(Cat(Text(keyword::kLet), Text("__rhs"),
-                        Text(token::kAssign), rhs_node,
-                        Text(token::kSemiColon)));
+    parts.push_back(
+        arena_.New<Let>("__rhs", /*is_mut=*/false, nullptr, rhs_node));
     rhs_node = Text("__rhs");
   }
 
   bool hoist_lhs = !isVoid() && !yields_rhs && lhs->HasSideEffects(ctx_) &&
                    AsBitFieldMember(lhs) == nullptr;
   if (hoist_lhs) {
-    parts.push_back(Cat(Text(keyword::kLet), Text("__lhs"),
-                        Text(token::kAssign),
-                        ConvertAddrOf(lhs, ctx_.getPointerType(lhs->getType())),
-                        Text(token::kSemiColon)));
+    parts.push_back(arena_.New<Let>(
+        "__lhs", /*is_mut=*/false, nullptr,
+        ConvertAddrOf(lhs, ctx_.getPointerType(lhs->getType()))));
   }
 
   auto *lhs_node =
