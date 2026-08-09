@@ -307,6 +307,9 @@ void Converter::LowerNodes(RsExpr *&node) {
     node = lowered;
   }
   node->ForEachChild([this](RsExpr *&child) { LowerNodes(child); });
+  if (auto *widened = WidenPtrWith(node)) {
+    node = widened;
+  }
   if (auto *lowered = LowerRedundantClone(node)) {
     node = lowered;
   }

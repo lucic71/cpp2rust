@@ -165,13 +165,12 @@ fn main_0() -> i32 {
         fill_1(_out, _cap)
     });
     assert!(
-        (((((c
+        ((((c
             .as_pointer()
             .reinterpret_cast::<u8>()
             .offset(0usize)
             .reinterpret_cast::<record>() as Ptr<record>)
-            .with(|__v| __v.code) as i32)
-            == 2) as i32)
+            .with(|__v| (__v.code as i32) == 2)) as i32)
             != 0)
     );
     assert!(

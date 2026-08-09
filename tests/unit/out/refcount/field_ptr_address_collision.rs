@@ -106,23 +106,19 @@ fn main_0() -> i32 {
         __obj.with_mut(|__v| __v.a = 33_i64)
     };
     assert!(
-        (((((*h.borrow())
-            .with(|__v| __v.words.offset(((0) as isize)).clone())
-            .read())
-            == 11_i64) as i32)
+        ((((*h.borrow()).with(|__v| (__v.words.offset(((0) as isize)).clone().read()) == 11_i64))
+            as i32)
             != 0)
     );
     assert!(
-        (((((*h.borrow())
-            .with(|__v| __v.words.offset(((1) as isize)).clone())
-            .read())
-            == 22_i64) as i32)
+        ((((*h.borrow()).with(|__v| (__v.words.offset(((1) as isize)).clone().read()) == 22_i64))
+            as i32)
             != 0)
     );
     assert!(
-        ((((*h.borrow()).with(|__v| __v.field.clone().with(|__v| __v.a)) == 33_i64) as i32) != 0)
+        ((((*h.borrow()).with(|__v| __v.field.clone().with(|__v| __v.a) == 33_i64)) as i32) != 0)
     );
-    assert!(((((*o.borrow()).with(|__v| __v.tag) == 7_i64) as i32) != 0));
+    assert!(((((*o.borrow()).with(|__v| __v.tag == 7_i64)) as i32) != 0));
     libcc2rs::free_refcount(
         (((*h.borrow()).with(|__v| __v.words.clone())) as Ptr<i64>)
             .to_any()

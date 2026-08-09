@@ -168,23 +168,21 @@ fn main_0() -> i32 {
         ((c.as_pointer()) as Ptr<Container>).to_any().clone()
     };
     assert!(
-        (((((c
+        ((((c
             .as_pointer()
             .reinterpret_cast::<u8>()
             .offset(0usize)
             .reinterpret_cast::<shape_a>() as Ptr<shape_a>)
-            .with(|__v| __v.code) as i32)
-            == 0) as i32)
+            .with(|__v| (__v.code as i32) == 0)) as i32)
             != 0)
     );
     assert!(
-        (((((c
+        ((((c
             .as_pointer()
             .reinterpret_cast::<u8>()
             .offset(0usize)
             .reinterpret_cast::<shape_b>() as Ptr<shape_b>)
-            .with(|__v| __v.lo) as i32)
-            == 0) as i32)
+            .with(|__v| (__v.lo as i32) == 0)) as i32)
             != 0)
     );
     assert!(
@@ -242,13 +240,12 @@ fn main_0() -> i32 {
             .clone()
     };
     assert!(
-        (((((c
+        ((((c
             .as_pointer()
             .reinterpret_cast::<u8>()
             .offset(0usize)
             .reinterpret_cast::<shape_b>() as Ptr<shape_b>)
-            .with(|__v| __v.code) as i32)
-            == 2) as i32)
+            .with(|__v| (__v.code as i32) == 2)) as i32)
             != 0)
     );
     assert!(
@@ -275,41 +272,37 @@ fn main_0() -> i32 {
         ((c.as_pointer()) as Ptr<Container>).to_any().clone()
     };
     assert!(
-        (((((c
+        ((((c
             .as_pointer()
             .reinterpret_cast::<u8>()
             .offset(0usize)
             .reinterpret_cast::<shape_b>() as Ptr<shape_b>)
-            .with(|__v| __v.code) as i32)
-            == 0) as i32)
+            .with(|__v| (__v.code as i32) == 0)) as i32)
             != 0)
     );
     assert!((((4usize == 4_usize) as i32) != 0));
     assert!(
-        (((((((((((c
+        ((((((((((c
             .as_pointer()
             .reinterpret_cast::<u8>()
             .offset(0usize)
             .reinterpret_cast::<shape_c>() as Ptr<shape_c>)
-            .with(|__v| __v.f1()) as i32)
-            == 0) as i32)
+            .with(|__v| (__v.f1() as i32) == 0)) as i32)
             != 0)
-            && (((((c
+            && ((((c
                 .as_pointer()
                 .reinterpret_cast::<u8>()
                 .offset(0usize)
                 .reinterpret_cast::<shape_c>() as Ptr<shape_c>)
-                .with(|__v| __v.f2()) as i32)
-                == 0) as i32)
+                .with(|__v| (__v.f2() as i32) == 0)) as i32)
                 != 0)) as i32)
             != 0)
-            && (((((c
+            && ((((c
                 .as_pointer()
                 .reinterpret_cast::<u8>()
                 .offset(0usize)
                 .reinterpret_cast::<shape_c>() as Ptr<shape_c>)
-                .with(|__v| __v.f3()) as i32)
-                == 0) as i32)
+                .with(|__v| (__v.f3() as i32) == 0)) as i32)
                 != 0)) as i32)
             != 0)
     );
@@ -360,41 +353,37 @@ fn main_0() -> i32 {
             .clone()
     };
     assert!(
-        (((((((((((c
+        ((((((((((c
             .as_pointer()
             .reinterpret_cast::<u8>()
             .offset(0usize)
             .reinterpret_cast::<shape_c>() as Ptr<shape_c>)
-            .with(|__v| __v.f1()) as i32)
-            == 1) as i32)
+            .with(|__v| (__v.f1() as i32) == 1)) as i32)
             != 0)
-            && (((((c
+            && ((((c
                 .as_pointer()
                 .reinterpret_cast::<u8>()
                 .offset(0usize)
                 .reinterpret_cast::<shape_c>() as Ptr<shape_c>)
-                .with(|__v| __v.f2()) as i32)
-                == 7) as i32)
+                .with(|__v| (__v.f2() as i32) == 7)) as i32)
                 != 0)) as i32)
             != 0)
-            && (((((c
+            && ((((c
                 .as_pointer()
                 .reinterpret_cast::<u8>()
                 .offset(0usize)
                 .reinterpret_cast::<shape_c>() as Ptr<shape_c>)
-                .with(|__v| __v.f3()) as i32)
-                == 4095) as i32)
+                .with(|__v| (__v.f3() as i32) == 4095)) as i32)
                 != 0)) as i32)
             != 0)
     );
     assert!(
-        (((((c
+        ((((c
             .as_pointer()
             .reinterpret_cast::<u8>()
             .offset(0usize)
             .reinterpret_cast::<shape_c>() as Ptr<shape_c>)
-            .with(|__v| __v.code) as i32)
-            == 2) as i32)
+            .with(|__v| (__v.code as i32) == 2)) as i32)
             != 0)
     );
     {
@@ -404,41 +393,37 @@ fn main_0() -> i32 {
         ((c.as_pointer()) as Ptr<Container>).to_any().clone()
     };
     assert!(
-        (((((((((((c
+        ((((((((((c
             .as_pointer()
             .reinterpret_cast::<u8>()
             .offset(0usize)
             .reinterpret_cast::<shape_c>() as Ptr<shape_c>)
-            .with(|__v| __v.f1()) as i32)
-            == 0) as i32)
+            .with(|__v| (__v.f1() as i32) == 0)) as i32)
             != 0)
-            && (((((c
+            && ((((c
                 .as_pointer()
                 .reinterpret_cast::<u8>()
                 .offset(0usize)
                 .reinterpret_cast::<shape_c>() as Ptr<shape_c>)
-                .with(|__v| __v.f2()) as i32)
-                == 0) as i32)
+                .with(|__v| (__v.f2() as i32) == 0)) as i32)
                 != 0)) as i32)
             != 0)
-            && (((((c
+            && ((((c
                 .as_pointer()
                 .reinterpret_cast::<u8>()
                 .offset(0usize)
                 .reinterpret_cast::<shape_c>() as Ptr<shape_c>)
-                .with(|__v| __v.f3()) as i32)
-                == 0) as i32)
+                .with(|__v| (__v.f3() as i32) == 0)) as i32)
                 != 0)) as i32)
             != 0)
     );
     assert!(
-        (((((c
+        ((((c
             .as_pointer()
             .reinterpret_cast::<u8>()
             .offset(0usize)
             .reinterpret_cast::<shape_c>() as Ptr<shape_c>)
-            .with(|__v| __v.code) as i32)
-            == 0) as i32)
+            .with(|__v| (__v.code as i32) == 0)) as i32)
             != 0)
     );
     return 0;

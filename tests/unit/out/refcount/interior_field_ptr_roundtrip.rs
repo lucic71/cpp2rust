@@ -87,13 +87,13 @@ fn main_0() -> i32 {
         ));
         (*h.borrow()).with_mut(|__v| __v.p = __rhs)
     };
-    assert!(((((*h.borrow()).with(|__v| __v.p.clone().with(|__v| __v.a)) == 2_i64) as i32) != 0));
+    assert!(((((*h.borrow()).with(|__v| __v.p.clone().with(|__v| __v.a) == 2_i64)) as i32) != 0));
     {
         let __obj = (*h.borrow()).with(|__v| __v.p.clone());
         __obj.with_mut(|__v| __v.b = 9_i64)
     };
-    assert!(((((*o.borrow()).with(|__v| __v.big.b) == 9_i64) as i32) != 0));
-    assert!(((((*o.borrow()).with(|__v| __v.pad) == 1_i64) as i32) != 0));
+    assert!(((((*o.borrow()).with(|__v| __v.big.b == 9_i64)) as i32) != 0));
+    assert!(((((*o.borrow()).with(|__v| __v.pad == 1_i64)) as i32) != 0));
     libcc2rs::free_refcount(((*h.borrow()).clone() as Ptr<holder>).to_any().clone());
     libcc2rs::free_refcount(((*o.borrow()).clone() as Ptr<outer>).to_any().clone());
     return 0;

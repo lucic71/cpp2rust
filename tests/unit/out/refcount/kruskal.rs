@@ -53,7 +53,7 @@ pub fn partition_0(arr: Ptr<Option<Value<Box<[Edge]>>>>, start: i32, end: i32) -
             let _lhs = (*(arr.read()).as_ref().unwrap().borrow())
                 [((*i.borrow()) as usize) as usize]
                 .weight;
-            _lhs <= pivot.with(|__v| __v.weight)
+            pivot.with(|__v| _lhs <= __v.weight)
         } {
             (*count.borrow_mut()).postfix_inc();
         }
@@ -88,7 +88,7 @@ pub fn partition_0(arr: Ptr<Option<Value<Box<[Edge]>>>>, start: i32, end: i32) -
             let _lhs = (*(arr.read()).as_ref().unwrap().borrow())
                 [((*i.borrow()) as usize) as usize]
                 .weight;
-            _lhs <= pivot.with(|__v| __v.weight)
+            pivot.with(|__v| _lhs <= __v.weight)
         } {
             (*i.borrow_mut()).prefix_inc();
         }
@@ -96,7 +96,7 @@ pub fn partition_0(arr: Ptr<Option<Value<Box<[Edge]>>>>, start: i32, end: i32) -
             let _lhs = (*(arr.read()).as_ref().unwrap().borrow())
                 [((*j.borrow()) as usize) as usize]
                 .weight;
-            _lhs > pivot.with(|__v| __v.weight)
+            pivot.with(|__v| _lhs > __v.weight)
         } {
             (*j.borrow_mut()).prefix_dec();
         }
@@ -222,7 +222,7 @@ pub fn MSTKruskal_2(graph: Ptr<Graph>) -> f64 {
             |__v: &Graph| ::std::slice::from_ref(&__v.edges),
             |__v: &mut Graph| ::std::slice::from_mut(&mut __v.edges),
         );
-        let _end: i32 = (graph.with(|__v| __v.E) - 1);
+        let _end: i32 = (graph.with(|__v| __v.E - 1));
         quicksort_1(_arr, 0, _end)
     });
     let set: Value<DisjointSet> = Rc::new(RefCell::new(DisjointSet {
@@ -243,7 +243,7 @@ pub fn MSTKruskal_2(graph: Ptr<Graph>) -> f64 {
     let i: Value<i32> = Rc::new(RefCell::new(0));
     'loop_: while {
         let _lhs = (*i.borrow());
-        _lhs < graph.with(|__v| __v.E)
+        graph.with(|__v| _lhs < __v.E)
     } {
         let x: Value<i32> = Rc::new(RefCell::new(
             (*graph
@@ -325,7 +325,7 @@ fn main_0() -> i32 {
 impl DisjointSetMethods for Ptr<DisjointSet> {
     fn makeSet(&self) {
         let i: Value<i32> = Rc::new(RefCell::new(0));
-        'loop_: while ((*i.borrow()) < self.with(|__v| __v.n)) {
+        'loop_: while (self.with(|__v| (*i.borrow()) < __v.n)) {
             {
                 let __rhs = (*i.borrow());
                 (*self

@@ -287,8 +287,7 @@ fn main_0() -> i32 {
     assert!(
         ((chunks.as_pointer() as Ptr<Chunk>)
             .offset(0_usize)
-            .with(|__v| __v.data)
-            == 42)
+            .with(|__v| __v.data == 42))
     );
     ({ emplace_local_from_field_4((jpg.as_pointer()), false) });
     assert!(((*jpg.borrow()).app_data.len() == 1_usize));
@@ -339,16 +338,14 @@ fn main_0() -> i32 {
     assert!(
         ((chunks.as_pointer() as Ptr<Chunk>)
             .offset(1_usize)
-            .with(|__v| __v.data)
-            == 99)
+            .with(|__v| __v.data == 99))
     );
     ({ self_ref_push_6((chunks.as_pointer())) });
     assert!(((*chunks.borrow()).len() == 3_usize));
     assert!(
         ((chunks.as_pointer() as Ptr<Chunk>)
             .offset(2_usize)
-            .with(|__v| __v.data)
-            == 42)
+            .with(|__v| __v.data == 42))
     );
     return 0;
 }

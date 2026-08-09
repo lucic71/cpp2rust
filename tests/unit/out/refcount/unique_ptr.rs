@@ -173,14 +173,12 @@ pub fn RndStuff_2() {
         assert!(
             ((*p3_0.borrow())
                 .offset(((*i.borrow()) as isize))
-                .with(|__v| __v.x)
-                == 1)
+                .with(|__v| __v.x == 1))
         );
         assert!(
             ((*p3_0.borrow())
                 .offset(((*i.borrow()) as isize))
-                .with(|__v| __v.y)
-                == 2)
+                .with(|__v| __v.y == 2))
         );
         ({
             ((*x3.borrow()).as_ref().unwrap().as_pointer() as Ptr<Pair>)
@@ -190,14 +188,12 @@ pub fn RndStuff_2() {
         assert!(
             ((*p3_0.borrow())
                 .offset(((*i.borrow()) as isize))
-                .with(|__v| __v.x)
-                == 11)
+                .with(|__v| __v.x == 11))
         );
         assert!(
             ((*p3_0.borrow())
                 .offset(((*i.borrow()) as isize))
-                .with(|__v| __v.y)
-                == 12)
+                .with(|__v| __v.y == 12))
         );
         (*i.borrow_mut()).prefix_inc();
     }
@@ -226,14 +222,12 @@ pub fn RndStuff_2() {
         assert!(
             ((*p3_1.borrow())
                 .offset(((*i.borrow()) as isize))
-                .with(|__v| __v.x)
-                == -1_i32)
+                .with(|__v| __v.x == -1_i32))
         );
         assert!(
             ((*p3_1.borrow())
                 .offset(((*i.borrow()) as isize))
-                .with(|__v| __v.y)
-                == -2_i32)
+                .with(|__v| __v.y == -2_i32))
         );
         ({
             ((*x3.borrow()).as_ref().unwrap().as_pointer() as Ptr<Pair>)
@@ -243,14 +237,12 @@ pub fn RndStuff_2() {
         assert!(
             ((*p3_1.borrow())
                 .offset(((*i.borrow()) as isize))
-                .with(|__v| __v.x)
-                == -11_i32)
+                .with(|__v| __v.x == -11_i32))
         );
         assert!(
             ((*p3_1.borrow())
                 .offset(((*i.borrow()) as isize))
-                .with(|__v| __v.y)
-                == -12_i32)
+                .with(|__v| __v.y == -12_i32))
         );
         (*i.borrow_mut()).prefix_inc();
     }

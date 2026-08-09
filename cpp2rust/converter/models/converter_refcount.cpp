@@ -1041,16 +1041,38 @@ RsExpr *ConverterRefCount::NestPtrUse(RsExpr *node) {
   return outer;
 }
 
-static bool MayReachOtherBorrow(RsExpr *node) {
-  if (clang::isa<PtrWith>(node) || clang::isa<PtrRead>(node) ||
-      clang::isa<PtrWrite>(node) || clang::isa<Call>(node) ||
-      clang::isa<BorrowRead>(node) || clang::isa<BorrowWrite>(node)) {
-    return true;
+RsExpr *ConverterRefCount::WidenPtrWith(RsExpr *node) {
+  auto *binary = clang::dyn_cast<Binary>(node);
+  if (binary == nullptr) {
+    return nullptr;
   }
-  bool found = false;
-  node->ForEachChild(
-      [&](RsExpr *&child) { found = found || MayReachOtherBorrow(child); });
-  return found;
+  RsExpr **slot = &binary->lhs;
+  RsExpr *sibling = binary->rhs;
+  PtrWith *with = binary->lhs->FindWith();
+  if (with == nullptr && !binary->IsShortCircuit()) {
+    slot = &binary->rhs;
+    sibling = binary->lhs;
+    with = binary->rhs->FindWith();
+  }
+  if (with == nullptr) {
+    return nullptr;
+  }
+  bool is_mut = with->is_mut;
+  bool blocked = sibling->Any([is_mut](RsExpr *n) {
+    if (auto *other = clang::dyn_cast<PtrWith>(n)) {
+      return is_mut || other->is_mut;
+    }
+    if (clang::isa<PtrWrite, Call, BorrowWrite>(n)) {
+      return true;
+    }
+    return is_mut && clang::isa<PtrRead, BorrowRead>(n);
+  });
+  if (blocked) {
+    return nullptr;
+  }
+  RsExpr::TakeWithFrom(*slot);
+  clang::cast<Closure>(with->closure)->body = node;
+  return with;
 }
 
 static bool UsesClosureParam(RsExpr *node, const std::string &param) {
@@ -1083,7 +1105,10 @@ RsExpr *ConverterRefCount::HoistBorrowedObject(Accessor *acc) {
 
 RsExpr *ConverterRefCount::HoistPtrWrite(PtrWrite *write) {
   auto *obj_let = HoistBorrowedObject(write);
-  bool hoist_value = MayReachOtherBorrow(write->value);
+  bool hoist_value = write->value->Any([](RsExpr *n) {
+    return clang::isa<PtrWith, PtrRead, PtrWrite, Call, BorrowRead,
+                      BorrowWrite>(n);
+  });
   if (!obj_let && !hoist_value) {
     return nullptr;
   }
@@ -1146,8 +1171,10 @@ RsExpr *ConverterRefCount::HoistPtrUse(RsExpr *node) {
   } else if (auto *assign = clang::dyn_cast<CompoundAssign>(closure->body)) {
     right = &assign->right;
   }
-  bool hoist_rhs = right && MayReachOtherBorrow(*right) &&
-                   !UsesClosureParam(*right, closure->param);
+  bool hoist_rhs = right != nullptr && (*right)->Any([](RsExpr *n) {
+    return clang::isa<PtrWith, PtrRead, PtrWrite, Call, BorrowRead,
+                      BorrowWrite>(n);
+  }) && !UsesClosureParam(*right, closure->param);
   auto *obj_let = with->is_mut ? HoistBorrowedObject(with) : nullptr;
   if (!hoist_rhs && !obj_let) {
     return nullptr;
@@ -2707,7 +2734,6 @@ RsExpr *
 ConverterRefCount::ConvertGenericBinaryOperator(clang::BinaryOperator *expr) {
   auto lhs = expr->getLHS();
   auto rhs = expr->getRHS();
-  std::string_view opcode = expr->getOpcodeStr();
 
   auto lhs_vars = GetAllVars(lhs);
   auto rhs_vars = GetAllVars(rhs);
@@ -2736,8 +2762,9 @@ ConverterRefCount::ConvertGenericBinaryOperator(clang::BinaryOperator *expr) {
     auto *rhs_node = ConvertFreshRValue(
         rhs, GetOperandImplicitConversionTarget(expr, rhs, lhs));
     computed_expr_type_ = ComputedExprType::FreshValue;
-    return Braces(Cat(Text("let _lhs ="), lhs_node, Text(token::kSemiColon),
-                      Text("_lhs"), Text(std::string(opcode)), rhs_node));
+    return Braces(
+        Cat(arena_.New<Let>("_lhs", /*is_mut=*/false, nullptr, lhs_node),
+            arena_.New<Binary>(expr->getOpcode(), Text("_lhs"), rhs_node)));
   }
 
   auto *lhs_node =
@@ -2745,7 +2772,7 @@ ConverterRefCount::ConvertGenericBinaryOperator(clang::BinaryOperator *expr) {
   auto *rhs_node =
       ConvertExpr(rhs, GetOperandImplicitConversionTarget(expr, rhs, lhs));
   computed_expr_type_ = ComputedExprType::FreshValue;
-  return Parens(Cat(lhs_node, Text(std::string(opcode)), rhs_node));
+  return Parens(arena_.New<Binary>(expr->getOpcode(), lhs_node, rhs_node));
 }
 
 RsExpr *

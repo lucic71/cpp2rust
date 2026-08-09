@@ -199,8 +199,7 @@ fn main_0() -> i32 {
             .reinterpret_cast::<u8>()
             .offset(8usize)
             .reinterpret_cast::<anon_1>() as Ptr<anon_1>)
-            .with(|__v| __v.size)
-            == 7_i64) as i32)
+            .with(|__v| __v.size == 7_i64)) as i32)
             != 0)
     );
     assert!(
@@ -208,11 +207,10 @@ fn main_0() -> i32 {
             .reinterpret_cast::<u8>()
             .offset(8usize)
             .reinterpret_cast::<anon_1>() as Ptr<anon_1>)
-            .with(|__v| __v.idx)
-            == 3_i64) as i32)
+            .with(|__v| __v.idx == 3_i64)) as i32)
             != 0)
     );
-    assert!(((((*e.borrow()).with(|__v| __v.kind) == 1) as i32) != 0));
+    assert!(((((*e.borrow()).with(|__v| __v.kind == 1)) as i32) != 0));
     (*e.borrow_mut()) = ((*table.borrow()).offset(((1) as isize)));
     (*e.borrow()).with_mut(|__v| __v.kind = 2);
     ((*e.borrow())
@@ -230,8 +228,7 @@ fn main_0() -> i32 {
             .reinterpret_cast::<u8>()
             .offset(8usize)
             .reinterpret_cast::<anon_2>() as Ptr<anon_2>)
-            .with(|__v| __v.min)
-            == 10) as i32)
+            .with(|__v| __v.min == 10)) as i32)
             != 0)
     );
     assert!(
@@ -239,8 +236,7 @@ fn main_0() -> i32 {
             .reinterpret_cast::<u8>()
             .offset(8usize)
             .reinterpret_cast::<anon_2>() as Ptr<anon_2>)
-            .with(|__v| __v.max)
-            == 20) as i32)
+            .with(|__v| __v.max == 20)) as i32)
             != 0)
     );
     assert!(
@@ -249,8 +245,7 @@ fn main_0() -> i32 {
             .reinterpret_cast::<u8>()
             .offset(8usize)
             .reinterpret_cast::<anon_1>() as Ptr<anon_1>)
-            .with(|__v| __v.size)
-            == 7_i64) as i32)
+            .with(|__v| __v.size == 7_i64)) as i32)
             != 0)
     );
     libcc2rs::free_refcount(

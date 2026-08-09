@@ -261,10 +261,9 @@ fn main_0() -> i32 {
         ((names.as_pointer() as Ptr<Ptr<u8>>).offset((*idx.borrow()) as isize)),
     ));
     assert!(
-        ((((((*pp.borrow())
-            .with(|__v| __v.offset(((0) as isize)).clone())
-            .read()) as i32)
-            == ('g' as i32)) as i32)
+        ((((*pp.borrow())
+            .with(|__v| ((__v.offset(((0) as isize)).clone().read()) as i32) == ('g' as i32)))
+            as i32)
             != 0)
     );
     let pe: Value<Ptr<Entry>> = Rc::new(RefCell::new(
@@ -272,7 +271,7 @@ fn main_0() -> i32 {
             .offset((*idx.borrow()) as isize)),
     ));
     assert!(
-        (((((*pe.borrow()).with(|__v| __v.opt) as u32) == ((Option_OPT_A as i32) as u32)) as i32)
+        ((((*pe.borrow()).with(|__v| (__v.opt as u32) == ((Option_OPT_A as i32) as u32))) as i32)
             != 0)
     );
     return 0;

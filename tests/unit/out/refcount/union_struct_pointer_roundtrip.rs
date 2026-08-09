@@ -91,7 +91,7 @@ fn main_0() -> i32 {
             .reinterpret_cast::<Ptr<pair>>() as Ptr<Ptr<pair>>)
             .read()),
     ));
-    assert!(((((*q.borrow()).with(|__v| __v.x) == 20) as i32) != 0));
+    assert!(((((*q.borrow()).with(|__v| __v.x == 20)) as i32) != 0));
     assert!(
         ((({
             let _lhs = (*q.borrow()).clone();
@@ -122,8 +122,7 @@ fn main_0() -> i32 {
             .offset(0usize)
             .reinterpret_cast::<Ptr<pair>>() as Ptr<Ptr<pair>>)
             .read())
-        .with(|__v| __v.x)
-            == 30) as i32)
+        .with(|__v| __v.x == 30)) as i32)
             != 0)
     );
     assert!(
@@ -163,8 +162,7 @@ fn main_0() -> i32 {
             .offset(0usize)
             .reinterpret_cast::<Ptr<pair>>() as Ptr<Ptr<pair>>)
             .read())
-        .with(|__v| __v.x)
-            == 10) as i32)
+        .with(|__v| __v.x == 10)) as i32)
             != 0)
     );
     assert!(

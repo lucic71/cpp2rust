@@ -70,7 +70,7 @@ fn main_0() -> i32 {
     return {
         let _lhs = {
             let _lhs = (*t3.borrow()).with(|__v| __v.x);
-            _lhs + (*t2.borrow()).with(|__v| __v.x)
+            (*t2.borrow()).with(|__v| _lhs + __v.x)
         };
         _lhs + (*t1.borrow()).x
     };

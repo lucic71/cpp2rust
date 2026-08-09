@@ -77,8 +77,8 @@ pub fn test_fstat_1() {
 pub fn timespec_to_ms_2(tv: Ptr<libcc2rs::Timespec>) -> i64 {
     let tv: Value<Ptr<libcc2rs::Timespec>> = Rc::new(RefCell::new(tv));
     return {
-        let _lhs = (((*tv.borrow()).with(|__v| __v.tv_sec) as i64) * 1000_i64);
-        _lhs + ((*tv.borrow()).with(|__v| __v.tv_nsec) / 1000000_i64)
+        let _lhs = ((*tv.borrow()).with(|__v| (__v.tv_sec as i64) * 1000_i64));
+        (*tv.borrow()).with(|__v| _lhs + (__v.tv_nsec / 1000000_i64))
     };
 }
 pub fn test_timespec_members_3() {

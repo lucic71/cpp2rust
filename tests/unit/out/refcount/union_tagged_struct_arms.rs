@@ -194,23 +194,22 @@ fn main_0() -> i32 {
             .reinterpret_cast::<u8>()
             .offset(8usize)
             .reinterpret_cast::<anon_1>() as Ptr<anon_1>)
-            .with(|__v| __v.count)
-            == 3_i64) as i32)
+            .with(|__v| __v.count == 3_i64)) as i32)
             != 0)
     );
     assert!(
-        ((((((p_list
+        ((((p_list
             .as_pointer()
             .reinterpret_cast::<u8>()
             .offset(8usize)
             .reinterpret_cast::<anon_1>() as Ptr<anon_1>)
-            .with(|__v| __v
+            .with(|__v| ((__v
                 .items
                 .offset(((1) as isize))
                 .clone()
-                .with(|__v| __v.offset(((0) as isize)).clone()))
-            .read()) as i32)
-            == ('b' as i32)) as i32)
+                .with(|__v| __v.offset(((0) as isize)).clone())
+                .read()) as i32)
+                == ('b' as i32))) as i32)
             != 0)
     );
     let p_letters: Value<Branch> = <Value<Branch>>::default();
@@ -295,8 +294,7 @@ fn main_0() -> i32 {
             .reinterpret_cast::<u8>()
             .offset(8usize)
             .reinterpret_cast::<anon_3>() as Ptr<anon_3>)
-            .with(|__v| __v.hi)
-            == 100_i64) as i32)
+            .with(|__v| __v.hi == 100_i64)) as i32)
             != 0)
     );
     assert!(
@@ -305,8 +303,7 @@ fn main_0() -> i32 {
             .reinterpret_cast::<u8>()
             .offset(8usize)
             .reinterpret_cast::<anon_3>() as Ptr<anon_3>)
-            .with(|__v| __v.width)
-            == 3) as i32)
+            .with(|__v| __v.width == 3)) as i32)
             != 0)
     );
     return 0;

@@ -63,12 +63,12 @@ fn main_0() -> i32 {
             (('b' as i32) as u8),
         )
     });
-    assert!(((((*b.borrow()).with(|__v| __v.idx) == 2) as i32) != 0));
+    assert!(((((*b.borrow()).with(|__v| __v.idx == 2)) as i32) != 0));
     assert!(
-        (((((*b.borrow()).with(|__v| __v.buf[(0) as usize]) as i32) == ('a' as i32)) as i32) != 0)
+        ((((*b.borrow()).with(|__v| (__v.buf[(0) as usize] as i32) == ('a' as i32))) as i32) != 0)
     );
     assert!(
-        (((((*b.borrow()).with(|__v| __v.buf[(1) as usize]) as i32) == ('b' as i32)) as i32) != 0)
+        ((((*b.borrow()).with(|__v| (__v.buf[(1) as usize] as i32) == ('b' as i32))) as i32) != 0)
     );
     libcc2rs::free_refcount(((*b.borrow()).clone() as Ptr<bin>).to_any().clone());
     return 0;

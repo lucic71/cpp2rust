@@ -487,6 +487,10 @@ protected:
 
   virtual RsExpr *LowerPtrUse([[maybe_unused]] RsExpr *node) { return nullptr; }
 
+  virtual RsExpr *WidenPtrWith([[maybe_unused]] RsExpr *node) {
+    return nullptr;
+  }
+
   virtual RsExpr *NestPtrUse([[maybe_unused]] RsExpr *node) { return nullptr; }
 
   virtual RsExpr *HoistPtrUse([[maybe_unused]] RsExpr *node) { return nullptr; }

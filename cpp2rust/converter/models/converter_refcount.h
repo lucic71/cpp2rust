@@ -95,6 +95,8 @@ public:
 
   RsExpr *LowerPtrUse(RsExpr *node) override;
 
+  RsExpr *WidenPtrWith(RsExpr *node) override;
+
   RsExpr *NestPtrUse(RsExpr *node) override;
 
   RsExpr *HoistPtrUse(RsExpr *node) override;

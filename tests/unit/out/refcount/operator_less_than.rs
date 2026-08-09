@@ -16,13 +16,13 @@ impl Pair {
     pub fn lt(&self, other: Ptr<Pair>) -> bool {
         return ({
             let _lhs = self.x;
-            _lhs < other.with(|__v| __v.x)
+            other.with(|__v| _lhs < __v.x)
         }) || (({
             let _lhs = self.x;
-            _lhs == other.with(|__v| __v.x)
+            other.with(|__v| _lhs == __v.x)
         }) && ({
             let _lhs = self.y;
-            _lhs < other.with(|__v| __v.y)
+            other.with(|__v| _lhs < __v.y)
         }));
     }
 }

@@ -168,18 +168,16 @@ fn main_0() -> i32 {
             .reinterpret_cast::<u8>()
             .offset(4usize)
             .reinterpret_cast::<shape_b>() as Ptr<shape_b>)
-            .with(|__v| __v.tail)
-            == 3735928559_u32) as i32)
+            .with(|__v| __v.tail == 3735928559_u32)) as i32)
             != 0)
     );
     assert!(
-        (((((c
+        ((((c
             .as_pointer()
             .reinterpret_cast::<u8>()
             .offset(4usize)
             .reinterpret_cast::<shape_b>() as Ptr<shape_b>)
-            .with(|__v| __v.code) as i32)
-            == 10) as i32)
+            .with(|__v| (__v.code as i32) == 10)) as i32)
             != 0)
     );
     (c.as_pointer()

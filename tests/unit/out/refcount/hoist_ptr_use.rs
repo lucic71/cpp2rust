@@ -65,7 +65,7 @@ fn main_0() -> i32 {
     {
         let __rhs = {
             let _lhs = (*q.borrow()).with(|__v| __v.in_.x);
-            _lhs + (*q.borrow()).with(|__v| __v.in_.y)
+            (*q.borrow()).with(|__v| _lhs + __v.in_.y)
         };
         (*p.borrow()).with_mut(|__v| __v.total = __rhs)
     };
@@ -78,7 +78,7 @@ fn main_0() -> i32 {
         )),
     ));
     {
-        let __rhs = ((*p.borrow()).with(|__v| __v.total) + 1);
+        let __rhs = ((*p.borrow()).with(|__v| __v.total + 1));
         (*ip.borrow()).with_mut(|__v| __v.x = __rhs)
     };
     assert!(((((*o.borrow()).in_.x == 4) as i32) != 0));
@@ -101,11 +101,11 @@ fn main_0() -> i32 {
     {
         let __rhs = {
             let _lhs = (*h.borrow()).with(|__v| __v.total);
-            _lhs + (*ha.borrow()).with(|__v| __v.in_.x)
+            (*ha.borrow()).with(|__v| _lhs + __v.in_.x)
         };
         (*ha.borrow()).with_mut(|__v| __v.total = __rhs)
     };
-    assert!(((((*h.borrow()).with(|__v| __v.total) == 6) as i32) != 0));
+    assert!(((((*h.borrow()).with(|__v| __v.total == 6)) as i32) != 0));
     libcc2rs::free_refcount(((*h.borrow()).clone() as Ptr<outer>).to_any().clone());
     return 0;
 }

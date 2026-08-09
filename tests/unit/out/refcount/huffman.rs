@@ -160,7 +160,7 @@ pub fn Huffman_2(
             ({
                 ((*minHeap.borrow()).as_pointer()).Alloc(('$' as u8), {
                     let _lhs = (*left.borrow()).with(|__v| __v.freq);
-                    _lhs + (*right.borrow()).with(|__v| __v.freq)
+                    (*right.borrow()).with(|__v| _lhs + __v.freq)
                 })
             }),
         ));
@@ -364,24 +364,30 @@ impl MinHeapMethods for Ptr<MinHeap> {
         let smallest: Value<i32> = Rc::new(RefCell::new((*idx.borrow())));
         let left: Value<i32> = Rc::new(RefCell::new(((2 * (*idx.borrow())) + 1)));
         let right: Value<i32> = Rc::new(RefCell::new(((2 * (*idx.borrow())) + 2)));
-        if ((*left.borrow()) < self.with(|__v| __v.size))
-            && ((*self.with(|__v| __v.arr.clone()).as_ref().unwrap().borrow())
-                [((*left.borrow()) as usize) as usize]
-                .with(|__v| __v.freq)
-                < (*self.with(|__v| __v.arr.clone()).as_ref().unwrap().borrow())
-                    [((*smallest.borrow()) as usize) as usize]
-                    .with(|__v| __v.freq))
-        {
+        if self.with(|__v| {
+            ((*left.borrow()) < __v.size)
+                && ((*__v.arr.clone().as_ref().unwrap().borrow())
+                    [((*left.borrow()) as usize) as usize]
+                    .with(|__v| {
+                        __v.freq
+                            < (*self.with(|__v| __v.arr.clone()).as_ref().unwrap().borrow())
+                                [((*smallest.borrow()) as usize) as usize]
+                                .with(|__v| __v.freq)
+                    }))
+        }) {
             (*smallest.borrow_mut()) = (*left.borrow());
         }
-        if ((*right.borrow()) < self.with(|__v| __v.size))
-            && ((*self.with(|__v| __v.arr.clone()).as_ref().unwrap().borrow())
-                [((*right.borrow()) as usize) as usize]
-                .with(|__v| __v.freq)
-                < (*self.with(|__v| __v.arr.clone()).as_ref().unwrap().borrow())
-                    [((*smallest.borrow()) as usize) as usize]
-                    .with(|__v| __v.freq))
-        {
+        if self.with(|__v| {
+            ((*right.borrow()) < __v.size)
+                && ((*__v.arr.clone().as_ref().unwrap().borrow())
+                    [((*right.borrow()) as usize) as usize]
+                    .with(|__v| {
+                        __v.freq
+                            < (*self.with(|__v| __v.arr.clone()).as_ref().unwrap().borrow())
+                                [((*smallest.borrow()) as usize) as usize]
+                                .with(|__v| __v.freq)
+                    }))
+        }) {
             (*smallest.borrow_mut()) = (*right.borrow());
         }
         if ((*smallest.borrow()) != (*idx.borrow())) {
@@ -421,13 +427,13 @@ impl MinHeapMethods for Ptr<MinHeap> {
     fn Insert(&self, node: Ptr<MinHeapNode>) {
         let node: Value<Ptr<MinHeapNode>> = Rc::new(RefCell::new(node));
         self.with_mut(|__v| __v.size.prefix_inc());
-        let i: Value<i32> = Rc::new(RefCell::new((self.with(|__v| __v.size) - 1)));
+        let i: Value<i32> = Rc::new(RefCell::new((self.with(|__v| __v.size - 1))));
         'loop_: while ((*i.borrow()) != 0)
             && ({
                 let _lhs = (*node.borrow()).with(|__v| __v.freq);
-                _lhs < (*self.with(|__v| __v.arr.clone()).as_ref().unwrap().borrow())
+                (*self.with(|__v| __v.arr.clone()).as_ref().unwrap().borrow())
                     [((((*i.borrow()) - 1) / 2) as usize) as usize]
-                    .with(|__v| __v.freq)
+                    .with(|__v| _lhs < __v.freq)
             })
         {
             {
@@ -474,7 +480,7 @@ impl MinHeapMethods for Ptr<MinHeap> {
                 });
             (*i.borrow_mut()).prefix_inc();
         }
-        let i: Value<i32> = Rc::new(RefCell::new(((self.with(|__v| __v.size) - 2) / 2)));
+        let i: Value<i32> = Rc::new(RefCell::new((self.with(|__v| (__v.size - 2) / 2))));
         'loop_: while ((*i.borrow()) >= 0) {
             ({ self.Heapify((*i.borrow())) });
             (*i.borrow_mut()).prefix_dec();

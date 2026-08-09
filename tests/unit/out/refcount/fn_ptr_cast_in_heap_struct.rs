@@ -26,7 +26,7 @@ impl ByteRepr for item {
 }
 pub fn read_item_0(it: Ptr<item>) -> i32 {
     let it: Value<Ptr<item>> = Rc::new(RefCell::new(it));
-    return ((*it.borrow()).with(|__v| __v.value) + 1);
+    return ((*it.borrow()).with(|__v| __v.value + 1));
 }
 #[repr(C)]
 #[derive(Clone)]

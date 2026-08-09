@@ -71,7 +71,9 @@ struct RsExpr {
 
   virtual void dump(llvm::raw_ostream &os, unsigned depth = 0);
 
-  virtual bool ContainsBorrow();
+  bool ContainsBorrow();
+
+  bool Any(llvm::function_ref<bool(RsExpr *)> pred);
 
   virtual void ForEachChild(llvm::function_ref<void(RsExpr *&)>) {}
 
@@ -92,13 +94,15 @@ struct RsExpr {
 
   virtual RsExpr *Pointer() { return nullptr; }
 
-  // Removes the innermost `with` from the receiver chain, splicing its closure
-  // body in its place.
-  virtual PtrWith *TakeWith() { return nullptr; }
+  virtual RsExpr **ChainSlot() { return nullptr; }
+
+  virtual PtrWith *TakeWith();
 
   static PtrWith *TakeWithFrom(RsExpr *&slot);
 
-  virtual RsExpr *TakePtr(RsExpr *) { return nullptr; }
+  RsExpr *TakePtr(RsExpr *replacement);
+
+  PtrWith *FindWith();
 
   // Visits the nodes whose value can become this expression's value.
   virtual void ForEachTail(llvm::function_ref<void(RsExpr *)> fn) { fn(this); }
@@ -187,17 +191,11 @@ struct Delim : RsExpr {
     fn(inner);
   }
 
-  RsExpr *TakePtr(RsExpr *replacement) override {
-    if (auto *ptr = inner->Pointer()) {
-      inner = replacement;
-      return ptr;
-    }
-    return inner->TakePtr(replacement);
-  }
-
   RsExpr *Pointer() override {
     return open == '(' ? inner->Pointer() : nullptr;
   }
+
+  RsExpr **ChainSlot() override { return &inner; }
 
   void ForEachTail(llvm::function_ref<void(RsExpr *)> fn) override {
     if (open == '(') {
@@ -206,8 +204,6 @@ struct Delim : RsExpr {
       fn(this);
     }
   }
-
-  PtrWith *TakeWith() override { return TakeWithFrom(inner); }
 
   char open;
   char close;
@@ -268,15 +264,7 @@ struct Cast : RsExpr {
     fn(type);
   }
 
-  RsExpr *TakePtr(RsExpr *replacement) override {
-    if (auto *ptr = expr->Pointer()) {
-      expr = replacement;
-      return ptr;
-    }
-    return expr->TakePtr(replacement);
-  }
-
-  PtrWith *TakeWith() override { return TakeWithFrom(expr); }
+  RsExpr **ChainSlot() override { return &expr; }
 
   RsExpr *expr;
   RsExpr *type;
@@ -326,15 +314,7 @@ struct Call : RsExpr {
     }
   }
 
-  RsExpr *TakePtr(RsExpr *replacement) override {
-    if (auto *ptr = callee->Pointer()) {
-      callee = replacement;
-      return ptr;
-    }
-    return callee->TakePtr(replacement);
-  }
-
-  PtrWith *TakeWith() override { return TakeWithFrom(callee); }
+  RsExpr **ChainSlot() override { return &callee; }
 
   RsExpr *callee;
   std::vector<RsExpr *> args;
@@ -754,15 +734,7 @@ struct Accessor : RsExpr {
     fn(object);
   }
 
-  RsExpr *TakePtr(RsExpr *replacement) override {
-    if (auto *ptr = object->Pointer()) {
-      object = replacement;
-      return ptr;
-    }
-    return object->TakePtr(replacement);
-  }
-
-  PtrWith *TakeWith() override { return TakeWithFrom(object); }
+  RsExpr **ChainSlot() override { return &object; }
 
   RsExpr *object;
 };
@@ -884,8 +856,6 @@ struct PtrView : Accessor {
 struct BorrowRead : Accessor {
   explicit BorrowRead(RsExpr *object) : Accessor(Kind::BorrowRead, object) {}
 
-  bool ContainsBorrow() override { return true; }
-
   static bool classof(const RsExpr *expr) {
     return expr->kind == Kind::BorrowRead;
   }
@@ -899,8 +869,6 @@ struct BorrowRead : Accessor {
 
 struct BorrowWrite : Accessor {
   explicit BorrowWrite(RsExpr *object) : Accessor(Kind::BorrowWrite, object) {}
-
-  bool ContainsBorrow() override { return true; }
 
   static bool classof(const RsExpr *expr) {
     return expr->kind == Kind::BorrowWrite;

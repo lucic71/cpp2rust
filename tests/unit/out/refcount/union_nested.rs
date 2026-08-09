@@ -185,33 +185,30 @@ fn main_0() -> i32 {
         .reinterpret_cast::<record>() as Ptr<record>)
         .with_mut(|__v| __v.pad[(0) as usize] = (('X' as i32) as u8));
     assert!(
-        (((((ex
+        ((((ex
             .as_pointer()
             .reinterpret_cast::<u8>()
             .offset(16usize)
             .reinterpret_cast::<record>() as Ptr<record>)
-            .with(|__v| __v.code) as i32)
-            == 2) as i32)
+            .with(|__v| (__v.code as i32) == 2)) as i32)
             != 0)
     );
     assert!(
-        (((((ex
+        ((((ex
             .as_pointer()
             .reinterpret_cast::<u8>()
             .offset(16usize)
             .reinterpret_cast::<record>() as Ptr<record>)
-            .with(|__v| __v.pad[(0) as usize]) as i32)
-            == ('X' as i32)) as i32)
+            .with(|__v| (__v.pad[(0) as usize] as i32) == ('X' as i32))) as i32)
             != 0)
     );
     assert!(
-        (((((ex
+        ((((ex
             .as_pointer()
             .reinterpret_cast::<u8>()
             .offset(16usize)
             .reinterpret_cast::<record>() as Ptr<record>)
-            .with(|__v| __v.code) as i32)
-            == 2) as i32)
+            .with(|__v| (__v.code as i32) == 2)) as i32)
             != 0)
     );
     return 0;

@@ -174,23 +174,12 @@ fn main_0() -> i32 {
             != 0)
     );
     assert!(
-        (((((v
+        ((((v
             .as_pointer()
             .reinterpret_cast::<u8>()
             .offset(0usize)
             .reinterpret_cast::<packed_flags>() as Ptr<packed_flags>)
-            .with(|__v| __v.a()) as i32)
-            == 1) as i32)
-            != 0)
-    );
-    assert!(
-        (((((v
-            .as_pointer()
-            .reinterpret_cast::<u8>()
-            .offset(0usize)
-            .reinterpret_cast::<packed_flags>() as Ptr<packed_flags>)
-            .with(|__v| __v.wide()) as i32)
-            == 703710) as i32)
+            .with(|__v| (__v.a() as i32) == 1)) as i32)
             != 0)
     );
     assert!(
@@ -199,8 +188,7 @@ fn main_0() -> i32 {
             .reinterpret_cast::<u8>()
             .offset(0usize)
             .reinterpret_cast::<packed_flags>() as Ptr<packed_flags>)
-            .with(|__v| __v.sgn())
-            == -3_i32) as i32)
+            .with(|__v| (__v.wide() as i32) == 703710)) as i32)
             != 0)
     );
     assert!(
@@ -209,8 +197,16 @@ fn main_0() -> i32 {
             .reinterpret_cast::<u8>()
             .offset(0usize)
             .reinterpret_cast::<packed_flags>() as Ptr<packed_flags>)
-            .with(|__v| __v.tail)
-            == 287454020_u32) as i32)
+            .with(|__v| __v.sgn() == -3_i32)) as i32)
+            != 0)
+    );
+    assert!(
+        ((((v
+            .as_pointer()
+            .reinterpret_cast::<u8>()
+            .offset(0usize)
+            .reinterpret_cast::<packed_flags>() as Ptr<packed_flags>)
+            .with(|__v| __v.tail == 287454020_u32)) as i32)
             != 0)
     );
     {
@@ -232,33 +228,12 @@ fn main_0() -> i32 {
         .offset(((3) as isize))
         .write(15_u8);
     assert!(
-        (((((v
+        ((((v
             .as_pointer()
             .reinterpret_cast::<u8>()
             .offset(0usize)
             .reinterpret_cast::<packed_flags>() as Ptr<packed_flags>)
-            .with(|__v| __v.a()) as i32)
-            == 0) as i32)
-            != 0)
-    );
-    assert!(
-        (((((v
-            .as_pointer()
-            .reinterpret_cast::<u8>()
-            .offset(0usize)
-            .reinterpret_cast::<packed_flags>() as Ptr<packed_flags>)
-            .with(|__v| __v.b()) as i32)
-            == 6) as i32)
-            != 0)
-    );
-    assert!(
-        (((((v
-            .as_pointer()
-            .reinterpret_cast::<u8>()
-            .offset(0usize)
-            .reinterpret_cast::<packed_flags>() as Ptr<packed_flags>)
-            .with(|__v| __v.wide()) as i32)
-            == 291) as i32)
+            .with(|__v| (__v.a() as i32) == 0)) as i32)
             != 0)
     );
     assert!(
@@ -267,8 +242,7 @@ fn main_0() -> i32 {
             .reinterpret_cast::<u8>()
             .offset(0usize)
             .reinterpret_cast::<packed_flags>() as Ptr<packed_flags>)
-            .with(|__v| __v.sgn())
-            == -1_i32) as i32)
+            .with(|__v| (__v.b() as i32) == 6)) as i32)
             != 0)
     );
     assert!(
@@ -277,8 +251,25 @@ fn main_0() -> i32 {
             .reinterpret_cast::<u8>()
             .offset(0usize)
             .reinterpret_cast::<packed_flags>() as Ptr<packed_flags>)
-            .with(|__v| __v.tail)
-            == 0_u32) as i32)
+            .with(|__v| (__v.wide() as i32) == 291)) as i32)
+            != 0)
+    );
+    assert!(
+        ((((v
+            .as_pointer()
+            .reinterpret_cast::<u8>()
+            .offset(0usize)
+            .reinterpret_cast::<packed_flags>() as Ptr<packed_flags>)
+            .with(|__v| __v.sgn() == -1_i32)) as i32)
+            != 0)
+    );
+    assert!(
+        ((((v
+            .as_pointer()
+            .reinterpret_cast::<u8>()
+            .offset(0usize)
+            .reinterpret_cast::<packed_flags>() as Ptr<packed_flags>)
+            .with(|__v| __v.tail == 0_u32)) as i32)
             != 0)
     );
     return 0;

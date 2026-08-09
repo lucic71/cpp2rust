@@ -126,14 +126,13 @@ fn main_0() -> i32 {
         .reinterpret_cast::<Ptr<u8>>() as Ptr<Ptr<u8>>)
         .write(Ptr::from_string_literal(b"hello\0"));
     assert!(
-        ((((((c
+        ((((c
             .as_pointer()
             .reinterpret_cast::<u8>()
             .offset(8usize)
             .reinterpret_cast::<Ptr::<u8>>() as Ptr<Ptr::<u8>>)
-            .with(|__v| __v.offset(((0) as isize)).clone())
-            .read()) as i32)
-            == ('h' as i32)) as i32)
+            .with(|__v| ((__v.offset(((0) as isize)).clone().read()) as i32) == ('h' as i32)))
+            as i32)
             != 0)
     );
     let d: Value<Slot> = <Value<Slot>>::default();

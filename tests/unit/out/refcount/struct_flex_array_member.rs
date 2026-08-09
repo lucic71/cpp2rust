@@ -65,7 +65,7 @@ fn main_0() -> i32 {
     let p: Value<Ptr<peer>> = Rc::new(RefCell::new(
         ({ peer_create_0(Ptr::from_string_literal(b"example.com\0")) }),
     ));
-    assert!(((((*p.borrow()).with(|__v| __v.port) == 443) as i32) != 0));
+    assert!(((((*p.borrow()).with(|__v| __v.port == 443)) as i32) != 0));
     assert!(
         ((({
             let mut __it1 = (((*p.borrow()).reinterpret_cast::<u8>().offset(4usize) as Ptr<u8>)
@@ -121,7 +121,7 @@ fn main_0() -> i32 {
         } == 0) as i32)
             != 0)
     );
-    assert!(((((*p.borrow()).with(|__v| __v.port) == 443) as i32) != 0));
+    assert!(((((*p.borrow()).with(|__v| __v.port == 443)) as i32) != 0));
     let h: Value<Ptr<u8>> = Rc::new(RefCell::new(
         (((*p.borrow()).reinterpret_cast::<u8>().offset(4usize) as Ptr<u8>).offset(((8) as isize))),
     ));

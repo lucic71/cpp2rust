@@ -45,7 +45,7 @@ pub fn find_0(node: Ptr<node_t>, value: i32) -> Ptr<node_t> {
     let value: Value<i32> = Rc::new(RefCell::new(value));
     if ({
         let _lhs = (*value.borrow());
-        _lhs < (*node.borrow()).with(|__v| __v.value)
+        (*node.borrow()).with(|__v| _lhs < __v.value)
     }) && (!(((*node.borrow()).with(|__v| __v.left.clone())).is_null()))
     {
         return ({
@@ -56,7 +56,7 @@ pub fn find_0(node: Ptr<node_t>, value: i32) -> Ptr<node_t> {
         });
     } else if ({
         let _lhs = (*value.borrow());
-        _lhs > (*node.borrow()).with(|__v| __v.value)
+        (*node.borrow()).with(|__v| _lhs > __v.value)
     }) && (!(((*node.borrow()).with(|__v| __v.right.clone())).is_null()))
     {
         return ({
@@ -67,7 +67,7 @@ pub fn find_0(node: Ptr<node_t>, value: i32) -> Ptr<node_t> {
         });
     } else if {
         let _lhs = (*value.borrow());
-        _lhs == (*node.borrow()).with(|__v| __v.value)
+        (*node.borrow()).with(|__v| _lhs == __v.value)
     } {
         return (*node.borrow()).clone();
     }
@@ -85,7 +85,7 @@ pub fn insert_1(node: Ptr<node_t>, value: i32) -> Ptr<node_t> {
     }
     if {
         let _lhs = (*value.borrow());
-        _lhs < (*node.borrow()).with(|__v| __v.value)
+        (*node.borrow()).with(|__v| _lhs < __v.value)
     } {
         {
             let __rhs = ({
@@ -98,7 +98,7 @@ pub fn insert_1(node: Ptr<node_t>, value: i32) -> Ptr<node_t> {
         };
     } else if {
         let _lhs = (*value.borrow());
-        _lhs > (*node.borrow()).with(|__v| __v.value)
+        (*node.borrow()).with(|__v| _lhs > __v.value)
     } {
         {
             let __rhs = ({
@@ -148,11 +148,11 @@ fn main_0() -> i32 {
         (*root.borrow_mut()) = __rhs
     };
     let out: Value<bool> = Rc::new(RefCell::new(
-        (((((({ find_0((*root.borrow()).clone(), 0) }).with(|__v| __v.value) == 0)
-            && (({ find_0((*root.borrow()).clone(), 1) }).with(|__v| __v.value) == 1))
-            && (({ find_0((*root.borrow()).clone(), 2) }).with(|__v| __v.value) == 2))
-            && (({ find_0((*root.borrow()).clone(), 3) }).with(|__v| __v.value) == 3))
-            && (({ find_0((*root.borrow()).clone(), 4) }).with(|__v| __v.value) == 4))
+        (((((({ find_0((*root.borrow()).clone(), 0) }).with(|__v| __v.value == 0))
+            && (({ find_0((*root.borrow()).clone(), 1) }).with(|__v| __v.value == 1)))
+            && (({ find_0((*root.borrow()).clone(), 2) }).with(|__v| __v.value == 2)))
+            && (({ find_0((*root.borrow()).clone(), 3) }).with(|__v| __v.value == 3)))
+            && (({ find_0((*root.borrow()).clone(), 4) }).with(|__v| __v.value == 4)))
             && (({ find_0((*root.borrow()).clone(), 5) }).is_null()),
     ));
     ({ del_2((*root.borrow()).clone()) });

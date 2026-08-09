@@ -49,8 +49,9 @@ fn main_0() -> i32 {
             };
             continue 'loop_;
         }
-        if (((((*ifa.borrow()).with(|__v| __v.ifa_addr.clone().with(|__v| __v.sa_family)) as i32)
-            != libc::AF_INET) as i32)
+        if ((((*ifa.borrow())
+            .with(|__v| (__v.ifa_addr.clone().with(|__v| __v.sa_family) as i32) != libc::AF_INET))
+            as i32)
             != 0)
         {
             {
@@ -79,7 +80,7 @@ fn main_0() -> i32 {
             != 0)
         {
             (*found_loopback.borrow_mut()) = 1;
-            assert!(((((*ifa.borrow()).with(|__v| __v.ifa_flags) != 0_u32) as i32) != 0));
+            assert!(((((*ifa.borrow()).with(|__v| __v.ifa_flags != 0_u32)) as i32) != 0));
             assert!(
                 (((!(((*ifa.borrow()).with(|__v| __v.ifa_netmask.clone())).is_null())) as i32)
                     != 0)

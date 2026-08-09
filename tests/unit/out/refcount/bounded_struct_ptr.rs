@@ -55,6 +55,6 @@ fn main_0() -> i32 {
     let p2: Value<Ptr<Foo>> = Rc::new(RefCell::new(((arr.as_pointer() as Ptr<Foo>).offset(0))));
     return {
         let _lhs = (*a.borrow());
-        _lhs + (*p2.borrow()).with(|__v| __v.x2)
+        (*p2.borrow()).with(|__v| _lhs + __v.x2)
     };
 }

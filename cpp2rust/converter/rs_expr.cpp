@@ -55,6 +55,40 @@ PtrWith *RsExpr::TakeWithFrom(RsExpr *&slot) {
   return slot->TakeWith();
 }
 
+PtrWith *RsExpr::TakeWith() {
+  auto **slot = ChainSlot();
+  return slot != nullptr ? TakeWithFrom(*slot) : nullptr;
+}
+
+RsExpr *RsExpr::TakePtr(RsExpr *replacement) {
+  auto **slot = ChainSlot();
+  if (slot == nullptr) {
+    return nullptr;
+  }
+  if (auto *ptr = (*slot)->Pointer()) {
+    *slot = replacement;
+    return ptr;
+  }
+  return (*slot)->TakePtr(replacement);
+}
+
+PtrWith *RsExpr::FindWith() {
+  if (auto *with = llvm::dyn_cast<PtrWith>(this)) {
+    return with;
+  }
+  auto **slot = ChainSlot();
+  return slot != nullptr ? (*slot)->FindWith() : nullptr;
+}
+
+bool RsExpr::Any(llvm::function_ref<bool(RsExpr *)> pred) {
+  if (pred(this)) {
+    return true;
+  }
+  bool found = false;
+  ForEachChild([&](RsExpr *&child) { found = found || child->Any(pred); });
+  return found;
+}
+
 const char *KindName(RsExpr::Kind kind) {
   switch (kind) {
   case RsExpr::Kind::Verbatim:
@@ -143,10 +177,9 @@ void DumpChildren(RsExpr *node, llvm::raw_ostream &os, unsigned depth) {
 } // namespace
 
 bool RsExpr::ContainsBorrow() {
-  bool found = false;
-  ForEachChild(
-      [&](RsExpr *&child) { found = found || child->ContainsBorrow(); });
-  return found;
+  return Any([](RsExpr *node) {
+    return llvm::isa<BorrowRead>(node) || llvm::isa<BorrowWrite>(node);
+  });
 }
 
 void RsExpr::dump(llvm::raw_ostream &os, unsigned depth) {

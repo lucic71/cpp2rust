@@ -79,7 +79,7 @@ fn main_0() -> i32 {
     (*h.borrow()).with_mut(|__v| __v.cb = FnPtr::<fn(i32)>::new(reset_2));
     ({ (*(*h.borrow()).with(|__v| __v.cb.clone()))(0) });
     assert!(((((*total_0.with(Value::clone).borrow()) == 0) as i32) != 0));
-    assert!(((((*h.borrow()).with(|__v| __v.n) == 7) as i32) != 0));
+    assert!(((((*h.borrow()).with(|__v| __v.n == 7)) as i32) != 0));
     (*h.borrow()).with_mut(|__v| __v.cb = FnPtr::<fn(i32)>::null());
     assert!((((((*h.borrow()).with(|__v| __v.cb.clone())).is_null()) as i32) != 0));
     libcc2rs::free_refcount(((*h.borrow()).clone() as Ptr<handlers>).to_any().clone());
