@@ -758,8 +758,8 @@ impl<T: ByteRepr + 'static> Ptr<Box<[T]>> {
                 offset: 0,
                 kind: PtrKind::Projected(Rc::new(ElemsProjection {
                     parent: self.clone(),
-                    get: |c: &Box<[T]>| &c[..],
-                    get_mut: |c: &mut Box<[T]>| &mut c[..],
+                    get: |c| &c[..],
+                    get_mut: |c| &mut c[..],
                 })),
             },
         }
