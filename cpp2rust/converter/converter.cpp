@@ -3462,8 +3462,7 @@ RsExpr *Converter::VisitConditionalOperator(clang::ConditionalOperator *expr) {
     else_node = Cat(Text(token::kRef), Text(keyword_mut_), else_node);
   }
 
-  return Cat(Text(keyword::kIf), cond, Braces(then_node), Text(keyword::kElse),
-             Braces(else_node));
+  return arena_.New<Conditional>(cond, then_node, else_node);
 }
 
 RsExpr *Converter::ConvertDeclRefExpr(clang::DeclRefExpr *expr) {

@@ -36,6 +36,7 @@ struct RsExpr {
     Cast,
     Call,
     Closure,
+    Conditional,
     Assign,
     CompoundAssign,
     Fn,
@@ -89,6 +90,9 @@ struct RsExpr {
 
   virtual RsExpr *TakePtr(RsExpr *) { return nullptr; }
 
+  // Visits the nodes whose value can become this expression's value.
+  virtual void ForEachTail(llvm::function_ref<void(RsExpr *)> fn) { fn(this); }
+
   Kind kind;
   const clang::Expr *expr = nullptr;
 };
@@ -129,6 +133,25 @@ struct Concat : RsExpr {
     }
   }
 
+  void ForEachTail(llvm::function_ref<void(RsExpr *)> fn) override {
+    RsExpr *value = nullptr;
+    for (auto *part : parts) {
+      if (llvm::isa<Verbatim>(part)) {
+        continue;
+      }
+      if (value != nullptr) {
+        fn(this);
+        return;
+      }
+      value = part;
+    }
+    if (value != nullptr) {
+      value->ForEachTail(fn);
+    } else {
+      fn(this);
+    }
+  }
+
   std::vector<RsExpr *> parts;
 
   void dump(llvm::raw_ostream &os, unsigned depth = 0) override;
@@ -164,6 +187,14 @@ struct Delim : RsExpr {
 
   RsExpr *Pointer() override {
     return open == '(' ? inner->Pointer() : nullptr;
+  }
+
+  void ForEachTail(llvm::function_ref<void(RsExpr *)> fn) override {
+    if (open == '(') {
+      inner->ForEachTail(fn);
+    } else {
+      fn(this);
+    }
   }
 
   PtrWith *TakeWith() override { return TakeWithFrom(inner); }
@@ -312,6 +343,36 @@ struct Closure : RsExpr {
   std::string param;
   RsExpr *param_type;
   RsExpr *body;
+
+  void dump(llvm::raw_ostream &os, unsigned depth = 0) override;
+};
+
+struct Conditional : RsExpr {
+  Conditional(RsExpr *cond, RsExpr *then_arm, RsExpr *else_arm)
+      : RsExpr(Kind::Conditional), cond(cond), then_arm(then_arm),
+        else_arm(else_arm) {}
+
+  static bool classof(const RsExpr *e) { return e->kind == Kind::Conditional; }
+
+  std::string print() const override {
+    return "if " + cond->print() + "{ " + then_arm->print() + "} else { " +
+           else_arm->print() + "} ";
+  }
+
+  void ForEachChild(llvm::function_ref<void(RsExpr *&)> fn) override {
+    fn(cond);
+    fn(then_arm);
+    fn(else_arm);
+  }
+
+  void ForEachTail(llvm::function_ref<void(RsExpr *)> fn) override {
+    then_arm->ForEachTail(fn);
+    else_arm->ForEachTail(fn);
+  }
+
+  RsExpr *cond;
+  RsExpr *then_arm;
+  RsExpr *else_arm;
 
   void dump(llvm::raw_ostream &os, unsigned depth = 0) override;
 };

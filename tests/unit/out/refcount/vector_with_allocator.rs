@@ -64,7 +64,7 @@ pub fn fn_1(v: Ptr<Vec<i32>>, v3: Vec<i32>) {
     (*v2.borrow_mut()).push(3);
     (*x.borrow_mut()) = ((v.elems() as Ptr<i32>).offset(2_usize).read());
     (v2.as_pointer() as Ptr<i32>).offset(0_usize).write(1);
-    ((if true { v3.as_pointer() } else { v.clone() }) as Ptr<i32>)
+    ((if true { v3.as_pointer() } else { v.elems() }) as Ptr<i32>)
         .offset(0_usize)
         .write(7);
     (((*v4.borrow()).elems()) as Ptr<i32>)

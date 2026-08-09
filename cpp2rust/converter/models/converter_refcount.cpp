@@ -1173,8 +1173,7 @@ ConverterRefCount::VisitConditionalOperator(clang::ConditionalOperator *expr) {
   auto *cond = ConvertCondition(expr->getCond());
   auto *then_node = ConvertFresh(expr->getTrueExpr(), expr->getType());
   auto *else_node = ConvertFresh(expr->getFalseExpr(), expr->getType());
-  return Cat(Text(keyword::kIf), cond, Braces(then_node), Text(keyword::kElse),
-             Braces(else_node));
+  return arena_.New<Conditional>(cond, then_node, else_node);
 }
 
 RsExpr *ConverterRefCount::VisitDeclRefExpr(clang::DeclRefExpr *expr) {

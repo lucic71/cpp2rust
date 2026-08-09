@@ -8,43 +8,25 @@
 
 namespace cpp2rust {
 
-static RsExpr *CastOperand(RsExpr *expr) {
-  if (auto *delim = llvm::dyn_cast<Delim>(expr); delim && delim->open == '(') {
-    return CastOperand(delim->inner);
-  }
-  if (auto *concat = llvm::dyn_cast<Concat>(expr)) {
-    RsExpr *value = nullptr;
-    for (auto *part : concat->parts) {
-      if (llvm::isa<Verbatim>(part)) {
-        continue;
-      }
-      if (value != nullptr) {
-        return expr;
-      }
-      value = part;
-    }
-    return value != nullptr ? CastOperand(value) : expr;
-  }
-  return expr;
-}
-
 Cast::Cast(RsExpr *expr, RsExpr *type, clang::QualType pointee)
     : RsExpr(Kind::Cast), expr(expr), type(type) {
   if (pointee.isNull()) {
     return;
   }
   auto wanted = pointee.getCanonicalType().getUnqualifiedType();
-  auto *operand = CastOperand(expr);
-  if (auto *ptr_view = llvm::dyn_cast<PtrView>(operand)) {
-    ptr_view->element =
-        wanted != ptr_view->view_type.getCanonicalType().getUnqualifiedType();
-    return;
-  }
-  if (auto *field_ptr = llvm::dyn_cast<FieldPtr>(operand);
-      field_ptr && field_ptr->container) {
-    field_ptr->element =
-        wanted != field_ptr->field_type.getCanonicalType().getUnqualifiedType();
-  }
+  expr->ForEachTail([&](RsExpr *operand) {
+    if (auto *ptr_view = llvm::dyn_cast<PtrView>(operand)) {
+      ptr_view->element =
+          wanted != ptr_view->view_type.getCanonicalType().getUnqualifiedType();
+      return;
+    }
+    if (auto *field_ptr = llvm::dyn_cast<FieldPtr>(operand);
+        field_ptr && field_ptr->container) {
+      field_ptr->element =
+          wanted !=
+          field_ptr->field_type.getCanonicalType().getUnqualifiedType();
+    }
+  });
 }
 
 RsExpr *RsExpr::IgnoreParens() {
@@ -82,6 +64,8 @@ const char *KindName(RsExpr::Kind kind) {
     return "Call";
   case RsExpr::Kind::Closure:
     return "Closure";
+  case RsExpr::Kind::Conditional:
+    return "Conditional";
   case RsExpr::Kind::Assign:
     return "Assign";
   case RsExpr::Kind::CompoundAssign:
@@ -198,6 +182,11 @@ void Call::dump(llvm::raw_ostream &os, unsigned depth) {
 
 void Closure::dump(llvm::raw_ostream &os, unsigned depth) {
   DumpHeader(this, os, depth, '|' + param + '|');
+  DumpChildren(this, os, depth);
+}
+
+void Conditional::dump(llvm::raw_ostream &os, unsigned depth) {
+  DumpHeader(this, os, depth);
   DumpChildren(this, os, depth);
 }
 
