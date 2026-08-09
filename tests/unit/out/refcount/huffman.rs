@@ -51,15 +51,15 @@ pub fn Swap_0(a: Ptr<MinHeapNode>, b: Ptr<MinHeapNode>) {
     let t: Value<MinHeapNode> = Rc::new(RefCell::new(MinHeapNode {
         data: a.with(|__v| __v.data),
         freq: a.with(|__v| __v.freq),
-        left: (a.with(|__v| __v.left.clone())).clone(),
-        right: (a.with(|__v| __v.right.clone())).clone(),
+        left: (a.with(|__v| __v.left.clone())),
+        right: (a.with(|__v| __v.right.clone())),
     }));
     {
         let __rhs = MinHeapNode {
             data: b.with(|__v| __v.data),
             freq: b.with(|__v| __v.freq),
-            left: (b.with(|__v| __v.left.clone())).clone(),
-            right: (b.with(|__v| __v.right.clone())).clone(),
+            left: (b.with(|__v| __v.left.clone())),
+            right: (b.with(|__v| __v.right.clone())),
         };
         a.write(__rhs)
     };
@@ -218,7 +218,7 @@ pub fn CollectCodes_4(
     if !(((*root.borrow()).with(|__v| __v.left.clone())).is_null()) {
         (*(arr.read()).as_ref().unwrap().borrow_mut())[((*top.borrow()) as usize) as usize] = 0;
         ({
-            let _root: Ptr<MinHeapNode> = ((*root.borrow()).with(|__v| __v.left.clone())).clone();
+            let _root: Ptr<MinHeapNode> = ((*root.borrow()).with(|__v| __v.left.clone()));
             let _arr: Ptr<Option<Value<Box<[i32]>>>> = (arr).clone();
             let _top: i32 = ((*top.borrow()) + 1);
             let _out: Ptr<Option<Value<Box<[i32]>>>> = (out).clone();
@@ -229,7 +229,7 @@ pub fn CollectCodes_4(
     if !(((*root.borrow()).with(|__v| __v.right.clone())).is_null()) {
         (*(arr.read()).as_ref().unwrap().borrow_mut())[((*top.borrow()) as usize) as usize] = 1;
         ({
-            let _root: Ptr<MinHeapNode> = ((*root.borrow()).with(|__v| __v.right.clone())).clone();
+            let _root: Ptr<MinHeapNode> = ((*root.borrow()).with(|__v| __v.right.clone()));
             let _arr: Ptr<Option<Value<Box<[i32]>>>> = (arr).clone();
             let _top: i32 = ((*top.borrow()) + 1);
             let _out: Ptr<Option<Value<Box<[i32]>>>> = (out).clone();

@@ -60,7 +60,7 @@ fn main_0() -> i32 {
     'loop_: for mut v2 in (v.as_pointer() as Ptr<Value<Vec<i32>>>) {
         let v2: Ptr<Vec<i32>> = (v2.read()).as_pointer();
         'loop_: for mut i in (v2.elems() as Ptr<i32>) {
-            let i: Value<i32> = Rc::new(RefCell::new((i.read()).clone()));
+            let i: Value<i32> = Rc::new(RefCell::new((i.read())));
             {
                 println!("{}", ((*i.borrow()) + 3));
                 let _ = ::std::io::Write::flush(&mut ::std::io::stdout());
@@ -70,7 +70,7 @@ fn main_0() -> i32 {
     'loop_: for mut v2 in (v.as_pointer() as Ptr<Value<Vec<i32>>>) {
         let v2: Value<Vec<i32>> = Rc::new(RefCell::new((v2.read()).borrow().clone()));
         'loop_: for mut i in (v2.as_pointer() as Ptr<i32>) {
-            let i: Value<i32> = Rc::new(RefCell::new((i.read()).clone()));
+            let i: Value<i32> = Rc::new(RefCell::new((i.read())));
             {
                 println!("{}", (*i.borrow()));
                 let _ = ::std::io::Write::flush(&mut ::std::io::stdout());

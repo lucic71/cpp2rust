@@ -148,13 +148,13 @@ fn main_0() -> i32 {
         (*h.borrow()).with_mut(|__v| __v.err = __rhs)
     };
     {
-        (((*h.borrow()).with(|__v| __v.err.clone())).clone() as Ptr<u8>)
+        (((*h.borrow()).with(|__v| __v.err.clone())) as Ptr<u8>)
             .to_any()
             .memcpy(
                 &Ptr::from_string_literal(b"boom\0").to_any(),
                 5_usize as usize,
             );
-        (((*h.borrow()).with(|__v| __v.err.clone())).clone() as Ptr<u8>)
+        (((*h.borrow()).with(|__v| __v.err.clone())) as Ptr<u8>)
             .to_any()
             .clone()
     };
@@ -185,7 +185,7 @@ fn main_0() -> i32 {
     );
     assert!(((*h.borrow()).with(|__v| __v.xfer.clone().with(|__v| __v.code)) == 7));
     libcc2rs::free_refcount(
-        (((*h.borrow()).with(|__v| __v.xfer.clone())).clone() as Ptr<transfer>)
+        (((*h.borrow()).with(|__v| __v.xfer.clone())) as Ptr<transfer>)
             .to_any()
             .clone(),
     );

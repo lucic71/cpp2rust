@@ -35,12 +35,12 @@ pub fn in_low_half_0(r: Ptr<region>, p: AnyPtr) -> i32 {
     let p: Value<AnyPtr> = Rc::new(RefCell::new(p));
     return ((((({
         let _lhs = (*p.borrow()).clone();
-        _lhs >= ((*r.borrow()).with(|__v| __v.start.clone())).clone()
+        _lhs >= ((*r.borrow()).with(|__v| __v.start.clone()))
     }) as i32)
         != 0)
         && ((({
             let _lhs = (*p.borrow()).clone();
-            _lhs < ((*r.borrow()).with(|__v| __v.mid.clone())).clone()
+            _lhs < ((*r.borrow()).with(|__v| __v.mid.clone()))
         }) as i32)
             != 0)) as i32);
 }

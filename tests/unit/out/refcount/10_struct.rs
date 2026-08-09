@@ -88,8 +88,7 @@ impl GraphMethods for Ptr<Graph> {
                 dst: (*dst.borrow()),
                 next: (self
                     .with(|__v| __v.adj.offset(((*src.borrow()) as isize)).clone())
-                    .read())
-                .clone(),
+                    .read()),
             });
             self.with(|__v| __v.adj.offset(((*src.borrow()) as isize)).clone())
                 .write(__rhs)
@@ -99,8 +98,7 @@ impl GraphMethods for Ptr<Graph> {
                 dst: (*src.borrow()),
                 next: (self
                     .with(|__v| __v.adj.offset(((*dst.borrow()) as isize)).clone())
-                    .read())
-                .clone(),
+                    .read()),
             });
             self.with(|__v| __v.adj.offset(((*dst.borrow()) as isize)).clone())
                 .write(__rhs)

@@ -301,7 +301,7 @@ RsExpr *ConverterRefCount::ConvertFreshLValue(clang::Expr *expr) {
     return node;
   }
   SetFresh();
-  return Cat(Text('('), node, Text(").clone()"));
+  return arena_.New<Clone>(Parens(node));
 }
 
 RsExpr *ConverterRefCount::ConvertObject(clang::Expr *expr) {
@@ -320,7 +320,7 @@ RsExpr *ConverterRefCount::ConvertFreshObject(clang::Expr *expr) {
     return node;
   }
   SetFresh();
-  return Cat(Text('('), node, Text(").clone()"));
+  return arena_.New<Clone>(Parens(node));
 }
 
 RsExpr *ConverterRefCount::ConvertFresh(
@@ -330,7 +330,7 @@ RsExpr *ConverterRefCount::ConvertFresh(
     return node;
   }
   SetFresh();
-  return Cat(Text('('), node, Text(").clone()"));
+  return arena_.New<Clone>(Parens(node));
 }
 
 RsExpr *ConverterRefCount::ConvertFreshRValue(
@@ -338,7 +338,7 @@ RsExpr *ConverterRefCount::ConvertFreshRValue(
   auto *node = ConvertRValue(expr, implicit_convert_to);
   if (!isFresh() && !expr->getType()->isVoidType()) {
     SetFresh();
-    return Cat(Text('('), node, Text(").clone()"));
+    return arena_.New<Clone>(Parens(node));
   }
   SetFresh();
   return node;
@@ -350,7 +350,7 @@ RsExpr *ConverterRefCount::ConvertFreshPointer(clang::Expr *expr) {
     return node;
   }
   SetFresh();
-  return Cat(Text('('), node, Text(").clone()"));
+  return arena_.New<Clone>(Parens(node));
 }
 
 std::pair<RsExpr *, RsExpr *>
@@ -961,7 +961,7 @@ RsExpr *ConverterRefCount::LowerPtrUse(RsExpr *node) {
       auto *value = Cat(arena_.New<PtrRead>(Text("_ptr")),
                         Text(std::string(op)), assign->right);
       return Braces(Cat(Text(keyword::kLet), Text("_ptr"), Text(token::kAssign),
-                        ptr, Text(".clone()"), Text(token::kSemiColon),
+                        arena_.New<Clone>(ptr), Text(token::kSemiColon),
                         arena_.New<PtrWrite>(Text("_ptr"), value)));
     }
     if (auto *ptr = assign->left->TakePtr(Text("__v"))) {
@@ -982,8 +982,7 @@ RsExpr *ConverterRefCount::LowerPtrUse(RsExpr *node) {
   if (auto *ptr = node->TakePtr(Text("(*__v)"))) {
     auto *body = node;
     if (!node->expr || !ExprIsCopyable(node->expr)) {
-      body = MethodCall(body, "clone", std::vector<RsExpr *>{},
-                        /*is_mut=*/false);
+      body = arena_.New<Clone>(body);
     }
     return arena_.New<PtrWith>(ptr, false,
                                arena_.New<Closure>("__v", nullptr, body));
@@ -1078,8 +1077,8 @@ RsExpr *ConverterRefCount::HoistBorrowedObject(Accessor *acc) {
   }
   auto *hoisted = acc->object;
   acc->object = Text("__ptr");
-  return Cat(Text(keyword::kLet), Text("__ptr"), Text(token::kAssign), hoisted,
-             Text(".clone()"), Text(token::kSemiColon));
+  return Cat(Text(keyword::kLet), Text("__ptr"), Text(token::kAssign),
+             arena_.New<Clone>(hoisted), Text(token::kSemiColon));
 }
 
 RsExpr *ConverterRefCount::HoistPtrWrite(PtrWrite *write) {
@@ -1120,7 +1119,7 @@ RsExpr *ConverterRefCount::HoistPtrUse(RsExpr *node) {
         !UsesClosureParam(body_with->closure, closure->param)) {
       auto *object = body_with->object;
       if (clang::isa<Field>(object)) {
-        object = Cat(Parens(object), Text(".clone()"));
+        object = arena_.New<Clone>(Parens(object));
       }
       auto *obj_read = arena_.New<PtrWith>(
           with->object, with->is_mut,
@@ -1731,7 +1730,7 @@ ConverterRefCount::VisitExplicitCastExpr(clang::ExplicitCastExpr *expr) {
     PushExprKind push(*this, ExprKind::Void);
     auto *node = ConvertExpr(expr->getSubExpr());
     if (!ExprIsCopyable(expr->getSubExpr()) && !isFresh()) {
-      return Cat(node, Text(".clone()"));
+      return arena_.New<Clone>(node);
     }
     return node;
   }
@@ -2402,10 +2401,9 @@ ConverterRefCount::VisitCXXForRangeStmtVector(clang::CXXForRangeStmt *stmt) {
     parts.push_back(Text(token::kSemiColon));
     shadow = arena_.New<Concat>(std::move(parts));
   } else {
-    shadow = EmitByValueShadow(
-        loop_var_name, loop_var->getType(),
-        Cat(arena_.New<Unary>(Unary::Op::Deref, Text(loop_var_name)),
-            Text(".clone()")));
+    shadow = EmitByValueShadow(loop_var_name, loop_var->getType(),
+                               arena_.New<Clone>(arena_.New<Unary>(
+                                   Unary::Op::Deref, Text(loop_var_name))));
   }
 
   auto *body = ConvertForRangeBody(stmt);
@@ -2427,10 +2425,9 @@ ConverterRefCount::VisitCXXForRangeStmtString(clang::CXXForRangeStmt *stmt) {
   auto *range_init = ConvertObject(stmt->getRangeInit());
   auto *iter_type = Convert(loop_var->getType().getNonReferenceType());
 
-  auto *shadow = EmitByValueShadow(
-      loop_var_name, loop_var->getType(),
-      Cat(arena_.New<Unary>(Unary::Op::Deref, Text(loop_var_name)),
-          Text(".clone()")));
+  auto *shadow = EmitByValueShadow(loop_var_name, loop_var->getType(),
+                                   arena_.New<Clone>(arena_.New<Unary>(
+                                       Unary::Op::Deref, Text(loop_var_name))));
   auto *body = ConvertForRangeBody(stmt);
 
   return Cat(

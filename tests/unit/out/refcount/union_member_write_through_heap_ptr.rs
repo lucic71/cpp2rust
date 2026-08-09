@@ -260,8 +260,7 @@ fn main_0() -> i32 {
             .offset(8usize)
             .reinterpret_cast::<anon_1>() as Ptr<anon_1>)
             .with(|__v| __v.elem.offset(((0) as isize)).clone())
-            .read())
-        .clone() as Ptr<u8>)
+            .read()) as Ptr<u8>)
             .to_any()
             .clone(),
     );
@@ -271,8 +270,7 @@ fn main_0() -> i32 {
             .reinterpret_cast::<u8>()
             .offset(8usize)
             .reinterpret_cast::<anon_1>() as Ptr<anon_1>)
-            .with(|__v| __v.elem.clone()))
-        .clone() as Ptr<Ptr<u8>>)
+            .with(|__v| __v.elem.clone())) as Ptr<Ptr<u8>>)
             .to_any()
             .clone(),
     );

@@ -50,7 +50,7 @@ pub fn find_0(node: Ptr<node_t>, value: i32) -> Ptr<node_t> {
     {
         return ({
             find_0(
-                ((*node.borrow()).with(|__v| __v.left.clone())).clone(),
+                ((*node.borrow()).with(|__v| __v.left.clone())),
                 (*value.borrow()),
             )
         });
@@ -61,7 +61,7 @@ pub fn find_0(node: Ptr<node_t>, value: i32) -> Ptr<node_t> {
     {
         return ({
             find_0(
-                ((*node.borrow()).with(|__v| __v.right.clone())).clone(),
+                ((*node.borrow()).with(|__v| __v.right.clone())),
                 (*value.borrow()),
             )
         });
@@ -90,7 +90,7 @@ pub fn insert_1(node: Ptr<node_t>, value: i32) -> Ptr<node_t> {
         {
             let __rhs = ({
                 insert_1(
-                    ((*node.borrow()).with(|__v| __v.left.clone())).clone(),
+                    ((*node.borrow()).with(|__v| __v.left.clone())),
                     (*value.borrow()),
                 )
             });
@@ -103,7 +103,7 @@ pub fn insert_1(node: Ptr<node_t>, value: i32) -> Ptr<node_t> {
         {
             let __rhs = ({
                 insert_1(
-                    ((*node.borrow()).with(|__v| __v.right.clone())).clone(),
+                    ((*node.borrow()).with(|__v| __v.right.clone())),
                     (*value.borrow()),
                 )
             });
@@ -115,10 +115,10 @@ pub fn insert_1(node: Ptr<node_t>, value: i32) -> Ptr<node_t> {
 pub fn del_2(node: Ptr<node_t>) {
     let node: Value<Ptr<node_t>> = Rc::new(RefCell::new(node));
     if !(((*node.borrow()).with(|__v| __v.left.clone())).is_null()) {
-        ({ del_2(((*node.borrow()).with(|__v| __v.left.clone())).clone()) });
+        ({ del_2(((*node.borrow()).with(|__v| __v.left.clone()))) });
     }
     if !(((*node.borrow()).with(|__v| __v.right.clone())).is_null()) {
-        ({ del_2(((*node.borrow()).with(|__v| __v.right.clone())).clone()) });
+        ({ del_2(((*node.borrow()).with(|__v| __v.right.clone()))) });
     }
     (*node.borrow()).delete();
 }

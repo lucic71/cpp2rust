@@ -151,7 +151,7 @@ fn main_0() -> i32 {
             != 0)
     );
     libcc2rs::free_refcount(
-        (((*r.borrow()).with(|__v| __v.name.clone())).clone() as Ptr<u8>)
+        (((*r.borrow()).with(|__v| __v.name.clone())) as Ptr<u8>)
             .to_any()
             .clone(),
     );

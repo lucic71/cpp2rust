@@ -60,6 +60,8 @@ const char *KindName(RsExpr::Kind kind) {
     return "Unary";
   case RsExpr::Kind::Cast:
     return "Cast";
+  case RsExpr::Kind::Clone:
+    return "Clone";
   case RsExpr::Kind::Call:
     return "Call";
   case RsExpr::Kind::Closure:
@@ -171,6 +173,11 @@ void Unary::dump(llvm::raw_ostream &os, unsigned depth) {
 }
 
 void Cast::dump(llvm::raw_ostream &os, unsigned depth) {
+  DumpHeader(this, os, depth);
+  DumpChildren(this, os, depth);
+}
+
+void Clone::dump(llvm::raw_ostream &os, unsigned depth) {
   DumpHeader(this, os, depth);
   DumpChildren(this, os, depth);
 }

@@ -60,14 +60,14 @@ fn main_0() -> i32 {
     (*h.borrow()).with_mut(|__v| __v.n = 7);
     assert!(
         ((({
-            let _lhs = ((*h.borrow()).with(|__v| __v.cb.clone())).clone();
+            let _lhs = ((*h.borrow()).with(|__v| __v.cb.clone()));
             _lhs == FnPtr::<fn(i32)>::new(bump_1)
         }) as i32)
             != 0)
     );
     assert!(
         ((({
-            let _lhs = ((*h.borrow()).with(|__v| __v.cb.clone())).clone();
+            let _lhs = ((*h.borrow()).with(|__v| __v.cb.clone()));
             _lhs != FnPtr::<fn(i32)>::new(reset_2)
         }) as i32)
             != 0)

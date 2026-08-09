@@ -99,8 +99,7 @@ fn main_0() -> i32 {
             .reinterpret_cast::<u8>()
             .offset(0usize)
             .reinterpret_cast::<Ptr<i32>>() as Ptr<Ptr<i32>>)
-            .read())
-        .clone(),
+            .read()),
     ));
     assert!((((((*q.borrow()).read()) == 40) as i32) != 0));
     assert!(
@@ -135,8 +134,7 @@ fn main_0() -> i32 {
                 .reinterpret_cast::<u8>()
                 .offset(0usize)
                 .reinterpret_cast::<Ptr<i32>>() as Ptr<Ptr<i32>>)
-                .read())
-            .clone();
+                .read());
             _lhs == ((arr.as_pointer() as Ptr<i32>).offset(0))
         }) as i32)
             != 0)
@@ -167,8 +165,7 @@ fn main_0() -> i32 {
                 .reinterpret_cast::<u8>()
                 .offset(0usize)
                 .reinterpret_cast::<Ptr<i32>>() as Ptr<Ptr<i32>>)
-                .read())
-            .clone();
+                .read());
             _lhs == (arr.as_pointer() as Ptr<i32>).offset(((4) as isize))
         }) as i32)
             != 0)

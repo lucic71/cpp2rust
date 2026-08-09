@@ -34,6 +34,7 @@ struct RsExpr {
     Delim,
     Unary,
     Cast,
+    Clone,
     Call,
     Closure,
     Conditional,
@@ -270,6 +271,22 @@ struct Cast : RsExpr {
 
   RsExpr *expr;
   RsExpr *type;
+
+  void dump(llvm::raw_ostream &os, unsigned depth = 0) override;
+};
+
+struct Clone : RsExpr {
+  explicit Clone(RsExpr *object) : RsExpr(Kind::Clone), object(object) {}
+
+  static bool classof(const RsExpr *e) { return e->kind == Kind::Clone; }
+
+  std::string print() const override { return object->print() + ".clone() "; }
+
+  void ForEachChild(llvm::function_ref<void(RsExpr *&)> fn) override {
+    fn(object);
+  }
+
+  RsExpr *object;
 
   void dump(llvm::raw_ostream &os, unsigned depth = 0) override;
 };

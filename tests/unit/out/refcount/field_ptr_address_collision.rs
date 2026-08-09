@@ -124,7 +124,7 @@ fn main_0() -> i32 {
     );
     assert!(((((*o.borrow()).with(|__v| __v.tag) == 7_i64) as i32) != 0));
     libcc2rs::free_refcount(
-        (((*h.borrow()).with(|__v| __v.words.clone())).clone() as Ptr<i64>)
+        (((*h.borrow()).with(|__v| __v.words.clone())) as Ptr<i64>)
             .to_any()
             .clone(),
     );

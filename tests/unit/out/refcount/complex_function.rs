@@ -422,12 +422,12 @@ fn main_0() -> i32 {
 }
 impl X2Methods for Ptr<X2> {
     fn get(&self) -> Ptr<X1> {
-        return (self.with(|__v| __v.v.clone())).clone();
+        return (self.with(|__v| __v.v.clone()));
     }
 }
 impl X3Methods for Ptr<X3> {
     fn get(&self) -> Ptr<X2> {
-        return (self.with(|__v| __v.v.clone())).clone();
+        return (self.with(|__v| __v.v.clone()));
     }
 }
 impl X4Methods for Ptr<X4> {

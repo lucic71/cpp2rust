@@ -59,8 +59,7 @@ fn main_0() -> i32 {
             .reinterpret_cast::<u8>()
             .offset(0usize)
             .reinterpret_cast::<Ptr<i32>>() as Ptr<Ptr<i32>>)
-            .read())
-        .clone(),
+            .read()),
     ));
     return if (((((*p.borrow()).read()) == 0) as i32) != 0) {
         0

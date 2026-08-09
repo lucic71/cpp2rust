@@ -37,11 +37,11 @@ impl ByteRepr for NonTrivial {
     }
 }
 pub fn unused_ref_param_1(x: Ptr<NonTrivial>) {
-    (x.read()).clone();
+    (x.read());
 }
 pub fn unused_ptr_param_2(p: Ptr<NonTrivial>) {
     let p: Value<Ptr<NonTrivial>> = Rc::new(RefCell::new(p));
-    ((*p.borrow()).read()).clone();
+    ((*p.borrow()).read());
 }
 thread_local!(
     pub static side_effect_counter_3: Value<i32> = Rc::new(RefCell::new(0));

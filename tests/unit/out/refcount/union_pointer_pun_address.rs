@@ -100,8 +100,7 @@ fn main_0() -> i32 {
             .reinterpret_cast::<u8>()
             .offset(0usize)
             .reinterpret_cast::<Ptr<node_b>>() as Ptr<Ptr<node_b>>)
-            .read())
-        .clone(),
+            .read()),
     ));
     assert!(
         ((({

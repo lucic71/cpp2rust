@@ -138,8 +138,7 @@ fn main_0() -> i32 {
                 .reinterpret_cast::<u8>()
                 .offset(16usize)
                 .reinterpret_cast::<AnyPtr>() as Ptr<AnyPtr>)
-                .read())
-            .clone();
+                .read());
             _lhs == ((dummy.as_pointer()) as Ptr<i32>).to_any()
         }) as i32)
             != 0)
@@ -168,8 +167,7 @@ fn main_0() -> i32 {
                 .reinterpret_cast::<u8>()
                 .offset(16usize)
                 .reinterpret_cast::<AnyPtr>() as Ptr<AnyPtr>)
-                .read())
-            .clone();
+                .read());
             _lhs == ((dummy.as_pointer()) as Ptr<i32>).to_any()
         }) as i32)
             != 0)

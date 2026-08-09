@@ -173,8 +173,7 @@ fn main_0() -> i32 {
                     .clone() as Ptr<anon_1>)
                     .with(|__v| __v.elem.offset(((0) as isize)).clone())
             })
-            .read())
-        .clone() as Ptr<u8>)
+            .read()) as Ptr<u8>)
             .to_any()
             .clone(),
     );
@@ -212,8 +211,7 @@ fn main_0() -> i32 {
                 .reinterpret_cast::<anon_1>()
                 .clone() as Ptr<anon_1>)
                 .with(|__v| __v.elem.clone())
-        }))
-        .clone() as Ptr<Ptr<u8>>)
+        })) as Ptr<Ptr<u8>>)
             .to_any()
             .clone(),
     );
@@ -241,7 +239,7 @@ fn main_0() -> i32 {
             != 0)
     );
     libcc2rs::free_refcount(
-        (((*h.borrow()).with(|__v| __v.table.clone())).clone() as Ptr<entry>)
+        (((*h.borrow()).with(|__v| __v.table.clone())) as Ptr<entry>)
             .to_any()
             .clone(),
     );

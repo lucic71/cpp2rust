@@ -191,7 +191,7 @@ pub fn emplace_local_from_field_4(jpg: Ptr<JPEGData>, cond: bool) {
 pub fn nested_emplace_move_5(bw: Ptr<Writer>) {
     let bw: Value<Ptr<Writer>> = Rc::new(RefCell::new(bw));
     (*bw.borrow())
-        .with(|__v| __v.output.clone().clone())
+        .with(|__v| __v.output.clone())
         .with_mut(|__v: &mut Vec<Chunk>| {
             __v.push(std::mem::take(
                 &mut (*bw.borrow()).with(|__v| __v.chunk.clone()),

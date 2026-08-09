@@ -307,12 +307,28 @@ void Converter::LowerNodes(RsExpr *&node) {
     node = lowered;
   }
   node->ForEachChild([this](RsExpr *&child) { LowerNodes(child); });
+  if (auto *lowered = LowerRedundantClone(node)) {
+    node = lowered;
+  }
   if (auto *nested = NestPtrUse(node)) {
     node = nested;
   }
   if (auto *hoisted = HoistPtrUse(node)) {
     node = hoisted;
   }
+}
+
+RsExpr *Converter::LowerRedundantClone(RsExpr *node) {
+  auto *clone = clang::dyn_cast<Clone>(node);
+  if (clone == nullptr) {
+    return nullptr;
+  }
+  auto *object = clone->object->IgnoreParens();
+  if (clang::isa<PtrWith>(object) || clang::isa<PtrRead>(object) ||
+      clang::isa<Clone>(object) || clang::isa<PtrView>(object)) {
+    return clone->object;
+  }
+  return nullptr;
 }
 
 RsExpr *Converter::ConvertDecl(clang::Decl *decl) {
@@ -1921,7 +1937,7 @@ RsExpr *Converter::ConvertLoopVariable(clang::VarDecl *decl,
     PushExplicitAutoref autoref(*this, /*is_mut=*/false);
     node = ConvertExpr(range_init);
   }
-  return Cat(node, Text(std::format("[{}]", loop_var_name)), Text(".clone()"));
+  return arena_.New<Clone>(Cat(node, Text(std::format("[{}]", loop_var_name))));
 }
 
 RsExpr *Converter::ConvertForRangeBody(clang::CXXForRangeStmt *stmt,
@@ -2386,7 +2402,7 @@ RsExpr *Converter::ConvertVAArgCall(clang::CallExpr *expr) {
   if (IsBuiltinVaCopy(expr)) {
     auto *dst = ConvertExpr(expr->getArg(0)->IgnoreImpCasts());
     auto *src = ConvertExpr(expr->getArg(1)->IgnoreImpCasts());
-    return Cat(dst, Text('='), src, Text(".clone()"));
+    return Cat(dst, Text('='), arena_.New<Clone>(src));
   }
   return Text("");
 }
@@ -3987,7 +4003,7 @@ RsExpr *Converter::VisitCXXConstructExpr(clang::CXXConstructExpr *expr) {
     bool suppress = PushSuppressIteratorClone::take(*this);
     auto *node = ConvertExpr(expr->getArg(0));
     if (ctor->isCopyConstructor() && !suppress) {
-      return Cat(node, Text(".clone()"));
+      return arena_.New<Clone>(node);
     }
     return node;
   }
@@ -4545,8 +4561,7 @@ RsExpr *Converter::ConvertVarInit(clang::QualType qual_type,
       PushInitType init_type(*this, qual_type);
       inner = ConvertExpr(expr);
     }
-    parts.push_back(
-        Cat(Parens(Cat(Text(token::kStar), inner)), Text(".clone()")));
+    parts.push_back(arena_.New<Clone>(Parens(Cat(Text(token::kStar), inner))));
   } else if (IsReferenceType(expr) || qual_type->isFunctionPointerType()) {
     PushExprKind push(*this, ExprKind::AddrOf);
     PushInitType init_type(*this, qual_type);
@@ -5447,7 +5462,7 @@ RsExpr *Converter::ConvertFreshRValue(
   if (!isFresh() && !expr->getType()->isVoidType() &&
       !expr->getType()->isPointerType()) {
     SetFresh();
-    return Cat(Text('('), node, Text(").clone()"));
+    return arena_.New<Clone>(Parens(node));
   }
   SetFresh();
   return node;

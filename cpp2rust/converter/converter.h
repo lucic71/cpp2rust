@@ -483,6 +483,8 @@ protected:
 
   RsExpr *LowerBitField(RsExpr *node);
 
+  RsExpr *LowerRedundantClone(RsExpr *node);
+
   virtual RsExpr *LowerPtrUse([[maybe_unused]] RsExpr *node) { return nullptr; }
 
   virtual RsExpr *NestPtrUse([[maybe_unused]] RsExpr *node) { return nullptr; }

@@ -54,8 +54,8 @@ fn main_0() -> i32 {
     });
     assert!(
         ((({
-            let _lhs = ((*p.borrow()).with(|__v| __v.a.clone())).clone();
-            _lhs != ((*p.borrow()).with(|__v| __v.b.clone())).clone()
+            let _lhs = ((*p.borrow()).with(|__v| __v.a.clone()));
+            _lhs != ((*p.borrow()).with(|__v| __v.b.clone()))
         }) as i32)
             != 0)
     );
@@ -75,8 +75,8 @@ fn main_0() -> i32 {
     }
     assert!(
         ((({
-            let _lhs = ((*p.borrow()).with(|__v| __v.a.clone())).clone();
-            _lhs != ((*p.borrow()).with(|__v| __v.b.clone())).clone()
+            let _lhs = ((*p.borrow()).with(|__v| __v.a.clone()));
+            _lhs != ((*p.borrow()).with(|__v| __v.b.clone()))
         }) as i32)
             != 0)
     );

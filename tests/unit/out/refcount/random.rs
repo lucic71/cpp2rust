@@ -134,12 +134,12 @@ fn main_0() -> i32 {
             ry1.with(|__v| __v.a[(3) as usize]),
             ry1.with(|__v| __v.a[(4) as usize]),
         ]),
-        r: (ry1.with(|__v| __v.r.clone())).clone(),
-        p: (ry1.with(|__v| __v.p.clone())).clone(),
-        pair: (ry1.with(|__v| __v.pair.clone())).clone(),
+        r: (ry1.with(|__v| __v.r.clone())),
+        p: (ry1.with(|__v| __v.p.clone())),
+        pair: (ry1.with(|__v| __v.pair.clone())),
         ap: Box::new([
-            (ry1.with(|__v| __v.ap[(0) as usize].clone())).clone(),
-            (ry1.with(|__v| __v.ap[(1) as usize].clone())).clone(),
+            (ry1.with(|__v| __v.ap[(0) as usize].clone())),
+            (ry1.with(|__v| __v.ap[(1) as usize].clone())),
         ]),
     }));
     let ry2: Ptr<Pair> = (ry1).clone();
@@ -154,12 +154,12 @@ fn main_0() -> i32 {
             (*py1.borrow()).with(|__v| __v.a[(3) as usize]),
             (*py1.borrow()).with(|__v| __v.a[(4) as usize]),
         ]),
-        r: ((*py1.borrow()).with(|__v| __v.r.clone())).clone(),
-        p: ((*py1.borrow()).with(|__v| __v.p.clone())).clone(),
-        pair: ((*py1.borrow()).with(|__v| __v.pair.clone())).clone(),
+        r: ((*py1.borrow()).with(|__v| __v.r.clone())),
+        p: ((*py1.borrow()).with(|__v| __v.p.clone())),
+        pair: ((*py1.borrow()).with(|__v| __v.pair.clone())),
         ap: Box::new([
-            ((*py1.borrow()).with(|__v| __v.ap[(0) as usize].clone())).clone(),
-            ((*py1.borrow()).with(|__v| __v.ap[(1) as usize].clone())).clone(),
+            ((*py1.borrow()).with(|__v| __v.ap[(0) as usize].clone())),
+            ((*py1.borrow()).with(|__v| __v.ap[(1) as usize].clone())),
         ]),
     }));
     let ry3: Ptr<Pair> = (*py1.borrow()).clone();

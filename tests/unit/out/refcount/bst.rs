@@ -50,7 +50,7 @@ pub fn find_0(node: Ptr<node_t>, value: i32) -> Ptr<node_t> {
     {
         return ({
             find_0(
-                ((*node.borrow()).with(|__v| __v.left.clone())).clone(),
+                ((*node.borrow()).with(|__v| __v.left.clone())),
                 (*value.borrow()),
             )
         });
@@ -61,7 +61,7 @@ pub fn find_0(node: Ptr<node_t>, value: i32) -> Ptr<node_t> {
     {
         return ({
             find_0(
-                ((*node.borrow()).with(|__v| __v.right.clone())).clone(),
+                ((*node.borrow()).with(|__v| __v.right.clone())),
                 (*value.borrow()),
             )
         });
@@ -86,7 +86,7 @@ pub fn insert_1(node: Ptr<node_t>, new_node: Ptr<node_t>) -> Ptr<node_t> {
         {
             let __rhs = ({
                 insert_1(
-                    ((*node.borrow()).with(|__v| __v.left.clone())).clone(),
+                    ((*node.borrow()).with(|__v| __v.left.clone())),
                     (*new_node.borrow()).clone(),
                 )
             });
@@ -99,7 +99,7 @@ pub fn insert_1(node: Ptr<node_t>, new_node: Ptr<node_t>) -> Ptr<node_t> {
         {
             let __rhs = ({
                 insert_1(
-                    ((*node.borrow()).with(|__v| __v.right.clone())).clone(),
+                    ((*node.borrow()).with(|__v| __v.right.clone())),
                     (*new_node.borrow()).clone(),
                 )
             });
