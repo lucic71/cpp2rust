@@ -1874,14 +1874,15 @@ RsExpr *ConverterRefCount::ConvertBinaryOperator(clang::BinaryOperator *expr) {
       auto *lhs_node =
           hoist_lhs ? Parens(arena_.New<Unary>(Unary::Op::Deref, Text("__lhs")))
                     : ConvertRValue(lhs);
-      auto op = opcode_as_string;
-      op.remove_suffix(1); // remove '=' from operator
       auto *rhs_node = ConvertRValue(rhs);
-      value = Parens(Cat(Parens(CastTo(lhs_node, computation_result_type)),
-                         Text(std::string(op)), rhs_node));
+      value = Parens(arena_.New<Binary>(
+          clang::BinaryOperator::getOpForCompoundAssignment(expr->getOpcode()),
+          Parens(CastTo(lhs_node, computation_result_type)), rhs_node));
     }
     if (lhs_type->isBooleanType()) {
-      value = Cat(value, Text(token::kDiff), Text(token::kZero));
+      value =
+          arena_.New<Binary>(clang::BO_NE, value,
+                             arena_.New<Literal>("0", Literal::Category::Int));
     } else {
       value = CastTo(value, lhs_type);
     }
@@ -1952,9 +1953,9 @@ RsExpr *ConverterRefCount::ConvertBinaryOperator(clang::BinaryOperator *expr) {
     auto *lhs_node = ConvertFreshPointer(lhs);
     auto *rhs_node = ConvertFreshPointer(rhs);
     computed_expr_type_ = ComputedExprType::FreshValue;
-    return CastTo(Parens(Cat(lhs_node, Text(std::string(expr->getOpcodeStr())),
-                             rhs_node)),
-                  expr->getType());
+    return CastTo(
+        Parens(arena_.New<Binary>(expr->getOpcode(), lhs_node, rhs_node)),
+        expr->getType());
   }
 
   if (expr->isAssignmentOp()) {

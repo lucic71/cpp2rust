@@ -3,6 +3,7 @@
 // Copyright (c) 2022-present INESC-ID.
 // Distributed under the MIT license that can be found in the LICENSE file.
 
+#include <clang/AST/OperationKinds.h>
 #include <clang/AST/Type.h>
 #include <llvm/ADT/STLFunctionalExtras.h>
 
@@ -38,6 +39,8 @@ struct RsExpr {
     Call,
     Closure,
     Conditional,
+    Binary,
+    Literal,
     Assign,
     CompoundAssign,
     Fn,
@@ -360,6 +363,46 @@ struct Closure : RsExpr {
   std::string param;
   RsExpr *param_type;
   RsExpr *body;
+
+  void dump(llvm::raw_ostream &os, unsigned depth = 0) override;
+};
+
+struct Binary : RsExpr {
+  Binary(clang::BinaryOperatorKind op, RsExpr *lhs, RsExpr *rhs)
+      : RsExpr(Kind::Binary), op(op), lhs(lhs), rhs(rhs) {}
+
+  static bool classof(const RsExpr *e) { return e->kind == Kind::Binary; }
+
+  std::string print() const override;
+
+  void ForEachChild(llvm::function_ref<void(RsExpr *&)> fn) override {
+    fn(lhs);
+    fn(rhs);
+  }
+
+  bool IsShortCircuit() const {
+    return op == clang::BO_LAnd || op == clang::BO_LOr;
+  }
+
+  clang::BinaryOperatorKind op;
+  RsExpr *lhs;
+  RsExpr *rhs;
+
+  void dump(llvm::raw_ostream &os, unsigned depth = 0) override;
+};
+
+struct Literal : RsExpr {
+  enum class Category : uint8_t { Int, Float, Char, Bool, Str };
+
+  Literal(std::string text, Category category)
+      : RsExpr(Kind::Literal), text(std::move(text)), category(category) {}
+
+  static bool classof(const RsExpr *e) { return e->kind == Kind::Literal; }
+
+  std::string print() const override { return text; }
+
+  std::string text;
+  Category category;
 
   void dump(llvm::raw_ostream &os, unsigned depth = 0) override;
 };

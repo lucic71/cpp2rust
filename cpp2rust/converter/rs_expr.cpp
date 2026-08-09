@@ -3,6 +3,7 @@
 
 #include "rs_expr.h"
 
+#include <clang/AST/Expr.h>
 #include <llvm/Support/Casting.h>
 #include <llvm/Support/raw_ostream.h>
 
@@ -27,6 +28,12 @@ Cast::Cast(RsExpr *expr, RsExpr *type, clang::QualType pointee)
           field_ptr->field_type.getCanonicalType().getUnqualifiedType();
     }
   });
+}
+
+std::string Binary::print() const {
+  return lhs->print() + ' ' +
+         std::string(clang::BinaryOperator::getOpcodeStr(op)) + ' ' +
+         rhs->print() + ' ';
 }
 
 RsExpr *RsExpr::IgnoreParens() {
@@ -68,6 +75,10 @@ const char *KindName(RsExpr::Kind kind) {
     return "Closure";
   case RsExpr::Kind::Conditional:
     return "Conditional";
+  case RsExpr::Kind::Binary:
+    return "Binary";
+  case RsExpr::Kind::Literal:
+    return "Literal";
   case RsExpr::Kind::Assign:
     return "Assign";
   case RsExpr::Kind::CompoundAssign:
@@ -195,6 +206,16 @@ void Closure::dump(llvm::raw_ostream &os, unsigned depth) {
 void Conditional::dump(llvm::raw_ostream &os, unsigned depth) {
   DumpHeader(this, os, depth);
   DumpChildren(this, os, depth);
+}
+
+void Binary::dump(llvm::raw_ostream &os, unsigned depth) {
+  DumpHeader(this, os, depth,
+             std::string(clang::BinaryOperator::getOpcodeStr(op)));
+  DumpChildren(this, os, depth);
+}
+
+void Literal::dump(llvm::raw_ostream &os, unsigned depth) {
+  DumpHeader(this, os, depth, text);
 }
 
 void Fn::dump(llvm::raw_ostream &os, unsigned depth) {

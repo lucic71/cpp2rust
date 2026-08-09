@@ -1511,7 +1511,7 @@ RsExpr *Converter::BitFieldArith(BitField *field, std::string_view op,
 }
 
 RsExpr *Converter::LowerBitFieldStore(BitField *field, RsExpr *value) {
-  if (BitFieldStoreNeedsTemp() && !clang::isa<Verbatim>(value)) {
+  if (BitFieldStoreNeedsTemp() && !clang::isa<Verbatim, Literal>(value)) {
     return Braces(Cat(Text(keyword::kLet), Text("__bf_v"), Text(token::kAssign),
                       value, Text(token::kSemiColon),
                       MethodCall(field->object, field->Setter(),
@@ -2816,12 +2816,16 @@ RsExpr *Converter::VisitIntegerLiteral(clang::IntegerLiteral *expr) {
   if (auto *mapped = GetMappedAsNode(expr)) {
     return mapped;
   }
-  return Text(getIntegerLiteral(expr, Mapper::Map(expr->getType()) != "i32"));
+  return arena_.New<Literal>(
+      getIntegerLiteral(expr, Mapper::Map(expr->getType()) != "i32"),
+      Literal::Category::Int);
 }
 
 RsExpr *Converter::VisitFloatingLiteral(clang::FloatingLiteral *expr) {
   computed_expr_type_ = ComputedExprType::FreshValue;
-  return Text(static_cast<std::string>(GetNumAsString(expr->getValue())));
+  return arena_.New<Literal>(
+      static_cast<std::string>(GetNumAsString(expr->getValue())),
+      Literal::Category::Float);
 }
 
 RsExpr *Converter::VisitCharacterLiteral(clang::CharacterLiteral *expr) {
@@ -2829,8 +2833,9 @@ RsExpr *Converter::VisitCharacterLiteral(clang::CharacterLiteral *expr) {
   std::string ch = GetEscapedCharLiteral(expr->getValue());
   ch = (uc > 0x7F ? "b'" : "'") + std::move(ch) + '\'';
   computed_expr_type_ = ComputedExprType::FreshValue;
-  return arena_.New<Cast>(Text(std::move(ch)),
-                          Converter::Convert(expr->getType()));
+  return arena_.New<Cast>(
+      arena_.New<Literal>(std::move(ch), Literal::Category::Char),
+      Converter::Convert(expr->getType()));
 }
 
 std::string Converter::GetEscapedCharLiteral(char character) const {
@@ -3169,14 +3174,15 @@ RsExpr *Converter::ConvertBinaryOperator(clang::BinaryOperator *expr) {
       auto *receiver = Parens(CastTo(lhs_again, computation_result_type));
       value = Parens(ConvertUnsignedArithBinaryOperator(expr, rhs, receiver));
     } else {
-      auto op = opcode_as_string;
-      op.remove_suffix(1); // remove '=' from operator
       auto *rhs_node = ConvertRValue(rhs, computation_result_type);
-      value = Parens(Cat(Parens(CastTo(lhs_again, computation_result_type)),
-                         Text(std::string(op)), rhs_node));
+      value = Parens(arena_.New<Binary>(
+          clang::BinaryOperator::getOpForCompoundAssignment(expr->getOpcode()),
+          Parens(CastTo(lhs_again, computation_result_type)), rhs_node));
     }
     if (lhs_type->isBooleanType()) {
-      value = Parens(Cat(value, Text(token::kDiff), Text(token::kZero)));
+      value = Parens(
+          arena_.New<Binary>(clang::BO_NE, value,
+                             arena_.New<Literal>("0", Literal::Category::Int)));
     } else {
       value = CastTo(value, lhs_type);
     }
@@ -3296,10 +3302,10 @@ RsExpr *Converter::ConvertBinaryOperator(clang::BinaryOperator *expr) {
     auto *pointee_type_node = ConvertPointeeType(lhs_type);
     auto *size_of_node =
         Cat(Text("::std::mem::size_of::<"), pointee_type_node, Text(">()"));
-    auto *diff = Parens(Cat(arena_.New<Cast>(lhs_node, Text("usize")),
-                            Text(token::kMinus),
-                            arena_.New<Cast>(rhs_node, Text("usize"))));
-    auto *node = Parens(Cat(diff, Text(token::kDiv), size_of_node));
+    auto *diff = Parens(arena_.New<Binary>(
+        clang::BO_Sub, arena_.New<Cast>(lhs_node, Text("usize")),
+        arena_.New<Cast>(rhs_node, Text("usize"))));
+    auto *node = Parens(arena_.New<Binary>(clang::BO_Div, diff, size_of_node));
     computed_expr_type_ = ComputedExprType::FreshValue;
     return CastTo(node, expr->getType());
   }
@@ -3307,7 +3313,7 @@ RsExpr *Converter::ConvertBinaryOperator(clang::BinaryOperator *expr) {
     auto *lhs_node = Parens(ConvertCondition(expr->getLHS()));
     auto *rhs_node = Parens(ConvertCondition(expr->getRHS()));
     computed_expr_type_ = ComputedExprType::FreshValue;
-    return Cat(lhs_node, Text(std::string(expr->getOpcodeStr())), rhs_node);
+    return arena_.New<Binary>(expr->getOpcode(), lhs_node, rhs_node);
   }
   return ConvertGenericBinaryOperator(expr);
 }
@@ -3321,8 +3327,8 @@ RsExpr *Converter::ConvertGenericBinaryOperator(clang::BinaryOperator *expr) {
   auto *rhs_node =
       ConvertExpr(rhs, GetOperandImplicitConversionTarget(expr, rhs, lhs));
   computed_expr_type_ = ComputedExprType::FreshValue;
-  return Parens(Cat(Parens(lhs_node), Text(std::string(expr->getOpcodeStr())),
-                    Parens(rhs_node)));
+  return Parens(arena_.New<Binary>(expr->getOpcode(), Parens(lhs_node),
+                                   Parens(rhs_node)));
 }
 
 bool Converter::IsReferenceType(const clang::Expr *expr) const {
