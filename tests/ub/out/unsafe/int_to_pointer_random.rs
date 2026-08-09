@@ -26,5 +26,5 @@ unsafe fn main_0() -> i32 {
     let mut u: anon_0 = <anon_0>::default();
     u.bits = 3735928559_u64;
     let mut p: *mut i32 = u.p;
-    return if ((((*p) == (0)) as i32) != 0) { 0 } else { 1 };
+    return if (((*p) == (0)) as i32) != 0 { 0 } else { 1 };
 }

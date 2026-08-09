@@ -18,46 +18,46 @@ unsafe fn main_0() -> i32 {
     let mut ul: u64 = 5_u64;
     let mut ll: i64 = 6_i64;
     let mut ch: libc::c_char = ('a' as libc::c_char);
-    if (n != 0) {
+    if n != 0 {
         assert!(true);
     }
     if !(n != 0) {
         assert!(false);
     }
-    if (zero != 0) {
+    if zero != 0 {
         assert!(false);
     }
     if !(zero != 0) {
         assert!(true);
     }
-    if (u != 0) {
+    if u != 0 {
         assert!(true);
     }
-    if (ul != 0) {
+    if ul != 0 {
         assert!(true);
     }
-    if (ll != 0) {
+    if ll != 0 {
         assert!(true);
     }
-    if (ch != 0) {
+    if ch != 0 {
         assert!(true);
     }
     let mut loop_count: i32 = 0;
     let mut counter: i32 = 3;
-    'loop_: while (counter != 0) {
+    'loop_: while counter != 0 {
         counter.prefix_dec();
         loop_count.prefix_inc();
     }
     assert!(((loop_count) == (3)));
     let mut i: i32 = 5;
-    'loop_: while (i != 0) {
+    'loop_: while i != 0 {
         loop_count.prefix_inc();
         i.prefix_dec();
     }
     assert!(((loop_count) == (8)));
-    let mut t: i32 = if (n != 0) { 100 } else { 200 };
+    let mut t: i32 = if n != 0 { 100 } else { 200 };
     assert!(((t) == (100)));
-    let mut t2: i32 = if (zero != 0) { 100 } else { 200 };
+    let mut t2: i32 = if zero != 0 { 100 } else { 200 };
     assert!(((t2) == (200)));
     let mut t7: i32 = (!(n != 0) as i32);
     assert!(((t7) == (0)));

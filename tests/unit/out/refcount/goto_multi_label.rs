@@ -12,10 +12,10 @@ pub fn classify_0(n: i32) -> i32 {
     goto_block!({
         '__entry: {
             *ret.borrow_mut() = 0;
-            if ((((*n.borrow()) < 0) as i32) != 0) {
+            if (((*n.borrow()) < 0) as i32) != 0 {
                 goto!('error);
             }
-            if ((((*n.borrow()) == 0) as i32) != 0) {
+            if (((*n.borrow()) == 0) as i32) != 0 {
                 goto!('out);
             }
             (*ret.borrow_mut()) = (*n.borrow());

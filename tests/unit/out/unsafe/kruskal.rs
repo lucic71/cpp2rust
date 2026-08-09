@@ -17,8 +17,8 @@ pub unsafe fn partition_0(arr: *mut Option<Box<[Edge]>>, mut start: i32, mut end
     let pivot: *mut Edge = (&mut (*arr).as_mut().unwrap()[(start as usize)] as *mut Edge);
     let mut count: i32 = 0;
     let mut i: i32 = ((start) + (1));
-    'loop_: while ((i) <= (end)) {
-        if (((*arr).as_mut().unwrap()[(i as usize)].weight) <= ((*pivot).weight)) {
+    'loop_: while (i) <= (end) {
+        if ((*arr).as_mut().unwrap()[(i as usize)].weight) <= ((*pivot).weight) {
             count.postfix_inc();
         }
         i.prefix_inc();
@@ -42,10 +42,10 @@ pub unsafe fn partition_0(arr: *mut Option<Box<[Edge]>>, mut start: i32, mut end
     let mut i: i32 = start;
     let mut j: i32 = end;
     'loop_: while ((i) < (pidx)) && ((j) > (pidx)) {
-        'loop_: while (((*arr).as_mut().unwrap()[(i as usize)].weight) <= ((*pivot).weight)) {
+        'loop_: while ((*arr).as_mut().unwrap()[(i as usize)].weight) <= ((*pivot).weight) {
             i.prefix_inc();
         }
-        'loop_: while (((*arr).as_mut().unwrap()[(j as usize)].weight) > ((*pivot).weight)) {
+        'loop_: while ((*arr).as_mut().unwrap()[(j as usize)].weight) > ((*pivot).weight) {
             j.prefix_dec();
         }
         if ((i) < (pidx)) && ((j) > (pidx)) {
@@ -71,7 +71,7 @@ pub unsafe fn partition_0(arr: *mut Option<Box<[Edge]>>, mut start: i32, mut end
     return pidx;
 }
 pub unsafe fn quicksort_1(arr: *mut Option<Box<[Edge]>>, mut start: i32, mut end: i32) {
-    if ((start) >= (end)) {
+    if (start) >= (end) {
         return;
     }
     let mut p: i32 = (unsafe {
@@ -103,14 +103,14 @@ pub struct DisjointSet {
 impl DisjointSet {
     pub unsafe fn makeSet(&mut self) {
         let mut i: i32 = 0;
-        'loop_: while ((i) < (self.n)) {
+        'loop_: while (i) < (self.n) {
             self.parent.as_mut().unwrap()[(i as usize)] = i;
             self.rank.as_mut().unwrap()[(i as usize)] = 1;
             i.postfix_inc();
         }
     }
     pub unsafe fn find(&mut self, mut x: i32) -> i32 {
-        if ((self.parent.as_mut().unwrap()[(x as usize)]) != (x)) {
+        if (self.parent.as_mut().unwrap()[(x as usize)]) != (x) {
             self.parent.as_mut().unwrap()[(x as usize)] = (unsafe {
                 let _x: i32 = self.parent.as_mut().unwrap()[(x as usize)];
                 self.find(_x)
@@ -121,15 +121,15 @@ impl DisjointSet {
     pub unsafe fn merge(&mut self, mut x: i32, mut y: i32) {
         let mut xset: i32 = (unsafe { self.find(x) });
         let mut yset: i32 = (unsafe { self.find(y) });
-        if ((xset) == (yset)) {
+        if (xset) == (yset) {
             return;
         }
-        if ((self.rank.as_mut().unwrap()[(xset as usize)])
-            < (self.rank.as_mut().unwrap()[(yset as usize)]))
+        if (self.rank.as_mut().unwrap()[(xset as usize)])
+            < (self.rank.as_mut().unwrap()[(yset as usize)])
         {
             self.parent.as_mut().unwrap()[(xset as usize)] = yset;
-        } else if ((self.rank.as_mut().unwrap()[(xset as usize)])
-            > (self.rank.as_mut().unwrap()[(yset as usize)]))
+        } else if (self.rank.as_mut().unwrap()[(xset as usize)])
+            > (self.rank.as_mut().unwrap()[(yset as usize)])
         {
             self.parent.as_mut().unwrap()[(yset as usize)] = xset;
         } else {
@@ -168,11 +168,11 @@ pub unsafe fn MSTKruskal_2(graph: *mut Graph) -> f64 {
     (unsafe { set.makeSet() });
     let mut total_weight: f64 = 0_f64;
     let mut i: i32 = 0;
-    'loop_: while ((i) < ((*graph).E)) {
+    'loop_: while (i) < ((*graph).E) {
         let mut x: i32 = (*graph).edges.as_mut().unwrap()[(i as usize)].u;
         let mut y: i32 = (*graph).edges.as_mut().unwrap()[(i as usize)].v;
         let mut w: f64 = (*graph).edges.as_mut().unwrap()[(i as usize)].weight;
-        if ((unsafe { set.find(x) }) != (unsafe { set.find(y) })) {
+        if (unsafe { set.find(x) }) != (unsafe { set.find(y) }) {
             (unsafe { set.merge(x, y) });
             total_weight += w;
         }

@@ -11,10 +11,10 @@ pub unsafe fn classify_0(mut n: i32) -> i32 {
     goto_block!({
         '__entry: {
             ret = 0;
-            if ((((n) < (0)) as i32) != 0) {
+            if (((n) < (0)) as i32) != 0 {
                 goto!('error);
             }
-            if ((((n) == (0)) as i32) != 0) {
+            if (((n) == (0)) as i32) != 0 {
                 goto!('out);
             }
             ret = n;

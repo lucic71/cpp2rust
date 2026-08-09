@@ -10,14 +10,14 @@ pub unsafe fn for_test_0(n: i32) -> i32 {
     let mut x: i32 = 0;
     let mut i: i32 = 0;
     let mut j: i32 = 0;
-    'loop_: while ((i) < (n)) {
+    'loop_: while (i) < (n) {
         x += 1;
-        if ((x) == (100)) {
+        if (x) == (100) {
             break;
         }
         let mut k: i32 = 0;
         let mut w: i32 = 0;
-        'loop_: while ((w) < (j)) {
+        'loop_: while (w) < (j) {
             break;
             w += 1;
             k += 1;

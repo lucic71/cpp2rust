@@ -152,7 +152,7 @@ fn main_0() -> i32 {
     let N: Value<i32> = Rc::new(RefCell::new(5));
     let v1: Value<Vec<i32>> = Rc::new(RefCell::new(Vec::new()));
     let i: Value<i32> = Rc::new(RefCell::new(0));
-    'loop_: while ((*i.borrow()) < (*N.borrow())) {
+    'loop_: while (*i.borrow()) < (*N.borrow()) {
         {
             let a0_clone = (*i.borrow()).clone();
             (*v1.borrow_mut()).push(a0_clone)
@@ -161,7 +161,7 @@ fn main_0() -> i32 {
     }
     let v2: Value<Vec<i32>> = Rc::new(RefCell::new((*v1.borrow()).clone()));
     let i: Value<i32> = Rc::new(RefCell::new(0));
-    'loop_: while ((*i.borrow()) < (*N.borrow())) {
+    'loop_: while (*i.borrow()) < (*N.borrow()) {
         assert!(
             (((v2.as_pointer() as Ptr<i32>)
                 .offset(((*i.borrow()) as usize))
@@ -171,14 +171,14 @@ fn main_0() -> i32 {
         (*i.borrow_mut()).prefix_inc();
     }
     let i: Value<i32> = Rc::new(RefCell::new(0));
-    'loop_: while ((*i.borrow()) < (*N.borrow())) {
+    'loop_: while (*i.borrow()) < (*N.borrow()) {
         (v2.as_pointer() as Ptr<i32>)
             .offset(((*i.borrow()) as usize))
             .with_mut(|__v| __v.prefix_inc());
         (*i.borrow_mut()).prefix_inc();
     }
     let i: Value<i32> = Rc::new(RefCell::new(0));
-    'loop_: while ((*i.borrow()) < (*N.borrow())) {
+    'loop_: while (*i.borrow()) < (*N.borrow()) {
         assert!(
             (((v2.as_pointer() as Ptr<i32>)
                 .offset(((*i.borrow()) as usize))
@@ -195,7 +195,7 @@ fn main_0() -> i32 {
     }
     let m1: Value<Vec<Value<Vec<i32>>>> = Rc::new(RefCell::new(Vec::new()));
     let i: Value<i32> = Rc::new(RefCell::new(0));
-    'loop_: while ((*i.borrow()) < (*N.borrow())) {
+    'loop_: while (*i.borrow()) < (*N.borrow()) {
         (m1.as_pointer() as Ptr<Vec<Value<Vec<i32>>>>).with_mut(
             |__v: &mut Vec<Value<Vec<i32>>>| {
                 __v.push(Rc::new(RefCell::new(
@@ -215,7 +215,7 @@ fn main_0() -> i32 {
             .collect(),
     ));
     let i: Value<i32> = Rc::new(RefCell::new(0));
-    'loop_: while ((*i.borrow()) < (*N.borrow())) {
+    'loop_: while (*i.borrow()) < (*N.borrow()) {
         assert!(
             (((((m1.as_pointer() as Ptr<Value<Vec<i32>>>)
                 .offset(((*i.borrow()) as usize))
@@ -235,7 +235,7 @@ fn main_0() -> i32 {
                 == 10_usize)
         );
         let j: Value<i32> = Rc::new(RefCell::new(0));
-        'loop_: while ((*j.borrow()) < 10) {
+        'loop_: while (*j.borrow()) < 10 {
             assert!(
                 (((((m1.as_pointer() as Ptr<Value<Vec<i32>>>)
                     .offset(((*i.borrow()) as usize))
@@ -259,9 +259,9 @@ fn main_0() -> i32 {
         (*i.borrow_mut()).prefix_inc();
     }
     let i: Value<i32> = Rc::new(RefCell::new(0));
-    'loop_: while ((*i.borrow()) < (*N.borrow())) {
+    'loop_: while (*i.borrow()) < (*N.borrow()) {
         let j: Value<i32> = Rc::new(RefCell::new(0));
-        'loop_: while ((*j.borrow()) < 10) {
+        'loop_: while (*j.borrow()) < 10 {
             (((m2.as_pointer() as Ptr<Value<Vec<i32>>>)
                 .offset(((*i.borrow()) as usize))
                 .read())
@@ -273,7 +273,7 @@ fn main_0() -> i32 {
         (*i.borrow_mut()).prefix_inc();
     }
     let i: Value<i32> = Rc::new(RefCell::new(0));
-    'loop_: while ((*i.borrow()) < (*N.borrow())) {
+    'loop_: while (*i.borrow()) < (*N.borrow()) {
         assert!(
             (((((m1.as_pointer() as Ptr<Value<Vec<i32>>>)
                 .offset(((*i.borrow()) as usize))
@@ -293,7 +293,7 @@ fn main_0() -> i32 {
                 == 10_usize)
         );
         let j: Value<i32> = Rc::new(RefCell::new(0));
-        'loop_: while ((*j.borrow()) < 10) {
+        'loop_: while (*j.borrow()) < 10 {
             assert!(
                 (((((m1.as_pointer() as Ptr<Value<Vec<i32>>>)
                     .offset(((*i.borrow()) as usize))
@@ -318,7 +318,7 @@ fn main_0() -> i32 {
     }
     let map1: Value<BTreeMap<i32, Value<i32>>> = Rc::new(RefCell::new(BTreeMap::new()));
     let i: Value<i32> = Rc::new(RefCell::new(0));
-    'loop_: while ((*i.borrow()) < (*N.borrow())) {
+    'loop_: while (*i.borrow()) < (*N.borrow()) {
         {
             let __rhs = (*i.borrow());
             (map1.as_pointer() as Ptr<BTreeMap<i32, Value<i32>>>)
@@ -338,7 +338,7 @@ fn main_0() -> i32 {
             .collect(),
     ));
     let i: Value<i32> = Rc::new(RefCell::new(0));
-    'loop_: while ((*i.borrow()) < (*N.borrow())) {
+    'loop_: while (*i.borrow()) < (*N.borrow()) {
         assert!(
             (((map2.as_pointer() as Ptr<BTreeMap<i32, Value<i32>>>)
                 .with_mut(|__v: &mut BTreeMap<i32, Value<i32>>| {
@@ -359,7 +359,7 @@ fn main_0() -> i32 {
         (*i.borrow_mut()).prefix_inc();
     }
     let i: Value<i32> = Rc::new(RefCell::new(0));
-    'loop_: while ((*i.borrow()) < (*N.borrow())) {
+    'loop_: while (*i.borrow()) < (*N.borrow()) {
         assert!(
             (((map1.as_pointer() as Ptr<BTreeMap<i32, Value<i32>>>)
                 .with_mut(|__v: &mut BTreeMap<i32, Value<i32>>| {
@@ -466,7 +466,7 @@ fn main_0() -> i32 {
     let v4: Value<Vec<i32>> = Rc::new(RefCell::new(Vec::new()));
     (v4.as_pointer() as Ptr<Vec<i32>>).write((*v2.borrow()).clone());
     let i: Value<i32> = Rc::new(RefCell::new(0));
-    'loop_: while ((*i.borrow()) < (*N.borrow())) {
+    'loop_: while (*i.borrow()) < (*N.borrow()) {
         assert!(
             (((v4.as_pointer() as Ptr<i32>)
                 .offset(((*i.borrow()) as usize))
@@ -479,7 +479,7 @@ fn main_0() -> i32 {
         (*i.borrow_mut()).prefix_inc();
     }
     let i: Value<i32> = Rc::new(RefCell::new(0));
-    'loop_: while ((*i.borrow()) < (*N.borrow())) {
+    'loop_: while (*i.borrow()) < (*N.borrow()) {
         assert!(
             (((v4.as_pointer() as Ptr<i32>)
                 .offset(((*i.borrow()) as usize))

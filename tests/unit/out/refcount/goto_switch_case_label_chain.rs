@@ -12,7 +12,7 @@ pub fn pick_0(op: i32, x: i32) -> i32 {
     let r: Value<i32> = Rc::new(RefCell::new(0));
     switch!(match (*op.borrow()) {
         __v if __v == 1 => {
-            if ((((*x.borrow()) == 0) as i32) != 0) {
+            if (((*x.borrow()) == 0) as i32) != 0 {
                 (*r.borrow_mut()) = 5;
                 break;
             }

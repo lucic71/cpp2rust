@@ -14,7 +14,7 @@ pub unsafe fn f3_1(mut x: f64, mut y: f64, mut z: f64) -> f64 {
 }
 pub unsafe fn f1_2(mut x: f64, mut y: f64) -> f64 {
     let mut z1: f64 = (unsafe { f2_0(x, y) });
-    if ((unsafe { f2_0(z1, y) }) < (0_f64)) {
+    if (unsafe { f2_0(z1, y) }) < (0_f64) {
         let mut z2: f64 = -(unsafe {
             let _y: f64 = (unsafe { f2_0(x, y) });
             let _z: f64 = y;

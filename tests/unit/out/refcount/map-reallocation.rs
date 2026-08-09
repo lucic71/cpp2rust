@@ -43,7 +43,7 @@ fn main_0() -> i32 {
             .is_null())
     );
     let i: Value<i32> = Rc::new(RefCell::new(0));
-    'loop_: while ((*i.borrow()) < (*sentinel.borrow())) {
+    'loop_: while (*i.borrow()) < (*sentinel.borrow()) {
         {
             let __rhs = (*i.borrow());
             (m.as_pointer() as Ptr<BTreeMap<i32, Value<i32>>>)
@@ -57,7 +57,7 @@ fn main_0() -> i32 {
         (*i.borrow_mut()).prefix_inc();
     }
     let i: Value<i32> = Rc::new(RefCell::new(((*sentinel.borrow()) + 1)));
-    'loop_: while ((*i.borrow()) <= (*N.borrow())) {
+    'loop_: while (*i.borrow()) <= (*N.borrow()) {
         {
             let __rhs = (*i.borrow());
             (m.as_pointer() as Ptr<BTreeMap<i32, Value<i32>>>)

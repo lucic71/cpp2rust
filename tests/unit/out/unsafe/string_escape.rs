@@ -60,9 +60,9 @@ unsafe fn main_0() -> i32 {
         ]
     };;
     let mut i: i32 = 0;
-    'loop_: while ((i)
+    'loop_: while (i)
         < (((::std::mem::size_of::<[libc::c_char; 41]>() as usize)
-            .wrapping_div((::std::mem::size_of::<libc::c_char>() as usize))) as i32))
+            .wrapping_div((::std::mem::size_of::<libc::c_char>() as usize))) as i32)
     {
         assert!(
             (((*special.offset(((i) as isize))) as i32) == (expected_0[((i) as usize)] as i32))

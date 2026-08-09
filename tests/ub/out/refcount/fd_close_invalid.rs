@@ -10,7 +10,7 @@ pub fn main() {
     libcc2rs::exit_refcount(main_0());
 }
 fn main_0() -> i32 {
-    return if (((libcc2rs::close_refcount(1234) == -1_i32) as i32) != 0) {
+    return if ((libcc2rs::close_refcount(1234) == -1_i32) as i32) != 0 {
         0
     } else {
         1

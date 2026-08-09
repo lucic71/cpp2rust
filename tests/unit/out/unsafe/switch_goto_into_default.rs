@@ -9,7 +9,7 @@ use std::rc::Rc;
 pub unsafe fn direct_label_0(mut x: i32, mut y: i32) -> i32 {
     switch!(match x {
         __v if __v == 1 => {
-            if (y != 0) {
+            if y != 0 {
                 goto!('other);
             }
             return 10;
@@ -30,7 +30,7 @@ pub unsafe fn braced_label_1(mut x: i32, mut y: i32) -> i32 {
     let mut r: i32 = 0;
     switch!(match x {
         __v if __v == 1 => {
-            if (y != 0) {
+            if y != 0 {
                 goto!('other);
             }
             r = 10;

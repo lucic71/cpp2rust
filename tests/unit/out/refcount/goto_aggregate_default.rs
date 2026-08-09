@@ -49,7 +49,7 @@ pub fn agg_0(n: i32) -> i32 {
     goto_block!({
         '__entry: {
             *total.borrow_mut() = 0;
-            if ((((*n.borrow()) < 0) as i32) != 0) {
+            if (((*n.borrow()) < 0) as i32) != 0 {
                 goto!('out);
             }
             (*total.borrow_mut()) = 1;

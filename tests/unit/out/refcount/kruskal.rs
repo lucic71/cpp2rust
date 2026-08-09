@@ -48,7 +48,7 @@ pub fn partition_0(arr: Ptr<Option<Value<Box<[Edge]>>>>, start: i32, end: i32) -
     .clone();
     let count: Value<i32> = Rc::new(RefCell::new(0));
     let i: Value<i32> = Rc::new(RefCell::new(((*start.borrow()) + 1)));
-    'loop_: while ((*i.borrow()) <= (*end.borrow())) {
+    'loop_: while (*i.borrow()) <= (*end.borrow()) {
         if {
             let _lhs = (*(arr.read()).as_ref().unwrap().borrow())
                 [((*i.borrow()) as usize) as usize]
@@ -138,7 +138,7 @@ pub fn partition_0(arr: Ptr<Option<Value<Box<[Edge]>>>>, start: i32, end: i32) -
 pub fn quicksort_1(arr: Ptr<Option<Value<Box<[Edge]>>>>, start: i32, end: i32) {
     let start: Value<i32> = Rc::new(RefCell::new(start));
     let end: Value<i32> = Rc::new(RefCell::new(end));
-    if ((*start.borrow()) >= (*end.borrow())) {
+    if (*start.borrow()) >= (*end.borrow()) {
         return;
     }
     let p: Value<i32> = Rc::new(RefCell::new(
@@ -269,8 +269,7 @@ pub fn MSTKruskal_2(graph: Ptr<Graph>) -> f64 {
                 .borrow())[((*i.borrow()) as usize) as usize]
                 .weight,
         ));
-        if (({ set.as_pointer().find((*x.borrow())) })
-            != ({ set.as_pointer().find((*y.borrow())) }))
+        if ({ set.as_pointer().find((*x.borrow())) }) != ({ set.as_pointer().find((*y.borrow())) })
         {
             ({ set.as_pointer().merge((*x.borrow()), (*y.borrow())) });
             (*total_weight.borrow_mut()) += (*w.borrow());
@@ -325,7 +324,7 @@ fn main_0() -> i32 {
 impl DisjointSetMethods for Ptr<DisjointSet> {
     fn makeSet(&self) {
         let i: Value<i32> = Rc::new(RefCell::new(0));
-        'loop_: while (self.with(|__v| (*i.borrow()) < __v.n)) {
+        'loop_: while self.with(|__v| (*i.borrow()) < __v.n) {
             {
                 let __rhs = (*i.borrow());
                 (*self
@@ -344,12 +343,12 @@ impl DisjointSetMethods for Ptr<DisjointSet> {
     }
     fn find(&self, x: i32) -> i32 {
         let x: Value<i32> = Rc::new(RefCell::new(x));
-        if ((*self
+        if (*self
             .with(|__v| __v.parent.clone())
             .as_ref()
             .unwrap()
             .borrow())[((*x.borrow()) as usize) as usize]
-            != (*x.borrow()))
+            != (*x.borrow())
         {
             {
                 let __rhs = ({
@@ -378,23 +377,23 @@ impl DisjointSetMethods for Ptr<DisjointSet> {
         let y: Value<i32> = Rc::new(RefCell::new(y));
         let xset: Value<i32> = Rc::new(RefCell::new(({ self.find((*x.borrow())) })));
         let yset: Value<i32> = Rc::new(RefCell::new(({ self.find((*y.borrow())) })));
-        if ((*xset.borrow()) == (*yset.borrow())) {
+        if (*xset.borrow()) == (*yset.borrow()) {
             return;
         }
-        if ((*self.with(|__v| __v.rank.clone()).as_ref().unwrap().borrow())
+        if (*self.with(|__v| __v.rank.clone()).as_ref().unwrap().borrow())
             [((*xset.borrow()) as usize) as usize]
             < (*self.with(|__v| __v.rank.clone()).as_ref().unwrap().borrow())
-                [((*yset.borrow()) as usize) as usize])
+                [((*yset.borrow()) as usize) as usize]
         {
             (*self
                 .with(|__v| __v.parent.clone())
                 .as_ref()
                 .unwrap()
                 .borrow_mut())[((*xset.borrow()) as usize) as usize] = (*yset.borrow());
-        } else if ((*self.with(|__v| __v.rank.clone()).as_ref().unwrap().borrow())
+        } else if (*self.with(|__v| __v.rank.clone()).as_ref().unwrap().borrow())
             [((*xset.borrow()) as usize) as usize]
             > (*self.with(|__v| __v.rank.clone()).as_ref().unwrap().borrow())
-                [((*yset.borrow()) as usize) as usize])
+                [((*yset.borrow()) as usize) as usize]
         {
             (*self
                 .with(|__v| __v.parent.clone())

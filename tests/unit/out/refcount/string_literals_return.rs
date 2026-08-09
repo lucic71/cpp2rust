@@ -14,7 +14,7 @@ pub fn get_empty_1() -> Ptr<u8> {
 }
 pub fn get_branch_2(x: i32) -> Ptr<u8> {
     let x: Value<i32> = Rc::new(RefCell::new(x));
-    if ((*x.borrow()) > 0) {
+    if (*x.borrow()) > 0 {
         return Ptr::from_string_literal(b"positive\0");
     }
     return Ptr::from_string_literal(b"non-positive\0");

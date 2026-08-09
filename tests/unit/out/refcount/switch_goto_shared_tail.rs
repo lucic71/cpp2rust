@@ -97,7 +97,7 @@ pub fn convert_4(s: Ptr<u8>) -> Ptr<u8> {
     let s: Value<Ptr<u8>> = Rc::new(RefCell::new(s));
     let last: Value<i32> = Rc::new(RefCell::new(0));
     (*n_1.with(Value::clone).borrow_mut()) = 0;
-    'loop_: while (((*s.borrow()).read()) != 0) {
+    'loop_: while ((*s.borrow()).read()) != 0 {
         ({
             step_3(
                 (((*s.borrow_mut()).postfix_inc().read()) as i32),

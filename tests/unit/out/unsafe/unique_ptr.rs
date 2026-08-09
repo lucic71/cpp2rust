@@ -73,7 +73,7 @@ pub unsafe fn RndStuff_2() {
         (0..100_usize).map(|_| 0_i32).collect::<Box<[i32]>>(),
     )));
     let mut i: i32 = 0;
-    'loop_: while ((i) < (100)) {
+    'loop_: while (i) < (100) {
         x2.as_mut().unwrap()[(i as usize)] = 1;
         i.prefix_inc();
     }
@@ -81,7 +81,7 @@ pub unsafe fn RndStuff_2() {
         (0..200_usize).map(|_| 0_i32).collect::<Box<[i32]>>(),
     )));
     let mut i: i32 = 0;
-    'loop_: while ((i) < (200)) {
+    'loop_: while (i) < (200) {
         x2.as_mut().unwrap()[(i as usize)] = 2;
         i.prefix_inc();
     }
@@ -89,7 +89,7 @@ pub unsafe fn RndStuff_2() {
         .as_deref_mut()
         .map_or(::std::ptr::null_mut(), |s| s.as_mut_ptr());
     let mut i: i32 = 0;
-    'loop_: while ((i) < (200)) {
+    'loop_: while (i) < (200) {
         assert!(((*p2.offset(((i) as isize))) == (2)));
         i.prefix_inc();
     }
@@ -99,7 +99,7 @@ pub unsafe fn RndStuff_2() {
             .collect::<Box<[_]>>(),
     );
     let mut i: i32 = 0;
-    'loop_: while ((i) < (10)) {
+    'loop_: while (i) < (10) {
         x3.as_mut().unwrap()[(i as usize)] = Pair { x: 1, y: 2 };
         i.prefix_inc();
     }
@@ -107,7 +107,7 @@ pub unsafe fn RndStuff_2() {
         .as_deref_mut()
         .map_or(::std::ptr::null_mut(), |s| s.as_mut_ptr());
     let mut i: i32 = 0;
-    'loop_: while ((i) < (10)) {
+    'loop_: while (i) < (10) {
         assert!((((*p3_0.offset(((i) as isize))).x) == (1)));
         assert!((((*p3_0.offset(((i) as isize))).y) == (2)));
         (unsafe { x3.as_mut().unwrap()[(i as usize)].inc(10) });
@@ -121,7 +121,7 @@ pub unsafe fn RndStuff_2() {
             .collect::<Box<[Pair]>>(),
     )));
     let mut i: i32 = 0;
-    'loop_: while ((i) < (50)) {
+    'loop_: while (i) < (50) {
         x3.as_mut().unwrap()[(i as usize)] = Pair {
             x: -1_i32,
             y: -2_i32,
@@ -133,7 +133,7 @@ pub unsafe fn RndStuff_2() {
         .map_or(::std::ptr::null_mut(), |s| s.as_mut_ptr());
     assert!(((p3_0) != (p3_1)));
     let mut i: i32 = 0;
-    'loop_: while ((i) < (50)) {
+    'loop_: while (i) < (50) {
         assert!((((*p3_1.offset(((i) as isize))).x) == (-1_i32)));
         assert!((((*p3_1.offset(((i) as isize))).y) == (-2_i32)));
         (unsafe { x3.as_mut().unwrap()[(i as usize)].inc(-10_i32) });

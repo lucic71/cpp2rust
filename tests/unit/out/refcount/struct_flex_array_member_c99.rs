@@ -69,7 +69,7 @@ pub fn table_create_0(n: i32) -> Ptr<table> {
         (*t.borrow()).with_mut(|__v| __v.n = __rhs)
     };
     let i: Value<i32> = Rc::new(RefCell::new(0));
-    'loop_: while ((((*i.borrow()) < (*n.borrow())) as i32) != 0) {
+    'loop_: while (((*i.borrow()) < (*n.borrow())) as i32) != 0 {
         {
             let __rhs = ((*i.borrow()) * 10);
             ((*t.borrow())

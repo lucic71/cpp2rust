@@ -20,7 +20,7 @@ fn main_0() -> i32 {
         (words.as_pointer() as Ptr<u32>).reinterpret_cast::<u8>(),
     ));
     let i: Value<i32> = Rc::new(RefCell::new(0));
-    'loop_: while ((((*i.borrow()) < 6) as i32) != 0) {
+    'loop_: while (((*i.borrow()) < 6) as i32) != 0 {
         {
             let __rhs = (((*i.borrow()) + 1) as u8);
             (*bytes.borrow())

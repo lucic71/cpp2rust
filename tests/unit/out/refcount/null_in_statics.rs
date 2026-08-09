@@ -46,13 +46,13 @@ fn main_0() -> i32 {
     assert!((*p_const_1.with(Value::clone).borrow()).is_null());
     assert!((*cp_2.with(Value::clone).borrow()).is_null());
     let i: Value<i32> = Rc::new(RefCell::new(0));
-    'loop_: while ((*i.borrow()) < 4) {
+    'loop_: while (*i.borrow()) < 4 {
         assert!(((*arr_of_ptr_3.with(Value::clone).borrow())[(*i.borrow()) as usize]).is_null());
         (*i.borrow_mut()).prefix_inc();
     }
     assert!((*pp_4.with(Value::clone).borrow()).is_null());
     let i: Value<i32> = Rc::new(RefCell::new(0));
-    'loop_: while ((*i.borrow()) < 3) {
+    'loop_: while (*i.borrow()) < 3 {
         assert!(
             ((*const_arr_of_ptr_5.with(Value::clone).borrow())[(*i.borrow()) as usize]).is_null()
         );

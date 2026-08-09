@@ -39,7 +39,7 @@ pub unsafe fn fft_3(a: *mut Option<Box<[Complex]>>, mut N: i32) -> Option<Box<[C
             .map(|_| <Complex>::default())
             .collect::<Box<[_]>>(),
     );
-    if ((N) == (1)) {
+    if (N) == (1) {
         y.as_mut().unwrap()[(0_usize)] = Complex {
             re: (*a).as_mut().unwrap()[(0_usize)].re,
             img: (*a).as_mut().unwrap()[(0_usize)].img,
@@ -52,7 +52,7 @@ pub unsafe fn fft_3(a: *mut Option<Box<[Complex]>>, mut N: i32) -> Option<Box<[C
             .collect::<Box<[_]>>(),
     );
     let mut i: i32 = 0;
-    'loop_: while ((i) < (N)) {
+    'loop_: while (i) < (N) {
         let mut alpha: f64 =
             ((((-2_i32 as f64) * (3.1415926535897931E+0)) * (i as f64)) / (N as f64));
         w.as_mut().unwrap()[(i as usize)] = Complex {
@@ -72,7 +72,7 @@ pub unsafe fn fft_3(a: *mut Option<Box<[Complex]>>, mut N: i32) -> Option<Box<[C
             .collect::<Box<[_]>>(),
     );
     let mut i: i32 = 0;
-    'loop_: while ((i) < ((N) / (2))) {
+    'loop_: while (i) < ((N) / (2)) {
         A0.as_mut().unwrap()[(i as usize)] = Complex {
             re: (*a).as_mut().unwrap()[(((i) * (2)) as usize)].re,
             img: (*a).as_mut().unwrap()[(((i) * (2)) as usize)].img,
@@ -88,7 +88,7 @@ pub unsafe fn fft_3(a: *mut Option<Box<[Complex]>>, mut N: i32) -> Option<Box<[C
     let mut y1: Option<Box<[Complex]>> =
         (unsafe { fft_3((&mut A1 as *mut Option<Box<[Complex]>>), ((N) / (2))) });
     let mut k: i32 = 0;
-    'loop_: while ((k) < ((N) / (2))) {
+    'loop_: while (k) < ((N) / (2)) {
         let mut yk: Complex = (unsafe {
             let _z1: Complex = y0.as_mut().unwrap()[(k as usize)].clone();
             let _z2: Complex = (unsafe {
@@ -136,7 +136,7 @@ unsafe fn main_0() -> i32 {
             .collect::<Box<[_]>>(),
     );
     let mut i: i32 = 0;
-    'loop_: while ((i) < (N)) {
+    'loop_: while (i) < (N) {
         a.as_mut().unwrap()[(i as usize)] = Complex {
             re: ((i as f64) + (1_f64)),
             img: 0_f64,
@@ -156,7 +156,7 @@ unsafe fn main_0() -> i32 {
             .collect::<Box<[_]>>(),
     );
     let mut i: i32 = 0;
-    'loop_: while ((i) < (N)) {
+    'loop_: while (i) < (N) {
         reals.as_mut().unwrap()[(i as usize)] =
             (b.as_mut().unwrap()[(i as usize)].re.round() as i32);
         imgs.as_mut().unwrap()[(i as usize)] =

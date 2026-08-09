@@ -78,7 +78,7 @@ impl ByteRepr for Route {
     }
 }
 pub fn RandomRoute_0(route: Ptr<Route>) -> i32 {
-    if ((route.with(|__v| __v.path.first % 2)) != 0) {
+    if (route.with(|__v| __v.path.first % 2)) != 0 {
         return ({
             let _new_first: i32 = ({
                 route

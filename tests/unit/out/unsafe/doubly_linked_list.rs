@@ -24,7 +24,7 @@ impl Node {
 pub unsafe fn Find_0(mut head: *mut Node, mut idx: i32) -> *mut Node {
     let mut curr: *mut Node = head;
     let mut i: i32 = 0;
-    'loop_: while ((i) < (idx)) {
+    'loop_: while (i) < (idx) {
         curr = (*curr).next;
         i.postfix_inc();
     }
@@ -33,7 +33,7 @@ pub unsafe fn Find_0(mut head: *mut Node, mut idx: i32) -> *mut Node {
 pub unsafe fn FindBack_1(mut tail: *mut Node, mut idx: i32) -> *mut Node {
     let mut curr: *mut Node = tail;
     let mut i: i32 = 0;
-    'loop_: while ((i) < (idx)) {
+    'loop_: while (i) < (idx) {
         curr = (*curr).prev;
         i.postfix_inc();
     }
@@ -53,7 +53,7 @@ pub unsafe fn Append_2(head: *mut Node, new_node: *mut Node) {
 pub unsafe fn Delete_3(mut head: *mut Node, mut val: i32) -> *mut Node {
     let mut curr: *mut Node = head;
     'loop_: while !((curr).is_null()) {
-        if (((*curr).val) == (val)) {
+        if ((*curr).val) == (val) {
             let mut prev: *mut Node = (*curr).prev;
             let mut next: *mut Node = (*curr).next;
             if !((prev).is_null()) {

@@ -84,7 +84,7 @@ fn main_0() -> i32 {
         (*n.borrow()).with_mut(|__v| __v.len = __rhs)
     };
     let i: Value<usize> = Rc::new(RefCell::new(0_usize));
-    'loop_: while ((((*i.borrow()) < (*tail_size.borrow())) as i32) != 0) {
+    'loop_: while (((*i.borrow()) < (*tail_size.borrow())) as i32) != 0 {
         {
             let __rhs = (((*i.borrow()) & 255_usize) as u8);
             (((*n.borrow()).reinterpret_cast::<u8>().offset(16usize) as Ptr<u8>) as Ptr<u8>)
@@ -94,7 +94,7 @@ fn main_0() -> i32 {
         (*i.borrow_mut()).postfix_inc();
     }
     let i: Value<usize> = Rc::new(RefCell::new(0_usize));
-    'loop_: while ((((*i.borrow()) < (*tail_size.borrow())) as i32) != 0) {
+    'loop_: while (((*i.borrow()) < (*tail_size.borrow())) as i32) != 0 {
         assert!(
             ((({
                 let _lhs = (((((*n.borrow()).reinterpret_cast::<u8>().offset(16usize) as Ptr<u8>)

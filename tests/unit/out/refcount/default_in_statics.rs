@@ -225,7 +225,7 @@ fn main_0() -> i32 {
     assert!(((*static_outer_1.with(Value::clone).borrow()).pp).is_null());
     assert!(((*static_outer_1.with(Value::clone).borrow()).fn_).is_null());
     let i: Value<i32> = Rc::new(RefCell::new(0));
-    'loop_: while ((*i.borrow()) < 3) {
+    'loop_: while (*i.borrow()) < 3 {
         assert!(
             ((*static_outer_1.with(Value::clone).borrow()).arr[(*i.borrow()) as usize]).is_null()
         );
@@ -233,7 +233,7 @@ fn main_0() -> i32 {
     }
     assert!(((*static_outer_1.with(Value::clone).borrow()).inner.name).is_null());
     let i: Value<i32> = Rc::new(RefCell::new(0));
-    'loop_: while ((*i.borrow()) < 2) {
+    'loop_: while (*i.borrow()) < 2 {
         assert!(
             ((*static_inner_array_2.with(Value::clone).borrow())[(*i.borrow()) as usize].name)
                 .is_null()
@@ -245,7 +245,7 @@ fn main_0() -> i32 {
     assert!(((*static_foo_3.with(Value::clone).borrow()).fn2).is_null());
     assert!(((*static_foo_3.with(Value::clone).borrow()).n == 42));
     let i: Value<i32> = Rc::new(RefCell::new(0));
-    'loop_: while ((*i.borrow()) < 2) {
+    'loop_: while (*i.borrow()) < 2 {
         assert!(
             ((*static_foo_array_4.with(Value::clone).borrow())[(*i.borrow()) as usize].s2)
                 .is_null()

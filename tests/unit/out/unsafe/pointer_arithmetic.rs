@@ -15,7 +15,7 @@ unsafe fn main_0() -> i32 {
     let mut x: i32 = 1;
     let mut p: *mut i32 = (&raw mut x as *mut i32);
     (*p) += 1;
-    if ((x) == (2)) {
+    if (x) == (2) {
         let mut a: [i32; 2] = [1, 2];
         p = (&raw mut a[((1) as usize)] as *mut i32);
         (*p) += 1;
@@ -25,7 +25,7 @@ unsafe fn main_0() -> i32 {
             if ((a[((0) as usize)]) == (2)) && ((a[((1) as usize)]) == (3)) {
                 p = (&raw mut x as *mut i32);
                 (*p) += 1;
-                if ((x) == (3)) {
+                if (x) == (3) {
                     let mut p2: *mut i32 = p;
                     (*p2) += 1;
                     return (((x) == (4)) as i32);

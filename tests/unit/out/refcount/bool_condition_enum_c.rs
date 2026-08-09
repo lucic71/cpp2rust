@@ -16,13 +16,13 @@ pub fn main() {
 fn main_0() -> i32 {
     let code: Value<Code> = Rc::new(RefCell::new(Code_CODE_OK));
     let err: Value<Code> = Rc::new(RefCell::new(Code_CODE_ERR));
-    if ((*code.borrow()) != 0) {
+    if (*code.borrow()) != 0 {
         assert!((0 != 0));
     }
     if !((*code.borrow()) != 0) {
         assert!((1 != 0));
     }
-    if ((*err.borrow()) != 0) {
+    if (*err.borrow()) != 0 {
         assert!((1 != 0));
     }
     if !((*err.borrow()) != 0) {

@@ -13,7 +13,7 @@ pub unsafe fn dec_1(mut x: i32) -> i32 {
     return ((x) - (1));
 }
 pub unsafe fn pick_2(mut choose_inc: i32) -> Option<unsafe fn(i32) -> i32> {
-    if (choose_inc != 0) {
+    if choose_inc != 0 {
         return Some(inc_0);
     }
     return Some(dec_1);

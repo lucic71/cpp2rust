@@ -12,11 +12,11 @@ pub fn sum_ints_0(first: i32, __args: &[VaArg]) -> i32 {
     let total: Value<i32> = Rc::new(RefCell::new((*first.borrow())));
     (*args.borrow_mut()) = VaList::new(__args);
     let val: Value<i32> = <Value<i32>>::default();
-    'loop_: while (((({
+    'loop_: while ((({
         (*val.borrow_mut()) = (*args.borrow_mut()).arg::<i32>();
         (*val.borrow())
     }) != 0) as i32)
-        != 0)
+        != 0
     {
         (*total.borrow_mut()) += (*val.borrow());
     }

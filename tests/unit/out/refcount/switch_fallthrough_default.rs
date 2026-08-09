@@ -12,7 +12,7 @@ pub fn fallthrough_default_0(x: i32, flag: i32) -> i32 {
     let r: Value<i32> = Rc::new(RefCell::new(0));
     switch!(match (*x.borrow()) {
         __v if __v == 7 => {
-            if ((*flag.borrow()) != 0) {
+            if (*flag.borrow()) != 0 {
                 (*r.borrow_mut()) = 100;
                 break;
             };

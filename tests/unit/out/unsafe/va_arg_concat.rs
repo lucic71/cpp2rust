@@ -11,11 +11,11 @@ pub unsafe fn sum_ints_0(mut first: i32, __args: &[VaArg]) -> i32 {
     let mut total: i32 = first;
     args = VaList::new(__args);
     let mut val: i32 = 0_i32;
-    'loop_: while (((({
+    'loop_: while ((({
         val = args.arg::<i32>();
         val
     }) != (0)) as i32)
-        != 0)
+        != 0
     {
         total += val;
     }

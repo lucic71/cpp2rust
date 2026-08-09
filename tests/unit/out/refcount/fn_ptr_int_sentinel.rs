@@ -17,10 +17,10 @@ pub fn real_free_1(p: AnyPtr) {
 pub fn consume_2(data: AnyPtr, d: FnPtr<fn(AnyPtr)>) -> i32 {
     let data: Value<AnyPtr> = Rc::new(RefCell::new(data));
     let d: Value<FnPtr<fn(AnyPtr)>> = Rc::new(RefCell::new(d));
-    if ((((*d.borrow()).is_null()) as i32) != 0) {
+    if (((*d.borrow()).is_null()) as i32) != 0 {
         return 1;
     }
-    if ((((*d.borrow()) == (<FnPtr<fn(AnyPtr)>>::from_int((-1_i32) as usize))) as i32) != 0) {
+    if (((*d.borrow()) == (<FnPtr<fn(AnyPtr)>>::from_int((-1_i32) as usize))) as i32) != 0 {
         return 2;
     }
     ({ (*(*d.borrow()))((*data.borrow()).clone()) });

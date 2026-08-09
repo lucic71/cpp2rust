@@ -9,7 +9,7 @@ use std::rc::{Rc, Weak};
 pub fn strlen_0(s: Ptr<u8>) -> usize {
     let s: Value<Ptr<u8>> = Rc::new(RefCell::new(s));
     let begin: Value<Ptr<u8>> = Rc::new(RefCell::new((*s.borrow()).clone()));
-    'loop_: while (((*s.borrow()).read()) != 0) {
+    'loop_: while ((*s.borrow()).read()) != 0 {
         (*s.borrow_mut()).prefix_inc();
     }
     return ((((*s.borrow()).clone() - (*begin.borrow()).clone()) as i64) as usize);

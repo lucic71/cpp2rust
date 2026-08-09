@@ -10,7 +10,7 @@ pub unsafe fn fallthrough_default_0(mut x: i32, mut flag: i32) -> i32 {
     let mut r: i32 = 0;
     switch!(match x {
         __v if __v == 7 => {
-            if (flag != 0) {
+            if flag != 0 {
                 r = 100;
                 break;
             };

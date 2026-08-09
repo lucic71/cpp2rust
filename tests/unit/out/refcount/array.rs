@@ -14,7 +14,7 @@ fn main_0() -> i32 {
     let arr1: Value<Box<[i32]>> = Rc::new(RefCell::new(Box::new([0, 0, 0, 0, 0])));
     let arr2: Value<Box<[i32]>> = Rc::new(RefCell::new(Box::new([1, 1, 1, 1, 1])));
     let i: Value<i32> = Rc::new(RefCell::new(0));
-    'loop_: while ((*i.borrow()) < (*N.borrow())) {
+    'loop_: while (*i.borrow()) < (*N.borrow()) {
         {
             let __rhs = ((*i.borrow()) + (*arr2.borrow())[(*i.borrow()) as usize]);
             (*arr1.borrow_mut())[(*i.borrow()) as usize] = __rhs
@@ -23,7 +23,7 @@ fn main_0() -> i32 {
     }
     let fatorial: Value<i32> = Rc::new(RefCell::new(1));
     let i: Value<i32> = Rc::new(RefCell::new(0));
-    'loop_: while ((*i.borrow()) < (*N.borrow())) {
+    'loop_: while (*i.borrow()) < (*N.borrow()) {
         (*fatorial.borrow_mut()) *= (*arr1.borrow())[(*i.borrow()) as usize];
         (*i.borrow_mut()).prefix_inc();
     }

@@ -18,7 +18,7 @@ fn main_0() -> i32 {
     let c: Value<Color> = Rc::new(RefCell::new(((*n.borrow()) as Color)));
     assert!((((*c.borrow()) as i32) == (((3) as Color) as i32)));
     assert!((((*c.borrow()) as i32) != (Color_BLUE as i32)));
-    return if (((*c.borrow()) as i32) == (((3) as Color) as i32)) {
+    return if ((*c.borrow()) as i32) == (((3) as Color) as i32) {
         0
     } else {
         1

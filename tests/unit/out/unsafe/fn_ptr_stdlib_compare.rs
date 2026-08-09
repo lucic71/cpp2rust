@@ -75,12 +75,12 @@ unsafe fn main_0() -> i32 {
         );
         assert!(((n) == (10_usize)));
         let mut i: i32 = 0;
-        'loop_: while ((i) < (10)) {
+        'loop_: while (i) < (10) {
             assert!(((buf[((i) as usize)] as i32) == (0)));
             i.prefix_inc();
         }
         let mut i: i32 = 10;
-        'loop_: while ((i) < (16)) {
+        'loop_: while (i) < (16) {
             assert!(((buf[((i) as usize)] as i32) == (('X' as libc::c_char) as i32)));
             i.prefix_inc();
         }
@@ -110,12 +110,12 @@ unsafe fn main_0() -> i32 {
         });
         assert!(((n) == (10_usize)));
         let mut i: i32 = 0;
-        'loop_: while ((i) < (10)) {
+        'loop_: while (i) < (10) {
             assert!(((buf[((i) as usize)] as i32) == (0)));
             i.prefix_inc();
         }
         let mut i: i32 = 10;
-        'loop_: while ((i) < (16)) {
+        'loop_: while (i) < (16) {
             assert!(((buf[((i) as usize)] as i32) == (('X' as libc::c_char) as i32)));
             i.prefix_inc();
         }

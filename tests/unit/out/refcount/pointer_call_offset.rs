@@ -20,7 +20,7 @@ fn main_0() -> i32 {
             .collect::<Box<[i32]>>(),
     )));
     let i: Value<u32> = Rc::new(RefCell::new(0_u32));
-    'loop_: while ((*i.borrow()) < 10_u32) {
+    'loop_: while (*i.borrow()) < 10_u32 {
         {
             let __rhs = ((*i.borrow()) as i32);
             (*p1.borrow()).offset(((*i.borrow()) as isize)).write(__rhs)

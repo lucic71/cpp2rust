@@ -27,7 +27,7 @@ unsafe fn main_0() -> i32 {
     assert!(((counter) == (1)));
     let mut z: i32 = {
         let mut v: i32 = 5;
-        if ((v) > (0)) {
+        if (v) > (0) {
             v = ((v) * (2));
         }
         v

@@ -15,7 +15,7 @@ pub fn All_0(arr: Ptr<Option<Value<Box<[i32]>>>>, N: i32, element: i32) {
             .collect::<Box<[_]>>(),
     )))));
     let i: Value<i32> = Rc::new(RefCell::new(0));
-    'loop_: while ((*i.borrow()) < (*N.borrow())) {
+    'loop_: while (*i.borrow()) < (*N.borrow()) {
         (*(*all.borrow()).as_ref().unwrap().borrow_mut())[((*i.borrow()) as usize) as usize] =
             (*element.borrow());
         (*i.borrow_mut()).prefix_inc();
@@ -30,7 +30,7 @@ pub fn Consume_1(arr: Option<Value<Box<[i32]>>>, N: i32) -> i32 {
     let N: Value<i32> = Rc::new(RefCell::new(N));
     let sum: Value<i32> = Rc::new(RefCell::new(0));
     let i: Value<i32> = Rc::new(RefCell::new(-1_i32));
-    'loop_: while ((*i.borrow_mut()).prefix_inc() < (*N.borrow())) {
+    'loop_: while (*i.borrow_mut()).prefix_inc() < (*N.borrow()) {
         (*sum.borrow_mut()) +=
             (*(*arr.borrow()).as_ref().unwrap().borrow())[((*i.borrow()) as usize) as usize];
     }

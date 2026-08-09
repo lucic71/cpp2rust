@@ -13,13 +13,13 @@ pub unsafe fn sum_with_copy_0(mut count: i32, __args: &[VaArg]) -> i32 {
     aq = ap.clone();
     let mut sum1: i32 = 0;
     let mut i: i32 = 0;
-    'loop_: while ((((i) < (count)) as i32) != 0) {
+    'loop_: while (((i) < (count)) as i32) != 0 {
         sum1 += ap.arg::<i32>();
         i.postfix_inc();
     }
     let mut sum2: i32 = 0;
     let mut i: i32 = 0;
-    'loop_: while ((((i) < (count)) as i32) != 0) {
+    'loop_: while (((i) < (count)) as i32) != 0 {
         sum2 += aq.arg::<i32>();
         i.postfix_inc();
     }

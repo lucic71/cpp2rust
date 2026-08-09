@@ -18,7 +18,7 @@ pub fn retry_0(n: i32) -> i32 {
         'again: {
             (*count.borrow_mut()) += 1;
             (*acc.borrow_mut()) += (*n.borrow());
-            if ((((*count.borrow()) < 3) as i32) != 0) {
+            if (((*count.borrow()) < 3) as i32) != 0 {
                 goto!('again);
             }
             return (*acc.borrow());

@@ -10,7 +10,7 @@ pub fn switch_in_loop_0(n: i32) -> i32 {
     let n: Value<i32> = Rc::new(RefCell::new(n));
     let r: Value<i32> = Rc::new(RefCell::new(0));
     let i: Value<i32> = Rc::new(RefCell::new(0));
-    'loop_: while ((*i.borrow()) < (*n.borrow())) {
+    'loop_: while (*i.borrow()) < (*n.borrow()) {
         'switch: {
             let __match_cond = ((*i.borrow()) % 3);
             match __match_cond {

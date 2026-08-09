@@ -17,7 +17,7 @@ pub fn main() {
 fn main_0() -> i32 {
     let count: Value<i32> = Rc::new(RefCell::new(0));
     let c: Value<color> = Rc::new(RefCell::new(color_RED));
-    'loop_: while (((((*c.borrow()) as u32) < ((color_COLOR_LAST as i32) as u32)) as i32) != 0) {
+    'loop_: while ((((*c.borrow()) as u32) < ((color_COLOR_LAST as i32) as u32)) as i32) != 0 {
         (*count.borrow_mut()).postfix_inc();
         (*c.borrow_mut()).postfix_inc();
     }

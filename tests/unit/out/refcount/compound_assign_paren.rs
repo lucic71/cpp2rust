@@ -70,7 +70,7 @@ fn main_0() -> i32 {
     assert!((((*bits.borrow())[(0) as usize] as i32) == 32));
     assert!((((*bits.borrow())[(1) as usize] as i32) == 32));
     assert!((((*bits.borrow())[(2) as usize] as i32) == 0));
-    if ((*ptr.borrow()).with(|__v| (__v.flags as i32) != 0)) {
+    if (*ptr.borrow()).with(|__v| (__v.flags as i32) != 0) {
         ({
             let rhs_0 = (((*ptr.borrow())
                 .with(|__v| (__v.flags as i32) & ((!(1 << 1) as u8) as i32)))

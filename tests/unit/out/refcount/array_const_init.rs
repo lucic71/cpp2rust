@@ -52,14 +52,14 @@ pub fn main() {
 fn main_0() -> i32 {
     assert!(((((*s_0.with(Value::clone).borrow()).head == 5) as i32) != 0));
     let i: Value<i32> = Rc::new(RefCell::new(0));
-    'loop_: while ((((*i.borrow()) < 3) as i32) != 0) {
+    'loop_: while (((*i.borrow()) < 3) as i32) != 0 {
         assert!(
             ((((*s_0.with(Value::clone).borrow()).tail[(*i.borrow()) as usize] == 0) as i32) != 0)
         );
         (*i.borrow_mut()).postfix_inc();
     }
     let i: Value<i32> = Rc::new(RefCell::new(0));
-    'loop_: while ((((*i.borrow()) < 4) as i32) != 0) {
+    'loop_: while (((*i.borrow()) < 4) as i32) != 0 {
         assert!(
             (((((*s_0.with(Value::clone).borrow()).buf[(*i.borrow()) as usize] as i32) == 0)
                 as i32)

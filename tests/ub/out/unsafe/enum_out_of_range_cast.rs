@@ -20,7 +20,7 @@ unsafe fn main_0() -> i32 {
     let mut c: Color = ((n) as Color);
     assert!(((c as i32) == (((3) as Color) as i32)));
     assert!(((c as i32) != (Color_BLUE as i32)));
-    return if ((c as i32) == (((3) as Color) as i32)) {
+    return if (c as i32) == (((3) as Color) as i32) {
         0
     } else {
         1

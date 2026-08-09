@@ -107,7 +107,7 @@ fn main_0() -> i32 {
     ));
     let n: Value<i32> = Rc::new(RefCell::new(2));
     let sel: Value<Ptr<u8>> = Rc::new(RefCell::new(
-        if ((((*n.borrow()) < 100) as i32) != 0) {
+        if (((*n.borrow()) < 100) as i32) != 0 {
             (*vp.borrow()).clone()
         } else {
             (AnyPtr::default())
@@ -119,7 +119,7 @@ fn main_0() -> i32 {
         ((((((*sel.borrow()).offset(((0) as isize)).read()) as i32) == ('h' as i32)) as i32) != 0)
     );
     (*n.borrow_mut()) = 200;
-    (*sel.borrow_mut()) = if ((((*n.borrow()) < 100) as i32) != 0) {
+    (*sel.borrow_mut()) = if (((*n.borrow()) < 100) as i32) != 0 {
         (*vp.borrow()).clone()
     } else {
         (AnyPtr::default())

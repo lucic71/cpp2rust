@@ -21,14 +21,14 @@ fn main_0() -> i32 {
     ));
     assert!(!(*fp.borrow()).is_null());
     libcc2rs::fclose_refcount((*fp.borrow()).clone());
-    return if ((({
+    return if (({
         let __c = ('x' as i32) as u8;
         match (*fp.borrow()).with_mut(|__f| __f.write(&[__c])) {
             1 => __c as i32,
             _ => -1,
         }
     } == ('x' as i32)) as i32)
-        != 0)
+        != 0
     {
         1
     } else {

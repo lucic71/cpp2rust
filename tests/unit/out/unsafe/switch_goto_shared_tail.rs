@@ -83,7 +83,7 @@ pub unsafe fn step_3(mut c: i32, mut last: *mut i32) {
 pub unsafe fn convert_4(mut s: *const libc::c_char) -> *const libc::c_char {
     let mut last: i32 = 0;
     n_1 = 0;
-    'loop_: while ((*s) != 0) {
+    'loop_: while (*s) != 0 {
         (unsafe { step_3(((*s.postfix_inc()) as i32), (&raw mut last as *mut i32)) });
     }
     buf_0[((n_1) as usize)] = (0 as libc::c_char);

@@ -26,7 +26,7 @@ fn main_0() -> i32 {
             .reinterpret_cast::<i32>(),
         ));
         let i: Value<i32> = Rc::new(RefCell::new(0));
-        'loop_: while ((((*i.borrow()) < 4) as i32) != 0) {
+        'loop_: while (((*i.borrow()) < 4) as i32) != 0 {
             {
                 let __rhs = ((*i.borrow()) * 10);
                 (*arr.borrow())
@@ -66,7 +66,7 @@ fn main_0() -> i32 {
                 .reinterpret_cast::<i32>(),
         ));
         let i: Value<i32> = Rc::new(RefCell::new(0));
-        'loop_: while ((((*i.borrow()) < 4) as i32) != 0) {
+        'loop_: while (((*i.borrow()) < 4) as i32) != 0 {
             assert!(
                 (((((*zeros.borrow()).offset(((*i.borrow()) as isize)).read()) == 0) as i32) != 0)
             );
@@ -107,7 +107,7 @@ fn main_0() -> i32 {
             .reinterpret_cast::<i32>(),
         ));
         let i: Value<i32> = Rc::new(RefCell::new(0));
-        'loop_: while ((((*i.borrow()) < 4) as i32) != 0) {
+        'loop_: while (((*i.borrow()) < 4) as i32) != 0 {
             {
                 let __rhs = ((*i.borrow()) * 10);
                 (*arr.borrow())
@@ -151,7 +151,7 @@ fn main_0() -> i32 {
                 .reinterpret_cast::<i32>(),
         ));
         let i: Value<i32> = Rc::new(RefCell::new(0));
-        'loop_: while ((((*i.borrow()) < 4) as i32) != 0) {
+        'loop_: while (((*i.borrow()) < 4) as i32) != 0 {
             assert!(
                 (((((*zeros.borrow()).offset(((*i.borrow()) as isize)).read()) == 0) as i32) != 0)
             );

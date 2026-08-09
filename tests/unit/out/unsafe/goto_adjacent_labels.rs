@@ -11,11 +11,11 @@ pub unsafe fn run_0(mut x: i32) -> i32 {
     goto_block!({
         '__entry: {
             steps = 0;
-            if ((((x) < (0)) as i32) != 0) {
+            if (((x) < (0)) as i32) != 0 {
                 goto!('error);
             }
             steps = 1;
-            if ((((x) == (0)) as i32) != 0) {
+            if (((x) == (0)) as i32) != 0 {
                 goto!('done);
             }
             steps = 2;

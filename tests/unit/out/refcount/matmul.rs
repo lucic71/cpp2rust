@@ -17,7 +17,7 @@ pub fn matalloc_0(n: i32, p: i32, e: i32) -> Option<Value<Box<[Option<Value<Box<
                 .collect::<Box<[_]>>(),
         )))));
     let i: Value<i32> = Rc::new(RefCell::new(0));
-    'loop_: while ((*i.borrow()) < (*n.borrow())) {
+    'loop_: while (*i.borrow()) < (*n.borrow()) {
         (*(*m.borrow()).as_ref().unwrap().borrow_mut())[((*i.borrow()) as usize) as usize] =
             Some(Rc::new(RefCell::new(
                 (0..((*p.borrow()) as usize))
@@ -25,7 +25,7 @@ pub fn matalloc_0(n: i32, p: i32, e: i32) -> Option<Value<Box<[Option<Value<Box<
                     .collect::<Box<[_]>>(),
             )));
         let j: Value<i32> = Rc::new(RefCell::new(0));
-        'loop_: while ((*j.borrow()) < (*p.borrow())) {
+        'loop_: while (*j.borrow()) < (*p.borrow()) {
             (*(*(*m.borrow()).as_ref().unwrap().borrow())[((*i.borrow()) as usize) as usize]
                 .as_ref()
                 .unwrap()
@@ -54,12 +54,12 @@ pub fn matmul_1(
         ({ matalloc_0((*n1.borrow()), (*p2.borrow()), 0) }),
     ));
     let i: Value<i32> = Rc::new(RefCell::new(0));
-    'loop_: while ((*i.borrow()) < (*n1.borrow())) {
+    'loop_: while (*i.borrow()) < (*n1.borrow()) {
         let j: Value<i32> = Rc::new(RefCell::new(0));
         let sum: Value<i32> = Rc::new(RefCell::new(0));
-        'loop_: while ((*j.borrow()) < (*p2.borrow())) {
+        'loop_: while (*j.borrow()) < (*p2.borrow()) {
             let k: Value<i32> = Rc::new(RefCell::new(0));
-            'loop_: while ((*k.borrow()) < (*p1.borrow())) {
+            'loop_: while (*k.borrow()) < (*p1.borrow()) {
                 (*sum.borrow_mut()) += ((*(*(*m1.borrow()).as_ref().unwrap().borrow())
                     [((*i.borrow()) as usize) as usize]
                     .as_ref()

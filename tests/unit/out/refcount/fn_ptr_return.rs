@@ -16,7 +16,7 @@ pub fn dec_1(x: i32) -> i32 {
 }
 pub fn pick_2(choose_inc: i32) -> FnPtr<fn(i32) -> i32> {
     let choose_inc: Value<i32> = Rc::new(RefCell::new(choose_inc));
-    if ((*choose_inc.borrow()) != 0) {
+    if (*choose_inc.borrow()) != 0 {
         return FnPtr::<fn(i32) -> i32>::new(inc_0);
     }
     return FnPtr::<fn(i32) -> i32>::new(dec_1);

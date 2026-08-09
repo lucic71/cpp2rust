@@ -20,7 +20,7 @@ impl Node {
 pub unsafe fn Find_0(mut head: *mut Node, mut idx: i32) -> *mut Node {
     let mut curr: *mut Node = head;
     let mut i: i32 = 0;
-    'loop_: while ((i) < (idx)) {
+    'loop_: while (i) < (idx) {
         curr = (*curr).next;
         i.postfix_inc();
     }
@@ -37,7 +37,7 @@ pub unsafe fn Delete_2(mut head: *mut Node, mut val: i32) -> *mut Node {
     let mut curr: *mut Node = head;
     let mut prev: *mut Node = std::ptr::null_mut();
     'loop_: while !((curr).is_null()) {
-        if (((*curr).val) == (val)) {
+        if ((*curr).val) == (val) {
             if !((prev).is_null()) {
                 (*prev).next = (*curr).next;
                 return head;

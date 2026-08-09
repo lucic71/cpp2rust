@@ -15,14 +15,14 @@ pub unsafe fn consume_2(
     mut data: *mut ::libc::c_void,
     mut d: Option<unsafe fn(*mut ::libc::c_void)>,
 ) -> i32 {
-    if ((((d).is_none()) as i32) != 0) {
+    if (((d).is_none()) as i32) != 0 {
         return 1;
     }
-    if ((((d)
+    if (((d)
         == (std::mem::transmute::<usize, Option<unsafe fn(*mut ::libc::c_void)>>(
             (-1_i32 as usize),
         ))) as i32)
-        != 0)
+        != 0
     {
         return 2;
     }

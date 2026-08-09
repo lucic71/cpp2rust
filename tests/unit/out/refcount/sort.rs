@@ -23,7 +23,7 @@ fn main_0() -> i32 {
     (*v.borrow_mut()).push(6);
     (v.as_pointer() as Ptr<i32>).sort((v.as_pointer() as Ptr<i32>).to_end().get_offset());
     let i: Value<u32> = Rc::new(RefCell::new(0_u32));
-    'loop_: while (((*i.borrow()) as usize) < ((*v.borrow()).len()).wrapping_sub(1_usize)) {
+    'loop_: while ((*i.borrow()) as usize) < ((*v.borrow()).len()).wrapping_sub(1_usize) {
         assert!(
             (((v.as_pointer() as Ptr<i32>)
                 .offset(((*i.borrow()) as usize))

@@ -71,7 +71,7 @@ unsafe fn main_0() -> i32 {
     assert!((((((*tail.offset(((1) as isize))) as i32) == ('c' as i32)) as i32) != 0));
     assert!((((((*tail.offset(((2) as isize))) as i32) == ('d' as i32)) as i32) != 0));
     let mut have: i32 = 0;
-    let mut p: *mut ::libc::c_void = if (have != 0) {
+    let mut p: *mut ::libc::c_void = if have != 0 {
         (table_1[((0) as usize)].name as *mut ::libc::c_void)
     } else {
         ((c"".as_ptr().cast_mut() as *mut libc::c_char) as *mut ::libc::c_void)
@@ -81,7 +81,7 @@ unsafe fn main_0() -> i32 {
             != 0)
     );
     have = 1;
-    p = if (have != 0) {
+    p = if have != 0 {
         (table_1[((0) as usize)].name as *mut ::libc::c_void)
     } else {
         ((c"".as_ptr().cast_mut() as *mut libc::c_char) as *mut ::libc::c_void)

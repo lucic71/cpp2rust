@@ -13,7 +13,7 @@ pub unsafe fn f_0(mut op: i32, mut v: i32) -> i32 {
     switch!(match op {
         __v if __v == 1 => {
             a = ((v) * (4));
-            if (v != 0) {
+            if v != 0 {
                 goto!('l1);
             }
             break;
@@ -24,7 +24,7 @@ pub unsafe fn f_0(mut op: i32, mut v: i32) -> i32 {
         }
         __v if __v == 2 => {
             a__1 = (c"abcd".as_ptr().cast_mut()).cast_const();
-            if (v != 0) {
+            if v != 0 {
                 goto!('l2);
             }
             break;

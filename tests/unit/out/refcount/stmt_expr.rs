@@ -27,7 +27,7 @@ fn main_0() -> i32 {
     assert!(((*counter.borrow()) == 1));
     let z: Value<i32> = Rc::new(RefCell::new({
         let v: Value<i32> = Rc::new(RefCell::new(5));
-        if ((*v.borrow()) > 0) {
+        if (*v.borrow()) > 0 {
             {
                 let __rhs = ((*v.borrow()) * 2);
                 (*v.borrow_mut()) = __rhs

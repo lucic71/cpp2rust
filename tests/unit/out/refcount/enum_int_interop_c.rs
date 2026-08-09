@@ -111,7 +111,7 @@ fn main_0() -> i32 {
     assert!((((((*c.borrow()) as u32) == ((Color_RED as i32) as u32)) as i32) != 0));
     assert!((((((*c.borrow()) as u32) == 0_u32) as i32) != 0));
     assert!((((((*c.borrow()) as u32) != 1_u32) as i32) != 0));
-    if (((((*c.borrow()) as u32) == ((Color_GREEN as i32) as u32)) as i32) != 0) {
+    if ((((*c.borrow()) as u32) == ((Color_GREEN as i32) as u32)) as i32) != 0 {
         return 1;
     }
     'switch: {

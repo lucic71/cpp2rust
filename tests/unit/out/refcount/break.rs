@@ -11,14 +11,14 @@ pub fn for_test_0(n: i32) -> i32 {
     let x: Value<i32> = Rc::new(RefCell::new(0));
     let i: Value<i32> = Rc::new(RefCell::new(0));
     let j: Value<i32> = Rc::new(RefCell::new(0));
-    'loop_: while ((*i.borrow()) < (*n.borrow())) {
+    'loop_: while (*i.borrow()) < (*n.borrow()) {
         (*x.borrow_mut()) += 1;
-        if ((*x.borrow()) == 100) {
+        if (*x.borrow()) == 100 {
             break;
         }
         let k: Value<i32> = Rc::new(RefCell::new(0));
         let w: Value<i32> = Rc::new(RefCell::new(0));
-        'loop_: while ((*w.borrow()) < (*j.borrow())) {
+        'loop_: while (*w.borrow()) < (*j.borrow()) {
             break;
             (*w.borrow_mut()) += 1;
             (*k.borrow_mut()) += 1;

@@ -40,19 +40,19 @@ fn main_0() -> i32 {
     let ifa: Value<Ptr<libcc2rs::Ifaddrs>> =
         Rc::new(RefCell::new(Ptr::<libcc2rs::Ifaddrs>::null()));
     (*ifa.borrow_mut()) = (*list.borrow()).clone();
-    'loop_: while (((!((*ifa.borrow()).is_null())) as i32) != 0) {
+    'loop_: while ((!((*ifa.borrow()).is_null())) as i32) != 0 {
         assert!((((!(((*ifa.borrow()).with(|__v| __v.ifa_name.clone())).is_null())) as i32) != 0));
-        if (((((*ifa.borrow()).with(|__v| __v.ifa_addr.clone())).is_null()) as i32) != 0) {
+        if ((((*ifa.borrow()).with(|__v| __v.ifa_addr.clone())).is_null()) as i32) != 0 {
             {
                 let __rhs = ((*ifa.borrow()).with(|__v| __v.ifa_next.clone()));
                 (*ifa.borrow_mut()) = __rhs
             };
             continue 'loop_;
         }
-        if ((((*ifa.borrow())
+        if (((*ifa.borrow())
             .with(|__v| (__v.ifa_addr.clone().with(|__v| __v.sa_family) as i32) != libc::AF_INET))
             as i32)
-            != 0)
+            != 0
         {
             {
                 let __rhs = ((*ifa.borrow()).with(|__v| __v.ifa_next.clone()));
@@ -66,7 +66,7 @@ fn main_0() -> i32 {
                 .reinterpret_cast::<libcc2rs::SockaddrIn>(),
         ));
         let lo_be: Value<Box<[u8]>> = Rc::new(RefCell::new(Box::new([127_u8, 0_u8, 0_u8, 1_u8])));
-        if ((((((*sin.borrow()).field_ptr(
+        if (((((*sin.borrow()).field_ptr(
             4,
             |__v: &libcc2rs::SockaddrIn| ::std::slice::from_ref(&__v.sin_addr),
             |__v: &mut libcc2rs::SockaddrIn| ::std::slice::from_mut(&mut __v.sin_addr),
@@ -77,7 +77,7 @@ fn main_0() -> i32 {
                 4_usize,
             )
             == 0) as i32)
-            != 0)
+            != 0
         {
             (*found_loopback.borrow_mut()) = 1;
             assert!(((((*ifa.borrow()).with(|__v| __v.ifa_flags != 0_u32)) as i32) != 0));

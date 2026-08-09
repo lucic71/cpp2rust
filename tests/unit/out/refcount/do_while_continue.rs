@@ -14,7 +14,7 @@ pub fn run_0() -> i32 {
         __do_while = false;
         (*runs.borrow_mut()) += 1;
         (*i.borrow_mut()) += 1;
-        if ((((*i.borrow()) == 4) as i32) != 0) {
+        if (((*i.borrow()) == 4) as i32) != 0 {
             continue 'loop_;
         }
     }
@@ -33,7 +33,7 @@ pub fn nested_1() -> i32 {
             __do_while = false;
             (*runs.borrow_mut()) += 1;
             (*ii.borrow_mut()) += 1;
-            if ((((*ii.borrow()) == 3) as i32) != 0) {
+            if (((*ii.borrow()) == 3) as i32) != 0 {
                 continue 'loop_;
             }
         }

@@ -9,13 +9,13 @@ use std::rc::Rc;
 pub unsafe fn scan_0(mut n: i32) -> i32 {
     let mut total: i32 = 0;
     let mut i: i32 = 0;
-    'loop_: while ((((i) < (n)) as i32) != 0) {
+    'loop_: while (((i) < (n)) as i32) != 0 {
         let mut j: i32 = 0_i32;
         goto_block!({
             '__entry: {
                 j = 0;
-                'loop_: while ((((j) < (10)) as i32) != 0) {
-                    if ((((j) == (5)) as i32) != 0) {
+                'loop_: while (((j) < (10)) as i32) != 0 {
+                    if (((j) == (5)) as i32) != 0 {
                         goto!('next);
                     }
                     total += 1;

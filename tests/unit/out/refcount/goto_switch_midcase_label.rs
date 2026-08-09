@@ -18,7 +18,7 @@ pub fn classify_0(kind: i32, x: i32) -> i32 {
         }
         __v if __v == 1 => {
             (*len.borrow_mut()) = ((*x.borrow()) + 1);
-            if ((((*len.borrow()) > 10) as i32) != 0) {
+            if (((*len.borrow()) > 10) as i32) != 0 {
                 (*len.borrow_mut()) = 10;
             }
         }

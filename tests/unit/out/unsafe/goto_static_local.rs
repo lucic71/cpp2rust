@@ -11,11 +11,11 @@ pub unsafe fn acc_0(mut x: i32) -> i32 {
     static mut limit_2: i32 = unsafe { 10 };
     goto_block!({
         '__entry: {
-            if ((((x) < (0)) as i32) != 0) {
+            if (((x) < (0)) as i32) != 0 {
                 goto!('done);
             }
             total_1 += x;
-            if ((((total_1) > (limit_2)) as i32) != 0) {
+            if (((total_1) > (limit_2)) as i32) != 0 {
                 total_1 = limit_2;
             }
         }

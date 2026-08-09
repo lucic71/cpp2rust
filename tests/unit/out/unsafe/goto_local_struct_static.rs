@@ -31,8 +31,8 @@ pub unsafe fn lookup_0(mut c: libc::c_char, mut fallback: i32) -> i32 {
         '__entry: {
             r = fallback;
             i = 0;
-            'loop_: while ((((i) < (2)) as i32) != 0) {
-                if ((((c as i32) == (aChoice_1[((i) as usize)].key as i32)) as i32) != 0) {
+            'loop_: while (((i) < (2)) as i32) != 0 {
+                if (((c as i32) == (aChoice_1[((i) as usize)].key as i32)) as i32) != 0 {
                     r = aChoice_1[((i) as usize)].op;
                     goto!('done);
                 }

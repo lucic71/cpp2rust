@@ -14,8 +14,8 @@ pub fn for_in_switch_continue_0(n: i32) -> i32 {
         match __match_cond {
             __v if __v == 0 => {
                 let i: Value<i32> = Rc::new(RefCell::new(0));
-                'loop_: while ((*i.borrow()) < 5) {
-                    if (((*i.borrow()) % 2) == 0) {
+                'loop_: while (*i.borrow()) < 5 {
+                    if ((*i.borrow()) % 2) == 0 {
                         (*i.borrow_mut()).prefix_inc();
                         continue 'loop_;
                     }

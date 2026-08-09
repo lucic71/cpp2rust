@@ -59,8 +59,8 @@ fn main_0() -> i32 {
         ])));
     );
     let i: Value<i32> = Rc::new(RefCell::new(0));
-    'loop_: while ((*i.borrow())
-        < (((41usize as usize).wrapping_div((::std::mem::size_of::<u8>() as usize))) as i32))
+    'loop_: while (*i.borrow())
+        < (((41usize as usize).wrapping_div((::std::mem::size_of::<u8>() as usize))) as i32)
     {
         assert!({
             let _lhs = (((*special.borrow()).offset(((*i.borrow()) as isize)).read()) as i32);

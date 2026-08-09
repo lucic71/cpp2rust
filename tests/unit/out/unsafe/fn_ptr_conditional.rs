@@ -16,10 +16,10 @@ pub unsafe fn identity_2(mut x: i32) -> i32 {
     return x;
 }
 pub unsafe fn pick_3(mut mode: i32) -> Option<unsafe fn(i32) -> i32> {
-    return if ((mode) > (0)) {
+    return if (mode) > (0) {
         Some(inc_0)
     } else {
-        if ((mode) < (0)) {
+        if (mode) < (0) {
             Some(dec_1)
         } else {
             Some(identity_2)

@@ -21,7 +21,7 @@ pub fn f1_2(x: f64, y: f64) -> f64 {
     let x: Value<f64> = Rc::new(RefCell::new(x));
     let y: Value<f64> = Rc::new(RefCell::new(y));
     let z1: Value<f64> = Rc::new(RefCell::new(({ f2_0((*x.borrow()), (*y.borrow())) })));
-    if (({ f2_0((*z1.borrow()), (*y.borrow())) }) < 0_f64) {
+    if ({ f2_0((*z1.borrow()), (*y.borrow())) }) < 0_f64 {
         let z2: Value<f64> = Rc::new(RefCell::new(
             -({
                 let _y: f64 = ({ f2_0((*x.borrow()), (*y.borrow())) });

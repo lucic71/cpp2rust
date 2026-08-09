@@ -44,7 +44,7 @@ pub fn Find_0(head: Ptr<Node>, idx: i32) -> Ptr<Node> {
     let idx: Value<i32> = Rc::new(RefCell::new(idx));
     let curr: Value<Ptr<Node>> = Rc::new(RefCell::new((*head.borrow()).clone()));
     let i: Value<i32> = Rc::new(RefCell::new(0));
-    'loop_: while ((*i.borrow()) < (*idx.borrow())) {
+    'loop_: while (*i.borrow()) < (*idx.borrow()) {
         {
             let __rhs = ((*curr.borrow()).with(|__v| __v.next.clone()));
             (*curr.borrow_mut()) = __rhs

@@ -9,14 +9,14 @@ use std::rc::Rc;
 pub unsafe fn for_switch_for_break_0(mut n: i32) -> i32 {
     let mut r: i32 = 0;
     let mut i: i32 = 0;
-    'loop_: while ((i) < (n)) {
+    'loop_: while (i) < (n) {
         'switch: {
             let __match_cond = i;
             match __match_cond {
                 __v if __v == 1 => {
                     let mut j: i32 = 0;
-                    'loop_: while ((j) < (10)) {
-                        if ((j) == (2)) {
+                    'loop_: while (j) < (10) {
+                        if (j) == (2) {
                             break;
                         }
                         r += 1;

@@ -14,7 +14,7 @@ pub fn route_0(op: i32, v: i32) -> i32 {
     switch!(match (*op.borrow()) {
         __v if __v == 1 => {
             *base.borrow_mut() = ((*v.borrow()) * 10);
-            if ((((*v.borrow()) > 3) as i32) != 0) {
+            if (((*v.borrow()) > 3) as i32) != 0 {
                 (*out.borrow_mut()) = ((*base.borrow()) + 1);
                 goto!('tail);
             }

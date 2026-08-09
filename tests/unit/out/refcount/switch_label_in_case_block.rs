@@ -15,7 +15,7 @@ pub fn f_0(op: i32, v: i32) -> i32 {
     switch!(match (*op.borrow()) {
         __v if __v == 1 => {
             *a.borrow_mut() = ((*v.borrow()) * 4);
-            if ((*v.borrow()) != 0) {
+            if (*v.borrow()) != 0 {
                 goto!('l1);
             }
             break;
@@ -26,7 +26,7 @@ pub fn f_0(op: i32, v: i32) -> i32 {
         }
         __v if __v == 2 => {
             *a__1.borrow_mut() = Ptr::from_string_literal(b"abcd\0");
-            if ((*v.borrow()) != 0) {
+            if (*v.borrow()) != 0 {
                 goto!('l2);
             }
             break;

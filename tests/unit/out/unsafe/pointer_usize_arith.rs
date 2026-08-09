@@ -53,7 +53,7 @@ unsafe fn main_0() -> i32 {
     let mut end: *mut i32 = p.offset(((8) as isize));
     let mut sum: i32 = 0;
     let mut it: *mut i32 = p;
-    'loop_: while ((it) != (end)) {
+    'loop_: while (it) != (end) {
         sum += (*it);
         it.prefix_inc();
     }

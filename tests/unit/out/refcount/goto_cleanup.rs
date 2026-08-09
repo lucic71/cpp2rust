@@ -13,7 +13,7 @@ pub fn early_0(n: i32) -> i32 {
     goto_block!({
         '__entry: {
             *ret.borrow_mut() = 0;
-            if ((((*n.borrow()) < 0) as i32) != 0) {
+            if (((*n.borrow()) < 0) as i32) != 0 {
                 (*ret.borrow_mut()) = -1_i32;
                 goto!('out);
             }
@@ -34,8 +34,8 @@ pub fn from_loop_1(n: i32) -> i32 {
         '__entry: {
             *ret.borrow_mut() = 0;
             let i: Value<i32> = Rc::new(RefCell::new(0));
-            'loop_: while ((((*i.borrow()) < (*n.borrow())) as i32) != 0) {
-                if ((((*i.borrow()) == 3) as i32) != 0) {
+            'loop_: while (((*i.borrow()) < (*n.borrow())) as i32) != 0 {
+                if (((*i.borrow()) == 3) as i32) != 0 {
                     (*ret.borrow_mut()) = 7;
                     goto!('out);
                 }
@@ -104,7 +104,7 @@ pub fn via_pointer_3(w: Ptr<wrapper>, fail: i32) -> i32 {
         '__entry: {
             *ret.borrow_mut() = 0;
             *item.borrow_mut() = ((*w.borrow()).with(|__v| __v.item.clone()));
-            if ((*fail.borrow()) != 0) {
+            if (*fail.borrow()) != 0 {
                 (*ret.borrow_mut()) = -1_i32;
                 goto!('out);
             }
@@ -134,7 +134,7 @@ pub fn via_arrays_4(fail: i32) -> i32 {
             *remain.borrow_mut() =
                 Box::new([0_u8, <u8>::default(), <u8>::default(), <u8>::default()]);
             *name.borrow_mut() = Box::from(*b"wxyz\0");
-            if ((*fail.borrow()) != 0) {
+            if (*fail.borrow()) != 0 {
                 (*ret.borrow_mut()) = -1_i32;
                 goto!('out);
             }

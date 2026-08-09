@@ -7,10 +7,10 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
 pub fn smaller_0(x1: Ptr<i32>, x2: Ptr<i32>) -> Ptr<i32> {
-    return if ({
+    return if {
         let _lhs = (x1.read());
         _lhs < (x2.read())
-    }) {
+    } {
         (x1).clone()
     } else {
         (x2).clone()
@@ -22,7 +22,7 @@ pub fn main() {
 fn main_0() -> i32 {
     let out: Value<Ptr<i32>> = Rc::new(RefCell::new(Ptr::<i32>::null()));
     let x1: Value<i32> = Rc::new(RefCell::new(1));
-    if ((*x1.borrow()) != 0) {
+    if (*x1.borrow()) != 0 {
         let x2: Value<i32> = Rc::new(RefCell::new(-1_i32));
         (*out.borrow_mut()) = ({ smaller_0(x1.as_pointer(), x2.as_pointer()) });
     }

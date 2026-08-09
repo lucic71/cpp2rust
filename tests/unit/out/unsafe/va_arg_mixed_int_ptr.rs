@@ -11,9 +11,9 @@ pub unsafe fn mixed_args_0(mut count: i32, __args: &[VaArg]) -> i32 {
     ap = VaList::new(__args);
     let mut total: i32 = 0;
     let mut i: i32 = 0;
-    'loop_: while ((((i) < (count)) as i32) != 0) {
+    'loop_: while (((i) < (count)) as i32) != 0 {
         let mut tag: i32 = ap.arg::<i32>();
-        if ((((tag) == (0)) as i32) != 0) {
+        if (((tag) == (0)) as i32) != 0 {
             total += ap.arg::<i32>();
         } else {
             let mut ptr: *mut i32 = ap.arg::<*mut i32>();

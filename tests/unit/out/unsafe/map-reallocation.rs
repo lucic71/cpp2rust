@@ -28,12 +28,12 @@ unsafe fn main_0() -> i32 {
             && (!(c"pointer does not have correct value before insert".as_ptr()).is_null())
     );
     let mut i: i32 = 0;
-    'loop_: while ((i) < (sentinel)) {
+    'loop_: while (i) < (sentinel) {
         (*m.entry(i).or_default().as_mut()) = i;
         i.prefix_inc();
     }
     let mut i: i32 = ((sentinel) + (1));
-    'loop_: while ((i) <= (N)) {
+    'loop_: while (i) <= (N) {
         (*m.entry(i).or_default().as_mut()) = i;
         i.prefix_inc();
     }

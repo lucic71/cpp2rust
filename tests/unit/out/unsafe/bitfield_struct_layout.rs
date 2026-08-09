@@ -261,7 +261,7 @@ unsafe fn main_0() -> i32 {
     assert!(((((!(f.b() as i32)) == (!5)) as i32) != 0));
     assert!(((((-(f.b() as i32)) == (-5_i32)) as i32) != 0));
     assert!(((((f.b() as i32) == (5)) as i32) != 0));
-    if (f.b() != 0) {
+    if f.b() != 0 {
         assert!(((((f.b() as i32) == (5)) as i32) != 0));
     }
     let mut step: u8 = 2_u8;

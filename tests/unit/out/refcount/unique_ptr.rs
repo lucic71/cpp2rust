@@ -135,7 +135,7 @@ pub fn RndStuff_2() {
         .to_owned_opt(),
     ));
     let i: Value<i32> = Rc::new(RefCell::new(0));
-    'loop_: while ((*i.borrow()) < 100) {
+    'loop_: while (*i.borrow()) < 100 {
         (*(*x2.borrow()).as_ref().unwrap().borrow_mut())[((*i.borrow()) as usize) as usize] = 1;
         (*i.borrow_mut()).prefix_inc();
     }
@@ -146,13 +146,13 @@ pub fn RndStuff_2() {
     )
     .to_owned_opt();
     let i: Value<i32> = Rc::new(RefCell::new(0));
-    'loop_: while ((*i.borrow()) < 200) {
+    'loop_: while (*i.borrow()) < 200 {
         (*(*x2.borrow()).as_ref().unwrap().borrow_mut())[((*i.borrow()) as usize) as usize] = 2;
         (*i.borrow_mut()).prefix_inc();
     }
     let p2: Value<Ptr<i32>> = Rc::new(RefCell::new((*x2.borrow()).as_pointer()));
     let i: Value<i32> = Rc::new(RefCell::new(0));
-    'loop_: while ((*i.borrow()) < 200) {
+    'loop_: while (*i.borrow()) < 200 {
         assert!((((*p2.borrow()).offset(((*i.borrow()) as isize)).read()) == 2));
         (*i.borrow_mut()).prefix_inc();
     }
@@ -162,14 +162,14 @@ pub fn RndStuff_2() {
             .collect::<Box<[_]>>(),
     )))));
     let i: Value<i32> = Rc::new(RefCell::new(0));
-    'loop_: while ((*i.borrow()) < 10) {
+    'loop_: while (*i.borrow()) < 10 {
         (*(*x3.borrow()).as_ref().unwrap().borrow_mut())[((*i.borrow()) as usize) as usize] =
             Pair { x: 1, y: 2 };
         (*i.borrow_mut()).prefix_inc();
     }
     let p3_0: Value<Ptr<Pair>> = Rc::new(RefCell::new((*x3.borrow()).as_pointer()));
     let i: Value<i32> = Rc::new(RefCell::new(0));
-    'loop_: while ((*i.borrow()) < 10) {
+    'loop_: while (*i.borrow()) < 10 {
         assert!(
             ((*p3_0.borrow())
                 .offset(((*i.borrow()) as isize))
@@ -204,7 +204,7 @@ pub fn RndStuff_2() {
     )
     .to_owned_opt();
     let i: Value<i32> = Rc::new(RefCell::new(0));
-    'loop_: while ((*i.borrow()) < 50) {
+    'loop_: while (*i.borrow()) < 50 {
         (*(*x3.borrow()).as_ref().unwrap().borrow_mut())[((*i.borrow()) as usize) as usize] =
             Pair {
                 x: -1_i32,
@@ -218,7 +218,7 @@ pub fn RndStuff_2() {
         _lhs != (*p3_1.borrow()).clone()
     });
     let i: Value<i32> = Rc::new(RefCell::new(0));
-    'loop_: while ((*i.borrow()) < 50) {
+    'loop_: while (*i.borrow()) < 50 {
         assert!(
             ((*p3_1.borrow())
                 .offset(((*i.borrow()) as isize))

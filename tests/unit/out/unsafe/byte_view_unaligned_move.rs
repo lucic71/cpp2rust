@@ -15,7 +15,7 @@ unsafe fn main_0() -> i32 {
     let mut words: [u32; 4] = [0_u32, 0_u32, 0_u32, 0_u32];
     let mut bytes: *mut u8 = (words.as_mut_ptr() as *mut u8);
     let mut i: i32 = 0;
-    'loop_: while ((((i) < (6)) as i32) != 0) {
+    'loop_: while (((i) < (6)) as i32) != 0 {
         (*bytes.offset((((6) + (i)) as isize))) = (((i) + (1)) as u8);
         i.postfix_inc();
     }

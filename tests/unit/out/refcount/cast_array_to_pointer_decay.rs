@@ -13,7 +13,7 @@ pub fn deref_0(p: Ptr<i32>) -> i32 {
 pub fn strlen_1(s: Ptr<u8>) -> i32 {
     let s: Value<Ptr<u8>> = Rc::new(RefCell::new(s));
     let c: Value<i32> = Rc::new(RefCell::new(0));
-    'loop_: while (((*s.borrow_mut()).postfix_inc().read()) != 0) {
+    'loop_: while ((*s.borrow_mut()).postfix_inc().read()) != 0 {
         (*c.borrow_mut()).prefix_inc();
     }
     return (*c.borrow());

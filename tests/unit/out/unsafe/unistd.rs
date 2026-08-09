@@ -234,7 +234,7 @@ pub unsafe fn test_open_6() {
         )
     });
     assert!(((((fd) >= (-1_i32)) as i32) != 0));
-    if ((((fd) >= (0)) as i32) != 0) {
+    if (((fd) >= (0)) as i32) != 0 {
         libcc2rs::close_unsafe(fd);
     }
     fd = (unsafe {
@@ -244,7 +244,7 @@ pub unsafe fn test_open_6() {
         )
     });
     assert!(((((fd) >= (-1_i32)) as i32) != 0));
-    if ((((fd) >= (0)) as i32) != 0) {
+    if (((fd) >= (0)) as i32) != 0 {
         libcc2rs::close_unsafe(fd);
     }
 }
@@ -252,7 +252,7 @@ pub unsafe fn test_fcntl_7() {
     assert!(((((unsafe { libc::fcntl(0 as i32, 1 as i32,) }) >= (-1_i32)) as i32) != 0));
     let mut duped: i32 = (unsafe { libc::fcntl(0 as i32, 0 as i32, (100)) });
     assert!(((((duped) >= (-1_i32)) as i32) != 0));
-    if ((((duped) >= (0)) as i32) != 0) {
+    if (((duped) >= (0)) as i32) != 0 {
         libcc2rs::close_unsafe(duped);
     }
 }

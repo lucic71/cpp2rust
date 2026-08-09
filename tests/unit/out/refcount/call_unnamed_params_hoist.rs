@@ -12,11 +12,11 @@ pub fn pick_0(a: Ptr<u8>, b: Ptr<u8>, n: i32) -> i32 {
     let n: Value<i32> = Rc::new(RefCell::new(n));
     return {
         let _lhs = {
-            let _lhs = (if ((({
+            let _lhs = (if (({
                 let _lhs = (*a.borrow()).clone();
                 _lhs == (*b.borrow()).clone()
             }) as i32)
-                != 0)
+                != 0
             {
                 10
             } else {

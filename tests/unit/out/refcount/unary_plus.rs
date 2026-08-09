@@ -18,7 +18,7 @@ fn main_0() -> i32 {
     assert!((((((*a.borrow()) + (*b.borrow())) == 2) as i32) != 0));
     assert!((((((*d.borrow()) * 4.0E+0) == 2.0E+0) as i32) != 0));
     assert!(
-        ((((if ((((*a.borrow()) > 0) as i32) != 0) {
+        ((((if (((*a.borrow()) > 0) as i32) != 0 {
             1
         } else {
             -1_i32

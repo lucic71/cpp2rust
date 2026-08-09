@@ -111,22 +111,22 @@ unsafe fn main_0() -> i32 {
     assert!(((m2.len()) == (0_usize)));
     let mut indexes: Vec<i32> = Vec::new();
     let mut i: u32 = 60_u32;
-    'loop_: while ((i) > (30_u32)) {
+    'loop_: while (i) > (30_u32) {
         indexes.push((i as i32));
         i.prefix_dec();
     }
     let mut i: u32 = 100_u32;
-    'loop_: while ((i) > (60_u32)) {
+    'loop_: while (i) > (60_u32) {
         indexes.push((i as i32));
         i.prefix_dec();
     }
     let mut i: u32 = 30_u32;
-    'loop_: while ((i) > (0_u32)) {
+    'loop_: while (i) > (0_u32) {
         indexes.push((i as i32));
         i.prefix_dec();
     }
     let mut i: u32 = 0_u32;
-    'loop_: while ((i as usize) < (indexes.len())) {
+    'loop_: while (i as usize) < (indexes.len()) {
         (*m2.entry(indexes[(i as usize)]).or_default().as_mut()) = ((i).wrapping_rem(2_u32) != 0);
         i.prefix_inc();
     }

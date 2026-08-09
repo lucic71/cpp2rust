@@ -23,19 +23,19 @@ pub fn main() {
 unsafe fn main_0() -> i32 {
     let mut a: i32 = 0;
     let mut b: i32 = 0_i32;
-    if ({
+    if {
         b = a;
         b
-    } != 0)
+    } != 0
     {}
-    'loop_: while (({
+    'loop_: while ({
         b = a;
         b
-    }) != (0))
+    }) != (0)
     {}
-    if (a != 0) {}
-    if ((a) == (b)) {}
-    if ((a) < (b)) {}
+    if a != 0 {}
+    if (a) == (b) {}
+    if (a) < (b) {}
     assert!(((a) == (b)));
     assert!(
         !(({

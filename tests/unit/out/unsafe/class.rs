@@ -55,7 +55,7 @@ impl Route {
     }
 }
 pub unsafe fn RandomRoute_0(route: *mut Route) -> i32 {
-    if ((((*route).path.first) % (2)) != 0) {
+    if (((*route).path.first) % (2)) != 0 {
         return (unsafe {
             let _new_first: i32 = (unsafe { (*route).path.SetSecond(10) });
             (*route).path.SetFirst(_new_first)

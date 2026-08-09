@@ -12,7 +12,7 @@ pub unsafe fn route_0(mut op: i32, mut v: i32) -> i32 {
     switch!(match op {
         __v if __v == 1 => {
             base = ((v) * (10));
-            if ((((v) > (3)) as i32) != 0) {
+            if (((v) > (3)) as i32) != 0 {
                 out = ((base) + (1));
                 goto!('tail);
             }

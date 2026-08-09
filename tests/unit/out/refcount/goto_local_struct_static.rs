@@ -48,11 +48,11 @@ pub fn lookup_0(c: u8, fallback: i32) -> i32 {
         '__entry: {
             *r.borrow_mut() = (*fallback.borrow());
             (*i.borrow_mut()) = 0;
-            'loop_: while ((((*i.borrow()) < 2) as i32) != 0) {
-                if (((((*c.borrow()) as i32)
+            'loop_: while (((*i.borrow()) < 2) as i32) != 0 {
+                if ((((*c.borrow()) as i32)
                     == ((*aChoice_1.with(Value::clone).borrow())[(*i.borrow()) as usize].key
                         as i32)) as i32)
-                    != 0)
+                    != 0
                 {
                     (*r.borrow_mut()) =
                         (*aChoice_1.with(Value::clone).borrow())[(*i.borrow()) as usize].op;

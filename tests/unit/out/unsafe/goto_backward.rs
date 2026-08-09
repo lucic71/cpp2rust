@@ -17,7 +17,7 @@ pub unsafe fn retry_0(mut n: i32) -> i32 {
         'again: {
             count += 1;
             acc += n;
-            if ((((count) < (3)) as i32) != 0) {
+            if (((count) < (3)) as i32) != 0 {
                 goto!('again);
             }
             return acc;

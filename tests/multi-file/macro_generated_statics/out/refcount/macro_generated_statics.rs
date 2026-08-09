@@ -25,7 +25,7 @@ pub fn shiftB_3(x: i32) -> i32 {
 pub fn pmin_int_4(a: i32, b: i32) -> i32 {
     let a: Value<i32> = Rc::new(RefCell::new(a));
     let b: Value<i32> = Rc::new(RefCell::new(b));
-    return if ((((*a.borrow()) < (*b.borrow())) as i32) != 0) {
+    return if (((*a.borrow()) < (*b.borrow())) as i32) != 0 {
         (*a.borrow())
     } else {
         (*b.borrow())
@@ -34,7 +34,7 @@ pub fn pmin_int_4(a: i32, b: i32) -> i32 {
 pub fn pmax_int_5(a: i32, b: i32) -> i32 {
     let a: Value<i32> = Rc::new(RefCell::new(a));
     let b: Value<i32> = Rc::new(RefCell::new(b));
-    return if ((((*a.borrow()) > (*b.borrow())) as i32) != 0) {
+    return if (((*a.borrow()) > (*b.borrow())) as i32) != 0 {
         (*a.borrow())
     } else {
         (*b.borrow())
@@ -43,7 +43,7 @@ pub fn pmax_int_5(a: i32, b: i32) -> i32 {
 pub fn pmin_long_6(a: i64, b: i64) -> i64 {
     let a: Value<i64> = Rc::new(RefCell::new(a));
     let b: Value<i64> = Rc::new(RefCell::new(b));
-    return if ((((*a.borrow()) < (*b.borrow())) as i32) != 0) {
+    return if (((*a.borrow()) < (*b.borrow())) as i32) != 0 {
         (*a.borrow())
     } else {
         (*b.borrow())
@@ -52,7 +52,7 @@ pub fn pmin_long_6(a: i64, b: i64) -> i64 {
 pub fn pmax_long_7(a: i64, b: i64) -> i64 {
     let a: Value<i64> = Rc::new(RefCell::new(a));
     let b: Value<i64> = Rc::new(RefCell::new(b));
-    return if ((((*a.borrow()) > (*b.borrow())) as i32) != 0) {
+    return if (((*a.borrow()) > (*b.borrow())) as i32) != 0 {
         (*a.borrow())
     } else {
         (*b.borrow())

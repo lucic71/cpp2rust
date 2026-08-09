@@ -31,7 +31,7 @@ fn main_0() -> i32 {
             .collect::<Box<[Value<Box<[u8]>>]>>(),
     ));
     let i: Value<i32> = Rc::new(RefCell::new(0));
-    'loop_: while ((((*i.borrow()) < 3) as i32) != 0) {
+    'loop_: while (((*i.borrow()) < 3) as i32) != 0 {
         ({
             let _row: Ptr<u8> = ((((grid.as_pointer() as Ptr<Value<Box<[u8]>>>)
                 .offset((*i.borrow()))

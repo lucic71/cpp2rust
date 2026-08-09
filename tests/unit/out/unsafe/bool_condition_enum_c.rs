@@ -18,13 +18,13 @@ pub fn main() {
 unsafe fn main_0() -> i32 {
     let mut code: Code = Code_CODE_OK;
     let mut err: Code = Code_CODE_ERR;
-    if (code != 0) {
+    if code != 0 {
         assert!((0 != 0));
     }
     if !(code != 0) {
         assert!((1 != 0));
     }
-    if (err != 0) {
+    if err != 0 {
         assert!((1 != 0));
     }
     if !(err != 0) {

@@ -43,7 +43,7 @@ unsafe fn main_0() -> i32 {
         .collect();
     let mut p2: *const libc::c_char = (s2.as_mut_ptr()).cast_const();
     let mut i: u32 = 0_u32;
-    'loop_: while ((i as usize) < (s2.len() - 1)) {
+    'loop_: while (i as usize) < (s2.len() - 1) {
         assert!(
             (((*p2.offset(((i) as isize))) as i32) == (('a' as libc::c_char) as i32))
                 && ((s2[(i as usize)] as i32) == (('a' as libc::c_char) as i32))
@@ -57,7 +57,7 @@ unsafe fn main_0() -> i32 {
     assert!(((s2[(0_usize)] as i32) == (('b' as libc::c_char) as i32)));
     assert!(((s2[(1_usize)] as i32) == (('c' as libc::c_char) as i32)));
     let mut i: u32 = 2_u32;
-    'loop_: while ((i as usize) < (s2.len() - 1)) {
+    'loop_: while (i as usize) < (s2.len() - 1) {
         assert!(
             (((*p2.offset(((i) as isize))) as i32) == (('a' as libc::c_char) as i32))
                 && ((s2[(i as usize)] as i32) == (('a' as libc::c_char) as i32))
@@ -75,7 +75,7 @@ unsafe fn main_0() -> i32 {
     assert!(((s3.len() - 1) == (s3.len() - 1)));
     let mut p3: *const libc::c_char = (s3.as_mut_ptr()).cast_const();
     let mut i: u32 = 0_u32;
-    'loop_: while ((i as usize) < (s3.len() - 1)) {
+    'loop_: while (i as usize) < (s3.len() - 1) {
         assert!((((*p3.offset(((i) as isize))) as i32) == (s3[(i as usize)] as i32)));
         i.prefix_inc();
     }
@@ -102,7 +102,7 @@ unsafe fn main_0() -> i32 {
     assert!(((s4.len() - 1) == (s4.len() - 1)));
     let mut p4: *const libc::c_char = (s4.as_mut_ptr()).cast_const();
     let mut i: u32 = 0_u32;
-    'loop_: while ((i as usize) < (s4.len() - 1)) {
+    'loop_: while (i as usize) < (s4.len() - 1) {
         assert!((((*p4.offset(((i) as isize))) as i32) == (s4[(i as usize)] as i32)));
         i.prefix_inc();
     }
@@ -121,7 +121,7 @@ unsafe fn main_0() -> i32 {
     assert!(((s5.len() - 1) == (s5.len() - 1)));
     let mut p5: *const libc::c_char = (s5.as_mut_ptr()).cast_const();
     let mut i: u32 = 0_u32;
-    'loop_: while ((i as usize) < (s5.len() - 1)) {
+    'loop_: while (i as usize) < (s5.len() - 1) {
         assert!((((*p5.offset(((i) as isize))) as i32) == (s5[(i as usize)] as i32)));
         i.prefix_inc();
     }

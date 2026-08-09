@@ -32,7 +32,7 @@ unsafe fn main_0() -> i32 {
     assert!(((bits[((0) as usize)] as i32) == (32)));
     assert!(((bits[((1) as usize)] as i32) == (32)));
     assert!(((bits[((2) as usize)] as i32) == (0)));
-    if (((*ptr).flags as i32) != (0)) {
+    if ((*ptr).flags as i32) != (0) {
         ((*(ptr)).flags = ((((*(ptr)).flags as i32) & ((!((1) << (1)) as u8) as i32)) as u8));
     }
     assert!((((*ptr).flags as i32) == (0)));

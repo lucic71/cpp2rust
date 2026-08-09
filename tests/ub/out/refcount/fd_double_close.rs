@@ -30,7 +30,7 @@ fn main_0() -> i32 {
         }
     }));
     libcc2rs::close_refcount((*fd.borrow()));
-    return if (((libcc2rs::close_refcount((*fd.borrow())) == -1_i32) as i32) != 0) {
+    return if ((libcc2rs::close_refcount((*fd.borrow())) == -1_i32) as i32) != 0 {
         0
     } else {
         1

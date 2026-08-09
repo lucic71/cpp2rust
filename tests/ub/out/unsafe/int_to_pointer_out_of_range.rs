@@ -29,5 +29,5 @@ unsafe fn main_0() -> i32 {
     u.bits = (u.bits)
         .wrapping_add(((100_usize).wrapping_mul((::std::mem::size_of::<i32>() as usize)) as u64));
     let mut p: *mut i32 = u.p;
-    return if ((((*p) == (0)) as i32) != 0) { 0 } else { 1 };
+    return if (((*p) == (0)) as i32) != 0 { 0 } else { 1 };
 }

@@ -12,7 +12,7 @@ pub fn main() {
 fn main_0() -> i32 {
     let v: Value<Vec<i32>> = Rc::new(RefCell::new(Vec::new()));
     let i: Value<i32> = Rc::new(RefCell::new(0));
-    'loop_: while ((*i.borrow()) < 10) {
+    'loop_: while (*i.borrow()) < 10 {
         {
             let a0_clone = (*i.borrow()).clone();
             (*v.borrow_mut()).push(a0_clone)

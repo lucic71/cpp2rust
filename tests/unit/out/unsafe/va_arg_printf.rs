@@ -57,7 +57,7 @@ unsafe fn main_0() -> i32 {
         ((((unsafe {
             lenf_2(
                 (c"%s".as_ptr().cast_mut()).cast_const(),
-                &[(if (((*dummy.offset(((0) as isize))) as i32) != 0) {
+                &[(if ((*dummy.offset(((0) as isize))) as i32) != 0 {
                     dummy
                 } else {
                     (c"".as_ptr().cast_mut() as *const libc::c_char)

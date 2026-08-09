@@ -24,7 +24,7 @@ unsafe fn main_0() -> i32 {
     };
     let mut sum: i32 = 0;
     let mut i: i32 = 0;
-    'loop_: while ((i) < (N)) {
+    'loop_: while (i) < (N) {
         sum += (*arr.offset(((i) as isize)));
         i.prefix_inc();
     }

@@ -8,7 +8,7 @@ use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 pub unsafe fn extract_nth_0(mut n: i32, mut ap: VaList) -> i32 {
     let mut i: i32 = 0;
-    'loop_: while ((((i) < (n)) as i32) != 0) {
+    'loop_: while (((i) < (n)) as i32) != 0 {
         ap.arg::<i32>();
         i.postfix_inc();
     }

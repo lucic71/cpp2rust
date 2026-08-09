@@ -87,7 +87,7 @@ unsafe fn main_0() -> i32 {
     assert!(((c as i32) == (Color_RED as i32)));
     assert!(((c as i32) == (0)));
     assert!(((c as i32) != (1)));
-    if ((c as i32) == (Color_GREEN as i32)) {
+    if (c as i32) == (Color_GREEN as i32) {
         return 1;
     }
     'switch: {

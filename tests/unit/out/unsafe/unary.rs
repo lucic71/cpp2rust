@@ -14,11 +14,11 @@ pub fn main() {
 unsafe fn main_0() -> i32 {
     let mut x: i32 = 0;
     let mut a: [i32; 3] = [0, 1, 2];
-    'loop_: while ((x) < (3)) {
+    'loop_: while (x) < (3) {
         a[((x.postfix_inc()) as usize)].prefix_inc();
     }
     let mut out: i32 = 0;
-    'loop_: while (x != 0) {
+    'loop_: while x != 0 {
         out += a[((x.prefix_dec()) as usize)];
     }
     out.postfix_inc();

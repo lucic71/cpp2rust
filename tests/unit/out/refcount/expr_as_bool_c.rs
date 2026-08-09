@@ -27,20 +27,20 @@ pub fn main() {
 fn main_0() -> i32 {
     let a: Value<i32> = Rc::new(RefCell::new(0));
     let b: Value<i32> = <Value<i32>>::default();
-    if ({
+    if {
         (*b.borrow_mut()) = (*a.borrow());
         (*b.borrow())
-    } != 0)
+    } != 0
     {}
-    'loop_: while (((({
+    'loop_: while ((({
         (*b.borrow_mut()) = (*a.borrow());
         (*b.borrow())
     }) != 0) as i32)
-        != 0)
+        != 0
     {}
-    if ((*a.borrow()) != 0) {}
-    if ((((*a.borrow()) == (*b.borrow())) as i32) != 0) {}
-    if ((((*a.borrow()) < (*b.borrow())) as i32) != 0) {}
+    if (*a.borrow()) != 0 {}
+    if (((*a.borrow()) == (*b.borrow())) as i32) != 0 {}
+    if (((*a.borrow()) < (*b.borrow())) as i32) != 0 {}
     assert!(((((*a.borrow()) == (*b.borrow())) as i32) != 0));
     assert!(
         ((!(({

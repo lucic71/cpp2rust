@@ -20,7 +20,7 @@ unsafe fn main_0() -> i32 {
     c.postfix_inc();
     assert!(((((c as u32) == (((3) as color) as u32)) as i32) != 0));
     assert!(((((c as u32) != ((color_RED as i32) as u32)) as i32) != 0));
-    return if ((((c as u32) == (((3) as color) as u32)) as i32) != 0) {
+    return if (((c as u32) == (((3) as color) as u32)) as i32) != 0 {
         0
     } else {
         1

@@ -13,7 +13,7 @@ pub unsafe fn get_empty_1() -> *const libc::c_char {
     return c"".as_ptr();
 }
 pub unsafe fn get_branch_2(mut x: i32) -> *const libc::c_char {
-    if ((x) > (0)) {
+    if (x) > (0) {
         return c"positive".as_ptr();
     }
     return c"non-positive".as_ptr();

@@ -20,10 +20,10 @@ pub fn identity_2(x: i32) -> i32 {
 }
 pub fn pick_3(mode: i32) -> FnPtr<fn(i32) -> i32> {
     let mode: Value<i32> = Rc::new(RefCell::new(mode));
-    return if ((*mode.borrow()) > 0) {
+    return if (*mode.borrow()) > 0 {
         FnPtr::<fn(i32) -> i32>::new(inc_0)
     } else {
-        if ((*mode.borrow()) < 0) {
+        if (*mode.borrow()) < 0 {
             FnPtr::<fn(i32) -> i32>::new(dec_1)
         } else {
             FnPtr::<fn(i32) -> i32>::new(identity_2)

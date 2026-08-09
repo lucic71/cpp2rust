@@ -97,7 +97,7 @@ unsafe fn main_0() -> i32 {
     });
     (unsafe { libc::printf(c"\n".as_ptr() as *const libc::c_char) });
     assert!(((total) == (3)));
-    'loop_: while ((n.postfix_inc()) < (6)) {
+    'loop_: while (n.postfix_inc()) < (6) {
         (unsafe { libc::printf(c" ".as_ptr() as *const libc::c_char) });
     }
     assert!(((n) == (7)));

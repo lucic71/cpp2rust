@@ -16,7 +16,7 @@ pub unsafe fn classify_0(mut kind: i32, mut x: i32) -> i32 {
         }
         __v if __v == 1 => {
             len = ((x) + (1));
-            if ((((len) > (10)) as i32) != 0) {
+            if (((len) > (10)) as i32) != 0 {
                 len = 10;
             }
         }

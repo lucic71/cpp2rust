@@ -73,7 +73,7 @@ pub fn fft_3(a: Ptr<Option<Value<Box<[Complex]>>>>, N: i32) -> Option<Value<Box<
                 .map(|_| <Complex>::default())
                 .collect::<Box<[_]>>(),
         )))));
-    if ((*N.borrow()) == 1) {
+    if (*N.borrow()) == 1 {
         {
             let __rhs = Complex {
                 re: (*(a.read()).as_ref().unwrap().borrow())[(0_usize) as usize].re,
@@ -90,7 +90,7 @@ pub fn fft_3(a: Ptr<Option<Value<Box<[Complex]>>>>, N: i32) -> Option<Value<Box<
                 .collect::<Box<[_]>>(),
         )))));
     let i: Value<i32> = Rc::new(RefCell::new(0));
-    'loop_: while ((*i.borrow()) < (*N.borrow())) {
+    'loop_: while (*i.borrow()) < (*N.borrow()) {
         let alpha: Value<f64> = Rc::new(RefCell::new(
             ((((-2_i32 as f64) * 3.1415926535897931E+0) * ((*i.borrow()) as f64))
                 / ((*N.borrow()) as f64)),
@@ -115,7 +115,7 @@ pub fn fft_3(a: Ptr<Option<Value<Box<[Complex]>>>>, N: i32) -> Option<Value<Box<
                 .collect::<Box<[_]>>(),
         )))));
     let i: Value<i32> = Rc::new(RefCell::new(0));
-    'loop_: while ((*i.borrow()) < ((*N.borrow()) / 2)) {
+    'loop_: while (*i.borrow()) < ((*N.borrow()) / 2) {
         {
             let __rhs = Complex {
                 re: (*(a.read()).as_ref().unwrap().borrow())
@@ -149,7 +149,7 @@ pub fn fft_3(a: Ptr<Option<Value<Box<[Complex]>>>>, N: i32) -> Option<Value<Box<
         ({ fft_3(A1.as_pointer(), ((*N.borrow()) / 2)) }),
     ));
     let k: Value<i32> = Rc::new(RefCell::new(0));
-    'loop_: while ((*k.borrow()) < ((*N.borrow()) / 2)) {
+    'loop_: while (*k.borrow()) < ((*N.borrow()) / 2) {
         let yk: Value<Complex> = Rc::new(RefCell::new(
             ({
                 let _z1: Complex = ((*(*y0.borrow()).as_ref().unwrap().borrow())
@@ -214,7 +214,7 @@ fn main_0() -> i32 {
                 .collect::<Box<[_]>>(),
         )))));
     let i: Value<i32> = Rc::new(RefCell::new(0));
-    'loop_: while ((*i.borrow()) < (*N.borrow())) {
+    'loop_: while (*i.borrow()) < (*N.borrow()) {
         {
             let __rhs = Complex {
                 re: (((*i.borrow()) as f64) + 1_f64),
@@ -240,7 +240,7 @@ fn main_0() -> i32 {
                 .collect::<Box<[_]>>(),
         )))));
     let i: Value<i32> = Rc::new(RefCell::new(0));
-    'loop_: while ((*i.borrow()) < (*N.borrow())) {
+    'loop_: while (*i.borrow()) < (*N.borrow()) {
         {
             let __rhs = ((*(*b.borrow()).as_ref().unwrap().borrow())
                 [((*i.borrow()) as usize) as usize]

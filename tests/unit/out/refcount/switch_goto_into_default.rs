@@ -11,7 +11,7 @@ pub fn direct_label_0(x: i32, y: i32) -> i32 {
     let y: Value<i32> = Rc::new(RefCell::new(y));
     switch!(match (*x.borrow()) {
         __v if __v == 1 => {
-            if ((*y.borrow()) != 0) {
+            if (*y.borrow()) != 0 {
                 goto!('other);
             }
             return 10;
@@ -34,7 +34,7 @@ pub fn braced_label_1(x: i32, y: i32) -> i32 {
     let r: Value<i32> = Rc::new(RefCell::new(0));
     switch!(match (*x.borrow()) {
         __v if __v == 1 => {
-            if ((*y.borrow()) != 0) {
+            if (*y.borrow()) != 0 {
                 goto!('other);
             }
             (*r.borrow_mut()) = 10;

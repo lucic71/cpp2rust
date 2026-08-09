@@ -106,7 +106,7 @@ fn main_0() -> i32 {
         ((((((*tail.borrow()).offset(((2) as isize)).read()) as i32) == ('d' as i32)) as i32) != 0)
     );
     let have: Value<i32> = Rc::new(RefCell::new(0));
-    let p: Value<AnyPtr> = Rc::new(RefCell::new(if ((*have.borrow()) != 0) {
+    let p: Value<AnyPtr> = Rc::new(RefCell::new(if (*have.borrow()) != 0 {
         ((*table_1.with(Value::clone).borrow())[(0) as usize].name)
             .clone()
             .to_any()
@@ -121,7 +121,7 @@ fn main_0() -> i32 {
             != 0)
     );
     (*have.borrow_mut()) = 1;
-    (*p.borrow_mut()) = if ((*have.borrow()) != 0) {
+    (*p.borrow_mut()) = if (*have.borrow()) != 0 {
         ((*table_1.with(Value::clone).borrow())[(0) as usize].name)
             .clone()
             .to_any()

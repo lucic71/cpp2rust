@@ -14,7 +14,7 @@ pub unsafe fn run_0() -> i32 {
         __do_while = false;
         runs += 1;
         i += 1;
-        if ((((i) == (4)) as i32) != 0) {
+        if (((i) == (4)) as i32) != 0 {
             continue 'loop_;
         }
     }
@@ -33,7 +33,7 @@ pub unsafe fn nested_1() -> i32 {
             __do_while = false;
             runs += 1;
             ii += 1;
-            if ((((ii) == (3)) as i32) != 0) {
+            if (((ii) == (3)) as i32) != 0 {
                 continue 'loop_;
             }
         }

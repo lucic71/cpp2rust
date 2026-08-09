@@ -13,14 +13,14 @@ pub unsafe fn matalloc_0(mut n: i32, mut p: i32, mut e: i32) -> Option<Box<[Opti
             .collect::<Box<[_]>>(),
     );
     let mut i: i32 = 0;
-    'loop_: while ((i) < (n)) {
+    'loop_: while (i) < (n) {
         m.as_mut().unwrap()[(i as usize)] = Some(
             (0..(p as usize))
                 .map(|_| <i32>::default())
                 .collect::<Box<[_]>>(),
         );
         let mut j: i32 = 0;
-        'loop_: while ((j) < (p)) {
+        'loop_: while (j) < (p) {
             m.as_mut().unwrap()[(i as usize)].as_mut().unwrap()[(j as usize)] = e;
             j.prefix_inc();
         }
@@ -38,12 +38,12 @@ pub unsafe fn matmul_1(
 ) -> Option<Box<[Option<Box<[i32]>>]>> {
     let mut m3: Option<Box<[Option<Box<[i32]>>]>> = (unsafe { matalloc_0(n1, p2, 0) });
     let mut i: i32 = 0;
-    'loop_: while ((i) < (n1)) {
+    'loop_: while (i) < (n1) {
         let mut j: i32 = 0;
         let mut sum: i32 = 0;
-        'loop_: while ((j) < (p2)) {
+        'loop_: while (j) < (p2) {
             let mut k: i32 = 0;
-            'loop_: while ((k) < (p1)) {
+            'loop_: while (k) < (p1) {
                 sum += ((m1.as_mut().unwrap()[(i as usize)].as_mut().unwrap()[(k as usize)])
                     * (m2.as_mut().unwrap()[(k as usize)].as_mut().unwrap()[(j as usize)]));
                 k.prefix_inc();

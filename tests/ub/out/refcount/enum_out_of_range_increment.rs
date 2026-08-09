@@ -18,7 +18,7 @@ fn main_0() -> i32 {
     (*c.borrow_mut()).postfix_inc();
     assert!((((((*c.borrow()) as u32) == (((3) as color) as u32)) as i32) != 0));
     assert!((((((*c.borrow()) as u32) != ((color_RED as i32) as u32)) as i32) != 0));
-    return if (((((*c.borrow()) as u32) == (((3) as color) as u32)) as i32) != 0) {
+    return if ((((*c.borrow()) as u32) == (((3) as color) as u32)) as i32) != 0 {
         0
     } else {
         1

@@ -19,7 +19,7 @@ unsafe fn main_0() -> i32 {
         )
     });
     libcc2rs::close_unsafe(fd);
-    return if ((((libcc2rs::close_unsafe(fd)) == (-1_i32)) as i32) != 0) {
+    return if (((libcc2rs::close_unsafe(fd)) == (-1_i32)) as i32) != 0 {
         0
     } else {
         1

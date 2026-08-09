@@ -18,7 +18,7 @@ fn main_0() -> i32 {
         (arr.as_pointer() as Ptr<u64>).reinterpret_cast::<u16>(),
     ));
     let i: Value<i32> = Rc::new(RefCell::new(0));
-    'loop_: while ((*i.borrow()) < 8) {
+    'loop_: while (*i.borrow()) < 8 {
         assert!({
             let _lhs = (((*words.borrow()).offset(((*i.borrow()) as isize)).read()) as i32);
             _lhs == ((((*i.borrow()) + 1) as u16) as i32)

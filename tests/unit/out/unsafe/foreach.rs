@@ -14,7 +14,7 @@ pub fn main() {
 unsafe fn main_0() -> i32 {
     let mut v: Vec<i32> = Vec::new();
     let mut i: i32 = 0;
-    'loop_: while ((i) < (10)) {
+    'loop_: while (i) < (10) {
         {
             let a0_clone = i.clone();
             v.push(a0_clone)

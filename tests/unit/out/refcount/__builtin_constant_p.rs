@@ -11,7 +11,7 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     let x: Value<i32> = Rc::new(RefCell::new(0));
-    if (1 != 0) {
+    if 1 != 0 {
         return (1 + 2);
     } else {
         return -1_i32;

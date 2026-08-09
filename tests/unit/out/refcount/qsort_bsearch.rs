@@ -57,7 +57,7 @@ fn main_0() -> i32 {
         }
     };
     let i: Value<i32> = Rc::new(RefCell::new(0));
-    'loop_: while ((((*i.borrow()) < 7) as i32) != 0) {
+    'loop_: while (((*i.borrow()) < 7) as i32) != 0 {
         assert!(
             ((((*arr.borrow())[(*i.borrow()) as usize]
                 <= (*arr.borrow())[((*i.borrow()) + 1) as usize]) as i32)

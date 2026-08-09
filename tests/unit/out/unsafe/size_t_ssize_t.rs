@@ -95,25 +95,25 @@ unsafe fn main_0() -> i32 {
     let mut count: usize = (::std::mem::size_of::<[i32; 8]>() as usize)
         .wrapping_div((::std::mem::size_of::<i32>() as usize));
     let mut i: usize = 0_usize;
-    'loop_: while ((i) < (count)) {
+    'loop_: while (i) < (count) {
         data[(i)] = (((i).wrapping_mul(2_usize)) as i32);
         i.postfix_inc();
     }
     let mut total: usize = 0_usize;
     let mut i: usize = 0_usize;
-    'loop_: while ((i) < (count)) {
+    'loop_: while (i) < (count) {
         total = (total).wrapping_add((data[(i)] as usize));
         i.postfix_inc();
     }
     assert!(((total) == (56_usize)));
-    let mut cond: usize = (if ((sz) > (ul as usize)) {
+    let mut cond: usize = (if (sz) > (ul as usize) {
         (sz as u64).wrapping_add((::std::mem::size_of::<i32>() as u64))
     } else {
         ul
     } as usize);
     assert!(((cond) == ((21_usize).wrapping_add((::std::mem::size_of::<i32>() as usize)))));
     let mut arr: [usize; 4] = [0_usize, 1_usize, 2_usize, 3_usize];
-    let mut idx: usize = (if ((::std::mem::size_of::<i32>()) > (2_usize)) {
+    let mut idx: usize = (if (::std::mem::size_of::<i32>()) > (2_usize) {
         2
     } else {
         0

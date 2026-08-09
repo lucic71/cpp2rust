@@ -130,7 +130,7 @@ fn main_0() -> i32 {
         let _ = ::std::io::Write::flush(&mut ::std::io::stdout());
     };
     assert!(((*total.borrow()) == 3));
-    'loop_: while ((*n.borrow_mut()).postfix_inc() < 6) {
+    'loop_: while (*n.borrow_mut()).postfix_inc() < 6 {
         {
             print!(" ");
             let _ = ::std::io::Write::flush(&mut ::std::io::stdout());

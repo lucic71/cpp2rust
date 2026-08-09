@@ -18,7 +18,7 @@ pub unsafe fn find_0(mut node: *mut node_t, mut value: i32) -> *mut node_t {
         return (unsafe { find_0((*node).left, value) });
     } else if ((value) > ((*node).value)) && (!(((*node).right).is_null())) {
         return (unsafe { find_0((*node).right, value) });
-    } else if ((value) == ((*node).value)) {
+    } else if (value) == ((*node).value) {
         return node;
     }
     return std::ptr::null_mut();
@@ -31,9 +31,9 @@ pub unsafe fn insert_1(mut node: *mut node_t, mut value: i32) -> *mut node_t {
             value: value,
         })) as *mut node_t);
     }
-    if ((value) < ((*node).value)) {
+    if (value) < ((*node).value) {
         (*node).left = (unsafe { insert_1((*node).left, value) });
-    } else if ((value) > ((*node).value)) {
+    } else if (value) > ((*node).value) {
         (*node).right = (unsafe { insert_1((*node).right, value) });
     }
     return node;

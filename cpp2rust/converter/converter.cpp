@@ -307,6 +307,13 @@ void Converter::LowerNodes(RsExpr *&node) {
     node = lowered;
   }
   node->ForEachChild([this](RsExpr *&child) { LowerNodes(child); });
+  if (auto *conditional = clang::dyn_cast<Conditional>(node)) {
+    conditional->cond = conditional->cond->IgnoreParens();
+  } else if (auto *if_stmt = clang::dyn_cast<If>(node)) {
+    if_stmt->cond = if_stmt->cond->IgnoreParens();
+  } else if (auto *loop = clang::dyn_cast<Loop>(node)) {
+    loop->header = loop->header->IgnoreParens();
+  }
   if (auto *widened = WidenPtrWith(node)) {
     node = widened;
   }

@@ -12,11 +12,11 @@ pub fn run_0(x: i32) -> i32 {
     goto_block!({
         '__entry: {
             *steps.borrow_mut() = 0;
-            if ((((*x.borrow()) < 0) as i32) != 0) {
+            if (((*x.borrow()) < 0) as i32) != 0 {
                 goto!('error);
             }
             (*steps.borrow_mut()) = 1;
-            if ((((*x.borrow()) == 0) as i32) != 0) {
+            if (((*x.borrow()) == 0) as i32) != 0 {
                 goto!('done);
             }
             (*steps.borrow_mut()) = 2;

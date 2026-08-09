@@ -19,7 +19,7 @@ fn main_0() -> i32 {
             _ptr.write(__rhs)
         }
     };
-    if ((*x.borrow()) == 2) {
+    if (*x.borrow()) == 2 {
         let a: Value<Box<[i32]>> = Rc::new(RefCell::new(Box::new([1, 2])));
         (*p.borrow_mut()) = ((a.as_pointer() as Ptr<i32>).offset(1));
         {
@@ -47,7 +47,7 @@ fn main_0() -> i32 {
                         _ptr.write(__rhs)
                     }
                 };
-                if ((*x.borrow()) == 3) {
+                if (*x.borrow()) == 3 {
                     let p2: Value<Ptr<i32>> = Rc::new(RefCell::new((*p.borrow()).clone()));
                     {
                         let _ptr = (*p2.borrow()).clone();

@@ -16,13 +16,13 @@ pub fn acc_0(x: i32) -> i32 {
     );
     goto_block!({
         '__entry: {
-            if ((((*x.borrow()) < 0) as i32) != 0) {
+            if (((*x.borrow()) < 0) as i32) != 0 {
                 goto!('done);
             }
             (*total_1.with(Value::clone).borrow_mut()) += (*x.borrow());
-            if ((((*total_1.with(Value::clone).borrow()) > (*limit_2.with(Value::clone).borrow()))
+            if (((*total_1.with(Value::clone).borrow()) > (*limit_2.with(Value::clone).borrow()))
                 as i32)
-                != 0)
+                != 0
             {
                 (*total_1.with(Value::clone).borrow_mut()) = (*limit_2.with(Value::clone).borrow());
             }

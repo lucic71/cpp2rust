@@ -58,7 +58,7 @@ unsafe fn main_0() -> i32 {
     let mut v3: Vec<i32> = vec![1; 100_usize as usize];
     assert!(((v3.len()) == (100_usize)));
     let mut i: i32 = 0;
-    'loop_: while ((i) < (100)) {
+    'loop_: while (i) < (100) {
         assert!(((v3[(i as usize)]) == (1)));
         i.prefix_inc();
     }
@@ -67,7 +67,7 @@ unsafe fn main_0() -> i32 {
         .collect::<Vec<_>>();
     assert!(((v4.len()) == (100_usize)));
     let mut i: u32 = 0_u32;
-    'loop_: while ((i as usize) < (v4.len())) {
+    'loop_: while (i as usize) < (v4.len()) {
         assert!((v4[(i as usize)]).is_null());
         i.prefix_inc();
     }
@@ -76,14 +76,14 @@ unsafe fn main_0() -> i32 {
         .collect::<Vec<_>>();
     assert!(((v5.len()) == (100_usize)));
     let mut i: u32 = 0_u32;
-    'loop_: while ((i as usize) < (v5.len())) {
+    'loop_: while (i as usize) < (v5.len()) {
         assert!((v5[(i as usize)]).is_null());
         i.prefix_inc();
     }
     let mut v6: Vec<f64> = vec![2.0E+0; s2 as usize];
     assert!(((v6.len()) == (s2)));
     let mut i: u32 = 0_u32;
-    'loop_: while ((i as usize) < (s2)) {
+    'loop_: while (i as usize) < (s2) {
         assert!(((v6[(i as usize)]) == (2.0E+0)));
         i.prefix_inc();
     }
@@ -92,7 +92,7 @@ unsafe fn main_0() -> i32 {
         .collect::<Vec<_>>();
     assert!(((v7.len()) == (200_usize)));
     let mut i: u32 = 0_u32;
-    'loop_: while ((i) < (200_u32)) {
+    'loop_: while (i) < (200_u32) {
         assert!(((v7[(i as usize)].0).is_null()) && ((v7[(i as usize)].1) == (0)));
         i.prefix_inc();
     }

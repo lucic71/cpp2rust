@@ -384,7 +384,7 @@ pub fn test_open_6() {
         }
     }));
     assert!(((((*fd.borrow()) >= -1_i32) as i32) != 0));
-    if ((((*fd.borrow()) >= 0) as i32) != 0) {
+    if (((*fd.borrow()) >= 0) as i32) != 0 {
         libcc2rs::close_refcount((*fd.borrow()));
     }
     (*fd.borrow_mut()) = {
@@ -407,7 +407,7 @@ pub fn test_open_6() {
         }
     };
     assert!(((((*fd.borrow()) >= -1_i32) as i32) != 0));
-    if ((((*fd.borrow()) >= 0) as i32) != 0) {
+    if (((*fd.borrow()) >= 0) as i32) != 0 {
         libcc2rs::close_refcount((*fd.borrow()));
     }
 }
@@ -419,7 +419,7 @@ pub fn test_fcntl_7() {
         &[(100).into()],
     )));
     assert!(((((*duped.borrow()) >= -1_i32) as i32) != 0));
-    if ((((*duped.borrow()) >= 0) as i32) != 0) {
+    if (((*duped.borrow()) >= 0) as i32) != 0 {
         libcc2rs::close_refcount((*duped.borrow()));
     }
 }

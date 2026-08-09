@@ -13,8 +13,8 @@ pub unsafe fn for_in_switch_break_0(mut n: i32) -> i32 {
         match __match_cond {
             __v if __v == 0 => {
                 let mut i: i32 = 0;
-                'loop_: while ((i) < (10)) {
-                    if ((i) == (3)) {
+                'loop_: while (i) < (10) {
+                    if (i) == (3) {
                         break;
                     }
                     r += i;

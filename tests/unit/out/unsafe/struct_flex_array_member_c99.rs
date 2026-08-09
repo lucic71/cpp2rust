@@ -31,7 +31,7 @@ pub unsafe fn table_create_0(mut n: i32) -> *mut table {
     let mut t: *mut table = (raw_ as *mut table);
     (*t).n = n;
     let mut i: i32 = 0;
-    'loop_: while ((((i) < (n)) as i32) != 0) {
+    'loop_: while (((i) < (n)) as i32) != 0 {
         (*(*t).a.as_mut_ptr().add((i) as usize)).id = ((i) * (10));
         (*(*t).a.as_mut_ptr().add((i) as usize)).weight = ((i) + (1));
         i.postfix_inc();

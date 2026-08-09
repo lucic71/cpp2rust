@@ -12,7 +12,7 @@ pub unsafe fn early_0(mut n: i32) -> i32 {
     goto_block!({
         '__entry: {
             ret = 0;
-            if ((((n) < (0)) as i32) != 0) {
+            if (((n) < (0)) as i32) != 0 {
                 ret = -1_i32;
                 goto!('out);
             }
@@ -31,8 +31,8 @@ pub unsafe fn from_loop_1(mut n: i32) -> i32 {
         '__entry: {
             ret = 0;
             let mut i: i32 = 0;
-            'loop_: while ((((i) < (n)) as i32) != 0) {
-                if ((((i) == (3)) as i32) != 0) {
+            'loop_: while (((i) < (n)) as i32) != 0 {
+                if (((i) == (3)) as i32) != 0 {
                     ret = 7;
                     goto!('out);
                 }
@@ -85,7 +85,7 @@ pub unsafe fn via_pointer_3(mut w: *mut wrapper, mut fail: i32) -> i32 {
         '__entry: {
             ret = 0;
             item = (*w).item;
-            if (fail != 0) {
+            if fail != 0 {
                 ret = -1_i32;
                 goto!('out);
             }
@@ -106,7 +106,7 @@ pub unsafe fn via_arrays_4(mut fail: i32) -> i32 {
             ret = 0;
             remain = [0_u8, 0_u8, 0_u8, 0_u8];
             name = std::mem::transmute(*b"wxyz\0");
-            if (fail != 0) {
+            if fail != 0 {
                 ret = -1_i32;
                 goto!('out);
             }

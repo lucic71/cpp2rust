@@ -7,7 +7,7 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 pub unsafe fn pick_0(mut a: *const libc::c_char, mut b: *const libc::c_char, mut n: i32) -> i32 {
-    return (((if ((((a) == (b)) as i32) != 0) { 10 } else { 20 }) + (n))
+    return (((if (((a) == (b)) as i32) != 0 { 10 } else { 20 }) + (n))
         + (((*a.offset(((0) as isize))) as i32) - ('a' as i32)));
 }
 pub unsafe fn total_1(mut x: *mut i32, mut y: *mut i32) -> i32 {

@@ -62,7 +62,7 @@ fn main_0() -> i32 {
     libcc2rs::fclose_refcount((*p.borrow()).with(|__v| __v.a.clone()).clone());
     libcc2rs::fclose_refcount((*p.borrow()).with(|__v| __v.b.clone()).clone());
     let i: Value<i32> = Rc::new(RefCell::new(0));
-    'loop_: while ((((*i.borrow()) < 64) as i32) != 0) {
+    'loop_: while (((*i.borrow()) < 64) as i32) != 0 {
         let q: Value<Ptr<u8>> = Rc::new(RefCell::new(
             libcc2rs::malloc_refcount(16_usize).reinterpret_cast::<u8>(),
         ));

@@ -19,16 +19,16 @@ pub unsafe fn shiftB_3(mut x: i32) -> i32 {
     return ((x) - (3));
 }
 pub unsafe fn pmin_int_4(mut a: i32, mut b: i32) -> i32 {
-    return if ((((a) < (b)) as i32) != 0) { a } else { b };
+    return if (((a) < (b)) as i32) != 0 { a } else { b };
 }
 pub unsafe fn pmax_int_5(mut a: i32, mut b: i32) -> i32 {
-    return if ((((a) > (b)) as i32) != 0) { a } else { b };
+    return if (((a) > (b)) as i32) != 0 { a } else { b };
 }
 pub unsafe fn pmin_long_6(mut a: i64, mut b: i64) -> i64 {
-    return if ((((a) < (b)) as i32) != 0) { a } else { b };
+    return if (((a) < (b)) as i32) != 0 { a } else { b };
 }
 pub unsafe fn pmax_long_7(mut a: i64, mut b: i64) -> i64 {
-    return if ((((a) > (b)) as i32) != 0) { a } else { b };
+    return if (((a) > (b)) as i32) != 0 { a } else { b };
 }
 pub fn main() {
     unsafe {

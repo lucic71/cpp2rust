@@ -129,7 +129,7 @@ pub fn fill_1(out: AnyPtr, cap: usize) {
     (*src.borrow_mut())[(6) as usize] = 0_u8;
     (*src.borrow_mut())[(7) as usize] = 1_u8;
     let n: Value<usize> = Rc::new(RefCell::new(
-        (if (((16usize < (*cap.borrow())) as i32) != 0) {
+        (if ((16usize < (*cap.borrow())) as i32) != 0 {
             (16usize as u64)
         } else {
             ((*cap.borrow()) as u64)

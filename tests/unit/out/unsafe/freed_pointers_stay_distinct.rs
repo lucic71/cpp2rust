@@ -32,7 +32,7 @@ unsafe fn main_0() -> i32 {
     libcc2rs::fclose_unsafe((*p).a);
     libcc2rs::fclose_unsafe((*p).b);
     let mut i: i32 = 0;
-    'loop_: while ((((i) < (64)) as i32) != 0) {
+    'loop_: while (((i) < (64)) as i32) != 0 {
         let mut q: *mut libc::c_char = (libcc2rs::malloc_unsafe(16_usize) as *mut libc::c_char);
         (*q.offset(((0) as isize))) = (i as libc::c_char);
         libcc2rs::free_unsafe(((q as *mut libc::c_char) as *mut ::libc::c_void));

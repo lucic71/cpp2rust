@@ -59,7 +59,7 @@ fn main_0() -> i32 {
     let v3: Value<Vec<i32>> = Rc::new(RefCell::new(vec![1; 100_usize as usize]));
     assert!(((*v3.borrow()).len() == 100_usize));
     let i: Value<i32> = Rc::new(RefCell::new(0));
-    'loop_: while ((*i.borrow()) < 100) {
+    'loop_: while (*i.borrow()) < 100 {
         assert!(
             (((v3.as_pointer() as Ptr<i32>)
                 .offset(((*i.borrow()) as usize))
@@ -75,7 +75,7 @@ fn main_0() -> i32 {
     ));
     assert!(((*v4.borrow()).len() == 100_usize));
     let i: Value<u32> = Rc::new(RefCell::new(0_u32));
-    'loop_: while (((*i.borrow()) as usize) < (*v4.borrow()).len()) {
+    'loop_: while ((*i.borrow()) as usize) < (*v4.borrow()).len() {
         assert!(
             ((v4.as_pointer() as Ptr<Ptr::<i32>>)
                 .offset(((*i.borrow()) as usize))
@@ -91,7 +91,7 @@ fn main_0() -> i32 {
     ));
     assert!(((*v5.borrow()).len() == 100_usize));
     let i: Value<u32> = Rc::new(RefCell::new(0_u32));
-    'loop_: while (((*i.borrow()) as usize) < (*v5.borrow()).len()) {
+    'loop_: while ((*i.borrow()) as usize) < (*v5.borrow()).len() {
         assert!(
             ((v5.as_pointer() as Ptr<Ptr::<i32>>)
                 .offset(((*i.borrow()) as usize))
@@ -103,7 +103,7 @@ fn main_0() -> i32 {
     let v6: Value<Vec<f64>> = Rc::new(RefCell::new(vec![2.0E+0; (*s2.borrow()) as usize]));
     assert!(((*v6.borrow()).len() == (*s2.borrow())));
     let i: Value<u32> = Rc::new(RefCell::new(0_u32));
-    'loop_: while (((*i.borrow()) as usize) < (*s2.borrow())) {
+    'loop_: while ((*i.borrow()) as usize) < (*s2.borrow()) {
         assert!(
             (((v6.as_pointer() as Ptr<f64>)
                 .offset(((*i.borrow()) as usize))
@@ -119,7 +119,7 @@ fn main_0() -> i32 {
     ));
     assert!(((*v7.borrow()).len() == 200_usize));
     let i: Value<u32> = Rc::new(RefCell::new(0_u32));
-    'loop_: while ((*i.borrow()) < 200_u32) {
+    'loop_: while (*i.borrow()) < 200_u32 {
         assert!(
             ((*((v7.as_pointer() as Ptr<(Value<Ptr::<i32>>, Value<i32>)>)
                 .offset(((*i.borrow()) as usize))

@@ -12,11 +12,11 @@ pub fn main() {
 fn main_0() -> i32 {
     let x: Value<i32> = Rc::new(RefCell::new(0));
     let a: Value<Box<[i32]>> = Rc::new(RefCell::new(Box::new([0, 1, 2])));
-    'loop_: while ((*x.borrow()) < 3) {
+    'loop_: while (*x.borrow()) < 3 {
         (*a.borrow_mut())[((*x.borrow_mut()).postfix_inc()) as usize].prefix_inc();
     }
     let out: Value<i32> = Rc::new(RefCell::new(0));
-    'loop_: while ((*x.borrow()) != 0) {
+    'loop_: while (*x.borrow()) != 0 {
         (*out.borrow_mut()) += (*a.borrow())[((*x.borrow_mut()).prefix_dec()) as usize];
     }
     (*out.borrow_mut()).postfix_inc();

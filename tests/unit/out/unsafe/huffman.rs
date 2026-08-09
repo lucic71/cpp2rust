@@ -77,7 +77,7 @@ impl MinHeap {
         {
             smallest = right;
         }
-        if ((smallest) != (idx)) {
+        if (smallest) != (idx) {
             (unsafe {
                 let _a: *mut MinHeapNode =
                     (&mut (*self.arr.as_mut().unwrap()[(smallest as usize)]) as *mut MinHeapNode);
@@ -115,7 +115,7 @@ impl MinHeap {
         mut n: i32,
     ) {
         let mut i: i32 = 0;
-        'loop_: while ((i) < (n)) {
+        'loop_: while (i) < (n) {
             self.arr.as_mut().unwrap()[(self.size.postfix_inc() as usize)] = (unsafe {
                 let _data: libc::c_char = (*data).as_mut().unwrap()[(i as usize)];
                 let _freq: i32 = (*freq).as_mut().unwrap()[(i as usize)];
@@ -124,7 +124,7 @@ impl MinHeap {
             i.prefix_inc();
         }
         let mut i: i32 = (((self.size) - (2)) / (2));
-        'loop_: while ((i) >= (0)) {
+        'loop_: while (i) >= (0) {
             (unsafe { self.Heapify(i) });
             i.prefix_dec();
         }
@@ -160,7 +160,7 @@ pub unsafe fn Huffman_2(
         let _n: i32 = size;
         (*minHeap.as_deref_mut().unwrap()).Build(_data, _freq, _n)
     });
-    'loop_: while (((*minHeap.as_deref_mut().unwrap()).size) != (1)) {
+    'loop_: while ((*minHeap.as_deref_mut().unwrap()).size) != (1) {
         let mut left: *mut MinHeapNode =
             (unsafe { (*minHeap.as_deref_mut().unwrap()).ExtractMin() });
         let mut right: *mut MinHeapNode =
@@ -183,7 +183,7 @@ pub unsafe fn CollectCode_3(
 ) {
     (*out).as_mut().unwrap()[((*next) as usize)] = 0;
     let mut i: i32 = 0;
-    'loop_: while ((i) < (top)) {
+    'loop_: while (i) < (top) {
         (*out).as_mut().unwrap()[((*next) as usize)] =
             (((*out).as_mut().unwrap()[((*next) as usize)]) * (10));
         (*out).as_mut().unwrap()[((*next) as usize)] = (((*out).as_mut().unwrap()
@@ -222,7 +222,7 @@ pub unsafe fn CollectCodes_4(
             CollectCodes_4(_root, _arr, _top, _out, _next)
         });
     }
-    if (unsafe { (*(root).cast_const()).IsLeaf() }) {
+    if unsafe { (*(root).cast_const()).IsLeaf() } {
         (unsafe {
             let _arr: *mut Option<Box<[i32]>> = arr;
             let _top: i32 = top;
@@ -294,7 +294,7 @@ unsafe fn main_0() -> i32 {
             .collect::<Box<[_]>>(),
     );
     let mut i: i32 = 0;
-    'loop_: while ((i) < (size)) {
+    'loop_: while (i) < (size) {
         data.as_mut().unwrap()[(i as usize)] = arr1[((i) as usize)];
         freq.as_mut().unwrap()[(i as usize)] = arr2[((i) as usize)];
         i.prefix_inc();

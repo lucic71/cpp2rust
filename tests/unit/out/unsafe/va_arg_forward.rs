@@ -9,7 +9,7 @@ use std::rc::Rc;
 pub unsafe fn inner_0(mut count: i32, mut ap: VaList) -> i32 {
     let mut total: i32 = 0;
     let mut i: i32 = 0;
-    'loop_: while ((((i) < (count)) as i32) != 0) {
+    'loop_: while (((i) < (count)) as i32) != 0 {
         total += ap.arg::<i32>();
         i.postfix_inc();
     }

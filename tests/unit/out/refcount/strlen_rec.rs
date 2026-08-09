@@ -9,7 +9,7 @@ use std::rc::{Rc, Weak};
 pub fn strlen_0(s: Ptr<u8>, n: i32) -> i32 {
     let s: Value<Ptr<u8>> = Rc::new(RefCell::new(s));
     let n: Value<i32> = Rc::new(RefCell::new(n));
-    return if (((*s.borrow()).read()) != 0) {
+    return if ((*s.borrow()).read()) != 0 {
         ({ strlen_0((*s.borrow()).offset(((1) as isize)), ((*n.borrow()) + 1)) })
     } else {
         (*n.borrow())

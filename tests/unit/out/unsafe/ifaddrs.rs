@@ -20,19 +20,19 @@ unsafe fn main_0() -> i32 {
     let mut found_loopback: i32 = 0;
     let mut ifa: *mut libc::ifaddrs = std::ptr::null_mut();
     ifa = list;
-    'loop_: while (((!((ifa).is_null())) as i32) != 0) {
+    'loop_: while ((!((ifa).is_null())) as i32) != 0 {
         assert!((((!(((*ifa).ifa_name).is_null())) as i32) != 0));
-        if (((((*ifa).ifa_addr).is_null()) as i32) != 0) {
+        if ((((*ifa).ifa_addr).is_null()) as i32) != 0 {
             ifa = (*ifa).ifa_next;
             continue 'loop_;
         }
-        if (((((*(*ifa).ifa_addr).sa_family as i32) != (libc::AF_INET)) as i32) != 0) {
+        if ((((*(*ifa).ifa_addr).sa_family as i32) != (libc::AF_INET)) as i32) != 0 {
             ifa = (*ifa).ifa_next;
             continue 'loop_;
         }
         let mut sin: *mut ::libc::sockaddr_in = ((*ifa).ifa_addr as *mut ::libc::sockaddr_in);
         let mut lo_be: [u8; 4] = [127_u8, 0_u8, 0_u8, 1_u8];
-        if (((({
+        if ((({
             let sa = core::slice::from_raw_parts(
                 (((&raw mut (*sin).sin_addr as *mut ::libc::in_addr) as *const ::libc::in_addr)
                     as *const ::libc::c_void) as *const u8,
@@ -51,7 +51,7 @@ unsafe fn main_0() -> i32 {
             }
             diff
         }) == (0)) as i32)
-            != 0)
+            != 0
         {
             found_loopback = 1;
             assert!((((((*ifa).ifa_flags) != (0_u32)) as i32) != 0));

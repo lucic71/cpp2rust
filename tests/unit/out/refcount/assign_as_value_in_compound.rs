@@ -30,7 +30,7 @@ pub fn merge_0(a: Ptr<item>, n: i32) -> u8 {
     let all: Value<u8> = Rc::new(RefCell::new(0_u8));
     let i: Value<i32> = <Value<i32>>::default();
     (*i.borrow_mut()) = ((*n.borrow()) - 1);
-    'loop_: while ((((*i.borrow()) > 0) as i32) != 0) {
+    'loop_: while (((*i.borrow()) > 0) as i32) != 0 {
         {
             let rhs_0 = ((((*all.borrow()) as i32)
                 | (({

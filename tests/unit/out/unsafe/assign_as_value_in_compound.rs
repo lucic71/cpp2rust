@@ -15,7 +15,7 @@ pub unsafe fn merge_0(mut a: *mut item, mut n: i32) -> u8 {
     let mut all: u8 = 0_u8;
     let mut i: i32 = 0_i32;
     i = ((n) - (1));
-    'loop_: while ((((i) > (0)) as i32) != 0) {
+    'loop_: while (((i) > (0)) as i32) != 0 {
         all = (((all as i32)
             | (({
                 (*a.offset(((i) as isize))).flags = (*a.offset((((i) - (1)) as isize))).flags;

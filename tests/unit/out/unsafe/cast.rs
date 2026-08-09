@@ -13,7 +13,7 @@ pub fn main() {
 }
 unsafe fn main_0() -> i32 {
     let mut size: usize = 1_usize;
-    if ((size) == (1_usize)) {
+    if (size) == (1_usize) {
         return 1;
     }
     return 0;

@@ -80,7 +80,7 @@ fn main_0() -> i32 {
             .reinterpret_cast::<Ptr<i32>>() as Ptr<Ptr<i32>>)
             .read()),
     ));
-    return if (((((*p.borrow()).read()) == 0) as i32) != 0) {
+    return if ((((*p.borrow()).read()) == 0) as i32) != 0 {
         0
     } else {
         1

@@ -38,7 +38,7 @@ fn main_0() -> i32 {
         ((buf.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any().clone(),
         4usize,
     )));
-    return if ((((*n.borrow()) == (-1_i32 as isize)) as i32) != 0) {
+    return if (((*n.borrow()) == (-1_i32 as isize)) as i32) != 0 {
         0
     } else {
         1

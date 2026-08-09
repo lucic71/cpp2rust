@@ -13,7 +13,7 @@ fn main_0() -> i32 {
     let m: Value<BTreeMap<i32, Value<f64>>> = Rc::new(RefCell::new(BTreeMap::new()));
     let i: Value<i32> = Rc::new(RefCell::new(0));
     let k: Value<i32> = Rc::new(RefCell::new(100));
-    'loop_: while ((*i.borrow()) < 100) {
+    'loop_: while (*i.borrow()) < 100 {
         {
             let __rhs = (((*k.borrow()) as f64) / 2.0E+0);
             (m.as_pointer() as Ptr<BTreeMap<i32, Value<f64>>>)

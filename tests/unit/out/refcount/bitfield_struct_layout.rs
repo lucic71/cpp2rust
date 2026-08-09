@@ -341,7 +341,7 @@ fn main_0() -> i32 {
     assert!((((!((*f.borrow_mut()).b() as i32) == !5) as i32) != 0));
     assert!((((-((*f.borrow_mut()).b() as i32) == -5_i32) as i32) != 0));
     assert!((((((*f.borrow_mut()).b() as i32) == 5) as i32) != 0));
-    if ((*f.borrow_mut()).b() != 0) {
+    if (*f.borrow_mut()).b() != 0 {
         assert!((((((*f.borrow_mut()).b() as i32) == 5) as i32) != 0));
     }
     let step: Value<u8> = Rc::new(RefCell::new(2_u8));

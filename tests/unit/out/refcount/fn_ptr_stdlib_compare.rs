@@ -92,12 +92,12 @@ fn main_0() -> i32 {
         }));
         assert!(((*n.borrow()) == 10_usize));
         let i: Value<i32> = Rc::new(RefCell::new(0));
-        'loop_: while ((*i.borrow()) < 10) {
+        'loop_: while (*i.borrow()) < 10 {
             assert!((((*buf.borrow())[(*i.borrow()) as usize] as i32) == 0));
             (*i.borrow_mut()).prefix_inc();
         }
         let i: Value<i32> = Rc::new(RefCell::new(10));
-        'loop_: while ((*i.borrow()) < 16) {
+        'loop_: while (*i.borrow()) < 16 {
             assert!((((*buf.borrow())[(*i.borrow()) as usize] as i32) == (('X' as u8) as i32)));
             (*i.borrow_mut()).prefix_inc();
         }
@@ -137,12 +137,12 @@ fn main_0() -> i32 {
         ));
         assert!(((*n.borrow()) == 10_usize));
         let i: Value<i32> = Rc::new(RefCell::new(0));
-        'loop_: while ((*i.borrow()) < 10) {
+        'loop_: while (*i.borrow()) < 10 {
             assert!((((*buf.borrow())[(*i.borrow()) as usize] as i32) == 0));
             (*i.borrow_mut()).prefix_inc();
         }
         let i: Value<i32> = Rc::new(RefCell::new(10));
-        'loop_: while ((*i.borrow()) < 16) {
+        'loop_: while (*i.borrow()) < 16 {
             assert!((((*buf.borrow())[(*i.borrow()) as usize] as i32) == (('X' as u8) as i32)));
             (*i.borrow_mut()).prefix_inc();
         }

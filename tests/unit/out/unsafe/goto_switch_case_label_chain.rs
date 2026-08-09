@@ -10,7 +10,7 @@ pub unsafe fn pick_0(mut op: i32, mut x: i32) -> i32 {
     let mut r: i32 = 0;
     switch!(match op {
         __v if __v == 1 => {
-            if ((((x) == (0)) as i32) != 0) {
+            if (((x) == (0)) as i32) != 0 {
                 r = 5;
                 break;
             }

@@ -24,13 +24,13 @@ unsafe fn main_0() -> i32 {
     assert!((p_const_1).is_null());
     assert!((cp_2).is_null());
     let mut i: i32 = 0;
-    'loop_: while ((i) < (4)) {
+    'loop_: while (i) < (4) {
         assert!((arr_of_ptr_3[((i) as usize)]).is_null());
         i.prefix_inc();
     }
     assert!((pp_4).is_null());
     let mut i: i32 = 0;
-    'loop_: while ((i) < (3)) {
+    'loop_: while (i) < (3) {
         assert!((const_arr_of_ptr_5[((i) as usize)]).is_null());
         i.prefix_inc();
     }

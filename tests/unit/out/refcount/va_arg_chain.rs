@@ -10,7 +10,7 @@ pub fn extract_nth_0(n: i32, ap: VaList) -> i32 {
     let n: Value<i32> = Rc::new(RefCell::new(n));
     let ap: Value<VaList> = Rc::new(RefCell::new(ap));
     let i: Value<i32> = Rc::new(RefCell::new(0));
-    'loop_: while ((((*i.borrow()) < (*n.borrow())) as i32) != 0) {
+    'loop_: while (((*i.borrow()) < (*n.borrow())) as i32) != 0 {
         (*ap.borrow_mut()).arg::<i32>();
         (*i.borrow_mut()).postfix_inc();
     }

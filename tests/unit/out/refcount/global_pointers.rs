@@ -67,7 +67,7 @@ pub fn main() {
 fn main_0() -> i32 {
     assert!(((*single_entry_0.with(Value::clone).borrow()).p).is_null());
     let i: Value<i32> = Rc::new(RefCell::new(0));
-    'loop_: while ((*i.borrow()) < 2) {
+    'loop_: while (*i.borrow()) < 2 {
         assert!(((*entries_1.with(Value::clone).borrow())[(*i.borrow()) as usize].p).is_null());
         assert!(
             ((*arr_of_pointers_2.with(Value::clone).borrow())[(*i.borrow()) as usize]).is_null()

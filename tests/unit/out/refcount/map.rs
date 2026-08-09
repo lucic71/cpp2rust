@@ -363,22 +363,22 @@ fn main_0() -> i32 {
     assert!(((*m2.borrow()).len() == 0_usize));
     let indexes: Value<Vec<i32>> = Rc::new(RefCell::new(Vec::new()));
     let i: Value<u32> = Rc::new(RefCell::new(60_u32));
-    'loop_: while ((*i.borrow()) > 30_u32) {
+    'loop_: while (*i.borrow()) > 30_u32 {
         (*indexes.borrow_mut()).push(((*i.borrow()) as i32));
         (*i.borrow_mut()).prefix_dec();
     }
     let i: Value<u32> = Rc::new(RefCell::new(100_u32));
-    'loop_: while ((*i.borrow()) > 60_u32) {
+    'loop_: while (*i.borrow()) > 60_u32 {
         (*indexes.borrow_mut()).push(((*i.borrow()) as i32));
         (*i.borrow_mut()).prefix_dec();
     }
     let i: Value<u32> = Rc::new(RefCell::new(30_u32));
-    'loop_: while ((*i.borrow()) > 0_u32) {
+    'loop_: while (*i.borrow()) > 0_u32 {
         (*indexes.borrow_mut()).push(((*i.borrow()) as i32));
         (*i.borrow_mut()).prefix_dec();
     }
     let i: Value<u32> = Rc::new(RefCell::new(0_u32));
-    'loop_: while (((*i.borrow()) as usize) < (*indexes.borrow()).len()) {
+    'loop_: while ((*i.borrow()) as usize) < (*indexes.borrow()).len() {
         {
             let __rhs = ((*i.borrow()).wrapping_rem(2_u32) != 0);
             (m2.as_pointer() as Ptr<BTreeMap<i32, Value<bool>>>)
