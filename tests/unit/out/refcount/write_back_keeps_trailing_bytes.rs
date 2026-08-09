@@ -56,7 +56,7 @@ fn main_0() -> i32 {
             .clone()
     };
     (*h.borrow()).with_mut(|__v| __v.n = 5);
-    assert!(((((*h.borrow()).with(|__v| (*__v).n) == 5) as i32) != 0));
+    assert!(((((*h.borrow()).with(|__v| __v.n) == 5) as i32) != 0));
     assert!(
         ((({
             let mut __it1 = (((*h.borrow()).reinterpret_cast::<u8>().offset(4usize) as Ptr<u8>)

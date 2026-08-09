@@ -41,7 +41,7 @@ fn main_0() -> i32 {
     let r: Value<i32> = Rc::new(RefCell::new(if (*c.borrow()) {
         (*obj.borrow()).x
     } else {
-        (*ptr.borrow()).with(|__v| (*__v).x)
+        (*ptr.borrow()).with(|__v| __v.x)
     }));
     let p: Value<Ptr<i32>> = Rc::new(RefCell::new(
         (obj.as_pointer().field_ptr(

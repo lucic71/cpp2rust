@@ -98,14 +98,14 @@ pub fn main() {
 fn main_0() -> i32 {
     assert!((((4usize == 4_usize) as i32) != 0));
     let t: Value<Ptr<table>> = Rc::new(RefCell::new(({ table_create_0(3) })));
-    assert!(((((*t.borrow()).with(|__v| (*__v).n) == 3) as i32) != 0));
+    assert!(((((*t.borrow()).with(|__v| __v.n) == 3) as i32) != 0));
     assert!(
         (((((*t.borrow())
             .reinterpret_cast::<u8>()
             .offset(4usize)
             .reinterpret_cast::<entry>() as Ptr<entry>)
             .offset(((0) as isize))
-            .with(|__v| (*__v).id)
+            .with(|__v| __v.id)
             == 0) as i32)
             != 0)
     );
@@ -115,7 +115,7 @@ fn main_0() -> i32 {
             .offset(4usize)
             .reinterpret_cast::<entry>() as Ptr<entry>)
             .offset(((2) as isize))
-            .with(|__v| (*__v).id)
+            .with(|__v| __v.id)
             == 20) as i32)
             != 0)
     );
@@ -125,7 +125,7 @@ fn main_0() -> i32 {
             .offset(4usize)
             .reinterpret_cast::<entry>() as Ptr<entry>)
             .offset(((2) as isize))
-            .with(|__v| (*__v).weight)
+            .with(|__v| __v.weight)
             == 3) as i32)
             != 0)
     );
@@ -141,7 +141,7 @@ fn main_0() -> i32 {
             .offset(4usize)
             .reinterpret_cast::<entry>() as Ptr<entry>)
             .offset(((1) as isize))
-            .with(|__v| (*__v).id)
+            .with(|__v| __v.id)
             == 99) as i32)
             != 0)
     );
@@ -151,7 +151,7 @@ fn main_0() -> i32 {
             .offset(4usize)
             .reinterpret_cast::<entry>() as Ptr<entry>)
             .offset(((0) as isize))
-            .with(|__v| (*__v).id)
+            .with(|__v| __v.id)
             == 0) as i32)
             != 0)
     );

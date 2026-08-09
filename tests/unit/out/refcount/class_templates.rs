@@ -151,10 +151,10 @@ fn main_0() -> i32 {
 }
 impl MyContainer_char_Methods for Ptr<MyContainer_char_> {
     fn empty(&self) -> bool {
-        return self.with(|__v| (*__v).vec_.clone()).is_empty();
+        return self.with(|__v| __v.vec_.clone()).is_empty();
     }
     fn size(&self) -> usize {
-        return self.with(|__v| (*__v).vec_.clone()).len();
+        return self.with(|__v| __v.vec_.clone()).len();
     }
     fn back_const(&self) -> Ptr<u8> {
         return (self.field_ptr(
@@ -185,10 +185,10 @@ impl MyContainer_char_Methods for Ptr<MyContainer_char_> {
 }
 impl MyContainer_float_Methods for Ptr<MyContainer_float_> {
     fn empty(&self) -> bool {
-        return self.with(|__v| (*__v).vec_.clone()).is_empty();
+        return self.with(|__v| __v.vec_.clone()).is_empty();
     }
     fn size(&self) -> usize {
-        return self.with(|__v| (*__v).vec_.clone()).len();
+        return self.with(|__v| __v.vec_.clone()).len();
     }
     fn back_const(&self) -> Ptr<f32> {
         return (self.field_ptr(
@@ -219,10 +219,10 @@ impl MyContainer_float_Methods for Ptr<MyContainer_float_> {
 }
 impl MyContainer_int_Methods for Ptr<MyContainer_int_> {
     fn empty(&self) -> bool {
-        return self.with(|__v| (*__v).vec_.clone()).is_empty();
+        return self.with(|__v| __v.vec_.clone()).is_empty();
     }
     fn size(&self) -> usize {
-        return self.with(|__v| (*__v).vec_.clone()).len();
+        return self.with(|__v| __v.vec_.clone()).len();
     }
     fn back_const(&self) -> Ptr<i32> {
         return (self.field_ptr(

@@ -83,11 +83,10 @@ fn main_0() -> i32 {
             .offset(0usize)
             .reinterpret_cast::<u64>() as Ptr<u64>)
             .with(|__v| {
-                (*__v)
-                    .wrapping_add(
-                        ((2_usize).wrapping_mul((::std::mem::size_of::<i32>() as usize)) as u64),
-                    )
-                    .clone()
+                __v.wrapping_add(
+                    ((2_usize).wrapping_mul((::std::mem::size_of::<i32>() as usize)) as u64),
+                )
+                .clone()
             });
         (u.as_pointer()
             .reinterpret_cast::<u8>()
@@ -118,11 +117,10 @@ fn main_0() -> i32 {
             .offset(0usize)
             .reinterpret_cast::<u64>() as Ptr<u64>)
             .with(|__v| {
-                (*__v)
-                    .wrapping_sub(
-                        ((3_usize).wrapping_mul((::std::mem::size_of::<i32>() as usize)) as u64),
-                    )
-                    .clone()
+                __v.wrapping_sub(
+                    ((3_usize).wrapping_mul((::std::mem::size_of::<i32>() as usize)) as u64),
+                )
+                .clone()
             });
         (u.as_pointer()
             .reinterpret_cast::<u8>()

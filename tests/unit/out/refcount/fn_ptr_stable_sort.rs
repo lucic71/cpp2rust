@@ -38,8 +38,8 @@ impl ByteRepr for Item {
 }
 pub fn Compare_0(a: Ptr<Item>, b: Ptr<Item>) -> bool {
     return {
-        let _lhs = a.with(|__v| (*__v).key);
-        _lhs < b.with(|__v| (*__v).key)
+        let _lhs = a.with(|__v| __v.key);
+        _lhs < b.with(|__v| __v.key)
     };
 }
 pub fn main() {
@@ -57,19 +57,19 @@ fn main_0() -> i32 {
     assert!(
         ((v.as_pointer() as Ptr<Item>)
             .offset(0_usize)
-            .with(|__v| (*__v).key)
+            .with(|__v| __v.key)
             == 1)
     );
     assert!(
         ((v.as_pointer() as Ptr<Item>)
             .offset(1_usize)
-            .with(|__v| (*__v).key)
+            .with(|__v| __v.key)
             == 2)
     );
     assert!(
         ((v.as_pointer() as Ptr<Item>)
             .offset(2_usize)
-            .with(|__v| (*__v).key)
+            .with(|__v| __v.key)
             == 3)
     );
     return 0;

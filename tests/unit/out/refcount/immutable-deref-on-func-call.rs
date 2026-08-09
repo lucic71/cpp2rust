@@ -53,12 +53,8 @@ fn main_0() -> i32 {
         (*arr.borrow()).offset(((0) as isize)).foo(_other)
     });
     let result: Value<i32> = Rc::new(RefCell::new(
-        ((*arr.borrow())
-            .offset(((0) as isize))
-            .with(|__v| (*__v).value)
-            + (*arr.borrow())
-                .offset(((1) as isize))
-                .with(|__v| (*__v).value)),
+        ((*arr.borrow()).offset(((0) as isize)).with(|__v| __v.value)
+            + (*arr.borrow()).offset(((1) as isize)).with(|__v| __v.value)),
     ));
     (*arr.borrow()).delete_array();
     return (*result.borrow());

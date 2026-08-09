@@ -130,11 +130,11 @@ fn main_0() -> i32 {
         let __rhs = libcc2rs::strdup_refcount((*p.borrow()).clone());
         (*r.borrow()).with_mut(|__v| __v.name = __rhs)
     };
-    assert!((((!(((*r.borrow()).with(|__v| (*__v).name.clone())).is_null())) as i32) != 0));
+    assert!((((!(((*r.borrow()).with(|__v| __v.name.clone())).is_null())) as i32) != 0));
     assert!(
         ((({
             let mut __it1 = (*r.borrow())
-                .with(|__v| (*__v).name.clone())
+                .with(|__v| __v.name.clone())
                 .to_c_string_iterator();
             let mut __it2 = (*p.borrow()).to_c_string_iterator();
             loop {
@@ -151,7 +151,7 @@ fn main_0() -> i32 {
             != 0)
     );
     libcc2rs::free_refcount(
-        (((*r.borrow()).with(|__v| (*__v).name.clone())).clone() as Ptr<u8>)
+        (((*r.borrow()).with(|__v| __v.name.clone())).clone() as Ptr<u8>)
             .to_any()
             .clone(),
     );

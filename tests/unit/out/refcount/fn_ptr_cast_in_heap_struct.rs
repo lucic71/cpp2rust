@@ -26,7 +26,7 @@ impl ByteRepr for item {
 }
 pub fn read_item_0(it: Ptr<item>) -> i32 {
     let it: Value<Ptr<item>> = Rc::new(RefCell::new(it));
-    return ((*it.borrow()).with(|__v| (*__v).value) + 1);
+    return ((*it.borrow()).with(|__v| __v.value) + 1);
 }
 #[repr(C)]
 #[derive(Clone)]
@@ -71,7 +71,7 @@ fn main_0() -> i32 {
     (*it.borrow_mut()).value = 41;
     assert!(
         (((({
-            (*(*h.borrow()).with(|__v| (*__v).callback.clone()))(
+            (*(*h.borrow()).with(|__v| __v.callback.clone()))(
                 ((it.as_pointer()) as Ptr<item>).to_any(),
             )
         }) == 42) as i32)

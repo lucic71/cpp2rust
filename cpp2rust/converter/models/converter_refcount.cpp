@@ -936,6 +936,13 @@ RsExpr *ConverterRefCount::LowerPtrUse(RsExpr *node) {
     return nullptr;
   }
 
+  if (auto *acc = clang::dyn_cast<Accessor>(node)) {
+    if (auto *verbatim = clang::dyn_cast<Verbatim>(acc->object->IgnoreParens());
+        verbatim && verbatim->text == "(*__v)") {
+      verbatim->text = "__v";
+    }
+  }
+
   if (auto *assign = clang::dyn_cast<Assign>(node)) {
     if (auto *ptr = assign->left->Pointer()) {
       return arena_.New<PtrWrite>(ptr, assign->right);

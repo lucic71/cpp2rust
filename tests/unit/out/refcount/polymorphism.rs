@@ -67,12 +67,12 @@ fn main_0() -> i32 {
         ((dog.as_pointer()).to_strong() as Value<dyn Animal>).as_pointer_dyn(),
     ));
     let eat1: Value<bool> = Rc::new(RefCell::new(
-        ({ (*animal.borrow()).with(|__v| (*__v).bark().clone()) }),
+        ({ (*animal.borrow()).with(|__v| __v.bark().clone()) }),
     ));
     let cat: Value<Cat> = Rc::new(RefCell::new(<Cat>::default()));
     (*animal.borrow_mut()) = ((cat.as_pointer()).to_strong() as Value<dyn Animal>).as_pointer_dyn();
     let eat2: Value<bool> = Rc::new(RefCell::new(
-        ({ (*animal.borrow()).with(|__v| (*__v).bark().clone()) }),
+        ({ (*animal.borrow()).with(|__v| __v.bark().clone()) }),
     ));
     return (((*eat1.borrow()) && (!(*eat2.borrow()))) as i32);
 }

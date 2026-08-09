@@ -15,7 +15,7 @@ pub fn foo_0(x: u32) {
 }
 pub fn bar_1(x: Ptr<u32>) {
     {
-        let __rhs = x.with(|__v| (*__v).wrapping_add(1_u32));
+        let __rhs = x.with(|__v| __v.wrapping_add(1_u32));
         x.write(__rhs)
     };
 }
@@ -166,7 +166,7 @@ fn main_0() -> i32 {
                     .as_pointer()
             })
             .with(|__v| {
-                (*__v).wrapping_add(
+                __v.wrapping_add(
                     ((m.as_pointer() as Ptr<BTreeMap<i16, Value<u32>>>)
                         .with_mut(|__v: &mut BTreeMap<i16, Value<u32>>| {
                             __v.entry(2_i16.clone())

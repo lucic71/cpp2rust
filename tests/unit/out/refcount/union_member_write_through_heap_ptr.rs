@@ -148,7 +148,7 @@ fn main_0() -> i32 {
             .reinterpret_cast::<u8>()
             .offset(8usize)
             .reinterpret_cast::<anon_1>() as Ptr<anon_1>)
-            .with(|__v| (*__v).elem.clone()))
+            .with(|__v| __v.elem.clone()))
         .is_null())) as i32)
             != 0)
     );
@@ -158,7 +158,7 @@ fn main_0() -> i32 {
             .reinterpret_cast::<u8>()
             .offset(8usize)
             .reinterpret_cast::<anon_1>() as Ptr<anon_1>)
-            .with(|__v| (*__v).elem.offset(((0) as isize)).clone())
+            .with(|__v| __v.elem.offset(((0) as isize)).clone())
             .write(__rhs)
     };
     assert!(
@@ -166,7 +166,7 @@ fn main_0() -> i32 {
             .reinterpret_cast::<u8>()
             .offset(8usize)
             .reinterpret_cast::<anon_1>() as Ptr<anon_1>)
-            .with(|__v| (*__v).elem.offset(((0) as isize)).clone())
+            .with(|__v| __v.elem.offset(((0) as isize)).clone())
             .read())
         .is_null())) as i32)
             != 0)
@@ -177,7 +177,7 @@ fn main_0() -> i32 {
                 .reinterpret_cast::<u8>()
                 .offset(8usize)
                 .reinterpret_cast::<anon_1>() as Ptr<anon_1>)
-                .with(|__v| (*__v).elem.offset(((0) as isize)).clone())
+                .with(|__v| __v.elem.offset(((0) as isize)).clone())
                 .read())
             .to_c_string_iterator();
             let mut __it2 = Ptr::from_string_literal(b"alpha\0").to_c_string_iterator();
@@ -199,7 +199,7 @@ fn main_0() -> i32 {
             .reinterpret_cast::<u8>()
             .offset(8usize)
             .reinterpret_cast::<anon_1>() as Ptr<anon_1>)
-            .with(|__v| (*__v).size)
+            .with(|__v| __v.size)
             == 7_i64) as i32)
             != 0)
     );
@@ -208,11 +208,11 @@ fn main_0() -> i32 {
             .reinterpret_cast::<u8>()
             .offset(8usize)
             .reinterpret_cast::<anon_1>() as Ptr<anon_1>)
-            .with(|__v| (*__v).idx)
+            .with(|__v| __v.idx)
             == 3_i64) as i32)
             != 0)
     );
-    assert!(((((*e.borrow()).with(|__v| (*__v).kind) == 1) as i32) != 0));
+    assert!(((((*e.borrow()).with(|__v| __v.kind) == 1) as i32) != 0));
     (*e.borrow_mut()) = ((*table.borrow()).offset(((1) as isize)));
     (*e.borrow()).with_mut(|__v| __v.kind = 2);
     ((*e.borrow())
@@ -230,7 +230,7 @@ fn main_0() -> i32 {
             .reinterpret_cast::<u8>()
             .offset(8usize)
             .reinterpret_cast::<anon_2>() as Ptr<anon_2>)
-            .with(|__v| (*__v).min)
+            .with(|__v| __v.min)
             == 10) as i32)
             != 0)
     );
@@ -239,7 +239,7 @@ fn main_0() -> i32 {
             .reinterpret_cast::<u8>()
             .offset(8usize)
             .reinterpret_cast::<anon_2>() as Ptr<anon_2>)
-            .with(|__v| (*__v).max)
+            .with(|__v| __v.max)
             == 20) as i32)
             != 0)
     );
@@ -249,7 +249,7 @@ fn main_0() -> i32 {
             .reinterpret_cast::<u8>()
             .offset(8usize)
             .reinterpret_cast::<anon_1>() as Ptr<anon_1>)
-            .with(|__v| (*__v).size)
+            .with(|__v| __v.size)
             == 7_i64) as i32)
             != 0)
     );
@@ -259,7 +259,7 @@ fn main_0() -> i32 {
             .reinterpret_cast::<u8>()
             .offset(8usize)
             .reinterpret_cast::<anon_1>() as Ptr<anon_1>)
-            .with(|__v| (*__v).elem.offset(((0) as isize)).clone())
+            .with(|__v| __v.elem.offset(((0) as isize)).clone())
             .read())
         .clone() as Ptr<u8>)
             .to_any()
@@ -271,7 +271,7 @@ fn main_0() -> i32 {
             .reinterpret_cast::<u8>()
             .offset(8usize)
             .reinterpret_cast::<anon_1>() as Ptr<anon_1>)
-            .with(|__v| (*__v).elem.clone()))
+            .with(|__v| __v.elem.clone()))
         .clone() as Ptr<Ptr<u8>>)
             .to_any()
             .clone(),

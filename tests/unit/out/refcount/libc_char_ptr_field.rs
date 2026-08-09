@@ -25,7 +25,7 @@ fn main_0() -> i32 {
         return 0;
     }
     let home: Value<Ptr<u8>> = Rc::new(RefCell::new(
-        ((*pw.borrow()).with(|__v| (*__v).pw_dir.clone())).clone(),
+        ((*pw.borrow()).with(|__v| __v.pw_dir.clone())).clone(),
     ));
     let d: Value<Ptr<libcc2rs::Dirent>> = Rc::new(RefCell::new(
         match nix::dir::Dir::open(

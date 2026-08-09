@@ -42,8 +42,8 @@ pub fn main() {
 fn main_0() -> i32 {
     let p: Value<Ptr<Pair>> = Rc::new(RefCell::new(Ptr::alloc(Pair { x: 1, y: 2 })));
     let out: Value<i32> = Rc::new(RefCell::new({
-        let _lhs = (*p.borrow()).with(|__v| (*__v).x);
-        _lhs + (*p.borrow()).with(|__v| (*__v).y)
+        let _lhs = (*p.borrow()).with(|__v| __v.x);
+        _lhs + (*p.borrow()).with(|__v| __v.y)
     }));
     (*p.borrow()).delete();
     return (*out.borrow());

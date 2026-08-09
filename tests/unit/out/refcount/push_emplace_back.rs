@@ -147,10 +147,10 @@ pub fn shrink_through_ptr_2(comps: Ptr<Vec<Chunk>>) {
 pub fn nested_push_move_3(bw: Ptr<Writer>) {
     let bw: Value<Ptr<Writer>> = Rc::new(RefCell::new(bw));
     {
-        let __obj = (*bw.borrow()).with(|__v| ((*__v).output).clone());
+        let __obj = (*bw.borrow()).with(|__v| (__v.output).clone());
         __obj.with_mut(|__v: &mut Vec<Chunk>| {
             __v.push(std::mem::take(
-                &mut (*bw.borrow()).with(|__v| (*__v).chunk.clone()),
+                &mut (*bw.borrow()).with(|__v| __v.chunk.clone()),
             ))
         })
     };
@@ -191,10 +191,10 @@ pub fn emplace_local_from_field_4(jpg: Ptr<JPEGData>, cond: bool) {
 pub fn nested_emplace_move_5(bw: Ptr<Writer>) {
     let bw: Value<Ptr<Writer>> = Rc::new(RefCell::new(bw));
     (*bw.borrow())
-        .with(|__v| (*__v).output.clone().clone())
+        .with(|__v| __v.output.clone().clone())
         .with_mut(|__v: &mut Vec<Chunk>| {
             __v.push(std::mem::take(
-                &mut (*bw.borrow()).with(|__v| (*__v).chunk.clone()),
+                &mut (*bw.borrow()).with(|__v| __v.chunk.clone()),
             ))
         });
 }
@@ -287,7 +287,7 @@ fn main_0() -> i32 {
     assert!(
         ((chunks.as_pointer() as Ptr<Chunk>)
             .offset(0_usize)
-            .with(|__v| (*__v).data)
+            .with(|__v| __v.data)
             == 42)
     );
     ({ emplace_local_from_field_4((jpg.as_pointer()), false) });
@@ -339,7 +339,7 @@ fn main_0() -> i32 {
     assert!(
         ((chunks.as_pointer() as Ptr<Chunk>)
             .offset(1_usize)
-            .with(|__v| (*__v).data)
+            .with(|__v| __v.data)
             == 99)
     );
     ({ self_ref_push_6((chunks.as_pointer())) });
@@ -347,7 +347,7 @@ fn main_0() -> i32 {
     assert!(
         ((chunks.as_pointer() as Ptr<Chunk>)
             .offset(2_usize)
-            .with(|__v| (*__v).data)
+            .with(|__v| __v.data)
             == 42)
     );
     return 0;

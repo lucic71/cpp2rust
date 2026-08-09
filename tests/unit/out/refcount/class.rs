@@ -78,7 +78,7 @@ impl ByteRepr for Route {
     }
 }
 pub fn RandomRoute_0(route: Ptr<Route>) -> i32 {
-    if ((route.with(|__v| (*__v).path.first) % 2) != 0) {
+    if ((route.with(|__v| __v.path.first) % 2) != 0) {
         return ({
             let _new_first: i32 = ({
                 route
@@ -151,10 +151,10 @@ fn main_0() -> i32 {
 impl PairMethods for Ptr<Pair> {
     fn NOP(&self) {}
     fn GetFirst(&self) -> i32 {
-        return self.with(|__v| (*__v).first);
+        return self.with(|__v| __v.first);
     }
     fn GetSecond(&self) -> i32 {
-        return self.with(|__v| (*__v).second);
+        return self.with(|__v| __v.second);
     }
     fn Set(&self, field: Ptr<i32>, new_val: i32) -> i32 {
         let new_val: Value<i32> = Rc::new(RefCell::new(new_val));
@@ -194,7 +194,7 @@ impl PairMethods for Ptr<Pair> {
 impl RouteMethods for Ptr<Route> {
     fn SetCost(&self, new_cost: f64) -> f64 {
         let new_cost: Value<f64> = Rc::new(RefCell::new(new_cost));
-        let old_cost: Value<f64> = Rc::new(RefCell::new(self.with(|__v| (*__v).cost)));
+        let old_cost: Value<f64> = Rc::new(RefCell::new(self.with(|__v| __v.cost)));
         {
             let __rhs = (*new_cost.borrow());
             self.with_mut(|__v| __v.cost = __rhs)

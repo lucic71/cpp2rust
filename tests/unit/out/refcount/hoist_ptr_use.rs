@@ -50,7 +50,7 @@ impl ByteRepr for outer {
 }
 pub fn read_total_0(o: Ptr<outer>) -> i32 {
     let o: Value<Ptr<outer>> = Rc::new(RefCell::new(o));
-    return (*o.borrow()).with(|__v| (*__v).total);
+    return (*o.borrow()).with(|__v| __v.total);
 }
 pub fn main() {
     libcc2rs::exit_refcount(main_0());
@@ -64,8 +64,8 @@ fn main_0() -> i32 {
     let q: Value<Ptr<outer>> = Rc::new(RefCell::new((o.as_pointer())));
     {
         let __rhs = {
-            let _lhs = (*q.borrow()).with(|__v| (*__v).in_.x);
-            _lhs + (*q.borrow()).with(|__v| (*__v).in_.y)
+            let _lhs = (*q.borrow()).with(|__v| __v.in_.x);
+            _lhs + (*q.borrow()).with(|__v| __v.in_.y)
         };
         (*p.borrow()).with_mut(|__v| __v.total = __rhs)
     };
@@ -78,12 +78,12 @@ fn main_0() -> i32 {
         )),
     ));
     {
-        let __rhs = ((*p.borrow()).with(|__v| (*__v).total) + 1);
+        let __rhs = ((*p.borrow()).with(|__v| __v.total) + 1);
         (*ip.borrow()).with_mut(|__v| __v.x = __rhs)
     };
     assert!(((((*o.borrow()).in_.x == 4) as i32) != 0));
     {
-        let __rhs = (*q.borrow()).with(|__v| (*__v).in_.x);
+        let __rhs = (*q.borrow()).with(|__v| __v.in_.x);
         (*p.borrow()).with_mut(|__v| __v.total += __rhs)
     };
     assert!(((((*o.borrow()).total == 7) as i32) != 0));
@@ -100,12 +100,12 @@ fn main_0() -> i32 {
     (*h.borrow()).with_mut(|__v| __v.in_.x = 1);
     {
         let __rhs = {
-            let _lhs = (*h.borrow()).with(|__v| (*__v).total);
-            _lhs + (*ha.borrow()).with(|__v| (*__v).in_.x)
+            let _lhs = (*h.borrow()).with(|__v| __v.total);
+            _lhs + (*ha.borrow()).with(|__v| __v.in_.x)
         };
         (*ha.borrow()).with_mut(|__v| __v.total = __rhs)
     };
-    assert!(((((*h.borrow()).with(|__v| (*__v).total) == 6) as i32) != 0));
+    assert!(((((*h.borrow()).with(|__v| __v.total) == 6) as i32) != 0));
     libcc2rs::free_refcount(((*h.borrow()).clone() as Ptr<outer>).to_any().clone());
     return 0;
 }

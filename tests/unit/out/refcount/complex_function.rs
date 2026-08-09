@@ -171,7 +171,7 @@ fn main_0() -> i32 {
         v: (*c.borrow()).clone(),
     }));
     {
-        let __obj = (*d.borrow()).v.v.with(|__v| (*__v).v.clone());
+        let __obj = (*d.borrow()).v.v.with(|__v| __v.v.clone());
         __obj.with_mut(|__v| __v.v = 0)
     };
     ({ ({ ({ d.as_pointer().get() }).get() }).get() }).with_mut(|__v| __v.v = 0);
@@ -207,7 +207,7 @@ fn main_0() -> i32 {
         |__v: &mut X1| ::std::slice::from_mut(&mut __v.v),
     );
     let x5: Value<i32> = Rc::new(RefCell::new(
-        ({ ({ ({ d.as_pointer().get() }).get() }).get() }).with(|__v| (*__v).v),
+        ({ ({ ({ d.as_pointer().get() }).get() }).get() }).with(|__v| __v.v),
     ));
     {
         let _ptr = ({ bar_2(x1.as_pointer()) }).clone();
@@ -418,16 +418,16 @@ fn main_0() -> i32 {
             )
         })
         .read()))
-        + ({ foo_0(({ ({ ({ d.as_pointer().get() }).get() }).get() }).with(|__v| (*__v).v)) }));
+        + ({ foo_0(({ ({ ({ d.as_pointer().get() }).get() }).get() }).with(|__v| __v.v)) }));
 }
 impl X2Methods for Ptr<X2> {
     fn get(&self) -> Ptr<X1> {
-        return (self.with(|__v| (*__v).v.clone())).clone();
+        return (self.with(|__v| __v.v.clone())).clone();
     }
 }
 impl X3Methods for Ptr<X3> {
     fn get(&self) -> Ptr<X2> {
-        return (self.with(|__v| (*__v).v.clone())).clone();
+        return (self.with(|__v| __v.v.clone())).clone();
     }
 }
 impl X4Methods for Ptr<X4> {

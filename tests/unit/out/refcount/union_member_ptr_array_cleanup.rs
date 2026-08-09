@@ -109,8 +109,7 @@ fn main_0() -> i32 {
         .with_mut(|__v| __v.table = libcc2rs::malloc_refcount(8usize).reinterpret_cast::<entry>());
     {
         let __obj = (*h.borrow()).with(|__v| {
-            ((*__v)
-                .table
+            (__v.table
                 .offset(((0) as isize))
                 .reinterpret_cast::<u8>()
                 .offset(0usize)
@@ -125,14 +124,13 @@ fn main_0() -> i32 {
         let __rhs = libcc2rs::strdup_refcount(Ptr::from_string_literal(b"alpha\0").clone());
         (*h.borrow())
             .with(|__v| {
-                ((*__v)
-                    .table
+                (__v.table
                     .offset(((0) as isize))
                     .reinterpret_cast::<u8>()
                     .offset(0usize)
                     .reinterpret_cast::<anon_1>()
                     .clone() as Ptr<anon_1>)
-                    .with(|__v| (*__v).elem.offset(((0) as isize)).clone())
+                    .with(|__v| __v.elem.offset(((0) as isize)).clone())
             })
             .write(__rhs)
     };
@@ -140,14 +138,13 @@ fn main_0() -> i32 {
         ((({
             let mut __it1 = ((*h.borrow())
                 .with(|__v| {
-                    ((*__v)
-                        .table
+                    (__v.table
                         .offset(((0) as isize))
                         .reinterpret_cast::<u8>()
                         .offset(0usize)
                         .reinterpret_cast::<anon_1>()
                         .clone() as Ptr<anon_1>)
-                        .with(|__v| (*__v).elem.offset(((0) as isize)).clone())
+                        .with(|__v| __v.elem.offset(((0) as isize)).clone())
                 })
                 .read())
             .to_c_string_iterator();
@@ -168,14 +165,13 @@ fn main_0() -> i32 {
     libcc2rs::free_refcount(
         (((*h.borrow())
             .with(|__v| {
-                ((*__v)
-                    .table
+                (__v.table
                     .offset(((0) as isize))
                     .reinterpret_cast::<u8>()
                     .offset(0usize)
                     .reinterpret_cast::<anon_1>()
                     .clone() as Ptr<anon_1>)
-                    .with(|__v| (*__v).elem.offset(((0) as isize)).clone())
+                    .with(|__v| __v.elem.offset(((0) as isize)).clone())
             })
             .read())
         .clone() as Ptr<u8>)
@@ -184,40 +180,38 @@ fn main_0() -> i32 {
     );
     (*h.borrow())
         .with(|__v| {
-            ((*__v)
-                .table
+            (__v.table
                 .offset(((0) as isize))
                 .reinterpret_cast::<u8>()
                 .offset(0usize)
                 .reinterpret_cast::<anon_1>()
                 .clone() as Ptr<anon_1>)
-                .with(|__v| (*__v).elem.offset(((0) as isize)).clone())
+                .with(|__v| __v.elem.offset(((0) as isize)).clone())
         })
         .write(Ptr::<u8>::null());
     assert!(
         (((((*h.borrow())
-            .with(|__v| ((*__v)
+            .with(|__v| (__v
                 .table
                 .offset(((0) as isize))
                 .reinterpret_cast::<u8>()
                 .offset(0usize)
                 .reinterpret_cast::<anon_1>()
                 .clone() as Ptr<anon_1>)
-                .with(|__v| (*__v).elem.offset(((0) as isize)).clone()))
+                .with(|__v| __v.elem.offset(((0) as isize)).clone()))
             .read())
         .is_null()) as i32)
             != 0)
     );
     libcc2rs::free_refcount(
         (((*h.borrow()).with(|__v| {
-            ((*__v)
-                .table
+            (__v.table
                 .offset(((0) as isize))
                 .reinterpret_cast::<u8>()
                 .offset(0usize)
                 .reinterpret_cast::<anon_1>()
                 .clone() as Ptr<anon_1>)
-                .with(|__v| (*__v).elem.clone())
+                .with(|__v| __v.elem.clone())
         }))
         .clone() as Ptr<Ptr<u8>>)
             .to_any()
@@ -225,8 +219,7 @@ fn main_0() -> i32 {
     );
     {
         let __obj = (*h.borrow()).with(|__v| {
-            ((*__v)
-                .table
+            (__v.table
                 .offset(((0) as isize))
                 .reinterpret_cast::<u8>()
                 .offset(0usize)
@@ -236,19 +229,19 @@ fn main_0() -> i32 {
         __obj.with_mut(|__v| __v.elem = Ptr::<Ptr<u8>>::null())
     };
     assert!(
-        (((((*h.borrow()).with(|__v| ((*__v)
+        (((((*h.borrow()).with(|__v| (__v
             .table
             .offset(((0) as isize))
             .reinterpret_cast::<u8>()
             .offset(0usize)
             .reinterpret_cast::<anon_1>()
             .clone() as Ptr<anon_1>)
-            .with(|__v| (*__v).elem.clone())))
+            .with(|__v| __v.elem.clone())))
         .is_null()) as i32)
             != 0)
     );
     libcc2rs::free_refcount(
-        (((*h.borrow()).with(|__v| (*__v).table.clone())).clone() as Ptr<entry>)
+        (((*h.borrow()).with(|__v| __v.table.clone())).clone() as Ptr<entry>)
             .to_any()
             .clone(),
     );

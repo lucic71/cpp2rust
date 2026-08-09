@@ -262,7 +262,7 @@ fn main_0() -> i32 {
     ));
     assert!(
         ((((((*pp.borrow())
-            .with(|__v| (*__v).offset(((0) as isize)).clone())
+            .with(|__v| __v.offset(((0) as isize)).clone())
             .read()) as i32)
             == ('g' as i32)) as i32)
             != 0)
@@ -272,8 +272,7 @@ fn main_0() -> i32 {
             .offset((*idx.borrow()) as isize)),
     ));
     assert!(
-        (((((*pe.borrow()).with(|__v| (*__v).opt) as u32) == ((Option_OPT_A as i32) as u32))
-            as i32)
+        (((((*pe.borrow()).with(|__v| __v.opt) as u32) == ((Option_OPT_A as i32) as u32)) as i32)
             != 0)
     );
     return 0;

@@ -41,30 +41,27 @@ fn main_0() -> i32 {
         Rc::new(RefCell::new(Ptr::<libcc2rs::Ifaddrs>::null()));
     (*ifa.borrow_mut()) = (*list.borrow()).clone();
     'loop_: while (((!((*ifa.borrow()).is_null())) as i32) != 0) {
-        assert!(
-            (((!(((*ifa.borrow()).with(|__v| (*__v).ifa_name.clone())).is_null())) as i32) != 0)
-        );
-        if (((((*ifa.borrow()).with(|__v| (*__v).ifa_addr.clone())).is_null()) as i32) != 0) {
+        assert!((((!(((*ifa.borrow()).with(|__v| __v.ifa_name.clone())).is_null())) as i32) != 0));
+        if (((((*ifa.borrow()).with(|__v| __v.ifa_addr.clone())).is_null()) as i32) != 0) {
             {
-                let __rhs = ((*ifa.borrow()).with(|__v| (*__v).ifa_next.clone())).clone();
+                let __rhs = ((*ifa.borrow()).with(|__v| __v.ifa_next.clone())).clone();
                 (*ifa.borrow_mut()) = __rhs
             };
             continue 'loop_;
         }
-        if (((((*ifa.borrow()).with(|__v| (*__v).ifa_addr.clone().with(|__v| (*__v).sa_family))
-            as i32)
+        if (((((*ifa.borrow()).with(|__v| __v.ifa_addr.clone().with(|__v| __v.sa_family)) as i32)
             != libc::AF_INET) as i32)
             != 0)
         {
             {
-                let __rhs = ((*ifa.borrow()).with(|__v| (*__v).ifa_next.clone())).clone();
+                let __rhs = ((*ifa.borrow()).with(|__v| __v.ifa_next.clone())).clone();
                 (*ifa.borrow_mut()) = __rhs
             };
             continue 'loop_;
         }
         let sin: Value<Ptr<libcc2rs::SockaddrIn>> = Rc::new(RefCell::new(
             (*ifa.borrow())
-                .with(|__v| (*__v).ifa_addr.clone())
+                .with(|__v| __v.ifa_addr.clone())
                 .reinterpret_cast::<libcc2rs::SockaddrIn>(),
         ));
         let lo_be: Value<Box<[u8]>> = Rc::new(RefCell::new(Box::new([127_u8, 0_u8, 0_u8, 1_u8])));
@@ -82,14 +79,14 @@ fn main_0() -> i32 {
             != 0)
         {
             (*found_loopback.borrow_mut()) = 1;
-            assert!(((((*ifa.borrow()).with(|__v| (*__v).ifa_flags) != 0_u32) as i32) != 0));
+            assert!(((((*ifa.borrow()).with(|__v| __v.ifa_flags) != 0_u32) as i32) != 0));
             assert!(
-                (((!(((*ifa.borrow()).with(|__v| (*__v).ifa_netmask.clone())).is_null())) as i32)
+                (((!(((*ifa.borrow()).with(|__v| __v.ifa_netmask.clone())).is_null())) as i32)
                     != 0)
             );
             let mask: Value<Ptr<libcc2rs::SockaddrIn>> = Rc::new(RefCell::new(
                 (*ifa.borrow())
-                    .with(|__v| (*__v).ifa_netmask.clone())
+                    .with(|__v| __v.ifa_netmask.clone())
                     .reinterpret_cast::<libcc2rs::SockaddrIn>(),
             ));
             let mask_be: Value<Box<[u8]>> =
@@ -111,7 +108,7 @@ fn main_0() -> i32 {
             assert!(
                 (((match nix::net::if_::if_nametoindex(
                     (*ifa.borrow())
-                        .with(|__v| (*__v).ifa_name.clone())
+                        .with(|__v| __v.ifa_name.clone())
                         .to_rust_string()
                         .as_str()
                 ) {
@@ -125,7 +122,7 @@ fn main_0() -> i32 {
             );
         }
         {
-            let __rhs = ((*ifa.borrow()).with(|__v| (*__v).ifa_next.clone())).clone();
+            let __rhs = ((*ifa.borrow()).with(|__v| __v.ifa_next.clone())).clone();
             (*ifa.borrow_mut()) = __rhs
         };
     }

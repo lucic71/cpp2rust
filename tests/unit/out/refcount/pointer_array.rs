@@ -46,7 +46,7 @@ pub fn IncrementAll_0(s: Ptr<StackArray>) {
     'loop_: while ((*i.borrow()) < 3) {
         {
             let _ptr = s
-                .with(|__v| (*__v).arr[(*i.borrow()) as usize].clone())
+                .with(|__v| __v.arr[(*i.borrow()) as usize].clone())
                 .clone();
             {
                 let __rhs = (_ptr.read()) + 1;

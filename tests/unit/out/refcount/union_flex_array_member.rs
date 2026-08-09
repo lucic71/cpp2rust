@@ -123,7 +123,7 @@ fn main_0() -> i32 {
     (*n.borrow()).with_mut(|__v| __v.pos = 20_usize);
     let q: Value<Ptr<u8>> = Rc::new(RefCell::new(
         ((((*n.borrow()).reinterpret_cast::<u8>().offset(16usize) as Ptr<u8>) as Ptr<u8>)
-            .offset((((*n.borrow()).with(|__v| (*__v).pos)) as isize))),
+            .offset((((*n.borrow()).with(|__v| __v.pos)) as isize))),
     ));
     assert!(((((((*q.borrow()).read()) as i32) == 20) as i32) != 0));
     (*q.borrow()).write(187_u8);

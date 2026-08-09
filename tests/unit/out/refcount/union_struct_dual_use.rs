@@ -30,8 +30,8 @@ impl ByteRepr for Inner {
 pub fn sum_inner_0(i: Ptr<Inner>) -> i32 {
     let i: Value<Ptr<Inner>> = Rc::new(RefCell::new(i));
     return {
-        let _lhs = (*i.borrow()).with(|__v| (*__v).a);
-        _lhs + (*i.borrow()).with(|__v| (*__v).b)
+        let _lhs = (*i.borrow()).with(|__v| __v.a);
+        _lhs + (*i.borrow()).with(|__v| __v.b)
     };
 }
 pub struct anon_1 {

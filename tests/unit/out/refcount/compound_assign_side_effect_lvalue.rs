@@ -54,7 +54,7 @@ fn main_0() -> i32 {
     let w: Value<Ptr<u32>> = Rc::new(RefCell::new((words.as_pointer() as Ptr<u32>)));
     {
         let __lhs = (*w.borrow_mut()).postfix_inc();
-        let rhs_0 = __lhs.with(|__v| (*__v).wrapping_add((10_u32 as u32)).clone());
+        let rhs_0 = __lhs.with(|__v| __v.wrapping_add((10_u32 as u32)).clone());
         __lhs.write(rhs_0)
     };
     assert!(

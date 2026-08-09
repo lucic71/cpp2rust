@@ -139,7 +139,7 @@ fn main_0() -> i32 {
     let h: Value<Holder> = Rc::new(RefCell::new(Holder { field: 17 }));
     ((*h.borrow()).field);
     let hp: Value<Ptr<Holder>> = Rc::new(RefCell::new((h.as_pointer())));
-    ((*hp.borrow()).with(|__v| (*__v).field));
+    ((*hp.borrow()).with(|__v| __v.field));
     let nt: Value<NonTrivial> = Rc::new(RefCell::new(<NonTrivial>::default()));
     ({ unused_ref_param_1(nt.as_pointer()) });
     ({ unused_ptr_param_2((nt.as_pointer())) });

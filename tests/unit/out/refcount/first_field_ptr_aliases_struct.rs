@@ -132,13 +132,12 @@ fn main_0() -> i32 {
         __v.xfer = libcc2rs::malloc_refcount(36usize).reinterpret_cast::<transfer>()
     });
     {
-        let __obj = (*h.borrow()).with(|__v| (*__v).xfer.clone());
+        let __obj = (*h.borrow()).with(|__v| __v.xfer.clone());
         __obj.with_mut(|__v| __v.code = 7)
     };
     {
         let __rhs = ((*h.borrow()).with(|__v| {
-            (*__v)
-                .xfer
+            __v.xfer
                 .field_ptr(
                     0,
                     |__v: &transfer| &__v.errbuf[..],
@@ -149,21 +148,20 @@ fn main_0() -> i32 {
         (*h.borrow()).with_mut(|__v| __v.err = __rhs)
     };
     {
-        (((*h.borrow()).with(|__v| (*__v).err.clone())).clone() as Ptr<u8>)
+        (((*h.borrow()).with(|__v| __v.err.clone())).clone() as Ptr<u8>)
             .to_any()
             .memcpy(
                 &Ptr::from_string_literal(b"boom\0").to_any(),
                 5_usize as usize,
             );
-        (((*h.borrow()).with(|__v| (*__v).err.clone())).clone() as Ptr<u8>)
+        (((*h.borrow()).with(|__v| __v.err.clone())).clone() as Ptr<u8>)
             .to_any()
             .clone()
     };
     assert!(
         ({
             let mut __it1 = ((*h.borrow()).with(|__v| {
-                (*__v)
-                    .xfer
+                __v.xfer
                     .field_ptr(
                         0,
                         |__v: &transfer| &__v.errbuf[..],
@@ -185,9 +183,9 @@ fn main_0() -> i32 {
             }
         } == 0)
     );
-    assert!(((*h.borrow()).with(|__v| (*__v).xfer.clone().with(|__v| (*__v).code)) == 7));
+    assert!(((*h.borrow()).with(|__v| __v.xfer.clone().with(|__v| __v.code)) == 7));
     libcc2rs::free_refcount(
-        (((*h.borrow()).with(|__v| (*__v).xfer.clone())).clone() as Ptr<transfer>)
+        (((*h.borrow()).with(|__v| __v.xfer.clone())).clone() as Ptr<transfer>)
             .to_any()
             .clone(),
     );

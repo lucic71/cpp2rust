@@ -80,21 +80,16 @@ pub fn main() {
     libcc2rs::exit_refcount(main_0());
 }
 fn main_0() -> i32 {
-    assert!(((*items_3.with(Value::clone).borrow())[(0) as usize].with(|__v| (*__v).value) == 1));
-    assert!(((*items_3.with(Value::clone).borrow())[(1) as usize].with(|__v| (*__v).value) == 2));
-    assert!(
-        ((*obj_4.with(Value::clone).borrow())
-            .p
-            .with(|__v| (*__v).value)
-            == 42)
-    );
+    assert!(((*items_3.with(Value::clone).borrow())[(0) as usize].with(|__v| __v.value) == 1));
+    assert!(((*items_3.with(Value::clone).borrow())[(1) as usize].with(|__v| __v.value) == 2));
+    assert!(((*obj_4.with(Value::clone).borrow()).p.with(|__v| __v.value) == 42));
     thread_local!(
         static cache_5: Value<Box<[Ptr<Inner>]>> = Rc::new(RefCell::new(Box::new([
             (alpha_0.with(Value::clone).as_pointer()),
             (beta_1.with(Value::clone).as_pointer()),
         ])));
     );
-    assert!(((*cache_5.with(Value::clone).borrow())[(0) as usize].with(|__v| (*__v).value) == 1));
-    assert!(((*cache_5.with(Value::clone).borrow())[(1) as usize].with(|__v| (*__v).value) == 2));
+    assert!(((*cache_5.with(Value::clone).borrow())[(0) as usize].with(|__v| __v.value) == 1));
+    assert!(((*cache_5.with(Value::clone).borrow())[(1) as usize].with(|__v| __v.value) == 2));
     return 0;
 }

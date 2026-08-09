@@ -170,7 +170,7 @@ fn main_0() -> i32 {
             .reinterpret_cast::<u8>()
             .offset(0usize)
             .reinterpret_cast::<record>() as Ptr<record>)
-            .with(|__v| (*__v).code) as i32)
+            .with(|__v| __v.code) as i32)
             == 2) as i32)
             != 0)
     );

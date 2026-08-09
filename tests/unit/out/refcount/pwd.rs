@@ -21,22 +21,22 @@ pub fn test_getpwuid_0() {
     assert!((((!((*pw.borrow()).is_null())) as i32) != 0));
     assert!(
         ((({
-            let _lhs = (*pw.borrow()).with(|__v| (*__v).pw_uid);
+            let _lhs = (*pw.borrow()).with(|__v| __v.pw_uid);
             _lhs == libcc2rs::geteuid_refcount()
         }) as i32)
             != 0)
     );
     assert!(
         ((((*pw.borrow())
-            .with(|__v| (*__v).pw_name.clone())
+            .with(|__v| __v.pw_name.clone())
             .to_c_string_iterator()
             .count()
             > 0_usize) as i32)
             != 0)
     );
-    assert!((((!(((*pw.borrow()).with(|__v| (*__v).pw_dir.clone())).is_null())) as i32) != 0));
+    assert!((((!(((*pw.borrow()).with(|__v| __v.pw_dir.clone())).is_null())) as i32) != 0));
     {
-        println!("{}", (*pw.borrow()).with(|__v| (*__v).pw_name.clone()));
+        println!("{}", (*pw.borrow()).with(|__v| __v.pw_name.clone()));
         let _ = ::std::io::Write::flush(&mut ::std::io::stdout());
     };
 }
@@ -137,7 +137,7 @@ pub fn test_getpwuid_r_2() {
         ((({
             let mut __it1 = (*pw.borrow()).pw_name.to_c_string_iterator();
             let mut __it2 = (*pw2.borrow())
-                .with(|__v| (*__v).pw_name.clone())
+                .with(|__v| __v.pw_name.clone())
                 .to_c_string_iterator();
             loop {
                 let __c1 = __it1.next();

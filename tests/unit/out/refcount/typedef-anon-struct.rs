@@ -82,7 +82,7 @@ fn main_0() -> i32 {
             |__v: &mut Outer| &mut __v.runs[..]
         ) as Ptr<Outer_RunInfo>)
             .offset(0_usize)
-            .with(|__v| (*__v).block_idx)
+            .with(|__v| __v.block_idx)
             == 1)
     );
     assert!(
@@ -92,7 +92,7 @@ fn main_0() -> i32 {
             |__v: &mut Outer| &mut __v.runs[..]
         ) as Ptr<Outer_RunInfo>)
             .offset(0_usize)
-            .with(|__v| (*__v).num_extra_zero_runs)
+            .with(|__v| __v.num_extra_zero_runs)
             == 2)
     );
     return 0;

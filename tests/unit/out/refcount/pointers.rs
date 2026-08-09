@@ -42,8 +42,8 @@ pub fn Update_0(t: Ptr<Test>) -> Ptr<Test> {
     let y: Value<i32> = Rc::new(RefCell::new(2));
     (*x.borrow_mut()).prefix_inc();
     ({ (*t.borrow()).update((*x.borrow()), (*y.borrow())) });
-    (*x.borrow_mut()) = (*t.borrow()).with(|__v| (*__v).x);
-    (*y.borrow_mut()) = (*t.borrow()).with(|__v| (*__v).x);
+    (*x.borrow_mut()) = (*t.borrow()).with(|__v| __v.x);
+    (*y.borrow_mut()) = (*t.borrow()).with(|__v| __v.x);
     ({
         let _x: i32 = (*x.borrow());
         let _y: i32 = (*y.borrow());
@@ -69,8 +69,8 @@ fn main_0() -> i32 {
     };
     return {
         let _lhs = {
-            let _lhs = (*t3.borrow()).with(|__v| (*__v).x);
-            _lhs + (*t2.borrow()).with(|__v| (*__v).x)
+            let _lhs = (*t3.borrow()).with(|__v| __v.x);
+            _lhs + (*t2.borrow()).with(|__v| __v.x)
         };
         _lhs + (*t1.borrow()).x
     };
