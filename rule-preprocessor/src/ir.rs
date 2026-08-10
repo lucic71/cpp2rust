@@ -87,6 +87,7 @@ impl FnIr {
                 BodyFragment::MethodCall { method_call } => {
                     check(&method_call.receiver) || check(&method_call.body)
                 }
+                BodyFragment::Assign { assign } => check(&assign.lhs) || check(&assign.rhs),
                 _ => false,
             })
         }
@@ -139,6 +140,9 @@ pub enum BodyFragment {
     MethodCall {
         method_call: MethodCallInner,
     },
+    Assign {
+        assign: AssignInner,
+    },
     VaArgs {
         va_args: std::marker::PhantomData<()>,
     },
@@ -165,6 +169,13 @@ pub struct PlaceholderInner {
 pub struct MethodCallInner {
     pub receiver: Vec<BodyFragment>,
     pub body: Vec<BodyFragment>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct AssignInner {
+    pub lhs: Vec<BodyFragment>,
+    pub op: String,
+    pub rhs: Vec<BodyFragment>,
 }
 
 // For convenience: match on fragment kind
@@ -209,6 +220,14 @@ fn resolve_nth_unknown(
                         return true;
                     }
                     if resolve(&mut method_call.body, param, nth, count, patch) {
+                        return true;
+                    }
+                }
+                BodyFragment::Assign { assign } => {
+                    if resolve(&mut assign.lhs, param, nth, count, patch) {
+                        return true;
+                    }
+                    if resolve(&mut assign.rhs, param, nth, count, patch) {
                         return true;
                     }
                 }

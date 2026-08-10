@@ -44,16 +44,26 @@ struct VaArgsFragment {
 };
 
 struct MethodCallFragment; // forward declaration
+struct AssignFragment;     // forward declaration
 
 using BodyFragment =
     std::variant<TextFragment, PlaceholderFragment, GenericFragment,
-                 VaArgsFragment, std::unique_ptr<MethodCallFragment>>;
+                 VaArgsFragment, std::unique_ptr<MethodCallFragment>,
+                 std::unique_ptr<AssignFragment>>;
 
 struct MethodCallFragment {
   std::vector<BodyFragment> receiver;
   std::vector<BodyFragment> body;
 
   const PlaceholderFragment *getReceiverPlaceholder() const;
+  void dump() const;
+};
+
+struct AssignFragment {
+  std::vector<BodyFragment> lhs;
+  std::string op;
+  std::vector<BodyFragment> rhs;
+
   void dump() const;
 };
 

@@ -5320,6 +5320,14 @@ RsExpr *Converter::ConvertIRFragment(
     } else if (auto *mc =
                    std::get_if<std::unique_ptr<MethodCallFragment>>(&frag)) {
       parts.push_back(ConvertMappedMethodCall(expr, **mc, args, num_args, ctx));
+    } else if (auto *as = std::get_if<std::unique_ptr<AssignFragment>>(&frag)) {
+      auto *lhs = ConvertIRFragment((*as)->lhs, expr, args, num_args, ctx);
+      auto *rhs = ConvertIRFragment((*as)->rhs, expr, args, num_args, ctx);
+      if ((*as)->op == "=") {
+        parts.push_back(arena_.New<Assign>(lhs, rhs));
+      } else {
+        parts.push_back(arena_.New<CompoundAssign>(lhs, (*as)->op, rhs));
+      }
     }
   }
 

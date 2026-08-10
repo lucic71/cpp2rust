@@ -73,6 +73,20 @@ MethodCallFragment ParseMethodCallFragmentJSON(const llvm::json::Object &obj) {
   return mc;
 }
 
+AssignFragment ParseAssignFragmentJSON(const llvm::json::Object &obj) {
+  AssignFragment as;
+  if (auto *lhs = obj.getArray("lhs")) {
+    as.lhs = ParseBodyFragmentsJSON(*lhs);
+  }
+  if (auto op = obj.getString("op")) {
+    as.op = op->str();
+  }
+  if (auto *rhs = obj.getArray("rhs")) {
+    as.rhs = ParseBodyFragmentsJSON(*rhs);
+  }
+  return as;
+}
+
 std::vector<BodyFragment> ParseBodyFragmentsJSON(const llvm::json::Array &arr) {
   std::vector<BodyFragment> result;
   for (auto &frag : arr) {
@@ -88,6 +102,9 @@ std::vector<BodyFragment> ParseBodyFragmentsJSON(const llvm::json::Array &arr) {
     } else if (auto *mc = frag_obj->getObject("method_call")) {
       result.push_back(std::make_unique<MethodCallFragment>(
           ParseMethodCallFragmentJSON(*mc)));
+    } else if (auto *as = frag_obj->getObject("assign")) {
+      result.push_back(
+          std::make_unique<AssignFragment>(ParseAssignFragmentJSON(*as)));
     } else if (frag_obj->get("va_args")) {
       result.push_back(VaArgsFragment{});
     }
@@ -237,6 +254,8 @@ void BodyFragmentDump(const BodyFragment &frag) {
   } else if (auto *mc =
                  std::get_if<std::unique_ptr<MethodCallFragment>>(&frag)) {
     (*mc)->dump();
+  } else if (auto *as = std::get_if<std::unique_ptr<AssignFragment>>(&frag)) {
+    (*as)->dump();
   }
 }
 
@@ -278,6 +297,19 @@ void MethodCallFragment::dump() const {
   }
   log() << "    body:\n";
   for (const auto &frag : body) {
+    BodyFragmentDump(frag);
+  }
+}
+
+void AssignFragment::dump() const {
+  log() << "  assign:\n"
+           "    lhs:\n";
+  for (const auto &frag : lhs) {
+    BodyFragmentDump(frag);
+  }
+  log() << "    op: " << op << '\n';
+  log() << "    rhs:\n";
+  for (const auto &frag : rhs) {
     BodyFragmentDump(frag);
   }
 }

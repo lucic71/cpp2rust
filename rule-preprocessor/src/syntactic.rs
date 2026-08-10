@@ -9,8 +9,8 @@ use std::collections::{BTreeMap, HashMap};
 use std::path::{Path, PathBuf};
 
 use crate::ir::{
-    Access, BodyFragment, FileIr, FnIr, MethodCallInner, PlaceholderInner, RuleIr, RulesIR,
-    TypeInfo, TypeIr,
+    Access, AssignInner, BodyFragment, FileIr, FnIr, MethodCallInner, PlaceholderInner, RuleIr,
+    RulesIR, TypeInfo, TypeIr,
 };
 
 /// Classify a type AST node as refcount pointer (`Ptr<T>`), unsafe pointer
@@ -244,6 +244,13 @@ impl<'a> FragmentCtx<'a> {
                     self.emit_method_call(&call);
                     return;
                 }
+                if let Some(bin) = ast::BinExpr::cast(node.clone())
+                    && matches!(bin.op_kind(), Some(ast::BinaryOp::Assignment { .. }))
+                    && bin.lhs().is_some_and(|lhs| self.contains_param(&lhs))
+                {
+                    self.emit_assign(&bin);
+                    return;
+                }
                 for child in node.children_with_tokens() {
                     self.visit(child);
                 }
@@ -322,6 +329,43 @@ impl<'a> FragmentCtx<'a> {
 
         self.fragments.push(BodyFragment::MethodCall {
             method_call: MethodCallInner { receiver, body },
+        });
+    }
+
+    fn contains_param(&self, expr: &ast::Expr) -> bool {
+        expr.syntax()
+            .descendants_with_tokens()
+            .filter_map(|el| el.into_token())
+            .any(|t| {
+                t.kind() == SyntaxKind::IDENT && self.params.iter().any(|p| p.name == t.text())
+            })
+    }
+
+    fn emit_assign(&mut self, bin: &ast::BinExpr) {
+        self.flush_text();
+
+        let lhs = {
+            let mut lhs_ctx = FragmentCtx::new(self.builder, self.params, self.generic_names);
+            lhs_ctx.visit(ra_ap_syntax::NodeOrToken::Node(
+                bin.lhs().unwrap().syntax().clone(),
+            ));
+            lhs_ctx.finish()
+        };
+
+        let rhs = {
+            let mut rhs_ctx = FragmentCtx::new(self.builder, self.params, self.generic_names);
+            rhs_ctx.visit(ra_ap_syntax::NodeOrToken::Node(
+                bin.rhs().unwrap().syntax().clone(),
+            ));
+            rhs_ctx.finish()
+        };
+
+        self.fragments.push(BodyFragment::Assign {
+            assign: AssignInner {
+                lhs,
+                op: bin.op_token().unwrap().text().to_string(),
+                rhs,
+            },
         });
     }
 }
