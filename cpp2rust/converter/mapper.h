@@ -38,6 +38,8 @@ std::string GetParamType(const clang::Expr *expr, unsigned index);
 bool ParamIsPointer(const clang::Expr *expr, unsigned index);
 
 bool ParamPointeeIsContainer(const clang::Expr *expr, unsigned index);
+
+bool ParamIsSharedRef(const clang::Expr *expr, unsigned index);
 bool MapsToPointer(clang::QualType qual_type);
 bool MapsToRefcountPointer(clang::QualType qual_type);
 const std::vector<std::string> *MappedDerives(clang::QualType qual_type);

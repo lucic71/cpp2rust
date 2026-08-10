@@ -17,7 +17,7 @@ unsafe fn f2<T1>(a0: &mut Vec<T1>) -> *const T1 {
     ((a0).first_mut().unwrap())
 }
 
-unsafe fn f3<T1>(a0: Vec<T1>) -> bool {
+unsafe fn f3<T1>(a0: &Vec<T1>) -> bool {
     a0.is_empty()
 }
 

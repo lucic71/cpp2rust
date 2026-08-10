@@ -56,6 +56,7 @@ struct MethodCallFragment {
   std::vector<BodyFragment> body;
 
   const PlaceholderFragment *getReceiverPlaceholder() const;
+  const PlaceholderFragment *getReceiverAsPlaceholder() const;
   void dump() const;
 };
 
@@ -73,6 +74,7 @@ struct TypeInfo {
   bool is_refcount_pointer = false;
   bool is_unsafe_pointer = false;
   bool pointee_is_container = false;
+  bool is_shared_ref = false;
 
   bool is_pointer() const { return is_refcount_pointer || is_unsafe_pointer; }
 

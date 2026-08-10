@@ -38,10 +38,10 @@ unsafe fn f1<T1>(a0: &mut Vec<T1>, a1: *const T1) -> *const T1 {
     a0.remove(pos);
     a1
 }
-unsafe fn f2<T1>(a0: Vec<T1>) -> usize {
+unsafe fn f2<T1>(a0: &Vec<T1>) -> usize {
     a0.len()
 }
-unsafe fn f3<T1>(a0: Vec<T1>) -> bool {
+unsafe fn f3<T1>(a0: &Vec<T1>) -> bool {
     a0.is_empty()
 }
 unsafe fn f4<T1>() -> Vec<T1> {
@@ -260,11 +260,11 @@ unsafe fn f60<T1>(a0: &mut Vec<T1>, a1: *const T1) -> *const T1 {
     a1
 }
 
-unsafe fn f61<T1>(a0: Vec<T1>) -> usize {
+unsafe fn f61<T1>(a0: &Vec<T1>) -> usize {
     a0.len()
 }
 
-unsafe fn f62<T1>(a0: Vec<T1>) -> bool {
+unsafe fn f62<T1>(a0: &Vec<T1>) -> bool {
     a0.is_empty()
 }
 

@@ -376,6 +376,7 @@ struct ParamInfo {
     is_refcount_pointer: bool,
     is_unsafe_pointer: bool,
     pointee_is_container: bool,
+    is_shared_ref: bool,
     is_mut_ref: bool,
     is_va_args: bool,
 }
@@ -418,6 +419,7 @@ impl<'a> FnIrBuilder<'a> {
                 is_refcount_pointer,
                 is_unsafe_pointer,
                 pointee_is_container: pointee_is_container(&ty),
+                is_shared_ref: matches!(&ty, ast::Type::RefType(r) if r.mut_token().is_none()),
                 is_mut_ref: matches!(&ty, ast::Type::RefType(r) if r.mut_token().is_some()),
                 is_va_args,
             });
@@ -437,6 +439,7 @@ impl<'a> FnIrBuilder<'a> {
                 is_refcount_pointer,
                 is_unsafe_pointer,
                 pointee_is_container: pointee_is_container(&ty),
+                is_shared_ref: matches!(&ty, ast::Type::RefType(r) if r.mut_token().is_none()),
                 derives: Vec::new(),
             })
         }
@@ -607,6 +610,7 @@ impl<'a> FnIrBuilder<'a> {
                         is_refcount_pointer: p.is_refcount_pointer,
                         is_unsafe_pointer: p.is_unsafe_pointer,
                         pointee_is_container: p.pointee_is_container,
+                        is_shared_ref: p.is_shared_ref,
                         derives: Vec::new(),
                     },
                 )
@@ -688,6 +692,7 @@ impl<'a> TypeIrBuilder<'a> {
                 is_refcount_pointer,
                 is_unsafe_pointer,
                 pointee_is_container: pointee_is_container(&ty),
+                is_shared_ref: matches!(&ty, ast::Type::RefType(r) if r.mut_token().is_none()),
                 derives: Vec::new(),
             },
         }

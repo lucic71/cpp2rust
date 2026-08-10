@@ -167,6 +167,8 @@ GetTemplateArgs(clang::QualType qual_type, clang::Expr *expr = nullptr);
 
 clang::QualType GetContainerElementType(clang::QualType qual_type);
 
+bool RecordIsCopyConstructible(const clang::CXXRecordDecl *record);
+
 template <class UnaryFunction>
 void ForEachTemplateArgument(
     clang::ArrayRef<clang::TemplateArgument> template_arguments,

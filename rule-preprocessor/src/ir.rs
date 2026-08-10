@@ -46,6 +46,8 @@ pub struct TypeInfo {
     pub is_unsafe_pointer: bool,
     #[serde(default, skip_serializing_if = "std::ops::Not::not")]
     pub pointee_is_container: bool,
+    #[serde(default, skip_serializing_if = "std::ops::Not::not")]
+    pub is_shared_ref: bool,
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub derives: Vec<String>,
 }

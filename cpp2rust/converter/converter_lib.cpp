@@ -8,6 +8,7 @@
 #include <clang/AST/ParentMapContext.h>
 #include <clang/AST/RecordLayout.h>
 #include <clang/Basic/SourceManager.h>
+#include <llvm/ADT/SmallPtrSet.h>
 #include <llvm/Support/ErrorHandling.h>
 
 #include <algorithm>
@@ -726,6 +727,58 @@ clang::QualType GetContainerElementType(clang::QualType qual_type) {
     return (*args)[0].getAsType();
   }
   return {};
+}
+
+static bool RecordIsCopyConstructibleImpl(
+    const clang::CXXRecordDecl *record,
+    llvm::SmallPtrSet<const clang::CXXRecordDecl *, 8> &visited);
+
+static bool TypeIsCopyConstructible(
+    clang::QualType type,
+    llvm::SmallPtrSet<const clang::CXXRecordDecl *, 8> &visited) {
+  if (type.isNull()) {
+    return true;
+  }
+  if (auto elem = GetContainerElementType(type);
+      !elem.isNull() && !TypeIsCopyConstructible(elem, visited)) {
+    return false;
+  }
+  auto *record = type.getNonReferenceType()->getAsCXXRecordDecl();
+  if (!record) {
+    return true;
+  }
+  return RecordIsCopyConstructibleImpl(record, visited);
+}
+
+static bool RecordIsCopyConstructibleImpl(
+    const clang::CXXRecordDecl *record,
+    llvm::SmallPtrSet<const clang::CXXRecordDecl *, 8> &visited) {
+  record = record->getDefinition();
+  if (!record || !visited.insert(record).second) {
+    return true;
+  }
+  for (auto *ctor : record->ctors()) {
+    if (ctor->isCopyConstructor() && ctor->isDeleted()) {
+      return false;
+    }
+  }
+  if (record->defaultedCopyConstructorIsDeleted()) {
+    return false;
+  }
+  if (record->hasUserDeclaredCopyConstructor()) {
+    return true;
+  }
+  for (auto *field : record->fields()) {
+    if (!TypeIsCopyConstructible(field->getType(), visited)) {
+      return false;
+    }
+  }
+  return true;
+}
+
+bool RecordIsCopyConstructible(const clang::CXXRecordDecl *record) {
+  llvm::SmallPtrSet<const clang::CXXRecordDecl *, 8> visited;
+  return RecordIsCopyConstructibleImpl(record, visited);
 }
 
 clang::Expr *GetCallObject(clang::CallExpr *expr) {

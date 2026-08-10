@@ -775,6 +775,10 @@ bool ParamPointeeIsContainer(const clang::Expr *expr, unsigned index) {
   return GetParamInfo(expr, index).pointee_is_container;
 }
 
+bool ParamIsSharedRef(const clang::Expr *expr, unsigned index) {
+  return GetParamInfo(expr, index).is_shared_ref;
+}
+
 clang::QualType GetTypeForDecl(const clang::NamedDecl *decl) {
   if (const auto *spec =
           llvm::dyn_cast<clang::ClassTemplateSpecializationDecl>(decl)) {

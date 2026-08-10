@@ -79,7 +79,8 @@ fn main_0() -> i32 {
     {
         let part: Ptr<Vec<i32>> = (part.read()).as_pointer();
         {
-            let rhs_0 = ((((*points.borrow()) as usize).wrapping_add((part.read()).len())) as i32);
+            let rhs_0 =
+                ((((*points.borrow()) as usize).wrapping_add(part.with(|__v| __v.len()))) as i32);
             (*points.borrow_mut()) = rhs_0
         };
         (*s.borrow_mut()).a.postfix_inc();

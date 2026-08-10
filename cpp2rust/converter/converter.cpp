@@ -4517,7 +4517,7 @@ Converter::GetStructAttributes(const clang::RecordDecl *decl) {
   }
 
   if (auto cxx_decl = clang::dyn_cast<clang::CXXRecordDecl>(decl)) {
-    if (!cxx_decl->defaultedCopyConstructorIsDeleted()) {
+    if (RecordIsCopyConstructible(cxx_decl)) {
       struct_attrs.emplace_back("Clone");
     }
   } else /* RecordDecl */ {

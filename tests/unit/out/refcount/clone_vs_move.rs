@@ -217,22 +217,18 @@ fn main_0() -> i32 {
     let i: Value<i32> = Rc::new(RefCell::new(0));
     'loop_: while (*i.borrow()) < (*N.borrow()) {
         assert!(
-            (((((m1.as_pointer() as Ptr<Value<Vec<i32>>>)
+            ((((m1.as_pointer() as Ptr<Value<Vec<i32>>>)
                 .offset(((*i.borrow()) as usize))
                 .read())
             .as_pointer() as Ptr<Vec<i32>>)
-                .read())
-            .len()
-                == 10_usize)
+                .with(|__v| __v.len() == 10_usize))
         );
         assert!(
-            (((((m2.as_pointer() as Ptr<Value<Vec<i32>>>)
+            ((((m2.as_pointer() as Ptr<Value<Vec<i32>>>)
                 .offset(((*i.borrow()) as usize))
                 .read())
             .as_pointer() as Ptr<Vec<i32>>)
-                .read())
-            .len()
-                == 10_usize)
+                .with(|__v| __v.len() == 10_usize))
         );
         let j: Value<i32> = Rc::new(RefCell::new(0));
         'loop_: while (*j.borrow()) < 10 {
@@ -275,22 +271,18 @@ fn main_0() -> i32 {
     let i: Value<i32> = Rc::new(RefCell::new(0));
     'loop_: while (*i.borrow()) < (*N.borrow()) {
         assert!(
-            (((((m1.as_pointer() as Ptr<Value<Vec<i32>>>)
+            ((((m1.as_pointer() as Ptr<Value<Vec<i32>>>)
                 .offset(((*i.borrow()) as usize))
                 .read())
             .as_pointer() as Ptr<Vec<i32>>)
-                .read())
-            .len()
-                == 10_usize)
+                .with(|__v| __v.len() == 10_usize))
         );
         assert!(
-            (((((m2.as_pointer() as Ptr<Value<Vec<i32>>>)
+            ((((m2.as_pointer() as Ptr<Value<Vec<i32>>>)
                 .offset(((*i.borrow()) as usize))
                 .read())
             .as_pointer() as Ptr<Vec<i32>>)
-                .read())
-            .len()
-                == 10_usize)
+                .with(|__v| __v.len() == 10_usize))
         );
         let j: Value<i32> = Rc::new(RefCell::new(0));
         'loop_: while (*j.borrow()) < 10 {

@@ -476,7 +476,7 @@ RsExpr *ConverterRefCount::AddCloneTrait(const clang::RecordDecl *decl) {
     return Text("");
   }
 
-  if (cxx->defaultedCopyConstructorIsDeleted()) {
+  if (!RecordIsCopyConstructible(cxx)) {
     return Text("");
   }
 
@@ -3137,12 +3137,38 @@ RsExpr *ConverterRefCount::ConvertMappedMethodCall(
     clang::Expr *expr, const TranslationRule::MethodCallFragment &mc,
     clang::Expr **args, unsigned num_args, TempMaterializationCtx *ctx) {
   auto receiver_ph = mc.getReceiverPlaceholder();
-  if (!receiver_ph || receiver_ph->access == TranslationRule::Access::kRead) {
+  if (!receiver_ph) {
     return Converter::ConvertMappedMethodCall(expr, mc, args, num_args, ctx);
   }
 
   auto arg_idx = receiver_ph->n;
   auto *arg = BuildUnifiedArgs(expr, args, num_args)[arg_idx];
+
+  if (receiver_ph->access == TranslationRule::Access::kRead) {
+    if (!mc.getReceiverAsPlaceholder() ||
+        !Mapper::ParamIsSharedRef(GetCalleeOrExpr(expr), arg_idx)) {
+      return Converter::ConvertMappedMethodCall(expr, mc, args, num_args, ctx);
+    }
+    auto *receiver = ConvertIRFragment(mc.receiver, expr, args, num_args, ctx);
+    auto *body = ConvertIRFragment(mc.body, expr, args, num_args, ctx);
+
+    // The receiver is read out of a pointer: call through it instead.
+    if (auto *ptr = receiver->IgnoreParens()->Pointer()) {
+      return arena_.New<PtrWith>(
+          ptr, false,
+          arena_.New<Closure>("__v", nullptr, Cat(Text("__v"), body)));
+    }
+
+    // The receiver sits behind a pointer (a field or an element of it).
+    auto *node = Cat(receiver, body);
+    if (auto *ptr = receiver->TakePtr(Text("__v"))) {
+      return arena_.New<PtrWith>(ptr, false,
+                                 arena_.New<Closure>("__v", nullptr, node));
+    }
+
+    // Plain value: the existing borrow is already enough.
+    return node;
+  }
 
   if (!arg->getType()->isPointerType() && !IsReferenceType(arg)) {
     PushExprKind push(*this, ExprKind::LValue);
