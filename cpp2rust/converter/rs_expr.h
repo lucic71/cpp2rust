@@ -36,6 +36,7 @@ struct RsExpr {
     Unary,
     Cast,
     Clone,
+    Take,
     Call,
     Closure,
     Conditional,
@@ -278,6 +279,24 @@ struct Clone : RsExpr {
   static bool classof(const RsExpr *e) { return e->kind == Kind::Clone; }
 
   std::string print() const override { return object->print() + ".clone() "; }
+
+  void ForEachChild(llvm::function_ref<void(RsExpr *&)> fn) override {
+    fn(object);
+  }
+
+  RsExpr *object;
+
+  void dump(llvm::raw_ostream &os, unsigned depth = 0) override;
+};
+
+struct Take : RsExpr {
+  explicit Take(RsExpr *object) : RsExpr(Kind::Take), object(object) {}
+
+  static bool classof(const RsExpr *e) { return e->kind == Kind::Take; }
+
+  std::string print() const override {
+    return "std::mem::take(&mut " + object->print() + ") ";
+  }
 
   void ForEachChild(llvm::function_ref<void(RsExpr *&)> fn) override {
     fn(object);

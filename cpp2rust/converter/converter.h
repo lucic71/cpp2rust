@@ -946,8 +946,8 @@ protected:
   virtual RsExpr *
   emplace_back_plugin_construct_arg(clang::QualType elem_type,
                                     clang::CXXConstructExpr *ctor);
-  virtual RsExpr *emplace_back_emit_push_open(clang::CXXMemberCallExpr *call);
-  virtual RsExpr *emplace_back_emit_push_close(clang::CXXMemberCallExpr *call);
+  virtual RsExpr *emplace_back_emit_push(clang::CXXMemberCallExpr *call,
+                                         RsExpr *arg);
 
   TempMaterializationCtx CollectRefBindingTempArgs(clang::CallExpr *expr);
 

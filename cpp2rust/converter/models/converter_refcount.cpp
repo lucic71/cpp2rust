@@ -971,6 +971,14 @@ RsExpr *ConverterRefCount::LowerPtrUse(RsExpr *node) {
     return nullptr;
   }
 
+  if (auto *take = clang::dyn_cast<Take>(node)) {
+    if (auto *ptr = take->object->TakePtr(Text("__v"))) {
+      return arena_.New<PtrWith>(ptr, true,
+                                 arena_.New<Closure>("__v", nullptr, node));
+    }
+    return nullptr;
+  }
+
   if (auto *call = clang::dyn_cast<Call>(node); call && call->is_mut) {
     if (auto *ptr = call->TakePtr(Text("__v"))) {
       return arena_.New<PtrWith>(ptr, true,
@@ -1164,6 +1172,21 @@ RsExpr *ConverterRefCount::HoistPtrUse(RsExpr *node) {
   }
   if (!with->is_mut) {
     return nullptr;
+  }
+  if (!clang::isa<Assign, CompoundAssign>(closure->body)) {
+    RsExpr **nested = nullptr;
+    closure->body->ForEachChild([&](RsExpr *&child) {
+      if (nested == nullptr && clang::isa<PtrWith>(child) &&
+          !UsesClosureParam(child, closure->param)) {
+        nested = &child;
+      }
+    });
+    if (nested != nullptr) {
+      auto *inner = *nested;
+      *nested = Text("__val");
+      return Braces(Cat(
+          arena_.New<Let>("__val", /*is_mut=*/false, nullptr, inner), node));
+    }
   }
   RsExpr **right = nullptr;
   if (auto *assign = clang::dyn_cast<Assign>(closure->body)) {
@@ -3104,7 +3127,8 @@ RsExpr *ConverterRefCount::emplace_back_plugin_construct_arg(
 }
 
 RsExpr *
-ConverterRefCount::emplace_back_emit_push_open(clang::CXXMemberCallExpr *call) {
+ConverterRefCount::emplace_back_emit_push(clang::CXXMemberCallExpr *call,
+                                          RsExpr *arg) {
   auto *obj = GetCallObject(call);
   auto obj_type = obj->getType().getNonReferenceType();
   if (obj_type->isPointerType()) {
@@ -3112,14 +3136,11 @@ ConverterRefCount::emplace_back_emit_push_open(clang::CXXMemberCallExpr *call) {
   }
   auto *object = ConvertFreshObject(obj);
   auto *type_node = Convert(obj_type.getNonReferenceType());
-  return Cat(object, Text(".with_mut("),
-             arena_.New<Closure>("__v", Cat(Text("&mut"), type_node),
-                                 Text("__v.push(")));
-}
-
-RsExpr *ConverterRefCount::emplace_back_emit_push_close(
-    clang::CXXMemberCallExpr *call) {
-  return Text("))");
+  auto *push = arena_.New<Call>(arena_.New<Field>(Text("__v"), "push"),
+                                std::vector<RsExpr *>{arg}, /*is_mut=*/true);
+  return arena_.New<PtrWith>(
+      object, /*is_mut=*/true,
+      arena_.New<Closure>("__v", Cat(Text("&mut"), type_node), push));
 }
 
 bool ConverterRefCount::IsReferenceType(const clang::Expr *expr) const {

@@ -134,19 +134,15 @@ clang::CXXConstructExpr *buildConstructExpr(clang::CXXMemberCallExpr *call,
 
 } // namespace
 
-RsExpr *Converter::emplace_back_emit_push_open(clang::CXXMemberCallExpr *call) {
+RsExpr *Converter::emplace_back_emit_push(clang::CXXMemberCallExpr *call,
+                                          RsExpr *arg) {
   RsExpr *callee = nullptr;
   {
     PushExprKind push(*this, ExprKind::LValue);
     callee = ConvertExpr(call->getCallee());
   }
   clang::cast<Field>(callee)->member = "push";
-  return Cat(callee, Text('('));
-}
-
-RsExpr *
-Converter::emplace_back_emit_push_close(clang::CXXMemberCallExpr *call) {
-  return Text(')');
+  return arena_.New<Call>(callee, std::vector<RsExpr *>{arg}, /*is_mut=*/true);
 }
 
 RsExpr *Converter::emplace_back_plugin_convert(clang::CallExpr *call) {
@@ -156,34 +152,29 @@ RsExpr *Converter::emplace_back_plugin_convert(clang::CallExpr *call) {
   auto [elem_ty, ctor] = analyzeEmplaceCall(member_call, GetSema());
   assert(!elem_ty.isNull() && "Could not analyze emplace_back type");
 
-  std::vector<RsExpr *> parts;
-  parts.push_back(emplace_back_emit_push_open(member_call));
+  RsExpr *arg = nullptr;
 
   if (ctor) {
-    auto is_argument_moved = false;
+    bool is_argument_moved = false;
     if (call->getNumArgs() > 0) {
       if (auto arg_call = clang::dyn_cast<clang::CallExpr>(call->getArg(0))) {
         is_argument_moved = arg_call->isCallToStdMove();
       }
     }
 
+    arg = emplace_back_plugin_construct_arg(
+        elem_ty, buildConstructExpr(member_call, GetSema()));
     if (is_argument_moved) {
-      parts.push_back(Text("std::mem::take(&mut"));
-    }
-    parts.push_back(emplace_back_plugin_construct_arg(
-        elem_ty, buildConstructExpr(member_call, GetSema())));
-    if (is_argument_moved) {
-      parts.push_back(Text(')'));
+      arg = arena_.New<Take>(arg);
     }
   } else if (elem_ty.isPODType(ctx_)) {
     if (call->getNumArgs() == 0) {
-      parts.push_back(GetDefaultAsString(elem_ty));
+      arg = GetDefaultAsString(elem_ty);
     } else {
       assert(call->getNumArgs() == 1 &&
              "multiple arguments passed for building POD type");
-      parts.push_back(ConvertExpr(call->getArg(0)));
-      parts.push_back(Text("as"));
-      parts.push_back(Text(GetUnsafeTypeAsString(elem_ty)));
+      arg = Cat(ConvertExpr(call->getArg(0)), Text("as"),
+                Text(GetUnsafeTypeAsString(elem_ty)));
     }
   } else {
     call->dump();
@@ -191,8 +182,7 @@ RsExpr *Converter::emplace_back_plugin_convert(clang::CallExpr *call) {
     return nullptr;
   }
 
-  parts.push_back(emplace_back_emit_push_close(member_call));
-  return arena_.New<Concat>(std::move(parts));
+  return emplace_back_emit_push(member_call, arg);
 }
 
 } // namespace cpp2rust

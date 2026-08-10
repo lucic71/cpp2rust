@@ -241,8 +241,8 @@ private:
   RsExpr *
   emplace_back_plugin_construct_arg(clang::QualType elem_type,
                                     clang::CXXConstructExpr *ctor) override;
-  RsExpr *emplace_back_emit_push_open(clang::CXXMemberCallExpr *call) override;
-  RsExpr *emplace_back_emit_push_close(clang::CXXMemberCallExpr *call) override;
+  RsExpr *emplace_back_emit_push(clang::CXXMemberCallExpr *call,
+                                 RsExpr *arg) override;
 
   RsExpr *BuildFnAdapter(const clang::FunctionDecl *src_fn,
                          const clang::FunctionProtoType *src_proto,

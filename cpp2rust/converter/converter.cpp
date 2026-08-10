@@ -329,6 +329,13 @@ void Converter::LowerNodes(RsExpr *&node) {
 }
 
 RsExpr *Converter::LowerRedundantClone(RsExpr *node) {
+  if (auto *with = clang::dyn_cast<PtrWith>(node)) {
+    if (auto *object = clang::dyn_cast<Clone>(with->object->IgnoreParens())) {
+      with->object = object->object;
+    }
+    return nullptr;
+  }
+
   auto *clone = clang::dyn_cast<Clone>(node);
   if (clone == nullptr) {
     return nullptr;
@@ -5248,8 +5255,7 @@ RsExpr *Converter::ConvertPlaceholder(clang::Expr *expr, clang::Expr *arg,
     if (clang::isa<clang::MaterializeTemporaryExpr>(arg)) {
       return ConvertRValue(arg);
     }
-    auto *node = ConvertLValue(arg);
-    return Cat(Text("std::mem::take(&mut"), node, Text(')'));
+    return arena_.New<Take>(ConvertLValue(arg));
   }
 
   return ConvertRValue(arg, ph_ctx.implicit_convert_to);
