@@ -172,28 +172,24 @@ pub fn emplace_local_from_field_4(jpg: Ptr<JPEGData>, cond: bool) {
             |__v: &mut JPEGData| ::std::slice::from_mut(&mut __v.app_data),
         ));
     }
-    (*dest.borrow())
-        .clone()
-        .with_mut(|__v: &mut Vec<Value<Vec<u8>>>| {
-            __v.push(Rc::new(RefCell::new({
-                let __count = (head.as_pointer() as Ptr<u8>)
-                    .offset(((3) as isize))
-                    .get_offset()
-                    - (head.as_pointer() as Ptr<u8>).get_offset();
-                PtrValueIter::new(&(head.as_pointer() as Ptr<u8>), __count)
-                    .map(|item| u8::try_from(item).ok().unwrap())
-                    .collect::<Vec<_>>()
-            })))
-        });
+    (*dest.borrow()).with_mut(|__v: &mut Vec<Value<Vec<u8>>>| {
+        __v.push(Rc::new(RefCell::new({
+            let __count = (head.as_pointer() as Ptr<u8>)
+                .offset(((3) as isize))
+                .get_offset()
+                - (head.as_pointer() as Ptr<u8>).get_offset();
+            PtrValueIter::new(&(head.as_pointer() as Ptr<u8>), __count)
+                .map(|item| u8::try_from(item).ok().unwrap())
+                .collect::<Vec<_>>()
+        })))
+    });
 }
 pub fn nested_emplace_move_5(bw: Ptr<Writer>) {
     let bw: Value<Ptr<Writer>> = Rc::new(RefCell::new(bw));
     (*bw.borrow()).with_mut(|__v| {
         {
             let __val = std::mem::take(&mut __v.chunk);
-            __v.output
-                .clone()
-                .with_mut(|__v: &mut Vec<Chunk>| __v.push(__val))
+            __v.output.with_mut(|__v: &mut Vec<Chunk>| __v.push(__val))
         }
         .clone()
     });

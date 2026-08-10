@@ -481,6 +481,8 @@ protected:
 
   void LowerNodes(RsExpr *&node);
 
+  void StripWithReceiverClone(RsExpr *node);
+
   RsExpr *LowerBitField(RsExpr *node);
 
   RsExpr *LowerRedundantClone(RsExpr *node);

@@ -82,9 +82,7 @@ fn main_0() -> i32 {
     );
     (*h.borrow()).with_mut(|__v| __v.count = 1);
     assert!(((((*h.borrow()).with(|__v| __v.count == 1)) as i32) != 0));
-    assert!(
-        ((((*h.borrow()).with(|__v| __v.second.clone().with(|__v| __v.value) == 22)) as i32) != 0)
-    );
+    assert!(((((*h.borrow()).with(|__v| __v.second.with(|__v| __v.value) == 22)) as i32) != 0));
     (*h.borrow()).with_mut(|__v| __v.first = Ptr::<payload>::null());
     assert!((((((*h.borrow()).with(|__v| __v.first.clone())).is_null()) as i32) != 0));
     assert!(((((*h.borrow()).with(|__v| __v.count == 1)) as i32) != 0));

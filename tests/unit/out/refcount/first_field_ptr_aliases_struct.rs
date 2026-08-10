@@ -183,7 +183,7 @@ fn main_0() -> i32 {
             }
         } == 0)
     );
-    assert!(((*h.borrow()).with(|__v| __v.xfer.clone().with(|__v| __v.code) == 7)));
+    assert!(((*h.borrow()).with(|__v| __v.xfer.with(|__v| __v.code) == 7)));
     libcc2rs::free_refcount(
         (((*h.borrow()).with(|__v| __v.xfer.clone())) as Ptr<transfer>)
             .to_any()

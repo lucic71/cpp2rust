@@ -294,9 +294,23 @@ bool Converter::Convert(clang::Decl *decl) {
   }
   auto *node = ConvertDecl(decl);
   LowerNodes(node);
+  StripWithReceiverClone(node);
   node->dump(log());
   *rs_code_ += node->print();
   return false;
+}
+
+void Converter::StripWithReceiverClone(RsExpr *node) {
+  if (auto *with = clang::dyn_cast<PtrWith>(node)) {
+    auto *object = with->object->IgnoreParens();
+    if (auto *clone = clang::dyn_cast<Clone>(object)) {
+      with->object = clone->object;
+    } else if (auto *view = clang::dyn_cast<PtrView>(object);
+               view && !view->element) {
+      with->object = view->object;
+    }
+  }
+  node->ForEachChild([this](RsExpr *&child) { StripWithReceiverClone(child); });
 }
 
 void Converter::LowerNodes(RsExpr *&node) {
@@ -329,13 +343,6 @@ void Converter::LowerNodes(RsExpr *&node) {
 }
 
 RsExpr *Converter::LowerRedundantClone(RsExpr *node) {
-  if (auto *with = clang::dyn_cast<PtrWith>(node)) {
-    if (auto *object = clang::dyn_cast<Clone>(with->object->IgnoreParens())) {
-      with->object = object->object;
-    }
-    return nullptr;
-  }
-
   auto *clone = clang::dyn_cast<Clone>(node);
   if (clone == nullptr) {
     return nullptr;
