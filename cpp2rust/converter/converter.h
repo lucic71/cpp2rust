@@ -152,6 +152,10 @@ public:
 
   RsExpr *ConvertCXXConstructorBody(clang::CXXConstructorDecl *decl);
 
+  virtual bool ConstructorBoxesThis(const clang::CXXConstructorDecl *decl) const {
+    return false;
+  }
+
   virtual RsExpr *VisitCXXConstructorDecl(clang::CXXConstructorDecl *decl);
 
   virtual RsExpr *VisitFieldDecl(clang::FieldDecl *decl);

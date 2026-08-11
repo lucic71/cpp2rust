@@ -718,8 +718,17 @@ RsExpr *ConverterRefCount::EmitOutOfLineMethod(clang::CXXMethodDecl *decl,
 }
 
 bool ConverterRefCount::ThisIsValue() const {
+  if (auto *ctor =
+          clang::dyn_cast_or_null<clang::CXXConstructorDecl>(curr_function_)) {
+    return !ConstructorBoxesThis(ctor);
+  }
   auto *method = clang::dyn_cast_or_null<clang::CXXMethodDecl>(curr_function_);
   return !method || !IsMethodOnPtr(method);
+}
+
+bool ConverterRefCount::ConstructorBoxesThis(
+    const clang::CXXConstructorDecl *decl) const {
+  return decl->getBody() && ReferencesThis(decl->getBody());
 }
 
 RsExpr *ConverterRefCount::DestroyMembers(const clang::CXXRecordDecl *decl) {

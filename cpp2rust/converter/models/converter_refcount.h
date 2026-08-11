@@ -63,6 +63,8 @@ public:
 
   bool ThisIsValue() const override;
 
+  bool ConstructorBoxesThis(const clang::CXXConstructorDecl *decl) const override;
+
   static bool IsMethodOnPtr(clang::CXXMethodDecl *method);
 
   RsExpr *TryEmitShadowedMethodCall(CallInfo &info) override;

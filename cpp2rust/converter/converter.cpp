@@ -1522,11 +1522,21 @@ RsExpr *Converter::ConvertCXXConstructorBody(clang::CXXConstructorDecl *decl) {
     inits.push_back(Text(token::kComma));
   }
 
+  auto *literal = Cat(Text("Self"), Braces(arena_.New<Concat>(std::move(inits))));
+
+  if (ConstructorBoxesThis(decl)) {
+    auto *body = ConvertStmtBody(decl->getBody());
+    return Cat(preamble, Text(keyword::kLet), Text("this"),
+               Text(token::kColon), Text("Value<Self>"), Text(token::kAssign),
+               Text("Rc::new(RefCell::new("), literal, Text("))"),
+               Text(token::kSemiColon), body,
+               Text("Rc::try_unwrap(this).ok().unwrap().into_inner()"));
+  }
+
   auto *body = ConvertStmtBody(decl->getBody());
   return Cat(preamble, Text(keyword::kLet), Text("mut"), Text("this"),
-             Text(token::kAssign), Text("Self"),
-             Braces(arena_.New<Concat>(std::move(inits))),
-             Text(token::kSemiColon), body, Text("this"));
+             Text(token::kAssign), literal, Text(token::kSemiColon), body,
+             Text("this"));
 }
 
 RsExpr *Converter::BitFieldArith(BitField *field, std::string_view op,
@@ -3786,8 +3796,10 @@ RsExpr *Converter::ConvertMemberExpr(clang::MemberExpr *expr) {
 }
 
 RsExpr *Converter::VisitCXXThisExpr([[maybe_unused]] clang::CXXThisExpr *expr) {
-  if (clang::isa<clang::CXXConstructorDecl>(curr_function_)) {
-    return Text("this");
+  if (auto *ctor =
+          clang::dyn_cast_or_null<clang::CXXConstructorDecl>(curr_function_)) {
+    return ConstructorBoxesThis(ctor) ? Text("this.as_pointer()")
+                                      : Text("this");
   }
   return Text(keyword::kSelfValue);
 }

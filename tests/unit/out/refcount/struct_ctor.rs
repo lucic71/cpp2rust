@@ -16,13 +16,13 @@ impl StructWithCtor {
     pub fn StructWithCtor(x1: i32, x2: i32) -> Self {
         let x1: Value<i32> = Rc::new(RefCell::new(x1));
         let x2: Value<i32> = Rc::new(RefCell::new(x2));
-        let mut this = Self {
+        let this: Value<Self> = Rc::new(RefCell::new(Self {
             x1_: (*x1.borrow()),
             x2_: (*x2.borrow()),
-        };
-        this.x1_.prefix_inc();
-        this.x2_.prefix_dec();
-        this
+        }));
+        this.as_pointer().with_mut(|__v| __v.x1_.prefix_inc());
+        this.as_pointer().with_mut(|__v| __v.x2_.prefix_dec());
+        Rc::try_unwrap(this).ok().unwrap().into_inner()
     }
 }
 pub trait StructWithCtorMethods {
