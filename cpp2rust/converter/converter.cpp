@@ -3832,17 +3832,18 @@ RsExpr *Converter::VisitInitListExpr(clang::InitListExpr *expr) {
     return GetDefaultAsString(qual_type);
   }
   if (qual_type->isRecordType()) {
+    const auto *record = qual_type->getAsRecordDecl();
+    if (record->getQualifiedNameAsString() == "std::array") {
+      auto *init = clang::dyn_cast<clang::InitListExpr>(expr->getInit(0));
+      if (init && (init->getNumInits() > 0 || init->hasArrayFiller())) {
+        return Cat(Text("vec!"), VisitInitListExpr(init));
+      }
+      return GetDefaultAsString(qual_type);
+    }
     if (IsZeroInitializer(ctx_, expr)) {
       if (auto init = Mapper::MapInitializer(qual_type); !init.empty()) {
         return Text(std::move(init));
       }
-    }
-    const auto *record = qual_type->getAsRecordDecl();
-    if (record->getQualifiedNameAsString() == "std::array") {
-      if (auto init = clang::dyn_cast<clang::InitListExpr>(expr->getInit(0))) {
-        return Cat(Text("vec!"), VisitInitListExpr(init));
-      }
-      return Cat(Text("vec!"), Text("[]"));
     }
 
     if (record->isUnion()) {

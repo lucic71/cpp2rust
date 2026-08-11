@@ -2172,23 +2172,21 @@ RsExpr *ConverterRefCount::VisitInitListExpr(clang::InitListExpr *expr) {
   }
 
   if (qual_type->isRecordType()) {
+    const auto *record = qual_type->getAsRecordDecl();
+    if (record->getQualifiedNameAsString() == "std::array") {
+      computed_expr_type_ = ComputedExprType::FreshValue;
+      auto *init = clang::dyn_cast<clang::InitListExpr>(expr->getInit(0));
+      if (!init || (init->getNumInits() == 0 && !init->hasArrayFiller())) {
+        return GetDefaultAsString(qual_type);
+      }
+      PushConversionKind push(*this, ConversionKind::Unboxed);
+      return Cat(Text("vec!"), ConverterRefCount::VisitInitListExpr(init));
+    }
     if (IsZeroInitExpr(ctx_, expr)) {
       if (auto init = Mapper::MapInitializer(qual_type); !init.empty()) {
         computed_expr_type_ = ComputedExprType::FreshValue;
         return Text(std::move(init));
       }
-    }
-    const auto *record = qual_type->getAsRecordDecl();
-    if (record->getQualifiedNameAsString() == "std::array") {
-      RsExpr *node = nullptr;
-      if (auto init = clang::dyn_cast<clang::InitListExpr>(expr->getInit(0))) {
-        PushConversionKind push(*this, ConversionKind::Unboxed);
-        node = ConverterRefCount::VisitInitListExpr(init);
-      } else {
-        node = Text("[]");
-      }
-      computed_expr_type_ = ComputedExprType::FreshValue;
-      return Cat(Text("vec!"), node);
     }
 
     if (record->isUnion()) {
