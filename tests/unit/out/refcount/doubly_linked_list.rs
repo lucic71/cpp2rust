@@ -247,7 +247,7 @@ fn main_0() -> i32 {
     );
     assert!(
         (({ Find_0((*head.borrow()).clone(), 1) })
-            .with(|__v| __v.next.with(|__v| __v.next.with(|__v| __v.val)) == 1))
+            .with(|__v| __v.next.with(|__v| __v.next.clone().with(|__v| __v.val)) == 1))
     );
     assert!(
         (({ Find_0((*head.borrow()).clone(), 2) }).with(|__v| __v.prev.with(|__v| __v.val) == 3))
@@ -255,19 +255,19 @@ fn main_0() -> i32 {
     assert!((({ Find_0((*head.borrow()).clone(), 4) }).with(|__v| __v.next.clone())).is_null());
     assert!(
         (({ FindBack_1((*tail.borrow()).clone(), 1) })
-            .with(|__v| __v.prev.with(|__v| __v.prev.with(|__v| __v.val)) == 3))
+            .with(|__v| __v.prev.with(|__v| __v.prev.clone().with(|__v| __v.val)) == 3))
     );
     {
-        let __obj = ({ Find_0((*head.borrow()).clone(), 0) }).with(|__v| __v.next.clone());
-        __obj.with_mut(|__v| __v.val = 30)
+        let __ptr = ({ Find_0((*head.borrow()).clone(), 0) }).with(|__v| __v.next.clone());
+        __ptr.with_mut(|__v| __v.val = 30)
     };
     assert!((({ Find_0((*head.borrow()).clone(), 1) }).with(|__v| __v.val == 30)));
     {
         let __rhs = (({ Find_0((*head.borrow()).clone(), 0) }).with(|__v| __v.val)
             + ({ Find_0((*head.borrow()).clone(), 3) }).with(|__v| __v.val));
         {
-            let __obj = ({ Find_0((*head.borrow()).clone(), 1) }).with(|__v| __v.next.clone());
-            __obj.with_mut(|__v| __v.val = __rhs)
+            let __ptr = ({ Find_0((*head.borrow()).clone(), 1) }).with(|__v| __v.next.clone());
+            __ptr.with_mut(|__v| __v.val = __rhs)
         }
     };
     assert!((({ Find_0((*head.borrow()).clone(), 2) }).with(|__v| __v.val == (4 + 1))));
@@ -286,8 +286,8 @@ fn main_0() -> i32 {
         } == (4 + -1_i32))
     );
     assert!({
-        let _lhs =
-            ({ Find_0((*head.borrow()).clone(), 2) }).with(|__v| __v.next.with(|__v| __v.val));
+        let _lhs = ({ Find_0((*head.borrow()).clone(), 2) })
+            .with(|__v| __v.next.clone().with(|__v| __v.val));
         ({ FindBack_1((*tail.borrow()).clone(), 1) }).with(|__v| _lhs == __v.val)
     });
     assert!({

@@ -67,12 +67,12 @@ fn main_0() -> i32 {
     assert!((((!(((*h.borrow()).with(|__v| __v.first.clone())).is_null())) as i32) != 0));
     assert!((((!(((*h.borrow()).with(|__v| __v.second.clone())).is_null())) as i32) != 0));
     {
-        let __obj = (*h.borrow()).with(|__v| __v.first.clone());
-        __obj.with_mut(|__v| __v.value = 11)
+        let __ptr = (*h.borrow()).with(|__v| __v.first.clone());
+        __ptr.with_mut(|__v| __v.value = 11)
     };
     {
-        let __obj = (*h.borrow()).with(|__v| __v.second.clone());
-        __obj.with_mut(|__v| __v.value = 22)
+        let __ptr = (*h.borrow()).with(|__v| __v.second.clone());
+        __ptr.with_mut(|__v| __v.value = 22)
     };
     (*h.borrow()).with_mut(|__v| __v.count = 2);
     libcc2rs::free_refcount(

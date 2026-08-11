@@ -1018,9 +1018,8 @@ RsExpr *ConverterRefCount::LowerPtrUse(RsExpr *node) {
   }
 
   if (auto *acc = clang::dyn_cast<Accessor>(node)) {
-    if (auto *verbatim = clang::dyn_cast<Verbatim>(acc->object->IgnoreParens());
-        verbatim && verbatim->text == "(*__v)") {
-      verbatim->text = "__v";
+    if (auto *param = clang::dyn_cast<ClosureParam>(acc->object->IgnoreParens())) {
+      param->deref = false;
     }
   }
 
@@ -1028,7 +1027,7 @@ RsExpr *ConverterRefCount::LowerPtrUse(RsExpr *node) {
     if (auto *ptr = assign->left->Pointer()) {
       return arena_.New<PtrWrite>(ptr, assign->right);
     }
-    if (auto *ptr = assign->left->TakePtr(Text("__v"))) {
+    if (auto *ptr = assign->left->TakePtr(arena_.New<ClosureParam>())) {
       return arena_.New<PtrWith>(ptr, true,
                                  arena_.New<Closure>("__v", nullptr, node));
     }
@@ -1045,7 +1044,7 @@ RsExpr *ConverterRefCount::LowerPtrUse(RsExpr *node) {
                                         arena_.New<Clone>(ptr)),
                         arena_.New<PtrWrite>(Text("_ptr"), value)));
     }
-    if (auto *ptr = assign->left->TakePtr(Text("__v"))) {
+    if (auto *ptr = assign->left->TakePtr(arena_.New<ClosureParam>())) {
       return arena_.New<PtrWith>(ptr, true,
                                  arena_.New<Closure>("__v", nullptr, node));
     }
@@ -1053,7 +1052,7 @@ RsExpr *ConverterRefCount::LowerPtrUse(RsExpr *node) {
   }
 
   if (auto *take = clang::dyn_cast<Take>(node)) {
-    if (auto *ptr = take->object->TakePtr(Text("__v"))) {
+    if (auto *ptr = take->object->TakePtr(arena_.New<ClosureParam>())) {
       return arena_.New<PtrWith>(ptr, true,
                                  arena_.New<Closure>("__v", nullptr, node));
     }
@@ -1061,16 +1060,17 @@ RsExpr *ConverterRefCount::LowerPtrUse(RsExpr *node) {
   }
 
   if (auto *call = clang::dyn_cast<Call>(node); call && call->is_mut) {
-    if (auto *ptr = call->TakePtr(Text("__v"))) {
+    if (auto *ptr = call->TakePtr(arena_.New<ClosureParam>())) {
       return arena_.New<PtrWith>(ptr, true,
                                  arena_.New<Closure>("__v", nullptr, node));
     }
     return nullptr;
   }
 
-  if (auto *ptr = node->TakePtr(Text("(*__v)"))) {
+  if (auto *ptr = node->TakePtr(arena_.New<ClosureParam>(/*deref=*/true))) {
     auto *body = node;
-    if (!node->expr || !ExprIsCopyable(node->expr)) {
+    if (!clang::isa<PtrWith, PtrRead, Clone, PtrView>(node->IgnoreParens()) &&
+        (!node->expr || !ExprIsCopyable(node->expr))) {
       body = arena_.New<Clone>(body);
     }
     return arena_.New<PtrWith>(ptr, false,
@@ -1104,15 +1104,42 @@ static bool MergeSameObjectWith(RsExpr *&slot, const std::string &object,
   return merged;
 }
 
+static bool HasBorrowedReceiverWith(RsExpr *node) {
+  bool found = false;
+  node->ForEachChild([&](RsExpr *&child) {
+    if (found) {
+      return;
+    }
+    if (auto *with = clang::dyn_cast<PtrWith>(child);
+        with && ReadsClosureParam(with->object)) {
+      found = true;
+      return;
+    }
+    found = HasBorrowedReceiverWith(child);
+  });
+  return found;
+}
+
 RsExpr *ConverterRefCount::NestPtrUse(RsExpr *node) {
   if (!clang::isa<PtrWith>(node)) {
     return nullptr;
   }
   auto *with = clang::cast<PtrWith>(node);
   auto *body = clang::cast<Closure>(with->closure);
+  if (HasBorrowedReceiverWith(body->body)) {
+    return nullptr;
+  }
   bool is_mut = with->is_mut;
   if (MergeSameObjectWith(body->body, with->object->print(), is_mut)) {
     with->is_mut = is_mut;
+  }
+
+  if (auto *receiver = with->object->IgnoreParens();
+      with->is_mut && clang::isa<PtrWith>(receiver)) {
+    with->object = Text("__ptr");
+    return Braces(
+        Cat(arena_.New<Let>("__ptr", /*is_mut=*/false, nullptr, receiver),
+            node));
   }
 
   auto *outer = node;
@@ -1164,20 +1191,6 @@ RsExpr *ConverterRefCount::WidenPtrWith(RsExpr *node) {
   return with;
 }
 
-static bool UsesClosureParam(RsExpr *node, const std::string &param) {
-  if (auto *closure = clang::dyn_cast<Closure>(node);
-      closure && closure->param == param) {
-    return false;
-  }
-  if (auto *verbatim = clang::dyn_cast<Verbatim>(node)) {
-    return verbatim->text.find(param) != std::string::npos;
-  }
-  bool used = false;
-  node->ForEachChild(
-      [&](RsExpr *&child) { used = used || UsesClosureParam(child, param); });
-  return used;
-}
-
 RsExpr *ConverterRefCount::HoistBorrowedObject(Accessor *acc) {
   auto *object = acc->object->IgnoreParens();
   if (!clang::isa<Field>(object) && !clang::isa<Index>(object)) {
@@ -1226,10 +1239,26 @@ RsExpr *ConverterRefCount::HoistPtrUse(RsExpr *node) {
   if (!closure) {
     return nullptr;
   }
-  if (auto *body_with = clang::dyn_cast<PtrWith>(closure->body)) {
+  RsExpr *prefix = nullptr;
+  auto *body_with = clang::dyn_cast<PtrWith>(closure->body);
+  if (!body_with) {
+    auto *block = closure->body->IgnoreParens();
+    if (auto *delim = clang::dyn_cast<Delim>(block)) {
+      block = delim->inner;
+    }
+    if (auto *concat = clang::dyn_cast<Concat>(block);
+        concat && concat->parts.size() == 2) {
+      if (auto *tail = clang::dyn_cast<PtrWith>(concat->parts.back());
+          tail && !ReadsClosureParam(concat->parts.front())) {
+        body_with = tail;
+        prefix = concat->parts.front();
+      }
+    }
+  }
+  if (body_with) {
     if (body_with->is_mut &&
-        UsesClosureParam(body_with->object, closure->param) &&
-        !UsesClosureParam(body_with->closure, closure->param)) {
+        ReadsClosureParam(body_with->object) &&
+        !ReadsClosureParam(body_with->closure)) {
       auto *object = body_with->object;
       if (clang::isa<Field>(object)) {
         object = arena_.New<Clone>(Parens(object));
@@ -1242,9 +1271,12 @@ RsExpr *ConverterRefCount::HoistPtrUse(RsExpr *node) {
       if (auto *hoisted = HoistPtrUse(inner_with)) {
         inner_with = hoisted;
       }
-      return Braces(
-          Cat(arena_.New<Let>("__obj", /*is_mut=*/false, nullptr, obj_read),
-              inner_with));
+      auto *let_obj =
+          arena_.New<Let>("__obj", /*is_mut=*/false, nullptr, obj_read);
+      if (prefix) {
+        return Braces(Cat(prefix, let_obj, inner_with));
+      }
+      return Braces(Cat(let_obj, inner_with));
     }
   }
   if (auto *inner = HoistPtrUse(closure->body)) {
@@ -1258,7 +1290,7 @@ RsExpr *ConverterRefCount::HoistPtrUse(RsExpr *node) {
     RsExpr **nested = nullptr;
     closure->body->ForEachChild([&](RsExpr *&child) {
       if (nested == nullptr && clang::isa<PtrWith>(child) &&
-          !UsesClosureParam(child, closure->param)) {
+          !ReadsClosureParam(child)) {
         nested = &child;
       }
     });
@@ -1278,7 +1310,7 @@ RsExpr *ConverterRefCount::HoistPtrUse(RsExpr *node) {
   bool hoist_rhs = right != nullptr && (*right)->Any([](RsExpr *n) {
     return clang::isa<PtrWith, PtrRead, PtrWrite, Call, BorrowRead,
                       BorrowWrite>(n);
-  }) && !UsesClosureParam(*right, closure->param);
+  }) && !ReadsClosureParam(*right);
   auto *obj_let = with->is_mut ? HoistBorrowedObject(with) : nullptr;
   if (!hoist_rhs && !obj_let) {
     return nullptr;
@@ -2175,11 +2207,11 @@ RsExpr *ConverterRefCount::VisitInitListExpr(clang::InitListExpr *expr) {
     const auto *record = qual_type->getAsRecordDecl();
     if (record->getQualifiedNameAsString() == "std::array") {
       computed_expr_type_ = ComputedExprType::FreshValue;
+      PushConversionKind push(*this, ConversionKind::Unboxed);
       auto *init = clang::dyn_cast<clang::InitListExpr>(expr->getInit(0));
       if (!init || (init->getNumInits() == 0 && !init->hasArrayFiller())) {
         return GetDefaultAsString(qual_type);
       }
-      PushConversionKind push(*this, ConversionKind::Unboxed);
       return Cat(Text("vec!"), ConverterRefCount::VisitInitListExpr(init));
     }
     if (IsZeroInitExpr(ctx_, expr)) {
@@ -3232,7 +3264,7 @@ ConverterRefCount::emplace_back_emit_push(clang::CXXMemberCallExpr *call,
   }
   auto *object = ConvertFreshObject(obj);
   auto *type_node = Convert(obj_type.getNonReferenceType());
-  auto *push = arena_.New<Call>(arena_.New<Field>(Text("__v"), "push"),
+  auto *push = arena_.New<Call>(arena_.New<Field>(arena_.New<ClosureParam>(), "push"),
                                 std::vector<RsExpr *>{arg}, /*is_mut=*/true);
   return arena_.New<PtrWith>(
       object, /*is_mut=*/true,
@@ -3273,12 +3305,12 @@ RsExpr *ConverterRefCount::ConvertMappedMethodCall(
     if (auto *ptr = receiver->IgnoreParens()->Pointer()) {
       return arena_.New<PtrWith>(
           ptr, false,
-          arena_.New<Closure>("__v", nullptr, Cat(Text("__v"), body)));
+          arena_.New<Closure>("__v", nullptr, Cat(arena_.New<ClosureParam>(), body)));
     }
 
     // The receiver sits behind a pointer (a field or an element of it).
     auto *node = Cat(receiver, body);
-    if (auto *ptr = receiver->TakePtr(Text("__v"))) {
+    if (auto *ptr = receiver->TakePtr(arena_.New<ClosureParam>())) {
       return arena_.New<PtrWith>(ptr, false,
                                  arena_.New<Closure>("__v", nullptr, node));
     }
@@ -3292,7 +3324,7 @@ RsExpr *ConverterRefCount::ConvertMappedMethodCall(
     auto *receiver = ConvertIRFragment(mc.receiver, expr, args, num_args, ctx);
     auto *body = ConvertIRFragment(mc.body, expr, args, num_args, ctx);
     auto *node = Cat(receiver, body);
-    if (auto *ptr = receiver->TakePtr(Text("__v"))) {
+    if (auto *ptr = receiver->TakePtr(arena_.New<ClosureParam>())) {
       return arena_.New<PtrWith>(ptr, true,
                                  arena_.New<Closure>("__v", nullptr, node));
     }
@@ -3306,7 +3338,7 @@ RsExpr *ConverterRefCount::ConvertMappedMethodCall(
     auto *body = ConvertIRFragment(mc.body, expr, args, num_args, ctx);
     return arena_.New<PtrWith>(
         ptr, true,
-        arena_.New<Closure>("__v", Text(param_type), Cat(Text("__v"), body)));
+        arena_.New<Closure>("__v", Text(param_type), Cat(arena_.New<ClosureParam>(), body)));
   }
 
   auto *receiver =
@@ -3320,12 +3352,12 @@ RsExpr *ConverterRefCount::ConvertMappedMethodCall(
         receiver_ptr, true,
         arena_.New<Closure>(
             "__v", Cat(Text("&mut Value<"), Convert(arg->getType()), Text('>')),
-            Cat(arena_.New<BorrowWrite>(Text("__v")), body)));
+            Cat(arena_.New<BorrowWrite>(arena_.New<ClosureParam>()), body)));
   }
 
   return arena_.New<PtrWith>(
       receiver_ptr, true,
-      arena_.New<Closure>("__v", Text(param_type), Cat(Text("__v"), body)));
+      arena_.New<Closure>("__v", Text(param_type), Cat(arena_.New<ClosureParam>(), body)));
 }
 
 RsExpr *ConverterRefCount::ConvertPointeeType(clang::QualType ptr_type) {

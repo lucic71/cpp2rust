@@ -31,6 +31,7 @@ struct PtrWith;
 struct RsExpr {
   enum class Kind : uint8_t {
     Verbatim,
+    ClosureParam,
     Concat,
     Delim,
     Unary,
@@ -125,6 +126,19 @@ struct Verbatim : RsExpr {
   void dump(llvm::raw_ostream &os, unsigned depth = 0) override;
 
   std::string text;
+};
+
+struct ClosureParam : RsExpr {
+  explicit ClosureParam(bool deref = false)
+      : RsExpr(Kind::ClosureParam), deref(deref) {}
+
+  static bool classof(const RsExpr *e) { return e->kind == Kind::ClosureParam; }
+
+  std::string print() const override { return deref ? "(*__v)" : "__v"; }
+
+  bool deref;
+
+  void dump(llvm::raw_ostream &os, unsigned depth = 0) override;
 };
 
 struct Concat : RsExpr {
@@ -1007,6 +1021,8 @@ struct CompoundAssign : RsExpr {
 
   void dump(llvm::raw_ostream &os, unsigned depth = 0) override;
 };
+
+bool ReadsClosureParam(RsExpr *node);
 
 inline bool SameRendered(const RsExpr *lhs, const RsExpr *rhs) {
   return lhs->print() == rhs->print();

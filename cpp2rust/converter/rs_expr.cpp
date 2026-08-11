@@ -80,6 +80,19 @@ PtrWith *RsExpr::FindWith() {
   return slot != nullptr ? (*slot)->FindWith() : nullptr;
 }
 
+bool ReadsClosureParam(RsExpr *node) {
+  if (llvm::isa<Closure>(node)) {
+    return false;
+  }
+  if (llvm::isa<ClosureParam>(node)) {
+    return true;
+  }
+  bool used = false;
+  node->ForEachChild(
+      [&](RsExpr *&child) { used = used || ReadsClosureParam(child); });
+  return used;
+}
+
 bool RsExpr::Any(llvm::function_ref<bool(RsExpr *)> pred) {
   if (pred(this)) {
     return true;
@@ -93,6 +106,8 @@ const char *KindName(RsExpr::Kind kind) {
   switch (kind) {
   case RsExpr::Kind::Verbatim:
     return "Verbatim";
+  case RsExpr::Kind::ClosureParam:
+    return "ClosureParam";
   case RsExpr::Kind::Concat:
     return "Concat";
   case RsExpr::Kind::Delim:
@@ -201,6 +216,10 @@ void Verbatim::dump(llvm::raw_ostream &os, unsigned depth) {
     line += "...";
   }
   DumpHeader(this, os, depth, '"' + line + '"');
+}
+
+void ClosureParam::dump(llvm::raw_ostream &os, unsigned depth) {
+  DumpHeader(this, os, depth, deref ? "deref" : "");
 }
 
 void Concat::dump(llvm::raw_ostream &os, unsigned depth) {

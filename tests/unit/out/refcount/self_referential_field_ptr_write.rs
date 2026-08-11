@@ -59,8 +59,8 @@ pub fn set_current_0(p: Ptr<Outer>, src: Ptr<i32>) {
     {
         let __rhs = ((*src.borrow()).read());
         {
-            let __obj = (*p.borrow()).with(|__v| __v.cur.clone());
-            __obj.with_mut(|__v| __v.value = __rhs)
+            let __ptr = (*p.borrow()).with(|__v| __v.cur.clone());
+            __ptr.with_mut(|__v| __v.value = __rhs)
         }
     };
 }
@@ -69,8 +69,8 @@ pub fn bump_current_1(p: Ptr<Outer>) {
     {
         let __rhs = ((*p.borrow()).with(|__v| __v.slots[(0) as usize].value + 1));
         {
-            let __obj = (*p.borrow()).with(|__v| __v.cur.clone());
-            __obj.with_mut(|__v| __v.value = __rhs)
+            let __ptr = (*p.borrow()).with(|__v| __v.cur.clone());
+            __ptr.with_mut(|__v| __v.value = __rhs)
         }
     };
 }

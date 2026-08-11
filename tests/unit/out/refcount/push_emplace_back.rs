@@ -186,13 +186,11 @@ pub fn emplace_local_from_field_4(jpg: Ptr<JPEGData>, cond: bool) {
 }
 pub fn nested_emplace_move_5(bw: Ptr<Writer>) {
     let bw: Value<Ptr<Writer>> = Rc::new(RefCell::new(bw));
-    (*bw.borrow()).with_mut(|__v| {
-        {
-            let __val = std::mem::take(&mut __v.chunk);
-            __v.output.with_mut(|__v: &mut Vec<Chunk>| __v.push(__val))
-        }
-        .clone()
-    });
+    {
+        let __val = (*bw.borrow()).with_mut(|__v| std::mem::take(&mut __v.chunk));
+        let __obj = (*bw.borrow()).with(|__v| __v.output.clone());
+        __obj.with_mut(|__v: &mut Vec<Chunk>| __v.push(__val))
+    };
 }
 pub fn self_ref_push_6(comps: Ptr<Vec<Chunk>>) {
     let comps: Value<Ptr<Vec<Chunk>>> = Rc::new(RefCell::new(comps));

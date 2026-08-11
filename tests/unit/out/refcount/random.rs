@@ -248,8 +248,8 @@ fn main_0() -> i32 {
         __ptr.with_mut(|__v| __v.pair = (y2.as_pointer()))
     };
     {
-        let __obj = (*y1.borrow()).pair.with(|__v| __v.pair.clone());
-        __obj.with_mut(|__v| __v.x = 100)
+        let __ptr = (*y1.borrow()).pair.with(|__v| __v.pair.clone());
+        __ptr.with_mut(|__v| __v.x = 100)
     };
     (*y1.borrow_mut()).ap[(0) as usize] = (x1.as_pointer());
     (*y1.borrow_mut()).ap[(1) as usize] = (x2.as_pointer());
@@ -282,8 +282,8 @@ fn main_0() -> i32 {
         __ptr.with_mut(|__v| __v.pair = (y2.as_pointer()))
     };
     {
-        let __obj = (*y1.borrow()).pair.with(|__v| __v.pair.clone());
-        __obj.with_mut(|__v| __v.x = 10)
+        let __ptr = (*y1.borrow()).pair.with(|__v| __v.pair.clone());
+        __ptr.with_mut(|__v| __v.x = 10)
     };
     ({ y1.as_pointer().method() });
     (*y1.borrow_mut()).pair = (y2.as_pointer());

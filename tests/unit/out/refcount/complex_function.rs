@@ -171,8 +171,8 @@ fn main_0() -> i32 {
         v: (*c.borrow()).clone(),
     }));
     {
-        let __obj = (*d.borrow()).v.v.with(|__v| __v.v.clone());
-        __obj.with_mut(|__v| __v.v = 0)
+        let __ptr = (*d.borrow()).v.v.with(|__v| __v.v.clone());
+        __ptr.with_mut(|__v| __v.v = 0)
     };
     ({ ({ ({ d.as_pointer().get() }).get() }).get() }).with_mut(|__v| __v.v = 0);
     (*d.borrow_mut()).v.v = (b.as_pointer());

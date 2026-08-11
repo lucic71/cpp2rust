@@ -58,6 +58,56 @@ pub fn store_0(h: Ptr<Holder>) {
             .with_mut(|__v: &mut Vec<Item>| __v.push(__val))
     };
 }
+#[repr(C)]
+#[derive(Default)]
+pub struct Nested {
+    pub items: Vec<Item>,
+}
+impl ByteRepr for Nested {
+    fn byte_size() -> usize {
+        80
+    }
+    fn to_bytes(&self, buf: &mut [u8]) {
+        self.items.to_bytes(&mut buf[0..80]);
+    }
+    fn from_bytes(buf: &[u8]) -> Self {
+        Self {
+            items: <Vec<Item>>::from_bytes(&buf[0..80]),
+        }
+    }
+}
+#[repr(C)]
+#[derive(Default)]
+pub struct Outer {
+    pub nested: Nested,
+    pub sink: Ptr<Vec<Item>>,
+    pub pending: Item,
+}
+impl ByteRepr for Outer {
+    fn byte_size() -> usize {
+        96
+    }
+    fn to_bytes(&self, buf: &mut [u8]) {
+        self.nested.to_bytes(&mut buf[0..80]);
+        self.sink.to_bytes(&mut buf[80..88]);
+        self.pending.to_bytes(&mut buf[88..96]);
+    }
+    fn from_bytes(buf: &[u8]) -> Self {
+        Self {
+            nested: <Nested>::from_bytes(&buf[0..80]),
+            sink: <Ptr<Vec<Item>>>::from_bytes(&buf[80..88]),
+            pending: <Item>::from_bytes(&buf[88..96]),
+        }
+    }
+}
+pub fn store_through_1(o: Ptr<Outer>) {
+    let o: Value<Ptr<Outer>> = Rc::new(RefCell::new(o));
+    {
+        let __val = (*o.borrow()).with_mut(|__v| std::mem::take(&mut __v.pending));
+        let __obj = (*o.borrow()).with(|__v| __v.sink.clone());
+        __obj.with_mut(|__v: &mut Vec<Item>| __v.push(__val))
+    };
+}
 pub fn main() {
     libcc2rs::exit_refcount(main_0());
 }
@@ -80,6 +130,47 @@ fn main_0() -> i32 {
             .unwrap()
             .borrow())
             == 7)
+    );
+    let o: Value<Outer> = Rc::new(RefCell::new(<Outer>::default()));
+    {
+        let __rhs = (o
+            .as_pointer()
+            .field_ptr(
+                0,
+                |__v: &Outer| ::std::slice::from_ref(&__v.nested),
+                |__v: &mut Outer| ::std::slice::from_mut(&mut __v.nested),
+            )
+            .field_ptr(
+                0,
+                |__v: &Nested| ::std::slice::from_ref(&__v.items),
+                |__v: &mut Nested| ::std::slice::from_mut(&mut __v.items),
+            ));
+        (*o.borrow_mut()).sink = __rhs
+    };
+    {
+        let _p: Ptr<_> = Ptr::alloc(9);
+        (*o.borrow_mut()).pending.value = _p.to_owned_opt()
+    };
+    ({ store_through_1((o.as_pointer())) });
+    assert!(((*o.borrow()).pending.value.as_pointer()).is_null());
+    assert!(
+        ((*(o
+            .as_pointer()
+            .field_ptr(
+                0,
+                |__v: &Outer| ::std::slice::from_ref(&__v.nested),
+                |__v: &mut Outer| ::std::slice::from_mut(&mut __v.nested)
+            )
+            .field_ptr(
+                0,
+                |__v: &Nested| &__v.items[..],
+                |__v: &mut Nested| &mut __v.items[..]
+            ) as Ptr<Item>)
+            .with(|__v| __v.value.clone())
+            .as_ref()
+            .unwrap()
+            .borrow())
+            == 9)
     );
     return 0;
 }

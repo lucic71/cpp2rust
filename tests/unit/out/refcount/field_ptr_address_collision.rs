@@ -102,8 +102,8 @@ fn main_0() -> i32 {
         .with(|__v| __v.words.offset(((1) as isize)).clone())
         .write(22_i64);
     {
-        let __obj = (*h.borrow()).with(|__v| __v.field.clone());
-        __obj.with_mut(|__v| __v.a = 33_i64)
+        let __ptr = (*h.borrow()).with(|__v| __v.field.clone());
+        __ptr.with_mut(|__v| __v.a = 33_i64)
     };
     assert!(
         ((((*h.borrow()).with(|__v| (__v.words.offset(((0) as isize)).clone().read()) == 11_i64))

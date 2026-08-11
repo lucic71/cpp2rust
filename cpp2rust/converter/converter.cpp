@@ -300,17 +300,41 @@ bool Converter::Convert(clang::Decl *decl) {
   return false;
 }
 
+static void StripReceiverCopy(PtrWith *with) {
+  auto *object = with->object->IgnoreParens();
+  if (auto *clone = clang::dyn_cast<Clone>(object)) {
+    with->object = clone->object;
+  } else if (auto *view = clang::dyn_cast<PtrView>(object);
+             view && !view->element) {
+    with->object = view->object;
+  }
+}
+
+static void ForEachNestedWith(RsExpr *node,
+                              llvm::function_ref<void(PtrWith *)> fn) {
+  node->ForEachChild([&](RsExpr *&child) {
+    if (auto *with = clang::dyn_cast<PtrWith>(child)) {
+      fn(with);
+      return;
+    }
+    ForEachNestedWith(child, fn);
+  });
+}
+
 void Converter::StripWithReceiverClone(RsExpr *node) {
   if (auto *with = clang::dyn_cast<PtrWith>(node)) {
-    auto *object = with->object->IgnoreParens();
-    if (auto *clone = clang::dyn_cast<Clone>(object)) {
-      with->object = clone->object;
-    } else if (auto *view = clang::dyn_cast<PtrView>(object);
-               view && !view->element) {
-      with->object = view->object;
+    if (!ReadsClosureParam(with->object)) {
+      StripReceiverCopy(with);
+    }
+    if (auto *closure = clang::dyn_cast<Closure>(with->closure)) {
+      ForEachNestedWith(closure->body, [&](PtrWith *nested) {
+        if (!with->is_mut && !nested->is_mut) {
+          StripReceiverCopy(nested);
+        }
+      });
     }
   }
-  node->ForEachChild([this](RsExpr *&child) { StripWithReceiverClone(child); });
+  node->ForEachChild([&](RsExpr *&child) { StripWithReceiverClone(child); });
 }
 
 void Converter::LowerNodes(RsExpr *&node) {

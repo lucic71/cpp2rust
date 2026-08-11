@@ -10,6 +10,8 @@ pub fn main() {
     libcc2rs::exit_refcount(main_0());
 }
 fn main_0() -> i32 {
-    let vec_: Value<Vec<i32>> = Rc::new(RefCell::new(Default::default()));
+    let vec_: Value<Vec<i32>> = Rc::new(RefCell::new(
+        std::array::from_fn::<_, 3, _>(|_| Default::default()).to_vec(),
+    ));
     return 0;
 }
