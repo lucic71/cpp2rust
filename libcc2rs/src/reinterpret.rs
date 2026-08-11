@@ -84,7 +84,11 @@ impl ByteRepr for bool {
 
 impl ByteRepr for () {}
 impl ByteRepr for std::fs::File {}
-impl<T: ByteRepr> ByteRepr for Vec<T> {}
+impl<T: ByteRepr> ByteRepr for Vec<T> {
+    fn byte_size() -> usize {
+        std::mem::size_of::<Self>()
+    }
+}
 impl<T: ByteRepr> ByteRepr for Option<T> {}
 impl<T: ByteRepr> ByteRepr for std::rc::Rc<T> {}
 impl<T: ByteRepr> ByteRepr for std::cell::RefCell<T> {}
