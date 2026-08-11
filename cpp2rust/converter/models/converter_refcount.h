@@ -43,8 +43,6 @@ public:
 
   RsExpr *AddCloneTrait(const clang::RecordDecl *decl) override;
 
-  RsExpr *AddDropTrait(const clang::CXXRecordDecl *decl) override;
-
   RsExpr *AddByteReprTrait(const clang::RecordDecl *decl) override;
 
   bool RustSizeofMatchesCSizeof(clang::QualType ty) const override;
@@ -56,6 +54,12 @@ public:
   RsExpr *AddDefaultTraitForUnion(const clang::RecordDecl *decl) override;
 
   RsExpr *ConvertRecordMethods(clang::CXXRecordDecl *decl) override;
+
+  RsExpr *AddDropTrait(const clang::CXXRecordDecl *decl) override;
+
+  RsExpr *DestroyMembers(const clang::CXXRecordDecl *decl);
+
+  RsExpr *ConvertFunctionBody(clang::FunctionDecl *decl) override;
 
   bool ThisIsValue() const override;
 
@@ -77,6 +81,8 @@ public:
   RsExpr *EmitFunctionPreamble(clang::FunctionDecl *decl) override;
 
   RsExpr *VisitVarDecl(clang::VarDecl *decl) override;
+
+  RsExpr *EmitScopedDestructor(const clang::VarDecl *decl);
 
   RsExpr *ConvertGlobalVarDecl(clang::VarDecl *decl) override;
 

@@ -22,6 +22,9 @@
 #include "logging.h"
 
 namespace cpp2rust {
+
+inline constexpr const char *kDestructorName = "__dtor";
+
 class Converter {
 
 public:
@@ -174,6 +177,8 @@ public:
   virtual RsExpr *VisitNamespaceDecl(clang::NamespaceDecl *decl);
 
   virtual RsExpr *VisitTypedefDecl(clang::TypedefDecl *decl);
+
+  RsExpr *ConvertStmtBody(clang::Stmt *stmt);
 
   virtual RsExpr *VisitCompoundStmt(clang::CompoundStmt *stmt);
 

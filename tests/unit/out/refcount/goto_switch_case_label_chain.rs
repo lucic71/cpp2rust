@@ -19,9 +19,11 @@ pub fn pick_0(op: i32, x: i32) -> i32 {
             goto!('shared);
         }
         __v if __v == 2 => 'shared: {
-            let t: Value<i32> = Rc::new(RefCell::new(((*x.borrow()) * 3)));
-            (*r.borrow_mut()) = ((*t.borrow()) + 1);
-            break;
+            {
+                let t: Value<i32> = Rc::new(RefCell::new(((*x.borrow()) * 3)));
+                (*r.borrow_mut()) = ((*t.borrow()) + 1);
+                break;
+            }
         }
         __v if false => '__default_1: {
             (*r.borrow_mut()) = -1_i32;

@@ -1428,6 +1428,26 @@ where
     }
 }
 
+pub struct ScopedDestructor<T> {
+    owner: Rc<RefCell<T>>,
+    destroy: fn(Ptr<T>),
+}
+
+impl<T> ScopedDestructor<T> {
+    pub fn new(owner: &Value<T>, destroy: fn(Ptr<T>)) -> Self {
+        Self {
+            owner: owner.clone(),
+            destroy,
+        }
+    }
+}
+
+impl<T> Drop for ScopedDestructor<T> {
+    fn drop(&mut self) {
+        (self.destroy)(self.owner.as_pointer());
+    }
+}
+
 #[derive(Clone)]
 pub struct AnyPtr {
     pub(crate) ptr: Rc<dyn ErasedPtr>,

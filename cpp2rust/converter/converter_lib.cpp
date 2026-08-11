@@ -307,6 +307,42 @@ bool IsConvertibleFunctionDecl(const clang::FunctionDecl *decl) {
   return decl->hasBody() && decl->isThisDeclarationADefinition();
 }
 
+clang::CXXDestructorDecl *
+GetTranslatableDestructor(const clang::CXXRecordDecl *decl) {
+  if (!decl->hasDefinition() || !IsUserDefinedDecl(decl) ||
+      !decl->hasUserDeclaredDestructor()) {
+    return nullptr;
+  }
+  auto *dtor = decl->getDestructor();
+  if (!dtor || !dtor->isThisDeclarationADefinition() || dtor->isImplicit()) {
+    return nullptr;
+  }
+  return dtor;
+}
+
+bool TypeNeedsDestruction(clang::QualType type) {
+  if (type->isArrayType()) {
+    type = clang::QualType(type->getBaseElementTypeUnsafe(), 0);
+  }
+  auto *record = type->getAsCXXRecordDecl();
+  return record && RecordNeedsDestruction(record);
+}
+
+bool RecordNeedsDestruction(const clang::CXXRecordDecl *decl) {
+  if (!decl->hasDefinition() || !IsUserDefinedDecl(decl)) {
+    return false;
+  }
+  if (GetTranslatableDestructor(decl)) {
+    return true;
+  }
+  for (const auto *field : decl->fields()) {
+    if (TypeNeedsDestruction(field->getType())) {
+      return true;
+    }
+  }
+  return false;
+}
+
 bool IsUniquePtr(clang::QualType type) {
   auto *record_decl = type.getNonReferenceType()->getAsCXXRecordDecl();
   return record_decl && record_decl->getNameAsString() == "unique_ptr";

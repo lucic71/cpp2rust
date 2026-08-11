@@ -898,7 +898,7 @@ RsExpr *Converter::ConvertFunctionBody(clang::FunctionDecl *decl) {
     }
   }
 
-  auto *node = ConvertFullStmt(decl->getBody());
+  auto *node = ConvertStmtBody(decl->getBody());
   if (!decl->getReturnType()->isVoidType()) {
     if (auto compound = clang::dyn_cast<clang::CompoundStmt>(decl->getBody())) {
       if (!compound->body_empty()) {
@@ -1126,6 +1126,11 @@ bool Converter::RecordDerivesDefault(const clang::RecordDecl *decl) {
   }
 
   for (auto f : decl->fields()) {
+    // Fields with an in-class initializer need it honoured
+    if (f->hasInClassInitializer()) {
+      return false;
+    }
+
     // Records that contain function pointer do not derive Default
     if (auto ptr_ty = f->getType()->getAs<clang::PointerType>()) {
       if (ptr_ty->getPointeeType()->isFunctionType()) {
@@ -1428,7 +1433,9 @@ RsExpr *Converter::ConvertMethodItem(clang::CXXMethodDecl *decl,
   qualifiers.push_back(Text(keyword_unsafe_));
 
   std::string name;
-  if (decl->isOverloadedOperator()) {
+  if (clang::isa<clang::CXXDestructorDecl>(decl)) {
+    name = kDestructorName;
+  } else if (decl->isOverloadedOperator()) {
     name = GetOverloadedOperator(decl);
   } else if (IsOverloadedMethod(decl)) {
     name = GetOverloadedFunctionName(decl);
@@ -1515,7 +1522,7 @@ RsExpr *Converter::ConvertCXXConstructorBody(clang::CXXConstructorDecl *decl) {
     inits.push_back(Text(token::kComma));
   }
 
-  auto *body = ConvertFullStmt(decl->getBody());
+  auto *body = ConvertStmtBody(decl->getBody());
   return Cat(preamble, Text(keyword::kLet), Text("mut"), Text("this"),
              Text(token::kAssign), Text("Self"),
              Braces(arena_.New<Concat>(std::move(inits))),
@@ -1846,15 +1853,23 @@ RsExpr *Converter::ConvertStmt(clang::Stmt *stmt) {
   }
 }
 
+RsExpr *Converter::ConvertStmtBody(clang::Stmt *stmt) {
+  auto *compound = clang::dyn_cast<clang::CompoundStmt>(stmt);
+  if (!compound || CompoundHasTopLevelLabel(compound)) {
+    return ConvertFullStmt(stmt);
+  }
+  std::vector<RsExpr *> parts;
+  for (auto *child : compound->body()) {
+    parts.push_back(ConvertFullStmt(child));
+  }
+  return arena_.New<Concat>(std::move(parts));
+}
+
 RsExpr *Converter::VisitCompoundStmt(clang::CompoundStmt *stmt) {
   if (CompoundHasTopLevelLabel(stmt)) {
     return ConvertGotoBlock(stmt);
   }
-  std::vector<RsExpr *> parts;
-  for (auto *child : stmt->body()) {
-    parts.push_back(ConvertFullStmt(child));
-  }
-  return arena_.New<Concat>(std::move(parts));
+  return Braces(ConvertStmtBody(stmt));
 }
 
 RsExpr *Converter::VisitDeclStmt(clang::DeclStmt *stmt) {
@@ -1889,10 +1904,10 @@ RsExpr *Converter::ConvertCondition(clang::Expr *cond) {
 
 RsExpr *Converter::VisitIfStmt(clang::IfStmt *stmt) {
   auto *cond = ConvertCondition(stmt->getCond());
-  auto *then = ConvertFullStmt(stmt->getThen());
+  auto *then = ConvertStmtBody(stmt->getThen());
   RsExpr *els = nullptr;
   if (stmt->hasElseStorage()) {
-    els = ConvertFullStmt(stmt->getElse());
+    els = ConvertStmtBody(stmt->getElse());
     if (!clang::isa<clang::IfStmt>(stmt->getElse())) {
       els = Braces(els);
     }
@@ -1904,7 +1919,7 @@ RsExpr *Converter::VisitWhileStmt(clang::WhileStmt *stmt) {
   PushBreakTarget push(break_target_, BreakTarget::Loop);
   auto *cond = ConvertCondition(stmt->getCond());
   curr_for_inc_.emplace_back(nullptr);
-  auto *body = ConvertFullStmt(stmt->getBody());
+  auto *body = ConvertStmtBody(stmt->getBody());
   curr_for_inc_.pop_back();
   return arena_.New<Loop>("'loop_", keyword::kWhile, cond, body);
 }
@@ -1914,7 +1929,7 @@ RsExpr *Converter::VisitDoStmt(clang::DoStmt *stmt) {
   const char *control_var = "__do_while";
   auto *cond = ConvertCondition(stmt->getCond());
   curr_for_inc_.emplace_back(nullptr);
-  auto *body = ConvertFullStmt(stmt->getBody());
+  auto *body = ConvertStmtBody(stmt->getBody());
   curr_for_inc_.pop_back();
   auto *header =
       arena_.New<Binary>(clang::BO_LOr, Text(control_var), Parens(cond));
@@ -1936,7 +1951,7 @@ RsExpr *Converter::VisitForStmt(clang::ForStmt *stmt) {
     cond = ConvertCondition(stmt->getCond());
   }
   curr_for_inc_.emplace_back(stmt->getInc());
-  auto *body = ConvertFullStmt(stmt->getBody());
+  auto *body = ConvertStmtBody(stmt->getBody());
   curr_for_inc_.pop_back();
   auto *inc = Cat(ConvertExpr(stmt->getInc()), Text(token::kSemiColon));
   return Cat(init,
@@ -1971,7 +1986,7 @@ RsExpr *Converter::ConvertForRangeBody(clang::CXXForRangeStmt *stmt,
   if (map_iter_decl)
     skip.emplace(*this, map_iter_decl);
   curr_for_inc_.emplace_back(nullptr);
-  auto *body = ConvertFullStmt(stmt->getBody());
+  auto *body = ConvertStmtBody(stmt->getBody());
   curr_for_inc_.pop_back();
   return body;
 }
@@ -4526,7 +4541,10 @@ Converter::GetStructAttributes(const clang::RecordDecl *decl) {
 
   std::vector<const char *> struct_attrs;
 
-  if (RecordHasCopyableFields(decl)) {
+  auto *cxx = clang::dyn_cast<clang::CXXRecordDecl>(decl);
+  bool has_destructor = cxx && GetTranslatableDestructor(cxx);
+
+  if (!has_destructor && RecordHasCopyableFields(decl)) {
     struct_attrs.emplace_back("Copy");
   }
 
@@ -4957,7 +4975,23 @@ RsExpr *Converter::AddCloneTrait(const clang::RecordDecl *decl) {
 }
 
 RsExpr *Converter::AddDropTrait(const clang::CXXRecordDecl *decl) {
-  return Text("");
+  auto *dtor = GetTranslatableDestructor(decl);
+  if (!dtor) {
+    return Text("");
+  }
+  auto *body = dtor->getBody();
+  if (!body) {
+    return Text("");
+  }
+
+  auto *old_function = curr_function_;
+  curr_function_ = dtor;
+  auto *body_node = ConvertStmtBody(body);
+  curr_function_ = old_function;
+
+  return Cat(Text(keyword::kImpl), Text("Drop for"), Text(GetRecordName(decl)),
+             Text('{'), Text("fn drop(&mut self)"),
+             Braces(Cat(Text(keyword_unsafe_), Braces(body_node))), Text('}'));
 }
 
 RsExpr *Converter::AddDefaultTraitForUnion(const clang::RecordDecl *decl) {
@@ -5005,7 +5039,13 @@ RsExpr *Converter::EmitDefaultStructLiteral(const clang::RecordDecl *decl) {
   auto emit_field = [&](const clang::FieldDecl *field) {
     fields.push_back(Text(GetNamedDeclAsString(field)));
     fields.push_back(Text(token::kColon));
-    fields.push_back(GetDefaultAsString(field->getType()));
+    if (auto *init = field->hasInClassInitializer()
+                         ? field->getInClassInitializer()
+                         : nullptr) {
+      fields.push_back(ConvertVarInit(field->getType(), init));
+    } else {
+      fields.push_back(GetDefaultAsString(field->getType()));
+    }
     fields.push_back(Text(token::kComma));
   };
   auto emit_storage = [&](unsigned run) {

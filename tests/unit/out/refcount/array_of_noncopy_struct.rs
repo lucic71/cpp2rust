@@ -7,7 +7,7 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
 #[repr(C)]
-#[derive(Default)]
+#[derive()]
 pub struct NonCopy {
     pub data: Vec<i32>,
     pub tag: i32,
@@ -19,6 +19,14 @@ impl Clone for NonCopy {
             tag: self.tag,
         };
         this
+    }
+}
+impl Default for NonCopy {
+    fn default() -> Self {
+        NonCopy {
+            data: Default::default(),
+            tag: 0,
+        }
     }
 }
 impl ByteRepr for NonCopy {

@@ -546,35 +546,6 @@ RsExpr *ConverterRefCount::EmitRustUnion(clang::RecordDecl *decl) {
   return arena_.New<Concat>(std::move(parts));
 }
 
-RsExpr *ConverterRefCount::AddDropTrait(const clang::CXXRecordDecl *decl) {
-  if (!decl->hasUserDeclaredDestructor()) {
-    return Text("");
-  }
-
-  auto dtor = decl->getDestructor();
-  if (!dtor) {
-    return Text("");
-  }
-
-  auto body = dtor->getBody();
-  if (!body) {
-    return Text("");
-  }
-
-  if (auto stmt = llvm::dyn_cast<clang::CompoundStmt>(body)) {
-    if (stmt->body_empty()) {
-      return Text("");
-    }
-  }
-
-  auto record_name = GetRecordName(decl);
-  auto *body_node = ConvertFullStmt(body);
-
-  return Cat(Text(keyword::kImpl), Text("Drop for"), Text(record_name),
-             Text('{'), Text("fn drop(&mut self) {"), body_node, Text('}'),
-             Text('}'));
-}
-
 RsExpr *ConverterRefCount::AddByteReprTrait(const clang::RecordDecl *decl) {
   auto struct_name = GetRecordName(decl);
 
@@ -652,7 +623,14 @@ RsExpr *ConverterRefCount::AddByteReprTrait(const clang::RecordDecl *decl) {
              Braces(arena_.New<Concat>(std::move(body))));
 }
 
+RsExpr *ConverterRefCount::AddDropTrait(const clang::CXXRecordDecl *decl) {
+  return Text("");
+}
+
 bool ConverterRefCount::IsMethodOnPtr(clang::CXXMethodDecl *method) {
+  if (auto *dtor = clang::dyn_cast<clang::CXXDestructorDecl>(method)) {
+    return GetTranslatableDestructor(dtor->getParent()) != nullptr;
+  }
   return IsTranslatableMethod(method) && !method->isStatic() &&
          !clang::isa<clang::CXXConstructorDecl>(method) &&
          !method->isOverloadedOperator();
@@ -744,6 +722,51 @@ bool ConverterRefCount::ThisIsValue() const {
   return !method || !IsMethodOnPtr(method);
 }
 
+RsExpr *ConverterRefCount::DestroyMembers(const clang::CXXRecordDecl *decl) {
+  if (decl->isUnion()) {
+    return Text("");
+  }
+
+  PushConversionKind push(*this, ConversionKind::Unboxed);
+  auto record_name = GetRecordName(decl);
+  const auto &layout = ctx_.getASTRecordLayout(decl);
+
+  std::vector<const clang::FieldDecl *> fields;
+  for (auto *field : decl->fields()) {
+    auto elem = field->getType();
+    if (elem->isArrayType()) {
+      elem = clang::QualType(elem->getBaseElementTypeUnsafe(), 0);
+    }
+    auto *record = elem->getAsCXXRecordDecl();
+    if (record && IsUserDefinedDecl(record) &&
+        GetTranslatableDestructor(record)) {
+      fields.push_back(field);
+    }
+  }
+
+  std::vector<RsExpr *> parts;
+  for (auto *field : std::ranges::reverse_view(fields)) {
+    auto byte_off = layout.getFieldOffset(field->getFieldIndex()) / 8;
+    bool array = field->getType()->isArrayType();
+    auto *field_ptr = arena_.New<FieldPtr>(
+        Text(keyword::kSelfValue), byte_off, record_name,
+        GetNamedDeclAsString(field),
+        field->getType(), !array && IsBoxedType(field->getType()));
+    field_ptr->element = array;
+    parts.push_back(
+        Cat(field_ptr, Text(std::format(".{}() ;", kDestructorName))));
+  }
+  return arena_.New<Concat>(std::move(parts));
+}
+
+RsExpr *ConverterRefCount::ConvertFunctionBody(clang::FunctionDecl *decl) {
+  auto *body = Converter::ConvertFunctionBody(decl);
+  if (auto *dtor = clang::dyn_cast<clang::CXXDestructorDecl>(decl)) {
+    return Cat(body, DestroyMembers(dtor->getParent()));
+  }
+  return body;
+}
+
 RsExpr *ConverterRefCount::ConvertRecordMethods(clang::CXXRecordDecl *decl) {
   std::vector<RsExpr *> parts;
   auto struct_name = GetRecordName(decl);
@@ -764,7 +787,10 @@ RsExpr *ConverterRefCount::ConvertRecordMethods(clang::CXXRecordDecl *decl) {
     }
   }
 
-  if (!ptr_methods.empty()) {
+  bool synthesize_dtor =
+      RecordNeedsDestruction(decl) && !GetTranslatableDestructor(decl);
+
+  if (!ptr_methods.empty() || synthesize_dtor) {
     auto trait_name = std::format("{}Methods", struct_name);
 
     auto *self_type =
@@ -773,13 +799,35 @@ RsExpr *ConverterRefCount::ConvertRecordMethods(clang::CXXRecordDecl *decl) {
         std::format("impl {} for {}", trait_name, self_type->print());
 
     std::vector<RsExpr *> declarations;
-    for (auto *method : ptr_methods) {
-      declarations.push_back(ConvertMethodItem(method, false, false));
-      if (method->isThisDeclarationADefinition()) {
-        auto *definition = ConvertMethodItem(method, false, true);
-        LowerNodes(definition);
-        deferred_impls_[impl_header] += definition->print();
+    auto emit = [&](RsExpr *declaration, RsExpr *definition) {
+      declarations.push_back(declaration);
+      if (definition == nullptr) {
+        return;
       }
+      LowerNodes(definition);
+      deferred_impls_[impl_header] += definition->print();
+    };
+
+    auto synthesized_dtor = [&](std::optional<std::vector<RsExpr *>> body) {
+      return arena_.New<Fn>(std::vector<RsExpr *>{}, kDestructorName,
+                            Fn::Receiver::Ref, std::vector<RsExpr *>{}, nullptr,
+                            std::move(body));
+    };
+
+    if (synthesize_dtor) {
+      emit(synthesized_dtor(std::nullopt),
+           synthesized_dtor(std::vector<RsExpr *>{DestroyMembers(decl)}));
+    }
+    for (auto *method : ptr_methods) {
+      auto *definition = method;
+      if (!method->isThisDeclarationADefinition()) {
+        definition = clang::isa<clang::CXXDestructorDecl>(method)
+                         ? clang::dyn_cast_or_null<clang::CXXMethodDecl>(
+                               method->getDefinition())
+                         : nullptr;
+      }
+      emit(ConvertMethodItem(method, false, false),
+           definition ? ConvertMethodItem(definition, false, true) : nullptr);
     }
 
     parts.push_back(
@@ -895,11 +943,35 @@ RsExpr *ConverterRefCount::VisitVarDecl(clang::VarDecl *decl) {
   bool unboxed = in_function_formals_;
   PushConversionKind push(*this, unboxed ? ConversionKind::Unboxed
                                          : ConversionKind::FullRefCount);
+  RsExpr *node = nullptr;
   if (decl->getType()->isReferenceType()) {
     PushExprKind push(*this, ExprKind::AddrOf);
-    return Converter::VisitVarDecl(decl);
+    node = Converter::VisitVarDecl(decl);
+  } else {
+    node = Converter::VisitVarDecl(decl);
   }
-  return Converter::VisitVarDecl(decl);
+  if (auto *guard = EmitScopedDestructor(decl)) {
+    return Cat(node, guard);
+  }
+  return node;
+}
+
+RsExpr *ConverterRefCount::EmitScopedDestructor(const clang::VarDecl *decl) {
+  if (in_function_formals_ || IsGlobalVar(const_cast<clang::VarDecl *>(decl)) ||
+      decl->getType()->isReferenceType()) {
+    return nullptr;
+  }
+  auto type = decl->getType();
+  if (type->isArrayType()) {
+    return nullptr;
+  }
+  if (!TypeNeedsDestruction(type)) {
+    return nullptr;
+  }
+  auto name = GetNamedDeclAsString(decl);
+  return Text(std::format(
+      "let _dtor_{0} = ScopedDestructor::new(&{0}, |__p| __p.{1}()) ;", name,
+      kDestructorName));
 }
 
 RsExpr *ConverterRefCount::ConvertIncAndDec(clang::UnaryOperator *expr) {
@@ -2379,8 +2451,25 @@ RsExpr *ConverterRefCount::VisitCXXNewExpr(clang::CXXNewExpr *expr) {
 
 RsExpr *ConverterRefCount::VisitCXXDeleteExpr(clang::CXXDeleteExpr *expr) {
   auto *argument = ConvertExpr(expr->getArgument());
+  bool dtor = TypeNeedsDestruction(expr->getDestroyedType());
+
   if (expr->isArrayForm()) {
+    if (dtor) {
+      auto *ptr = ConvertExpr(expr->getArgument());
+      return Cat(Text("{ let __p ="), ptr, Text(";"),
+                 Text(std::format("for __i in 0..__p.len() {{ __p.offset(__i as "
+                                  "isize).{}() ; }}",
+                                  kDestructorName)),
+                 Text("__p.delete_array() ; }"));
+    }
     return Cat(argument, Text(".delete_array()"));
+  }
+
+  if (dtor) {
+    auto *ptr = ConvertExpr(expr->getArgument());
+    return Cat(Text("{ let __p ="), ptr, Text(";"),
+               Text(std::format("__p.{}() ; __p.delete() ; }}",
+                                kDestructorName)));
   }
   return Cat(argument, Text(".delete()"));
 }

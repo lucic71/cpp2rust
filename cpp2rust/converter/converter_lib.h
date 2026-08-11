@@ -97,6 +97,13 @@ bool IsConvertibleFunctionDecl(const clang::FunctionDecl *decl);
 
 bool IsUniquePtr(clang::QualType type);
 
+clang::CXXDestructorDecl *
+GetTranslatableDestructor(const clang::CXXRecordDecl *decl);
+
+bool RecordNeedsDestruction(const clang::CXXRecordDecl *decl);
+
+bool TypeNeedsDestruction(clang::QualType type);
+
 bool IsCallToOstream(clang::CallExpr *expr);
 
 bool IsAsciiStringLiteral(const clang::StringLiteral *str);

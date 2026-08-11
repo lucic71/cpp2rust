@@ -17,9 +17,11 @@ pub unsafe fn pick_0(mut op: i32, mut x: i32) -> i32 {
             goto!('shared);
         }
         __v if __v == 2 => 'shared: {
-            let mut t: i32 = ((x) * (3));
-            r = ((t) + (1));
-            break;
+            {
+                let mut t: i32 = ((x) * (3));
+                r = ((t) + (1));
+                break;
+            }
         }
         __v if false => '__default_1: {
             r = -1_i32;
