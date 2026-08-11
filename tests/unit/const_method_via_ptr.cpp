@@ -13,7 +13,8 @@ struct Wrapper {
 };
 
 int count(Wrapper *w, std::deque<Item> *q) {
-  return (int)w->items.size() + (w->queue.empty() ? 1 : 0) + (q->empty() ? 2 : 0);
+  return (int)w->items.size() + (w->queue.empty() ? 1 : 0) +
+         (q->empty() ? 2 : 0);
 }
 
 int main() {
