@@ -83,13 +83,19 @@ rather than written, is on the [Traits](./traits.md) page.
 Fields keep their C++ access: `pub` for public members, nothing for private
 ones. A class nested in another class is emitted as its own top-level struct,
 named `Outer_Inner` (see [Naming](./naming.md)); Rust has no nested types, and
-the outer struct refers to it by that name.
+the outer struct refers to it by that name. A record that is only
+forward-declared, or whose definition is never converted because it is only used
+behind pointers, is emitted at the end of the file as an empty
+`pub struct Name;` (see [The Translation Pipeline](../pipeline.md)).
 
 A constructor becomes an associated function named after the class that builds
-`this` from the initializer list, runs the body, and returns it. Methods take
-`&self` when `const` and `&mut self` otherwise in the unsafe model; in the
-refcount model they always take `&self`, since mutation goes through the fields'
-`RefCell`s.
+`this` from the initializer list, runs the body, and returns it; inside the
+body, `this` is that local. Only implicit or defaulted copy and move
+constructors are supported: a user-defined one stops the translation, and the
+implicit copy is what the `Clone` impl represents. Methods take `&self` when
+`const` and `&mut self` otherwise in the unsafe model; in the refcount model
+they always take `&self`, since mutation goes through the fields' `RefCell`s.
+Inside a method, `this` is `self`.
 
 A destructor with a body becomes `impl Drop` in the refcount model.
 
