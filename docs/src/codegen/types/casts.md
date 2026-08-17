@@ -1,4 +1,66 @@
-# Pointer Casts
+# Casts
+
+Casts are of two kinds: scalar casts, which both models spell with Rust's `as`
+or with a small expression, and pointer casts, where the models diverge. Most
+casts in the input are implicit, inserted by clang, and are translated the same
+way as explicit ones.
+
+## Scalar casts
+
+An integer conversion becomes `expr as T` (an integer literal is instead
+re-typed in place: `1` cast to `unsigned char` prints as `1_u8`), and is dropped
+when source and target map to the same Rust type, so `int` to `long` on a
+platform where both are `i32` prints nothing. Floating conversions are `as` as
+well. The other scalar casts have their own spellings:
+
+- Integer to `bool`: `(x) != 0`; a comparison or logical operator that already
+  yields `bool` is left alone. Enum to `bool` compares against `<E>::from(0)`.
+- Pointer to `bool`: `!(p).is_null()`.
+- Integer to enum: `<E>::from(x)`, the `From<i32>` impl from the
+  [Enums](./enums.md) page. When the operand is itself a constant of that same
+  enum, which C++ sees as an integer being converted back to the enum, the cast
+  is dropped and the constant is printed directly (`Color::RED`, not
+  `<Color>::from(Color::RED as i32)`). Enum to integer is `as`.
+- A cast to `void`, used to silence an unused-variable warning, becomes a
+  statement that only mentions the operand: `&(x);` in the unsafe model,
+  `(*x.borrow()).clone();` in the refcount model.
+
+Explicit `static_cast`, C-style, and `reinterpret_cast` between scalars follow
+the same rules; a cast to the operand's own type is elided.
+
+### Implicit conversions to `usize` and `isize`
+
+`size_t`, `size_type`, and `ssize_t` are translated as `usize` and `isize`
+rather than as the `u64`/`i64` of the `unsigned long`/`long` they are typedefs
+of (built-in type rules, looked up on the sugared type before it is desugared).
+This keeps rules and output free of `as usize` casts on lengths and indexes, but
+it splits one C type in two: clang inserts no conversion between `size_t` and
+`unsigned long`, while `usize` and `u64` do not mix in Rust. Given
+
+```cpp
+unsigned long take_ulong(unsigned long x);
+
+size_t sz = 20;
+unsigned long r = take_ulong(sz);
+```
+
+the refcount model produces
+
+```rust
+let sz: Value<usize> = Rc::new(RefCell::new(20_usize));
+let r: Value<u64> = Rc::new(RefCell::new(take_ulong_0((*sz.borrow()) as u64)));
+```
+
+`Convert(expr, implicit_convert_to)` is the single place where such a cast is
+added: the caller passes the type the context expects, `NeedsImplicitScalarCast`
+checks that it is the same C type as the expression's but maps to a different
+Rust type, and if so the expression is wrapped in `(...) as <target>`. Callers
+that pass a target are assignments and initializations (the variable's type),
+call arguments (the parameter type of the callee or rule,
+`GetParamImplicitConvertTarget`, as in the example), and binary operators, which
+pick one Rust type for both operands (`GetOperandImplicitConversionTarget`).
+
+## Pointer casts
 
 Given
 
@@ -29,14 +91,14 @@ let back: Value<Ptr<u8>> =
     Rc::new(RefCell::new((*any.borrow()).reinterpret_cast::<u8>()));
 ```
 
-## Unsafe model
+### Unsafe model
 
 Every pointer cast, whether written as a C cast, `static_cast`, or
 `reinterpret_cast`, is a Rust `as` between raw pointer types. Casts that change
 nothing in Rust (a `typedef` to its underlying type, an implicit `T *` to
-`const T *`) are not emitted. Casts to and from integers are also `as`.
+`const T *`) are not emitted. Casts between pointers and integers are also `as`.
 
-## Refcount model
+### Refcount model
 
 A `Ptr<T>` is a weak reference to a `RefCell<T>`, so it cannot simply be
 relabeled as a `Ptr<U>`: the cell it points to holds a `T`. A cast to another
@@ -66,7 +128,7 @@ integers use the [integer cast](../../runtime/rc.md#integer-casts) API of `Ptr`.
 Constness is dropped in a cast as everywhere else, so `const_cast` is a no-op.
 `dynamic_cast` is not supported.
 
-## Function pointers
+### Function pointers
 
 Casting a function pointer to a different signature, which C code does to call
 through a generic type, wraps the function in an adapter closure that converts

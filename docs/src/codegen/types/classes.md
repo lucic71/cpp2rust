@@ -1,4 +1,4 @@
-# Classes
+# Classes and Structs
 
 A class becomes a struct with one field per data member, an `impl` block holding
 its constructors and methods, and trait implementations after it. Given
@@ -167,3 +167,15 @@ arguments (see [Naming](./naming.md)). `MyContainer<int>` and
 `MyContainer<char>` become `MyContainer_int_` and `MyContainer_char_`, each with
 a complete copy of the methods specialized for its element type. Nothing is
 shared between instantiations, and Rust generics are not used.
+
+## Flexible array members
+
+A trailing array member of size 0, 1, or `[]` that C code over-indexes into
+memory allocated past the struct is detected with clang's
+`isFlexibleArrayMemberLike`. In the unsafe model an access to such a member is
+not an array index, which Rust would bounds-check against the declared length,
+but pointer arithmetic from the array's start: `n->x.bytes[i]` becomes
+`*(*n).x.bytes.as_mut_ptr().add(i as usize)`, and `&n->x.bytes[i]` the same
+without the leading `*`. The refcount model has no dedicated handling; the
+pattern works when the array is a union member, because the union accessor
+returns a `Ptr` over the whole allocation that can be offset freely.
