@@ -40,6 +40,11 @@
 # Code Generation
 
 - [Overview](./codegen/overview.md)
+- [The Translation Pipeline](./codegen/pipeline.md)
+- [Types](./codegen/types.md)
+  - [Type Mappings](./codegen/types/mappings.md)
+  - [Boxing](./codegen/types/boxing.md)
+  - [Classes](./codegen/types/classes.md)
 - [Pointers and References](./codegen/pointers.md)
 - [Unions](./codegen/unions.md)
 - [Global Variables](./codegen/globals.md)
