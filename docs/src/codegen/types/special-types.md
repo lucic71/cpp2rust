@@ -128,7 +128,7 @@ derive `Default`, and it does not derive `Copy` either since the field is a
 >
 > An empty initializer, `std::array<int, 3> a = {};`, becomes `vec![]`, a vector
 > of length 0, where C++ value-initializes `N` elements; indexing it panics
-> (TODO: link the issue).
+> ([#313](https://github.com/Cpp2Rust/cpp2rust/issues/313)).
 
 ## `std::string` and streams
 

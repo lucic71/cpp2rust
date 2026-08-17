@@ -9,4 +9,5 @@ differ from C.
 >
 > Code that relies on bit-field layout or width (packing several fields into one
 > word, `sizeof` on such a struct, storing a value wider than the field)
-> translates silently to something else (TODO: link the issue).
+> translates silently to something else
+> ([#312](https://github.com/Cpp2Rust/cpp2rust/issues/312)).

@@ -83,7 +83,7 @@ once and clones it out of the box at each use.
 > `let foo = || { a += 1; a }; return foo() + a;` does not compile, while
 > re-emitting the closure at each call keeps every borrow inside that call. It
 > is a bug, since the lambda's creation and its uses are no longer the same
-> object (TODO: link the issue).
+> object ([#314](https://github.com/Cpp2Rust/cpp2rust/issues/314)).
 
 A capture-less lambda assigned to a function pointer becomes a function pointer
 value: `Some(|...| ...)` in the unsafe model and `FnPtr::new(|...| ...)` in the
