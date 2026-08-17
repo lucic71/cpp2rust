@@ -19,10 +19,10 @@ in place; namespaces themselves leave no trace in the output beyond the `ns_`
 prefix on names (see [Naming](../types/naming.md)).
 
 Function definitions are converted where they appear; a function that is
-declared but never defined in the input is not emitted (see Functions). Records
-referenced but never defined are collected in `record_decls_` and emitted as
-opaque `pub struct Name;` after the last unit
-([The Translation Pipeline](../pipeline.md)).
+declared but never defined in the input is not emitted (see
+[Functions](../declarations/functions.md)). Records referenced but never defined
+are collected in `record_decls_` and emitted as opaque `pub struct Name;` after
+the last unit ([The Translation Pipeline](../pipeline.md)).
 
 Nothing is reordered: the Rust file follows the C++ order unit by unit, which is
 fine for Rust items but is why local declarations sometimes need hoisting (see
