@@ -3,7 +3,7 @@
 A rule body is written against idiomatic Rust types: a rule that mutates a
 vector declares its parameter as `&mut Vec<T1>`. But in the refcount model the
 call-site argument is usually a `Ptr<Vec<T1>>`, and a `Ptr`
-[cannot produce a long-lived `&mut`](../codegen/pointers.md). Instead of forcing
+[cannot produce a long-lived `&mut`](../codegen/types/pointers.md). Instead of forcing
 every rule to handle pointers, the code generator _rewrites_ the rule body at
 application time.
 
@@ -28,7 +28,7 @@ followed by body. The rewrite fires when all three hold:
    first one is used.
 2. The receiver placeholder's access is write or move, i.e. the method takes
    `&mut self` or the rule mutates the parameter. Read access does not need the
-   rewrite, since a read can go through a [`StrongPtr`](../codegen/pointers.md)
+   rewrite, since a read can go through a [`StrongPtr`](../codegen/types/pointers.md)
    obtained with `Ptr::upgrade`, or through a `read()` copy.
 3. The call-site argument is a pointer, or an expression of reference type
    (which includes an operator call returning a reference).
@@ -58,7 +58,7 @@ fails and no closure is emitted; the same rule produces a direct call like
 
 The rewrite applies to pointer dereferences (`p->push_back(20)`) and to
 reference usages (`r.push_back(20)` with `std::vector<int> &r = *p`); both are
-[translated as a `Ptr`](../codegen/pointers.md), and that `Ptr` is what
+[translated as a `Ptr`](../codegen/types/pointers.md), and that `Ptr` is what
 `with_mut` is called on.
 
 When the pointee is itself a boxed value (`Value<T>`, i.e. `Rc<RefCell<T>>`),

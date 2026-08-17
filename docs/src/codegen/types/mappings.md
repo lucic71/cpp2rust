@@ -19,9 +19,13 @@ refcount boxing. `T` stands for the translated inner type.
 | `R (*)(A)`                     | `Option<unsafe fn(A) -> R>`                     | [`FnPtr<fn(A) -> R>`](../../runtime/fn-ptr.md)            |
 | `va_list`                      | [`VaList`](../../runtime/va-args.md)            | [`VaList`](../../runtime/va-args.md)                      |
 | lambda closure                 | `impl Fn(A) -> R` as a parameter, `_` elsewhere | same                                                      |
+| `std::unique_ptr<T>`           | by type rule (`Option<Box<T>>`)                 | by type rule (`Option<Value<T>>`)                         |
 | `std::vector<T>` and other STL | by type rule (`Vec<T>`)                         | by type rule (`Vec<T>`, `Vec<Value<Vec<T>>>` when nested) |
 
-Other built-ins (`wchar_t`, `long double`, `char16_t`) are omitted.
+Other built-ins (`wchar_t`, `long double`, `char16_t`) are omitted. Rvalue
+references (`T &&`) have no mapping of their own; they reach the converter only
+through `std::move` and implicit move constructors, which are handled by rules
+and by the constructor translation.
 
 ## User-defined types as rules
 
@@ -61,5 +65,5 @@ Constness is dropped: in the unsafe model it survives only as `*const` on
 pointers and as a missing `mut` on bindings, and in the refcount model it has no
 representation.
 
-The [Pointers and References](../pointers.md) page covers how values of pointer
+The [Pointers and References](./pointers.md) page covers how values of pointer
 types are read and written.

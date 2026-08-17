@@ -93,8 +93,73 @@ A constructor becomes an associated function named after the class that builds
 refcount model they always take `&self`, since mutation goes through the fields'
 `RefCell`s.
 
-A destructor with a body becomes `impl Drop` in the refcount model. The unsafe
-model does not emit destructors at all.
+A destructor with a body becomes `impl Drop` in the refcount model.
 
-Abstract classes become traits, so pointers to them print with `dyn`:
-`*mut dyn Base` in the unsafe model, `PtrDyn<dyn Base>` in the refcount model.
+> [!WARNING]
+>
+> The unsafe model does not emit destructors at all; a user-defined destructor
+> is silently dropped ([#310](https://github.com/Cpp2Rust/cpp2rust/issues/310)).
+
+## Inheritance
+
+An abstract class becomes a trait with one method per pure virtual function, and
+a class deriving from it implements the trait with its overrides. Given
+
+```cpp
+class Animal {
+public:
+  virtual bool bark() const = 0;
+};
+
+class Dog : public Animal {
+  bool bark() const override { return true; }
+};
+```
+
+the unsafe model produces
+
+```rust
+pub unsafe trait Animal {
+    unsafe fn bark(&self) -> bool;
+}
+#[repr(C)]
+#[derive(Copy, Clone, Default)]
+pub struct Dog {}
+unsafe impl Animal for Dog {
+    unsafe fn bark(&self) -> bool {
+        return true;
+    }
+}
+```
+
+and the refcount model produces (`Clone` and `ByteRepr` impls omitted)
+
+```rust
+pub trait Animal {
+    fn bark(&self) -> bool;
+}
+#[derive(Default)]
+pub struct Dog {}
+impl Animal for Dog {
+    fn bark(&self) -> bool {
+        return true;
+    }
+}
+```
+
+Non-virtual methods of the derived class go into its own `impl Dog` block as
+usual. Because the base is a trait, pointers to it are `*mut dyn Animal` in the
+unsafe model and [`PtrDyn<dyn Animal>`](../../runtime/ptr-dyn.md) in the
+refcount model, and a `Dog *` is upcast at the call site. Only the first base
+class is considered, and only virtual methods go through the trait; bases with
+data members or non-virtual methods, and multiple inheritance, are outside the
+supported subset.
+
+## Templates
+
+Class templates are translated by full instantiation: each instantiation used by
+the program becomes its own struct and `impl` block, named after the template
+arguments (see [Naming](./naming.md)). `MyContainer<int>` and
+`MyContainer<char>` become `MyContainer_int_` and `MyContainer_char_`, each with
+a complete copy of the methods specialized for its element type. Nothing is
+shared between instantiations, and Rust generics are not used.

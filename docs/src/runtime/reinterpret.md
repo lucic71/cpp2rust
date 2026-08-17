@@ -101,14 +101,17 @@ temporary struct. Three C patterns break because of this; all are set to be
 fixed in the near future.
 
 1. Taking the address of a field of a reinterpreted struct yields a pointer into
-   the temporary, which dangles as soon as the temporary is dropped.
+   the temporary, which dangles as soon as the temporary is dropped
+   ([#309](https://github.com/Cpp2Rust/cpp2rust/issues/309)).
 2. Writing to a field of a reinterpreted struct, translated as
    `p.upgrade().deref().field.borrow_mut()`, mutates the temporary returned by
    `p.upgrade().deref()` and never writes the bytes back to the original
-   allocation, so the write is lost.
-3. [Union accessors](../codegen/unions.md) return pointers to the union's
+   allocation, so the write is lost
+   ([#309](https://github.com/Cpp2Rust/cpp2rust/issues/309)).
+3. [Union accessors](../codegen/types/unions.md) return pointers to the union's
    storage; on a reinterpreted union that storage is the temporary, so the
-   returned pointer dangles.
+   returned pointer dangles
+   ([#311](https://github.com/Cpp2Rust/cpp2rust/issues/311)).
 
 ## AnyPtr casts
 
