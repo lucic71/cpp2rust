@@ -76,16 +76,14 @@ impl Clone for Counter {
 impl ByteRepr for Counter { /* byte_size, to_bytes, from_bytes */ }
 ```
 
-In the unsafe model the struct carries `#[repr(C)]` and derives `Copy` (when all
-fields are copyable), `Clone`, and `Default`. The refcount model derives only
-`Default` and writes `Clone` by hand: C++ copies a struct member by member, and
-a derived `Clone` on `Value` fields would only bump reference counts and leave
-the copy sharing the original's storage, so the hand-written one creates a fresh
-box per field. `ByteRepr` supports
-[type reinterpretation](../../runtime/reinterpret.md).
+The unsafe model adds `#[repr(C)]` and derives what it can; the refcount model
+writes most impls by hand. Which traits are emitted, and when they are derived
+rather than written, is on the [Traits](./traits.md) page.
 
 Fields keep their C++ access: `pub` for public members, nothing for private
-ones.
+ones. A class nested in another class is emitted as its own top-level struct,
+named `Outer_Inner` (see [Naming](./naming.md)); Rust has no nested types, and
+the outer struct refers to it by that name.
 
 A constructor becomes an associated function named after the class that builds
 `this` from the initializer list, runs the body, and returns it. Methods take
