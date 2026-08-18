@@ -119,13 +119,13 @@ dereferenced.
 
 ## References
 
-A C++ reference is a pointer that cannot be reseated, and both models translate
-it as one. In the unsafe model a reference parameter is `*mut T` (`*const T` for
-`const T &`), an argument `f(x)` is `f(&mut x as *mut T)`, and uses of the
-reference are `*r`. In the refcount model it is a `Ptr<T>` that is
-[never boxed](./boxing.md): the argument is `f(x.as_pointer())`, uses are
-`r.read()` and `r.write(v)`, and returning a reference returns the `Ptr` (with a
-`.clone()`, since `Ptr` is not `Copy`).
+A C++ reference is a pointer that cannot be made to point elsewhere, and both
+models translate it as one. In the unsafe model a reference parameter is
+`*mut T` (`*const T` for `const T &`), an argument `f(x)` is
+`f(&mut x as *mut T)`, and uses of the reference are `*r`. In the refcount model
+it is a `Ptr<T>` that is [never boxed](./boxing.md): the argument is
+`f(x.as_pointer())`, uses are `r.read()` and `r.write(v)`, and returning a
+reference returns the `Ptr` (with a `.clone()`, since `Ptr` is not `Copy`).
 
 ## Heap
 

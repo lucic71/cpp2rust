@@ -50,8 +50,8 @@ Parameters are printed by `ConvertVarDeclSkipInit`, the same routine that prints
 local variables, with [`in_function_formals_`](../internals/state.md) set so
 that the refcount model prints the type unboxed (see
 [Boxing](../types/boxing.md)). In the unsafe model a parameter is `mut` unless
-its C++ type is `const` or a reference; a reference parameter is a pointer that
-the body never reseats. An unnamed parameter is `_`. A variadic function gets a
+its C++ type is `const` or a reference; a reference parameter is a pointer the
+body never reassigns. An unnamed parameter is `_`. A variadic function gets a
 trailing `__args: &[VaArg]` parameter (see
 [Variadic Arguments](../../runtime/va-args.md)). The return type is omitted for
 `void`.
