@@ -30,8 +30,8 @@ The cases, in the order the code checks them:
   pointee is a boxed container it prints `r.to_strong().as_pointer()`; as an
   `LValue` it becomes a [pending dereference](./pending-deref.md); otherwise it
   is read, `r1.read()`, or, for a record pointee, `(*r1.upgrade().deref())`. A
-  range-for variable over a map is exempt: it is registered in `map_iter_decls_`
-  and prints bare, `i.second()`.
+  range-for variable over a map is exempt: it is registered in
+  [`map_iter_decls_`](../internals/state.md) and prints bare, `i.second()`.
 - Any other variable under `AddrOf` becomes `x.as_pointer()`.
 - Under `RValue` it becomes `*x.borrow()`, and in every other kind
   `*x.borrow_mut()`.

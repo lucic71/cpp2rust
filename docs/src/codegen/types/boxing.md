@@ -7,8 +7,8 @@ of a variable would need a Rust reference, and arbitrary C++ aliasing cannot be
 expressed with references.
 
 Not every type position is boxed. `ConverterRefCount` keeps a stack of
-conversion kinds, `conversion_kind_`, and the construct that owns the type
-pushes one before printing it:
+conversion kinds, [`conversion_kind_`](../internals/state.md), and the construct
+that owns the type pushes one before printing it:
 
 - `FullRefCount`: pushed by variable and field declarations; `Convert(QualType)`
   wraps the result in `Value<...>`.
@@ -44,9 +44,9 @@ the copy on entry then lets the body treat parameters exactly like local
 variables. The preamble skips reference parameters, which are a `Ptr<T>` and
 never boxed.
 
-Nested library containers box each level except the innermost, so that every
-inner container can be borrowed and mutated on its own, and a pointer can be
-taken to it. That boxing is written into the type rules themselves:
-`std::vector<std::vector<int>>` maps to `Vec<Value<Vec<i32>>>` before the outer
-`Value<...>` is added. Multi-dimensional arrays box every dimension the same
-way: `int a[2][2]` is `Value<Box<[Value<Box<[i32]>>]>>`.
+Nested containers, library ones and arrays alike, box each level except the
+innermost, so that every inner container can be borrowed and mutated on its own,
+and a pointer can be taken to it. The boxing is written into the type rules
+themselves: `std::vector<std::vector<int>>` maps to `Vec<Value<Vec<i32>>>`, and
+the `carray` rules map `int a[2][2]` to `Box<[Value<Box<[i32]>>]>`, both before
+the outer `Value<...>` of the declaration is added.

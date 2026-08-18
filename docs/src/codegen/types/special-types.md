@@ -104,8 +104,8 @@ access into an accessor call.
 
 The loop variable of a range-`for` over a `std::map` is the map iterator itself,
 an entry with `first()`/`second()` accessors, not a pointer to an element; the
-converter remembers such variables in `map_iter_decls_` so that uses of them are
-not dereferenced.
+converter remembers such variables in [`map_iter_decls_`](../internals/state.md)
+so that uses of them are not dereferenced.
 
 A converting-constructor call that only wraps an iterator does not clone it
 (`PushSuppressIteratorClone`). libstdc++ and libc++ differ in whether such a

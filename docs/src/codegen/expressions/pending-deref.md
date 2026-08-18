@@ -3,8 +3,9 @@
 The refcount model cannot print `*p` on the left of an assignment as a Rust
 place: `Ptr` hands out no references, only `read()` and `write(v)`. So when a
 dereference is converted as an `LValue`, `ConverterRefCount` prints nothing and
-instead records the pointer expression in `pending_deref_`; whoever consumes the
-lvalue then wraps the pointer in the right call. Given
+instead records the pointer expression in
+[`pending_deref_`](../internals/state.md); whoever consumes the lvalue then
+wraps the pointer in the right call. Given
 
 ```cpp
 *p2 = 1;

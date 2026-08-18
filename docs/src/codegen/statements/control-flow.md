@@ -64,9 +64,9 @@ than as nested blocks.
 `while` becomes `while cond { body }`. `for (init; cond; inc)` becomes
 `init; while cond { body; inc; }`, with `while true` when the condition is
 empty. Both carry the `'loop_` label, shown in the example above. The increment
-is remembered on `curr_for_inc_` for the duration of the body, so that
-`continue` can run it before jumping (see below); `while` and `do` push a null
-entry so a `continue` inside them emits no increment.
+is remembered on [`curr_for_inc_`](../internals/state.md) for the duration of
+the body, so that `continue` can run it before jumping (see below); `while` and
+`do` push a null entry so a `continue` inside them emits no increment.
 
 ## `do`
 

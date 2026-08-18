@@ -3,9 +3,9 @@
 ## Expression kinds
 
 Before converting a subexpression, the enclosing construct pushes an `ExprKind`
-on the `curr_expr_kind_` stack (`PushExprKind`), and the subexpression's visitor
-reads it to choose its output form. For a variable `x`, the unsafe and refcount
-models print:
+on the [`curr_expr_kind_`](../internals/state.md) stack (`PushExprKind`), and
+the subexpression's visitor reads it to choose its output form. For a variable
+`x`, the unsafe and refcount models print:
 
 - `RValue`: the value is wanted; `x` and `*x.borrow()`.
 - `LValue`: a place to assign to; `x` and `*x.borrow_mut()`, or a
@@ -38,16 +38,16 @@ call arguments pass a target.
 
 ## Freshness
 
-Every visitor also sets `computed_expr_type_`, one of `Value`, `FreshValue`,
-`Pointer`, `FreshPointer`. Fresh means the printed Rust already yields an owned
-value, a literal, an arithmetic result, `x.as_pointer()`; not fresh means it
-names existing storage, `*x.borrow()`, a reference parameter `r`. When an owned
-value is needed and the expression is not fresh, the caller appends `.clone()`:
-`ConvertFreshRValue`, `ConvertFreshPointer`, `ConvertFresh*` do this.
-`SetValueFreshness(type)` decides after a load: a `Copy` type (`TypeIsCopyable`:
-builtins, enums, records that derive `Copy`, and function pointers in the unsafe
-model only) is fresh even when read from a variable, since copying it out is
-free.
+Every visitor also sets [`computed_expr_type_`](../internals/state.md), one of
+`Value`, `FreshValue`, `Pointer`, `FreshPointer`. Fresh means the printed Rust
+already yields an owned value, a literal, an arithmetic result,
+`x.as_pointer()`; not fresh means it names existing storage, `*x.borrow()`, a
+reference parameter `r`. When an owned value is needed and the expression is not
+fresh, the caller appends `.clone()`: `ConvertFreshRValue`,
+`ConvertFreshPointer`, `ConvertFresh*` do this. `SetValueFreshness(type)`
+decides after a load: a `Copy` type (`TypeIsCopyable`: builtins, enums, records
+that derive `Copy`, and function pointers in the unsafe model only) is fresh
+even when read from a variable, since copying it out is free.
 
 The two models differ in one point: raw pointers are `Copy`, so the unsafe model
 never clones a pointer, while `Ptr` is not, so the refcount model does. Given

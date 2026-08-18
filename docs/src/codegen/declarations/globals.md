@@ -35,22 +35,23 @@ thread_local!(
 `IsGlobalVar` is true for file-scope variables and for `static` locals, and both
 go through `ConvertGlobalVarDecl`. Only definitions are emitted: an
 `extern int x;` with no initializer prints nothing, and a C tentative definition
-repeated in the same unit is emitted once (`globals_` tracks the names). Like
-functions, globals are always `pub`, C `static` included, and get the `_N`
-suffix that keeps same-named `static`s from different files apart (see
-[Naming](../types/naming.md)).
+repeated in the same unit is emitted once ([`globals_`](../internals/state.md)
+tracks the names). Like functions, globals are always `pub`, C `static`
+included, and get the `_N` suffix that keeps same-named `static`s from different
+files apart (see [Naming](../types/naming.md)).
 
 ## Unsafe model
 
 A global is a `static mut` whose initializer is wrapped in an `unsafe` block, so
 that it can take the address of another `static mut` (`&raw mut counter_0`).
-`ConvertVarDecl` sets `in_const_initializer_` while converting it, because a
-Rust `static` initializer must be a constant expression: a record without an
-initializer is printed as a struct literal of its fields' defaults rather than
-`<T>::default()`, which is not `const` (see [Default Values](./defaults.md)). A
-global whose class has a user-defined default constructor and no initializer
-cannot be emitted this way and stops the translation. Uses of the global are
-plain identifiers, `counter_0`, which is why every function is `unsafe fn`.
+`ConvertVarDecl` sets [`in_const_initializer_`](../internals/state.md) while
+converting it, because a Rust `static` initializer must be a constant
+expression: a record without an initializer is printed as a struct literal of
+its fields' defaults rather than `<T>::default()`, which is not `const` (see
+[Default Values](./defaults.md)). A global whose class has a user-defined
+default constructor and no initializer cannot be emitted this way and stops the
+translation. Uses of the global are plain identifiers, `counter_0`, which is why
+every function is `unsafe fn`.
 
 ## Refcount model
 

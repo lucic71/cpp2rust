@@ -95,7 +95,8 @@ Before the `goto_block!`, `EmitHoistedDecls` walks the declarations written at
 the top level of the block. For every local variable it emits a declaration with
 the type's default value, `let mut count: i32 = 0_i32;`
 (`<Value<i32>>::default()` in the refcount model), and records the `VarDecl` in
-`hoisted_decls_`. Static locals and globals are left alone.
+[`hoisted_decls_`](../internals/state.md). Static locals and globals are left
+alone.
 
 Inside the arms the traversal then meets the original declarations.
 `ConvertVarDecl` checks `hoisted_decls_` first and, for a hoisted variable,

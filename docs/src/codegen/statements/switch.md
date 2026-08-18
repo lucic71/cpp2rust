@@ -83,10 +83,11 @@ Each C `break` becomes `break 'switch`, which leaves the block, and a missing
 ### Fallthrough
 
 When some arm falls through or carries a label, the arms go into
-`switch!(match cond { ... })` instead, and `break_target_` is set to
-`FallthroughSwitch` so that a `break` inside is emitted as a plain `break` for
-the macro to handle. The macro turns the arms into a state machine in which an
-arm that does not end in `break` continues into the next one, which is how
+`switch!(match cond { ... })` instead, and
+[`break_target_`](../internals/state.md) is set to `FallthroughSwitch` so that a
+`break` inside is emitted as a plain `break` for the macro to handle. The macro
+turns the arms into a state machine in which an arm that does not end in `break`
+continues into the next one, which is how
 `case 1: r += 10; case 2: r += 20; break;` keeps its C meaning:
 
 ```rust
