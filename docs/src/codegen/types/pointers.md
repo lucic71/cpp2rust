@@ -78,35 +78,29 @@ printed plainly.
 
 Refcount model: a dereference cannot hand out a `&T` into the pointee, because
 nothing would bound the borrow's lifetime, so a read copies the value out and a
-write copies it in:
+write copies it in. Which form is emitted follows the
+[expression kind](../expressions/kinds.md), what the enclosing construct expects
+of the dereference:
 
-- Reading a scalar or pointer pointee is `p.read()`.
-- Writing is `p.write(v)`.
-- A compound assignment `*p += v` becomes
+- An rvalue use copies the value out. A scalar or pointer pointee is `p.read()`.
+  A record pointee goes through `p.upgrade().deref()`, which briefly turns the
+  weak pointer into a [strong one](../../runtime/rc.md#strong-pointers) and
+  borrows the record; a field of it is a `Value` and is borrowed as usual,
+  `(*p.upgrade().deref()).x`. A read-only method on a boxed pointee borrows the
+  same way: `p->size()` is `(*p.upgrade().deref()).len()`.
+- An address-of use prints `p` itself.
+- An lvalue use prints nothing at once. The converter records the pointer
+  expression as a [pending dereference](../expressions/pending-deref.md), and
+  whoever consumes the lvalue, an assignment or a mapped method call, wraps it:
+  `p.write(v)`, or [`with_mut`](../../rules/rewriting.md) for a mutating method
+  on a boxed pointee. This is what lets `*p = v` come out as a single `write`
+  instead of a borrow followed by an assignment, and `*p += v` as
   `{ let _ptr = p.clone(); _ptr.write(_ptr.read() + v) }`.
-- Reading or writing a field of a record pointee goes through
-  `p.upgrade().deref()`, which briefly turns the weak pointer into a
-  [strong one](../../runtime/rc.md#strong-pointers) and borrows the record; the
-  field is then a `Value` and is borrowed as usual: `(*p.upgrade().deref()).x`.
-  The strong pointer only ever appears as a temporary inside the expression,
-  which is what breaks field writes and field addresses through reinterpreted
-  pointers ([#309](https://github.com/Cpp2Rust/cpp2rust/issues/309)) and union
-  accessors ([#311](https://github.com/Cpp2Rust/cpp2rust/issues/311)).
-- Calling a method on a pointee whose type is itself boxed, such as a
-  `Ptr<Vec<T>>` receiver, uses `p.to_strong().as_pointer()` to reach the owning
-  cell, and mutation then goes through [`with_mut`](../../rules/rewriting.md).
 
-Which form is emitted is decided by the expression kind (`ExprKind`, what the
-enclosing construct expects from the expression):
-
-- An rvalue use of `*p` prints `p.read()`.
-- An address-of use of `*p` prints `p` itself.
-- An lvalue use does not print anything at once. The converter records the
-  pointer expression as a
-  [pending dereference](../expressions/pending-deref.md), and whoever consumes
-  the lvalue, the assignment or a mapped method call, emits `p.write(...)` or
-  `p.with_mut(...)` around it. This is what lets `*p = v` come out as a single
-  `write` instead of a borrow followed by an assignment.
+The strong pointer only ever appears as a temporary inside the expression, which
+is what breaks field writes and field addresses through reinterpreted pointers
+([#309](https://github.com/Cpp2Rust/cpp2rust/issues/309)) and union accessors
+([#311](https://github.com/Cpp2Rust/cpp2rust/issues/311)).
 
 ## Arithmetic and comparison
 
