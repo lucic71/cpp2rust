@@ -2,9 +2,10 @@
 
 Library types are translated by [type rules](../../rules/overview.md), and for
 most of them the converter does nothing beyond applying the rule. A few types
-also have code of their own in the converter, because a rule cannot express how
-their values are dereferenced, iterated, or initialized. This page lists them;
-the rest of the type comes from its rule module under `rules/`.
+also have code of their own in the converter, which decides how their values are
+dereferenced, iterated, or initialized. Some of it could be moved into
+[rules](../../rules/writing-rules.md). This page lists what the converter does
+today; the rest of the type comes from its rule module under `rules/`.
 
 ## `std::unique_ptr`
 
@@ -56,12 +57,12 @@ it and emits `is_null()` as for any pointer, which no test exercises on an
 
 ## Iterators
 
-Iterator types come from rules (`std::vector<T>::iterator` maps to a pointer,
-map iterators to `RefcountMapIter`/`UnsafeMapIterator`), and the converter
-classifies them by `GetStrongestIteratorCategory`: rule types marked as refcount
-pointers are contiguous iterators and are handled exactly like a `Ptr<T>`, and
-the map iterator types are bidirectional. The classification drives a few
-decisions.
+Iterator types come from rules (`std::vector<T>::iterator` maps to `*mut T` or
+`Ptr<T>`, `std::map<K, V>::iterator` to `UnsafeMapIterator<K, V>` or
+`RefcountMapIter<K, V>`), and the converter classifies them by
+`GetStrongestIteratorCategory`: rule types marked as refcount pointers are
+contiguous iterators and are handled exactly like a `Ptr<T>`, and the map
+iterator types are bidirectional. The classification drives a few decisions.
 
 Given
 
