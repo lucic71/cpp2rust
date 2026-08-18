@@ -85,3 +85,4 @@
   - [Miscellaneous](./codegen/expressions/misc.md)
 - [Converter State](./codegen/internals/state.md)
 - [The Mapper Interface](./codegen/internals/mapper.md)
+- [Debugging the Generator](./codegen/internals/debugging.md)

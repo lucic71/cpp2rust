@@ -86,14 +86,27 @@ the unsafe model. Because both models are driven by the same traversal, the
 pages in this part describe each construct twice, once per model, and note when
 a construct is handled entirely by the base class.
 
-## The Mapper
+## What this part covers
 
-The converter itself translates the language: types, variables, pointers,
-control flow, functions, and classes. Calls into libraries (the STL, libc,
-`printf`) are translated by [translation rules](../rules/overview.md), and the
-converter only applies the rule that matches. It never reads the Rules IR
-itself. All rule lookups go through the `Mapper` namespace
-(`cpp2rust/converter/mapper.h`). How rules are loaded and indexed is covered in
-[Loading and Matching](../rules/loading.md) and how a candidate rule is matched
-against a construct in [The Matching Engine](../rules/matching.md); this part
-only describes what the converter does with a match.
+[The Translation Pipeline](./pipeline.md) follows a source file from the
+driver to the formatted output. The four parts after it follow the structure of
+the C++ program, from the outside in:
+
+- [Types](./types.md): how every C++ type is spelled in Rust in each model, and
+  the type-level constructs, records, enums, unions, bit-fields, pointers, casts,
+  function pointers, lambdas, and the library types the converter special-cases.
+- [Declarations](./declarations.md): functions, `main`, methods and
+  constructors, local and global variables, and default values.
+- [Statements](./statements.md): the translation unit, control flow, `switch`,
+  `goto`, and `return`.
+- [Expressions](./expressions.md): where the two models differ most; the
+  expression kinds and freshness that drive the refcount model, variable
+  references, operators, calls, rule application, plugins, variadics, `printf`
+  and streams, member access, construction, and what is not handled.
+
+The last pages are for reading and changing the generator itself:
+[Converter State](./internals/state.md) lists the member variables the visitors
+communicate through, [The Mapper Interface](./internals/mapper.md) lists the
+converter's interface to the translation rules, and
+[Debugging the Generator](./internals/debugging.md) lists the logging,
+assertions, and test workflow.
