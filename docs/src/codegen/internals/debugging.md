@@ -12,10 +12,10 @@
 - every `StrCat` call with the function and line that made it and the text it
   appended, so a piece of output can be traced back to the visitor that printed
   it;
-- every push of an expression kind (`PushExprKind <file>:<line> [LValue, RValue,
-  ...]`), so a wrong `borrow()`/`borrow_mut()` or a missing dereference can be
-  followed to the caller that set the kind (see
-  [Expression Kinds](../expressions/kinds.md));
+- every push of an [expression kind](../expressions/kinds.md)
+  (`PushExprKind <file>:<line> [LValue, RValue, ...]`), so a wrong
+  `borrow()`/`borrow_mut()` or a missing dereference can be followed to the
+  caller that set the kind;
 - every rule lookup, `search expr ...` / `search type ...` with the matched rule
   dumped, or `None` (see [Loading and Matching](../../rules/loading.md)).
 

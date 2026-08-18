@@ -100,9 +100,10 @@ the C++ program, from the outside in:
 - [Statements](./statements.md): the translation unit, control flow, `switch`,
   `goto`, and `return`.
 - [Expressions](./expressions.md): where the two models differ most; the
-  expression kinds and freshness that drive the refcount model, variable
-  references, operators, calls, rule application, plugins, variadics, `printf`
-  and streams, member access, construction, and what is not handled.
+  [expression kinds](./expressions/kinds.md) and freshness that drive the
+  refcount model, variable references, operators, calls, rule application,
+  plugins, variadics, `printf` and streams, member access, construction, and
+  what is not handled.
 
 The last pages are for reading and changing the generator itself:
 [Converter State](./internals/state.md) lists the member variables the visitors
