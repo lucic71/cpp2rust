@@ -16,9 +16,9 @@ typedef (`typedef struct { ... } Point;`) is emitted as `Point_struct` (or
 namespaces and `Point` may already be a variable or function.
 
 Names that are Rust keywords get a trailing underscore: a variable `type`
-becomes `type_`. The same rule applies to a keyword followed only by
-underscores, so a C++ identifier that was already `type_` becomes `type__` and
-cannot collide with the renamed `type`.
+becomes `type_`. The same applies to a keyword followed only by underscores, so
+a C++ identifier that was already `type_` becomes `type__` and cannot collide
+with the renamed `type`.
 
 Free functions and global variables get a numeric suffix (`main_0`, `foo_3`)
 from a process-wide table keyed by mangled name, which keeps overloads and

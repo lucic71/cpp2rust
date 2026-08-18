@@ -42,15 +42,17 @@ pub unsafe fn count_0(mut n: i32) -> i32 {
 ```
 
 and the refcount model the same shape with every variable access borrowed
-(`(*i.borrow()) < (*n.borrow())`, `(*i.borrow_mut()).postfix_inc()`).
+(`*i.borrow() < *n.borrow()`, `(*i.borrow_mut()).postfix_inc()`).
 
 ## Conditions
 
-`ConvertCondition` converts the condition as an rvalue after normalizing it to
-`bool` (`NormalizeToBool`): a C++ `bool` expression is left alone, an integer
-becomes `(x) != 0`, a pointer becomes `!(p).is_null()`, and a `!x` on an integer
-is re-typed to yield `bool`. In C, where comparisons have type `int`, this is
-why conditions come out as `((a < b) as i32) != 0`.
+`ConvertCondition` converts the condition as an rvalue. Rust needs a `bool`
+there, and C++ conditions already are `bool` in the AST, so they print as is. C
+has no `bool`: a condition is an integer or pointer compared against zero, so
+`NormalizeToBool` first turns an integer into `x != 0`, a pointer into
+`!p.is_null()`, and re-types `!x` on an integer to yield `bool`. Since C
+comparisons have type `int`, this is why C conditions come out as
+`(a < b) as i32 != 0`.
 
 ## `if`
 
@@ -124,7 +126,7 @@ produces
 ```rust
 for mut x in v.as_pointer() as Ptr<i32> {
     let x: Value<i32> = Rc::new(RefCell::new(x.read().clone()));
-    (*sum.borrow_mut()) += (*x.borrow());
+    *sum.borrow_mut() += *x.borrow();
 }
 for mut x in v.as_pointer() as Ptr<i32> {
     let _ptr = x.clone();

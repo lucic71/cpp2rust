@@ -78,10 +78,11 @@ When a rule matches, the converter walks its body fragments and emits:
     are moved as-is.
   - If the rule declares a pointer parameter but the argument is not a pointer,
     the converter takes a fresh pointer to it,
-    [materializing a temporary](../codegen/temporaries.md) when the argument has
-    no address of its own. For example, the refcount `std::max` rule declares
-    `Ptr<T1>` parameters, since the C++ side takes `const T1 &` and the refcount
-    model [translates references as `Ptr`](../codegen/types/pointers.md), so
+    [materializing a temporary](../codegen/expressions/temporaries.md) when the
+    argument has no address of its own. For example, the refcount `std::max`
+    rule declares `Ptr<T1>` parameters, since the C++ side takes `const T1 &`
+    and the refcount model
+    [translates references as `Ptr`](../codegen/types/pointers.md), so
     `std::max(x1, x2)` on plain locals substitutes `x1.as_pointer()` and
     `x2.as_pointer()` for the placeholders, while `std::max(30, 40)` first
     materializes `__tmp_0` and `__tmp_1` values for the literals and points into

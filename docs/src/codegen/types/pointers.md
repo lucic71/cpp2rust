@@ -88,10 +88,11 @@ enclosing construct expects from the expression):
 - An rvalue use of `*p` prints `p.read()`.
 - An address-of use of `*p` prints `p` itself.
 - An lvalue use does not print anything at once. The converter records the
-  pointer expression as a [pending dereference](../pending-deref.md), and
-  whoever consumes the lvalue, the assignment or a mapped method call, emits
-  `p.write(...)` or `p.with_mut(...)` around it. This is what lets `*p = v` come
-  out as a single `write` instead of a borrow followed by an assignment.
+  pointer expression as a
+  [pending dereference](../expressions/pending-deref.md), and whoever consumes
+  the lvalue, the assignment or a mapped method call, emits `p.write(...)` or
+  `p.with_mut(...)` around it. This is what lets `*p = v` come out as a single
+  `write` instead of a borrow followed by an assignment.
 
 ## Arithmetic and comparison
 

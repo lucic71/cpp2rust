@@ -3,9 +3,9 @@
 A rule body is written against idiomatic Rust types: a rule that mutates a
 vector declares its parameter as `&mut Vec<T1>`. But in the refcount model the
 call-site argument is usually a `Ptr<Vec<T1>>`, and a `Ptr`
-[cannot produce a long-lived `&mut`](../codegen/types/pointers.md). Instead of forcing
-every rule to handle pointers, the code generator _rewrites_ the rule body at
-application time.
+[cannot produce a long-lived `&mut`](../codegen/types/pointers.md). Instead of
+forcing every rule to handle pointers, the code generator _rewrites_ the rule
+body at application time.
 
 ## The `with_mut` rewrite
 
@@ -28,8 +28,9 @@ followed by body. The rewrite fires when all three hold:
    first one is used.
 2. The receiver placeholder's access is write or move, i.e. the method takes
    `&mut self` or the rule mutates the parameter. Read access does not need the
-   rewrite, since a read can go through a [`StrongPtr`](../codegen/types/pointers.md)
-   obtained with `Ptr::upgrade`, or through a `read()` copy.
+   rewrite, since a read can go through a
+   [`StrongPtr`](../codegen/types/pointers.md) obtained with `Ptr::upgrade`, or
+   through a `read()` copy.
 3. The call-site argument is a pointer, or an expression of reference type
    (which includes an operator call returning a reference).
 
@@ -81,7 +82,7 @@ For read access the converter does not emit a closure. A pointer receiver whose
 rule parameter is a value or `&` type is simply dereferenced (`p.read()` or
 `(*p.upgrade().deref())`); conversely, if the rule declares a `Ptr` parameter
 but the argument is not a pointer, the converter inserts an `as_pointer()` cast
-or [materializes a temporary](../codegen/temporaries.md).
+or [materializes a temporary](../codegen/expressions/temporaries.md).
 
 ## Preprocessor-side rewrites
 

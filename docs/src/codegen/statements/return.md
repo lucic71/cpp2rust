@@ -44,7 +44,7 @@ it end before the block yields the value:
 let x: Value<i32> = Rc::new(RefCell::new({
     let a: Value<i32> = Rc::new(RefCell::new(1));
     let b: Value<i32> = Rc::new(RefCell::new(2));
-    let __result = (*a.borrow()) + (*b.borrow());
+    let __result = *a.borrow() + *b.borrow();
     __result
 }));
 ```

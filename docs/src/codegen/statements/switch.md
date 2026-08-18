@@ -69,7 +69,7 @@ If no arm falls through and no arm carries a label, the switch is a labeled
 block: `'switch: { let match_cond = cond; match match_cond { ... } }`.
 
 The condition is evaluated once into `match_cond` rather than written inline: a
-`match (*x.borrow()) { ... }` would keep the borrow of `x` alive for the whole
+`match *x.borrow() { ... }` would keep the borrow of `x` alive for the whole
 `match`, so any arm that writes `x` would trap at run time.
 
 Arms are written as guards, `v if v == 1`, not as patterns, because a C `case`

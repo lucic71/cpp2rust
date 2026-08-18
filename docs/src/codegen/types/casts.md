@@ -13,16 +13,16 @@ when source and target map to the same Rust type, so `int` to `long` on a
 platform where both are `i32` prints nothing. Floating conversions are `as` as
 well. The other scalar casts have their own spellings:
 
-- Integer to `bool`: `(x) != 0`; a comparison or logical operator that already
+- Integer to `bool`: `x != 0`; a comparison or logical operator that already
   yields `bool` is left alone. Enum to `bool` compares against `<E>::from(0)`.
-- Pointer to `bool`: `!(p).is_null()`.
+- Pointer to `bool`: `!p.is_null()`.
 - Integer to enum: `<E>::from(x)`, the `From<i32>` impl from the
   [Enums](./enums.md) page. When the operand is itself a constant of that same
   enum, which C++ sees as an integer being converted back to the enum, the cast
   is dropped and the constant is printed directly (`Color::RED`, not
   `<Color>::from(Color::RED as i32)`). Enum to integer is `as`.
 - A cast to `void`, used to silence an unused-variable warning, becomes a
-  statement that only mentions the operand: `&(x);` in the unsafe model,
+  statement that only mentions the operand: `&x;` in the unsafe model,
   `(*x.borrow()).clone();` in the refcount model.
 
 Explicit `static_cast`, C-style, and `reinterpret_cast` between scalars follow
@@ -48,7 +48,7 @@ the refcount model produces
 
 ```rust
 let sz: Value<usize> = Rc::new(RefCell::new(20_usize));
-let r: Value<u64> = Rc::new(RefCell::new(take_ulong_0((*sz.borrow()) as u64)));
+let r: Value<u64> = Rc::new(RefCell::new(take_ulong_0(*sz.borrow() as u64)));
 ```
 
 `Convert(expr, implicit_convert_to)` is the single place where such a cast is
