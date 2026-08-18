@@ -32,10 +32,10 @@ int r = b->f();
 ```rust
 let d: Value<Derived> = Rc::new(RefCell::new(<Derived>::default()));
 let b: Value<PtrDyn<dyn Base>> = Rc::new(RefCell::new(
-    ((d.as_pointer()).to_strong() as Value<dyn Base>).as_pointer_dyn(),
+    (d.as_pointer().to_strong() as Value<dyn Base>).as_pointer_dyn(),
 ));
 let r: Value<i32> = Rc::new(RefCell::new(
-    ({ (*(*b.borrow()).upgrade().deref()).f() }),
+    { (*(*b.borrow()).upgrade().deref()).f() },
 ));
 ```
 

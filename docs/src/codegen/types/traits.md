@@ -52,7 +52,7 @@ impl Default for S {
         S {
             head: 0_i32,
             tail: [0_i32; 3],
-            buf: [(0 as libc::c_char); 4],
+            buf: [0 as libc::c_char; 4],
         }
     }
 }

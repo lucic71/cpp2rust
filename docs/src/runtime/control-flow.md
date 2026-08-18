@@ -35,12 +35,12 @@ pub fn retry_0(n: i32) -> i32 {
             *acc.borrow_mut() = 0;
         }
         'again: {
-            (*count.borrow_mut()) += 1;
-            (*acc.borrow_mut()) += (*n.borrow());
+            *count.borrow_mut() += 1;
+            *acc.borrow_mut() += *n.borrow();
             if *count.borrow() < 3 {
                 goto!('again);
             }
-            return (*acc.borrow());
+            return *acc.borrow();
         }
     });
     panic!("ub: non-void function does not return a value")
@@ -121,16 +121,16 @@ default:
 ```
 
 ```rust
-switch!(match (*x.borrow()) {
+switch!(match *x.borrow() {
     v if v == 1 => {
-        (*r.borrow_mut()) += 10;
+        *r.borrow_mut() += 10;
     }
     v if v == 2 => {
-        (*r.borrow_mut()) += 20;
+        *r.borrow_mut() += 20;
         break;
     }
     _ => {
-        (*r.borrow_mut()) = -1;
+        *r.borrow_mut() = -1;
         break;
     }
 });
@@ -169,15 +169,15 @@ case 2:
 
 ```rust
 let y: Value<i32> = <Value<i32>>::default();
-switch!(match (*x.borrow()) {
+switch!(match *x.borrow() {
     v if v == 1 => {
-        (*r.borrow_mut()) = 1;
+        *r.borrow_mut() = 1;
         *y.borrow_mut() = 10;
-        (*r.borrow_mut()) += *y.borrow();
+        *r.borrow_mut() += *y.borrow();
     }
     v if v == 2 => {
         *y.borrow_mut() = 20;
-        (*r.borrow_mut()) = *y.borrow();
+        *r.borrow_mut() = *y.borrow();
         break;
     }
     _ => {}

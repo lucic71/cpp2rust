@@ -88,14 +88,15 @@ forward-declared, or whose definition is never converted because it is only used
 behind pointers, is emitted at the end of the file as an empty
 `pub struct Name;` (see [The Translation Pipeline](../pipeline.md)).
 
-A constructor becomes an associated function named after the class that builds
-`this` from the initializer list, runs the body, and returns it; inside the
-body, `this` is that local. Only implicit or defaulted copy and move
+A constructor becomes an associated function named after the class. It opens
+with `let mut this = Self { ... }`, one field per member initializer, then runs
+the C++ body and returns `this`. Only implicit or defaulted copy and move
 constructors are supported: a user-defined one stops the translation, and the
-implicit copy is what the `Clone` impl represents. Methods take `&self` when
-`const` and `&mut self` otherwise in the unsafe model; in the refcount model
-they always take `&self`, since mutation goes through the fields' `RefCell`s.
-Inside a method, `this` is `self`.
+implicit copy is what the `Clone` impl represents.
+
+Methods take `&self` when `const` and `&mut self` otherwise in the unsafe model.
+In the refcount model they always take `&self`, since mutation goes through the
+fields' `RefCell`s. Inside a method, `this` is `self`.
 
 A destructor with a body becomes `impl Drop` in the refcount model.
 
@@ -120,14 +121,12 @@ class Dog : public Animal {
 };
 ```
 
-the unsafe model produces
+the unsafe model produces (attributes omitted)
 
 ```rust
 pub unsafe trait Animal {
     unsafe fn bark(&self) -> bool;
 }
-#[repr(C)]
-#[derive(Copy, Clone, Default)]
 pub struct Dog {}
 unsafe impl Animal for Dog {
     unsafe fn bark(&self) -> bool {
@@ -136,13 +135,13 @@ unsafe impl Animal for Dog {
 }
 ```
 
-and the refcount model produces (`Clone` and `ByteRepr` impls omitted)
+and the refcount model produces (attributes and the `Clone` and `ByteRepr` impls
+omitted)
 
 ```rust
 pub trait Animal {
     fn bark(&self) -> bool;
 }
-#[derive(Default)]
 pub struct Dog {}
 impl Animal for Dog {
     fn bark(&self) -> bool {
@@ -174,8 +173,8 @@ A trailing array member of size 0, 1, or `[]` that C code over-indexes into
 memory allocated past the struct is detected with clang's
 `isFlexibleArrayMemberLike`. In the unsafe model an access to such a member is
 not an array index, which Rust would bounds-check against the declared length,
-but pointer arithmetic from the array's start: `n->x.bytes[i]` becomes
-`*(*n).x.bytes.as_mut_ptr().add(i as usize)`, and `&n->x.bytes[i]` the same
-without the leading `*`. The refcount model has no dedicated handling; the
-pattern works when the array is a union member, because the union accessor
-returns a `Ptr` over the whole allocation that can be offset freely.
+but pointer arithmetic from the array's start: `s.bytes[i]` becomes
+`*s.bytes.as_mut_ptr().add(i as usize)`, and `&s.bytes[i]` the same without the
+leading `*`. The refcount model has no dedicated handling; the pattern works
+when the array is a union member, because the union accessor returns a `Ptr`
+over the whole allocation that can be offset freely.

@@ -41,10 +41,10 @@ sum(3, 10, 20, 30);
 ```rust
 pub fn sum_0(count: i32, __args: &[VaArg]) -> i32 {
     let ap: Value<VaList> = Rc::new(RefCell::new(VaList::default()));
-    (*ap.borrow_mut()) = VaList::new(__args);
+    *ap.borrow_mut() = VaList::new(__args);
     let total: Value<i32> = Rc::new(RefCell::new(0));
     // ...
-    (*total.borrow_mut()) += (*ap.borrow_mut()).arg::<i32>();
+    *total.borrow_mut() += (*ap.borrow_mut()).arg::<i32>();
     // ...
 }
 

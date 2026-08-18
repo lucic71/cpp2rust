@@ -61,7 +61,7 @@ for (const auto &i : m)
 let m: Value<BTreeMap<i32, Value<f64>>> =
     Rc::new(RefCell::new(BTreeMap::new()));
 for i in RefcountMapIter::begin(m.as_pointer()) {
-    (*sum.borrow_mut()) += (*i.second().borrow());
+    *sum.borrow_mut() += *i.second().borrow();
 }
 ```
 

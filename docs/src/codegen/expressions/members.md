@@ -14,11 +14,11 @@ let mut p: *mut i32 = &mut obj.x as *mut i32;
 and the refcount model produces
 
 ```rust
-(*(*(*ptr.borrow()).upgrade().deref()).x.borrow_mut()) = 2;
+*(*(*ptr.borrow()).upgrade().deref()).x.borrow_mut() = 2;
 let r: Value<i32> = Rc::new(RefCell::new(if *c.borrow() {
-    (*(*obj.borrow()).x.borrow())
+    *(*obj.borrow()).x.borrow()
 } else {
-    (*(*(*ptr.borrow()).upgrade().deref()).x.borrow())
+    *(*(*ptr.borrow()).upgrade().deref()).x.borrow()
 }));
 let p: Value<Ptr<i32>> = Rc::new(RefCell::new((*obj.borrow()).x.as_pointer()));
 ```
@@ -82,8 +82,8 @@ each row is its own `Value`:
 an element gives `(arr.as_pointer() as Ptr<i32>).offset(0)`.
 
 A flexible array member is not indexed, which Rust would bounds-check against
-the declared length, but offset from its start:
-`*(*n).x.bytes.as_mut_ptr().add(i as usize)` (see
+the declared length, but offset from its start: `s.bytes[i]` becomes
+`*s.bytes.as_mut_ptr().add(i as usize)` (see
 [Flexible array members](../types/classes.md#flexible-array-members)). A
 `unique_ptr<T[]>` is `x.as_mut().unwrap()[i as usize]`.
 

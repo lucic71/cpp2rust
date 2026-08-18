@@ -12,21 +12,21 @@ double z2 = f2(z1, f1(x, y), y);
 the unsafe model produces
 
 ```rust
-let mut z2: f64 = (unsafe {
-    let _d: f64 = (unsafe { f1_0(x, y) });
+let mut z2: f64 = unsafe {
+    let _d: f64 = unsafe { f1_0(x, y) };
     let _e: f64 = y;
     f2_1(z1, _d, _e)
-});
+};
 ```
 
 and the refcount model produces
 
 ```rust
-let z2: Value<f64> = Rc::new(RefCell::new(({
-    let _d: f64 = ({ f1_0(*x.borrow(), *y.borrow()) });
+let z2: Value<f64> = Rc::new(RefCell::new({
+    let _d: f64 = { f1_0(*x.borrow(), *y.borrow()) };
     let _e: f64 = *y.borrow();
     f2_1(*z1.borrow(), _d, _e)
-})));
+}));
 ```
 
 ## Dispatch

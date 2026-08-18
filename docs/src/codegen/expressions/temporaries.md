@@ -59,9 +59,9 @@ the call in a block. `std::max(30, 40)` becomes in the unsafe model
     let mut __tmp_0 = 30;
     let mut __tmp_1 = 40;
     (*if *&mut __tmp_0 >= *&mut __tmp_1 {
-        (&mut __tmp_0) as *const _
+        &mut __tmp_0 as *const _
     } else {
-        (&mut __tmp_1) as *const _
+        &mut __tmp_1 as *const _
     })
 }
 ```
