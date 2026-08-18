@@ -50,12 +50,14 @@ Refcount model: `&x` becomes `x.as_pointer()`, which produces a `Ptr` holding a
 weak reference to the variable's `Value`. Since every field is its own `Value`,
 `&s.field` is `s.field.as_pointer()`. An array decays with
 `arr.as_pointer() as Ptr<T>`, a `Ptr` to element 0 of the whole array, and
-`&arr[i]` is that pointer offset by `i`. Taking the address is pushed down to
-the innermost place expression: `&(cond ? x : y)` becomes
-`if cond { x.as_pointer() } else { y.as_pointer() }`. Rust does not allow
-`as_pointer()` on the result of the `if`, because that result is a value copied
-out of whichever branch ran, not the branch's storage, so `as_pointer()` has to
-be applied inside each branch, where the place is still known.
+`&arr[i]` is that pointer offset by `i`.
+
+Both models push the address down to the innermost place expression:
+`&(cond ? x : y)` becomes `if cond { &mut x } else { &mut y }` in the unsafe
+model and `if cond { x.as_pointer() } else { y.as_pointer() }` in the refcount
+one. The `if` yields a value copied out of whichever branch ran, not that
+branch's storage, so the address has to be taken inside the branches, where the
+place is still known.
 
 ## Dereference
 
