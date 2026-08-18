@@ -72,5 +72,3 @@ function, so a pointer stays equal to itself after being cast.
 
 A capture-less lambda assigned to a function pointer becomes
 `FnPtr::new(|...| ...)` with the closure inline (see [Lambdas](./lambdas.md)).
-Casts of function pointers are on the [Casts](./casts.md#function-pointers)
-page.
