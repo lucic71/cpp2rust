@@ -84,3 +84,4 @@
   - [Construction, `new` and `delete`](./codegen/expressions/construction.md)
   - [Miscellaneous](./codegen/expressions/misc.md)
 - [Converter State](./codegen/internals/state.md)
+- [The Mapper Interface](./codegen/internals/mapper.md)
