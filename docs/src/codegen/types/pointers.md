@@ -62,6 +62,18 @@ be applied inside each branch, where the place is still known.
 Unsafe model: `*p` stays `*p`, `p->x` becomes `(*p).x`, and an assignment
 through a pointer is `*p = v`.
 
+When the dereference is the base of an index, `(*p)[i]` with
+`p: *mut Vec<i32>`, Rust would have to create a `&mut Vec<i32>` out of the raw
+pointer to call `Index::index`, and its `dangerous_implicit_autorefs` lint
+rejects that as an error. The converter makes the reference explicit instead:
+`EmitDeref` prints `(&mut (*p))[i]`, or `(&(*p))[i]` when the `operator[]` is
+`const`, when `autoref_mut_` is set. `PushExplicitAutoref` sets it around the
+base of an overloaded subscript, which also covers a member of the pointee,
+`(&mut (*hp)).v[i]`, around the range of a range-`for`, and around a rule
+placeholder marked `is_index_base` (see [Rules IR](../../rules/ir.md));
+`EmitDeref` clears it once used, so nested dereferences inside the base are
+printed plainly.
+
 Refcount model: a dereference cannot hand out a `&T` into the pointee, because
 nothing would bound the borrow's lifetime, so a read copies the value out and a
 write copies it in:
