@@ -31,13 +31,15 @@ let e: Value<Ptr<i32>> = Rc::new(RefCell::new(Ptr::alloc_array(
 `VisitCXXNewExpr` leaks a `Box` in the unsafe model and allocates through
 [`Ptr::alloc`](../../runtime/rc.md#the-heap) in the refcount model. The
 initializer is converted like a variable initializer: `new Pair{1, 2}` gives
-`Box::new(Pair { x: 1, y: 2 })`, `new Pair()` the type's default value, and
-`new T[n]` fills `n` copies of the [default value](../declarations/defaults.md)
-(`new int[3]{7, 8}` becomes `Box::new([7, 8, 0_i32])`, padded to the size). The
-size expression is converted as written, `(*N2) as usize` for a reference. In
-the unsafe model the `.as_mut_ptr()` is only appended when the result goes into
-a pointer, so `unique_ptr<int[]>(new int[100])` gets the `Box<[i32]>` its rule
-expects. Placement `new` is not handled.
+`Box::new(Pair { x: 1, y: 2 })`, `new Pair()` the type's default value (a bare
+`new T` with no initializer is `Ptr::alloc(Default::default())` in the refcount
+model), and `new T[n]` fills `n` copies of the
+[default value](../declarations/defaults.md) (`new int[3]{7, 8}` becomes
+`Box::new([7, 8, 0_i32])`, padded to the size). The size expression is converted
+as written, `(*N2) as usize` for a reference. In the unsafe model the
+`.as_mut_ptr()` is only appended when the result goes into a pointer, so
+`unique_ptr<int[]>(new int[100])` gets the `Box<[i32]>` its rule expects.
+Placement `new` is not handled.
 
 `VisitCXXDeleteExpr` frees with `Box::from_raw`. For `delete[]` the unsafe model
 has no length, so it recovers one from the allocator with `malloc_usable_size`

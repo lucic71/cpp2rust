@@ -37,9 +37,9 @@ the refcount model. The unsafe model does not look at the constness of the
 reference: the binding is always `let mut` and the argument always `&mut name`,
 which coerces to the `*const i32` of the `const int &` parameter (see
 [Pointers](../types/pointers.md)) as well as to the `*mut` of a non-const one.
-There is no visitor for clang's `MaterializeTemporaryExpr`,
-`ExprWithCleanups`, or `CXXBindTemporaryExpr`; they are traversed through, and
-only inspected at the two call sites below.
+There is no visitor for clang's `MaterializeTemporaryExpr`, `ExprWithCleanups`,
+or `CXXBindTemporaryExpr`; they are traversed through, and only inspected at the
+two call sites below.
 
 For a generic call, `CollectCallInfo` marks an argument `Materialized` when it
 is a `MaterializeTemporaryExpr` passed to an lvalue reference parameter; the

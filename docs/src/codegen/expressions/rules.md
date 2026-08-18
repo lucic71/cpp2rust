@@ -31,17 +31,21 @@ instead, `Some(libcc2rs::fread_unsafe)` and
 
 `BuildUnifiedArgs` lines up the rule's `a0`, `a1`, ... with the call: for a
 method call the receiver is `a0` and the explicit arguments follow, so there is
-no separate `this` placeholder. `ConvertIRFragment` walks the rule body and
-calls `ConvertPlaceholder` for each `aN`, with a `PlaceholderCtx` that knows the
-rule's parameter type, whether the argument is a C++ pointer, whether its Rust
-type is a pointer (`Mapper::MapsToPointer`), whether the rule declares the
-parameter as a pointer, whether this is the receiver, and how the rule accesses
-it (read, write, move). The decision, in order:
+no separate `this` placeholder. `ConvertIRFragment` walks the rule body: text
+fragments are copied, a generic fragment is instantiated with
+`Mapper::InstantiateTemplate`, a `va` fragment becomes the variadic tail
+(`ConvertVariadicTail`, see [Variadic Functions](./variadic.md)), a
+`method_call` fragment converts its receiver and body fragments in turn, and
+each `aN` placeholder goes through `ConvertPlaceholder` with a `PlaceholderCtx`
+that knows the rule's parameter type, whether the argument is a C++ pointer,
+whether its Rust type is a pointer (`Mapper::MapsToPointer`), whether the rule
+declares the parameter as a pointer, whether this is the receiver, and how the
+rule accesses it (read, write, move). The decision, in order:
 
 - A function-pointer argument is converted as a `Callee`, so the bare function
   name is substituted.
-- A C array where the rule wants a pointer becomes `(arr.as_mut_ptr() as *mut T)`
-  / `(arr.as_pointer() as Ptr<T>)`.
+- A C array where the rule wants a pointer becomes
+  `(arr.as_mut_ptr() as *mut T)` / `(arr.as_pointer() as Ptr<T>)`.
 - An argument with no address where the rule wants a pointer becomes a
   [materialized temporary](./temporaries.md), `__tmp_N`.
 - A receiver that is not a Rust pointer but is declared as one in the rule is

@@ -53,14 +53,17 @@ pushes `FullRefCount` first, so it comes out as `Value<T>`, except for
 references, which are an unboxed `Ptr<T>` (see [Boxing](../types/boxing.md)). A
 `const` local is `let b` without `mut` in the unsafe model, and the refcount
 model never prints `mut` (see [Declarations](../declarations.md)). A variable
-named `_` gets no `mut` either.
+named `_` gets no `mut` either. A [hoisted](../statements/goto.md) local is
+always `mut`, even when `const`, because its value is assigned later.
 
 Two kinds of declaration take a different path before any of this. A local
 initialized with a lambda is not emitted at all by the unsafe model, which
-inlines the closure at every use (see [Lambdas](../types/lambdas.md)); the
-refcount model declares it like any other variable. A `va_list` local is
-declared as `VaList` (`Value<VaList>` in the refcount model) by
-`ConvertVaListVarDecl` (see [Variadic Arguments](../../runtime/va-args.md)).
+inlines the closure at every use (see [Lambdas](../types/lambdas.md)), unless
+the variable has function pointer type, in which case it is declared as
+`Option<unsafe fn(...)>` holding the closure; the refcount model declares it
+like any other variable. A `va_list` local is declared as `VaList`
+(`Value<VaList>` in the refcount model) by `ConvertVaListVarDecl` (see
+[Variadic Arguments](../../runtime/va-args.md)).
 
 ## The initializer
 

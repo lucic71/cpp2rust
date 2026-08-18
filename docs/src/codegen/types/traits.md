@@ -1,8 +1,10 @@
 # Traits
 
-Every emitted struct, union, and enum comes with a fixed set of trait
-implementations. Some are derived, some are written out; which is which depends
-on the model.
+Every emitted struct comes with a fixed set of trait implementations. Some are
+derived, some are written out; which is which depends on the model. Enums derive
+`Clone, Copy, PartialEq, Debug, Default` in both models, and unions derive
+`Copy, Clone` in the unsafe model regardless of their fields; the table below is
+for structs.
 
 | Trait                                  | Unsafe model                                                          | Refcount model                                      |
 | -------------------------------------- | --------------------------------------------------------------------- | --------------------------------------------------- |
@@ -18,9 +20,10 @@ on the model.
 In the unsafe model a record derives `Copy` unless a field is translated to a
 `Vec`, `BTreeMap`, `Option<Box<T>>` (`std::unique_ptr`), or a record that is not
 itself `Copy`; `Clone` is derived unless the C++ copy constructor is deleted.
-The refcount model cannot derive either, because a `Value<T>` field is an `Rc`
-and a derived `Clone` would only bump its count, leaving the copy aliasing the
-original. The generated `Clone` therefore rebuilds every field:
+The refcount model skips `Clone` altogether when the copy constructor is
+deleted. The refcount model cannot derive either, because a `Value<T>` field is
+an `Rc` and a derived `Clone` would only bump its count, leaving the copy
+aliasing the original. The generated `Clone` therefore rebuilds every field:
 
 ```rust
 impl Clone for Counter {

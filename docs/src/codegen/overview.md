@@ -88,13 +88,14 @@ a construct is handled entirely by the base class.
 
 ## What this part covers
 
-[The Translation Pipeline](./pipeline.md) follows a source file from the
-driver to the formatted output. The four parts after it follow the structure of
-the C++ program, from the outside in:
+[The Translation Pipeline](./pipeline.md) follows a source file from the driver
+to the formatted output. The four parts after it follow the structure of the C++
+program, from the outside in:
 
 - [Types](./types.md): how every C++ type is spelled in Rust in each model, and
-  the type-level constructs, records, enums, unions, bit-fields, pointers, casts,
-  function pointers, lambdas, and the library types the converter special-cases.
+  the type-level constructs, records, enums, unions, bit-fields, pointers,
+  casts, function pointers, lambdas, and the library types the converter
+  special-cases.
 - [Declarations](./declarations.md): functions, `main`, methods and
   constructors, local and global variables, and default values.
 - [Statements](./statements.md): the translation unit, control flow, `switch`,

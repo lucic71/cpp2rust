@@ -46,7 +46,7 @@ The converter has no visitor for exceptions (`throw`, `try`/`catch`), `typeid`,
 constructs that are rejected explicitly, with an assertion, are: an out-of-line
 overloaded operator other than `operator<`, a user-defined copy or move
 constructor, an overloaded operator call other than `= * -> [] << ()` and `<`
-without a rule, an unsigned binary operator outside `+ - * / %`, a global with
-a user-defined default constructor and no initializer in the unsafe model, a
+without a rule, an unsigned binary operator outside `+ - * / %`, a global with a
+user-defined default constructor and no initializer in the unsafe model, a
 `printf` format the refcount rewrite does not know, and a function pointer cast
 it cannot express.

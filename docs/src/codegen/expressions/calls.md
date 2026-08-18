@@ -36,14 +36,14 @@ let z2: Value<f64> = Rc::new(RefCell::new({
 1. The `va_start`/`va_end`/`va_copy` builtins (see
    [Variadic Functions](./variadic.md)).
 2. A [plugin](./plugins.md).
-3. A translation rule for the callee (see [Applying Rules](./rules.md)). If
-   the rule is a libc passthrough, this step goes straight to the generic path
-   of step 8 instead.
+3. A translation rule for the callee (see [Applying Rules](./rules.md)). If the
+   rule is a libc passthrough, this step goes straight to the generic path of
+   step 8 instead.
 4. `std::move`, which prints just its argument.
 5. An overloaded operator call.
 6. `printf` and `fprintf`, recognized by name in `ConvertCallExpr` and sent to
-   `ConvertPrintf` (see [printf and Streams](./io.md)). They have no
-   translation rule, which is why step 3 does not catch them.
+   `ConvertPrintf` (see [printf and Streams](./io.md)). They have no translation
+   rule, which is why step 3 does not catch them.
 7. `__builtin_constant_p`, printed as `1` or `0` depending on whether its
    argument is a constant expression.
 8. The generic path, `ConvertGenericCallExpr`, which handles user functions,
@@ -81,9 +81,9 @@ through `ConvertParamTy`, which converts as `AddrOf` for a reference parameter
 and otherwise like a variable initializer with the parameter type as implicit
 conversion target, so a `size_t` argument to an `unsigned long` parameter is
 cast, `take_ulong_1(sz as u64)`. An argument for a parameter with a default is
-wrapped in `Some(...)` (see
-[Functions](../declarations/functions.md)). Every argument is followed by a
-comma, so trailing commas appear inside macros: `apply_1(5, None,)`.
+wrapped in `Some(...)` (see [Functions](../declarations/functions.md)). Every
+argument is followed by a comma, so trailing commas appear inside macros:
+`apply_1(5, None,)`.
 
 ## Callees
 
@@ -96,19 +96,18 @@ comma, so trailing commas appear inside macros: `apply_1(5, None,)`.
 - A libc passthrough (see
   [Passthrough rules](../../rules/writing-rules.md#passthrough-rules)) is
   `libc::name(args)`, each inline argument cast to the Rust parameter type of
-  the rule:
-  `libc::fcntl(fds[0 as usize] as i32, 3 as i32, 0)`. `IsLibcPassthrough` holds
-  when the rule body is empty and `extern`, and only the unsafe rules are; the
-  refcount rules for the same functions have bodies and go through the rule
-  path.
+  the rule: `libc::fcntl(fds[0 as usize] as i32, 3 as i32, 0)`.
+  `IsLibcPassthrough` holds when the rule body is empty and `extern`, and only
+  the unsafe rules are; the refcount rules for the same functions have bodies
+  and go through the rule path.
 
 ## Return values
 
 A call returning a reference is dereferenced when the value is wanted. Given
 `struct Stack { const int &top(); };` and `int t = s.top();`, the initializer is
 `(*(unsafe { s.top() }))` in the unsafe model and
-`({ (*s.borrow()).top() }).read()` in the refcount model
-(`.upgrade().deref()` for a record); as an lvalue in the refcount model it
-becomes a [pending dereference](./pending-deref.md). When the address of a value
-return is wanted, the refcount model boxes it on the spot:
+`({ (*s.borrow()).top() }).read()` in the refcount model (`.upgrade().deref()`
+for a record); as an lvalue in the refcount model it becomes a
+[pending dereference](./pending-deref.md). When the address of a value return is
+wanted, the refcount model boxes it on the spot:
 `Rc::new(RefCell::new(call)).as_pointer()`.

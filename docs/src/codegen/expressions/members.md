@@ -41,9 +41,8 @@ strong one to reach the record (see
 method call is borrowed immutably, `(*c.borrow()).get()`, even for a non-`const`
 method, since the fields of a user class carry their own cells; `NeedsMutAccess`
 asks for `borrow_mut()` when the call is a mutating library method such as
-`push`, `(*v.borrow_mut()).push(10)`. A union member
-becomes an accessor call, `(*u.borrow_mut()).i().write(42)` (see
-[Unions](../types/unions.md)).
+`push`, `(*v.borrow_mut()).push(10)`. A union member becomes an accessor call,
+`(*u.borrow_mut()).i().write(42)` (see [Unions](../types/unions.md)).
 
 Members of an anonymous struct or union are reached through the implicit field
 clang inserts, named `anon_N` like its type: `o.e = 7` becomes `o.anon_2.e = 7`.
@@ -69,15 +68,15 @@ let __rhs = (*ptr.borrow()).offset(*i.borrow() as isize).read();
 *out.borrow_mut() += __rhs;
 ```
 
-`VisitArraySubscriptExpr` translates `p[i]` differently depending on whether
-`p` is a pointer or an array. When it is a pointer, `ConvertPointerSubscript`
-emits pointer arithmetic, `(*p.offset(i as isize))`, or just
-`p.offset(i as isize)` under `AddrOf`; in the refcount model the offset is read
-with `.read()` (`.upgrade().deref()` for a record) or, as an lvalue, recorded as
-a [pending dereference](./pending-deref.md). When it is an array, the result is
-a Rust index, `arr[i as usize]`; the refcount model borrows the array first, and
-for a two-dimensional array inserts a `.borrow()` between the two subscripts, since
-each row is its own `Value`:
+`VisitArraySubscriptExpr` translates `p[i]` differently depending on whether `p`
+is a pointer or an array. When it is a pointer, `ConvertPointerSubscript` emits
+pointer arithmetic, `(*p.offset(i as isize))`, or just `p.offset(i as isize)`
+under `AddrOf`; in the refcount model the offset is read with `.read()`
+(`.upgrade().deref()` for a record) or, as an lvalue, recorded as a
+[pending dereference](./pending-deref.md). When it is an array, the result is a
+Rust index, `arr[i as usize]`; the refcount model borrows the array first, and
+for a two-dimensional array inserts a `.borrow()` between the two subscripts,
+since each row is its own `Value`:
 `(*grid.borrow())[2 as usize].borrow_mut()[5 as usize]`. Taking the address of
 an element gives `(arr.as_pointer() as Ptr<i32>).offset(0)`.
 

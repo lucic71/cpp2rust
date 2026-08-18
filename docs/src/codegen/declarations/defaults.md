@@ -14,6 +14,7 @@ The unsafe model tries these cases in order:
 | `va_list`                                | `VaList::default()`                                                     |
 | `T[N]`                                   | `[d; N]` with `d` the default of `T`                                    |
 | `T[N]`, `T` a non-`Copy` record          | `std::array::from_fn::<_, N, _>(\|_\| d)`                               |
+| `T[]`                                    | the default of `T`                                                      |
 | `std::array<T, N>`                       | `std::array::from_fn::<_, N, _>(\|_\| Default::default()).to_vec()`     |
 | type with a rule that has an initializer | the rule's initializer, for example `Vec::new()`                        |
 | `T *`, `T` not a function                | `std::ptr::null_mut()`, or `std::ptr::null()` for `const T *`           |

@@ -133,8 +133,9 @@ derive `Default`, and it does not derive `Copy` either since the field is a
 
 ## `std::string` and streams
 
-`std::string` maps to `Vec<u8>` through its rules; the converter itself only
-special-cases string literals (their type in an initializer, and ASCII escaping)
-and range-`for` over a string. `std::ostream` calls (`std::cout << x`) are
-detected with `IsCallToOstream` and translated by a dedicated path rather than
-by rules; that path is described with `printf` under Expressions.
+`std::string` maps to `Vec<libc::c_char>` in the unsafe model and `Vec<u8>` in
+the refcount model through its rules; the converter itself only special-cases
+string literals (their type in an initializer, and ASCII escaping) and
+range-`for` over a string. `std::ostream` calls (`std::cout << x`) are detected
+with `IsCallToOstream` and translated by a dedicated path rather than by rules;
+that path is described with `printf` under Expressions.

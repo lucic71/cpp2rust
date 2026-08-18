@@ -48,8 +48,9 @@ The list is then emitted as runs of two kinds. String and character literals,
 that is not a `char` or a `std::string` are accumulated into a format string and
 flushed as `write!(stream, "fmt", args,);`, a value printing as `{}` or `{:x}`
 after `std::hex`. `char` values and `std::string` values cannot go through `{}`,
-since they are `u8` and `Vec<u8>` on the Rust side, so they are written as byte
-slices, `stream.write_all(&([...].concat()));`. Given
+since they are `libc::c_char` and `Vec<libc::c_char>` (`u8` and `Vec<u8>` in the
+refcount model) on the Rust side, so they are written as byte slices,
+`stream.write_all(&([...].concat()));`. Given
 `std::cout << i << " a"; std::cout << std::hex << 27;` the refcount model
 produces
 

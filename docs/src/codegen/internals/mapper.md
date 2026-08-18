@@ -20,13 +20,13 @@ records, enums, and template instantiations get their Rust names (see
 
 ## Asking whether a rule applies
 
-`Contains(QualType)` and `Contains(Expr *)` answer whether a rule matches.
-Every visitor that may apply a rule asks this first and takes its ordinary path
-when the answer is no, which is why the converter never has to know what the
-rule tables hold. `GetExprRule` returns the matched expression rule itself when
-the converter needs more than a yes: `ConvertIRFragment` walks its body
-fragments, and the cast visitor compares its return type with the cast target
-to drop a redundant `as`.
+`Contains(QualType)` and `Contains(Expr *)` answer whether a rule matches. Every
+visitor that may apply a rule asks this first and takes its ordinary path when
+the answer is no, which is why the converter never has to know what the rule
+tables hold. `GetExprRule` returns the matched expression rule itself when the
+converter needs more than a yes: `ConvertIRFragment` walks its body fragments,
+and the cast visitor compares its return type with the cast target to drop a
+redundant `as`.
 
 ## Mapping types
 
@@ -60,14 +60,14 @@ When a call has a rule, `ConvertPlaceholder` needs to know how the rule declares
 each parameter to decide how to print the argument (see
 [Applying Rules](../expressions/rules.md)): `GetParamType` gives the
 instantiated Rust type of parameter `i`, `ParamIsPointer` and `ReturnsPointer`
-whether the parameter or the return type is a pointer, and
-`InstantiateTemplate` the type bound to `Tn` at this call site for a `generic`
-fragment. `IsLibcPassthrough` singles out the rules that are bare `extern`
-declarations, whose call is printed as `libc::name(...)` instead of a rule body
-(see [Calls](../expressions/calls.md)). `MapFunctionName` covers the case where
-a function with a rule is not called but used as a value: the rule body cannot
-be substituted, so the name of the runtime's function, `libcc2rs::fread_unsafe`
-or `libcc2rs::fread_refcount`, is printed instead.
+whether the parameter or the return type is a pointer, and `InstantiateTemplate`
+the type bound to `Tn` at this call site for a `generic` fragment.
+`IsLibcPassthrough` singles out the rules that are bare `extern` declarations,
+whose call is printed as `libc::name(...)` instead of a rule body (see
+[Calls](../expressions/calls.md)). `MapFunctionName` covers the case where a
+function with a rule is not called but used as a value: the rule body cannot be
+substituted, so the name of the runtime's function, `libcc2rs::fread_unsafe` or
+`libcc2rs::fread_refcount`, is printed instead.
 
 ## Loading and context
 
@@ -81,16 +81,16 @@ themselves.
 ## `ToString`
 
 `ToString` prints a `QualType`, a `NamedDecl`, or an `Expr` in the form the rule
-preprocessor writes into the Rules IR; the two sides share the printer, which is what
-keeps them comparable (see
+preprocessor writes into the Rules IR; the two sides share the printer, which is
+what keeps them comparable (see
 [Loading and Matching](../../rules/loading.md#matching)). Beyond the plain
 cases, functions, types, and qualified names, it has a few special forms that
 exist only so that a rule can be written for the construct:
 
 - A lambda type prints as the signature of its call operator, so a rule can
   match a callable by its parameter list.
-- An anonymous struct, union, or enum prints as the typedef that names it, or
-  as its generated `anon_N` name (see [Naming](../types/naming.md)).
+- An anonymous struct, union, or enum prints as the typedef that names it, or as
+  its generated `anon_N` name (see [Naming](../types/naming.md)).
 - A member access through an overloaded `operator->` prints as
   `<pointer type>-><member>`, and a field access on the loop variable of a
   range-`for` over a `std::map` prints as `<iterator type>-><member>` (see

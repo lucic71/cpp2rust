@@ -8,8 +8,8 @@ calls are handled by a plugin, a converter method that inspects the call and
 prints the translation itself. Plugins are consulted by `TryPluginConvert`
 before translation rules, in `VisitCallExpr`.
 
-The plugin infrastructure is minimal: a plugin is a pair of `Converter`
-methods, `<name>_plugin_match(CallExpr *)` and `<name>_plugin_convert(CallExpr *)`,
+The plugin infrastructure is minimal: a plugin is a pair of `Converter` methods,
+`<name>_plugin_match(CallExpr *)` and `<name>_plugin_convert(CallExpr *)`,
 implemented in `cpp2rust/converter/plugins/<name>.cpp`, plus virtual hooks that
 `ConverterRefCount` overrides where the two models differ. Adding a plugin means
 declaring the pair in `converter.h`, adding a branch to `TryPluginConvert`, and
