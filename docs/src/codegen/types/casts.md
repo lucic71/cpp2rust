@@ -94,9 +94,11 @@ let back: Value<Ptr<u8>> =
 ### Unsafe model
 
 Every pointer cast, whether written as a C cast, `static_cast`, or
-`reinterpret_cast`, is a Rust `as` between raw pointer types. Casts that change
-nothing in Rust (a `typedef` to its underlying type, an implicit `T *` to
-`const T *`) are not emitted. Casts between pointers and integers are also `as`.
+`reinterpret_cast`, is a Rust `as` between raw pointer types. A cast that only
+adds or removes `const` changes the Rust type too, since `T *` is `*mut T` and
+`const T *` is `*const T`, and becomes `.cast_const()` or `.cast_mut()`. A cast
+that changes nothing in Rust, such as a `typedef` to its underlying type, is not
+emitted. Casts between pointers and integers are also `as`.
 
 ### Refcount model
 
