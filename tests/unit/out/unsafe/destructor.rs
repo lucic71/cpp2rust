@@ -8,7 +8,7 @@ use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 pub static mut total_0: i32 = unsafe { 0 };
 #[repr(C)]
-#[derive(Copy, Clone)]
+#[derive(Clone)]
 pub struct Inner {
     pub target: *mut i32,
 }
@@ -30,12 +30,12 @@ impl Default for Inner {
     }
 }
 #[repr(C)]
-#[derive(Copy, Clone, Default)]
+#[derive(Clone, Default)]
 pub struct Outer {
     pub inner: Inner,
 }
 #[repr(C)]
-#[derive(Copy, Clone)]
+#[derive(Clone)]
 pub struct OutOfLine {
     pub step: i32,
 }
