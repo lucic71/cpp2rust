@@ -854,23 +854,6 @@ void Converter::EmitRustStructOrUnion(clang::RecordDecl *decl) {
   AddByteReprTrait(decl);
 }
 
-bool Converter::IsEmittableMethod(clang::CXXMethodDecl *method) {
-  // Virtual methods go into the base trait impl, destructors into Drop
-  if (method->isVirtual() || clang::isa<clang::CXXDestructorDecl>(method)) {
-    return false;
-  }
-  // Compiler-generated members are covered by derived traits
-  if (method->isImplicit()) {
-    return false;
-  }
-  if (auto *definition = method->getDefinition();
-      definition && definition->isDefaulted()) {
-    return false;
-  }
-  return method->isThisDeclarationADefinition() ||
-         clang::isa<clang::CXXConstructorDecl>(method);
-}
-
 void Converter::ConvertCXXRecordMethods(clang::CXXRecordDecl *decl) {
   ConvertCXXMethodDecls(
       decl, std::format("{} {}", keyword::kImpl, GetRecordName(decl)),
@@ -958,7 +941,7 @@ bool Converter::VisitCXXRecordDecl(clang::CXXRecordDecl *decl) {
 
 bool Converter::VisitCXXMethodDecl(clang::CXXMethodDecl *decl) {
   decl->dump(log());
-  if (!IsConvertibleCXXMethodDecl(decl)) {
+  if (!ShouldConvertMethod(decl)) {
     return false;
   }
   PushCurrFunction push_fn(*this, decl);
@@ -972,6 +955,10 @@ bool Converter::VisitCXXMethodDecl(clang::CXXMethodDecl *decl) {
   return ConvertCXXMethodDecl(decl);
 }
 
+bool Converter::ShouldConvertMethod(const clang::CXXMethodDecl *decl) {
+  return IsConvertibleCXXMethodDecl(decl);
+}
+
 bool Converter::ConvertOutOfLineMethod(clang::CXXMethodDecl *decl) {
   StrCat(keyword::kImpl, GetRecordName(decl->getParent()));
   PushBrace impl_brace(*this);
@@ -979,6 +966,9 @@ bool Converter::ConvertOutOfLineMethod(clang::CXXMethodDecl *decl) {
 }
 
 std::string Converter::GetMethodName(const clang::CXXMethodDecl *decl) {
+  if (clang::isa<clang::CXXDestructorDecl>(decl)) {
+    return kDestructorName;
+  }
   if (decl->isOverloadedOperator()) {
     return GetOverloadedOperator(decl);
   }
@@ -1060,39 +1050,45 @@ void Converter::ConvertCXXConstructorBody(clang::CXXConstructorDecl *decl) {
   StrCat(keyword::kLet, "mut", "this", token::kAssign, "Self");
   {
     PushBrace this_init(*this);
-    const auto *record_decl = decl->getParent();
-    auto *definition_or_null = decl->getDefinition();
-    assert(definition_or_null);
-    auto *definition =
-        clang::cast<clang::CXXConstructorDecl>(definition_or_null);
-
-    bool has_inits = !definition->inits().empty();
-    auto **ctor_initializer_list = definition->inits().begin();
-    int curr_init =
-        has_inits ? (ctor_initializer_list[0]->isBaseInitializer() ? 1 : 0) : 0;
-
-    for (const auto *field : record_decl->fields()) {
-      auto field_name = GetNamedDeclAsString(field);
-      auto field_type = field->getType();
-      auto *ctor_initializer =
-          has_inits ? ctor_initializer_list[curr_init] : nullptr;
-
-      if (has_inits &&
-          GetNamedDeclAsString(ctor_initializer->getMember()) == field_name) {
-        auto *ctor_init_expr = ctor_initializer->getInit();
-        StrCat(field_name, token::kColon);
-        ConvertVarInit(field_type, ctor_init_expr);
-        curr_init = (curr_init + 1) % definition->getNumCtorInitializers();
-      } else {
-        StrCat(field_name, token::kColon, GetDefaultAsString(field_type));
-      }
-      StrCat(token::kComma);
-    }
+    EmitConstructorFieldInits(decl);
   }
 
   StrCat(token::kSemiColon);
   ConvertBodyStmts(decl->getBody());
   StrCat("this");
+}
+
+void Converter::EmitConstructorFieldInits(clang::CXXConstructorDecl *decl) {
+  const auto *record_decl = decl->getParent();
+  auto *definition_or_null = decl->getDefinition();
+  assert(definition_or_null);
+  auto *definition = clang::cast<clang::CXXConstructorDecl>(definition_or_null);
+
+  bool has_inits = !definition->inits().empty();
+  auto **ctor_initializer_list = definition->inits().begin();
+  int curr_init =
+      has_inits ? (ctor_initializer_list[0]->isBaseInitializer() ? 1 : 0) : 0;
+
+  for (const auto *field : record_decl->fields()) {
+    auto field_name = GetNamedDeclAsString(field);
+    auto field_type = field->getType();
+    auto *ctor_initializer =
+        has_inits ? ctor_initializer_list[curr_init] : nullptr;
+
+    if (has_inits &&
+        GetNamedDeclAsString(ctor_initializer->getMember()) == field_name) {
+      auto *ctor_init_expr = ctor_initializer->getInit();
+      StrCat(field_name, token::kColon);
+      ConvertVarInit(field_type, ctor_init_expr);
+      curr_init = (curr_init + 1) % definition->getNumCtorInitializers();
+    } else if (field->hasInClassInitializer()) {
+      StrCat(field_name, token::kColon);
+      ConvertVarInit(field_type, field->getInClassInitializer());
+    } else {
+      StrCat(field_name, token::kColon, GetDefaultAsString(field_type));
+    }
+    StrCat(token::kComma);
+  }
 }
 
 bool Converter::VisitFieldDecl(clang::FieldDecl *decl) {

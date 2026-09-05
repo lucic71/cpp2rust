@@ -41,8 +41,6 @@ public:
 
   void AddCloneTrait(const clang::RecordDecl *decl) override;
 
-  void AddDropTrait(const clang::CXXRecordDecl *decl) override;
-
   void AddByteReprTrait(const clang::RecordDecl *decl) override;
 
   bool
@@ -54,7 +52,15 @@ public:
 
   std::string GetSelfMaybeWithMut(const clang::CXXMethodDecl *decl) override;
 
+  bool ShouldConvertMethod(const clang::CXXMethodDecl *decl) override;
+
+  void AddDropTrait(const clang::CXXRecordDecl *decl) override {}
+
   bool ConvertOutOfLineMethod(clang::CXXMethodDecl *decl) override;
+
+  void ConvertFunctionBody(clang::FunctionDecl *decl) override;
+
+  void ConvertCXXConstructorBody(clang::CXXConstructorDecl *decl) override;
 
   void ConvertCXXRecordMethods(clang::CXXRecordDecl *decl) override;
 
@@ -212,9 +218,10 @@ public:
                           TempMaterializationCtx *ctx) override;
 
 private:
-  static bool IsMethodOnPtr(const clang::CXXMethodDecl *method);
   std::string TraitName(const clang::CXXRecordDecl *decl) const;
   std::string ImplHeader(const clang::CXXRecordDecl *decl) const;
+  std::string DestroyMembers(const clang::CXXRecordDecl *decl);
+  void EmitScopedDestructor(const clang::VarDecl *decl);
 
   std::pair<std::string, std::string>
   MaterializeTemp(const std::string &binding_name, clang::QualType param_type,

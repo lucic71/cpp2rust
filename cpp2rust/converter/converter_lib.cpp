@@ -618,6 +618,43 @@ bool RecordNeedsDestruction(const clang::CXXRecordDecl *decl) {
   return false;
 }
 
+bool IsEmittableMethod(clang::CXXMethodDecl *method) {
+  // Virtual methods go into the base trait impl, destructors into Drop
+  if (method->isVirtual() || clang::isa<clang::CXXDestructorDecl>(method)) {
+    return false;
+  }
+  // Compiler-generated members are covered by derived traits
+  if (method->isImplicit()) {
+    return false;
+  }
+  if (auto *definition = method->getDefinition();
+      definition && definition->isDefaulted()) {
+    return false;
+  }
+  return method->isThisDeclarationADefinition() ||
+         clang::isa<clang::CXXConstructorDecl>(method);
+}
+
+bool IsMethodOnPtr(const clang::CXXMethodDecl *method) {
+  if (method->isImplicit() || method->isStatic() || method->isVirtual() ||
+      method->isOverloadedOperator() ||
+      clang::isa<clang::CXXConstructorDecl>(method)) {
+    return false;
+  }
+  if (!IsUserDefinedDecl(method->getParent()) ||
+      method->getParent()->isLambda()) {
+    return false;
+  }
+  if (auto *definition = method->getDefinition();
+      definition && definition->isDefaulted()) {
+    return false;
+  }
+  if (clang::isa<clang::CXXDestructorDecl>(method)) {
+    return GetTranslatableDestructor(method->getParent()) != nullptr;
+  }
+  return true;
+}
+
 bool IsOverloadedComparisonOperator(const clang::CXXMethodDecl *decl) {
   if (decl->isOverloadedOperator()) {
     switch (decl->getOverloadedOperator()) {

@@ -23,6 +23,7 @@
 #include "logging.h"
 
 namespace cpp2rust {
+inline constexpr const char kDestructorName[] = "__dtor";
 class Converter : public clang::RecursiveASTVisitor<Converter> {
 
 public:
@@ -126,16 +127,17 @@ public:
   virtual const char *CharRustType() const { return "libc::c_char"; }
 
   virtual bool VisitCXXMethodDecl(clang::CXXMethodDecl *decl);
+  virtual bool ShouldConvertMethod(const clang::CXXMethodDecl *decl);
   virtual bool ConvertOutOfLineMethod(clang::CXXMethodDecl *decl);
   bool ConvertCXXMethodDecl(clang::CXXMethodDecl *decl);
   std::string GetMethodName(const clang::CXXMethodDecl *decl);
   virtual std::string GetSelfMaybeWithMut(const clang::CXXMethodDecl *decl);
   virtual void ConvertCXXRecordMethods(clang::CXXRecordDecl *decl);
-  static bool IsEmittableMethod(clang::CXXMethodDecl *method);
 
   virtual bool ThisIsPointer() const { return false; }
 
-  void ConvertCXXConstructorBody(clang::CXXConstructorDecl *decl);
+  virtual void ConvertCXXConstructorBody(clang::CXXConstructorDecl *decl);
+  void EmitConstructorFieldInits(clang::CXXConstructorDecl *decl);
 
   virtual bool VisitCXXConstructorDecl(clang::CXXConstructorDecl *decl);
 
