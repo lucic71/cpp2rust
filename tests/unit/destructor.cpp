@@ -39,22 +39,34 @@ struct Copied {
 };
 
 int main() {
-  { S s{}; }
+  {
+    S s{};
+  }
   assert(global == 1);
 
-  { S s{}; }
+  {
+    S s{};
+  }
   assert(global == 2);
 
-  { Defaulted d{}; }
+  {
+    Defaulted d{};
+  }
   assert(global == 3);
 
-  { Outer o{}; }
+  {
+    Outer o{};
+  }
   assert(global == 4);
 
-  { ArrayMember am{}; }
+  {
+    ArrayMember am{};
+  }
   assert(global == 7);
 
-  { EmptyBody e{}; }
+  {
+    EmptyBody e{};
+  }
   assert(global == 8);
 
   {
