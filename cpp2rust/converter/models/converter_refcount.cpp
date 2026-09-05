@@ -1637,8 +1637,9 @@ bool ConverterRefCount::VisitMemberExpr(clang::MemberExpr *expr) {
           ThisIsPointer()) {
         method_receiver_ = keyword::kSelfValue;
       } else {
-        method_receiver_ = token::kRef + (expr->isArrow() ? ConvertRValue(base)
-                                                        : ConvertPointer(base));
+        method_receiver_ =
+            token::kRef +
+            (expr->isArrow() ? ConvertRValue(base) : ConvertPointer(base));
       }
       StrCat(TraitName(method->getParent()), token::kDoubleColon,
              GetMethodName(method));
