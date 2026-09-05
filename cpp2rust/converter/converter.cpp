@@ -678,7 +678,7 @@ bool Converter::RecordDerivesCopy(const clang::RecordDecl *decl) const {
 
 bool Converter::RecordHasCopyableFields(const clang::RecordDecl *decl) {
   if (auto *cxx = clang::dyn_cast<clang::CXXRecordDecl>(decl);
-      cxx && RecordNeedsDestruction(cxx)) {
+      cxx && !cxx->hasTrivialDestructor()) {
     return false;
   }
   for (auto f : decl->fields()) {

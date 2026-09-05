@@ -589,39 +589,15 @@ const char *GetOverloadedOperator(const clang::FunctionDecl *decl) {
 
 clang::CXXDestructorDecl *
 GetTranslatableDestructor(const clang::CXXRecordDecl *decl) {
-  if (!decl->hasDefinition() || !IsUserDefinedDecl(decl) ||
-      !decl->hasUserDeclaredDestructor()) {
+  if (!IsUserDefinedDecl(decl)) {
     return nullptr;
   }
   auto *dtor = decl->getDestructor();
-  if (!dtor || dtor->isImplicit() || !dtor->getDefinition() ||
-      dtor->getDefinition()->isDefaulted()) {
+  if (!dtor || dtor->isImplicit()) {
     return nullptr;
   }
-  return dtor;
-}
-
-bool TypeNeedsDestruction(clang::QualType type) {
-  if (type->isArrayType()) {
-    type = clang::QualType(type->getBaseElementTypeUnsafe(), 0);
-  }
-  auto *record = type->getAsCXXRecordDecl();
-  return record && RecordNeedsDestruction(record);
-}
-
-bool RecordNeedsDestruction(const clang::CXXRecordDecl *decl) {
-  if (!decl->hasDefinition() || !IsUserDefinedDecl(decl)) {
-    return false;
-  }
-  if (GetTranslatableDestructor(decl)) {
-    return true;
-  }
-  for (const auto *field : decl->fields()) {
-    if (TypeNeedsDestruction(field->getType())) {
-      return true;
-    }
-  }
-  return false;
+  auto *definition = dtor->getDefinition();
+  return definition && !definition->isDefaulted() ? dtor : nullptr;
 }
 
 bool IsOverloadedComparisonOperator(const clang::CXXMethodDecl *decl) {
