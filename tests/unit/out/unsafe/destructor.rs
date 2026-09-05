@@ -17,6 +17,82 @@ impl Drop for S {
         }
     }
 }
+#[repr(C)]
+#[derive(Clone, Default)]
+pub struct Defaulted {
+    pub s: S,
+}
+#[repr(C)]
+#[derive(Clone, Default)]
+pub struct Middle {
+    pub s: S,
+}
+#[repr(C)]
+#[derive(Clone, Default)]
+pub struct Outer {
+    pub m: Middle,
+}
+#[repr(C)]
+#[derive(Clone)]
+pub struct ArrayMember {
+    pub items: [S; 3],
+}
+impl Default for ArrayMember {
+    fn default() -> Self {
+        ArrayMember {
+            items: std::array::from_fn::<_, 3, _>(|_| <S>::default()),
+        }
+    }
+}
+#[repr(C)]
+#[derive(Clone, Default)]
+pub struct EmptyBody {
+    pub s: S,
+}
+impl Drop for EmptyBody {
+    fn drop(&mut self) {
+        unsafe {}
+    }
+}
+#[repr(C)]
+#[derive(Clone, Default)]
+pub struct Templated_char_ {
+    pub v: libc::c_char,
+}
+impl Drop for Templated_char_ {
+    fn drop(&mut self) {
+        unsafe {
+            global_0 = ((global_0 as usize)
+                .wrapping_add((::std::mem::size_of::<libc::c_char>() as usize)))
+                as i32;
+        }
+    }
+}
+#[repr(C)]
+#[derive(Clone, Default)]
+pub struct Templated_int_ {
+    pub v: i32,
+}
+impl Drop for Templated_int_ {
+    fn drop(&mut self) {
+        unsafe {
+            global_0 =
+                ((global_0 as usize).wrapping_add((::std::mem::size_of::<i32>() as usize))) as i32;
+        }
+    }
+}
+#[repr(C)]
+#[derive(Clone, Default)]
+pub struct Copied {
+    pub v: i32,
+}
+impl Drop for Copied {
+    fn drop(&mut self) {
+        unsafe {
+            global_0.postfix_inc();
+        }
+    }
+}
 pub fn main() {
     unsafe {
         std::process::exit(main_0() as i32);
@@ -31,5 +107,38 @@ unsafe fn main_0() -> i32 {
         let mut s: S = S {};
     }
     assert!(((global_0) == (2)));
+    {
+        let mut d: Defaulted = Defaulted { s: S {} };
+    }
+    assert!(((global_0) == (3)));
+    {
+        let mut o: Outer = Outer {
+            m: Middle { s: S {} },
+        };
+    }
+    assert!(((global_0) == (4)));
+    {
+        let mut am: ArrayMember = ArrayMember {
+            items: [S {}, S {}, S {}],
+        };
+    }
+    assert!(((global_0) == (7)));
+    {
+        let mut e: EmptyBody = EmptyBody { s: S {} };
+    }
+    assert!(((global_0) == (8)));
+    {
+        let mut tc: Templated_char_ = Templated_char_ {
+            v: (0 as libc::c_char),
+        };
+        let mut ti: Templated_int_ = Templated_int_ { v: 0_i32 };
+    }
+    assert!(((global_0) == (13)));
+    {
+        let mut a: Copied = Copied { v: 5 };
+        let mut b: Copied = a.clone();
+        assert!(((b.v) == (5)));
+    }
+    assert!(((global_0) == (15)));
     return 0;
 }
