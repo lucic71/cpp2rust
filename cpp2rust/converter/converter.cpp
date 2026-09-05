@@ -348,7 +348,7 @@ bool Converter::VisitFunctionDecl(clang::FunctionDecl *decl) {
     return false;
   }
   decl->dump(log());
-  curr_function_ = decl;
+  PushCurrFunction push_fn(*this, decl);
   std::string function_name;
   if (decl->isMain()) {
     function_name = "main_0";
@@ -935,7 +935,7 @@ bool Converter::VisitCXXMethodDecl(clang::CXXMethodDecl *decl) {
   if (!decl_ids_.insert(GetMethodID(decl)).second) {
     return false;
   }
-  curr_function_ = decl;
+  PushCurrFunction push_fn(*this, decl);
 
   if (decl->isOutOfLine() && !decl->overridden_methods().empty()) {
     return false;
@@ -995,7 +995,7 @@ bool Converter::VisitCXXConstructorDecl(clang::CXXConstructorDecl *decl) {
   if (decl->isOutOfLine() || decl->isImplicit()) {
     return false;
   }
-  curr_function_ = decl;
+  PushCurrFunction push_fn(*this, decl);
 
   if (decl->isCopyOrMoveConstructor()) {
     // FIXME: improve error handling
@@ -3283,11 +3283,9 @@ bool Converter::VisitLambdaExpr(clang::LambdaExpr *expr) {
   }
   StrCat("| {");
   EmitFunctionPreamble(expr->getLambdaClass()->getLambdaCallOperator());
-  // TODO: replace with a stack
-  auto old_function = curr_function_;
-  curr_function_ = expr->getLambdaClass()->getLambdaCallOperator();
+  PushCurrFunction push_fn(*this,
+                           expr->getLambdaClass()->getLambdaCallOperator());
   ConvertFunctionBody(curr_function_);
-  curr_function_ = old_function;
   StrCat('}');
   return false;
 }
