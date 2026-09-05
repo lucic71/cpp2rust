@@ -710,6 +710,10 @@ bool Converter::RecordDerivesCopy(const clang::RecordDecl *decl) const {
 }
 
 bool Converter::RecordHasCopyableFields(const clang::RecordDecl *decl) {
+  if (auto *cxx = clang::dyn_cast<clang::CXXRecordDecl>(decl);
+      cxx && RecordNeedsDestruction(cxx)) {
+    return false;
+  }
   for (auto f : decl->fields()) {
     // Records that contain std::vector, std::array, std::string or anything
     // that is translated to Vec<>, do not derive Copy
@@ -4017,7 +4021,7 @@ void Converter::AddDropTrait(const clang::CXXRecordDecl *decl) {
   StrCat("fn drop(&mut self)");
   PushBrace fn_brace(*this);
   StrCat(keyword_unsafe_);
-  PushBrace unsafe_brace(*this, *keyword_unsafe_ != '\0');
+  PushBrace unsafe_brace(*this);
   ConvertBodyStmts(dtor->getDefinition()->getBody());
 }
 
