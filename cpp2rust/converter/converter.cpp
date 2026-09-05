@@ -4006,7 +4006,20 @@ void Converter::AddOrdTrait(const clang::CXXRecordDecl *decl) {
 
 void Converter::AddCloneTrait(const clang::RecordDecl *decl) {}
 
-void Converter::AddDropTrait(const clang::CXXRecordDecl *decl) {}
+void Converter::AddDropTrait(const clang::CXXRecordDecl *decl) {
+  auto *dtor = GetTranslatableDestructor(decl);
+  if (!dtor) {
+    return;
+  }
+  PushCurrFunction push_fn(*this, dtor);
+  StrCat(keyword::kImpl, "Drop for", GetRecordName(decl));
+  PushBrace impl_brace(*this);
+  StrCat("fn drop(&mut self)");
+  PushBrace fn_brace(*this);
+  StrCat(keyword_unsafe_);
+  PushBrace unsafe_brace(*this, *keyword_unsafe_ != '\0');
+  ConvertBodyStmts(dtor->getDefinition()->getBody());
+}
 
 void Converter::AddDefaultTraitForUnion(const clang::RecordDecl *decl) {
   StrCat(std::format("impl Default for {}", GetRecordName(decl)));
