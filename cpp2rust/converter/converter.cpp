@@ -677,6 +677,10 @@ bool Converter::RecordDerivesCopy(const clang::RecordDecl *decl) const {
 }
 
 bool Converter::RecordHasCopyableFields(const clang::RecordDecl *decl) {
+  if (auto *cxx = clang::dyn_cast<clang::CXXRecordDecl>(decl);
+      cxx && RecordNeedsDestruction(cxx)) {
+    return false;
+  }
   for (auto f : decl->fields()) {
     // Records that contain std::vector, std::array, std::string or anything
     // that is translated to Vec<>, do not derive Copy
@@ -3969,7 +3973,20 @@ void Converter::AddOrdTrait(const clang::CXXRecordDecl *decl) {
 
 void Converter::AddCloneTrait(const clang::RecordDecl *decl) {}
 
-void Converter::AddDropTrait(const clang::CXXRecordDecl *decl) {}
+void Converter::AddDropTrait(const clang::CXXRecordDecl *decl) {
+  auto *dtor = GetTranslatableDestructor(decl);
+  if (!dtor) {
+    return;
+  }
+  PushCurrFunction push_fn(*this, dtor);
+  StrCat(keyword::kImpl, "Drop for", GetRecordName(decl));
+  PushBrace impl_brace(*this);
+  StrCat("fn drop(&mut self)");
+  PushBrace fn_brace(*this);
+  StrCat(keyword_unsafe_);
+  PushBrace unsafe_brace(*this);
+  ConvertBodyStmts(dtor->getDefinition()->getBody());
+}
 
 void Converter::AddDefaultTraitForUnion(const clang::RecordDecl *decl) {
   StrCat(std::format("impl Default for {}", GetRecordName(decl)));
