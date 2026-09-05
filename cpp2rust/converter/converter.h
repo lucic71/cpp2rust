@@ -885,6 +885,16 @@ protected:
 
   void dump_expr_kinds();
 
+  struct PushCurrFunction {
+    Converter &c;
+    clang::FunctionDecl *prev;
+    PushCurrFunction(Converter &c, clang::FunctionDecl *decl)
+        : c(c), prev(c.curr_function_) {
+      c.curr_function_ = decl;
+    }
+    ~PushCurrFunction() { c.curr_function_ = prev; }
+  };
+
   struct PushExprKind {
     Converter &c;
     PushExprKind(Converter &c, ExprKind k, const char *file = __builtin_FILE(),

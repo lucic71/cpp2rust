@@ -587,7 +587,10 @@ void ConverterRefCount::AddDropTrait(const clang::CXXRecordDecl *decl) {
 
   StrCat(keyword::kImpl, "Drop for", record_name, '{');
   StrCat("fn drop(&mut self)");
-  ConvertBody(body);
+  {
+    PushCurrFunction push_fn(*this, dtor);
+    ConvertBody(body);
+  }
   StrCat('}');
 }
 
