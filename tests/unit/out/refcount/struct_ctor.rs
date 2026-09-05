@@ -23,12 +23,10 @@ impl StructWithCtor {
         (*this.x2_.borrow_mut()).prefix_dec();
         this
     }
-    pub fn x1(&self) -> Ptr<i32> {
-        return self.x1_.as_pointer();
-    }
-    pub fn x2(&self) -> Ptr<i32> {
-        return self.x2_.as_pointer();
-    }
+}
+pub trait StructWithCtorImpl {
+    fn x1(&self) -> Ptr<i32>;
+    fn x2(&self) -> Ptr<i32>;
 }
 impl Clone for StructWithCtor {
     fn clone(&self) -> Self {
@@ -66,8 +64,16 @@ fn main_0() -> i32 {
     let x: Value<i32> = Rc::new(RefCell::new(3));
     assert!(
         (((({ foo_0(x.as_pointer(),) }).read()) == 3)
-            && ((({ (*struct_with_ctor.borrow()).x1() }).read()) == 2))
-            && ((({ (*struct_with_ctor.borrow()).x2() }).read()) == 1)
+            && ((({ StructWithCtorImpl::x1(&struct_with_ctor.as_pointer(),) }).read()) == 2))
+            && ((({ StructWithCtorImpl::x2(&struct_with_ctor.as_pointer(),) }).read()) == 1)
     );
     return 0;
+}
+impl StructWithCtorImpl for Ptr<StructWithCtor> {
+    fn x1(&self) -> Ptr<i32> {
+        return (*self.upgrade().deref()).x1_.as_pointer();
+    }
+    fn x2(&self) -> Ptr<i32> {
+        return (*self.upgrade().deref()).x2_.as_pointer();
+    }
 }

@@ -10,21 +10,11 @@ use std::rc::{Rc, Weak};
 pub struct Test {
     pub x: Value<i32>,
 }
-impl Test {
-    pub fn inc(&self) {
-        (*self.x.borrow_mut()).postfix_inc();
-    }
-    pub fn dec(&self) {
-        (*self.x.borrow_mut()).postfix_dec();
-    }
-    pub fn as_ptr(&self) -> Ptr<i32> {
-        return (self.x.as_pointer());
-    }
-    pub fn update(&self, x: i32, y: i32) {
-        let x: Value<i32> = Rc::new(RefCell::new(x));
-        let y: Value<i32> = Rc::new(RefCell::new(y));
-        (*self.x.borrow_mut()) = ((*x.borrow()) + (*y.borrow()));
-    }
+pub trait TestImpl {
+    fn inc(&self);
+    fn dec(&self);
+    fn as_ptr(&self) -> Ptr<i32>;
+    fn update(&self, x: i32, y: i32);
 }
 impl Clone for Test {
     fn clone(&self) -> Self {
@@ -52,13 +42,13 @@ pub fn Update_0(t: Ptr<Test>) -> Ptr<Test> {
     let x: Value<i32> = Rc::new(RefCell::new(1));
     let y: Value<i32> = Rc::new(RefCell::new(2));
     (*x.borrow_mut()).prefix_inc();
-    ({ (*(*t.borrow()).upgrade().deref()).update((*x.borrow()), (*y.borrow())) });
+    ({ TestImpl::update(&(*t.borrow()), (*x.borrow()), (*y.borrow())) });
     (*x.borrow_mut()) = (*(*(*t.borrow()).upgrade().deref()).x.borrow());
     (*y.borrow_mut()) = (*(*(*t.borrow()).upgrade().deref()).x.borrow());
     ({
         let _x: i32 = (*x.borrow());
         let _y: i32 = (*y.borrow());
-        (*(*t.borrow()).upgrade().deref()).update(_x, _y)
+        TestImpl::update(&(*t.borrow()), _x, _y)
     });
     return (*t.borrow()).clone();
 }
@@ -74,7 +64,7 @@ fn main_0() -> i32 {
     (*t3.borrow_mut()) = (*t2.borrow()).clone();
     (*(*(*t3.borrow()).upgrade().deref()).x.borrow_mut()) = 15;
     {
-        let _ptr = ({ (*(*t3.borrow()).upgrade().deref()).as_ptr() }).clone();
+        let _ptr = ({ TestImpl::as_ptr(&(*t3.borrow())) }).clone();
         _ptr.write(_ptr.read() + 10)
     };
     assert!(
@@ -87,4 +77,20 @@ fn main_0() -> i32 {
         } == 75)
     );
     return 0;
+}
+impl TestImpl for Ptr<Test> {
+    fn inc(&self) {
+        (*(*self.upgrade().deref()).x.borrow_mut()).postfix_inc();
+    }
+    fn dec(&self) {
+        (*(*self.upgrade().deref()).x.borrow_mut()).postfix_dec();
+    }
+    fn as_ptr(&self) -> Ptr<i32> {
+        return ((*self.upgrade().deref()).x.as_pointer());
+    }
+    fn update(&self, x: i32, y: i32) {
+        let x: Value<i32> = Rc::new(RefCell::new(x));
+        let y: Value<i32> = Rc::new(RefCell::new(y));
+        (*(*self.upgrade().deref()).x.borrow_mut()) = ((*x.borrow()) + (*y.borrow()));
+    }
 }

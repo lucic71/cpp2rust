@@ -36,13 +36,9 @@ pub struct Y {
     pub x: Value<X>,
     pub p: Value<Ptr<X>>,
 }
-impl Y {
-    pub fn foo(&self) -> Ptr<X> {
-        return self.x.as_pointer();
-    }
-    pub fn ptr(&self) -> Ptr<X> {
-        return (self.x.as_pointer());
-    }
+pub trait YImpl {
+    fn foo(&self) -> Ptr<X>;
+    fn ptr(&self) -> Ptr<X>;
 }
 impl Clone for Y {
     fn clone(&self) -> Self {
@@ -115,7 +111,7 @@ fn main_0() -> i32 {
         p: Rc::new(RefCell::new((x.as_pointer()))),
     }));
     (*(*(*y.borrow()).x.borrow()).x.borrow_mut()) = 5;
-    (*(*({ (*y.borrow()).foo() }).upgrade().deref())
+    (*(*({ YImpl::foo(&y.as_pointer()) }).upgrade().deref())
         .x
         .borrow_mut()) = 1;
     (*(*(*(*y.borrow()).p.borrow()).upgrade().deref())
@@ -127,12 +123,20 @@ fn main_0() -> i32 {
         .deref())
     .x
     .borrow_mut()) = 100;
-    (*(*({ (*y.borrow()).ptr() }).upgrade().deref())
+    (*(*({ YImpl::ptr(&y.as_pointer()) }).upgrade().deref())
         .x
         .borrow_mut()) = 1;
-    (*(*({ (*y.borrow()).ptr() }).upgrade().deref())
+    (*(*({ YImpl::ptr(&y.as_pointer()) }).upgrade().deref())
         .x
         .borrow_mut()) = 50;
     assert!(((*(*x.borrow()).x.borrow()) == 100));
     return 0;
+}
+impl YImpl for Ptr<Y> {
+    fn foo(&self) -> Ptr<X> {
+        return (*self.upgrade().deref()).x.as_pointer();
+    }
+    fn ptr(&self) -> Ptr<X> {
+        return ((*self.upgrade().deref()).x.as_pointer());
+    }
 }
