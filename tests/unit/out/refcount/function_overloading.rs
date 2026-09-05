@@ -48,8 +48,9 @@ pub trait FooImpl {
 }
 impl Clone for Foo {
     fn clone(&self) -> Self {
-        let mut this = Self {};
-        this
+        let __this: Value<Foo> = Rc::new(RefCell::new(Self {}));
+        let this: Ptr<Foo> = __this.as_pointer();
+        Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
 }
 impl ByteRepr for Foo {

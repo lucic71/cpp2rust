@@ -18,12 +18,13 @@ pub trait NodeImpl {
 }
 impl Clone for Node {
     fn clone(&self) -> Self {
-        let mut this = Self {
+        let __this: Value<Node> = Rc::new(RefCell::new(Self {
             val: Rc::new(RefCell::new((*self.val.borrow()))),
             next: Rc::new(RefCell::new((*self.next.borrow()).clone())),
             prev: Rc::new(RefCell::new((*self.prev.borrow()).clone())),
-        };
-        this
+        }));
+        let this: Ptr<Node> = __this.as_pointer();
+        Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
 }
 impl ByteRepr for Node {

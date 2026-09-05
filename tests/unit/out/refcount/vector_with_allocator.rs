@@ -14,8 +14,9 @@ pub trait TestAllocator_int_Impl {
 }
 impl Clone for TestAllocator_int_ {
     fn clone(&self) -> Self {
-        let mut this = Self {};
-        this
+        let __this: Value<TestAllocator_int_> = Rc::new(RefCell::new(Self {}));
+        let this: Ptr<TestAllocator_int_> = __this.as_pointer();
+        Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
 }
 impl ByteRepr for TestAllocator_int_ {
@@ -35,8 +36,9 @@ pub trait TestAllocator_double_Impl {
 }
 impl Clone for TestAllocator_double_ {
     fn clone(&self) -> Self {
-        let mut this = Self {};
-        this
+        let __this: Value<TestAllocator_double_> = Rc::new(RefCell::new(Self {}));
+        let this: Ptr<TestAllocator_double_> = __this.as_pointer();
+        Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
 }
 impl ByteRepr for TestAllocator_double_ {

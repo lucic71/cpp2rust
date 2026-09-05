@@ -14,12 +14,13 @@ pub struct Edge {
 }
 impl Clone for Edge {
     fn clone(&self) -> Self {
-        let mut this = Self {
+        let __this: Value<Edge> = Rc::new(RefCell::new(Self {
             u: Rc::new(RefCell::new((*self.u.borrow()))),
             v: Rc::new(RefCell::new((*self.v.borrow()))),
             weight: Rc::new(RefCell::new((*self.weight.borrow()))),
-        };
-        this
+        }));
+        let this: Ptr<Edge> = __this.as_pointer();
+        Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
 }
 impl ByteRepr for Edge {

@@ -18,8 +18,9 @@ impl Animal for Dog {
 }
 impl Clone for Dog {
     fn clone(&self) -> Self {
-        let mut this = Self {};
-        this
+        let __this: Value<Dog> = Rc::new(RefCell::new(Self {}));
+        let this: Ptr<Dog> = __this.as_pointer();
+        Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
 }
 impl ByteRepr for Dog {
@@ -43,8 +44,9 @@ impl Animal for Cat {
 }
 impl Clone for Cat {
     fn clone(&self) -> Self {
-        let mut this = Self {};
-        this
+        let __this: Value<Cat> = Rc::new(RefCell::new(Self {}));
+        let this: Ptr<Cat> = __this.as_pointer();
+        Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
 }
 impl ByteRepr for Cat {

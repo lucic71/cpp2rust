@@ -15,13 +15,14 @@ impl StructWithCtor {
     pub fn StructWithCtor(x1: i32, x2: i32) -> Self {
         let x1: Value<i32> = Rc::new(RefCell::new(x1));
         let x2: Value<i32> = Rc::new(RefCell::new(x2));
-        let mut this = Self {
+        let __this: Value<StructWithCtor> = Rc::new(RefCell::new(Self {
             x1_: Rc::new(RefCell::new((*x1.borrow()))),
             x2_: Rc::new(RefCell::new((*x2.borrow()))),
-        };
-        (*this.x1_.borrow_mut()).prefix_inc();
-        (*this.x2_.borrow_mut()).prefix_dec();
-        this
+        }));
+        let this: Ptr<StructWithCtor> = __this.as_pointer();
+        (*(*this.upgrade().deref()).x1_.borrow_mut()).prefix_inc();
+        (*(*this.upgrade().deref()).x2_.borrow_mut()).prefix_dec();
+        Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
 }
 pub trait StructWithCtorImpl {
@@ -30,11 +31,12 @@ pub trait StructWithCtorImpl {
 }
 impl Clone for StructWithCtor {
     fn clone(&self) -> Self {
-        let mut this = Self {
+        let __this: Value<StructWithCtor> = Rc::new(RefCell::new(Self {
             x1_: Rc::new(RefCell::new((*self.x1_.borrow()))),
             x2_: Rc::new(RefCell::new((*self.x2_.borrow()))),
-        };
-        this
+        }));
+        let this: Ptr<StructWithCtor> = __this.as_pointer();
+        Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
 }
 impl ByteRepr for StructWithCtor {

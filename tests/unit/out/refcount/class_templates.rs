@@ -20,10 +20,11 @@ pub trait MyContainer_int_Impl {
 }
 impl Clone for MyContainer_int_ {
     fn clone(&self) -> Self {
-        let mut this = Self {
+        let __this: Value<MyContainer_int_> = Rc::new(RefCell::new(Self {
             vec_: Rc::new(RefCell::new((*self.vec_.borrow()).clone())),
-        };
-        this
+        }));
+        let this: Ptr<MyContainer_int_> = __this.as_pointer();
+        Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
 }
 impl ByteRepr for MyContainer_int_ {
@@ -53,10 +54,11 @@ pub trait MyContainer_char_Impl {
 }
 impl Clone for MyContainer_char_ {
     fn clone(&self) -> Self {
-        let mut this = Self {
+        let __this: Value<MyContainer_char_> = Rc::new(RefCell::new(Self {
             vec_: Rc::new(RefCell::new((*self.vec_.borrow()).clone())),
-        };
-        this
+        }));
+        let this: Ptr<MyContainer_char_> = __this.as_pointer();
+        Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
 }
 impl ByteRepr for MyContainer_char_ {
@@ -86,10 +88,11 @@ pub trait MyContainer_float_Impl {
 }
 impl Clone for MyContainer_float_ {
     fn clone(&self) -> Self {
-        let mut this = Self {
+        let __this: Value<MyContainer_float_> = Rc::new(RefCell::new(Self {
             vec_: Rc::new(RefCell::new((*self.vec_.borrow()).clone())),
-        };
-        this
+        }));
+        let this: Ptr<MyContainer_float_> = __this.as_pointer();
+        Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
 }
 impl ByteRepr for MyContainer_float_ {

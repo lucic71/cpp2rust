@@ -13,11 +13,12 @@ pub struct GraphNode {
 }
 impl Clone for GraphNode {
     fn clone(&self) -> Self {
-        let mut this = Self {
+        let __this: Value<GraphNode> = Rc::new(RefCell::new(Self {
             dst: Rc::new(RefCell::new((*self.dst.borrow()))),
             next: Rc::new(RefCell::new((*self.next.borrow()).clone())),
-        };
-        this
+        }));
+        let this: Ptr<GraphNode> = __this.as_pointer();
+        Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
 }
 impl ByteRepr for GraphNode {
@@ -45,11 +46,12 @@ pub trait GraphImpl {
 }
 impl Clone for Graph {
     fn clone(&self) -> Self {
-        let mut this = Self {
+        let __this: Value<Graph> = Rc::new(RefCell::new(Self {
             V: Rc::new(RefCell::new((*self.V.borrow()))),
             adj: Rc::new(RefCell::new((*self.adj.borrow()).clone())),
-        };
-        this
+        }));
+        let this: Ptr<Graph> = __this.as_pointer();
+        Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
 }
 impl ByteRepr for Graph {

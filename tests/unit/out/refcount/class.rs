@@ -21,11 +21,12 @@ pub trait PairImpl {
 }
 impl Clone for Pair {
     fn clone(&self) -> Self {
-        let mut this = Self {
+        let __this: Value<Pair> = Rc::new(RefCell::new(Self {
             first: Rc::new(RefCell::new((*self.first.borrow()))),
             second: Rc::new(RefCell::new((*self.second.borrow()))),
-        };
-        this
+        }));
+        let this: Ptr<Pair> = __this.as_pointer();
+        Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
 }
 impl ByteRepr for Pair {
@@ -53,11 +54,12 @@ pub trait RouteImpl {
 }
 impl Clone for Route {
     fn clone(&self) -> Self {
-        let mut this = Self {
+        let __this: Value<Route> = Rc::new(RefCell::new(Self {
             path: Rc::new(RefCell::new((*self.path.borrow()).clone())),
             cost: Rc::new(RefCell::new((*self.cost.borrow()))),
-        };
-        this
+        }));
+        let this: Ptr<Route> = __this.as_pointer();
+        Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
 }
 impl ByteRepr for Route {

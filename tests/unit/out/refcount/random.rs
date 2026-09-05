@@ -24,7 +24,7 @@ pub trait PairImpl {
 }
 impl Clone for Pair {
     fn clone(&self) -> Self {
-        let mut this = Self {
+        let __this: Value<Pair> = Rc::new(RefCell::new(Self {
             x: Rc::new(RefCell::new((*self.x.borrow()))),
             y: Rc::new(RefCell::new((*self.y.borrow()))),
             a: Rc::new(RefCell::new((*self.a.borrow()).clone())),
@@ -32,8 +32,9 @@ impl Clone for Pair {
             p: Rc::new(RefCell::new((*self.p.borrow()).clone())),
             pair: Rc::new(RefCell::new((*self.pair.borrow()).clone())),
             ap: Rc::new(RefCell::new((*self.ap.borrow()).clone())),
-        };
-        this
+        }));
+        let this: Ptr<Pair> = __this.as_pointer();
+        Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
 }
 impl Default for Pair {
@@ -63,8 +64,9 @@ pub fn zero_0() -> i32 {
 pub struct X1 {}
 impl Clone for X1 {
     fn clone(&self) -> Self {
-        let mut this = Self {};
-        this
+        let __this: Value<X1> = Rc::new(RefCell::new(Self {}));
+        let this: Ptr<X1> = __this.as_pointer();
+        Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
 }
 impl ByteRepr for X1 {

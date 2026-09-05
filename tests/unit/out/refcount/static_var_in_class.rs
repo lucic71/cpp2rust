@@ -16,8 +16,9 @@ pub trait CImpl {
 }
 impl Clone for C {
     fn clone(&self) -> Self {
-        let mut this = Self {};
-        this
+        let __this: Value<C> = Rc::new(RefCell::new(Self {}));
+        let this: Ptr<C> = __this.as_pointer();
+        Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
 }
 impl ByteRepr for C {
@@ -36,8 +37,9 @@ thread_local!(
 pub struct S {}
 impl Clone for S {
     fn clone(&self) -> Self {
-        let mut this = Self {};
-        this
+        let __this: Value<S> = Rc::new(RefCell::new(Self {}));
+        let this: Ptr<S> = __this.as_pointer();
+        Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
 }
 impl ByteRepr for S {

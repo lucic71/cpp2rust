@@ -18,10 +18,11 @@ pub trait TestImpl {
 }
 impl Clone for Test {
     fn clone(&self) -> Self {
-        let mut this = Self {
+        let __this: Value<Test> = Rc::new(RefCell::new(Self {
             x: Rc::new(RefCell::new((*self.x.borrow()))),
-        };
-        this
+        }));
+        let this: Ptr<Test> = __this.as_pointer();
+        Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
 }
 impl ByteRepr for Test {

@@ -12,10 +12,11 @@ pub struct X {
 }
 impl Clone for X {
     fn clone(&self) -> Self {
-        let mut this = Self {
+        let __this: Value<X> = Rc::new(RefCell::new(Self {
             x: Rc::new(RefCell::new((*self.x.borrow()))),
-        };
-        this
+        }));
+        let this: Ptr<X> = __this.as_pointer();
+        Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
 }
 impl ByteRepr for X {
@@ -42,11 +43,12 @@ pub trait YImpl {
 }
 impl Clone for Y {
     fn clone(&self) -> Self {
-        let mut this = Self {
+        let __this: Value<Y> = Rc::new(RefCell::new(Self {
             x: Rc::new(RefCell::new((*self.x.borrow()).clone())),
             p: Rc::new(RefCell::new((*self.p.borrow()).clone())),
-        };
-        this
+        }));
+        let this: Ptr<Y> = __this.as_pointer();
+        Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
 }
 impl ByteRepr for Y {

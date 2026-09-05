@@ -18,13 +18,14 @@ pub trait MinHeapNodeImpl {
 }
 impl Clone for MinHeapNode {
     fn clone(&self) -> Self {
-        let mut this = Self {
+        let __this: Value<MinHeapNode> = Rc::new(RefCell::new(Self {
             data: Rc::new(RefCell::new((*self.data.borrow()))),
             freq: Rc::new(RefCell::new((*self.freq.borrow()))),
             left: Rc::new(RefCell::new((*self.left.borrow()).clone())),
             right: Rc::new(RefCell::new((*self.right.borrow()).clone())),
-        };
-        this
+        }));
+        let this: Ptr<MinHeapNode> = __this.as_pointer();
+        Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
 }
 impl ByteRepr for MinHeapNode {

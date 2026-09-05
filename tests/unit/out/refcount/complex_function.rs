@@ -23,10 +23,11 @@ pub struct X1 {
 }
 impl Clone for X1 {
     fn clone(&self) -> Self {
-        let mut this = Self {
+        let __this: Value<X1> = Rc::new(RefCell::new(Self {
             v: Rc::new(RefCell::new((*self.v.borrow()))),
-        };
-        this
+        }));
+        let this: Ptr<X1> = __this.as_pointer();
+        Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
 }
 impl ByteRepr for X1 {
@@ -51,10 +52,11 @@ pub trait X2Impl {
 }
 impl Clone for X2 {
     fn clone(&self) -> Self {
-        let mut this = Self {
+        let __this: Value<X2> = Rc::new(RefCell::new(Self {
             v: (self.v).clone(),
-        };
-        this
+        }));
+        let this: Ptr<X2> = __this.as_pointer();
+        Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
 }
 impl ByteRepr for X2 {}
@@ -67,10 +69,11 @@ pub trait X3Impl {
 }
 impl Clone for X3 {
     fn clone(&self) -> Self {
-        let mut this = Self {
+        let __this: Value<X3> = Rc::new(RefCell::new(Self {
             v: Rc::new(RefCell::new((*self.v.borrow()).clone())),
-        };
-        this
+        }));
+        let this: Ptr<X3> = __this.as_pointer();
+        Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
 }
 impl ByteRepr for X3 {
@@ -95,10 +98,11 @@ pub trait X4Impl {
 }
 impl Clone for X4 {
     fn clone(&self) -> Self {
-        let mut this = Self {
+        let __this: Value<X4> = Rc::new(RefCell::new(Self {
             v: Rc::new(RefCell::new((*self.v.borrow()).clone())),
-        };
-        this
+        }));
+        let this: Ptr<X4> = __this.as_pointer();
+        Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
 }
 impl ByteRepr for X4 {

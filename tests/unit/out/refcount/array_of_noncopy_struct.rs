@@ -6,18 +6,27 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Default)]
+#[derive()]
 pub struct NonCopy {
     pub data: Value<Vec<i32>>,
     pub tag: Value<i32>,
 }
 impl Clone for NonCopy {
     fn clone(&self) -> Self {
-        let mut this = Self {
+        let __this: Value<NonCopy> = Rc::new(RefCell::new(Self {
             data: Rc::new(RefCell::new((*self.data.borrow()).clone())),
             tag: Rc::new(RefCell::new((*self.tag.borrow()))),
-        };
-        this
+        }));
+        let this: Ptr<NonCopy> = __this.as_pointer();
+        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+    }
+}
+impl Default for NonCopy {
+    fn default() -> Self {
+        NonCopy {
+            data: Rc::new(RefCell::new(Default::default())),
+            tag: Rc::new(RefCell::new(0)),
+        }
     }
 }
 impl ByteRepr for NonCopy {

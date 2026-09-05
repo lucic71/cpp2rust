@@ -15,10 +15,11 @@ pub trait ItemImpl {
 }
 impl Clone for Item {
     fn clone(&self) -> Self {
-        let mut this = Self {
+        let __this: Value<Item> = Rc::new(RefCell::new(Self {
             value: Rc::new(RefCell::new((*self.value.borrow()))),
-        };
-        this
+        }));
+        let this: Ptr<Item> = __this.as_pointer();
+        Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
 }
 impl ByteRepr for Item {
