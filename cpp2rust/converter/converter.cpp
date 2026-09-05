@@ -25,6 +25,8 @@ std::unordered_set<std::string> Converter::decl_ids_;
 std::unordered_set<std::string> Converter::globals_;
 std::unordered_set<std::string> Converter::abstract_structs_;
 Converter::RecordIndex Converter::record_decls_;
+std::map<Converter::DeferredImplHeader, Converter::DeferredImplBody>
+    Converter::deferred_impls_;
 
 void Converter::ConvertUniquePtrDeref(clang::CXXOperatorCallExpr *expr) {
   bool is_star = expr->getOperator() == clang::OverloadedOperatorKind::OO_Star;
@@ -53,6 +55,17 @@ use std::io::{Read, Write, Seek};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 )");
+}
+
+std::string Converter::EmitDeferredImpls() {
+  std::string out;
+  for (const auto &[header, body] : deferred_impls_) {
+    out += header;
+    out += " {\n";
+    out += body;
+    out += "}\n";
+  }
+  return out;
 }
 
 std::string Converter::EmitOpaqueRecords() {
@@ -809,17 +822,7 @@ void Converter::EmitRustStructOrUnion(clang::RecordDecl *decl) {
   if (auto *cxx = clang::dyn_cast<clang::CXXRecordDecl>(decl)) {
     auto struct_name = GetRecordName(cxx);
 
-    ConvertCXXMethodDecls(
-        cxx, std::format("{} {}", keyword::kImpl, struct_name),
-        [](auto *method) {
-          return !method->isImplicit() &&
-                 !(method->getDefinition() &&
-                   method->getDefinition()->isDefaulted()) &&
-                 (method->isThisDeclarationADefinition() ||
-                  clang::isa<clang::CXXConstructorDecl>(method)) &&
-                 !method->isVirtual() &&
-                 !clang::isa<clang::CXXDestructorDecl>(method);
-        });
+    ConvertCXXRecordMethods(cxx);
 
     if (cxx->bases_begin() != cxx->bases_end()) {
       ConvertCXXMethodDecls(
@@ -841,6 +844,29 @@ void Converter::EmitRustStructOrUnion(clang::RecordDecl *decl) {
   AddCloneTrait(decl);
   AddDefaultTrait(decl);
   AddByteReprTrait(decl);
+}
+
+bool Converter::IsEmittableMethod(clang::CXXMethodDecl *method) {
+  // Virtual methods go into the base trait impl, destructors into Drop
+  if (method->isVirtual() || clang::isa<clang::CXXDestructorDecl>(method)) {
+    return false;
+  }
+  // Compiler-generated members are covered by derived traits
+  if (method->isImplicit()) {
+    return false;
+  }
+  if (auto *definition = method->getDefinition();
+      definition && definition->isDefaulted()) {
+    return false;
+  }
+  return method->isThisDeclarationADefinition() ||
+         clang::isa<clang::CXXConstructorDecl>(method);
+}
+
+void Converter::ConvertCXXRecordMethods(clang::CXXRecordDecl *decl) {
+  ConvertCXXMethodDecls(
+      decl, std::format("{} {}", keyword::kImpl, GetRecordName(decl)),
+      IsEmittableMethod);
 }
 
 void Converter::EmitRustUnion(clang::RecordDecl *decl) {
@@ -932,31 +958,39 @@ bool Converter::VisitCXXMethodDecl(clang::CXXMethodDecl *decl) {
   if (decl->isOutOfLine() && !decl->overridden_methods().empty()) {
     return false;
   }
-  bool out_of_line = decl->isOutOfLine();
-  if (out_of_line) {
-    StrCat(keyword::kImpl, GetRecordName(decl->getParent()));
+  if (decl->isOutOfLine()) {
+    return ConvertOutOfLineMethod(decl);
   }
-  PushBrace impl_brace(*this, out_of_line);
+  return ConvertCXXMethodDecl(decl);
+}
 
+bool Converter::ConvertOutOfLineMethod(clang::CXXMethodDecl *decl) {
+  StrCat(keyword::kImpl, GetRecordName(decl->getParent()));
+  PushBrace impl_brace(*this);
+  return ConvertCXXMethodDecl(decl);
+}
+
+std::string Converter::GetMethodName(const clang::CXXMethodDecl *decl) {
+  if (decl->isOverloadedOperator()) {
+    return GetOverloadedOperator(decl);
+  }
+  if (IsOverloadedMethod(decl)) {
+    return GetOverloadedFunctionName(decl);
+  }
+  return GetNamedDeclAsString(decl);
+}
+
+bool Converter::ConvertCXXMethodDecl(clang::CXXMethodDecl *decl) {
   if (auto *ctor = clang::dyn_cast<clang::CXXConstructorDecl>(decl)) {
     return VisitCXXConstructorDecl(ctor);
   }
 
-  if (decl->isStatic() ||
-      (!decl->isVirtual() && !decl->getParent()->isAbstract())) {
+  if (method_target_ == MethodTarget::ValueImpl &&
+      (decl->isStatic() ||
+       (!decl->isVirtual() && !decl->getParent()->isAbstract()))) {
     ConvertFunctionQualifiers(decl);
   }
-  StrCat(keyword_unsafe_, keyword::kFn);
-
-  std::string function_name;
-  if (decl->isOverloadedOperator()) {
-    function_name = GetOverloadedOperator(decl);
-  } else if (IsOverloadedMethod(decl)) {
-    function_name = GetOverloadedFunctionName(decl);
-  } else {
-    function_name = GetNamedDeclAsString(decl);
-  }
-  StrCat(std::move(function_name));
+  StrCat(keyword_unsafe_, keyword::kFn, GetMethodName(decl));
 
   {
     PushParen paren(*this);
@@ -966,7 +1000,7 @@ bool Converter::VisitCXXMethodDecl(clang::CXXMethodDecl *decl) {
     ConvertFunctionParameters(decl);
   }
   ConvertFunctionReturnType(decl);
-  if (decl->isPureVirtual()) {
+  if (decl->isPureVirtual() || method_target_ == MethodTarget::TraitDecl) {
     StrCat(token::kSemiColon);
   } else {
     PushBrace body(*this);
@@ -1809,6 +1843,10 @@ void Converter::EmitHoistedArgs(CallInfo &info) {
 void Converter::EmitArgList(const CallInfo &info) {
   using Kind = CallArg::Kind;
   PushParen call_args(*this);
+
+  if (!method_receiver_.empty()) {
+    StrCat(std::exchange(method_receiver_, std::string()), token::kComma);
+  }
 
   for (unsigned i = 0; i < info.args.size(); i++) {
     const auto &ca = info.args[i];
@@ -2885,7 +2923,8 @@ void Converter::ConvertMemberExpr(clang::MemberExpr *expr) {
   }
 
   auto *base = expr->getBase();
-  bool base_is_this = clang::isa<clang::CXXThisExpr>(base->IgnoreCasts());
+  bool base_is_this =
+      clang::isa<clang::CXXThisExpr>(base->IgnoreCasts()) && !ThisIsPointer();
   PushExprKind push(*this, isLValue() ? ExprKind::LValue : ExprKind::RValue);
   if (expr->isArrow() && !base_is_this) {
     ConvertArrow(base);

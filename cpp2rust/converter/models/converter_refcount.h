@@ -54,6 +54,14 @@ public:
 
   std::string GetSelfMaybeWithMut(const clang::CXXMethodDecl *decl) override;
 
+  bool ConvertOutOfLineMethod(clang::CXXMethodDecl *decl) override;
+
+  void ConvertCXXRecordMethods(clang::CXXRecordDecl *decl) override;
+
+  bool VisitCXXThisExpr(clang::CXXThisExpr *expr) override;
+
+  bool ThisIsPointer() const override;
+
   bool VisitCXXConstructorDecl(clang::CXXConstructorDecl *decl) override;
 
   bool VisitFieldDecl(clang::FieldDecl *decl) override;
@@ -204,6 +212,10 @@ public:
                           TempMaterializationCtx *ctx) override;
 
 private:
+  static bool IsMethodOnPtr(const clang::CXXMethodDecl *method);
+  std::string TraitName(const clang::CXXRecordDecl *decl) const;
+  std::string ImplHeader(const clang::CXXRecordDecl *decl) const;
+
   std::pair<std::string, std::string>
   MaterializeTemp(const std::string &binding_name, clang::QualType param_type,
                   clang::Expr *expr) override;

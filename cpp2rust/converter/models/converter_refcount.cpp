@@ -6,6 +6,7 @@
 #include <clang/AST/RecordLayout.h>
 #include <clang/Basic/OperatorKinds.h>
 
+#include <algorithm>
 #include <format>
 
 #include "compiler.h"
@@ -1627,6 +1628,19 @@ bool ConverterRefCount::VisitMemberExpr(clang::MemberExpr *expr) {
 
   if (auto *method = clang::dyn_cast<clang::CXXMethodDecl>(member);
       method && !known) {
+    if (IsMethodOnPtr(method)) {
+      auto *base = expr->getBase();
+      if (clang::isa<clang::CXXThisExpr>(base->IgnoreParenImpCasts()) &&
+          ThisIsPointer()) {
+        method_receiver_ = keyword::kSelfValue;
+      } else {
+        method_receiver_ = token::kRef + (expr->isArrow() ? ConvertRValue(base)
+                                                        : ConvertPointer(base));
+      }
+      StrCat(TraitName(method->getParent()), token::kDoubleColon,
+             GetMethodName(method));
+      return false;
+    }
     // User-defined types have Value<T> fields; the struct itself is read-only
     // and only needs an immutable borrow. Non-user-defined types (STL)
     // need a mutable borrow for non-const methods
@@ -2561,4 +2575,104 @@ std::string ConverterRefCount::ConvertPointeeType(clang::QualType ptr_type) {
   return str;
 }
 
+bool ConverterRefCount::IsMethodOnPtr(const clang::CXXMethodDecl *method) {
+  if (method->isImplicit() || method->isStatic() || method->isVirtual() ||
+      method->isOverloadedOperator() ||
+      clang::isa<clang::CXXConstructorDecl>(method) ||
+      clang::isa<clang::CXXDestructorDecl>(method)) {
+    return false;
+  }
+  if (!IsUserDefinedDecl(method->getParent()) ||
+      method->getParent()->isLambda()) {
+    return false;
+  }
+  if (auto *definition = method->getDefinition();
+      definition && definition->isDefaulted()) {
+    return false;
+  }
+  return true;
+}
+
+bool ConverterRefCount::ThisIsPointer() const {
+  auto *method = clang::dyn_cast_or_null<clang::CXXMethodDecl>(curr_function_);
+  return method && IsMethodOnPtr(method);
+}
+
+std::string
+ConverterRefCount::TraitName(const clang::CXXRecordDecl *decl) const {
+  return GetRecordName(decl) + "Impl";
+}
+
+std::string
+ConverterRefCount::ImplHeader(const clang::CXXRecordDecl *decl) const {
+  return std::format("impl {} for Ptr<{}>", TraitName(decl),
+                     GetRecordName(decl));
+}
+
+bool ConverterRefCount::ConvertOutOfLineMethod(clang::CXXMethodDecl *decl) {
+  if (!IsMethodOnPtr(decl)) {
+    return Converter::ConvertOutOfLineMethod(decl);
+  }
+  Buffer buf(*this);
+  {
+    PushMethodTarget push(*this, MethodTarget::PtrImpl);
+    ConvertCXXMethodDecl(decl);
+  }
+  deferred_impls_[ImplHeader(decl->getParent())] += std::move(buf).str();
+  return false;
+}
+
+void ConverterRefCount::ConvertCXXRecordMethods(clang::CXXRecordDecl *decl) {
+  auto struct_name = GetRecordName(decl);
+
+  ConvertCXXMethodDecls(decl, std::format("{} {}", keyword::kImpl, struct_name),
+                        [](auto *method) {
+                          return IsEmittableMethod(method) &&
+                                 !ConverterRefCount::IsMethodOnPtr(method);
+                        });
+
+  std::vector<clang::CXXMethodDecl *> ptr_methods;
+  for (auto *method : decl->methods()) {
+    if (IsMethodOnPtr(method) && method->getDefinition()) {
+      ptr_methods.push_back(method);
+    }
+  }
+  if (ptr_methods.empty()) {
+    return;
+  }
+
+  StrCat(keyword::kPub, keyword::kTrait, TraitName(decl),
+         token::kOpenCurlyBracket);
+  {
+    PushMethodTarget push(*this, MethodTarget::TraitDecl);
+    for (auto *method : ptr_methods) {
+      VisitCXXMethodDecl(method);
+    }
+  }
+  StrCat(token::kCloseCurlyBracket);
+
+  auto header = ImplHeader(decl);
+  for (auto *method : ptr_methods) {
+    if (!method->isThisDeclarationADefinition()) {
+      continue;
+    }
+    Buffer buf(*this);
+    {
+      PushMethodTarget push(*this, MethodTarget::PtrImpl);
+      VisitCXXMethodDecl(method);
+    }
+    deferred_impls_[header] += std::move(buf).str();
+  }
+}
+
+bool ConverterRefCount::VisitCXXThisExpr(
+    [[maybe_unused]] clang::CXXThisExpr *expr) {
+  bool in_ctor =
+      curr_function_ && clang::isa<clang::CXXConstructorDecl>(curr_function_);
+  StrCat(in_ctor ? "this" : keyword::kSelfValue);
+  if (ThisIsPointer()) {
+    computed_expr_type_ = ComputedExprType::Pointer;
+  }
+  return false;
+}
 } // namespace cpp2rust
