@@ -6,12 +6,13 @@ struct S {
   ~S() { global++; }
 };
 
-  ~Inner() {
-    if (target != nullptr) {
-      total += *target;
-      target = nullptr;
-    }
-  }
+struct Defaulted {
+  S s;
+  ~Defaulted() = default;
+};
+
+struct Middle {
+  S s;
 };
 
 struct Outer {
@@ -32,7 +33,10 @@ template <typename T> struct Templated {
   ~Templated() { global += sizeof(T); }
 };
 
-OutOfLine::~OutOfLine() { total += step; }
+struct Copied {
+  int v;
+  ~Copied() { global++; }
+};
 
 int main() {
   {
