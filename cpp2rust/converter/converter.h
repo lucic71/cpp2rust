@@ -8,6 +8,7 @@
 #include <clang/Sema/Sema.h>
 
 #include <functional>
+#include <map>
 #include <optional>
 #include <string>
 #include <type_traits>
@@ -847,8 +848,7 @@ protected:
   static RecordIndex record_decls_;
   using DeferredImplHeader = std::string;
   using DeferredImplBody = std::string;
-  static std::unordered_map<DeferredImplHeader, DeferredImplBody>
-      deferred_impls_;
+  static std::map<DeferredImplHeader, DeferredImplBody> deferred_impls_;
 
   enum class ExprKind : uint8_t {
     Callee,
