@@ -21,17 +21,13 @@ impl S {
     }
     pub unsafe fn S(mut init: i32) -> Self {
         let mut this = Self { v: init };
-        (unsafe { this.mut_method() });
-        total_0 += (unsafe { this.const_method() });
+        (unsafe { S::mut_method(&mut this) });
+        total_0 += (unsafe { S::const_method(&mut this) });
         this
     }
-}
-impl Drop for S {
-    fn drop(&mut self) {
-        unsafe {
-            (unsafe { self.mut_method() });
-            total_0 += (unsafe { self.const_method() });
-        }
+    pub unsafe fn destructor(&mut self) {
+        (unsafe { S::mut_method(self) });
+        total_0 += (unsafe { S::const_method(self) });
     }
 }
 pub fn main() {
@@ -42,6 +38,7 @@ pub fn main() {
 unsafe fn main_0() -> i32 {
     {
         let mut s: S = S::S({ 3 });
+        let _dtor_s = ScopedDestructorUnsafe::new(&raw mut s, S::destructor);
         assert!(((s.v) == (4)));
         assert!(((total_0) == (8)));
     }
