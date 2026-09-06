@@ -587,6 +587,19 @@ const char *GetOverloadedOperator(const clang::FunctionDecl *decl) {
   }
 }
 
+clang::CXXDestructorDecl *
+GetTranslatableDestructor(const clang::CXXRecordDecl *decl) {
+  if (!IsUserDefinedDecl(decl)) {
+    return nullptr;
+  }
+  auto *dtor = decl->getDestructor();
+  if (!dtor || dtor->isImplicit()) {
+    return nullptr;
+  }
+  auto *definition = dtor->getDefinition();
+  return definition && !definition->isDefaulted() ? dtor : nullptr;
+}
+
 bool IsOverloadedComparisonOperator(const clang::CXXMethodDecl *decl) {
   if (decl->isOverloadedOperator()) {
     switch (decl->getOverloadedOperator()) {

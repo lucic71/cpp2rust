@@ -119,6 +119,9 @@ const char *GetOverloadedOperator(const clang::FunctionDecl *decl);
 
 bool IsOverloadedComparisonOperator(const clang::CXXMethodDecl *decl);
 
+clang::CXXDestructorDecl *
+GetTranslatableDestructor(const clang::CXXRecordDecl *decl);
+
 clang::Expr *ToAddrOf(clang::ASTContext &ctx, clang::Expr *expr);
 
 std::vector<clang::CXXRecordDecl *>
