@@ -4002,7 +4002,7 @@ void Converter::AddOrdTrait(const clang::CXXRecordDecl *decl) {
 void Converter::AddCloneTrait(const clang::RecordDecl *decl) {}
 
 void Converter::AddDropTrait(const clang::CXXRecordDecl *decl) {
-  auto *dtor = GetTranslatableDestructor(decl);
+  auto *dtor = GetUserDefinedDestructor(decl);
   if (!dtor) {
     return;
   }

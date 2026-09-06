@@ -588,7 +588,7 @@ const char *GetOverloadedOperator(const clang::FunctionDecl *decl) {
 }
 
 clang::CXXDestructorDecl *
-GetTranslatableDestructor(const clang::CXXRecordDecl *decl) {
+GetUserDefinedDestructor(const clang::CXXRecordDecl *decl) {
   if (!decl->hasDefinition() || !IsUserDefinedDecl(decl) ||
       !decl->hasUserDeclaredDestructor()) {
     return nullptr;
@@ -609,12 +609,9 @@ bool TypeNeedsDestruction(clang::QualType type) {
   return record && RecordNeedsDestruction(record);
 }
 
-bool RecordNeedsDestruction(const clang::CXXRecordDecl *decl) {
+bool HasFieldsNeedingDestruction(const clang::CXXRecordDecl *decl) {
   if (!decl->hasDefinition() || !IsUserDefinedDecl(decl)) {
     return false;
-  }
-  if (GetTranslatableDestructor(decl)) {
-    return true;
   }
   for (const auto *field : decl->fields()) {
     if (TypeNeedsDestruction(field->getType())) {
@@ -622,6 +619,10 @@ bool RecordNeedsDestruction(const clang::CXXRecordDecl *decl) {
     }
   }
   return false;
+}
+
+bool RecordNeedsDestruction(const clang::CXXRecordDecl *decl) {
+  return GetUserDefinedDestructor(decl) || HasFieldsNeedingDestruction(decl);
 }
 
 bool IsEmittableMethod(clang::CXXMethodDecl *method) {
@@ -656,7 +657,7 @@ bool IsMethodOnPtr(const clang::CXXMethodDecl *method) {
     return false;
   }
   if (clang::isa<clang::CXXDestructorDecl>(method)) {
-    return GetTranslatableDestructor(method->getParent()) != nullptr;
+    return GetUserDefinedDestructor(method->getParent()) != nullptr;
   }
   return true;
 }

@@ -125,9 +125,11 @@ const char *GetOverloadedOperator(const clang::FunctionDecl *decl);
 bool IsOverloadedComparisonOperator(const clang::CXXMethodDecl *decl);
 
 clang::CXXDestructorDecl *
-GetTranslatableDestructor(const clang::CXXRecordDecl *decl);
+GetUserDefinedDestructor(const clang::CXXRecordDecl *decl);
 
 bool TypeNeedsDestruction(clang::QualType type);
+
+bool HasFieldsNeedingDestruction(const clang::CXXRecordDecl *decl);
 
 bool RecordNeedsDestruction(const clang::CXXRecordDecl *decl);
 

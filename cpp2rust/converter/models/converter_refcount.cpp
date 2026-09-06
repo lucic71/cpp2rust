@@ -2640,7 +2640,7 @@ void ConverterRefCount::ConvertCXXRecordMethods(clang::CXXRecordDecl *decl) {
     }
   }
   bool synthesize_dtor =
-      RecordNeedsDestruction(decl) && !GetTranslatableDestructor(decl);
+      !GetUserDefinedDestructor(decl) && HasFieldsNeedingDestruction(decl);
   if (ptr_methods.empty() && !synthesize_dtor) {
     return;
   }
