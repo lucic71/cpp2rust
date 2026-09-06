@@ -271,6 +271,88 @@ impl ByteRepr for Copied {
         }
     }
 }
+thread_local!(
+    pub static order_1: Value<Box<[i32]>> = Rc::new(RefCell::new(
+        (0..3).map(|_| <i32>::default()).collect::<Box<[i32]>>(),
+    ));
+);
+thread_local!(
+    pub static order_count_2: Value<i32> = Rc::new(RefCell::new(0));
+);
+#[derive(Default)]
+pub struct Tagged {
+    pub tag: Value<i32>,
+}
+pub trait TaggedImpl {
+    fn destructor(&self);
+}
+impl Clone for Tagged {
+    fn clone(&self) -> Self {
+        let __this: Value<Tagged> = Rc::new(RefCell::new(Self {
+            tag: Rc::new(RefCell::new((*self.tag.borrow()))),
+        }));
+        let this: Ptr<Tagged> = __this.as_pointer();
+        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+    }
+}
+impl ByteRepr for Tagged {
+    fn byte_size() -> usize {
+        4
+    }
+    fn to_bytes(&self, buf: &mut [u8]) {
+        (*self.tag.borrow()).to_bytes(&mut buf[0..4]);
+    }
+    fn from_bytes(buf: &[u8]) -> Self {
+        Self {
+            tag: Rc::new(RefCell::new(<i32>::from_bytes(&buf[0..4]))),
+        }
+    }
+}
+#[derive(Default)]
+pub struct Ordered {
+    pub first: Value<Tagged>,
+    pub dummy1: Value<i32>,
+    pub second: Value<Tagged>,
+    pub dummy2: Value<i32>,
+    pub third: Value<Tagged>,
+}
+pub trait OrderedImpl {
+    fn destructor(&self);
+}
+impl Clone for Ordered {
+    fn clone(&self) -> Self {
+        let __this: Value<Ordered> = Rc::new(RefCell::new(Self {
+            first: Rc::new(RefCell::new((*self.first.borrow()).clone())),
+            dummy1: Rc::new(RefCell::new((*self.dummy1.borrow()))),
+            second: Rc::new(RefCell::new((*self.second.borrow()).clone())),
+            dummy2: Rc::new(RefCell::new((*self.dummy2.borrow()))),
+            third: Rc::new(RefCell::new((*self.third.borrow()).clone())),
+        }));
+        let this: Ptr<Ordered> = __this.as_pointer();
+        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+    }
+}
+impl ByteRepr for Ordered {
+    fn byte_size() -> usize {
+        20
+    }
+    fn to_bytes(&self, buf: &mut [u8]) {
+        (*self.first.borrow()).to_bytes(&mut buf[0..4]);
+        (*self.dummy1.borrow()).to_bytes(&mut buf[4..8]);
+        (*self.second.borrow()).to_bytes(&mut buf[8..12]);
+        (*self.dummy2.borrow()).to_bytes(&mut buf[12..16]);
+        (*self.third.borrow()).to_bytes(&mut buf[16..20]);
+    }
+    fn from_bytes(buf: &[u8]) -> Self {
+        Self {
+            first: Rc::new(RefCell::new(<Tagged>::from_bytes(&buf[0..4]))),
+            dummy1: Rc::new(RefCell::new(<i32>::from_bytes(&buf[4..8]))),
+            second: Rc::new(RefCell::new(<Tagged>::from_bytes(&buf[8..12]))),
+            dummy2: Rc::new(RefCell::new(<i32>::from_bytes(&buf[12..16]))),
+            third: Rc::new(RefCell::new(<Tagged>::from_bytes(&buf[16..20]))),
+        }
+    }
+}
 pub fn main() {
     std::process::exit(main_0());
 }
@@ -336,6 +418,26 @@ fn main_0() -> i32 {
         assert!(((*(*b.borrow()).v.borrow()) == 5));
     }
     assert!(((*global_0.with(Value::clone).borrow()) == 15));
+    {
+        let o: Value<Ordered> = Rc::new(RefCell::new(Ordered {
+            first: Rc::new(RefCell::new(Tagged {
+                tag: Rc::new(RefCell::new(1)),
+            })),
+            dummy1: Rc::new(RefCell::new(0)),
+            second: Rc::new(RefCell::new(Tagged {
+                tag: Rc::new(RefCell::new(2)),
+            })),
+            dummy2: Rc::new(RefCell::new(0)),
+            third: Rc::new(RefCell::new(Tagged {
+                tag: Rc::new(RefCell::new(3)),
+            })),
+        }));
+        let _dtor_o = ScopedDestructor::new(&o, |__p| __p.destructor());
+    }
+    assert!(((*order_count_2.with(Value::clone).borrow()) == 3));
+    assert!(((*order_1.with(Value::clone).borrow())[(0) as usize] == 3));
+    assert!(((*order_1.with(Value::clone).borrow())[(1) as usize] == 2));
+    assert!(((*order_1.with(Value::clone).borrow())[(2) as usize] == 1));
     return 0;
 }
 impl ArrayMemberImpl for Ptr<ArrayMember> {
@@ -368,6 +470,13 @@ impl MiddleImpl for Ptr<Middle> {
         (*self.upgrade().deref()).s.as_pointer().destructor();
     }
 }
+impl OrderedImpl for Ptr<Ordered> {
+    fn destructor(&self) {
+        (*self.upgrade().deref()).third.as_pointer().destructor();
+        (*self.upgrade().deref()).second.as_pointer().destructor();
+        (*self.upgrade().deref()).first.as_pointer().destructor();
+    }
+}
 impl OuterImpl for Ptr<Outer> {
     fn destructor(&self) {
         (*self.upgrade().deref()).m.as_pointer().destructor();
@@ -376,6 +485,13 @@ impl OuterImpl for Ptr<Outer> {
 impl SImpl for Ptr<S> {
     fn destructor(&self) {
         (*global_0.with(Value::clone).borrow_mut()).postfix_inc();
+    }
+}
+impl TaggedImpl for Ptr<Tagged> {
+    fn destructor(&self) {
+        (*order_1.with(Value::clone).borrow_mut())
+            [((*order_count_2.with(Value::clone).borrow_mut()).postfix_inc()) as usize] =
+            (*(*self.upgrade().deref()).tag.borrow());
     }
 }
 impl Templated_char_Impl for Ptr<Templated_char_> {

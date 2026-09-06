@@ -107,6 +107,34 @@ impl Copied {
         global_0.postfix_inc();
     }
 }
+pub static mut order_1: [i32; 3] = unsafe { [0_i32; 3] };
+pub static mut order_count_2: i32 = unsafe { 0 };
+#[repr(C)]
+#[derive(Clone, Default)]
+pub struct Tagged {
+    pub tag: i32,
+}
+impl Tagged {
+    pub unsafe fn destructor(&mut self) {
+        order_1[(order_count_2.postfix_inc()) as usize] = self.tag;
+    }
+}
+#[repr(C)]
+#[derive(Clone, Default)]
+pub struct Ordered {
+    pub first: Tagged,
+    pub dummy1: i32,
+    pub second: Tagged,
+    pub dummy2: i32,
+    pub third: Tagged,
+}
+impl Ordered {
+    pub unsafe fn destructor(&mut self) {
+        Tagged::destructor(&mut self.third);
+        Tagged::destructor(&mut self.second);
+        Tagged::destructor(&mut self.first);
+    }
+}
 pub fn main() {
     unsafe {
         std::process::exit(main_0() as i32);
@@ -164,5 +192,19 @@ unsafe fn main_0() -> i32 {
         assert!(((b.v) == (5)));
     }
     assert!(((global_0) == (15)));
+    {
+        let mut o: Ordered = Ordered {
+            first: Tagged { tag: 1 },
+            dummy1: 0,
+            second: Tagged { tag: 2 },
+            dummy2: 0,
+            third: Tagged { tag: 3 },
+        };
+        let _dtor_o = ScopedDestructorUnsafe::new(&raw mut o, Ordered::destructor);
+    }
+    assert!(((order_count_2) == (3)));
+    assert!(((order_1[(0) as usize]) == (3)));
+    assert!(((order_1[(1) as usize]) == (2)));
+    assert!(((order_1[(2) as usize]) == (1)));
     return 0;
 }
