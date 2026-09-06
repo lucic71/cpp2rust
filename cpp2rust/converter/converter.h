@@ -23,7 +23,7 @@
 #include "logging.h"
 
 namespace cpp2rust {
-inline constexpr const char kDestructorName[] = "__dtor";
+inline constexpr const char kDestructorName[] = "destructor";
 class Converter : public clang::RecursiveASTVisitor<Converter> {
 
 public:

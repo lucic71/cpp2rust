@@ -28,7 +28,7 @@ impl S {
 pub trait SImpl {
     fn const_method(&self) -> i32;
     fn mut_method(&self);
-    fn __dtor(&self);
+    fn destructor(&self);
 }
 impl Clone for S {
     fn clone(&self) -> Self {
@@ -58,7 +58,7 @@ pub fn main() {
 fn main_0() -> i32 {
     {
         let s: Value<S> = Rc::new(RefCell::new(S::S({ 3 })));
-        let _dtor_s = ScopedDestructor::new(&s, |__p| __p.__dtor());
+        let _dtor_s = ScopedDestructor::new(&s, |__p| __p.destructor());
         assert!(((*(*s.borrow()).v.borrow()) == 4));
         assert!(((*total_0.with(Value::clone).borrow()) == 8));
     }
@@ -72,7 +72,7 @@ impl SImpl for Ptr<S> {
     fn mut_method(&self) {
         (*(*self.upgrade().deref()).v.borrow_mut()) += 1;
     }
-    fn __dtor(&self) {
+    fn destructor(&self) {
         ({ SImpl::mut_method(self) });
         (*total_0.with(Value::clone).borrow_mut()) += ({ SImpl::const_method(self) });
     }
