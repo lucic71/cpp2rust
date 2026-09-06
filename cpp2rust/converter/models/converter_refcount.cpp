@@ -2633,33 +2633,28 @@ void ConverterRefCount::ConvertCXXRecordMethods(clang::CXXRecordDecl *decl) {
                                  !IsMethodOnPtr(method);
                         });
 
-  std::vector<clang::CXXMethodDecl *> ptr_methods;
-  for (auto *method : decl->methods()) {
-    if (IsMethodOnPtr(method) && method->getDefinition()) {
-      ptr_methods.push_back(method);
-    }
-  }
   bool synthesize_dtor =
       !GetUserDefinedDestructor(decl) && HasFieldsNeedingDestruction(decl);
-  if (ptr_methods.empty() && !synthesize_dtor) {
+  if (!synthesize_dtor &&
+      !std::ranges::any_of(decl->methods(), [](auto *method) {
+        return IsMethodOnPtr(method) && method->getDefinition();
+      })) {
     return;
   }
 
+  auto header = ImplHeader(decl);
   StrCat(keyword::kPub, keyword::kTrait, TraitName(decl));
-  {
-    PushBrace trait_brace(*this);
-    PushMethodTarget push(*this, MethodTarget::TraitDecl);
-    for (auto *method : ptr_methods) {
+  PushBrace trait_brace(*this);
+
+  for (auto *method : decl->methods()) {
+    if (!IsMethodOnPtr(method) || !method->getDefinition()) {
+      continue;
+    }
+    {
       PushCurrFunction push_fn(*this, method);
+      PushMethodTarget push(*this, MethodTarget::TraitDecl);
       ConvertCXXMethodDecl(method);
     }
-    if (synthesize_dtor) {
-      StrCat(std::format("fn {}(&self)", kDestructorName), token::kSemiColon);
-    }
-  }
-
-  auto header = ImplHeader(decl);
-  for (auto *method : ptr_methods) {
     if (!method->isThisDeclarationADefinition()) {
       continue;
     }
@@ -2670,7 +2665,9 @@ void ConverterRefCount::ConvertCXXRecordMethods(clang::CXXRecordDecl *decl) {
     }
     deferred_impls_[header] += std::move(buf).str();
   }
+
   if (synthesize_dtor) {
+    StrCat(std::format("fn {}(&self)", kDestructorName), token::kSemiColon);
     deferred_impls_[header] += std::format(
         "fn {}(&self) {{ {} }}\n", kDestructorName, DestroyMembers(decl));
   }
