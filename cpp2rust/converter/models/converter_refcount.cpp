@@ -2645,19 +2645,18 @@ void ConverterRefCount::ConvertCXXRecordMethods(clang::CXXRecordDecl *decl) {
     return;
   }
 
-  StrCat(keyword::kPub, keyword::kTrait, TraitName(decl),
-         token::kOpenCurlyBracket);
+  StrCat(keyword::kPub, keyword::kTrait, TraitName(decl));
   {
+    PushBrace trait_brace(*this);
     PushMethodTarget push(*this, MethodTarget::TraitDecl);
     for (auto *method : ptr_methods) {
       PushCurrFunction push_fn(*this, method);
       ConvertCXXMethodDecl(method);
     }
+    if (synthesize_dtor) {
+      StrCat(std::format("fn {}(&self)", kDestructorName), token::kSemiColon);
+    }
   }
-  if (synthesize_dtor) {
-    StrCat(std::format("fn {}(&self)", kDestructorName), token::kSemiColon);
-  }
-  StrCat(token::kCloseCurlyBracket);
 
   auto header = ImplHeader(decl);
   for (auto *method : ptr_methods) {
