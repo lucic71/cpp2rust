@@ -1,9 +1,10 @@
 #include <cassert>
 
-static int total = 0;
+int global = 0;
 
-struct Inner {
-  int *target = nullptr;
+struct S {
+  ~S() { global++; }
+};
 
   ~Inner() {
     if (target != nullptr) {
@@ -14,27 +15,68 @@ struct Inner {
 };
 
 struct Outer {
-  Inner inner;
+  Middle m;
 };
 
-struct OutOfLine {
-  int step = 4;
+struct ArrayMember {
+  S items[3];
+};
 
-  ~OutOfLine();
+struct EmptyBody {
+  S s;
+  ~EmptyBody() {}
+};
+
+template <typename T> struct Templated {
+  T v;
+  ~Templated() { global += sizeof(T); }
 };
 
 OutOfLine::~OutOfLine() { total += step; }
 
 int main() {
-  int value = 40;
   {
-    Outer o;
-    o.inner.target = &value;
+    S s{};
   }
-  assert(total == 40);
+  assert(global == 1);
 
-  { OutOfLine t; }
-  assert(total == 44);
+  {
+    S s{};
+  }
+  assert(global == 2);
+
+  {
+    Defaulted d{};
+  }
+  assert(global == 3);
+
+  {
+    Outer o{};
+  }
+  assert(global == 4);
+
+  {
+    ArrayMember am{};
+  }
+  assert(global == 7);
+
+  {
+    EmptyBody e{};
+  }
+  assert(global == 8);
+
+  {
+    Templated<char> tc{};
+    Templated<int> ti{};
+  }
+  assert(global == 13);
+
+  {
+    Copied a{5};
+    Copied b = a;
+    assert(b.v == 5);
+  }
+  assert(global == 15);
 
   return 0;
 }

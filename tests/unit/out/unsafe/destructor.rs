@@ -6,49 +6,91 @@ use std::collections::BTreeMap;
 use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
-pub static mut total_0: i32 = unsafe { 0 };
+pub static mut global_0: i32 = unsafe { 0 };
 #[repr(C)]
-#[derive(Clone)]
-pub struct Inner {
-    pub target: *mut i32,
-}
-impl Drop for Inner {
+#[derive(Clone, Default)]
+pub struct S {}
+impl Drop for S {
     fn drop(&mut self) {
         unsafe {
-            if !((self.target).is_null()) {
-                total_0 += (*self.target);
-                self.target = std::ptr::null_mut();
-            }
-        }
-    }
-}
-impl Default for Inner {
-    fn default() -> Self {
-        Inner {
-            target: std::ptr::null_mut(),
+            global_0.postfix_inc();
         }
     }
 }
 #[repr(C)]
 #[derive(Clone, Default)]
+pub struct Defaulted {
+    pub s: S,
+}
+#[repr(C)]
+#[derive(Clone, Default)]
+pub struct Middle {
+    pub s: S,
+}
+#[repr(C)]
+#[derive(Clone, Default)]
 pub struct Outer {
-    pub inner: Inner,
+    pub m: Middle,
 }
 #[repr(C)]
 #[derive(Clone)]
-pub struct OutOfLine {
-    pub step: i32,
+pub struct ArrayMember {
+    pub items: [S; 3],
 }
-impl Drop for OutOfLine {
-    fn drop(&mut self) {
-        unsafe {
-            total_0 += self.step;
+impl Default for ArrayMember {
+    fn default() -> Self {
+        ArrayMember {
+            items: std::array::from_fn::<_, 3, _>(|_| <S>::default()),
         }
     }
 }
-impl Default for OutOfLine {
-    fn default() -> Self {
-        OutOfLine { step: 4 }
+#[repr(C)]
+#[derive(Clone, Default)]
+pub struct EmptyBody {
+    pub s: S,
+}
+impl Drop for EmptyBody {
+    fn drop(&mut self) {
+        unsafe {}
+    }
+}
+#[repr(C)]
+#[derive(Clone, Default)]
+pub struct Templated_char_ {
+    pub v: libc::c_char,
+}
+impl Drop for Templated_char_ {
+    fn drop(&mut self) {
+        unsafe {
+            global_0 = ((global_0 as usize)
+                .wrapping_add((::std::mem::size_of::<libc::c_char>() as usize)))
+                as i32;
+        }
+    }
+}
+#[repr(C)]
+#[derive(Clone, Default)]
+pub struct Templated_int_ {
+    pub v: i32,
+}
+impl Drop for Templated_int_ {
+    fn drop(&mut self) {
+        unsafe {
+            global_0 =
+                ((global_0 as usize).wrapping_add((::std::mem::size_of::<i32>() as usize))) as i32;
+        }
+    }
+}
+#[repr(C)]
+#[derive(Clone, Default)]
+pub struct Copied {
+    pub v: i32,
+}
+impl Drop for Copied {
+    fn drop(&mut self) {
+        unsafe {
+            global_0.postfix_inc();
+        }
     }
 }
 pub fn main() {
@@ -57,15 +99,46 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    let mut value: i32 = 40;
     {
-        let mut o: Outer = <Outer>::default();
-        o.inner.target = (&mut value as *mut i32);
+        let mut s: S = S {};
     }
-    assert!(((total_0) == (40)));
+    assert!(((global_0) == (1)));
     {
-        let mut t: OutOfLine = <OutOfLine>::default();
+        let mut s: S = S {};
     }
-    assert!(((total_0) == (44)));
+    assert!(((global_0) == (2)));
+    {
+        let mut d: Defaulted = Defaulted { s: S {} };
+    }
+    assert!(((global_0) == (3)));
+    {
+        let mut o: Outer = Outer {
+            m: Middle { s: S {} },
+        };
+    }
+    assert!(((global_0) == (4)));
+    {
+        let mut am: ArrayMember = ArrayMember {
+            items: [S {}, S {}, S {}],
+        };
+    }
+    assert!(((global_0) == (7)));
+    {
+        let mut e: EmptyBody = EmptyBody { s: S {} };
+    }
+    assert!(((global_0) == (8)));
+    {
+        let mut tc: Templated_char_ = Templated_char_ {
+            v: (0 as libc::c_char),
+        };
+        let mut ti: Templated_int_ = Templated_int_ { v: 0_i32 };
+    }
+    assert!(((global_0) == (13)));
+    {
+        let mut a: Copied = Copied { v: 5 };
+        let mut b: Copied = a.clone();
+        assert!(((b.v) == (5)));
+    }
+    assert!(((global_0) == (15)));
     return 0;
 }

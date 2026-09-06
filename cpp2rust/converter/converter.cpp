@@ -639,22 +639,6 @@ static bool hasUserDefinedNonDefaultCopyOrMoveCtor(clang::CXXRecordDecl *decl) {
   return false;
 }
 
-void Converter::materializeTemplateSpecialization(clang::CXXRecordDecl *decl) {
-  for (auto method : decl->methods()) {
-    const clang::FunctionDecl *definition = nullptr;
-    if (method->isDefined(definition)) {
-      continue;
-    }
-
-    if (auto pattern = method->getTemplateInstantiationPattern()) {
-      if (pattern->doesThisDeclarationHaveABody()) {
-        sema_->InstantiateFunctionDefinition(method->getLocation(), method,
-                                             /*Recursive=*/true);
-      }
-    }
-  }
-}
-
 bool IsPointerType(clang::QualType qual_type) {
   return qual_type->isPointerType() ||
          (qual_type->isArrayType() &&
@@ -884,10 +868,6 @@ void Converter::EmitRustUnion(clang::RecordDecl *decl) {
 }
 
 bool Converter::VisitCXXRecordDecl(clang::CXXRecordDecl *decl) {
-  if (clang::isa<clang::ClassTemplateSpecializationDecl>(decl)) {
-    materializeTemplateSpecialization(decl);
-  }
-
   decl->dump(log());
 
   Mapper::AddRuleForUserDefinedType(decl);
@@ -905,6 +885,15 @@ bool Converter::VisitCXXRecordDecl(clang::CXXRecordDecl *decl) {
     }
 
     if (!record_decls_.MarkDefined(GetRecordName(decl))) {
+      // Other translation units may instantiate members this one did not.
+      if (clang::isa<clang::ClassTemplateSpecializationDecl>(decl)) {
+        ConvertCXXMethodDecls(
+            decl, std::format("{} {}", keyword::kImpl, GetRecordName(decl)),
+            [](auto *method) {
+              return IsEmittableMethod(method) && method->hasBody() &&
+                     !decl_ids_.contains(GetMethodID(method));
+            });
+      }
       return false;
     }
 
@@ -942,6 +931,12 @@ bool Converter::VisitCXXRecordDecl(clang::CXXRecordDecl *decl) {
 bool Converter::VisitCXXMethodDecl(clang::CXXMethodDecl *decl) {
   decl->dump(log());
   if (!ShouldConvertMethod(decl)) {
+    return false;
+  }
+  if (!decl->isPureVirtual() && !decl->hasBody()) {
+    return false;
+  }
+  if (!decl_ids_.insert(GetMethodID(decl)).second) {
     return false;
   }
   PushCurrFunction push_fn(*this, decl);

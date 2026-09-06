@@ -2650,7 +2650,8 @@ void ConverterRefCount::ConvertCXXRecordMethods(clang::CXXRecordDecl *decl) {
   {
     PushMethodTarget push(*this, MethodTarget::TraitDecl);
     for (auto *method : ptr_methods) {
-      VisitCXXMethodDecl(method);
+      PushCurrFunction push_fn(*this, method);
+      ConvertCXXMethodDecl(method);
     }
   }
   if (synthesize_dtor) {
