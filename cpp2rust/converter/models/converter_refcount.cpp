@@ -2726,7 +2726,7 @@ bool ConverterRefCount::VisitCXXThisExpr(
   if (in_ctor) {
     StrCat("this");
   } else {
-    StrCat("(*", keyword::kSelfValue, ")");
+    StrCat("(*", keyword::kSelfValue, ')');
   }
   computed_expr_type_ = ComputedExprType::Pointer;
   return false;
