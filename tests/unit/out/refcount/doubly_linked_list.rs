@@ -438,10 +438,10 @@ fn main_0() -> i32 {
 impl NodeImpl for Ptr<Node> {
     fn SetNext(&self, n: Ptr<Node>) {
         let n: Value<Ptr<Node>> = Rc::new(RefCell::new(n));
-        (*(*self.upgrade().deref()).next.borrow_mut()) = (*n.borrow()).clone();
+        (*(*(*self).upgrade().deref()).next.borrow_mut()) = (*n.borrow()).clone();
     }
     fn SetPrev(&self, p: Ptr<Node>) {
         let p: Value<Ptr<Node>> = Rc::new(RefCell::new(p));
-        (*(*self.upgrade().deref()).prev.borrow_mut()) = (*p.borrow()).clone();
+        (*(*(*self).upgrade().deref()).prev.borrow_mut()) = (*p.borrow()).clone();
     }
 }

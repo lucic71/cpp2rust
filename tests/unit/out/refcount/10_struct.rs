@@ -86,25 +86,25 @@ impl GraphImpl for Ptr<Graph> {
         let __rhs = Ptr::alloc(GraphNode {
             dst: Rc::new(RefCell::new((*dst.borrow()))),
             next: Rc::new(RefCell::new(
-                ((*(*self.upgrade().deref()).adj.borrow())
+                ((*(*(*self).upgrade().deref()).adj.borrow())
                     .offset((*src.borrow()) as isize)
                     .read())
                 .clone(),
             )),
         });
-        (*(*self.upgrade().deref()).adj.borrow())
+        (*(*(*self).upgrade().deref()).adj.borrow())
             .offset((*src.borrow()) as isize)
             .write(__rhs);
         let __rhs = Ptr::alloc(GraphNode {
             dst: Rc::new(RefCell::new((*src.borrow()))),
             next: Rc::new(RefCell::new(
-                ((*(*self.upgrade().deref()).adj.borrow())
+                ((*(*(*self).upgrade().deref()).adj.borrow())
                     .offset((*dst.borrow()) as isize)
                     .read())
                 .clone(),
             )),
         });
-        (*(*self.upgrade().deref()).adj.borrow())
+        (*(*(*self).upgrade().deref()).adj.borrow())
             .offset((*dst.borrow()) as isize)
             .write(__rhs);
     }

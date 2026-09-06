@@ -150,64 +150,64 @@ fn main_0() -> i32 {
 }
 impl MyContainer_char_Impl for Ptr<MyContainer_char_> {
     fn empty(&self) -> bool {
-        return (*(*self.upgrade().deref()).vec_.borrow()).is_empty();
+        return (*(*(*self).upgrade().deref()).vec_.borrow()).is_empty();
     }
     fn size(&self) -> usize {
-        return (*(*self.upgrade().deref()).vec_.borrow()).len();
+        return (*(*(*self).upgrade().deref()).vec_.borrow()).len();
     }
     fn back(&self) -> Ptr<u8> {
-        return ((*self.upgrade().deref()).vec_.as_pointer() as Ptr<u8>).to_last();
+        return ((*(*self).upgrade().deref()).vec_.as_pointer() as Ptr<u8>).to_last();
     }
     fn pop_back(&self) {
-        (*(*self.upgrade().deref()).vec_.borrow_mut()).pop();
+        (*(*(*self).upgrade().deref()).vec_.borrow_mut()).pop();
         return;
     }
     fn push_back(&self, item: Ptr<u8>) {
         {
             let a0_clone = (item.read()).clone();
-            (*(*self.upgrade().deref()).vec_.borrow_mut()).push(a0_clone)
+            (*(*(*self).upgrade().deref()).vec_.borrow_mut()).push(a0_clone)
         };
     }
 }
 impl MyContainer_float_Impl for Ptr<MyContainer_float_> {
     fn empty(&self) -> bool {
-        return (*(*self.upgrade().deref()).vec_.borrow()).is_empty();
+        return (*(*(*self).upgrade().deref()).vec_.borrow()).is_empty();
     }
     fn size(&self) -> usize {
-        return (*(*self.upgrade().deref()).vec_.borrow()).len();
+        return (*(*(*self).upgrade().deref()).vec_.borrow()).len();
     }
     fn back(&self) -> Ptr<f32> {
-        return ((*self.upgrade().deref()).vec_.as_pointer() as Ptr<f32>).to_last();
+        return ((*(*self).upgrade().deref()).vec_.as_pointer() as Ptr<f32>).to_last();
     }
     fn pop_back(&self) {
-        (*(*self.upgrade().deref()).vec_.borrow_mut()).pop();
+        (*(*(*self).upgrade().deref()).vec_.borrow_mut()).pop();
         return;
     }
     fn push_back(&self, item: Ptr<f32>) {
         {
             let a0_clone = (item.read()).clone();
-            (*(*self.upgrade().deref()).vec_.borrow_mut()).push(a0_clone)
+            (*(*(*self).upgrade().deref()).vec_.borrow_mut()).push(a0_clone)
         };
     }
 }
 impl MyContainer_int_Impl for Ptr<MyContainer_int_> {
     fn empty(&self) -> bool {
-        return (*(*self.upgrade().deref()).vec_.borrow()).is_empty();
+        return (*(*(*self).upgrade().deref()).vec_.borrow()).is_empty();
     }
     fn size(&self) -> usize {
-        return (*(*self.upgrade().deref()).vec_.borrow()).len();
+        return (*(*(*self).upgrade().deref()).vec_.borrow()).len();
     }
     fn back(&self) -> Ptr<i32> {
-        return ((*self.upgrade().deref()).vec_.as_pointer() as Ptr<i32>).to_last();
+        return ((*(*self).upgrade().deref()).vec_.as_pointer() as Ptr<i32>).to_last();
     }
     fn pop_back(&self) {
-        (*(*self.upgrade().deref()).vec_.borrow_mut()).pop();
+        (*(*(*self).upgrade().deref()).vec_.borrow_mut()).pop();
         return;
     }
     fn push_back(&self, item: Ptr<i32>) {
         {
             let a0_clone = (item.read()).clone();
-            (*(*self.upgrade().deref()).vec_.borrow_mut()).push(a0_clone)
+            (*(*(*self).upgrade().deref()).vec_.borrow_mut()).push(a0_clone)
         };
     }
 }

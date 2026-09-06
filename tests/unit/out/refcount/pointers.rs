@@ -81,17 +81,17 @@ fn main_0() -> i32 {
 }
 impl TestImpl for Ptr<Test> {
     fn inc(&self) {
-        (*(*self.upgrade().deref()).x.borrow_mut()).postfix_inc();
+        (*(*(*self).upgrade().deref()).x.borrow_mut()).postfix_inc();
     }
     fn dec(&self) {
-        (*(*self.upgrade().deref()).x.borrow_mut()).postfix_dec();
+        (*(*(*self).upgrade().deref()).x.borrow_mut()).postfix_dec();
     }
     fn as_ptr(&self) -> Ptr<i32> {
-        return ((*self.upgrade().deref()).x.as_pointer());
+        return ((*(*self).upgrade().deref()).x.as_pointer());
     }
     fn update(&self, x: i32, y: i32) {
         let x: Value<i32> = Rc::new(RefCell::new(x));
         let y: Value<i32> = Rc::new(RefCell::new(y));
-        (*(*self.upgrade().deref()).x.borrow_mut()) = ((*x.borrow()) + (*y.borrow()));
+        (*(*(*self).upgrade().deref()).x.borrow_mut()) = ((*x.borrow()) + (*y.borrow()));
     }
 }

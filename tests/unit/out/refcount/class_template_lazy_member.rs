@@ -108,12 +108,12 @@ fn main_0() -> i32 {
 }
 impl Box_Point_Impl for Ptr<Box_Point_> {
     fn get(&self) -> Point {
-        return (*(*self.upgrade().deref()).val.borrow()).clone();
+        return (*(*(*self).upgrade().deref()).val.borrow()).clone();
     }
 }
 impl Box_int_Impl for Ptr<Box_int_> {
     fn twice(&self) -> i32 {
-        return ((*(*self.upgrade().deref()).val.borrow())
-            + (*(*self.upgrade().deref()).val.borrow()));
+        return ((*(*(*self).upgrade().deref()).val.borrow())
+            + (*(*(*self).upgrade().deref()).val.borrow()));
     }
 }

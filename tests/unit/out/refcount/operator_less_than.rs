@@ -14,13 +14,13 @@ pub struct Pair {
 impl Pair {
     pub fn lt(&self, other: Ptr<Pair>) -> bool {
         return ({
-            let _lhs = (*self.x.borrow());
+            let _lhs = (*(*self).x.borrow());
             _lhs < (*(*other.upgrade().deref()).x.borrow())
         }) || (({
-            let _lhs = (*self.x.borrow());
+            let _lhs = (*(*self).x.borrow());
             _lhs == (*(*other.upgrade().deref()).x.borrow())
         }) && ({
-            let _lhs = (*self.y.borrow());
+            let _lhs = (*(*self).y.borrow());
             _lhs < (*(*other.upgrade().deref()).y.borrow())
         }));
     }

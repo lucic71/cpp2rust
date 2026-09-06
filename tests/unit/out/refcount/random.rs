@@ -304,21 +304,21 @@ fn main_0() -> i32 {
 }
 impl PairImpl for Ptr<Pair> {
     fn method(&self) {
-        (*(*self.upgrade().deref()).x.borrow_mut()).postfix_inc();
-        (*(*self.upgrade().deref()).y.borrow_mut()).prefix_inc();
-        (*(*self.upgrade().deref()).a.borrow_mut())[(4) as usize] = 1;
-        (*self.upgrade().deref()).r.write(1);
-        (*(*self.upgrade().deref()).p.borrow_mut()) = Ptr::<i32>::null();
-        (*(*self.upgrade().deref()).pair.borrow_mut()) = Ptr::<Pair>::null();
-        (*(*self.upgrade().deref()).ap.borrow_mut())[(0) as usize] = Ptr::<i32>::null();
+        (*(*(*self).upgrade().deref()).x.borrow_mut()).postfix_inc();
+        (*(*(*self).upgrade().deref()).y.borrow_mut()).prefix_inc();
+        (*(*(*self).upgrade().deref()).a.borrow_mut())[(4) as usize] = 1;
+        (*(*self).upgrade().deref()).r.write(1);
+        (*(*(*self).upgrade().deref()).p.borrow_mut()) = Ptr::<i32>::null();
+        (*(*(*self).upgrade().deref()).pair.borrow_mut()) = Ptr::<Pair>::null();
+        (*(*(*self).upgrade().deref()).ap.borrow_mut())[(0) as usize] = Ptr::<i32>::null();
     }
     fn as_val(&self) -> i32 {
-        return (*(*self.upgrade().deref()).x.borrow());
+        return (*(*(*self).upgrade().deref()).x.borrow());
     }
     fn as_ref(&self) -> Ptr<i32> {
-        return (*self.upgrade().deref()).x.as_pointer();
+        return (*(*self).upgrade().deref()).x.as_pointer();
     }
     fn as_ptr(&self) -> Ptr<i32> {
-        return ((*self.upgrade().deref()).x.as_pointer());
+        return ((*(*self).upgrade().deref()).x.as_pointer());
     }
 }

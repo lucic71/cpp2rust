@@ -189,6 +189,6 @@ fn main_0() -> i32 {
 impl NodeImpl for Ptr<Node> {
     fn SetNext(&self, next: Ptr<Node>) {
         let next: Value<Ptr<Node>> = Rc::new(RefCell::new(next));
-        (*(*self.upgrade().deref()).next.borrow_mut()) = (*next.borrow()).clone();
+        (*(*(*self).upgrade().deref()).next.borrow_mut()) = (*next.borrow()).clone();
     }
 }

@@ -130,10 +130,10 @@ fn main_0() -> i32 {
 impl PairImpl for Ptr<Pair> {
     fn NOP(&self) {}
     fn GetFirst(&self) -> i32 {
-        return (*(*self.upgrade().deref()).first.borrow());
+        return (*(*(*self).upgrade().deref()).first.borrow());
     }
     fn GetSecond(&self) -> i32 {
-        return (*(*self.upgrade().deref()).second.borrow());
+        return (*(*(*self).upgrade().deref()).second.borrow());
     }
     fn Set(&self, field: Ptr<i32>, new_val: i32) -> i32 {
         let new_val: Value<i32> = Rc::new(RefCell::new(new_val));
@@ -147,7 +147,7 @@ impl PairImpl for Ptr<Pair> {
         let new_first: Value<i32> = Rc::new(RefCell::new(new_first));
         return (({ PairImpl::GetFirst(self) })
             + ({
-                let _field: Ptr<i32> = (*self.upgrade().deref()).first.as_pointer();
+                let _field: Ptr<i32> = (*(*self).upgrade().deref()).first.as_pointer();
                 PairImpl::Set(self, _field, (*new_first.borrow()))
             }));
     }
@@ -155,7 +155,7 @@ impl PairImpl for Ptr<Pair> {
         let new_second: Value<i32> = Rc::new(RefCell::new(new_second));
         return (({ PairImpl::GetSecond(self) })
             + ({
-                let _field: Ptr<i32> = (*self.upgrade().deref()).second.as_pointer();
+                let _field: Ptr<i32> = (*(*self).upgrade().deref()).second.as_pointer();
                 PairImpl::Set(self, _field, (*new_second.borrow()))
             }));
     }
@@ -164,8 +164,8 @@ impl RouteImpl for Ptr<Route> {
     fn SetCost(&self, new_cost: f64) -> f64 {
         let new_cost: Value<f64> = Rc::new(RefCell::new(new_cost));
         let old_cost: Value<f64> =
-            Rc::new(RefCell::new((*(*self.upgrade().deref()).cost.borrow())));
-        (*(*self.upgrade().deref()).cost.borrow_mut()) = (*new_cost.borrow());
+            Rc::new(RefCell::new((*(*(*self).upgrade().deref()).cost.borrow())));
+        (*(*(*self).upgrade().deref()).cost.borrow_mut()) = (*new_cost.borrow());
         return (*old_cost.borrow());
     }
 }

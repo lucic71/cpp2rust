@@ -67,10 +67,10 @@ fn main_0() -> i32 {
 }
 impl SImpl for Ptr<S> {
     fn const_method(&self) -> i32 {
-        return ((*(*self.upgrade().deref()).v.borrow()) * 2);
+        return ((*(*(*self).upgrade().deref()).v.borrow()) * 2);
     }
     fn mut_method(&self) {
-        (*(*self.upgrade().deref()).v.borrow_mut()) += 1;
+        (*(*(*self).upgrade().deref()).v.borrow_mut()) += 1;
     }
     fn destructor(&self) {
         ({ SImpl::mut_method(self) });

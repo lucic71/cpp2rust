@@ -301,13 +301,13 @@ fn main_0() -> i32 {
 impl PairImpl for Ptr<Pair> {
     fn inc(&self, k: i32) {
         let k: Value<i32> = Rc::new(RefCell::new(k));
-        (*(*self.upgrade().deref()).x.borrow_mut()) += (*k.borrow());
-        (*(*self.upgrade().deref()).y.borrow_mut()) += (*k.borrow());
+        (*(*(*self).upgrade().deref()).x.borrow_mut()) += (*k.borrow());
+        (*(*(*self).upgrade().deref()).y.borrow_mut()) += (*k.borrow());
     }
 }
 impl SafePointerImpl for Ptr<SafePointer> {
     fn inc(&self) {
-        (*(*(*self.upgrade().deref()).ptr.borrow_mut())
+        (*(*(*(*self).upgrade().deref()).ptr.borrow_mut())
             .as_ref()
             .unwrap()
             .borrow_mut())

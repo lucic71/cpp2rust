@@ -136,9 +136,9 @@ fn main_0() -> i32 {
 }
 impl YImpl for Ptr<Y> {
     fn foo(&self) -> Ptr<X> {
-        return (*self.upgrade().deref()).x.as_pointer();
+        return (*(*self).upgrade().deref()).x.as_pointer();
     }
     fn ptr(&self) -> Ptr<X> {
-        return ((*self.upgrade().deref()).x.as_pointer());
+        return ((*(*self).upgrade().deref()).x.as_pointer());
     }
 }

@@ -410,16 +410,16 @@ fn main_0() -> i32 {
 }
 impl X2Impl for Ptr<X2> {
     fn get(&self) -> Ptr<X1> {
-        return ((*self.upgrade().deref()).v).clone();
+        return ((*(*self).upgrade().deref()).v).clone();
     }
 }
 impl X3Impl for Ptr<X3> {
     fn get(&self) -> Ptr<X2> {
-        return (*(*self.upgrade().deref()).v.borrow()).clone();
+        return (*(*(*self).upgrade().deref()).v.borrow()).clone();
     }
 }
 impl X4Impl for Ptr<X4> {
     fn get(&self) -> Ptr<X3> {
-        return (*self.upgrade().deref()).v.as_pointer();
+        return (*(*self).upgrade().deref()).v.as_pointer();
     }
 }

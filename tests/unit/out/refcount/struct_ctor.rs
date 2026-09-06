@@ -73,9 +73,9 @@ fn main_0() -> i32 {
 }
 impl StructWithCtorImpl for Ptr<StructWithCtor> {
     fn x1(&self) -> Ptr<i32> {
-        return (*self.upgrade().deref()).x1_.as_pointer();
+        return (*(*self).upgrade().deref()).x1_.as_pointer();
     }
     fn x2(&self) -> Ptr<i32> {
-        return (*self.upgrade().deref()).x2_.as_pointer();
+        return (*(*self).upgrade().deref()).x2_.as_pointer();
     }
 }

@@ -2723,7 +2723,11 @@ bool ConverterRefCount::VisitCXXThisExpr(
     [[maybe_unused]] clang::CXXThisExpr *expr) {
   bool in_ctor =
       curr_function_ && clang::isa<clang::CXXConstructorDecl>(curr_function_);
-  StrCat(in_ctor ? "this" : keyword::kSelfValue);
+  if (in_ctor) {
+    StrCat("this");
+  } else {
+    StrCat("(*", keyword::kSelfValue, ")");
+  }
   computed_expr_type_ = ComputedExprType::Pointer;
   return false;
 }

@@ -491,7 +491,7 @@ impl TaggedImpl for Ptr<Tagged> {
     fn destructor(&self) {
         (*order_1.with(Value::clone).borrow_mut())
             [((*order_count_2.with(Value::clone).borrow_mut()).postfix_inc()) as usize] =
-            (*(*self.upgrade().deref()).tag.borrow());
+            (*(*(*self).upgrade().deref()).tag.borrow());
     }
 }
 impl Templated_char_Impl for Ptr<Templated_char_> {
