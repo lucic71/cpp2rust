@@ -6,7 +6,7 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Default)]
+#[derive()]
 pub struct NonCopy {
     pub data: Value<Vec<i32>>,
     pub tag: Value<i32>,
@@ -18,6 +18,14 @@ impl Clone for NonCopy {
             tag: Rc::new(RefCell::new((*self.tag.borrow()))),
         };
         this
+    }
+}
+impl Default for NonCopy {
+    fn default() -> Self {
+        NonCopy {
+            data: Rc::new(RefCell::new(Default::default())),
+            tag: Rc::new(RefCell::new(0)),
+        }
     }
 }
 impl ByteRepr for NonCopy {
