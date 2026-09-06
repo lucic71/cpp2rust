@@ -12,6 +12,7 @@
 
 #include <algorithm>
 #include <format>
+#include <ranges>
 #include <utility>
 
 #include "compiler.h"
@@ -449,6 +450,9 @@ void Converter::ConvertGotoBlock(clang::CompoundStmt *body) {
 
 void Converter::ConvertFunctionBody(clang::FunctionDecl *decl) {
   ConvertBodyStmts(decl->getBody());
+  if (auto *dtor = clang::dyn_cast<clang::CXXDestructorDecl>(decl)) {
+    StrCat(DestroyMembers(dtor->getParent()));
+  }
   if (decl->getReturnType()->isVoidType()) {
     return;
   }
@@ -612,8 +616,26 @@ bool Converter::VisitVarDecl(clang::VarDecl *decl) {
   } else {
     ConvertVarDecl(decl);
   }
+  EmitScopedDestructor(decl);
 
   return false;
+}
+
+void Converter::EmitScopedDestructor(const clang::VarDecl *decl) {
+  if (in_function_formals_ || !decl->isLocalVarDecl() || IsGlobalVar(decl)) {
+    return;
+  }
+  auto type = decl->getType();
+  if (type->isReferenceType() || type->isArrayType() ||
+      !TypeNeedsDestruction(type)) {
+    return;
+  }
+  auto name = GetNamedDeclAsString(decl);
+  StrCat(token::kSemiColon,
+         std::format("let _dtor_{0} = ScopedDestructorUnsafe::new(&raw mut "
+                     "{0}, {1}::{2})",
+                     name, GetRecordName(type->getAsCXXRecordDecl()),
+                     kDestructorName));
 }
 
 static bool hasUserDefinedNonDefaultCopyOrMoveCtor(clang::CXXRecordDecl *decl) {
@@ -831,7 +853,6 @@ void Converter::EmitRustStructOrUnion(clang::RecordDecl *decl) {
   // Traits
   if (auto *cxx = clang::dyn_cast<clang::CXXRecordDecl>(decl)) {
     AddOrdTrait(cxx);
-    AddDropTrait(cxx);
   }
   AddCloneTrait(decl);
   AddDefaultTrait(decl);
@@ -842,6 +863,43 @@ void Converter::ConvertCXXRecordMethods(clang::CXXRecordDecl *decl) {
   ConvertCXXMethodDecls(
       decl, std::format("{} {}", keyword::kImpl, GetRecordName(decl)),
       IsEmittableMethod);
+
+  if (GetUserDefinedDestructor(decl) || !HasFieldsNeedingDestruction(decl)) {
+    return;
+  }
+  StrCat(keyword::kImpl, GetRecordName(decl));
+  PushBrace impl_brace(*this);
+  StrCat(keyword::kPub, keyword_unsafe_, keyword::kFn, kDestructorName,
+         "(&mut self)");
+  PushBrace fn_brace(*this);
+  StrCat(DestroyMembers(decl));
+}
+
+std::string Converter::DestroyMembers(const clang::CXXRecordDecl *decl) {
+  std::vector<const clang::FieldDecl *> fields;
+  for (auto *field : decl->fields()) {
+    if (TypeNeedsDestruction(field->getType())) {
+      fields.push_back(field);
+    }
+  }
+
+  std::string out;
+  for (auto *field : std::ranges::reverse_view(fields)) {
+    auto name = GetNamedDeclAsString(field);
+    auto type = field->getType();
+    if (type->isArrayType()) {
+      auto *elem = type->getBaseElementTypeUnsafe()->getAsCXXRecordDecl();
+      assert(elem);
+      out +=
+          std::format("for __e in self.{0}.iter_mut() {{ {1}::{2}(__e); }}\n",
+                      name, GetRecordName(elem), kDestructorName);
+    } else {
+      out += std::format("{1}::{2}(&mut self.{0});\n", name,
+                         GetRecordName(type->getAsCXXRecordDecl()),
+                         kDestructorName);
+    }
+  }
+  return out;
 }
 
 void Converter::EmitRustUnion(clang::RecordDecl *decl) {
@@ -2827,6 +2885,13 @@ bool Converter::ConvertCXXOperatorCallExpr(clang::CXXOperatorCallExpr *expr) {
 
 bool Converter::VisitMemberExpr(clang::MemberExpr *expr) {
   auto *member = expr->getMemberDecl();
+  if (auto *method = clang::dyn_cast<clang::CXXMethodDecl>(member);
+      method && IsMethodOnPtr(method) && !Mapper::Contains(expr)) {
+    ConvertMethodReceiver(expr, method);
+    StrCat(GetRecordName(method->getParent()), token::kDoubleColon,
+           GetMethodName(method));
+    return false;
+  }
   std::string str;
   {
     Buffer buf(*this);
@@ -2863,6 +2928,26 @@ bool Converter::VisitMemberExpr(clang::MemberExpr *expr) {
 
   StrCat(str);
   return false;
+}
+
+void Converter::ConvertMethodReceiver(clang::MemberExpr *expr,
+                                      const clang::CXXMethodDecl *method) {
+  auto *base = expr->getBase();
+  if (clang::isa<clang::CXXThisExpr>(base->IgnoreParenImpCasts())) {
+    bool in_ctor =
+        curr_function_ && clang::isa<clang::CXXConstructorDecl>(curr_function_);
+    method_receiver_ = in_ctor ? "&mut this" : keyword::kSelfValue;
+    return;
+  }
+  Buffer buf(*this);
+  PushExprKind push(*this, ExprKind::LValue);
+  StrCat(method->isConst() ? "&" : "&mut");
+  if (expr->isArrow()) {
+    ConvertArrow(base);
+  } else {
+    Convert(base);
+  }
+  method_receiver_ = std::move(buf).str();
 }
 
 // Returns the inner member and the replacement string.
@@ -3107,7 +3192,30 @@ bool Converter::VisitCXXNewExpr(clang::CXXNewExpr *expr) {
 
 bool Converter::VisitCXXDeleteExpr(clang::CXXDeleteExpr *expr) {
   auto *argument = expr->getArgument();
-  auto argument_as_string = ToString(argument);
+  auto destroyed_type = expr->getDestroyedType();
+  if (!TypeNeedsDestruction(destroyed_type)) {
+    EmitDeallocation(expr, ToString(argument));
+    return false;
+  }
+  auto record_name = GetRecordName(destroyed_type->getAsCXXRecordDecl());
+  PushBrace brace(*this);
+  StrCat(keyword::kLet, "__p", token::kAssign, ToString(argument),
+         token::kSemiColon);
+  if (expr->isArrayForm()) {
+    StrCat(std::format("for __i in 0..libcc2rs::malloc_usable_size(__p as *mut "
+                       "::libc::c_void) / ::std::mem::size_of::<{0}>() {{ "
+                       "{0}::{1}(&mut *__p.add(__i)); }}",
+                       record_name, kDestructorName));
+  } else {
+    StrCat(std::format("{}::{}(&mut *__p)", record_name, kDestructorName),
+           token::kSemiColon);
+  }
+  EmitDeallocation(expr, "__p");
+  return false;
+}
+
+void Converter::EmitDeallocation(clang::CXXDeleteExpr *expr,
+                                 const std::string &argument_as_string) {
   if (expr->isArrayForm()) {
     auto destroyed_type = expr->getDestroyedType();
     auto destroyed_type_as_string = ToString(destroyed_type);
@@ -3133,7 +3241,6 @@ bool Converter::VisitCXXDeleteExpr(clang::CXXDeleteExpr *expr) {
     StrCat(
         std::format("::std::mem::drop(Box::from_raw({}))", argument_as_string));
   }
-  return false;
 }
 
 void Converter::ConvertArrayCXXConstructExpr(clang::CXXConstructExpr *expr) {
@@ -4000,21 +4107,6 @@ void Converter::AddOrdTrait(const clang::CXXRecordDecl *decl) {
 }
 
 void Converter::AddCloneTrait(const clang::RecordDecl *decl) {}
-
-void Converter::AddDropTrait(const clang::CXXRecordDecl *decl) {
-  auto *dtor = GetUserDefinedDestructor(decl);
-  if (!dtor) {
-    return;
-  }
-  PushCurrFunction push_fn(*this, dtor);
-  StrCat(keyword::kImpl, "Drop for", GetRecordName(decl));
-  PushBrace impl_brace(*this);
-  StrCat("fn drop(&mut self)");
-  PushBrace fn_brace(*this);
-  StrCat(keyword_unsafe_);
-  PushBrace unsafe_brace(*this);
-  ConvertBodyStmts(dtor->getDefinition()->getBody());
-}
 
 void Converter::AddDefaultTraitForUnion(const clang::RecordDecl *decl) {
   StrCat(std::format("impl Default for {}", GetRecordName(decl)));

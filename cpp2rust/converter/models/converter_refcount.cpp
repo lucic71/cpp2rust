@@ -732,7 +732,6 @@ bool ConverterRefCount::VisitVarDecl(clang::VarDecl *decl) {
   } else {
     Converter::VisitVarDecl(decl);
   }
-  EmitScopedDestructor(decl);
   return false;
 }
 
@@ -2670,13 +2669,6 @@ void ConverterRefCount::ConvertCXXRecordMethods(clang::CXXRecordDecl *decl) {
     StrCat(std::format("fn {}(&self)", kDestructorName), token::kSemiColon);
     deferred_impls_[header] += std::format(
         "fn {}(&self) {{ {} }}\n", kDestructorName, DestroyMembers(decl));
-  }
-}
-
-void ConverterRefCount::ConvertFunctionBody(clang::FunctionDecl *decl) {
-  Converter::ConvertFunctionBody(decl);
-  if (auto *dtor = clang::dyn_cast<clang::CXXDestructorDecl>(decl)) {
-    StrCat(DestroyMembers(dtor->getParent()));
   }
 }
 

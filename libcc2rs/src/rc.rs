@@ -785,6 +785,23 @@ impl<T> Drop for ScopedDestructor<T> {
     }
 }
 
+pub struct ScopedDestructorUnsafe<T> {
+    owner: *mut T,
+    destroy: unsafe fn(&mut T),
+}
+
+impl<T> ScopedDestructorUnsafe<T> {
+    pub fn new(owner: *mut T, destroy: unsafe fn(&mut T)) -> Self {
+        Self { owner, destroy }
+    }
+}
+
+impl<T> Drop for ScopedDestructorUnsafe<T> {
+    fn drop(&mut self) {
+        unsafe { (self.destroy)(&mut *self.owner) }
+    }
+}
+
 impl<T> AsPointer<T> for Rc<RefCell<T>> {
     #[inline]
     fn as_pointer(&self) -> Ptr<T> {

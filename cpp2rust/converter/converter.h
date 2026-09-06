@@ -133,6 +133,12 @@ public:
   std::string GetMethodName(const clang::CXXMethodDecl *decl);
   virtual std::string GetSelfMaybeWithMut(const clang::CXXMethodDecl *decl);
   virtual void ConvertCXXRecordMethods(clang::CXXRecordDecl *decl);
+  virtual std::string DestroyMembers(const clang::CXXRecordDecl *decl);
+  virtual void EmitScopedDestructor(const clang::VarDecl *decl);
+  void EmitDeallocation(clang::CXXDeleteExpr *expr,
+                        const std::string &argument_as_string);
+  void ConvertMethodReceiver(clang::MemberExpr *expr,
+                             const clang::CXXMethodDecl *method);
 
   virtual bool ThisIsRustPtr() const { return false; }
 
@@ -564,8 +570,6 @@ protected:
                                          std::string_view record_name);
 
   virtual void AddCloneTrait(const clang::RecordDecl *decl);
-
-  virtual void AddDropTrait(const clang::CXXRecordDecl *decl);
 
   virtual void AddDefaultTrait(const clang::RecordDecl *decl);
 

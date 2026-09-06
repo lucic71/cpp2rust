@@ -269,8 +269,10 @@ bool IsConvertibleCXXRecordDecl(const clang::CXXRecordDecl *decl) {
 }
 
 bool IsConvertibleCXXMethodDecl(const clang::CXXMethodDecl *decl) {
-  // Destructors go into the Drop trait
-  return !llvm::isa<clang::CXXDestructorDecl>(decl) && !decl->isImplicit();
+  if (llvm::isa<clang::CXXDestructorDecl>(decl)) {
+    return GetUserDefinedDestructor(decl->getParent()) != nullptr;
+  }
+  return !decl->isImplicit();
 }
 
 bool IsConvertibleFunctionDecl(const clang::FunctionDecl *decl) {
@@ -626,8 +628,12 @@ bool RecordNeedsDestruction(const clang::CXXRecordDecl *decl) {
 }
 
 bool IsEmittableMethod(clang::CXXMethodDecl *method) {
-  // Virtual methods go into the base trait impl, destructors into Drop
-  if (method->isVirtual() || clang::isa<clang::CXXDestructorDecl>(method)) {
+  if (clang::isa<clang::CXXDestructorDecl>(method)) {
+    return GetUserDefinedDestructor(method->getParent()) &&
+           method->isThisDeclarationADefinition();
+  }
+  // Virtual methods go into the base trait impl
+  if (method->isVirtual()) {
     return false;
   }
   // Compiler-generated members are covered by derived traits

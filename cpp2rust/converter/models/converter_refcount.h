@@ -54,11 +54,7 @@ public:
 
   bool ShouldConvertMethod(const clang::CXXMethodDecl *decl) override;
 
-  void AddDropTrait(const clang::CXXRecordDecl *decl) override {}
-
   bool ConvertOutOfLineMethod(clang::CXXMethodDecl *decl) override;
-
-  void ConvertFunctionBody(clang::FunctionDecl *decl) override;
 
   void ConvertCXXConstructorBody(clang::CXXConstructorDecl *decl) override;
 
@@ -220,8 +216,8 @@ public:
 private:
   std::string TraitName(const clang::CXXRecordDecl *decl) const;
   std::string ImplHeader(const clang::CXXRecordDecl *decl) const;
-  std::string DestroyMembers(const clang::CXXRecordDecl *decl);
-  void EmitScopedDestructor(const clang::VarDecl *decl);
+  std::string DestroyMembers(const clang::CXXRecordDecl *decl) override;
+  void EmitScopedDestructor(const clang::VarDecl *decl) override;
 
   std::pair<std::string, std::string>
   MaterializeTemp(const std::string &binding_name, clang::QualType param_type,
