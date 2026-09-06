@@ -1627,7 +1627,7 @@ bool ConverterRefCount::VisitMemberExpr(clang::MemberExpr *expr) {
                        clang::isa<clang::CXXConstructorDecl>(curr_function_);
         if (in_ctor) {
           method_receiver_ = "&this";
-        } else if (ThisIsPointer()) {
+        } else if (ThisIsRustPtr()) {
           method_receiver_ = keyword::kSelfValue;
         } else {
           method_receiver_ = token::kRef + ConvertPointer(base);
@@ -2594,7 +2594,7 @@ bool ConverterRefCount::ShouldConvertMethod(const clang::CXXMethodDecl *decl) {
   return Converter::ShouldConvertMethod(decl);
 }
 
-bool ConverterRefCount::ThisIsPointer() const {
+bool ConverterRefCount::ThisIsRustPtr() const {
   auto *method = clang::dyn_cast_or_null<clang::CXXMethodDecl>(curr_function_);
   return method && (IsMethodOnPtr(method) ||
                     clang::isa<clang::CXXConstructorDecl>(method));

@@ -134,7 +134,7 @@ public:
   virtual std::string GetSelfMaybeWithMut(const clang::CXXMethodDecl *decl);
   virtual void ConvertCXXRecordMethods(clang::CXXRecordDecl *decl);
 
-  virtual bool ThisIsPointer() const { return false; }
+  virtual bool ThisIsRustPtr() const { return false; }
 
   virtual void ConvertCXXConstructorBody(clang::CXXConstructorDecl *decl);
   void EmitConstructorFieldInits(clang::CXXConstructorDecl *decl);

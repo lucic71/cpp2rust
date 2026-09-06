@@ -2923,7 +2923,7 @@ void Converter::ConvertMemberExpr(clang::MemberExpr *expr) {
 
   auto *base = expr->getBase();
   bool base_is_this =
-      clang::isa<clang::CXXThisExpr>(base->IgnoreCasts()) && !ThisIsPointer();
+      clang::isa<clang::CXXThisExpr>(base->IgnoreCasts()) && !ThisIsRustPtr();
   PushExprKind push(*this, isLValue() ? ExprKind::LValue : ExprKind::RValue);
   if (expr->isArrow() && !base_is_this) {
     ConvertArrow(base);

@@ -66,7 +66,7 @@ public:
 
   bool VisitCXXThisExpr(clang::CXXThisExpr *expr) override;
 
-  bool ThisIsPointer() const override;
+  bool ThisIsRustPtr() const override;
 
   bool VisitCXXConstructorDecl(clang::CXXConstructorDecl *decl) override;
 
