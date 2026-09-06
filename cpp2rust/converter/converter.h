@@ -847,7 +847,8 @@ protected:
   static RecordIndex record_decls_;
   using DeferredImplHeader = std::string;
   using DeferredImplBody = std::string;
-  static std::unordered_map<DeferredImplHeader, DeferredImplBody> deferred_impls_;
+  static std::unordered_map<DeferredImplHeader, DeferredImplBody>
+      deferred_impls_;
 
   enum class ExprKind : uint8_t {
     Callee,
