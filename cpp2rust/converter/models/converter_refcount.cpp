@@ -2697,10 +2697,13 @@ ConverterRefCount::DestroyMembers(const clang::CXXRecordDecl *decl) {
   for (auto *field : std::ranges::reverse_view(fields)) {
     auto name = GetNamedDeclAsString(field);
     if (field->getType()->isArrayType()) {
+      auto *elem =
+          field->getType()->getBaseElementTypeUnsafe()->getAsCXXRecordDecl();
+      assert(elem);
       out += std::format(
           "{{ let __p = (*self.upgrade().deref()).{0}.as_pointer(); for __i in "
-          "0..__p.len() {{ __p.offset(__i as isize).{1}(); }} }}\n",
-          name, kDestructorName);
+          "0..__p.len() {{ {2}::{1}(&__p.offset(__i as isize)); }} }}\n",
+          name, kDestructorName, TraitName(elem));
     } else {
       out += std::format("(*self.upgrade().deref()).{0}.as_pointer().{1}();\n",
                          name, kDestructorName);

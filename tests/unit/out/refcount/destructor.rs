@@ -343,7 +343,7 @@ impl ArrayMemberImpl for Ptr<ArrayMember> {
         {
             let __p = (*self.upgrade().deref()).items.as_pointer();
             for __i in 0..__p.len() {
-                __p.offset(__i as isize).__dtor();
+                SImpl::__dtor(&__p.offset(__i as isize));
             }
         }
     }
