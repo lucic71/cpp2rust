@@ -26,7 +26,7 @@ std::unordered_set<std::string> Converter::decl_ids_;
 std::unordered_set<std::string> Converter::globals_;
 std::unordered_set<std::string> Converter::abstract_structs_;
 Converter::RecordIndex Converter::record_decls_;
-std::unordered_map<Converter::DeferredImplHeader, Converter::DeferredImplBody>
+std::map<Converter::DeferredImplHeader, Converter::DeferredImplBody>
     Converter::deferred_impls_;
 
 void Converter::ConvertUniquePtrDeref(clang::CXXOperatorCallExpr *expr) {
