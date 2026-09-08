@@ -624,29 +624,6 @@ void Converter::EmitScopedDestructor(const clang::VarDecl *decl) {
                      kDestructorName));
 }
 
-static bool hasUserDefinedNonDefaultCopyOrMoveCtor(clang::CXXRecordDecl *decl) {
-  for (const auto *ctor : decl->ctors()) {
-    if (ctor->isCopyConstructor() || ctor->isMoveConstructor()) {
-      auto source = ctor->getDefinition() ? ctor->getDefinition() : ctor;
-      if (source->isUserProvided() && !source->isDefaulted()) {
-        return true;
-      }
-    }
-  }
-
-  for (const auto *method : decl->methods()) {
-    if (method->isCopyAssignmentOperator() ||
-        method->isMoveAssignmentOperator()) {
-      auto source = method->getDefinition() ? method->getDefinition() : method;
-      if (source->isUserProvided() && !source->isDefaulted()) {
-        return true;
-      }
-    }
-  }
-
-  return false;
-}
-
 bool IsPointerType(clang::QualType qual_type) {
   return qual_type->isPointerType() ||
          (qual_type->isArrayType() &&
@@ -944,10 +921,6 @@ bool Converter::VisitCXXRecordDecl(clang::CXXRecordDecl *decl) {
     if (decl->isAbstract()) {
       ConvertAbstractClass(decl);
       return false;
-    }
-
-    if (hasUserDefinedNonDefaultCopyOrMoveCtor(decl)) {
-      assert(0 && "unsupported user-defined copy ctor, move ctor");
     }
 
     sema_->ForceDeclarationOfImplicitMembers(decl);
