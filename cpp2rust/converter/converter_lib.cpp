@@ -285,7 +285,8 @@ bool IsConvertibleCXXRecordDecl(const clang::CXXRecordDecl *decl) {
              decl->method_begin(), decl->method_end(), [](auto *method) {
                return method->getDefinition() || method->isPureVirtual() ||
                       method->getTemplateInstantiationPattern() ||
-                      method->getDescribedFunctionTemplate();
+                      method->getDescribedFunctionTemplate() ||
+                      IsCopyOrMoveSpecialMember(method);
              });
 }
 
