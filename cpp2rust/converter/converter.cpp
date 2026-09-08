@@ -1868,6 +1868,10 @@ void Converter::EmitArgList(const CallInfo &info) {
   for (unsigned i = 0; i < info.args.size(); i++) {
     const auto &ca = info.args[i];
 
+    if (ca.has_default && clang::isa<clang::CXXDefaultArgExpr>(ca.expr)) {
+      StrCat("None", token::kComma);
+      continue;
+    }
     if (ca.has_default) {
       StrCat("Some");
     }
@@ -3259,7 +3263,8 @@ void Converter::ConvertCXXConstructExprArgs(clang::CXXConstructExpr *expr) {
     auto param_type = param->getType();
     bool has_default = param->hasDefaultArg();
 
-    if (arg_idx < expr->getNumArgs()) {
+    if (arg_idx < expr->getNumArgs() &&
+        !clang::isa<clang::CXXDefaultArgExpr>(expr->getArg(arg_idx))) {
       clang::Expr *arg = expr->getArg(arg_idx++);
       PushBrace brace(*this);
       HoistMaterializedTempBindings hoist_temps(*this);
