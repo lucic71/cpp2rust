@@ -258,6 +258,27 @@ bool IsOverloadedMethod(const clang::CXXMethodDecl *decl) {
                        }) > 1;
 }
 
+bool IsCopyOrMoveSpecialMember(const clang::CXXMethodDecl *method) {
+  if (const auto *ctor = clang::dyn_cast<clang::CXXConstructorDecl>(method)) {
+    return ctor->isCopyOrMoveConstructor();
+  }
+  return method->isCopyAssignmentOperator() ||
+         method->isMoveAssignmentOperator();
+}
+
+bool HasUsableCopyConstructor(const clang::CXXRecordDecl *decl) {
+  if (!decl->hasUserDeclaredCopyConstructor()) {
+    return !decl->defaultedCopyConstructorIsDeleted();
+  }
+  for (const auto *ctor : decl->ctors()) {
+    if (ctor->isCopyConstructor() && !ctor->isDeleted() &&
+        ctor->getDefinition()) {
+      return true;
+    }
+  }
+  return false;
+}
+
 bool IsConvertibleCXXRecordDecl(const clang::CXXRecordDecl *decl) {
   return decl->isThisDeclarationADefinition() &&
          std::all_of(

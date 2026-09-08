@@ -63,6 +63,10 @@ bool IsOverloadedFunction(const clang::FunctionDecl *decl);
 
 bool IsOverloadedMethod(const clang::CXXMethodDecl *decl);
 
+bool IsCopyOrMoveSpecialMember(const clang::CXXMethodDecl *method);
+
+bool HasUsableCopyConstructor(const clang::CXXRecordDecl *decl);
+
 bool IsConvertibleCXXRecordDecl(const clang::CXXRecordDecl *decl);
 
 bool IsConvertibleCXXMethodDecl(const clang::CXXMethodDecl *decl);

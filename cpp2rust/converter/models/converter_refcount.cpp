@@ -478,7 +478,7 @@ void ConverterRefCount::AddCloneTrait(const clang::RecordDecl *decl) {
     return;
   }
 
-  if (cxx->defaultedCopyConstructorIsDeleted()) {
+  if (!HasUsableCopyConstructor(cxx)) {
     return;
   }
 

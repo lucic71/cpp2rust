@@ -3751,15 +3751,12 @@ Converter::GetStructAttributes(const clang::RecordDecl *decl) {
 
   std::vector<const char *> struct_attrs;
 
-  if (RecordHasCopyableFields(decl)) {
+  auto cxx_decl = clang::dyn_cast<clang::CXXRecordDecl>(decl);
+  bool clone = !cxx_decl || HasUsableCopyConstructor(cxx_decl);
+  if (clone && RecordHasCopyableFields(decl)) {
     struct_attrs.emplace_back("Copy");
   }
-
-  if (auto cxx_decl = clang::dyn_cast<clang::CXXRecordDecl>(decl)) {
-    if (!cxx_decl->defaultedCopyConstructorIsDeleted()) {
-      struct_attrs.emplace_back("Clone");
-    }
-  } else /* RecordDecl */ {
+  if (clone) {
     struct_attrs.emplace_back("Clone");
   }
 
