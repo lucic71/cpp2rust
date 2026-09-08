@@ -496,8 +496,11 @@ void ConverterRefCount::AddCloneTrait(const clang::RecordDecl *decl) {
       }
     }
     StrCat("));");
-    StrCat(std::format("{}::{}(__src.as_pointer())", record_name,
-                       GetCtorName(ctor)));
+    std::string args = "__src.as_pointer()";
+    for (unsigned i = 1; i < ctor->getNumParams(); ++i) {
+      args += ", None";
+    }
+    StrCat(std::format("{}::{}({})", record_name, GetCtorName(ctor), args));
   } else {
     for (auto ctor : cxx->ctors()) {
       if (ctor->isCopyConstructor()) {

@@ -134,7 +134,7 @@ impl Clone for WithDefault {
             v: self.v.clone(),
             tag: self.tag.clone(),
         }));
-        WithDefault::WithDefault_pconstWithDefault_i32(__src.as_pointer())
+        WithDefault::WithDefault_pconstWithDefault_i32(__src.as_pointer(), None)
     }
 }
 impl ByteRepr for WithDefault {
