@@ -98,7 +98,7 @@ unsafe fn main_0() -> i32 {
     {
         let mut a: Buffer = Buffer::Buffer({ 4 });
         let _dtor_a = ScopedDestructorUnsafe::new(&raw mut a, Buffer::destructor);
-        let mut b: Buffer = a.clone();
+        let mut b: Buffer = Buffer::Buffer_pconstBuffer({ &a as *const Buffer });
         let _dtor_b = ScopedDestructorUnsafe::new(&raw mut b, Buffer::destructor);
         assert!(((alive_0) == (2)) && ((copies_1) == (1)));
         (*b.data.offset((0) as isize)) = 100;
@@ -113,9 +113,11 @@ unsafe fn main_0() -> i32 {
             Buffer::operator_assign(&mut c, _o)
         });
         assert!(((copies_1) == (2)));
-        assert!(((unsafe { sum_2(a.clone(),) }) == (6)));
+        assert!(
+            ((unsafe { sum_2(Buffer::Buffer_pconstBuffer({ &a as *const Buffer },),) }) == (6))
+        );
         assert!(((alive_0) == (3)) && ((copies_1) == (3)));
-        let mut d: Buffer = a.clone();
+        let mut d: Buffer = Buffer::Buffer_pconstBuffer({ &mut a });
         let _dtor_d = ScopedDestructorUnsafe::new(&raw mut d, Buffer::destructor);
         assert!(((alive_0) == (4)) && ((copies_1) == (4)));
         assert!((!((a.data).is_null())) && ((a.size) == (4)));

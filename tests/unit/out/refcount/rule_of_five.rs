@@ -136,7 +136,9 @@ fn main_0() -> i32 {
     {
         let a: Value<Buffer> = Rc::new(RefCell::new(Buffer::Buffer({ 4 })));
         let _dtor_a = ScopedDestructor::new(&a, |__p| __p.destructor());
-        let b: Value<Buffer> = Rc::new(RefCell::new((*a.borrow()).clone()));
+        let b: Value<Buffer> = Rc::new(RefCell::new(Buffer::Buffer_pconstBuffer({
+            a.as_pointer()
+        })));
         let _dtor_b = ScopedDestructor::new(&b, |__p| __p.destructor());
         assert!(
             (((*alive_0.with(Value::clone).borrow()) == 2)

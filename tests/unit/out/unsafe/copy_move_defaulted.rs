@@ -121,7 +121,7 @@ unsafe fn main_0() -> i32 {
     let _dtor_b = ScopedDestructorUnsafe::new(&raw mut b, Explicit::destructor);
     let mut c: Explicit = a.clone();
     let _dtor_c = ScopedDestructorUnsafe::new(&raw mut c, Explicit::destructor);
-    let mut d: Explicit = a;
+    let mut d: Explicit = a.clone();
     let _dtor_d = ScopedDestructorUnsafe::new(&raw mut d, Explicit::destructor);
     assert!(
         ((unsafe { same_0(&b as *const Explicit, &a as *const Explicit,) })
@@ -173,7 +173,8 @@ unsafe fn main_0() -> i32 {
     assert!(((vec_[(0_usize)].v) == (1)) && ((vec_[(1_usize)].v) == (9)));
     let mut m: DefaultCopyUserMove = DefaultCopyUserMove::DefaultCopyUserMove({ 7 });
     let mut m1: DefaultCopyUserMove = m;
-    let mut m2: DefaultCopyUserMove = m;
+    let mut m2: DefaultCopyUserMove =
+        DefaultCopyUserMove::DefaultCopyUserMove_pmutDefaultCopyUserMove({ &mut m });
     assert!((((m1.v) == (7)) && ((m2.v) == (7))) && ((m.v) == (0)));
     let mut m3: DefaultCopyUserMove = DefaultCopyUserMove::DefaultCopyUserMove({ 1 });
     let mut m4: DefaultCopyUserMove = DefaultCopyUserMove::DefaultCopyUserMove({ 1 });
@@ -181,7 +182,10 @@ unsafe fn main_0() -> i32 {
     (unsafe { DefaultCopyUserMove::operator_assign_pmutDefaultCopyUserMove(&mut m4, &mut m1) });
     assert!((((m3.v) == (7)) && ((m4.v) == (7))) && ((m1.v) == (0)));
     let mut u: UserCopyDefaultMove = UserCopyDefaultMove::UserCopyDefaultMove({ 8 });
-    let mut u1: UserCopyDefaultMove = u;
+    let mut u1: UserCopyDefaultMove =
+        UserCopyDefaultMove::UserCopyDefaultMove_pconstUserCopyDefaultMove({
+            &u as *const UserCopyDefaultMove
+        });
     let mut u2: UserCopyDefaultMove = u;
     assert!((((u1.v) == (108)) && ((u2.v) == (8))) && ((u.v) == (8)));
     let mut u3: UserCopyDefaultMove = UserCopyDefaultMove::UserCopyDefaultMove({ 1 });

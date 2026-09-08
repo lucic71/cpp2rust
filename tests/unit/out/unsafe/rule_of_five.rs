@@ -111,7 +111,7 @@ impl Buffer {
 pub unsafe fn make_3(mut size: i32) -> Buffer {
     let mut b: Buffer = Buffer::Buffer({ size });
     let _dtor_b = ScopedDestructorUnsafe::new(&raw mut b, Buffer::destructor);
-    return b;
+    return Buffer::Buffer_pmutBuffer({ &mut b });
 }
 pub fn main() {
     unsafe {
@@ -122,12 +122,12 @@ unsafe fn main_0() -> i32 {
     {
         let mut a: Buffer = Buffer::Buffer({ 4 });
         let _dtor_a = ScopedDestructorUnsafe::new(&raw mut a, Buffer::destructor);
-        let mut b: Buffer = a.clone();
+        let mut b: Buffer = Buffer::Buffer_pconstBuffer({ &a as *const Buffer });
         let _dtor_b = ScopedDestructorUnsafe::new(&raw mut b, Buffer::destructor);
         assert!((((alive_0) == (2)) && ((copies_1) == (1))) && ((moves_2) == (0)));
         (*b.data.offset((0) as isize)) = 100;
         assert!(((*a.data.offset((0) as isize)) == (0)));
-        let mut c: Buffer = a;
+        let mut c: Buffer = Buffer::Buffer_pmutBuffer({ &mut a });
         let _dtor_c = ScopedDestructorUnsafe::new(&raw mut c, Buffer::destructor);
         assert!(((alive_0) == (3)) && ((moves_2) == (1)));
         assert!(((a.data).is_null()) && ((a.size) == (0)));

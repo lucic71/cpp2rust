@@ -358,7 +358,9 @@ fn main_0() -> i32 {
         Rc::new(RefCell::new(UserCopyDefaultMove::UserCopyDefaultMove({
             8
         })));
-    let u1: Value<UserCopyDefaultMove> = Rc::new(RefCell::new((*u.borrow()).clone()));
+    let u1: Value<UserCopyDefaultMove> = Rc::new(RefCell::new(
+        UserCopyDefaultMove::UserCopyDefaultMove_pconstUserCopyDefaultMove({ u.as_pointer() }),
+    ));
     let u2: Value<UserCopyDefaultMove> = Rc::new(RefCell::new((*u.borrow_mut())));
     assert!(
         (((*(*u1.borrow()).v.borrow()) == 108) && ((*(*u2.borrow()).v.borrow()) == 8))

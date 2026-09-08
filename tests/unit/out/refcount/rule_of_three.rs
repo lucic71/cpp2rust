@@ -126,7 +126,9 @@ fn main_0() -> i32 {
     {
         let a: Value<Buffer> = Rc::new(RefCell::new(Buffer::Buffer({ 4 })));
         let _dtor_a = ScopedDestructor::new(&a, |__p| __p.destructor());
-        let b: Value<Buffer> = Rc::new(RefCell::new((*a.borrow()).clone()));
+        let b: Value<Buffer> = Rc::new(RefCell::new(Buffer::Buffer_pconstBuffer({
+            a.as_pointer()
+        })));
         let _dtor_b = ScopedDestructor::new(&b, |__p| __p.destructor());
         assert!(
             ((*alive_0.with(Value::clone).borrow()) == 2)
@@ -152,12 +154,14 @@ fn main_0() -> i32 {
             BufferImpl::operator_assign(&c.as_pointer(), _o)
         });
         assert!(((*copies_1.with(Value::clone).borrow()) == 2));
-        assert!((({ sum_2((*a.borrow()).clone(),) }) == 6));
+        assert!((({ sum_2(Buffer::Buffer_pconstBuffer({ a.as_pointer() },),) }) == 6));
         assert!(
             ((*alive_0.with(Value::clone).borrow()) == 3)
                 && ((*copies_1.with(Value::clone).borrow()) == 3)
         );
-        let d: Value<Buffer> = Rc::new(RefCell::new((*a.borrow())));
+        let d: Value<Buffer> = Rc::new(RefCell::new(Buffer::Buffer_pconstBuffer({
+            a.as_pointer()
+        })));
         let _dtor_d = ScopedDestructor::new(&d, |__p| __p.destructor());
         assert!(
             ((*alive_0.with(Value::clone).borrow()) == 4)

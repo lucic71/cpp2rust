@@ -38,10 +38,10 @@ impl Chain {
         return self;
     }
     pub unsafe fn take(&mut self) -> Chain {
-        return (*self);
+        return Chain::Chain_pmutChain({ self });
     }
     pub unsafe fn copy(&self) -> Chain {
-        return (*self);
+        return Chain::Chain_pconstChain({ &(*self) as *const Chain });
     }
     pub unsafe fn self_(&mut self) -> *mut Chain {
         return self;
@@ -59,20 +59,25 @@ unsafe fn main_0() -> i32 {
     let mut a: Chain = Chain::Chain({ 1 });
     (unsafe { Chain::add_i32_lref(&mut (*(unsafe { Chain::add_i32_lref(&mut a, 1) })), 1) });
     assert!(((a.v) == (3)));
-    let mut b: Chain = (*(unsafe {
-        Chain::add_i32_rref(
-            &mut (*(unsafe { Chain::add_i32_rref(&mut Chain::Chain({ 5 }), 1) })),
-            1,
-        )
-    }));
+    let mut b: Chain = Chain::Chain_pmutChain({
+        (unsafe {
+            Chain::add_i32_rref(
+                &mut (*(unsafe { Chain::add_i32_rref(&mut Chain::Chain({ 5 }), 1) })),
+                1,
+            )
+        })
+    });
     assert!(((b.v) == (8)));
     let mut c: Chain = (unsafe { Chain::take(&mut Chain::Chain({ 10 })) });
     assert!(((c.v) == (11)));
     let mut d: Chain = (unsafe { Chain::copy(&c) });
     assert!(((d.v) == (111)) && ((c.v) == (11)));
     assert!(
-        ((unsafe { consume_0((*(unsafe { Chain::self_(&mut Chain::Chain({ 20 },),) })),) })
-            == (21))
+        ((unsafe {
+            consume_0(Chain::Chain_pmutChain({
+                (unsafe { Chain::self_(&mut Chain::Chain({ 20 })) })
+            }))
+        }) == (21))
     );
     let mut e: Chain = Chain::Chain({ 30 });
     let mut f: Chain = (unsafe { Chain::take(&mut e) });

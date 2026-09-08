@@ -93,7 +93,7 @@ pub unsafe fn by_value_1(mut c: Counted) -> i32 {
 }
 pub unsafe fn make_2(mut v: i32) -> Counted {
     let mut c: Counted = Counted::Counted({ v });
-    return c;
+    return Counted::Counted_pconstCounted({ &mut c });
 }
 pub fn main() {
     unsafe {
@@ -102,12 +102,15 @@ pub fn main() {
 }
 unsafe fn main_0() -> i32 {
     let mut a: Counted = Counted::Counted({ 1 });
-    let mut b: Counted = a;
-    let mut c: Counted = a;
-    let mut d: Counted = a;
+    let mut b: Counted = Counted::Counted_pconstCounted({ &a as *const Counted });
+    let mut c: Counted = Counted::Counted_pconstCounted({ &a as *const Counted });
+    let mut d: Counted = Counted::Counted_pconstCounted({ &a as *const Counted });
     assert!(((copies_0) == (3)));
     assert!((((b.v) == (1)) && ((c.v) == (1))) && ((d.v) == (1)));
-    assert!(((unsafe { by_value_1(a,) }) == (1)));
+    assert!(
+        ((unsafe { by_value_1(Counted::Counted_pconstCounted({ &a as *const Counted },),) })
+            == (1))
+    );
     assert!(((copies_0) == (4)));
     let mut e: Counted = (unsafe { make_2(5) });
     assert!(((e.v) == (5)));
@@ -116,7 +119,7 @@ unsafe fn main_0() -> i32 {
     assert!(((f.v) == (6)));
     assert!(((copies_0) == (5)));
     let g: Counted = Counted::Counted({ 7 });
-    let mut h: Counted = g;
+    let mut h: Counted = Counted::Counted_pconstCounted({ &g as *const Counted });
     assert!(((h.v) == (7)));
     assert!(((copies_0) == (6)));
     let mut hold: Holder = Holder {
@@ -137,14 +140,16 @@ unsafe fn main_0() -> i32 {
     assert!(((vec_[(0_usize)].v) == (1)));
     assert!(((copies_0) == (10)));
     let mut n: NonConst = NonConst::NonConst();
-    let mut n1: NonConst = n;
+    let mut n1: NonConst = NonConst::NonConst_pmutNonConst({ &mut n as *mut NonConst });
     let cn: NonConst = NonConst::NonConst();
-    let mut n2: NonConst = cn;
+    let mut n2: NonConst = NonConst::NonConst_pconstNonConst({ &cn as *const NonConst });
     assert!(((n1.mark) == (1)));
     assert!(((n2.mark) == (10)));
     let mut w: WithDefault = WithDefault::WithDefault({ 3 });
-    let mut w1: WithDefault = w;
-    let mut w2: WithDefault = w;
+    let mut w1: WithDefault =
+        WithDefault::WithDefault_pconstWithDefault_i32({ &w as *const WithDefault }, None);
+    let mut w2: WithDefault =
+        WithDefault::WithDefault_pconstWithDefault_i32({ &w as *const WithDefault }, { Some(9) });
     assert!(((w1.v) == (3)) && ((w1.tag) == (7)));
     assert!(((w2.v) == (3)) && ((w2.tag) == (9)));
     return 0;

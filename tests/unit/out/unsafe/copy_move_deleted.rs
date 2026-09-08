@@ -91,7 +91,7 @@ pub fn main() {
 }
 unsafe fn main_0() -> i32 {
     let mut a: NoCopy = NoCopy::NoCopy({ 1 });
-    let mut b: NoCopy = a;
+    let mut b: NoCopy = NoCopy::NoCopy_pmutNoCopy({ &mut a });
     assert!(((b.v) == (1)) && ((a.v) == (0)));
     (unsafe { NoCopy::operator_assign_pmutNoCopy(&mut a, &mut b) });
     assert!(((a.v) == (1)) && ((b.v) == (0)));
@@ -99,7 +99,7 @@ unsafe fn main_0() -> i32 {
     assert!(((a.v) == (2)));
     let mut p: PrivateCopy = PrivateCopy::PrivateCopy();
     p.v = 3;
-    let mut q: PrivateCopy = p;
+    let mut q: PrivateCopy = PrivateCopy::PrivateCopy_pmutPrivateCopy({ &mut p });
     assert!(((q.v) == (3)) && ((p.v) == (0)));
     (unsafe { PrivateCopy::operator_assign_pmutPrivateCopy(&mut p, &mut q) });
     assert!(((p.v) == (3)) && ((q.v) == (0)));
@@ -112,7 +112,7 @@ unsafe fn main_0() -> i32 {
         inner: NoCopy::NoCopy({ 6 }),
         tag: 7,
     };
-    let mut d: Container = c;
+    let mut d: Container = c.clone();
     assert!((((d.inner.v) == (6)) && ((d.tag) == (7))) && ((c.inner.v) == (0)));
     return 0;
 }

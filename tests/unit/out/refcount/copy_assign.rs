@@ -147,7 +147,9 @@ pub struct Holder {
 impl Clone for Holder {
     fn clone(&self) -> Self {
         let __this: Value<Holder> = Rc::new(RefCell::new(Self {
-            p: Rc::new(RefCell::new((*self.p.borrow()).clone())),
+            p: Rc::new(RefCell::new(Partial::Partial_pconstPartial({
+                self.p.as_pointer()
+            }))),
             arr: Rc::new(RefCell::new((*self.arr.borrow()).clone())),
         }));
         let this: Ptr<Holder> = __this.as_pointer();

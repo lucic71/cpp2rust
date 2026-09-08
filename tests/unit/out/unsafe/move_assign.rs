@@ -62,7 +62,7 @@ impl Default for ConstMoveAssign {
 }
 pub unsafe fn make_0(mut v: i32) -> MoveOnly {
     let mut m: MoveOnly = MoveOnly::MoveOnly({ v });
-    return m;
+    return MoveOnly::MoveOnly_pmutMoveOnly({ &mut m });
 }
 pub fn main() {
     unsafe {
