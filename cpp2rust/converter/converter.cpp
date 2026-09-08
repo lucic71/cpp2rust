@@ -1037,7 +1037,8 @@ bool Converter::VisitCXXConstructorDecl(clang::CXXConstructorDecl *decl) {
   }
   PushCurrFunction push_fn(*this, decl);
 
-  if (decl->isCopyOrMoveConstructor() && !decl->doesThisDeclarationHaveABody()) {
+  if (decl->isCopyOrMoveConstructor() &&
+      !decl->doesThisDeclarationHaveABody()) {
     return false;
   }
 
@@ -1132,8 +1133,9 @@ void Converter::EmitFunctionPreamble(clang::FunctionDecl *decl) {
   if (auto *method = clang::dyn_cast<clang::CXXMethodDecl>(decl);
       method && method->isInstance() && !method->getParent()->isLambda() &&
       !clang::isa<clang::CXXConstructorDecl>(method)) {
-    StrCat(std::format("let this = self as {}", ToString(method->getThisType())),
-           token::kSemiColon);
+    StrCat(
+        std::format("let this = self as {}", ToString(method->getThisType())),
+        token::kSemiColon);
   }
 }
 
@@ -3313,8 +3315,9 @@ bool Converter::VisitCXXConstructExpr(clang::CXXConstructExpr *expr) {
     // Take suppress before recursing into the child.
     bool suppress = PushSuppressIteratorClone::take(*this);
     Convert(expr->getArg(0));
-    bool clone = ctor->isCopyConstructor() ||
-                 (ctor->isMoveConstructor() && IsUserDefinedDecl(ctor->getParent()));
+    bool clone =
+        ctor->isCopyConstructor() ||
+        (ctor->isMoveConstructor() && IsUserDefinedDecl(ctor->getParent()));
     if (clone && !suppress && !TypeIsCopyable(expr->getType())) {
       StrCat(".clone()");
     }
