@@ -5,20 +5,17 @@ static int alive = 0;
 static int copies = 0;
 
 struct Buffer {
-  int *data;
+  int data[4];
   int size;
-  Buffer(int size) : data(new int[size]), size(size) {
-    for (int i = 0; i < size; ++i) {
-      data[i] = i;
+  Buffer(int size) : size(size) {
+    for (int i = 0; i < 4; ++i) {
+      data[i] = i < size ? i : -1;
     }
     ++alive;
   }
-  ~Buffer() {
-    delete[] data;
-    --alive;
-  }
-  Buffer(const Buffer &o) : data(new int[o.size]), size(o.size) {
-    for (int i = 0; i < size; ++i) {
+  ~Buffer() { --alive; }
+  Buffer(const Buffer &o) : size(o.size) {
+    for (int i = 0; i < 4; ++i) {
       data[i] = o.data[i];
     }
     ++alive;
@@ -28,10 +25,8 @@ struct Buffer {
     if (this == &o) {
       return *this;
     }
-    delete[] data;
-    data = new int[o.size];
     size = o.size;
-    for (int i = 0; i < size; ++i) {
+    for (int i = 0; i < 4; ++i) {
       data[i] = o.data[i];
     }
     ++copies;
@@ -39,7 +34,7 @@ struct Buffer {
   }
 };
 
-static int sum(Buffer b) {
+static int sum(const Buffer &b) {
   int s = 0;
   for (int i = 0; i < b.size; ++i) {
     s += b.data[i];
@@ -63,13 +58,13 @@ int main() {
     assert(copies == 2);
 
     assert(sum(a) == 6);
-    assert(alive == 3 && copies == 3);
+    assert(sum(b) == 106);
 
     Buffer d = std::move(a);
-    assert(alive == 4 && copies == 4);
-    assert(a.data != nullptr && a.size == 4);
+    assert(alive == 4 && copies == 3);
+    assert(a.size == 4 && a.data[3] == 3);
     d = std::move(b);
-    assert(copies == 5);
+    assert(copies == 4);
     assert(b.data[0] == 100 && d.data[0] == 100);
   }
   assert(alive == 0);

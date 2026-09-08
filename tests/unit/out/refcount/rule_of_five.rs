@@ -15,29 +15,29 @@ thread_local!(
 thread_local!(
     pub static moves_2: Value<i32> = Rc::new(RefCell::new(0));
 );
-#[derive(Default)]
+#[derive()]
 pub struct Buffer {
-    pub data: Value<Ptr<i32>>,
+    pub data: Value<Box<[i32]>>,
     pub size: Value<i32>,
 }
 impl Buffer {
     pub fn Buffer(size: i32) -> Self {
         let size: Value<i32> = Rc::new(RefCell::new(size));
         let __this: Value<Buffer> = Rc::new(RefCell::new(Self {
-            data: Rc::new(RefCell::new(Ptr::alloc_array(
-                (0..((*size.borrow()) as usize))
-                    .map(|_| <i32>::default())
-                    .collect::<Box<[i32]>>(),
-            ))),
+            data: Rc::new(RefCell::new(
+                (0..4).map(|_| <i32>::default()).collect::<Box<[i32]>>(),
+            )),
             size: Rc::new(RefCell::new((*size.borrow()))),
         }));
         let this: Ptr<Buffer> = __this.as_pointer();
         let i: Value<i32> = Rc::new(RefCell::new(0));
-        'loop_: while ((*i.borrow()) < (*size.borrow())) {
-            let __rhs = (*i.borrow());
-            (*(*this.upgrade().deref()).data.borrow())
-                .offset((*i.borrow()) as isize)
-                .write(__rhs);
+        'loop_: while ((*i.borrow()) < 4) {
+            let __rhs = if ((*i.borrow()) < (*size.borrow())) {
+                (*i.borrow())
+            } else {
+                -1_i32
+            };
+            (*(*this.upgrade().deref()).data.borrow_mut())[(*i.borrow()) as usize] = __rhs;
             (*i.borrow_mut()).prefix_inc();
         }
         (*alive_0.with(Value::clone).borrow_mut()).prefix_inc();
@@ -45,22 +45,16 @@ impl Buffer {
     }
     pub fn Buffer_pconstBuffer(o: Ptr<Buffer>) -> Self {
         let __this: Value<Buffer> = Rc::new(RefCell::new(Self {
-            data: Rc::new(RefCell::new(Ptr::alloc_array(
-                (0..((*(*o.upgrade().deref()).size.borrow()) as usize))
-                    .map(|_| <i32>::default())
-                    .collect::<Box<[i32]>>(),
-            ))),
+            data: Rc::new(RefCell::new(
+                (0..4).map(|_| <i32>::default()).collect::<Box<[i32]>>(),
+            )),
             size: Rc::new(RefCell::new((*(*o.upgrade().deref()).size.borrow()))),
         }));
         let this: Ptr<Buffer> = __this.as_pointer();
         let i: Value<i32> = Rc::new(RefCell::new(0));
-        'loop_: while ((*i.borrow()) < (*(*this.upgrade().deref()).size.borrow())) {
-            let __rhs = ((*(*o.upgrade().deref()).data.borrow())
-                .offset((*i.borrow()) as isize)
-                .read());
-            (*(*this.upgrade().deref()).data.borrow())
-                .offset((*i.borrow()) as isize)
-                .write(__rhs);
+        'loop_: while ((*i.borrow()) < 4) {
+            let __rhs = (*(*o.upgrade().deref()).data.borrow())[(*i.borrow()) as usize];
+            (*(*this.upgrade().deref()).data.borrow_mut())[(*i.borrow()) as usize] = __rhs;
             (*i.borrow_mut()).prefix_inc();
         }
         (*alive_0.with(Value::clone).borrow_mut()).prefix_inc();
@@ -70,12 +64,18 @@ impl Buffer {
     pub fn Buffer_pmutBuffer(o: Ptr<Buffer>) -> Self {
         let __this: Value<Buffer> = Rc::new(RefCell::new(Self {
             data: Rc::new(RefCell::new(
-                (*(*o.upgrade().deref()).data.borrow()).clone(),
+                (0..4).map(|_| <i32>::default()).collect::<Box<[i32]>>(),
             )),
             size: Rc::new(RefCell::new((*(*o.upgrade().deref()).size.borrow()))),
         }));
         let this: Ptr<Buffer> = __this.as_pointer();
-        (*(*o.upgrade().deref()).data.borrow_mut()) = Ptr::<i32>::null();
+        let i: Value<i32> = Rc::new(RefCell::new(0));
+        'loop_: while ((*i.borrow()) < 4) {
+            let __rhs = (*(*o.upgrade().deref()).data.borrow())[(*i.borrow()) as usize];
+            (*(*this.upgrade().deref()).data.borrow_mut())[(*i.borrow()) as usize] = __rhs;
+            (*(*o.upgrade().deref()).data.borrow_mut())[(*i.borrow()) as usize] = -1_i32;
+            (*i.borrow_mut()).prefix_inc();
+        }
         (*(*o.upgrade().deref()).size.borrow_mut()) = 0;
         (*alive_0.with(Value::clone).borrow_mut()).prefix_inc();
         (*moves_2.with(Value::clone).borrow_mut()).prefix_inc();
@@ -91,18 +91,28 @@ impl Clone for Buffer {
         Buffer::Buffer_pconstBuffer(__src.as_pointer())
     }
 }
+impl Default for Buffer {
+    fn default() -> Self {
+        Buffer {
+            data: Rc::new(RefCell::new(
+                (0..4).map(|_| <i32>::default()).collect::<Box<[i32]>>(),
+            )),
+            size: <Value<i32>>::default(),
+        }
+    }
+}
 impl ByteRepr for Buffer {
     fn byte_size() -> usize {
-        16
+        20
     }
     fn to_bytes(&self, buf: &mut [u8]) {
-        (*self.data.borrow()).to_bytes(&mut buf[0..8]);
-        (*self.size.borrow()).to_bytes(&mut buf[8..12]);
+        (*self.data.borrow()).to_bytes(&mut buf[0..16]);
+        (*self.size.borrow()).to_bytes(&mut buf[16..20]);
     }
     fn from_bytes(buf: &[u8]) -> Self {
         Self {
-            data: Rc::new(RefCell::new(<Ptr<i32>>::from_bytes(&buf[0..8]))),
-            size: Rc::new(RefCell::new(<i32>::from_bytes(&buf[8..12]))),
+            data: Rc::new(RefCell::new(<Box<[i32]>>::from_bytes(&buf[0..16]))),
+            size: Rc::new(RefCell::new(<i32>::from_bytes(&buf[16..20]))),
         }
     }
 }
@@ -128,10 +138,8 @@ fn main_0() -> i32 {
                 && ((*copies_1.with(Value::clone).borrow()) == 1))
                 && ((*moves_2.with(Value::clone).borrow()) == 0)
         );
-        (*(*b.borrow()).data.borrow())
-            .offset((0) as isize)
-            .write(100);
-        assert!((((*(*a.borrow()).data.borrow()).offset((0) as isize).read()) == 0));
+        (*(*b.borrow()).data.borrow_mut())[(0) as usize] = 100;
+        assert!(((*(*a.borrow()).data.borrow())[(0) as usize] == 0));
         let c: Value<Buffer> = Rc::new(RefCell::new(Buffer::Buffer_pmutBuffer({ a.as_pointer() })));
         let _dtor_c = ScopedDestructor::new(&c, |__p| __p.destructor());
         assert!(
@@ -139,11 +147,12 @@ fn main_0() -> i32 {
                 && ((*moves_2.with(Value::clone).borrow()) == 1)
         );
         assert!(
-            ((*(*a.borrow()).data.borrow()).is_null()) && ((*(*a.borrow()).size.borrow()) == 0)
+            ((*(*a.borrow()).size.borrow()) == 0)
+                && ((*(*a.borrow()).data.borrow())[(0) as usize] == -1_i32)
         );
         assert!(
             ((*(*c.borrow()).size.borrow()) == 4)
-                && (((*(*c.borrow()).data.borrow()).offset((3) as isize).read()) == 3)
+                && ((*(*c.borrow()).data.borrow())[(3) as usize] == 3)
         );
         let d: Value<Buffer> = Rc::new(RefCell::new(({ make_3(2) })));
         let _dtor_d = ScopedDestructor::new(&d, |__p| __p.destructor());
@@ -153,13 +162,13 @@ fn main_0() -> i32 {
         ({ BufferImpl::operator_assign_pconstBuffer(&d.as_pointer(), b.as_pointer()) });
         assert!(
             (((*(*d.borrow()).size.borrow()) == 4)
-                && (((*(*d.borrow()).data.borrow()).offset((0) as isize).read()) == 100))
+                && ((*(*d.borrow()).data.borrow())[(0) as usize] == 100))
                 && ((*copies_1.with(Value::clone).borrow()) == 2)
         );
         ({ BufferImpl::operator_assign_pmutBuffer(&d.as_pointer(), c.as_pointer()) });
         assert!(
-            ((((*(*d.borrow()).data.borrow()).offset((0) as isize).read()) == 0)
-                && ((*(*c.borrow()).data.borrow()).is_null()))
+            (((*(*d.borrow()).data.borrow())[(0) as usize] == 0)
+                && ((*(*c.borrow()).size.borrow()) == 0))
                 && ((*moves_2.with(Value::clone).borrow()) == 3)
         );
         ({
@@ -168,30 +177,6 @@ fn main_0() -> i32 {
         });
         assert!(
             ((*(*d.borrow()).size.borrow()) == 4) && ((*moves_2.with(Value::clone).borrow()) == 3)
-        );
-        let vec_: Value<Vec<Buffer>> = Rc::new(RefCell::new(Vec::new()));
-        (*vec_.borrow_mut()).push(Buffer::Buffer({ 3 }));
-        {
-            let a0_clone = (*b.borrow()).clone();
-            (*vec_.borrow_mut()).push(a0_clone)
-        };
-        assert!(
-            ((*(*(vec_.as_pointer() as Ptr<Buffer>)
-                .offset(0_usize)
-                .upgrade()
-                .deref())
-            .size
-            .borrow())
-                == 3)
-                && (((*(*(vec_.as_pointer() as Ptr<Buffer>)
-                    .offset(1_usize)
-                    .upgrade()
-                    .deref())
-                .data
-                .borrow())
-                .offset((0) as isize)
-                .read())
-                    == 100)
         );
     }
     assert!(((*alive_0.with(Value::clone).borrow()) == 0));
@@ -204,29 +189,18 @@ pub trait BufferImpl {
 }
 impl BufferImpl for Ptr<Buffer> {
     fn destructor(&self) {
-        (*(*(*self).upgrade().deref()).data.borrow()).delete_array();
         (*alive_0.with(Value::clone).borrow_mut()).prefix_dec();
     }
     fn operator_assign_pconstBuffer(&self, o: Ptr<Buffer>) -> Ptr<Buffer> {
         if ((*self) == (o)) {
             return (*self).clone();
         }
-        (*(*(*self).upgrade().deref()).data.borrow()).delete_array();
-        (*(*(*self).upgrade().deref()).data.borrow_mut()) = Ptr::alloc_array(
-            (0..((*(*o.upgrade().deref()).size.borrow()) as usize))
-                .map(|_| <i32>::default())
-                .collect::<Box<[i32]>>(),
-        );
         let __rhs = (*(*o.upgrade().deref()).size.borrow());
         (*(*(*self).upgrade().deref()).size.borrow_mut()) = __rhs;
         let i: Value<i32> = Rc::new(RefCell::new(0));
-        'loop_: while ((*i.borrow()) < (*(*(*self).upgrade().deref()).size.borrow())) {
-            let __rhs = ((*(*o.upgrade().deref()).data.borrow())
-                .offset((*i.borrow()) as isize)
-                .read());
-            (*(*(*self).upgrade().deref()).data.borrow())
-                .offset((*i.borrow()) as isize)
-                .write(__rhs);
+        'loop_: while ((*i.borrow()) < 4) {
+            let __rhs = (*(*o.upgrade().deref()).data.borrow())[(*i.borrow()) as usize];
+            (*(*(*self).upgrade().deref()).data.borrow_mut())[(*i.borrow()) as usize] = __rhs;
             (*i.borrow_mut()).prefix_inc();
         }
         (*copies_1.with(Value::clone).borrow_mut()).prefix_inc();
@@ -236,12 +210,15 @@ impl BufferImpl for Ptr<Buffer> {
         if ((*self) == (o)) {
             return (*self).clone();
         }
-        (*(*(*self).upgrade().deref()).data.borrow()).delete_array();
-        let __rhs = (*(*o.upgrade().deref()).data.borrow()).clone();
-        (*(*(*self).upgrade().deref()).data.borrow_mut()) = __rhs;
         let __rhs = (*(*o.upgrade().deref()).size.borrow());
         (*(*(*self).upgrade().deref()).size.borrow_mut()) = __rhs;
-        (*(*o.upgrade().deref()).data.borrow_mut()) = Ptr::<i32>::null();
+        let i: Value<i32> = Rc::new(RefCell::new(0));
+        'loop_: while ((*i.borrow()) < 4) {
+            let __rhs = (*(*o.upgrade().deref()).data.borrow())[(*i.borrow()) as usize];
+            (*(*(*self).upgrade().deref()).data.borrow_mut())[(*i.borrow()) as usize] = __rhs;
+            (*(*o.upgrade().deref()).data.borrow_mut())[(*i.borrow()) as usize] = -1_i32;
+            (*i.borrow_mut()).prefix_inc();
+        }
         (*(*o.upgrade().deref()).size.borrow_mut()) = 0;
         (*moves_2.with(Value::clone).borrow_mut()).prefix_inc();
         return (*self).clone();

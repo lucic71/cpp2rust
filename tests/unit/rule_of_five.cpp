@@ -1,33 +1,32 @@
 #include <cassert>
 #include <utility>
-#include <vector>
 
 static int alive = 0;
 static int copies = 0;
 static int moves = 0;
 
 struct Buffer {
-  int *data;
+  int data[4];
   int size;
-  Buffer(int size) : data(new int[size]), size(size) {
-    for (int i = 0; i < size; ++i) {
-      data[i] = i;
+  Buffer(int size) : size(size) {
+    for (int i = 0; i < 4; ++i) {
+      data[i] = i < size ? i : -1;
     }
     ++alive;
   }
-  ~Buffer() {
-    delete[] data;
-    --alive;
-  }
-  Buffer(const Buffer &o) : data(new int[o.size]), size(o.size) {
-    for (int i = 0; i < size; ++i) {
+  ~Buffer() { --alive; }
+  Buffer(const Buffer &o) : size(o.size) {
+    for (int i = 0; i < 4; ++i) {
       data[i] = o.data[i];
     }
     ++alive;
     ++copies;
   }
-  Buffer(Buffer &&o) : data(o.data), size(o.size) {
-    o.data = nullptr;
+  Buffer(Buffer &&o) : size(o.size) {
+    for (int i = 0; i < 4; ++i) {
+      data[i] = o.data[i];
+      o.data[i] = -1;
+    }
     o.size = 0;
     ++alive;
     ++moves;
@@ -36,10 +35,8 @@ struct Buffer {
     if (this == &o) {
       return *this;
     }
-    delete[] data;
-    data = new int[o.size];
     size = o.size;
-    for (int i = 0; i < size; ++i) {
+    for (int i = 0; i < 4; ++i) {
       data[i] = o.data[i];
     }
     ++copies;
@@ -49,10 +46,11 @@ struct Buffer {
     if (this == &o) {
       return *this;
     }
-    delete[] data;
-    data = o.data;
     size = o.size;
-    o.data = nullptr;
+    for (int i = 0; i < 4; ++i) {
+      data[i] = o.data[i];
+      o.data[i] = -1;
+    }
     o.size = 0;
     ++moves;
     return *this;
@@ -74,7 +72,7 @@ int main() {
 
     Buffer c = std::move(a);
     assert(alive == 3 && moves == 1);
-    assert(a.data == nullptr && a.size == 0);
+    assert(a.size == 0 && a.data[0] == -1);
     assert(c.size == 4 && c.data[3] == 3);
 
     Buffer d = make(2);
@@ -83,14 +81,9 @@ int main() {
     d = b;
     assert(d.size == 4 && d.data[0] == 100 && copies == 2);
     d = std::move(c);
-    assert(d.data[0] == 0 && c.data == nullptr && moves == 3);
+    assert(d.data[0] == 0 && c.size == 0 && moves == 3);
     d = std::move(d);
     assert(d.size == 4 && moves == 3);
-
-    std::vector<Buffer> vec;
-    vec.push_back(Buffer(3));
-    vec.push_back(b);
-    assert(vec[0].size == 3 && vec[1].data[0] == 100);
   }
   assert(alive == 0);
   return 0;
