@@ -79,7 +79,7 @@ impl DefaultCopyUserMove {
     }
 }
 #[repr(C)]
-#[derive(Copy, Clone, Default)]
+#[derive(Default)]
 pub struct UserCopyDefaultMove {
     pub v: i32,
 }
@@ -102,6 +102,15 @@ impl UserCopyDefaultMove {
     ) -> *mut UserCopyDefaultMove {
         self.v = (((*o).v) + (100));
         return &mut (*self) as *mut UserCopyDefaultMove;
+    }
+}
+impl Clone for UserCopyDefaultMove {
+    fn clone(&self) -> Self {
+        unsafe {
+            UserCopyDefaultMove::UserCopyDefaultMove_pconstUserCopyDefaultMove(
+                self as *const UserCopyDefaultMove,
+            )
+        }
     }
 }
 pub unsafe fn same_0(a: *const Explicit, b: *const Explicit) -> bool {
@@ -186,7 +195,7 @@ unsafe fn main_0() -> i32 {
         UserCopyDefaultMove::UserCopyDefaultMove_pconstUserCopyDefaultMove({
             &u as *const UserCopyDefaultMove
         });
-    let mut u2: UserCopyDefaultMove = u;
+    let mut u2: UserCopyDefaultMove = u.clone();
     assert!((((u1.v) == (108)) && ((u2.v) == (8))) && ((u.v) == (8)));
     let mut u3: UserCopyDefaultMove = UserCopyDefaultMove::UserCopyDefaultMove({ 1 });
     let mut u4: UserCopyDefaultMove = UserCopyDefaultMove::UserCopyDefaultMove({ 1 });

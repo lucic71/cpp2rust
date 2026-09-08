@@ -8,7 +8,7 @@ use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 pub static mut copies_0: i32 = unsafe { 0 };
 #[repr(C)]
-#[derive(Copy, Clone, Default)]
+#[derive(Default)]
 pub struct Counted {
     pub v: i32,
 }
@@ -23,8 +23,13 @@ impl Counted {
         this
     }
 }
+impl Clone for Counted {
+    fn clone(&self) -> Self {
+        unsafe { Counted::Counted_pconstCounted(self as *const Counted) }
+    }
+}
 #[repr(C)]
-#[derive(Copy, Clone)]
+#[derive()]
 pub struct NonConst {
     pub mark: i32,
 }
@@ -46,13 +51,18 @@ impl NonConst {
         this
     }
 }
+impl Clone for NonConst {
+    fn clone(&self) -> Self {
+        unsafe { NonConst::NonConst_pmutNonConst(self as *const NonConst) }
+    }
+}
 impl Default for NonConst {
     fn default() -> Self {
         unsafe { NonConst::NonConst() }
     }
 }
 #[repr(C)]
-#[derive(Copy, Clone, Default)]
+#[derive(Default)]
 pub struct WithDefault {
     pub v: i32,
     pub tag: i32,
@@ -74,8 +84,13 @@ impl WithDefault {
         this
     }
 }
+impl Clone for WithDefault {
+    fn clone(&self) -> Self {
+        unsafe { WithDefault::WithDefault_pconstWithDefault_i32(self as *const WithDefault) }
+    }
+}
 #[repr(C)]
-#[derive(Copy, Clone)]
+#[derive(Clone)]
 pub struct Holder {
     pub c: Counted,
     pub arr: [Counted; 2],
@@ -84,7 +99,7 @@ impl Default for Holder {
     fn default() -> Self {
         Holder {
             c: <Counted>::default(),
-            arr: [<Counted>::default(); 2],
+            arr: std::array::from_fn::<_, 2, _>(|_| <Counted>::default()),
         }
     }
 }
@@ -126,7 +141,7 @@ unsafe fn main_0() -> i32 {
         c: Counted::Counted({ 8 }),
         arr: [Counted::Counted({ 9 }), Counted::Counted({ 10 })],
     };
-    let mut hold2: Holder = hold;
+    let mut hold2: Holder = hold.clone();
     assert!(
         (((hold2.c.v) == (8)) && ((hold2.arr[(0) as usize].v) == (9)))
             && ((hold2.arr[(1) as usize].v) == (10))

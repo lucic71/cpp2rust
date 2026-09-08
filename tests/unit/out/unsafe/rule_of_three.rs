@@ -9,7 +9,7 @@ use std::rc::Rc;
 pub static mut alive_0: i32 = unsafe { 0 };
 pub static mut copies_1: i32 = unsafe { 0 };
 #[repr(C)]
-#[derive(Clone, Default)]
+#[derive(Default)]
 pub struct Buffer {
     pub data: *mut i32,
     pub size: i32,
@@ -78,6 +78,11 @@ impl Buffer {
         }
         copies_1.prefix_inc();
         return &mut (*self) as *mut Buffer;
+    }
+}
+impl Clone for Buffer {
+    fn clone(&self) -> Self {
+        unsafe { Buffer::Buffer_pconstBuffer(self as *const Buffer) }
     }
 }
 pub unsafe fn sum_2(mut b: Buffer) -> i32 {

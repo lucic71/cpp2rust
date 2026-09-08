@@ -33,12 +33,8 @@ impl Counted {
 }
 impl Clone for Counted {
     fn clone(&self) -> Self {
-        let __this: Value<Counted> = Rc::new(RefCell::new(Self {
-            v: Rc::new(RefCell::new((*(*o.upgrade().deref()).v.borrow()))),
-        }));
-        let this: Ptr<Counted> = __this.as_pointer();
-        (*copies_0.with(Value::clone).borrow_mut()).prefix_inc();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+        let __src: Value<Counted> = Rc::new(RefCell::new(Counted { v: self.v.clone() }));
+        Counted::Counted_pconstCounted(__src.as_pointer())
     }
 }
 impl ByteRepr for Counted {
@@ -83,11 +79,10 @@ impl NonConst {
 }
 impl Clone for NonConst {
     fn clone(&self) -> Self {
-        let __this: Value<NonConst> = Rc::new(RefCell::new(Self {
-            mark: Rc::new(RefCell::new(((*(*o.upgrade().deref()).mark.borrow()) + 1))),
+        let __src: Value<NonConst> = Rc::new(RefCell::new(NonConst {
+            mark: self.mark.clone(),
         }));
-        let this: Ptr<NonConst> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+        NonConst::NonConst_pmutNonConst(__src.as_pointer())
     }
 }
 impl Default for NonConst {
@@ -135,13 +130,11 @@ impl WithDefault {
 }
 impl Clone for WithDefault {
     fn clone(&self) -> Self {
-        let tag: Value<i32> = Rc::new(RefCell::new(tag.unwrap_or(7)));
-        let __this: Value<WithDefault> = Rc::new(RefCell::new(Self {
-            v: Rc::new(RefCell::new((*(*o.upgrade().deref()).v.borrow()))),
-            tag: Rc::new(RefCell::new((*tag.borrow()))),
+        let __src: Value<WithDefault> = Rc::new(RefCell::new(WithDefault {
+            v: self.v.clone(),
+            tag: self.tag.clone(),
         }));
-        let this: Ptr<WithDefault> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+        WithDefault::WithDefault_pconstWithDefault_i32(__src.as_pointer())
     }
 }
 impl ByteRepr for WithDefault {

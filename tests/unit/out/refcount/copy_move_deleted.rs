@@ -143,7 +143,7 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     let a: Value<NoCopy> = Rc::new(RefCell::new(NoCopy::NoCopy({ 1 })));
-    let b: Value<NoCopy> = Rc::new(RefCell::new((*a.borrow_mut())));
+    let b: Value<NoCopy> = Rc::new(RefCell::new(NoCopy::NoCopy_pmutNoCopy({ a.as_pointer() })));
     assert!(((*(*b.borrow()).v.borrow()) == 1) && ((*(*a.borrow()).v.borrow()) == 0));
     ({ NoCopyImpl::operator_assign_pmutNoCopy(&a.as_pointer(), b.as_pointer()) });
     assert!(((*(*a.borrow()).v.borrow()) == 1) && ((*(*b.borrow()).v.borrow()) == 0));
@@ -151,7 +151,9 @@ fn main_0() -> i32 {
     assert!(((*(*a.borrow()).v.borrow()) == 2));
     let p: Value<PrivateCopy> = Rc::new(RefCell::new(PrivateCopy::PrivateCopy()));
     (*(*p.borrow()).v.borrow_mut()) = 3;
-    let q: Value<PrivateCopy> = Rc::new(RefCell::new((*p.borrow_mut())));
+    let q: Value<PrivateCopy> = Rc::new(RefCell::new(PrivateCopy::PrivateCopy_pmutPrivateCopy({
+        p.as_pointer()
+    })));
     assert!(((*(*q.borrow()).v.borrow()) == 3) && ((*(*p.borrow()).v.borrow()) == 0));
     ({ PrivateCopyImpl::operator_assign_pmutPrivateCopy(&p.as_pointer(), q.as_pointer()) });
     assert!(((*(*p.borrow()).v.borrow()) == 3) && ((*(*q.borrow()).v.borrow()) == 0));
@@ -164,7 +166,7 @@ fn main_0() -> i32 {
         inner: Rc::new(RefCell::new(NoCopy::NoCopy({ 6 }))),
         tag: Rc::new(RefCell::new(7)),
     }));
-    let d: Value<Container> = Rc::new(RefCell::new((*c.borrow_mut())));
+    let d: Value<Container> = Rc::new(RefCell::new((*c.borrow())));
     assert!(
         (((*(*(*d.borrow()).inner.borrow()).v.borrow()) == 6)
             && ((*(*d.borrow()).tag.borrow()) == 7))

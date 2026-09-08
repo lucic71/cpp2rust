@@ -75,7 +75,7 @@ impl ByteRepr for ConstMoveAssign {
 pub fn make_0(v: i32) -> MoveOnly {
     let v: Value<i32> = Rc::new(RefCell::new(v));
     let m: Value<MoveOnly> = Rc::new(RefCell::new(MoveOnly::MoveOnly({ (*v.borrow()) })));
-    return (*m.borrow_mut());
+    return MoveOnly::MoveOnly_pmutMoveOnly({ m.as_pointer() });
 }
 pub fn main() {
     std::process::exit(main_0());

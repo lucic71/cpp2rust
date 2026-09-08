@@ -84,28 +84,11 @@ impl Buffer {
 }
 impl Clone for Buffer {
     fn clone(&self) -> Self {
-        let __this: Value<Buffer> = Rc::new(RefCell::new(Self {
-            data: Rc::new(RefCell::new(Ptr::alloc_array(
-                (0..((*(*o.upgrade().deref()).size.borrow()) as usize))
-                    .map(|_| <i32>::default())
-                    .collect::<Box<[i32]>>(),
-            ))),
-            size: Rc::new(RefCell::new((*(*o.upgrade().deref()).size.borrow()))),
+        let __src: Value<Buffer> = Rc::new(RefCell::new(Buffer {
+            data: self.data.clone(),
+            size: self.size.clone(),
         }));
-        let this: Ptr<Buffer> = __this.as_pointer();
-        let i: Value<i32> = Rc::new(RefCell::new(0));
-        'loop_: while ((*i.borrow()) < (*(*self).size.borrow())) {
-            let __rhs = ((*(*o.upgrade().deref()).data.borrow())
-                .offset((*i.borrow()) as isize)
-                .read());
-            (*(*self).data.borrow())
-                .offset((*i.borrow()) as isize)
-                .write(__rhs);
-            (*i.borrow_mut()).prefix_inc();
-        }
-        (*alive_0.with(Value::clone).borrow_mut()).prefix_inc();
-        (*copies_1.with(Value::clone).borrow_mut()).prefix_inc();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+        Buffer::Buffer_pconstBuffer(__src.as_pointer())
     }
 }
 impl ByteRepr for Buffer {
@@ -127,7 +110,7 @@ pub fn make_3(size: i32) -> Buffer {
     let size: Value<i32> = Rc::new(RefCell::new(size));
     let b: Value<Buffer> = Rc::new(RefCell::new(Buffer::Buffer({ (*size.borrow()) })));
     let _dtor_b = ScopedDestructor::new(&b, |__p| __p.destructor());
-    return (*b.borrow_mut());
+    return Buffer::Buffer_pmutBuffer({ b.as_pointer() });
 }
 pub fn main() {
     std::process::exit(main_0());
@@ -149,7 +132,7 @@ fn main_0() -> i32 {
             .offset((0) as isize)
             .write(100);
         assert!((((*(*a.borrow()).data.borrow()).offset((0) as isize).read()) == 0));
-        let c: Value<Buffer> = Rc::new(RefCell::new((*a.borrow_mut())));
+        let c: Value<Buffer> = Rc::new(RefCell::new(Buffer::Buffer_pmutBuffer({ a.as_pointer() })));
         let _dtor_c = ScopedDestructor::new(&c, |__p| __p.destructor());
         assert!(
             ((*alive_0.with(Value::clone).borrow()) == 3)

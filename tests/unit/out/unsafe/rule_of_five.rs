@@ -10,7 +10,7 @@ pub static mut alive_0: i32 = unsafe { 0 };
 pub static mut copies_1: i32 = unsafe { 0 };
 pub static mut moves_2: i32 = unsafe { 0 };
 #[repr(C)]
-#[derive(Clone, Default)]
+#[derive(Default)]
 pub struct Buffer {
     pub data: *mut i32,
     pub size: i32,
@@ -106,6 +106,11 @@ impl Buffer {
         (*o).size = 0;
         moves_2.prefix_inc();
         return &mut (*self) as *mut Buffer;
+    }
+}
+impl Clone for Buffer {
+    fn clone(&self) -> Self {
+        unsafe { Buffer::Buffer_pconstBuffer(self as *const Buffer) }
     }
 }
 pub unsafe fn make_3(mut size: i32) -> Buffer {

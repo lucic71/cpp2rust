@@ -203,11 +203,9 @@ impl UserCopyDefaultMove {
 }
 impl Clone for UserCopyDefaultMove {
     fn clone(&self) -> Self {
-        let __this: Value<UserCopyDefaultMove> = Rc::new(RefCell::new(Self {
-            v: Rc::new(RefCell::new(((*(*o.upgrade().deref()).v.borrow()) + 100))),
-        }));
-        let this: Ptr<UserCopyDefaultMove> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+        let __src: Value<UserCopyDefaultMove> =
+            Rc::new(RefCell::new(UserCopyDefaultMove { v: self.v.clone() }));
+        UserCopyDefaultMove::UserCopyDefaultMove_pconstUserCopyDefaultMove(__src.as_pointer())
     }
 }
 impl ByteRepr for UserCopyDefaultMove {
@@ -248,7 +246,7 @@ fn main_0() -> i32 {
     let _dtor_b = ScopedDestructor::new(&b, |__p| __p.destructor());
     let c: Value<Explicit> = Rc::new(RefCell::new((*a.borrow()).clone()));
     let _dtor_c = ScopedDestructor::new(&c, |__p| __p.destructor());
-    let d: Value<Explicit> = Rc::new(RefCell::new((*a.borrow_mut())));
+    let d: Value<Explicit> = Rc::new(RefCell::new((*a.borrow())));
     let _dtor_d = ScopedDestructor::new(&d, |__p| __p.destructor());
     assert!(
         (({ same_0(b.as_pointer(), a.as_pointer(),) })
@@ -283,7 +281,7 @@ fn main_0() -> i32 {
         arr: Rc::new(RefCell::new(Box::new([5, 6]))),
     }));
     let j: Value<Implicit> = Rc::new(RefCell::new((*i.borrow()).clone()));
-    let k: Value<Implicit> = Rc::new(RefCell::new((*i.borrow_mut())));
+    let k: Value<Implicit> = Rc::new(RefCell::new((*i.borrow())));
     assert!(
         (((*(*j.borrow()).v.borrow()) == 5)
             && ((*(*(*j.borrow()).inner.borrow()).x.borrow()) == 50))
@@ -330,7 +328,9 @@ fn main_0() -> i32 {
             7
         })));
     let m1: Value<DefaultCopyUserMove> = Rc::new(RefCell::new((*m.borrow()).clone()));
-    let m2: Value<DefaultCopyUserMove> = Rc::new(RefCell::new((*m.borrow_mut())));
+    let m2: Value<DefaultCopyUserMove> = Rc::new(RefCell::new(
+        DefaultCopyUserMove::DefaultCopyUserMove_pmutDefaultCopyUserMove({ m.as_pointer() }),
+    ));
     assert!(
         (((*(*m1.borrow()).v.borrow()) == 7) && ((*(*m2.borrow()).v.borrow()) == 7))
             && ((*(*m.borrow()).v.borrow()) == 0)
@@ -361,7 +361,7 @@ fn main_0() -> i32 {
     let u1: Value<UserCopyDefaultMove> = Rc::new(RefCell::new(
         UserCopyDefaultMove::UserCopyDefaultMove_pconstUserCopyDefaultMove({ u.as_pointer() }),
     ));
-    let u2: Value<UserCopyDefaultMove> = Rc::new(RefCell::new((*u.borrow_mut())));
+    let u2: Value<UserCopyDefaultMove> = Rc::new(RefCell::new((*u.borrow())));
     assert!(
         (((*(*u1.borrow()).v.borrow()) == 108) && ((*(*u2.borrow()).v.borrow()) == 8))
             && ((*(*u.borrow()).v.borrow()) == 8)

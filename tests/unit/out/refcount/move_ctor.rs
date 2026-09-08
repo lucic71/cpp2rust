@@ -93,26 +93,32 @@ pub fn by_value_0(m: MoveOnly) -> i32 {
 pub fn make_1(v: i32) -> MoveOnly {
     let v: Value<i32> = Rc::new(RefCell::new(v));
     let m: Value<MoveOnly> = Rc::new(RefCell::new(MoveOnly::MoveOnly({ (*v.borrow()) })));
-    return (*m.borrow_mut());
+    return MoveOnly::MoveOnly_pmutMoveOnly({ m.as_pointer() });
 }
 pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
     let a: Value<MoveOnly> = Rc::new(RefCell::new(MoveOnly::MoveOnly({ 1 })));
-    let b: Value<MoveOnly> = Rc::new(RefCell::new((*a.borrow_mut())));
+    let b: Value<MoveOnly> = Rc::new(RefCell::new(MoveOnly::MoveOnly_pmutMoveOnly({
+        a.as_pointer()
+    })));
     assert!(((*(*b.borrow()).v.borrow()) == 1));
     assert!(((*(*a.borrow()).v.borrow()) == 0));
-    let c: Value<MoveOnly> = Rc::new(RefCell::new((*b.borrow_mut())));
+    let c: Value<MoveOnly> = Rc::new(RefCell::new(MoveOnly::MoveOnly_pmutMoveOnly({
+        b.as_pointer()
+    })));
     assert!(((*(*c.borrow()).v.borrow()) == 1));
     assert!(((*(*b.borrow()).v.borrow()) == 0));
-    let d: Value<MoveOnly> = Rc::new(RefCell::new((*c.borrow_mut())));
+    let d: Value<MoveOnly> = Rc::new(RefCell::new(MoveOnly::MoveOnly_pmutMoveOnly({
+        c.as_pointer()
+    })));
     assert!(((*(*d.borrow()).v.borrow()) == 1));
     assert!(((*(*c.borrow()).v.borrow()) == 0));
     let e: Value<MoveOnly> = Rc::new(RefCell::new(({ make_1(5) })));
     assert!(((*(*e.borrow()).v.borrow()) == 5));
     assert!((({ by_value_0(MoveOnly::MoveOnly({ 6 },),) }) == 6));
-    assert!((({ by_value_0((*e.borrow_mut()),) }) == 5));
+    assert!((({ by_value_0(MoveOnly::MoveOnly_pmutMoveOnly({ e.as_pointer() },),) }) == 5));
     assert!(((*(*e.borrow()).v.borrow()) == 0));
     let vec_: Value<Vec<MoveOnly>> = Rc::new(RefCell::new(Vec::new()));
     (*vec_.borrow_mut()).push(MoveOnly::MoveOnly({ 7 }));
@@ -136,9 +142,13 @@ fn main_0() -> i32 {
     );
     assert!(((*(*f.borrow()).v.borrow()) == 0));
     let m: Value<ConstMove> = Rc::new(RefCell::new(ConstMove::ConstMove()));
-    let m1: Value<ConstMove> = Rc::new(RefCell::new((*m.borrow_mut())));
+    let m1: Value<ConstMove> = Rc::new(RefCell::new(ConstMove::ConstMove_pmutConstMove({
+        m.as_pointer()
+    })));
     let cm: Value<ConstMove> = Rc::new(RefCell::new(ConstMove::ConstMove()));
-    let m2: Value<ConstMove> = Rc::new(RefCell::new((*cm.borrow_mut())));
+    let m2: Value<ConstMove> = Rc::new(RefCell::new(ConstMove::ConstMove_pconstConstMove({
+        cm.as_pointer()
+    })));
     assert!(((*(*m1.borrow()).mark.borrow()) == 1));
     assert!(((*(*m2.borrow()).mark.borrow()) == 10));
     return 0;

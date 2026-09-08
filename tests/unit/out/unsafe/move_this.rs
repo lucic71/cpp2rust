@@ -7,7 +7,7 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 #[repr(C)]
-#[derive(Copy, Clone, Default)]
+#[derive(Default)]
 pub struct Chain {
     pub v: i32,
 }
@@ -45,6 +45,11 @@ impl Chain {
     }
     pub unsafe fn self_(&mut self) -> *mut Chain {
         return self;
+    }
+}
+impl Clone for Chain {
+    fn clone(&self) -> Self {
+        unsafe { Chain::Chain_pconstChain(self as *const Chain) }
     }
 }
 pub unsafe fn consume_0(mut c: Chain) -> i32 {

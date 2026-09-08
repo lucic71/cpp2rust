@@ -37,11 +37,8 @@ impl Chain {
 }
 impl Clone for Chain {
     fn clone(&self) -> Self {
-        let __this: Value<Chain> = Rc::new(RefCell::new(Self {
-            v: Rc::new(RefCell::new(((*(*o.upgrade().deref()).v.borrow()) + 100))),
-        }));
-        let this: Ptr<Chain> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+        let __src: Value<Chain> = Rc::new(RefCell::new(Chain { v: self.v.clone() }));
+        Chain::Chain_pconstChain(__src.as_pointer())
     }
 }
 impl ByteRepr for Chain {
