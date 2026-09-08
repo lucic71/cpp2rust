@@ -148,6 +148,7 @@ public:
   virtual void ConvertCXXConstructorBody(clang::CXXConstructorDecl *decl);
   void EmitConstructorFieldInits(clang::CXXConstructorDecl *decl);
 
+  std::string GetCtorName(clang::CXXConstructorDecl *decl);
   virtual bool VisitCXXConstructorDecl(clang::CXXConstructorDecl *decl);
 
   virtual bool VisitFieldDecl(clang::FieldDecl *decl);

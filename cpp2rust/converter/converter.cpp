@@ -1021,23 +1021,28 @@ std::string Converter::GetSelfMaybeWithMut(const clang::CXXMethodDecl *decl) {
   return decl->isConst() ? "&self" : "&mut self";
 }
 
+std::string Converter::GetCtorName(clang::CXXConstructorDecl *decl) {
+  if (decl->isCopyOrMoveConstructor()) {
+    return GetOverloadedFunctionName(decl);
+  }
+  return GetRecordName(decl->getParent()) +
+         (GetNumberOfConvertingCtors(decl->getParent()) != 1
+              ? std::to_string(GetCtorIndex(decl))
+              : "");
+}
+
 bool Converter::VisitCXXConstructorDecl(clang::CXXConstructorDecl *decl) {
   if (decl->isOutOfLine() || decl->isImplicit()) {
     return false;
   }
   PushCurrFunction push_fn(*this, decl);
 
-  if (decl->isCopyOrMoveConstructor()) {
-    // FIXME: improve error handling
-    assert(0 && "user-defined copy or move constructor are not supported");
+  if (decl->isCopyOrMoveConstructor() && !decl->doesThisDeclarationHaveABody()) {
+    return false;
   }
 
   ConvertFunctionQualifiers(decl);
-  auto ctor_name = GetRecordName(decl->getParent()) +
-                   (GetNumberOfConvertingCtors(decl->getParent()) != 1
-                        ? std::to_string(GetCtorIndex(decl))
-                        : "");
-  StrCat(keyword_unsafe_, keyword::kFn, ctor_name);
+  StrCat(keyword_unsafe_, keyword::kFn, GetCtorName(decl));
   {
     PushParen paren(*this);
     ConvertFunctionParameters(decl);
