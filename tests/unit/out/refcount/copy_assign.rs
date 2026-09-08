@@ -320,6 +320,6 @@ impl RefQualifiedImpl for Ptr<RefQualified> {
     fn operator_assign_pconstRefQualified_rref(&self, o: Ptr<RefQualified>) -> Ptr<RefQualified> {
         let __rhs = ((*(*o.upgrade().deref()).mark.borrow()) + 10);
         (*(*(*self).upgrade().deref()).mark.borrow_mut()) = __rhs;
-        return (*self);
+        return (*self).clone();
     }
 }

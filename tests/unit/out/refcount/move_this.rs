@@ -120,15 +120,15 @@ impl ChainImpl for Ptr<Chain> {
     fn add_i32_rref(&self, n: i32) -> Ptr<Chain> {
         let n: Value<i32> = Rc::new(RefCell::new(n));
         (*(*(*self).upgrade().deref()).v.borrow_mut()) += (*n.borrow());
-        return (*self);
+        return (*self).clone();
     }
     fn take(&self) -> Chain {
-        return Chain::Chain_pmutChain({ (*self) });
+        return Chain::Chain_pmutChain({ (*self).clone() });
     }
     fn copy(&self) -> Chain {
         return Chain::Chain_pconstChain({ (*self).clone() });
     }
     fn self_(&self) -> Ptr<Chain> {
-        return (*self);
+        return (*self).clone();
     }
 }
