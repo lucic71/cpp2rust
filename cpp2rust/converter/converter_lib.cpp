@@ -768,6 +768,9 @@ bool RecordNeedsDestruction(const clang::CXXRecordDecl *decl) {
 }
 
 bool IsEmittableMethod(clang::CXXMethodDecl *method) {
+  if (method->isDeleted()) {
+    return false;
+  }
   if (clang::isa<clang::CXXDestructorDecl>(method)) {
     return GetUserDefinedDestructor(method->getParent()) &&
            method->isThisDeclarationADefinition();
@@ -789,7 +792,8 @@ bool IsEmittableMethod(clang::CXXMethodDecl *method) {
 }
 
 bool IsMethodOnPtr(const clang::CXXMethodDecl *method) {
-  if (method->isImplicit() || method->isStatic() || method->isVirtual() ||
+  if (method->isImplicit() || method->isDeleted() || method->isStatic() ||
+      method->isVirtual() ||
       clang::isa<clang::CXXConstructorDecl>(method)) {
     return false;
   }
