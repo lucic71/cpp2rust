@@ -72,15 +72,11 @@ unsafe fn main_0() -> i32 {
     let mut a: Chain = Chain::Chain({ 1 });
     (unsafe { Chain::add_i32_lref(&mut (*(unsafe { Chain::add_i32_lref(&mut a, 1) })), 1) });
     assert!(((a.v) == (3)));
+    let mut b0: Chain = Chain::Chain({ 5 });
     let mut b: Chain = Chain::Chain_pmutChain({
-        (unsafe {
-            Chain::add_i32_rref(
-                &mut (*(unsafe { Chain::add_i32_rref(&mut Chain::Chain({ 5 }), 1) })),
-                1,
-            )
-        })
+        (unsafe { Chain::add_i32_rref(&mut (*(unsafe { Chain::add_i32_rref(&mut b0, 1) })), 1) })
     });
-    assert!(((b.v) == (8)));
+    assert!(((b.v) == (8)) && ((b0.v) == (0)));
     let mut c: Chain = (unsafe { Chain::take(&mut Chain::Chain({ 10 })) });
     assert!(((c.v) == (11)));
     let mut d: Chain = (unsafe { Chain::copy(&c) });

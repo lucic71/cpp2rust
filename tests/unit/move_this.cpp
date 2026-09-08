@@ -27,8 +27,9 @@ int main() {
   a.add(1).add(1);
   assert(a.v == 3);
 
-  Chain b = Chain(5).add(1).add(1);
-  assert(b.v == 8);
+  Chain b0(5);
+  Chain b = std::move(b0).add(1).add(1);
+  assert(b.v == 8 && b0.v == 0);
 
   Chain c = Chain(10).take();
   assert(c.v == 11);

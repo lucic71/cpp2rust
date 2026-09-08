@@ -65,13 +65,13 @@ fn main_0() -> i32 {
     let a: Value<Chain> = Rc::new(RefCell::new(Chain::Chain({ 1 })));
     ({ ChainImpl::add_i32_lref(&({ ChainImpl::add_i32_lref(&a.as_pointer(), 1) }), 1) });
     assert!(((*(*a.borrow()).v.borrow()) == 3));
+    let b0: Value<Chain> = Rc::new(RefCell::new(Chain::Chain({ 5 })));
     let b: Value<Chain> = Rc::new(RefCell::new(Chain::Chain_pmutChain({
-        let __tmp_0: Value<Chain> = Rc::new(RefCell::new(Chain::Chain({ 5 })));
-        ({ ChainImpl::add_i32_rref(&({ ChainImpl::add_i32_rref(&__tmp_0.as_pointer(), 1) }), 1) })
+        ({ ChainImpl::add_i32_rref(&({ ChainImpl::add_i32_rref(&b0.as_pointer(), 1) }), 1) })
     })));
-    assert!(((*(*b.borrow()).v.borrow()) == 8));
-    let __tmp_1: Value<Chain> = Rc::new(RefCell::new(Chain::Chain({ 10 })));
-    let c: Value<Chain> = Rc::new(RefCell::new(({ ChainImpl::take(&__tmp_1.as_pointer()) })));
+    assert!(((*(*b.borrow()).v.borrow()) == 8) && ((*(*b0.borrow()).v.borrow()) == 0));
+    let __tmp_0: Value<Chain> = Rc::new(RefCell::new(Chain::Chain({ 10 })));
+    let c: Value<Chain> = Rc::new(RefCell::new(({ ChainImpl::take(&__tmp_0.as_pointer()) })));
     assert!(((*(*c.borrow()).v.borrow()) == 11));
     let d: Value<Chain> = Rc::new(RefCell::new(({ ChainImpl::copy(&c.as_pointer()) })));
     assert!(((*(*d.borrow()).v.borrow()) == 111) && ((*(*c.borrow()).v.borrow()) == 11));
