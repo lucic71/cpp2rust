@@ -272,7 +272,8 @@ bool IsUserCopyOrMoveConstructor(const clang::CXXConstructorDecl *ctor) {
 }
 
 bool IsRValueConvertingConstructor(const clang::CXXConstructorDecl *ctor) {
-  return ctor->isConvertingConstructor(false) && ctor->getNumParams() == 1 &&
+  return !ctor->isCopyOrMoveConstructor() &&
+         ctor->isConvertingConstructor(false) && ctor->getNumParams() == 1 &&
          ctor->getParamDecl(0)->getType()->isRValueReferenceType();
 }
 
