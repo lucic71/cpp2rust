@@ -13,21 +13,24 @@ pub struct MoveOnly {
 }
 impl MoveOnly {
     pub unsafe fn MoveOnly(mut v: i32) -> Self {
-        let mut this = Self { v: v };
-        this
+        let mut __this = Self { v: v };
+        let this = &raw mut __this;
+        __this
     }
     pub unsafe fn MoveOnly_pmutMoveOnly(o: *mut MoveOnly) -> Self {
-        let mut this = Self { v: (*o).v };
+        let mut __this = Self { v: (*o).v };
+        let this = &raw mut __this;
         (*o).v = 0;
-        this
+        __this
     }
     pub unsafe fn operator_assign_pmutMoveOnly(&mut self, o: *mut MoveOnly) -> *mut MoveOnly {
-        if ((self) == (o)) {
-            return &mut (*self) as *mut MoveOnly;
+        let this = self as *mut MoveOnly;
+        if ((this) == (o)) {
+            return &mut (*this) as *mut MoveOnly;
         }
-        self.v = (*o).v;
+        (*this).v = (*o).v;
         (*o).v = 0;
-        return &mut (*self) as *mut MoveOnly;
+        return &mut (*this) as *mut MoveOnly;
     }
 }
 #[repr(C)]
@@ -37,22 +40,25 @@ pub struct ConstMoveAssign {
 }
 impl ConstMoveAssign {
     pub unsafe fn ConstMoveAssign() -> Self {
-        let mut this = Self { mark: 0 };
-        this
+        let mut __this = Self { mark: 0 };
+        let this = &raw mut __this;
+        __this
     }
     pub unsafe fn operator_assign_pmutConstMoveAssign(
         &mut self,
         o: *mut ConstMoveAssign,
     ) -> *mut ConstMoveAssign {
-        self.mark = (((*o).mark) + (1));
-        return &mut (*self) as *mut ConstMoveAssign;
+        let this = self as *mut ConstMoveAssign;
+        (*this).mark = (((*o).mark) + (1));
+        return &mut (*this) as *mut ConstMoveAssign;
     }
     pub unsafe fn operator_assign_pconstConstMoveAssign(
         &mut self,
         o: *const ConstMoveAssign,
     ) -> *mut ConstMoveAssign {
-        self.mark = (((*o).mark) + (10));
-        return &mut (*self) as *mut ConstMoveAssign;
+        let this = self as *mut ConstMoveAssign;
+        (*this).mark = (((*o).mark) + (10));
+        return &mut (*this) as *mut ConstMoveAssign;
     }
 }
 impl Default for ConstMoveAssign {

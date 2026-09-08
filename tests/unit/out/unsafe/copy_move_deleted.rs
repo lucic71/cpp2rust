@@ -13,18 +13,21 @@ pub struct NoCopy {
 }
 impl NoCopy {
     pub unsafe fn NoCopy(mut v: i32) -> Self {
-        let mut this = Self { v: v };
-        this
+        let mut __this = Self { v: v };
+        let this = &raw mut __this;
+        __this
     }
     pub unsafe fn NoCopy_pmutNoCopy(o: *mut NoCopy) -> Self {
-        let mut this = Self { v: (*o).v };
+        let mut __this = Self { v: (*o).v };
+        let this = &raw mut __this;
         (*o).v = 0;
-        this
+        __this
     }
     pub unsafe fn operator_assign_pmutNoCopy(&mut self, o: *mut NoCopy) -> *mut NoCopy {
-        self.v = (*o).v;
+        let this = self as *mut NoCopy;
+        (*this).v = (*o).v;
         (*o).v = 0;
-        return &mut (*self) as *mut NoCopy;
+        return &mut (*this) as *mut NoCopy;
     }
 }
 #[repr(C)]
@@ -34,21 +37,24 @@ pub struct PrivateCopy {
 }
 impl PrivateCopy {
     pub unsafe fn PrivateCopy() -> Self {
-        let mut this = Self { v: 0 };
-        this
+        let mut __this = Self { v: 0 };
+        let this = &raw mut __this;
+        __this
     }
     pub unsafe fn PrivateCopy_pmutPrivateCopy(o: *mut PrivateCopy) -> Self {
-        let mut this = Self { v: (*o).v };
+        let mut __this = Self { v: (*o).v };
+        let this = &raw mut __this;
         (*o).v = 0;
-        this
+        __this
     }
     pub unsafe fn operator_assign_pmutPrivateCopy(
         &mut self,
         o: *mut PrivateCopy,
     ) -> *mut PrivateCopy {
-        self.v = (*o).v;
+        let this = self as *mut PrivateCopy;
+        (*this).v = (*o).v;
         (*o).v = 0;
-        return &mut (*self) as *mut PrivateCopy;
+        return &mut (*this) as *mut PrivateCopy;
     }
 }
 impl Default for PrivateCopy {
@@ -63,8 +69,9 @@ pub struct Immovable {
 }
 impl Immovable {
     pub unsafe fn Immovable() -> Self {
-        let mut this = Self { v: 0 };
-        this
+        let mut __this = Self { v: 0 };
+        let this = &raw mut __this;
+        __this
     }
 }
 impl Default for Immovable {

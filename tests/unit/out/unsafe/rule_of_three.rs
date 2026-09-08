@@ -16,29 +16,32 @@ pub struct Buffer {
 }
 impl Buffer {
     pub unsafe fn Buffer(mut size: i32) -> Self {
-        let mut this = Self {
+        let mut __this = Self {
             data: Box::leak((0..(size as usize)).map(|_| 0_i32).collect::<Box<[i32]>>())
                 .as_mut_ptr(),
             size: size,
         };
+        let this = &raw mut __this;
         let mut i: i32 = 0;
         'loop_: while ((i) < (size)) {
-            (*this.data.offset((i) as isize)) = i;
+            (*(*this).data.offset((i) as isize)) = i;
             i.prefix_inc();
         }
         alive_0.prefix_inc();
-        this
+        __this
     }
     pub unsafe fn destructor(&mut self) {
+        let this = self as *mut Buffer;
+
         ::std::mem::drop(Box::from_raw(::std::slice::from_raw_parts_mut(
-            self.data,
-            libcc2rs::malloc_usable_size(self.data as *mut ::libc::c_void)
+            (*this).data,
+            libcc2rs::malloc_usable_size((*this).data as *mut ::libc::c_void)
                 / ::std::mem::size_of::<i32>(),
         )));
         alive_0.prefix_dec();
     }
     pub unsafe fn Buffer_pconstBuffer(o: *const Buffer) -> Self {
-        let mut this = Self {
+        let mut __this = Self {
             data: Box::leak(
                 (0..((*o).size as usize))
                     .map(|_| 0_i32)
@@ -47,37 +50,39 @@ impl Buffer {
             .as_mut_ptr(),
             size: (*o).size,
         };
+        let this = &raw mut __this;
         let mut i: i32 = 0;
-        'loop_: while ((i) < (this.size)) {
-            (*this.data.offset((i) as isize)) = (*(*o).data.offset((i) as isize));
+        'loop_: while ((i) < ((*this).size)) {
+            (*(*this).data.offset((i) as isize)) = (*(*o).data.offset((i) as isize));
             i.prefix_inc();
         }
         alive_0.prefix_inc();
         copies_1.prefix_inc();
-        this
+        __this
     }
     pub unsafe fn operator_assign(&mut self, o: *const Buffer) -> *mut Buffer {
-        if ((self) == (o)) {
-            return &mut (*self) as *mut Buffer;
+        let this = self as *mut Buffer;
+        if ((this) == (o)) {
+            return &mut (*this) as *mut Buffer;
         }
         ::std::mem::drop(Box::from_raw(::std::slice::from_raw_parts_mut(
-            self.data,
-            libcc2rs::malloc_usable_size(self.data as *mut ::libc::c_void)
+            (*this).data,
+            libcc2rs::malloc_usable_size((*this).data as *mut ::libc::c_void)
                 / ::std::mem::size_of::<i32>(),
         )));
-        self.data = Box::leak(
+        (*this).data = Box::leak(
             (0..((*o).size as usize))
                 .map(|_| 0_i32)
                 .collect::<Box<[i32]>>(),
         );
-        self.size = (*o).size;
+        (*this).size = (*o).size;
         let mut i: i32 = 0;
-        'loop_: while ((i) < (self.size)) {
-            (*self.data.offset((i) as isize)) = (*(*o).data.offset((i) as isize));
+        'loop_: while ((i) < ((*this).size)) {
+            (*(*this).data.offset((i) as isize)) = (*(*o).data.offset((i) as isize));
             i.prefix_inc();
         }
         copies_1.prefix_inc();
-        return &mut (*self) as *mut Buffer;
+        return &mut (*this) as *mut Buffer;
     }
 }
 impl Clone for Buffer {

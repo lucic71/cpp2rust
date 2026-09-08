@@ -20,14 +20,17 @@ pub struct Explicit {
 }
 impl Explicit {
     pub unsafe fn Explicit(mut v: i32) -> Self {
-        let mut this = Self {
+        let mut __this = Self {
             v: v,
             inner: Inner { x: ((v) * (10)) },
             arr: [v, ((v) + (1))],
         };
-        this
+        let this = &raw mut __this;
+        __this
     }
-    pub unsafe fn destructor(&mut self) {}
+    pub unsafe fn destructor(&mut self) {
+        let this = self as *mut Explicit;
+    }
 }
 impl Default for Explicit {
     fn default() -> Self {
@@ -61,21 +64,24 @@ pub struct DefaultCopyUserMove {
 }
 impl DefaultCopyUserMove {
     pub unsafe fn DefaultCopyUserMove(mut v: i32) -> Self {
-        let mut this = Self { v: v };
-        this
+        let mut __this = Self { v: v };
+        let this = &raw mut __this;
+        __this
     }
     pub unsafe fn DefaultCopyUserMove_pmutDefaultCopyUserMove(o: *mut DefaultCopyUserMove) -> Self {
-        let mut this = Self { v: (*o).v };
+        let mut __this = Self { v: (*o).v };
+        let this = &raw mut __this;
         (*o).v = 0;
-        this
+        __this
     }
     pub unsafe fn operator_assign_pmutDefaultCopyUserMove(
         &mut self,
         o: *mut DefaultCopyUserMove,
     ) -> *mut DefaultCopyUserMove {
-        self.v = (*o).v;
+        let this = self as *mut DefaultCopyUserMove;
+        (*this).v = (*o).v;
         (*o).v = 0;
-        return &mut (*self) as *mut DefaultCopyUserMove;
+        return &mut (*this) as *mut DefaultCopyUserMove;
     }
 }
 #[repr(C)]
@@ -85,23 +91,26 @@ pub struct UserCopyDefaultMove {
 }
 impl UserCopyDefaultMove {
     pub unsafe fn UserCopyDefaultMove(mut v: i32) -> Self {
-        let mut this = Self { v: v };
-        this
+        let mut __this = Self { v: v };
+        let this = &raw mut __this;
+        __this
     }
     pub unsafe fn UserCopyDefaultMove_pconstUserCopyDefaultMove(
         o: *const UserCopyDefaultMove,
     ) -> Self {
-        let mut this = Self {
+        let mut __this = Self {
             v: (((*o).v) + (100)),
         };
-        this
+        let this = &raw mut __this;
+        __this
     }
     pub unsafe fn operator_assign_pconstUserCopyDefaultMove(
         &mut self,
         o: *const UserCopyDefaultMove,
     ) -> *mut UserCopyDefaultMove {
-        self.v = (((*o).v) + (100));
-        return &mut (*self) as *mut UserCopyDefaultMove;
+        let this = self as *mut UserCopyDefaultMove;
+        (*this).v = (((*o).v) + (100));
+        return &mut (*this) as *mut UserCopyDefaultMove;
     }
 }
 impl Clone for UserCopyDefaultMove {

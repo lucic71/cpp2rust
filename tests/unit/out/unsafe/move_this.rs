@@ -13,38 +13,46 @@ pub struct Chain {
 }
 impl Chain {
     pub unsafe fn Chain(mut v: i32) -> Self {
-        let mut this = Self { v: v };
-        this
+        let mut __this = Self { v: v };
+        let this = &raw mut __this;
+        __this
     }
     pub unsafe fn Chain_pconstChain(o: *const Chain) -> Self {
-        let mut this = Self {
+        let mut __this = Self {
             v: (((*o).v) + (100)),
         };
-        this
+        let this = &raw mut __this;
+        __this
     }
     pub unsafe fn Chain_pmutChain(o: *mut Chain) -> Self {
-        let mut this = Self {
+        let mut __this = Self {
             v: (((*o).v) + (1)),
         };
+        let this = &raw mut __this;
         (*o).v = 0;
-        this
+        __this
     }
     pub unsafe fn add_i32_lref(&mut self, mut n: i32) -> *mut Chain {
-        self.v += n;
-        return &mut (*self) as *mut Chain;
+        let this = self as *mut Chain;
+        (*this).v += n;
+        return &mut (*this) as *mut Chain;
     }
     pub unsafe fn add_i32_rref(&mut self, mut n: i32) -> *mut Chain {
-        self.v += n;
-        return self;
+        let this = self as *mut Chain;
+        (*this).v += n;
+        return this;
     }
     pub unsafe fn take(&mut self) -> Chain {
-        return Chain::Chain_pmutChain({ self });
+        let this = self as *mut Chain;
+        return Chain::Chain_pmutChain({ this });
     }
     pub unsafe fn copy(&self) -> Chain {
-        return Chain::Chain_pconstChain({ &(*self) as *const Chain });
+        let this = self as *const Chain;
+        return Chain::Chain_pconstChain({ &(*this) as *const Chain });
     }
     pub unsafe fn self_(&mut self) -> *mut Chain {
-        return self;
+        let this = self as *mut Chain;
+        return this;
     }
 }
 impl Clone for Chain {

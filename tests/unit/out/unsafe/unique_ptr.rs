@@ -13,7 +13,8 @@ pub struct SafePointer {
 }
 impl SafePointer {
     pub unsafe fn inc(&mut self) {
-        (*self.ptr.as_deref_mut().unwrap()).prefix_inc();
+        let this = self as *mut SafePointer;
+        (*(*this).ptr.as_deref_mut().unwrap()).prefix_inc();
     }
 }
 #[repr(C)]
@@ -24,8 +25,9 @@ pub struct Pair {
 }
 impl Pair {
     pub unsafe fn inc(&mut self, mut k: i32) {
-        self.x += k;
-        self.y += k;
+        let this = self as *mut Pair;
+        (*this).x += k;
+        (*this).y += k;
     }
 }
 pub unsafe fn DoStuffWithSafePointer_0(safe_ptr: *mut Option<Box<SafePointer>>) {
