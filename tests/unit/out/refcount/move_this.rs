@@ -67,25 +67,23 @@ fn main_0() -> i32 {
     assert!(((*(*a.borrow()).v.borrow()) == 3));
     let b: Value<Chain> = Rc::new(RefCell::new(Chain::Chain_pmutChain({
         ({
-            ChainImpl::add_i32_rref(
-                &Rc::new(RefCell::new(
-                    (*({
-                        ChainImpl::add_i32_rref(
-                            &Rc::new(RefCell::new(Chain::Chain({ 5 }))).as_pointer(),
-                            1,
-                        )
-                    })
-                    .upgrade()
-                    .deref()),
-                ))
-                .as_pointer(),
-                1,
-            )
+            let __tmp_0: Value<Chain> = Rc::new(RefCell::new(
+                (*({
+                    let __tmp_1: Value<Chain> = Rc::new(RefCell::new(Chain::Chain({ 5 })));
+                    ChainImpl::add_i32_rref(&__tmp_1.as_pointer(), 1)
+                })
+                .upgrade()
+                .deref()),
+            ));
+            ChainImpl::add_i32_rref(&__tmp_0.as_pointer(), 1)
         })
     })));
     assert!(((*(*b.borrow()).v.borrow()) == 8));
     let c: Value<Chain> = Rc::new(RefCell::new(
-        ({ ChainImpl::take(&Rc::new(RefCell::new(Chain::Chain({ 10 }))).as_pointer()) }),
+        ({
+            let __tmp_2: Value<Chain> = Rc::new(RefCell::new(Chain::Chain({ 10 })));
+            ChainImpl::take(&__tmp_2.as_pointer())
+        }),
     ));
     assert!(((*(*c.borrow()).v.borrow()) == 11));
     let d: Value<Chain> = Rc::new(RefCell::new(({ ChainImpl::copy(&c.as_pointer()) })));
@@ -93,13 +91,19 @@ fn main_0() -> i32 {
     assert!(
         (({
             consume_0(Chain::Chain_pmutChain({
-                ({ ChainImpl::self_(&Rc::new(RefCell::new(Chain::Chain({ 20 }))).as_pointer()) })
+                ({
+                    let __tmp_3: Value<Chain> = Rc::new(RefCell::new(Chain::Chain({ 20 })));
+                    ChainImpl::self_(&__tmp_3.as_pointer())
+                })
             }))
         }) == 21)
     );
     let e: Value<Chain> = Rc::new(RefCell::new(Chain::Chain({ 30 })));
     let f: Value<Chain> = Rc::new(RefCell::new(
-        ({ ChainImpl::take(&Rc::new(RefCell::new((*e.borrow()))).as_pointer()) }),
+        ({
+            let __tmp_4: Value<Chain> = Rc::new(RefCell::new((*e.borrow())));
+            ChainImpl::take(&__tmp_4.as_pointer())
+        }),
     ));
     assert!(((*(*f.borrow()).v.borrow()) == 31) && ((*(*e.borrow()).v.borrow()) == 0));
     return 0;

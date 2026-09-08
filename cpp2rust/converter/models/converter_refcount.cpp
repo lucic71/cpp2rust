@@ -2614,10 +2614,13 @@ void ConverterRefCount::SetUFCSReceiver(clang::Expr *base, bool is_arrow,
     }
     return;
   }
-  if (!base->isLValue() && base->getType()->isRecordType()) {
-    PushConversionKind push(*this, ConversionKind::FullRefCount);
-    ufcs_receiver_ =
-        token::kRef + BoxValue(ConvertRValue(base)) + ".as_pointer()";
+  if ((!base->isLValue() ||
+       clang::isa<clang::MaterializeTemporaryExpr>(base->IgnoreParens())) &&
+      base->getType()->isRecordType()) {
+    auto [binding, ref] = MaterializeTemp(
+        std::format("__tmp_{}", materialized_temp_id_++), base->getType(), base);
+    StrCat(binding);
+    ufcs_receiver_ = token::kRef + ref;
     return;
   }
   ufcs_receiver_ = token::kRef + (base_is_pointer ? ConvertRValue(base)

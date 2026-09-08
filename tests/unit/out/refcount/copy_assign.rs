@@ -265,8 +265,9 @@ fn main_0() -> i32 {
     assert!(((*(*r1.borrow()).mark.borrow()) == 1));
     let r2: Value<RefQualified> = Rc::new(RefCell::new(
         (*({
+            let __tmp_0: Value<RefQualified> = Rc::new(RefCell::new(RefQualified::RefQualified()));
             RefQualifiedImpl::operator_assign_pconstRefQualified_rref(
-                &Rc::new(RefCell::new(RefQualified::RefQualified())).as_pointer(),
+                &__tmp_0.as_pointer(),
                 r.as_pointer(),
             )
         })
