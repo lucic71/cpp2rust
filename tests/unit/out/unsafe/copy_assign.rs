@@ -86,21 +86,10 @@ impl RefQualified {
         let this = &raw mut __this;
         __this
     }
-    pub unsafe fn operator_assign_pconstRefQualified_lref(
-        &mut self,
-        o: *const RefQualified,
-    ) -> *mut RefQualified {
+    pub unsafe fn operator_assign(&mut self, o: *const RefQualified) -> *mut RefQualified {
         let this = self as *mut RefQualified;
         (*this).mark = (((*o).mark) + (1));
         return &mut (*this) as *mut RefQualified;
-    }
-    pub unsafe fn operator_assign_pconstRefQualified_rref(
-        &mut self,
-        o: *const RefQualified,
-    ) -> *mut RefQualified {
-        let this = self as *mut RefQualified;
-        (*this).mark = (((*o).mark) + (10));
-        return this;
     }
 }
 impl Default for RefQualified {
@@ -193,16 +182,7 @@ unsafe fn main_0() -> i32 {
     assert!(((n2.mark) == (10)));
     let mut r: RefQualified = RefQualified::RefQualified();
     let mut r1: RefQualified = RefQualified::RefQualified();
-    (unsafe {
-        RefQualified::operator_assign_pconstRefQualified_lref(&mut r1, &r as *const RefQualified)
-    });
+    (unsafe { RefQualified::operator_assign(&mut r1, &r as *const RefQualified) });
     assert!(((r1.mark) == (1)));
-    let mut r2: RefQualified = (*(unsafe {
-        RefQualified::operator_assign_pconstRefQualified_rref(
-            &mut RefQualified::RefQualified(),
-            &r as *const RefQualified,
-        )
-    }));
-    assert!(((r2.mark) == (10)));
     return 0;
 }

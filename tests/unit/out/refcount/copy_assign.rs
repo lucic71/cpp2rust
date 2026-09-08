@@ -259,23 +259,8 @@ fn main_0() -> i32 {
     assert!(((*(*n2.borrow()).mark.borrow()) == 10));
     let r: Value<RefQualified> = Rc::new(RefCell::new(RefQualified::RefQualified()));
     let r1: Value<RefQualified> = Rc::new(RefCell::new(RefQualified::RefQualified()));
-    ({
-        RefQualifiedImpl::operator_assign_pconstRefQualified_lref(&r1.as_pointer(), r.as_pointer())
-    });
+    ({ RefQualifiedImpl::operator_assign(&r1.as_pointer(), r.as_pointer()) });
     assert!(((*(*r1.borrow()).mark.borrow()) == 1));
-    let r2: Value<RefQualified> = Rc::new(RefCell::new(
-        (*({
-            let __tmp_0: Value<RefQualified> = Rc::new(RefCell::new(RefQualified::RefQualified()));
-            RefQualifiedImpl::operator_assign_pconstRefQualified_rref(
-                &__tmp_0.as_pointer(),
-                r.as_pointer(),
-            )
-        })
-        .upgrade()
-        .deref())
-        .clone(),
-    ));
-    assert!(((*(*r2.borrow()).mark.borrow()) == 10));
     return 0;
 }
 pub trait NonConstAssignImpl {
@@ -309,17 +294,11 @@ impl PartialImpl for Ptr<Partial> {
     }
 }
 pub trait RefQualifiedImpl {
-    fn operator_assign_pconstRefQualified_lref(&self, o: Ptr<RefQualified>) -> Ptr<RefQualified>;
-    fn operator_assign_pconstRefQualified_rref(&self, o: Ptr<RefQualified>) -> Ptr<RefQualified>;
+    fn operator_assign(&self, o: Ptr<RefQualified>) -> Ptr<RefQualified>;
 }
 impl RefQualifiedImpl for Ptr<RefQualified> {
-    fn operator_assign_pconstRefQualified_lref(&self, o: Ptr<RefQualified>) -> Ptr<RefQualified> {
+    fn operator_assign(&self, o: Ptr<RefQualified>) -> Ptr<RefQualified> {
         let __rhs = ((*(*o.upgrade().deref()).mark.borrow()) + 1);
-        (*(*(*self).upgrade().deref()).mark.borrow_mut()) = __rhs;
-        return (*self).clone();
-    }
-    fn operator_assign_pconstRefQualified_rref(&self, o: Ptr<RefQualified>) -> Ptr<RefQualified> {
-        let __rhs = ((*(*o.upgrade().deref()).mark.borrow()) + 10);
         (*(*(*self).upgrade().deref()).mark.borrow_mut()) = __rhs;
         return (*self).clone();
     }
