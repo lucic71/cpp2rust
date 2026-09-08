@@ -62,7 +62,7 @@ impl Buffer {
     }
     pub unsafe fn operator_assign(&mut self, o: *const Buffer) -> *mut Buffer {
         let this = self as *mut Buffer;
-        if ((this) == (o)) {
+        if (((this).cast_const()) == (o)) {
             return &mut (*this) as *mut Buffer;
         }
         ::std::mem::drop(Box::from_raw(::std::slice::from_raw_parts_mut(

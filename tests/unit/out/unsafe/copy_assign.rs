@@ -29,7 +29,7 @@ impl Partial {
     }
     pub unsafe fn operator_assign(&mut self, o: *const Partial) -> *mut Partial {
         let this = self as *mut Partial;
-        if ((this) == (o)) {
+        if (((this).cast_const()) == (o)) {
             return &mut (*this) as *mut Partial;
         }
         (*this).v = (*o).v;
