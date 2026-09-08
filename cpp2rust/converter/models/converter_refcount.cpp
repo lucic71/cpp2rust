@@ -2616,7 +2616,13 @@ void ConverterRefCount::SetUFCSReceiver(clang::Expr *base, bool is_arrow,
   }
   if ((!base->isLValue() ||
        clang::isa<clang::MaterializeTemporaryExpr>(base->IgnoreParens())) &&
-      base->getType()->isRecordType()) {
+      base->getType()->isRecordType() &&
+      !IsReferenceType(base->IgnoreImplicit())) {
+    if (materialized_temp_bindings_) {
+      ufcs_receiver_ =
+          token::kRef + EmitMaterializedTempBinding(base->getType(), base);
+      return;
+    }
     auto [binding, ref] = MaterializeTemp(
         std::format("__tmp_{}", materialized_temp_id_++), base->getType(), base);
     StrCat(binding);
