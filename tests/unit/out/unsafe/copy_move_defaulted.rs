@@ -150,18 +150,19 @@ unsafe fn main_0() -> i32 {
     let _dtor_e = ScopedDestructorUnsafe::new(&raw mut e, Explicit::destructor);
     let mut f: Explicit = Explicit::Explicit({ 3 });
     let _dtor_f = ScopedDestructorUnsafe::new(&raw mut f, Explicit::destructor);
-    e = b;
-    f = c;
+    e = (b).clone();
+    f = (c).clone();
     assert!(
         (unsafe { same_0(&e as *const Explicit, &b as *const Explicit,) })
             && (unsafe { same_0(&f as *const Explicit, &c as *const Explicit,) })
     );
     let mut g: Explicit = Explicit::Explicit({ 4 });
     let _dtor_g = ScopedDestructorUnsafe::new(&raw mut g, Explicit::destructor);
-    g = {
-        e = f;
+    g = ({
+        e = (f).clone();
         e
-    };
+    })
+    .clone();
     assert!(
         (unsafe { same_0(&g as *const Explicit, &f as *const Explicit,) })
             && (unsafe { same_0(&e as *const Explicit, &f as *const Explicit,) })
@@ -214,7 +215,7 @@ unsafe fn main_0() -> i32 {
             &u2 as *const UserCopyDefaultMove,
         )
     });
-    u4 = u2;
+    u4 = (u2).clone();
     assert!(((u3.v) == (108)) && ((u4.v) == (8)));
     return 0;
 }

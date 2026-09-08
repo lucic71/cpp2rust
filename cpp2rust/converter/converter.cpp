@@ -2809,6 +2809,7 @@ bool Converter::VisitDeclRefExpr(clang::DeclRefExpr *expr) {
   }
 
   StrCat(str);
+  SetValueFreshness(expr->getType());
   return false;
 }
 
