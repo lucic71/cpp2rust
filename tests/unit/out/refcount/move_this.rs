@@ -75,11 +75,11 @@ fn main_0() -> i32 {
     assert!(((*(*c.borrow()).v.borrow()) == 11));
     let d: Value<Chain> = Rc::new(RefCell::new(({ ChainImpl::copy(&c.as_pointer()) })));
     assert!(((*(*d.borrow()).v.borrow()) == 111) && ((*(*c.borrow()).v.borrow()) == 11));
+    let g: Value<Chain> = Rc::new(RefCell::new(Chain::Chain({ 20 })));
     assert!(
         (({
             consume_0(Chain::Chain_pmutChain({
-                let __tmp_2: Value<Chain> = Rc::new(RefCell::new(Chain::Chain({ 20 })));
-                ({ ChainImpl::self_(&__tmp_2.as_pointer()) })
+                ({ ChainImpl::self_(&g.as_pointer()) })
             }))
         }) == 21)
     );

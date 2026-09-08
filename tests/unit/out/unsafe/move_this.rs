@@ -85,10 +85,11 @@ unsafe fn main_0() -> i32 {
     assert!(((c.v) == (11)));
     let mut d: Chain = (unsafe { Chain::copy(&c) });
     assert!(((d.v) == (111)) && ((c.v) == (11)));
+    let mut g: Chain = Chain::Chain({ 20 });
     assert!(
         ((unsafe {
             consume_0(Chain::Chain_pmutChain({
-                (unsafe { Chain::self_(&mut Chain::Chain({ 20 })) })
+                (unsafe { Chain::self_(&mut g) })
             }))
         }) == (21))
     );

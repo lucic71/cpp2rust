@@ -36,7 +36,8 @@ int main() {
   Chain d = c.copy();
   assert(d.v == 111 && c.v == 11);
 
-  assert(consume(Chain(20).self()) == 21);
+  Chain g(20);
+  assert(consume(std::move(g).self()) == 21);
 
   Chain e(30);
   Chain f = std::move(e).take();
