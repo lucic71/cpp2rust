@@ -158,11 +158,10 @@ unsafe fn main_0() -> i32 {
     );
     let mut g: Explicit = Explicit::Explicit({ 4 });
     let _dtor_g = ScopedDestructorUnsafe::new(&raw mut g, Explicit::destructor);
-    g = ({
+    g = {
         e = (f).clone();
-        e
-    })
-    .clone();
+        (e).clone()
+    };
     assert!(
         (unsafe { same_0(&g as *const Explicit, &f as *const Explicit,) })
             && (unsafe { same_0(&e as *const Explicit, &f as *const Explicit,) })

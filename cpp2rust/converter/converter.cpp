@@ -3965,7 +3965,8 @@ void Converter::ConvertAssignment(clang::Expr *lhs, clang::Expr *rhs,
 
   StrCat(lhs_as_string, assign_operator, rhs_as_string);
   if (!isVoid()) {
-    StrCat(token::kSemiColon, ConvertRValue(lhs));
+    StrCat(token::kSemiColon,
+           isAddrOf() ? ConvertRValue(lhs) : ConvertFreshRValue(lhs));
   }
 }
 
