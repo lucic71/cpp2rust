@@ -485,11 +485,26 @@ void ConverterRefCount::AddCloneTrait(const clang::RecordDecl *decl) {
   StrCat(keyword::kImpl, "Clone for", record_name, '{');
   StrCat("fn clone(&self) -> Self {");
 
-  for (auto ctor : cxx->ctors()) {
-    if (ctor->isCopyConstructor()) {
-      PushConversionKind push(*this, ConversionKind::FullRefCount);
-      ConvertCXXConstructorBody(ctor);
-      break;
+  if (auto *ctor = GetUserCopyConstructor(cxx)) {
+    StrCat(std::format("let __src: Value<{}> = Rc::new(RefCell::new({}",
+                       record_name, record_name));
+    {
+      PushBrace init_brace(*this);
+      for (auto *field : decl->fields()) {
+        auto name = GetNamedDeclAsString(field);
+        StrCat(std::format("{0}: self.{0}.clone(),", name));
+      }
+    }
+    StrCat("));");
+    StrCat(std::format("{}::{}(__src.as_pointer())", record_name,
+                       GetCtorName(ctor)));
+  } else {
+    for (auto ctor : cxx->ctors()) {
+      if (ctor->isCopyConstructor()) {
+        PushConversionKind push(*this, ConversionKind::FullRefCount);
+        ConvertCXXConstructorBody(ctor);
+        break;
+      }
     }
   }
 
