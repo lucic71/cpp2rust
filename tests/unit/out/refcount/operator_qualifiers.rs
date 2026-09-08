@@ -51,20 +51,26 @@ fn main_0() -> i32 {
     assert!((({ SImpl::operator_sub_i32_lref(&s.as_pointer(), 1,) }) == 9));
     assert!(
         (({
-            let __tmp_0: Value<S> = Rc::new(RefCell::new(S {
-                v: Rc::new(RefCell::new(10)),
-            }));
-            SImpl::operator_sub_i32_rref(&__tmp_0.as_pointer(), 1)
+            SImpl::operator_sub_i32_rref(
+                &Rc::new(RefCell::new(S {
+                    v: Rc::new(RefCell::new(10)),
+                }))
+                .as_pointer(),
+                1,
+            )
         }) == 8)
     );
     assert!((({ SImpl::operator_mul_i32_const_lref(&s.as_pointer(), 3,) }) == 30));
     assert!((({ SImpl::operator_mul_i32_const_lref(&cs.as_pointer(), 3,) }) == 30));
     assert!(
         (({
-            let __tmp_1: Value<S> = Rc::new(RefCell::new(S {
-                v: Rc::new(RefCell::new(10)),
-            }));
-            SImpl::operator_mul_i32_const_rref(&__tmp_1.as_pointer(), 3)
+            SImpl::operator_mul_i32_const_rref(
+                &Rc::new(RefCell::new(S {
+                    v: Rc::new(RefCell::new(10)),
+                }))
+                .as_pointer(),
+                3,
+            )
         }) == 60)
     );
     assert!((({ SImpl::operator_index_i32_lref(&s.as_pointer(), 2,) }) == 12));

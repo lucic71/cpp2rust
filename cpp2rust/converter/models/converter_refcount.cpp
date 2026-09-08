@@ -1241,6 +1241,16 @@ bool ConverterRefCount::VisitImplicitCastExpr(clang::ImplicitCastExpr *expr) {
 
   if (expr->getCastKind() == clang::CastKind::CK_NoOp) {
     Convert(sub_expr);
+
+    if (expr->getType()->isPointerType() &&
+        sub_expr->getType()->isPointerType()) {
+      auto dest_type = ConvertPointeeType(expr->getType());
+      if (dest_type != ConvertPointeeType(sub_expr->getType())) {
+        StrCat(std::format(".reinterpret_cast::<{}>()", dest_type));
+        computed_expr_type_ = ComputedExprType::FreshPointer;
+        return false;
+      }
+    }
     return false;
   }
 
@@ -1523,12 +1533,12 @@ bool ConverterRefCount::VisitInitListExpr(clang::InitListExpr *expr) {
   if (qual_type->isRecordType()) {
     const auto *record = qual_type->getAsRecordDecl();
     if (record->getQualifiedNameAsString() == "std::array") {
-      StrCat("vec!");
       if (auto init = clang::dyn_cast<clang::InitListExpr>(expr->getInit(0))) {
+        StrCat("vec!");
         PushConversionKind push(*this, ConversionKind::Unboxed);
         ConverterRefCount::VisitInitListExpr(init);
       } else {
-        StrCat("[]");
+        StrCat(GetArrayDefaultAsString(qual_type));
       }
       computed_expr_type_ = ComputedExprType::FreshValue;
       return false;
@@ -2560,7 +2570,7 @@ std::string ConverterRefCount::ConvertPointeeType(clang::QualType ptr_type) {
   PushConversionKind push(*this, ConversionKind::Unboxed);
   auto pointee = ptr_type->getPointeeType();
   if (!pointee->isRecordType()) {
-    return ToString(pointee);
+    return std::string(Trim(ToString(pointee)));
   }
 
   // Pointee of a pointer to incomplete type is an incomplete type that does
@@ -2569,7 +2579,19 @@ std::string ConverterRefCount::ConvertPointeeType(clang::QualType ptr_type) {
   auto str = ToString(ptr_type);
   Unwrap(str, "PtrDyn<", ">");
   Unwrap(str, "Ptr<", ">");
-  return str;
+  return std::string(Trim(str));
+}
+
+void ConverterRefCount::ConvertParamTyPointerCastIfNeeded(
+    clang::QualType param_type, clang::Expr *expr) {
+  if (!param_type->isPointerType() || !expr->getType()->isPointerType() ||
+      IsVaListType(param_type) || IsVaListType(expr->getType())) {
+    return;
+  }
+  auto dest_type = ConvertPointeeType(param_type);
+  if (dest_type != ConvertPointeeType(expr->getType())) {
+    StrCat(std::format(".reinterpret_cast::<{}>()", dest_type));
+  }
 }
 
 bool ConverterRefCount::ShouldConvertMethod(const clang::CXXMethodDecl *decl) {
