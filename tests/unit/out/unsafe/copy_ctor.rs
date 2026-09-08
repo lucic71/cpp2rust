@@ -53,7 +53,7 @@ impl NonConst {
 }
 impl Clone for NonConst {
     fn clone(&self) -> Self {
-        unsafe { NonConst::NonConst_pmutNonConst(self as *const NonConst) }
+        unsafe { NonConst::NonConst_pmutNonConst(self as *const NonConst as *mut NonConst) }
     }
 }
 impl Default for NonConst {
@@ -86,7 +86,7 @@ impl WithDefault {
 }
 impl Clone for WithDefault {
     fn clone(&self) -> Self {
-        unsafe { WithDefault::WithDefault_pconstWithDefault_i32(self as *const WithDefault) }
+        unsafe { WithDefault::WithDefault_pconstWithDefault_i32(self as *const WithDefault, None) }
     }
 }
 #[repr(C)]
