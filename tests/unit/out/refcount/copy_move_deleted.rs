@@ -166,7 +166,7 @@ fn main_0() -> i32 {
         inner: Rc::new(RefCell::new(NoCopy::NoCopy({ 6 }))),
         tag: Rc::new(RefCell::new(7)),
     }));
-    let d: Value<Container> = Rc::new(RefCell::new((*c.borrow())));
+    let d: Value<Container> = Rc::new(RefCell::new((*c.borrow()).clone()));
     assert!(
         (((*(*(*d.borrow()).inner.borrow()).v.borrow()) == 6)
             && ((*(*d.borrow()).tag.borrow()) == 7))

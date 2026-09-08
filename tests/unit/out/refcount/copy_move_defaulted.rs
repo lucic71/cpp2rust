@@ -246,7 +246,7 @@ fn main_0() -> i32 {
     let _dtor_b = ScopedDestructor::new(&b, |__p| __p.destructor());
     let c: Value<Explicit> = Rc::new(RefCell::new((*a.borrow()).clone()));
     let _dtor_c = ScopedDestructor::new(&c, |__p| __p.destructor());
-    let d: Value<Explicit> = Rc::new(RefCell::new((*a.borrow())));
+    let d: Value<Explicit> = Rc::new(RefCell::new((*a.borrow()).clone()));
     let _dtor_d = ScopedDestructor::new(&d, |__p| __p.destructor());
     assert!(
         (({ same_0(b.as_pointer(), a.as_pointer(),) })
@@ -258,7 +258,7 @@ fn main_0() -> i32 {
     let f: Value<Explicit> = Rc::new(RefCell::new(Explicit::Explicit({ 3 })));
     let _dtor_f = ScopedDestructor::new(&f, |__p| __p.destructor());
     (*e.borrow_mut()) = (*b.borrow()).clone();
-    (*f.borrow_mut()) = (*c.borrow());
+    (*f.borrow_mut()) = (*c.borrow()).clone();
     assert!(
         ({ same_0(e.as_pointer(), b.as_pointer(),) })
             && ({ same_0(f.as_pointer(), c.as_pointer(),) })
@@ -281,7 +281,7 @@ fn main_0() -> i32 {
         arr: Rc::new(RefCell::new(Box::new([5, 6]))),
     }));
     let j: Value<Implicit> = Rc::new(RefCell::new((*i.borrow()).clone()));
-    let k: Value<Implicit> = Rc::new(RefCell::new((*i.borrow())));
+    let k: Value<Implicit> = Rc::new(RefCell::new((*i.borrow()).clone()));
     assert!(
         (((*(*j.borrow()).v.borrow()) == 5)
             && ((*(*(*j.borrow()).inner.borrow()).x.borrow()) == 50))
@@ -361,7 +361,7 @@ fn main_0() -> i32 {
     let u1: Value<UserCopyDefaultMove> = Rc::new(RefCell::new(
         UserCopyDefaultMove::UserCopyDefaultMove_pconstUserCopyDefaultMove({ u.as_pointer() }),
     ));
-    let u2: Value<UserCopyDefaultMove> = Rc::new(RefCell::new((*u.borrow())));
+    let u2: Value<UserCopyDefaultMove> = Rc::new(RefCell::new((*u.borrow()).clone()));
     assert!(
         (((*(*u1.borrow()).v.borrow()) == 108) && ((*(*u2.borrow()).v.borrow()) == 8))
             && ((*(*u.borrow()).v.borrow()) == 8)
@@ -380,7 +380,7 @@ fn main_0() -> i32 {
             u2.as_pointer(),
         )
     });
-    (*u4.borrow_mut()) = (*u2.borrow());
+    (*u4.borrow_mut()) = (*u2.borrow()).clone();
     assert!(((*(*u3.borrow()).v.borrow()) == 108) && ((*(*u4.borrow()).v.borrow()) == 8));
     return 0;
 }
