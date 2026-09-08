@@ -1,4 +1,4 @@
-// XFAIL
+// translation-fail
 #include <cassert>
 #include <utility>
 #include <vector>
