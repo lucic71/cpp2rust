@@ -67,6 +67,9 @@ bool IsCopyOrMoveSpecialMember(const clang::CXXMethodDecl *method);
 
 bool HasUsableCopyConstructor(const clang::CXXRecordDecl *decl);
 
+clang::CXXConstructorDecl *
+GetUserCopyConstructor(const clang::CXXRecordDecl *decl);
+
 bool IsUserCopyOrMoveConstructor(const clang::CXXConstructorDecl *ctor);
 
 bool IsRValueConvertingConstructor(const clang::CXXConstructorDecl *ctor);

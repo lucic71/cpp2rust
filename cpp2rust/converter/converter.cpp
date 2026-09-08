@@ -3761,10 +3761,11 @@ Converter::GetStructAttributes(const clang::RecordDecl *decl) {
 
   auto cxx_decl = clang::dyn_cast<clang::CXXRecordDecl>(decl);
   bool clone = !cxx_decl || HasUsableCopyConstructor(cxx_decl);
-  if (clone && RecordHasCopyableFields(decl)) {
+  bool user_clone = cxx_decl && GetUserCopyConstructor(cxx_decl);
+  if (clone && !user_clone && RecordHasCopyableFields(decl)) {
     struct_attrs.emplace_back("Copy");
   }
-  if (clone) {
+  if (clone && !user_clone) {
     struct_attrs.emplace_back("Clone");
   }
 
@@ -4153,7 +4154,20 @@ void Converter::AddOrdTrait(const clang::CXXRecordDecl *decl) {
   ConvertOrdAndPartialOrdTraits(decl, eq, lt, cmp);
 }
 
-void Converter::AddCloneTrait(const clang::RecordDecl *decl) {}
+void Converter::AddCloneTrait(const clang::RecordDecl *decl) {
+  auto *cxx = clang::dyn_cast<clang::CXXRecordDecl>(decl);
+  auto *ctor = cxx ? GetUserCopyConstructor(cxx) : nullptr;
+  if (!ctor) {
+    return;
+  }
+  auto record_name = GetRecordName(decl);
+  StrCat(keyword::kImpl, "Clone for", record_name);
+  PushBrace impl_brace(*this);
+  StrCat("fn clone(&self) -> Self");
+  PushBrace fn_brace(*this);
+  StrCat(std::format("unsafe {{ {}::{}(self as *const {}) }}", record_name,
+                     GetCtorName(ctor), record_name));
+}
 
 void Converter::AddDefaultTraitForUnion(const clang::RecordDecl *decl) {
   StrCat(std::format("impl Default for {}", GetRecordName(decl)));

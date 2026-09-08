@@ -276,6 +276,17 @@ bool IsRValueConvertingConstructor(const clang::CXXConstructorDecl *ctor) {
          ctor->getParamDecl(0)->getType()->isRValueReferenceType();
 }
 
+clang::CXXConstructorDecl *
+GetUserCopyConstructor(const clang::CXXRecordDecl *decl) {
+  for (auto *ctor : decl->ctors()) {
+    if (ctor->isCopyConstructor() && IsUserCopyOrMoveConstructor(ctor) &&
+        ctor->getDefinition()) {
+      return ctor;
+    }
+  }
+  return nullptr;
+}
+
 bool HasUsableCopyConstructor(const clang::CXXRecordDecl *decl) {
   if (!decl->hasUserDeclaredCopyConstructor()) {
     return !decl->defaultedCopyConstructorIsDeleted();
