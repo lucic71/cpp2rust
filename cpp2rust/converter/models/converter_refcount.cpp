@@ -1865,6 +1865,10 @@ bool ConverterRefCount::VisitCXXConstructExpr(clang::CXXConstructExpr *expr) {
     return false;
   }
 
+  assert(!(IsDefaultedMoveConstructor(ctor) &&
+           HasUserDefinedCopyConstructor(ctor->getParent())) &&
+         "defaulted move constructor with a user-defined copy constructor is "
+         "not supported");
   if (ctor->isCopyOrMoveConstructor() && !IsUserCopyOrMoveConstructor(ctor)) {
     StrCat(PushSuppressIteratorClone::take(*this)
                ? ConvertRValue(expr->getArg(0))

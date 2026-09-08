@@ -3302,6 +3302,10 @@ bool Converter::VisitCXXConstructExpr(clang::CXXConstructExpr *expr) {
   }
 
   auto *ctor = expr->getConstructor();
+  assert(!(IsDefaultedMoveConstructor(ctor) &&
+           HasUserDefinedCopyConstructor(ctor->getParent())) &&
+         "defaulted move constructor with a user-defined copy constructor is "
+         "not supported");
   if (!IsUserCopyOrMoveConstructor(ctor) &&
       (ctor->isCopyOrMoveConstructor() ||
        IsRValueConvertingConstructor(ctor))) {

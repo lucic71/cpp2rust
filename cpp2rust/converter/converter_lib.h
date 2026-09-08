@@ -70,6 +70,10 @@ bool HasUsableCopyConstructor(const clang::CXXRecordDecl *decl);
 clang::CXXConstructorDecl *
 GetUserCopyConstructor(const clang::CXXRecordDecl *decl);
 
+bool IsDefaultedMoveConstructor(const clang::CXXConstructorDecl *ctor);
+
+bool HasUserDefinedCopyConstructor(const clang::CXXRecordDecl *decl);
+
 bool IsUserCopyOrMoveConstructor(const clang::CXXConstructorDecl *ctor);
 
 bool IsRValueConvertingConstructor(const clang::CXXConstructorDecl *ctor);

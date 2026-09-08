@@ -288,6 +288,15 @@ GetUserCopyConstructor(const clang::CXXRecordDecl *decl) {
   return nullptr;
 }
 
+bool IsDefaultedMoveConstructor(const clang::CXXConstructorDecl *ctor) {
+  return ctor->isMoveConstructor() && !IsUserCopyOrMoveConstructor(ctor) &&
+         IsUserDefinedDecl(ctor->getParent());
+}
+
+bool HasUserDefinedCopyConstructor(const clang::CXXRecordDecl *decl) {
+  return GetUserCopyConstructor(decl) != nullptr;
+}
+
 bool HasUsableCopyConstructor(const clang::CXXRecordDecl *decl) {
   if (!decl->hasUserDeclaredCopyConstructor()) {
     return !decl->defaultedCopyConstructorIsDeleted();
