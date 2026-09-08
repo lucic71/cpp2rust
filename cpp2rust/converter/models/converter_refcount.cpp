@@ -1841,14 +1841,13 @@ bool ConverterRefCount::VisitCXXConstructExpr(clang::CXXConstructExpr *expr) {
   }
 
   auto *ctor = expr->getConstructor();
-  if (ctor->isMoveConstructor() ||
-      (ctor->isConvertingConstructor(false) && ctor->getNumParams() == 1 &&
-       ctor->getParamDecl(0)->getType()->isRValueReferenceType())) {
+  if (IsRValueConvertingConstructor(ctor) ||
+      (ctor->isMoveConstructor() && !IsUserDefinedDecl(ctor->getParent()))) {
     StrCat(ConvertLValue(expr->getArg(0)));
     return false;
   }
 
-  if (ctor->isCopyConstructor()) {
+  if (ctor->isCopyOrMoveConstructor() && !IsUserCopyOrMoveConstructor(ctor)) {
     StrCat(PushSuppressIteratorClone::take(*this)
                ? ConvertRValue(expr->getArg(0))
                : ConvertFreshRValue(expr->getArg(0)));

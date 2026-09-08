@@ -266,6 +266,16 @@ bool IsCopyOrMoveSpecialMember(const clang::CXXMethodDecl *method) {
          method->isMoveAssignmentOperator();
 }
 
+bool IsUserCopyOrMoveConstructor(const clang::CXXConstructorDecl *ctor) {
+  return ctor->isCopyOrMoveConstructor() && ctor->isUserProvided() &&
+         IsUserDefinedDecl(ctor);
+}
+
+bool IsRValueConvertingConstructor(const clang::CXXConstructorDecl *ctor) {
+  return ctor->isConvertingConstructor(false) && ctor->getNumParams() == 1 &&
+         ctor->getParamDecl(0)->getType()->isRValueReferenceType();
+}
+
 bool HasUsableCopyConstructor(const clang::CXXRecordDecl *decl) {
   if (!decl->hasUserDeclaredCopyConstructor()) {
     return !decl->defaultedCopyConstructorIsDeleted();

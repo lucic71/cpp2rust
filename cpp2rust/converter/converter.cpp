@@ -3249,11 +3249,8 @@ void Converter::ConvertArrayCXXConstructExpr(clang::CXXConstructExpr *expr) {
 
 void Converter::ConvertCXXConstructExprArgs(clang::CXXConstructExpr *expr) {
   auto ctor = expr->getConstructor();
-  auto ctor_name = GetRecordName(ctor->getParent());
-  StrCat(ctor_name, token::kDoubleColon,
-         ctor_name + (GetNumberOfConvertingCtors(ctor->getParent()) != 1
-                          ? std::to_string(GetCtorIndex(ctor))
-                          : ""));
+  StrCat(GetRecordName(ctor->getParent()), token::kDoubleColon,
+         GetCtorName(ctor));
   PushParen paren(*this);
 
   unsigned arg_idx = 0;
@@ -3292,9 +3289,9 @@ bool Converter::VisitCXXConstructExpr(clang::CXXConstructExpr *expr) {
   }
 
   auto *ctor = expr->getConstructor();
-  if (ctor->isCopyOrMoveConstructor() ||
-      (ctor->isConvertingConstructor(false) && ctor->getNumParams() == 1 &&
-       ctor->getParamDecl(0)->getType()->isRValueReferenceType())) {
+  if (!IsUserCopyOrMoveConstructor(ctor) &&
+      (ctor->isCopyOrMoveConstructor() ||
+       IsRValueConvertingConstructor(ctor))) {
     // Take suppress before recursing into the child.
     bool suppress = PushSuppressIteratorClone::take(*this);
     Convert(expr->getArg(0));
