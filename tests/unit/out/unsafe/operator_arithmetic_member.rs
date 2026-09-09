@@ -13,63 +13,52 @@ pub struct S {
 }
 impl S {
     pub unsafe fn operator_add_pconstS_const(&self, o: *const S) -> S {
-        let this = self as *const S;
         return S {
-            v: (((*this).v) + ((*o).v)),
+            v: ((self.v) + ((*o).v)),
         };
     }
     pub unsafe fn operator_sub_pconstS_const(&self, o: *const S) -> S {
-        let this = self as *const S;
         return S {
-            v: (((*this).v) - ((*o).v)),
+            v: ((self.v) - ((*o).v)),
         };
     }
     pub unsafe fn operator_mul(&self, o: *const S) -> S {
-        let this = self as *const S;
         return S {
-            v: (((*this).v) * ((*o).v)),
+            v: ((self.v) * ((*o).v)),
         };
     }
     pub unsafe fn operator_div(&self, o: *const S) -> S {
-        let this = self as *const S;
         return S {
-            v: (((*this).v) / ((*o).v)),
+            v: ((self.v) / ((*o).v)),
         };
     }
     pub unsafe fn operator_rem(&self, o: *const S) -> S {
-        let this = self as *const S;
         return S {
-            v: (((*this).v) % ((*o).v)),
+            v: ((self.v) % ((*o).v)),
         };
     }
     pub unsafe fn operator_pos_const(&self) -> S {
-        let this = self as *const S;
-        return S { v: (*this).v };
+        return S { v: self.v };
     }
     pub unsafe fn operator_neg_const(&self) -> S {
-        let this = self as *const S;
-        return S { v: -(*this).v };
+        return S { v: -self.v };
     }
     pub unsafe fn operator_inc(&mut self) -> *mut S {
-        let this = self as *mut S;
-        (*this).v.prefix_inc();
-        return &mut (*this) as *mut S;
+        self.v.prefix_inc();
+        return &mut (*(self as *mut S)) as *mut S;
     }
     pub unsafe fn operator_post_inc_i32(&mut self, _: i32) -> S {
-        let this = self as *mut S;
-        let mut old: S = (*this);
-        (*this).v.prefix_inc();
+        let mut old: S = (*(self as *mut S));
+        self.v.prefix_inc();
         return old;
     }
     pub unsafe fn operator_dec(&mut self) -> *mut S {
-        let this = self as *mut S;
-        (*this).v.prefix_dec();
-        return &mut (*this) as *mut S;
+        self.v.prefix_dec();
+        return &mut (*(self as *mut S)) as *mut S;
     }
     pub unsafe fn operator_post_dec_i32(&mut self, _: i32) -> S {
-        let this = self as *mut S;
-        let mut old: S = (*this);
-        (*this).v.prefix_dec();
+        let mut old: S = (*(self as *mut S));
+        self.v.prefix_dec();
         return old;
     }
 }

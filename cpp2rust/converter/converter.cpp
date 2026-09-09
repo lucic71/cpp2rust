@@ -3051,7 +3051,19 @@ void Converter::ConvertMemberExpr(clang::MemberExpr *expr) {
     expr = inner;
   }
 
-  ConvertMemberBase(expr);
+  auto *base = expr->getBase();
+  bool base_is_this =
+      clang::isa<clang::CXXThisExpr>(base->IgnoreCasts()) && !ThisIsRustPtr();
+  PushExprKind push(*this, isLValue() ? ExprKind::LValue : ExprKind::RValue);
+  if (base_is_this) {
+    StrCat(clang::isa<clang::CXXConstructorDecl>(curr_function_)
+               ? "this"
+               : keyword::kSelfValue);
+  } else if (expr->isArrow()) {
+    ConvertArrow(base);
+  } else {
+    Convert(base);
+  }
 
   if (auto *method = clang::dyn_cast<clang::CXXMethodDecl>(member);
       method && IsOverloadedMethod(method)) {
@@ -3065,18 +3077,13 @@ void Converter::ConvertMemberExpr(clang::MemberExpr *expr) {
   }
 }
 
-void Converter::ConvertMemberBase(clang::MemberExpr *expr) {
-  PushExprKind push(*this, isLValue() ? ExprKind::LValue : ExprKind::RValue);
-  if (expr->isArrow()) {
-    ConvertArrow(expr->getBase());
+bool Converter::VisitCXXThisExpr(clang::CXXThisExpr *expr) {
+  if (clang::isa<clang::CXXConstructorDecl>(curr_function_)) {
+    StrCat("&raw mut this");
   } else {
-    Convert(expr->getBase());
+    PushParen paren(*this);
+    StrCat(keyword::kSelfValue, keyword::kAs, ToString(expr->getType()));
   }
-}
-
-bool Converter::VisitCXXThisExpr([[maybe_unused]] clang::CXXThisExpr *expr) {
-  StrCat("this");
-  return false;
 }
 
 bool Converter::VisitInitListExpr(clang::InitListExpr *expr) {

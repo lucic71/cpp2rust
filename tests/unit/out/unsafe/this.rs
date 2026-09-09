@@ -14,91 +14,85 @@ pub struct S {
 }
 impl S {
     pub unsafe fn S1(mut a: i32) -> Self {
-        let mut __this = Self {
+        let mut this = Self {
             a_: a,
             self__: std::ptr::null_mut(),
         };
-        let this = &raw mut __this;
-        __this
+        this
     }
     pub unsafe fn S2(mut a: i32, mut other: *mut S) -> Self {
-        let mut __this = Self {
+        let mut this = Self {
             a_: a,
             self__: std::ptr::null_mut(),
         };
-        let this = &raw mut __this;
-        if ((this) == (other)) {
-            (*this).self__ = std::ptr::null_mut();
+        if ((&raw mut this) == (other)) {
+            this.self__ = std::ptr::null_mut();
         } else {
-            (*this).self__ = other;
+            this.self__ = other;
         }
-        __this
+        this
+    }
+    pub unsafe fn S3(mut a: i32, mut other: *const S) -> Self {
+        let mut this = Self {
+            a_: a,
+            self__: std::ptr::null_mut(),
+        };
+        if (((&raw mut this).cast_const()) == (other)) {
+            this.self__ = std::ptr::null_mut();
+        }
+        this
     }
     pub unsafe fn returns_this_reference(&mut self) -> *mut S {
-        let this = self as *mut S;
-        return &mut (*this) as *mut S;
+        return &mut (*(self as *mut S)) as *mut S;
     }
     pub unsafe fn returns_this_pointer(&mut self) -> *mut S {
-        let this = self as *mut S;
-        return this;
+        return (self as *mut S);
     }
     pub unsafe fn inc(&mut self) -> *mut S {
-        let this = self as *mut S;
-        (*this).a_.postfix_inc();
-        return &mut (*this) as *mut S;
+        self.a_.postfix_inc();
+        return &mut (*(self as *mut S)) as *mut S;
     }
     pub unsafe fn set_from_this(&mut self) {
-        let this = self as *mut S;
-        (*this).a_ = (((*this).a_) + (1));
+        self.a_ = ((self.a_) + (1));
     }
     pub unsafe fn get(&mut self) -> i32 {
-        let this = self as *mut S;
-        return (*this).a_;
+        return self.a_;
     }
     pub unsafe fn twice(&mut self) -> i32 {
-        let this = self as *mut S;
         return ((unsafe { S::get(self) }) * (2));
     }
     pub unsafe fn link(&mut self) {
-        let this = self as *mut S;
-        (*this).self__ = this;
+        self.self__ = (self as *mut S);
     }
     pub unsafe fn bump_me(&mut self) {
-        let this = self as *mut S;
-        (unsafe { bump_0(this) });
+        (unsafe { bump_0((self as *mut S)) });
     }
     pub unsafe fn cref(&self) -> *const S {
-        let this = self as *const S;
-        return &(*this) as *const S;
+        return &(*(self as *const S)) as *const S;
     }
     pub unsafe fn is(&self, mut o: *const S) -> bool {
-        let this = self as *const S;
-        return ((o) == (this));
+        return ((o) == (self as *const S));
     }
     pub unsafe fn destroy(&mut self) {
-        let this = self as *mut S;
-        ::std::mem::drop(Box::from_raw(this));
+        ::std::mem::drop(Box::from_raw((self as *mut S)));
     }
     pub unsafe fn reset(&mut self) {
-        let this = self as *mut S;
-        (*this) = S::S1({ 0 });
+        (*(self as *mut S)) = S::S1({ 0 });
     }
     pub unsafe fn copy_if_different_const(&mut self, mut other: *const S) -> bool {
-        let this = self as *mut S;
-        if (((this).cast_const()) == (other)) {
+        if (((self as *mut S).cast_const()) == (other)) {
             return false;
         }
-        (*this).a_ = (*other).a_;
-        (*this).self__ = (*other).self__;
+        self.a_ = (*other).a_;
+        self.self__ = (*other).self__;
         return true;
     }
     pub unsafe fn copy_if_different(&mut self, mut other: *mut S) -> bool {
-        let this = self as *mut S;
-        if ((this) == (other)) {
+        if ((self as *mut S) == (other)) {
             return false;
         }
-        (*this).a_ = (*other).a_;
-        (*this).self__ = (*other).self__;
+        self.a_ = (*other).a_;
+        self.self__ = (*other).self__;
         return true;
     }
 }
@@ -112,10 +106,9 @@ pub struct D {
 }
 impl D {
     pub unsafe fn D(mut a: i32) -> Self {
-        let mut __this = Self { a_: a };
-        let this = &raw mut __this;
-        (*this).a_ *= 2;
-        __this
+        let mut this = Self { a_: a };
+        this.a_ *= 2;
+        this
     }
 }
 pub fn main() {
@@ -187,5 +180,8 @@ unsafe fn main_0() -> i32 {
     assert!(((s.self__) == (other.self__)));
     let mut u: S = S::S2({ 1 }, { (&mut s as *mut S) });
     assert!(((u.self__) == (&mut s as *mut S)));
+    let s_const: S = S::S1({ 100 });
+    let mut u1: S = S::S3({ 1 }, { (&s_const as *const S) });
+    assert!((u1.self__).is_null());
     return 0;
 }
