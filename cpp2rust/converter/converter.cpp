@@ -1908,6 +1908,7 @@ void Converter::EmitArgList(const CallInfo &info) {
       StrCat("None", token::kComma);
       continue;
     }
+
     if (ca.has_default) {
       StrCat("Some");
     }
