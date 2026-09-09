@@ -14,9 +14,8 @@ pub struct S {
 }
 impl S {
     pub unsafe fn S() -> Self {
-        let mut __this = Self { a: 11, b: true };
-        let this = &raw mut __this;
-        __this
+        let mut this = Self { a: 11, b: true };
+        this
     }
 }
 impl Default for S {

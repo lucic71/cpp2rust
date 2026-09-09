@@ -15,26 +15,23 @@ pub struct Partial {
 }
 impl Partial {
     pub unsafe fn Partial(mut v: i32, mut keep: i32) -> Self {
-        let mut __this = Self { v: v, keep: keep };
-        let this = &raw mut __this;
-        __this
+        let mut this = Self { v: v, keep: keep };
+        this
     }
     pub unsafe fn Partial_pconstPartial(o: *const Partial) -> Self {
-        let mut __this = Self {
+        let mut this = Self {
             v: (*o).v,
             keep: (*o).keep,
         };
-        let this = &raw mut __this;
-        __this
+        this
     }
     pub unsafe fn operator_assign(&mut self, o: *const Partial) -> *mut Partial {
-        let this = self as *mut Partial;
-        if (((this).cast_const()) == (o)) {
-            return &mut (*this) as *mut Partial;
+        if (((self as *mut Partial).cast_const()) == (o)) {
+            return &mut (*(self as *mut Partial)) as *mut Partial;
         }
-        (*this).v = (*o).v;
+        self.v = (*o).v;
         assigns_0.prefix_inc();
-        return &mut (*this) as *mut Partial;
+        return &mut (*(self as *mut Partial)) as *mut Partial;
     }
 }
 impl Clone for Partial {
@@ -49,25 +46,22 @@ pub struct NonConstAssign {
 }
 impl NonConstAssign {
     pub unsafe fn NonConstAssign() -> Self {
-        let mut __this = Self { mark: 0 };
-        let this = &raw mut __this;
-        __this
+        let mut this = Self { mark: 0 };
+        this
     }
     pub unsafe fn operator_assign_pmutNonConstAssign(
         &mut self,
         o: *mut NonConstAssign,
     ) -> *mut NonConstAssign {
-        let this = self as *mut NonConstAssign;
-        (*this).mark = (((*o).mark) + (1));
-        return &mut (*this) as *mut NonConstAssign;
+        self.mark = (((*o).mark) + (1));
+        return &mut (*(self as *mut NonConstAssign)) as *mut NonConstAssign;
     }
     pub unsafe fn operator_assign_pconstNonConstAssign(
         &mut self,
         o: *const NonConstAssign,
     ) -> *mut NonConstAssign {
-        let this = self as *mut NonConstAssign;
-        (*this).mark = (((*o).mark) + (10));
-        return &mut (*this) as *mut NonConstAssign;
+        self.mark = (((*o).mark) + (10));
+        return &mut (*(self as *mut NonConstAssign)) as *mut NonConstAssign;
     }
 }
 impl Default for NonConstAssign {
@@ -82,25 +76,22 @@ pub struct RefQualified {
 }
 impl RefQualified {
     pub unsafe fn RefQualified() -> Self {
-        let mut __this = Self { mark: 0 };
-        let this = &raw mut __this;
-        __this
+        let mut this = Self { mark: 0 };
+        this
     }
     pub unsafe fn operator_assign_pconstRefQualified_lref(
         &mut self,
         o: *const RefQualified,
     ) -> *mut RefQualified {
-        let this = self as *mut RefQualified;
-        (*this).mark = (((*o).mark) + (1));
-        return &mut (*this) as *mut RefQualified;
+        self.mark = (((*o).mark) + (1));
+        return &mut (*(self as *mut RefQualified)) as *mut RefQualified;
     }
     pub unsafe fn operator_assign_pconstRefQualified_rref(
         &mut self,
         o: *const RefQualified,
     ) -> *mut RefQualified {
-        let this = self as *mut RefQualified;
-        (*this).mark = (((*o).mark) + (10));
-        return this;
+        self.mark = (((*o).mark) + (10));
+        return (self as *mut RefQualified);
     }
 }
 impl Default for RefQualified {

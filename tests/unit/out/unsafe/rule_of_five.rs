@@ -17,84 +17,78 @@ pub struct Buffer {
 }
 impl Buffer {
     pub unsafe fn Buffer(mut size: i32) -> Self {
-        let mut __this = Self {
+        let mut this = Self {
             data: [0_i32; 4],
             size: size,
         };
-        let this = &raw mut __this;
         let mut i: i32 = 0;
         'loop_: while ((i) < (4)) {
-            (*this).data[(i) as usize] = if ((i) < (size)) { i } else { -1_i32 };
+            this.data[(i) as usize] = if ((i) < (size)) { i } else { -1_i32 };
             i.prefix_inc();
         }
         alive_0.prefix_inc();
-        __this
+        this
     }
     pub unsafe fn destructor(&mut self) {
-        let this = self as *mut Buffer;
         alive_0.prefix_dec();
     }
     pub unsafe fn Buffer_pconstBuffer(o: *const Buffer) -> Self {
-        let mut __this = Self {
+        let mut this = Self {
             data: [0_i32; 4],
             size: (*o).size,
         };
-        let this = &raw mut __this;
         let mut i: i32 = 0;
         'loop_: while ((i) < (4)) {
-            (*this).data[(i) as usize] = (*o).data[(i) as usize];
+            this.data[(i) as usize] = (*o).data[(i) as usize];
             i.prefix_inc();
         }
         alive_0.prefix_inc();
         copies_1.prefix_inc();
-        __this
+        this
     }
     pub unsafe fn Buffer_pmutBuffer(o: *mut Buffer) -> Self {
-        let mut __this = Self {
+        let mut this = Self {
             data: [0_i32; 4],
             size: (*o).size,
         };
-        let this = &raw mut __this;
         let mut i: i32 = 0;
         'loop_: while ((i) < (4)) {
-            (*this).data[(i) as usize] = (*o).data[(i) as usize];
+            this.data[(i) as usize] = (*o).data[(i) as usize];
             (*o).data[(i) as usize] = -1_i32;
             i.prefix_inc();
         }
         (*o).size = 0;
         alive_0.prefix_inc();
         moves_2.prefix_inc();
-        __this
+        this
     }
     pub unsafe fn operator_assign_pconstBuffer(&mut self, o: *const Buffer) -> *mut Buffer {
-        let this = self as *mut Buffer;
-        if (((this).cast_const()) == (o)) {
-            return &mut (*this) as *mut Buffer;
+        if (((self as *mut Buffer).cast_const()) == (o)) {
+            return &mut (*(self as *mut Buffer)) as *mut Buffer;
         }
-        (*this).size = (*o).size;
+        self.size = (*o).size;
         let mut i: i32 = 0;
         'loop_: while ((i) < (4)) {
-            (*this).data[(i) as usize] = (*o).data[(i) as usize];
+            self.data[(i) as usize] = (*o).data[(i) as usize];
             i.prefix_inc();
         }
         copies_1.prefix_inc();
-        return &mut (*this) as *mut Buffer;
+        return &mut (*(self as *mut Buffer)) as *mut Buffer;
     }
     pub unsafe fn operator_assign_pmutBuffer(&mut self, o: *mut Buffer) -> *mut Buffer {
-        let this = self as *mut Buffer;
-        if ((this) == (o)) {
-            return &mut (*this) as *mut Buffer;
+        if ((self as *mut Buffer) == (o)) {
+            return &mut (*(self as *mut Buffer)) as *mut Buffer;
         }
-        (*this).size = (*o).size;
+        self.size = (*o).size;
         let mut i: i32 = 0;
         'loop_: while ((i) < (4)) {
-            (*this).data[(i) as usize] = (*o).data[(i) as usize];
+            self.data[(i) as usize] = (*o).data[(i) as usize];
             (*o).data[(i) as usize] = -1_i32;
             i.prefix_inc();
         }
         (*o).size = 0;
         moves_2.prefix_inc();
-        return &mut (*this) as *mut Buffer;
+        return &mut (*(self as *mut Buffer)) as *mut Buffer;
     }
 }
 impl Clone for Buffer {

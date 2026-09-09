@@ -13,15 +13,13 @@ pub struct MoveOnly {
 }
 impl MoveOnly {
     pub unsafe fn MoveOnly(mut v: i32) -> Self {
-        let mut __this = Self { v: v };
-        let this = &raw mut __this;
-        __this
+        let mut this = Self { v: v };
+        this
     }
     pub unsafe fn MoveOnly_pmutMoveOnly(o: *mut MoveOnly) -> Self {
-        let mut __this = Self { v: (*o).v };
-        let this = &raw mut __this;
+        let mut this = Self { v: (*o).v };
         (*o).v = 0;
-        __this
+        this
     }
 }
 #[repr(C)]
@@ -31,23 +29,20 @@ pub struct ConstMove {
 }
 impl ConstMove {
     pub unsafe fn ConstMove() -> Self {
-        let mut __this = Self { mark: 0 };
-        let this = &raw mut __this;
-        __this
+        let mut this = Self { mark: 0 };
+        this
     }
     pub unsafe fn ConstMove_pmutConstMove(o: *mut ConstMove) -> Self {
-        let mut __this = Self {
+        let mut this = Self {
             mark: (((*o).mark) + (1)),
         };
-        let this = &raw mut __this;
-        __this
+        this
     }
     pub unsafe fn ConstMove_pconstConstMove(o: *const ConstMove) -> Self {
-        let mut __this = Self {
+        let mut this = Self {
             mark: (((*o).mark) + (10)),
         };
-        let this = &raw mut __this;
-        __this
+        this
     }
 }
 impl Default for ConstMove {

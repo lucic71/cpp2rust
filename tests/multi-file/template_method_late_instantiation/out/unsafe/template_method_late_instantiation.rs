@@ -13,8 +13,7 @@ pub struct S_int_ {
 }
 impl S_int_ {
     pub unsafe fn set(&mut self, mut v: i32) {
-        let this = self as *mut S_int_;
-        (*this).x = v;
+        self.x = v;
     }
 }
 pub fn main() {
@@ -30,8 +29,7 @@ unsafe fn main_0() -> i32 {
 }
 impl S_int_ {
     pub unsafe fn get(&mut self) -> i32 {
-        let this = self as *mut S_int_;
-        return (*this).x;
+        return self.x;
     }
 }
 pub unsafe fn f_0(mut p: *mut S_int_) -> i32 {

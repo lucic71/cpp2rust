@@ -14,15 +14,13 @@ pub struct Counted {
 }
 impl Counted {
     pub unsafe fn Counted(mut v: i32) -> Self {
-        let mut __this = Self { v: v };
-        let this = &raw mut __this;
-        __this
+        let mut this = Self { v: v };
+        this
     }
     pub unsafe fn Counted_pconstCounted(o: *const Counted) -> Self {
-        let mut __this = Self { v: (*o).v };
-        let this = &raw mut __this;
+        let mut this = Self { v: (*o).v };
         copies_0.prefix_inc();
-        __this
+        this
     }
 }
 impl Clone for Counted {
@@ -37,23 +35,20 @@ pub struct NonConst {
 }
 impl NonConst {
     pub unsafe fn NonConst() -> Self {
-        let mut __this = Self { mark: 0 };
-        let this = &raw mut __this;
-        __this
+        let mut this = Self { mark: 0 };
+        this
     }
     pub unsafe fn NonConst_pmutNonConst(o: *mut NonConst) -> Self {
-        let mut __this = Self {
+        let mut this = Self {
             mark: (((*o).mark) + (1)),
         };
-        let this = &raw mut __this;
-        __this
+        this
     }
     pub unsafe fn NonConst_pconstNonConst(o: *const NonConst) -> Self {
-        let mut __this = Self {
+        let mut this = Self {
             mark: (((*o).mark) + (10)),
         };
-        let this = &raw mut __this;
-        __this
+        this
     }
 }
 impl Clone for NonConst {
@@ -74,21 +69,19 @@ pub struct WithDefault {
 }
 impl WithDefault {
     pub unsafe fn WithDefault(mut v: i32) -> Self {
-        let mut __this = Self { v: v, tag: 0 };
-        let this = &raw mut __this;
-        __this
+        let mut this = Self { v: v, tag: 0 };
+        this
     }
     pub unsafe fn WithDefault_pconstWithDefault_i32(
         o: *const WithDefault,
         mut tag: Option<i32>,
     ) -> Self {
         let mut tag: i32 = tag.unwrap_or(7);
-        let mut __this = Self {
+        let mut this = Self {
             v: (*o).v,
             tag: tag,
         };
-        let this = &raw mut __this;
-        __this
+        this
     }
 }
 impl Clone for WithDefault {

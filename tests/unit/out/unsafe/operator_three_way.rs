@@ -13,18 +13,16 @@ pub struct S {
 }
 impl S {
     pub unsafe fn operator_cmp(&self, o: *const S) -> std::cmp::Ordering {
-        let this = self as *const S;
-        if (((*this).v) < ((*o).v)) {
+        if ((self.v) < ((*o).v)) {
             return std::cmp::Ordering::Less;
         }
-        if (((*this).v) > ((*o).v)) {
+        if ((self.v) > ((*o).v)) {
             return std::cmp::Ordering::Greater;
         }
         return std::cmp::Ordering::Equal;
     }
     pub unsafe fn operator_eq(&self, o: *const S) -> bool {
-        let this = self as *const S;
-        return (((*this).v) == ((*o).v));
+        return ((self.v) == ((*o).v));
     }
 }
 impl std::cmp::Ord for S {

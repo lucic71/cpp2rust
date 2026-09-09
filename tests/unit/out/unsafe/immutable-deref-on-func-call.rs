@@ -13,7 +13,6 @@ pub struct Item {
 }
 impl Item {
     pub unsafe fn foo(&mut self, mut other: *mut Item) {
-        let this = self as *mut Item;
         (*other).value = 10;
     }
 }

@@ -14,9 +14,8 @@ pub struct Pair {
 }
 impl Pair {
     pub unsafe fn operator_lt(&mut self, other: *const Pair) -> bool {
-        let this = self as *mut Pair;
-        return (((*this).x) < ((*other).x))
-            || ((((*this).x) == ((*other).x)) && (((*this).y) < ((*other).y)));
+        return ((self.x) < ((*other).x))
+            || (((self.x) == ((*other).x)) && ((self.y) < ((*other).y)));
     }
 }
 impl std::cmp::Ord for Pair {

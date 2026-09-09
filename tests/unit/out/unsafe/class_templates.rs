@@ -13,27 +13,22 @@ pub struct MyContainer_int_ {
 }
 impl MyContainer_int_ {
     pub unsafe fn empty(&self) -> bool {
-        let this = self as *const MyContainer_int_;
-        return (*this).vec_.is_empty();
+        return self.vec_.is_empty();
     }
     pub unsafe fn size(&self) -> usize {
-        let this = self as *const MyContainer_int_;
-        return (*this).vec_.len();
+        return self.vec_.len();
     }
     pub unsafe fn back(&mut self) -> *mut i32 {
-        let this = self as *mut MyContainer_int_;
-        return (((*this).vec_).last_mut().unwrap());
+        return ((self.vec_).last_mut().unwrap());
     }
     pub unsafe fn pop_back(&mut self) {
-        let this = self as *mut MyContainer_int_;
-        (*this).vec_.pop();
+        self.vec_.pop();
         return;
     }
     pub unsafe fn push_back(&mut self, item: *const i32) {
-        let this = self as *mut MyContainer_int_;
         {
             let a0_clone = (*item).clone();
-            (*this).vec_.push(a0_clone)
+            self.vec_.push(a0_clone)
         };
     }
 }
@@ -44,27 +39,22 @@ pub struct MyContainer_char_ {
 }
 impl MyContainer_char_ {
     pub unsafe fn empty(&self) -> bool {
-        let this = self as *const MyContainer_char_;
-        return (*this).vec_.is_empty();
+        return self.vec_.is_empty();
     }
     pub unsafe fn size(&self) -> usize {
-        let this = self as *const MyContainer_char_;
-        return (*this).vec_.len();
+        return self.vec_.len();
     }
     pub unsafe fn back(&mut self) -> *mut libc::c_char {
-        let this = self as *mut MyContainer_char_;
-        return (((*this).vec_).last_mut().unwrap());
+        return ((self.vec_).last_mut().unwrap());
     }
     pub unsafe fn pop_back(&mut self) {
-        let this = self as *mut MyContainer_char_;
-        (*this).vec_.pop();
+        self.vec_.pop();
         return;
     }
     pub unsafe fn push_back(&mut self, item: *const libc::c_char) {
-        let this = self as *mut MyContainer_char_;
         {
             let a0_clone = (*item).clone();
-            (*this).vec_.push(a0_clone)
+            self.vec_.push(a0_clone)
         };
     }
 }
@@ -75,27 +65,22 @@ pub struct MyContainer_float_ {
 }
 impl MyContainer_float_ {
     pub unsafe fn empty(&self) -> bool {
-        let this = self as *const MyContainer_float_;
-        return (*this).vec_.is_empty();
+        return self.vec_.is_empty();
     }
     pub unsafe fn size(&self) -> usize {
-        let this = self as *const MyContainer_float_;
-        return (*this).vec_.len();
+        return self.vec_.len();
     }
     pub unsafe fn back(&mut self) -> *mut f32 {
-        let this = self as *mut MyContainer_float_;
-        return (((*this).vec_).last_mut().unwrap());
+        return ((self.vec_).last_mut().unwrap());
     }
     pub unsafe fn pop_back(&mut self) {
-        let this = self as *mut MyContainer_float_;
-        (*this).vec_.pop();
+        self.vec_.pop();
         return;
     }
     pub unsafe fn push_back(&mut self, item: *const f32) {
-        let this = self as *mut MyContainer_float_;
         {
             let a0_clone = (*item).clone();
-            (*this).vec_.push(a0_clone)
+            self.vec_.push(a0_clone)
         };
     }
 }

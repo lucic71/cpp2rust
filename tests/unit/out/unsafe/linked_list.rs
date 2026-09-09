@@ -14,8 +14,7 @@ pub struct Node {
 }
 impl Node {
     pub unsafe fn SetNext(&mut self, mut next: *mut Node) {
-        let this = self as *mut Node;
-        (*this).next = next;
+        self.next = next;
     }
 }
 pub unsafe fn Find_0(mut head: *mut Node, mut idx: i32) -> *mut Node {
