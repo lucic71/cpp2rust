@@ -1059,16 +1059,15 @@ bool Converter::VisitCXXConstructorDecl(clang::CXXConstructorDecl *decl) {
 
 void Converter::ConvertCXXConstructorBody(clang::CXXConstructorDecl *decl) {
   EmitFunctionPreamble(decl);
-  StrCat(keyword::kLet, "mut", "__this", token::kAssign, "Self");
+  StrCat(keyword::kLet, "mut", "this", token::kAssign, "Self");
   {
     PushBrace this_init(*this);
     EmitConstructorFieldInits(decl);
   }
+
   StrCat(token::kSemiColon);
-  StrCat(keyword::kLet, "this", token::kAssign, "&raw mut __this",
-         token::kSemiColon);
   ConvertBodyStmts(decl->getBody());
-  StrCat("__this");
+  StrCat("this");
 }
 
 void Converter::EmitConstructorFieldInits(clang::CXXConstructorDecl *decl) {
@@ -1129,13 +1128,6 @@ void Converter::EmitFunctionPreamble(clang::FunctionDecl *decl) {
       StrCat(std::format("let mut {} : {} = {}", name, type, init),
              token::kSemiColon);
     }
-  }
-  if (auto *method = clang::dyn_cast<clang::CXXMethodDecl>(decl);
-      method && method->isInstance() && !method->getParent()->isLambda() &&
-      !clang::isa<clang::CXXConstructorDecl>(method)) {
-    StrCat(
-        std::format("let this = self as {}", ToString(method->getThisType())),
-        token::kSemiColon);
   }
 }
 
@@ -2981,7 +2973,7 @@ void Converter::SetUFCSReceiver(clang::Expr *base, bool is_arrow,
   if (clang::isa<clang::CXXThisExpr>(base->IgnoreParenImpCasts())) {
     bool in_ctor =
         curr_function_ && clang::isa<clang::CXXConstructorDecl>(curr_function_);
-    ufcs_receiver_ = in_ctor ? "&mut *this" : keyword::kSelfValue;
+    ufcs_receiver_ = in_ctor ? "&mut this" : keyword::kSelfValue;
     return;
   }
   Buffer buf(*this);
@@ -3084,6 +3076,7 @@ bool Converter::VisitCXXThisExpr(clang::CXXThisExpr *expr) {
     PushParen paren(*this);
     StrCat(keyword::kSelfValue, keyword::kAs, ToString(expr->getType()));
   }
+  return false;
 }
 
 bool Converter::VisitInitListExpr(clang::InitListExpr *expr) {
