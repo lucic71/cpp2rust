@@ -7,6 +7,7 @@
 #include <clang/AST/ParentMapContext.h>
 #include <clang/Basic/LangOptions.h>
 #include <clang/Basic/SourceManager.h>
+#include <clang/Basic/Version.h>
 #include <llvm/ADT/DenseMap.h>
 #include <llvm/Support/ConvertUTF.h>
 #include <llvm/Support/ErrorHandling.h>
@@ -969,9 +970,12 @@ bool Converter::VisitCXXRecordDecl(clang::CXXRecordDecl *decl) {
     for (auto *method : decl->methods()) {
       if (IsComparisonOperator(method) && method->isDefaulted() &&
           !method->doesThisDeclarationHaveABody()) {
-        sema_->DefineDefaultedComparison(
-            decl->getLocation(), method,
-            sema_->getDefaultedComparisonKind(method));
+#if CLANG_VERSION_MAJOR >= 23
+        auto kind = method->getDefaultedComparisonKind();
+#else
+        auto kind = sema_->getDefaultedComparisonKind(method);
+#endif
+        sema_->DefineDefaultedComparison(decl->getLocation(), method, kind);
       }
     }
 
