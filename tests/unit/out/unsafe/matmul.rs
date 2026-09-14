@@ -18,7 +18,8 @@ pub unsafe fn matalloc_0(mut n: i32, mut p: i32, mut e: i32) -> Option<Box<[Opti
             (0..(p as usize))
                 .map(|_| <i32>::default())
                 .collect::<Box<[_]>>(),
-        );
+        )
+        .take();
         let mut j: i32 = 0;
         'loop_: while ((j) < (p)) {
             m.as_mut().unwrap()[(i as usize)].as_mut().unwrap()[(j as usize)] = e;
@@ -26,7 +27,7 @@ pub unsafe fn matalloc_0(mut n: i32, mut p: i32, mut e: i32) -> Option<Box<[Opti
         }
         i.prefix_inc();
     }
-    return m;
+    return m.take();
 }
 pub unsafe fn matmul_1(
     mut m1: Option<Box<[Option<Box<[i32]>>]>>,
@@ -53,7 +54,7 @@ pub unsafe fn matmul_1(
         }
         i.prefix_inc();
     }
-    return m3;
+    return m3.take();
 }
 pub fn main() {
     unsafe {
@@ -66,13 +67,14 @@ unsafe fn main_0() -> i32 {
     let mut m1: Option<Box<[Option<Box<[i32]>>]>> = (unsafe { matalloc_0(n, p, 1) });
     let mut m2: Option<Box<[Option<Box<[i32]>>]>> = (unsafe { matalloc_0(p, n, 2) });
     let mut m3: Option<Box<[Option<Box<[i32]>>]>> = (unsafe {
-        let _m1: Option<Box<[Option<Box<[i32]>>]>> = m1;
+        let _m1: Option<Box<[Option<Box<[i32]>>]>> = m1.take();
         let _n1: i32 = n;
         let _p1: i32 = p;
-        let _m2: Option<Box<[Option<Box<[i32]>>]>> = m2;
+        let _m2: Option<Box<[Option<Box<[i32]>>]>> = m2.take();
         let _n2: i32 = p;
         let _p2: i32 = n;
         matmul_1(_m1, _n1, _p1, _m2, _n2, _p2)
     });
-    return m3.as_mut().unwrap()[(0_usize)].as_mut().unwrap()[(0_usize)];
+    assert!(((m3.as_mut().unwrap()[(0_usize)].as_mut().unwrap()[(0_usize)]) == (20)));
+    return 0;
 }

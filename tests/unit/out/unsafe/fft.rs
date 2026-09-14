@@ -44,7 +44,7 @@ pub unsafe fn fft_3(a: *mut Option<Box<[Complex]>>, mut N: i32) -> Option<Box<[C
             re: (*a).as_mut().unwrap()[(0_usize)].re,
             img: (*a).as_mut().unwrap()[(0_usize)].img,
         };
-        return y;
+        return y.take();
     }
     let mut w: Option<Box<[Complex]>> = Some(
         (0..(N as usize))
@@ -89,10 +89,10 @@ pub unsafe fn fft_3(a: *mut Option<Box<[Complex]>>, mut N: i32) -> Option<Box<[C
     let mut k: i32 = 0;
     'loop_: while ((k) < ((N) / (2))) {
         let mut yk: Complex = (unsafe {
-            let _z1: Complex = y0.as_mut().unwrap()[(k as usize)].clone();
+            let _z1: Complex = y0.as_mut().unwrap()[(k as usize)];
             let _z2: Complex = (unsafe {
-                let _z1: Complex = w.as_mut().unwrap()[(k as usize)].clone();
-                let _z2: Complex = y1.as_mut().unwrap()[(k as usize)].clone();
+                let _z1: Complex = w.as_mut().unwrap()[(k as usize)];
+                let _z2: Complex = y1.as_mut().unwrap()[(k as usize)];
                 Product_0(_z1, _z2)
             });
             Sum_1(_z1, _z2)
@@ -102,12 +102,12 @@ pub unsafe fn fft_3(a: *mut Option<Box<[Complex]>>, mut N: i32) -> Option<Box<[C
             img: yk.img,
         };
         let mut yk_n2: Complex = (unsafe {
-            let _z1: Complex = y0.as_mut().unwrap()[(k as usize)].clone();
+            let _z1: Complex = y0.as_mut().unwrap()[(k as usize)];
             let _z2: Complex = (unsafe {
                 Neg_2(
                     (unsafe {
-                        let _z1: Complex = w.as_mut().unwrap()[(k as usize)].clone();
-                        let _z2: Complex = y1.as_mut().unwrap()[(k as usize)].clone();
+                        let _z1: Complex = w.as_mut().unwrap()[(k as usize)];
+                        let _z2: Complex = y1.as_mut().unwrap()[(k as usize)];
                         Product_0(_z1, _z2)
                     }),
                 )
@@ -120,7 +120,7 @@ pub unsafe fn fft_3(a: *mut Option<Box<[Complex]>>, mut N: i32) -> Option<Box<[C
         };
         k.postfix_inc();
     }
-    return y;
+    return y.take();
 }
 pub fn main() {
     unsafe {
@@ -162,12 +162,15 @@ unsafe fn main_0() -> i32 {
             (b.as_mut().unwrap()[(i as usize)].img.round() as i32);
         i.prefix_inc();
     }
-    return (((((((reals.as_mut().unwrap()[(0_usize)]) == (10))
-        && ((imgs.as_mut().unwrap()[(0_usize)]) == (0)))
-        && (((reals.as_mut().unwrap()[(1_usize)]) == (-2_i32))
-            && ((imgs.as_mut().unwrap()[(1_usize)]) == (2))))
-        && (((reals.as_mut().unwrap()[(2_usize)]) == (-2_i32))
-            && ((imgs.as_mut().unwrap()[(2_usize)]) == (0))))
-        && (((reals.as_mut().unwrap()[(3_usize)]) == (-2_i32))
-            && ((imgs.as_mut().unwrap()[(3_usize)]) == (-2_i32)))) as i32);
+    assert!(
+        ((((((((reals.as_mut().unwrap()[(0_usize)]) == (10))
+            && ((imgs.as_mut().unwrap()[(0_usize)]) == (0)))
+            && ((reals.as_mut().unwrap()[(1_usize)]) == (-2_i32)))
+            && ((imgs.as_mut().unwrap()[(1_usize)]) == (2)))
+            && ((reals.as_mut().unwrap()[(2_usize)]) == (-2_i32)))
+            && ((imgs.as_mut().unwrap()[(2_usize)]) == (0)))
+            && ((reals.as_mut().unwrap()[(3_usize)]) == (-2_i32)))
+            && ((imgs.as_mut().unwrap()[(3_usize)]) == (-2_i32))
+    );
+    return 0;
 }

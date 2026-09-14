@@ -28,6 +28,10 @@ pub mod carray_tgt_refcount;
 pub mod carray_tgt_unsafe;
 #[path = r#"../cmath/tgt_unsafe.rs"#]
 pub mod cmath_tgt_unsafe;
+#[path = r#"../compare/tgt_unsafe.rs"#]
+pub mod compare_tgt_unsafe;
+#[path = r#"../cstddef/tgt_unsafe.rs"#]
+pub mod cstddef_tgt_unsafe;
 #[path = r#"../cstdlib/tgt_refcount.rs"#]
 pub mod cstdlib_tgt_refcount;
 #[path = r#"../cstdlib/tgt_unsafe.rs"#]

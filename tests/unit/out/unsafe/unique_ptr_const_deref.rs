@@ -28,7 +28,8 @@ pub fn main() {
 }
 unsafe fn main_0() -> i32 {
     let mut h: Holder = <Holder>::default();
-    h.val = Some(Box::new(10));
+    h.val = Some(Box::new(10)).take();
     (unsafe { write_val_1((&mut h as *mut Holder).cast_const(), 42) });
-    return (unsafe { read_val_0((&mut h as *mut Holder).cast_const()) });
+    assert!(((unsafe { read_val_0((&mut h as *mut Holder).cast_const(),) }) == (42)));
+    return 0;
 }

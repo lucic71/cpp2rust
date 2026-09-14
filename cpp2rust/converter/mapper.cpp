@@ -4,10 +4,12 @@
 #include "converter/mapper.h"
 
 #include <clang/AST/ExprCXX.h>
+#include <clang/Basic/OperatorKinds.h>
 #include <clang/Basic/SourceManager.h>
 #include <clang/Lex/Lexer.h>
 #include <llvm/Support/ThreadPool.h>
 
+#include <cctype>
 #include <cstdlib>
 #include <format>
 #include <optional>
@@ -618,12 +620,13 @@ std::string mapTypeStringRecursive(const std::string &cpp_type) {
 std::string normalizeTranslationRule(std::string rule) {
   // Detach pointer from double reference. Useful for matching translation
   // rules.
-  rule = ReplaceAll(rule, "*&&", "* &&");
+  ReplaceAll(rule, "*&&", "* &&");
 
-  const std::array<std::pair<std::regex, std::string>, 1> normalization_rules{{
-      // Ignore constant template parameters, i.e. replace them with _.
-      {std::regex(R"(\b\d+\b)"), "_"},
-  }};
+  static const std::array<std::pair<std::regex, std::string>, 1>
+      normalization_rules{{
+          // Ignore constant template parameters, i.e. replace them with _.
+          {std::regex(R"(\b\d+\b)"), "_"},
+      }};
 
   for (const auto &r : normalization_rules) {
     rule = std::regex_replace(rule, r.first, r.second);
@@ -826,12 +829,18 @@ void AddRuleForUserDefinedType(clang::NamedDecl *decl) {
 }
 
 std::string ToRustName(std::string name) {
-  size_t pos = 0;
-  while ((pos = name.find_first_of("<>, ", pos)) != std::string::npos) {
-    name[pos] = '_';
-    ++pos;
+  ReplaceAll(name, "::", "_");
+  ReplaceAll(name, "*", "ptr");
+  ReplaceAll(name, "&", "ref");
+  ReplaceAll(name, "[", "arr");
+  ReplaceAll(name, "]", "arr");
+  ReplaceAll(name, "-", "neg");
+  for (auto &c : name) {
+    if (!std::isalnum(c) && c != '_') {
+      c = '_';
+    }
   }
-  return ReplaceAll(name, "::", "_");
+  return name;
 }
 
 std::string ToString(clang::QualType qual_type, ScalarSugar sugar) {
@@ -922,8 +931,30 @@ std::string ToString(const clang::NamedDecl *decl) {
   }
 
   os << ToString(func_decl->getReturnType()) << ' ';
-  if (const auto *method_decl =
-          llvm::dyn_cast<clang::CXXMethodDecl>(func_decl)) {
+  if (const auto op = func_decl->getOverloadedOperator();
+      op >= clang::OverloadedOperatorKind::OO_LessLess &&
+      op <= clang::OverloadedOperatorKind::OO_GreaterGreaterEqual) {
+    // ensure matchTemplate does not consider these operator names when matching
+    func_decl->getQualifier().print(os, getPrintPolicy());
+    os << "operator ";
+    switch (op) {
+    case clang::OverloadedOperatorKind::OO_LessLess:
+      os << "shl";
+      break;
+    case clang::OverloadedOperatorKind::OO_GreaterGreater:
+      os << "shr";
+      break;
+    case clang::OverloadedOperatorKind::OO_LessLessEqual:
+      os << "shleq";
+      break;
+    case clang::OverloadedOperatorKind::OO_GreaterGreaterEqual:
+      os << "shreq";
+      break;
+    default:
+      assert(0 && "Unexpected overloaded operator kind");
+    }
+  } else if (const auto *method_decl =
+                 llvm::dyn_cast<clang::CXXMethodDecl>(func_decl)) {
     if (method_decl->getParent()->isLambda() &&
         method_decl->getOverloadedOperator() == clang::OO_Call) {
       func_decl->printName(os, getPrintPolicy());

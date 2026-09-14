@@ -5,9 +5,11 @@
 
 #include <clang/AST/ASTContext.h>
 #include <clang/AST/Decl.h>
+#include <clang/AST/DeclCXX.h>
 #include <clang/AST/Expr.h>
 #include <clang/AST/StmtCXX.h>
 #include <clang/AST/Type.h>
+#include <llvm/ADT/STLFunctionalExtras.h>
 
 #include <optional>
 #include <string>
@@ -32,9 +34,9 @@ std::optional<IteratorCategory>
 GetStrongestIteratorCategory(clang::QualType type);
 bool IsBuiltinConstantP(const clang::Expr *expr);
 
-bool IsGlobalVar(clang::VarDecl *decl);
+bool IsGlobalVar(const clang::VarDecl *decl);
 
-bool IsGlobalVar(clang::Expr *expr);
+bool IsGlobalVar(const clang::Expr *expr);
 
 bool IsComparisonWithNullOp(const clang::BinaryOperator *expr);
 
@@ -60,11 +62,39 @@ bool IsMutatingCall(const clang::CallExpr *expr);
 
 bool IsOverloadedFunction(const clang::FunctionDecl *decl);
 
+void ForEachTemplateInstantiatedMethod(
+    const clang::CXXRecordDecl *decl,
+    llvm::function_ref<void(clang::CXXMethodDecl *)> fn);
+
 bool IsOverloadedMethod(const clang::CXXMethodDecl *decl);
+
+bool IsUserDefinedCopyConstructor(const clang::CXXConstructorDecl *ctor);
+
+bool IsUserDefinedMoveConstructor(const clang::CXXConstructorDecl *ctor);
+
+bool IsUserDefinedCopyOrMoveConstructor(const clang::CXXConstructorDecl *ctor);
+
+bool IsDefaultedMoveConstructor(const clang::CXXConstructorDecl *ctor);
+
+clang::CXXConstructorDecl *
+GetUserDefinedCopyConstructor(const clang::RecordDecl *decl);
+
+bool HasCallableCopyConstructor(const clang::RecordDecl *decl);
+
+bool HasDefaultedCopyConstructor(const clang::RecordDecl *decl);
+
+bool IsRValueConvertingConstructor(const clang::CXXConstructorDecl *ctor);
+
+bool IsPassThroughConstructor(const clang::CXXConstructorDecl *ctor);
 
 bool IsConvertibleCXXRecordDecl(const clang::CXXRecordDecl *decl);
 
 bool IsConvertibleCXXMethodDecl(const clang::CXXMethodDecl *decl);
+
+bool IsComparisonOperator(const clang::FunctionDecl *fn);
+bool IsEmittableMethod(clang::CXXMethodDecl *method);
+
+bool IsMethodOnPtr(const clang::CXXMethodDecl *method);
 
 bool IsConvertibleFunctionDecl(const clang::FunctionDecl *decl);
 
@@ -99,6 +129,7 @@ unsigned GetColumnNumber(const clang::Decl *decl);
 unsigned GetArraySize(clang::QualType array_type);
 
 std::string GetID(const clang::Decl *decl);
+std::string GetMethodID(const clang::CXXMethodDecl *decl);
 
 std::string GetNamedDeclAsString(const clang::NamedDecl *decl);
 
@@ -116,7 +147,21 @@ clang::QualType GetReturnTypeOfFunction(const clang::CallExpr *expr);
 
 const char *GetOverloadedOperator(const clang::FunctionDecl *decl);
 
-bool IsOverloadedComparisonOperator(const clang::CXXMethodDecl *decl);
+std::string GetFunctionBaseName(const clang::FunctionDecl *decl);
+
+bool IsUserOperatorCall(const clang::CXXOperatorCallExpr *expr);
+
+bool IsSameTypeComparison(const clang::FunctionDecl *fn,
+                          const clang::CXXRecordDecl *record);
+
+clang::CXXDestructorDecl *
+GetUserDefinedDestructor(const clang::CXXRecordDecl *decl);
+
+bool TypeNeedsDestruction(clang::QualType type);
+
+bool HasFieldsNeedingDestruction(const clang::CXXRecordDecl *decl);
+
+bool RecordNeedsDestruction(const clang::CXXRecordDecl *decl);
 
 clang::Expr *ToAddrOf(clang::ASTContext &ctx, clang::Expr *expr);
 
@@ -215,8 +260,7 @@ std::string_view Trim(std::string_view s);
 
 void Unwrap(std::string &s, std::string_view prefix, std::string_view suffix);
 
-std::string ReplaceAll(std::string str, std::string_view from,
-                       std::string_view to);
+void ReplaceAll(std::string &str, std::string_view from, std::string_view to);
 
 enum class ConstCastType {
   ConstToConst,

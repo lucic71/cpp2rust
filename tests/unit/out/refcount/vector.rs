@@ -17,7 +17,7 @@ fn main_0() -> i32 {
     assert!(((*v1.borrow()).len() == 0_usize));
     assert!((*v1.borrow()).is_empty());
     (*v1.borrow_mut()).push(1);
-    assert!(!(*v1.borrow()).is_empty());
+    assert!(!((*v1.borrow()).is_empty()));
     (*v1.borrow_mut()).pop();
     assert!((*v1.borrow()).is_empty());
     let s1: Value<usize> = Rc::new(RefCell::new((*v1.borrow()).len()));
@@ -230,9 +230,12 @@ fn main_0() -> i32 {
             .read())
             == 6.5E+0)
     );
-    return ((((*s1.borrow()).wrapping_add((*s2.borrow()))).wrapping_add(
-        (((v2.as_pointer() as Ptr<i32>)
-            .offset(0_usize as isize)
-            .read()) as usize),
-    )) as i32);
+    assert!(
+        (((*s1.borrow()).wrapping_add((*s2.borrow()))).wrapping_add(
+            (((v2.as_pointer() as Ptr<i32>)
+                .offset(0_usize as isize)
+                .read()) as usize)
+        ) == 103_usize)
+    );
+    return 0;
 }

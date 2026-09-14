@@ -7,7 +7,7 @@ use std::fmt;
 use std::rc::Rc;
 
 use crate::CStringIterator;
-use crate::rc::{Ptr, PtrKind};
+use crate::rc::{AsPointer, Ptr, PtrKind};
 
 impl fmt::Display for Ptr<u8> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
@@ -27,71 +27,33 @@ impl fmt::Display for Ptr<u8> {
     }
 }
 
-type StringLiteralMap = HashMap<&'static [u8], Rc<RefCell<Vec<u8>>>>;
+type StringLiteralMap = HashMap<&'static [u8], Rc<RefCell<Box<[u8]>>>>;
 
 thread_local! {
     static STRING_LITERALS: RefCell<StringLiteralMap> = RefCell::new(HashMap::new());
 }
 
+impl Ptr<Box<[u8]>> {
+    #[inline]
+    pub fn from_string_literal_array(s: &'static [u8]) -> Self {
+        STRING_LITERALS.with(|literals| {
+            let mut literals = literals.borrow_mut();
+            let weak = Rc::downgrade(literals.entry(s).or_insert_with(|| {
+                Rc::new(RefCell::new({
+                    let mut v = s.to_vec();
+                    v.push(0);
+                    v.into_boxed_slice()
+                }))
+            }));
+            Ptr {
+                offset: 0,
+                kind: PtrKind::StackSingle(weak),
+            }
+        })
+    }
+}
+
 impl Ptr<u8> {
-    pub fn with_slice_mut<R>(&self, len: usize, f: impl FnOnce(&mut [u8]) -> R) -> R {
-        let off = self.offset;
-        match &self.kind {
-            PtrKind::Null => panic!("ub: null pointer"),
-            PtrKind::StackSingle(weak) | PtrKind::HeapSingle(weak) => {
-                assert!(off == 0 && len <= 1, "ub: with_slice_mut out of bounds");
-                let rc = weak.upgrade().expect("ub: dangling pointer");
-                let mut b = rc.borrow_mut();
-                f(&mut std::slice::from_mut(&mut *b)[..len])
-            }
-            PtrKind::StackArray(weak) | PtrKind::HeapArray(weak) => {
-                let rc = weak.upgrade().expect("ub: dangling pointer");
-                let mut b = rc.borrow_mut();
-                f(&mut b[off..off + len])
-            }
-            PtrKind::Vec(weak) => {
-                let rc = weak.upgrade().expect("ub: dangling pointer");
-                let mut b = rc.borrow_mut();
-                f(&mut b[off..off + len])
-            }
-            PtrKind::Reinterpreted(data) => {
-                let mut buf = vec![0u8; len];
-                data.alloc.read_bytes(off, &mut buf);
-                let r = f(&mut buf);
-                data.alloc.write_bytes(off, &buf);
-                r
-            }
-        }
-    }
-
-    pub fn with_slice<R>(&self, len: usize, f: impl FnOnce(&[u8]) -> R) -> R {
-        let off = self.offset;
-        match &self.kind {
-            PtrKind::Null => panic!("ub: null pointer"),
-            PtrKind::StackSingle(weak) | PtrKind::HeapSingle(weak) => {
-                assert!(off == 0 && len <= 1, "ub: with_slice out of bounds");
-                let rc = weak.upgrade().expect("ub: dangling pointer");
-                let b = rc.borrow();
-                f(&std::slice::from_ref(&*b)[..len])
-            }
-            PtrKind::StackArray(weak) | PtrKind::HeapArray(weak) => {
-                let rc = weak.upgrade().expect("ub: dangling pointer");
-                let b = rc.borrow();
-                f(&b[off..off + len])
-            }
-            PtrKind::Vec(weak) => {
-                let rc = weak.upgrade().expect("ub: dangling pointer");
-                let b = rc.borrow();
-                f(&b[off..off + len])
-            }
-            PtrKind::Reinterpreted(data) => {
-                let mut buf = vec![0u8; len];
-                data.alloc.read_bytes(off, &mut buf);
-                f(&buf)
-            }
-        }
-    }
-
     #[allow(clippy::explicit_counter_loop)]
     pub fn memcpy(&self, src: &Self, len: usize) {
         if *self > *src {
@@ -142,55 +104,11 @@ impl Ptr<u8> {
         0
     }
 
-    pub fn slice_until(&self, end: &Self) -> Vec<u8> {
-        assert!(self.kind == end.kind, "ub: invalid slice");
-        let start: usize = self.offset;
-        let end: usize = end.offset;
-        assert!(start <= end);
-        assert!(end <= self.len());
-        match self.kind {
-            PtrKind::Null => panic!("ub: dereference of null pointer"),
-            PtrKind::StackSingle(_) | PtrKind::HeapSingle(_) => {
-                if start < end {
-                    vec![self.read()]
-                } else {
-                    Vec::new()
-                }
-            }
-            PtrKind::Vec(ref weak) => {
-                let strong = weak.upgrade().expect("ub: dangling pointer");
-                let raw = strong.borrow();
-                raw[start..end].to_vec()
-            }
-            PtrKind::StackArray(ref weak) | PtrKind::HeapArray(ref weak) => {
-                let strong = weak.upgrade().expect("ub: dangling pointer");
-                let raw = strong.borrow();
-                raw[start..end].to_vec()
-            }
-            PtrKind::Reinterpreted(ref data) => {
-                let mut buf = vec![0u8; end.wrapping_sub(start)];
-                data.alloc.read_bytes(start, &mut buf);
-                buf
-            }
-        }
-    }
-
     #[inline]
     pub fn from_string_literal(s: &'static [u8]) -> Self {
-        STRING_LITERALS.with(|literals| {
-            let mut literals = literals.borrow_mut();
-            let weak = Rc::downgrade(literals.entry(s).or_insert_with(|| {
-                Rc::new(RefCell::new({
-                    let mut v = s.to_vec();
-                    v.push(0);
-                    v
-                }))
-            }));
-            Ptr {
-                offset: 0,
-                kind: PtrKind::Vec(weak),
-            }
-        })
+        Ptr::<Box<[u8]>>::from_string_literal_array(s)
+            .to_strong()
+            .as_pointer()
     }
 
     pub fn to_c_string_iterator(&self) -> CStringIterator {

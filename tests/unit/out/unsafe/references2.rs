@@ -8,7 +8,7 @@ use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 pub unsafe fn change_0(p: *mut Option<Box<i32>>) {
     let mut q: Option<Box<i32>> = Some(Box::new(7));
-    (*p) = q;
+    (*p) = q.take();
 }
 pub fn main() {
     unsafe {
@@ -18,5 +18,6 @@ pub fn main() {
 unsafe fn main_0() -> i32 {
     let mut a: Option<Box<i32>> = Some(Box::new(5));
     (unsafe { change_0(&mut a as *mut Option<Box<i32>>) });
-    return (*a.as_deref_mut().unwrap());
+    assert!(((*a.as_deref_mut().unwrap()) == (7)));
+    return 0;
 }

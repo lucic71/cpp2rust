@@ -12,3 +12,11 @@ fn f1<T1>(a0: Ptr<T1>) -> Ptr<T1> {
 fn f3<T1>(a0: Ptr<T1>) -> Ptr<T1> {
     a0
 }
+
+fn f5<T1: ByteRepr + Clone>(a0: Ptr<Vec<T1>>, a1: &mut Vec<T1>) {
+    a0.write(std::mem::take(&mut *a1))
+}
+
+fn f7<T1: Clone + ByteRepr>(a0: Ptr<Vec<T1>>, a1: Vec<T1>) {
+    a0.write(a1.clone())
+}

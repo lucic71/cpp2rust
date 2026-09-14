@@ -483,6 +483,73 @@ impl<T> Ptr<T> {
     }
 }
 
+impl Ptr<u8> {
+    pub fn with_slice_mut<R>(&self, len: usize, f: impl FnOnce(&mut [u8]) -> R) -> R {
+        let off = self.offset;
+        match &self.kind {
+            PtrKind::Null => panic!("ub: null pointer"),
+            PtrKind::StackSingle(weak) | PtrKind::HeapSingle(weak) => {
+                assert!(off == 0 && len <= 1, "ub: with_slice_mut out of bounds");
+                let rc = weak.upgrade().expect("ub: dangling pointer");
+                let mut b = rc.borrow_mut();
+                f(&mut std::slice::from_mut(&mut *b)[..len])
+            }
+            PtrKind::StackArray(weak) | PtrKind::HeapArray(weak) => {
+                let rc = weak.upgrade().expect("ub: dangling pointer");
+                let mut b = rc.borrow_mut();
+                f(&mut b[off..off + len])
+            }
+            PtrKind::Vec(weak) => {
+                let rc = weak.upgrade().expect("ub: dangling pointer");
+                let mut b = rc.borrow_mut();
+                f(&mut b[off..off + len])
+            }
+            PtrKind::Reinterpreted(data) => {
+                let mut buf = vec![0u8; len];
+                data.alloc.read_bytes(off, &mut buf);
+                let r = f(&mut buf);
+                data.alloc.write_bytes(off, &buf);
+                r
+            }
+        }
+    }
+
+    pub fn with_slice<R>(&self, len: usize, f: impl FnOnce(&[u8]) -> R) -> R {
+        let off = self.offset;
+        match &self.kind {
+            PtrKind::Null => panic!("ub: null pointer"),
+            PtrKind::StackSingle(weak) | PtrKind::HeapSingle(weak) => {
+                assert!(off == 0 && len <= 1, "ub: with_slice out of bounds");
+                let rc = weak.upgrade().expect("ub: dangling pointer");
+                let b = rc.borrow();
+                f(&std::slice::from_ref(&*b)[..len])
+            }
+            PtrKind::StackArray(weak) | PtrKind::HeapArray(weak) => {
+                let rc = weak.upgrade().expect("ub: dangling pointer");
+                let b = rc.borrow();
+                f(&b[off..off + len])
+            }
+            PtrKind::Vec(weak) => {
+                let rc = weak.upgrade().expect("ub: dangling pointer");
+                let b = rc.borrow();
+                f(&b[off..off + len])
+            }
+            PtrKind::Reinterpreted(data) => {
+                let mut buf = vec![0u8; len];
+                data.alloc.read_bytes(off, &mut buf);
+                f(&buf)
+            }
+        }
+    }
+
+    pub fn slice_until(&self, end: &Self) -> Vec<u8> {
+        assert!(self.kind == end.kind, "ub: invalid slice");
+        assert!(self.offset <= end.offset);
+        assert!(end.offset <= self.len());
+        self.with_slice(end.offset - self.offset, |s| s.to_vec())
+    }
+}
+
 impl<T: Clone + ByteRepr> Ptr<T> {
     pub fn read(&self) -> T {
         self.with(|v| v.clone())
@@ -722,6 +789,43 @@ impl<T> PrefixDec for Ptr<T> {
 
 pub trait AsPointer<T> {
     fn as_pointer(&self) -> Ptr<T>;
+}
+
+pub struct ScopedDestructor<T> {
+    owner: Rc<RefCell<T>>,
+    destroy: fn(Ptr<T>),
+}
+
+impl<T> ScopedDestructor<T> {
+    pub fn new(owner: &Value<T>, destroy: fn(Ptr<T>)) -> Self {
+        Self {
+            owner: owner.clone(),
+            destroy,
+        }
+    }
+}
+
+impl<T> Drop for ScopedDestructor<T> {
+    fn drop(&mut self) {
+        (self.destroy)(self.owner.as_pointer());
+    }
+}
+
+pub struct ScopedDestructorUnsafe<T> {
+    owner: *mut T,
+    destroy: unsafe fn(&mut T),
+}
+
+impl<T> ScopedDestructorUnsafe<T> {
+    pub fn new(owner: *mut T, destroy: unsafe fn(&mut T)) -> Self {
+        Self { owner, destroy }
+    }
+}
+
+impl<T> Drop for ScopedDestructorUnsafe<T> {
+    fn drop(&mut self) {
+        unsafe { (self.destroy)(&mut *self.owner) }
+    }
 }
 
 impl<T> AsPointer<T> for Rc<RefCell<T>> {
