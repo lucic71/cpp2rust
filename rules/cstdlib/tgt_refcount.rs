@@ -58,7 +58,7 @@ fn f8(a0: AnyPtr, a1: AnyPtr, a2: usize, a3: usize, a4: fn(AnyPtr, AnyPtr) -> i3
     while __lo <= __hi && __found.is_null() {
         let __mid = __lo + (__hi - __lo) / 2;
         let __elem = __base.offset(__mid as usize * a3);
-        let __r = a4(a0.clone(), __elem.to_any());
+        let __r = a4.call(a0.clone(), __elem.to_any());
         if __r == 0 {
             __found = __elem.to_any();
         } else if __r < 0 {
@@ -75,7 +75,7 @@ fn f9(a0: AnyPtr, a1: usize, a2: usize, a3: fn(AnyPtr, AnyPtr) -> i32) {
     for __i in 0..a1 {
         let mut __min = __i;
         for __j in (__i + 1)..a1 {
-            if a3(
+            if a3.call(
                 __base.offset(__j * a2).to_any(),
                 __base.offset(__min * a2).to_any(),
             ) < 0
