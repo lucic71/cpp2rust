@@ -66,7 +66,7 @@ fn main_0() -> i32 {
     });
     (v.as_pointer() as Ptr<Item>).sort_with_cmp(
         (v.as_pointer() as Ptr<Item>).to_end().get_offset(),
-        |x, y| (CompareItem_0 as fn(Ptr<Item>, Ptr<Item>) -> bool).call(x, y),
+        |x, y| CompareItem_0.call(x, y),
     );
     assert!(
         ((*(*(v.as_pointer() as Ptr<Item>)
@@ -100,9 +100,8 @@ fn main_0() -> i32 {
     );
     let arr: Value<Box<[i32]>> = Rc::new(RefCell::new(Box::new([5, 2, 8, 1, 3])));
     {
-        let fun = |x: Ptr<i32>, y: Ptr<i32>| {
-            (CompareInt_1 as fn(i32, i32) -> bool).call((x.read()).clone(), (y.read()).clone())
-        };
+        let fun =
+            |x: Ptr<i32>, y: Ptr<i32>| CompareInt_1.call((x.read()).clone(), (y.read()).clone());
         (arr.as_pointer() as Ptr<i32>).sort_with_cmp(
             (arr.as_pointer() as Ptr<i32>)
                 .offset((5) as isize)

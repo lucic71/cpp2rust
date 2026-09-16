@@ -1816,6 +1816,25 @@ void Converter::ConvertFunctionToFunctionPointer(
   computed_expr_type_ = ComputedExprType::FreshPointer;
 }
 
+std::string Converter::ConvertFnPtrCallee(clang::Expr *arg) {
+  PushExprKind push(*this, ExprKind::Callee);
+  Buffer buf(*this);
+  if (auto *lambda = clang::dyn_cast<clang::LambdaExpr>(
+          arg->IgnoreUnlessSpelledInSource())) {
+    VisitLambdaExpr(lambda);
+  } else {
+    Convert(arg);
+  }
+  return std::move(buf).str();
+}
+
+std::string Converter::ConvertFnPtrPlaceholder(clang::Expr *arg) {
+  auto proto =
+      arg->getType()->getPointeeType()->getAs<clang::FunctionProtoType>();
+  return std::format("({} as {} {})", ConvertFnPtrCallee(arg), keyword_unsafe_,
+                     ConvertFunctionPointerType(proto));
+}
+
 Converter::CallInfo Converter::CollectCallInfo(clang::CallExpr *expr) {
   using Kind = CallArg::Kind;
 
@@ -4614,18 +4633,7 @@ void Converter::PlaceholderCtx::dump() const {
 std::string Converter::ConvertPlaceholder(clang::Expr *expr, clang::Expr *arg,
                                           const PlaceholderCtx &ph_ctx) {
   if (arg->getType()->isFunctionPointerType()) {
-    PushExprKind push(*this, ExprKind::Callee);
-    Buffer buf(*this);
-    if (auto *lambda = clang::dyn_cast<clang::LambdaExpr>(
-            arg->IgnoreUnlessSpelledInSource())) {
-      VisitLambdaExpr(lambda);
-    } else {
-      Convert(arg);
-    }
-    auto proto =
-        arg->getType()->getPointeeType()->getAs<clang::FunctionProtoType>();
-    return std::format("({} as {} {})", std::move(buf).str(), keyword_unsafe_,
-                       ConvertFunctionPointerType(proto));
+    return ConvertFnPtrPlaceholder(arg);
   }
 
   if (ph_ctx.declared_in_rule_as_rust_ptr && arg->getType()->isArrayType()) {

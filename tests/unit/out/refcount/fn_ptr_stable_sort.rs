@@ -61,7 +61,7 @@ fn main_0() -> i32 {
     });
     (v.as_pointer() as Ptr<Item>).sort_with_cmp(
         (v.as_pointer() as Ptr<Item>).to_end().get_offset(),
-        |x, y| (Compare_0 as fn(Ptr<Item>, Ptr<Item>) -> bool).call(x, y),
+        |x, y| Compare_0.call(x, y),
     );
     assert!(
         ((*(*(v.as_pointer() as Ptr<Item>)
