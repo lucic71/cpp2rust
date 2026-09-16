@@ -36,11 +36,16 @@ impl ByteRepr for Item {
         }
     }
 }
-pub fn Compare_0(a: Ptr<Item>, b: Ptr<Item>) -> bool {
+pub fn CompareItem_0(a: Ptr<Item>, b: Ptr<Item>) -> bool {
     return {
         let _lhs = (*(*a.upgrade().deref()).key.borrow());
         _lhs < (*(*b.upgrade().deref()).key.borrow())
     };
+}
+pub fn CompareInt_1(a: i32, b: i32) -> bool {
+    let a: Value<i32> = Rc::new(RefCell::new(a));
+    let b: Value<i32> = Rc::new(RefCell::new(b));
+    return ((*a.borrow()) > (*b.borrow()));
 }
 pub fn main() {
     std::process::exit(main_0());
@@ -61,7 +66,7 @@ fn main_0() -> i32 {
     });
     (v.as_pointer() as Ptr<Item>).sort_with_cmp(
         (v.as_pointer() as Ptr<Item>).to_end().get_offset(),
-        |x, y| (Compare_0 as fn(Ptr<Item>, Ptr<Item>) -> bool).call(x, y),
+        |x, y| (CompareItem_0 as fn(Ptr<Item>, Ptr<Item>) -> bool).call(x, y),
     );
     assert!(
         ((*(*(v.as_pointer() as Ptr<Item>)
@@ -72,23 +77,56 @@ fn main_0() -> i32 {
         .borrow())
             == 1)
     );
-    assert!(
-        ((*(*(v.as_pointer() as Ptr<Item>)
-            .offset(1_usize)
-            .upgrade()
-            .deref())
-        .key
-        .borrow())
-            == 2)
+    (v.as_pointer() as Ptr<Item>).sort_with_cmp(
+        (v.as_pointer() as Ptr<Item>).to_end().get_offset(),
+        |x, y| {
+            (|a: Ptr<Item>, b: Ptr<Item>| {
+                return {
+                    let _lhs = (*(*a.upgrade().deref()).key.borrow());
+                    _lhs > (*(*b.upgrade().deref()).key.borrow())
+                };
+            })
+            .call(x, y)
+        },
     );
     assert!(
         ((*(*(v.as_pointer() as Ptr<Item>)
-            .offset(2_usize)
+            .offset(0_usize)
             .upgrade()
             .deref())
         .key
         .borrow())
             == 3)
     );
+    let arr: Value<Box<[i32]>> = Rc::new(RefCell::new(Box::new([5, 2, 8, 1, 3])));
+    {
+        let fun = |x: Ptr<i32>, y: Ptr<i32>| {
+            (CompareInt_1 as fn(i32, i32) -> bool).call((x.read()).clone(), (y.read()).clone())
+        };
+        (arr.as_pointer() as Ptr<i32>).sort_with_cmp(
+            (arr.as_pointer() as Ptr<i32>)
+                .offset((5) as isize)
+                .get_offset(),
+            fun,
+        )
+    };
+    assert!(((*arr.borrow())[(0) as usize] == 8));
+    {
+        let fun = |x: Ptr<i32>, y: Ptr<i32>| {
+            (|x: i32, y: i32| {
+                let x: Value<i32> = Rc::new(RefCell::new(x));
+                let y: Value<i32> = Rc::new(RefCell::new(y));
+                return ((*x.borrow()) < (*y.borrow()));
+            })
+            .call((x.read()).clone(), (y.read()).clone())
+        };
+        (arr.as_pointer() as Ptr<i32>).sort_with_cmp(
+            (arr.as_pointer() as Ptr<i32>)
+                .offset((5) as isize)
+                .get_offset(),
+            fun,
+        )
+    };
+    assert!(((*arr.borrow())[(0) as usize] == 1));
     return 0;
 }
