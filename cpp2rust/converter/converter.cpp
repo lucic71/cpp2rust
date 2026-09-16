@@ -4616,8 +4616,16 @@ std::string Converter::ConvertPlaceholder(clang::Expr *expr, clang::Expr *arg,
   if (arg->getType()->isFunctionPointerType()) {
     PushExprKind push(*this, ExprKind::Callee);
     Buffer buf(*this);
-    Convert(arg);
-    return std::move(buf).str();
+    if (auto *lambda = clang::dyn_cast<clang::LambdaExpr>(
+            arg->IgnoreUnlessSpelledInSource())) {
+      VisitLambdaExpr(lambda);
+    } else {
+      Convert(arg);
+    }
+    auto proto =
+        arg->getType()->getPointeeType()->getAs<clang::FunctionProtoType>();
+    return std::format("({} as {} {})", std::move(buf).str(), keyword_unsafe_,
+                       ConvertFunctionPointerType(proto));
   }
 
   if (ph_ctx.declared_in_rule_as_rust_ptr && arg->getType()->isArrayType()) {
