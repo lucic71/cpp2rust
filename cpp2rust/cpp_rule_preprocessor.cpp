@@ -29,11 +29,13 @@
 
 #include <cstdlib>
 #include <filesystem>
+#include <optional>
 #include <string>
 
 #include "compat/platform_flags.h"
 #include "converter/converter_lib.h"
 #include "converter/mapper.h"
+#include "converter/rules/match.h"
 
 namespace fs = std::filesystem;
 
@@ -118,6 +120,148 @@ public:
       }
       return;
     }
+
+    const clang::NamedDecl *rule = nullptr;
+    const clang::TemplateDecl *tmpl = nullptr;
+    if (auto var = R.Nodes.getNodeAs<clang::TypedefNameDecl>("tvar")) {
+      rule = var;
+      if (auto *alias = llvm::dyn_cast<clang::TypeAliasDecl>(var)) {
+        tmpl = alias->getDescribedAliasTemplate();
+      }
+    } else if (auto func = R.Nodes.getNodeAs<clang::FunctionDecl>("func")) {
+      rule = func;
+      tmpl = func->getDescribedFunctionTemplate();
+    } else {
+      return;
+    }
+    auto name = rule->getQualifiedNameAsString();
+    if (out_.find(name) != out_.end()) {
+      return;
+    }
+
+    nttp_alternate_.clear();
+    auto entry = build(R);
+    if (!entry) {
+      return;
+    }
+    if (tmpl) {
+      for (const clang::NamedDecl *param : *tmpl->getTemplateParameters()) {
+        auto n = paramNumber(param->getName());
+        const auto *nttp =
+            llvm::dyn_cast<clang::NonTypeTemplateParmDecl>(param);
+        if (!n || !nttp || param->isTemplateParameterPack()) {
+          continue;
+        }
+        nttp_alternate_ = param->getName().str();
+        auto alternate = build(R);
+        nttp_alternate_.clear();
+        if (!alternate || !markNTTP(entry->ir, alternate->ir, *n,
+                                    nttpValue(nttp->getType(), false),
+                                    nttpValue(nttp->getType(), true))) {
+          llvm::errs() << "ERROR: " << name << ": non-type parameter "
+                       << param->getName()
+                       << " must be used as a template argument as is\n";
+          std::exit(EXIT_FAILURE);
+        }
+      }
+    }
+
+    llvm::json::Object obj{{"ir", IrSrc::ToJSON(entry->ir)}};
+    if (entry->init_type) {
+      obj.try_emplace("init_type",
+                      llvm::json::Object{{"depth", entry->init_type->first},
+                                         {"index", entry->init_type->second}});
+    }
+    out_.try_emplace(std::move(name), std::move(obj));
+  }
+
+private:
+  llvm::json::Object &out_;
+  clang::Sema *sema_ = nullptr;
+  clang::SourceLocation loc_;
+  llvm::DenseMap<const clang::Decl *, unsigned> stand_ins_;
+  std::string nttp_alternate_;
+
+  struct Entry {
+    IrSrc::Node ir;
+    std::optional<std::pair<unsigned, unsigned>> init_type;
+  };
+
+  static std::optional<unsigned> paramNumber(llvm::StringRef name) {
+    unsigned n;
+    if (name.consume_front("T") && !name.empty() && !name.getAsInteger(10, n)) {
+      return n;
+    }
+    return std::nullopt;
+  }
+
+  llvm::APInt nttpAPInt(clang::QualType type, bool alternate) {
+    return llvm::APInt(sema_->Context.getIntWidth(type), alternate ? 2 : 1);
+  }
+
+  std::string nttpValue(clang::QualType type, bool alternate) {
+    return std::to_string(nttpAPInt(type, alternate).getZExtValue());
+  }
+
+  static bool markNTTP(IrSrc::Node &ir, const IrSrc::Node &alternate,
+                       unsigned n, const std::string &value,
+                       const std::string &alternate_value) {
+    using Kind = IrSrc::Node::Kind;
+    if (ir.kind == Kind::kValue && alternate.kind == Kind::kValue &&
+        ir.name != alternate.name) {
+      if (ir.name != value || alternate.name != alternate_value) {
+        return false;
+      }
+      ir.kind = Kind::kParam;
+      ir.name.clear();
+      ir.param = n;
+      return true;
+    }
+    if (ir.kind != alternate.kind || ir.name != alternate.name ||
+        ir.param != alternate.param || ir.is_const != alternate.is_const ||
+        ir.is_volatile != alternate.is_volatile ||
+        ir.variadic != alternate.variadic || ir.ref != alternate.ref ||
+        ir.children.size() != alternate.children.size()) {
+      return false;
+    }
+    for (size_t i = 0; i < ir.children.size(); ++i) {
+      if (!markNTTP(ir.children[i], alternate.children[i], n, value,
+                    alternate_value)) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  IrSrc::Builder builder() {
+    IrSrc::Builder b(sema_->Context);
+    b.stand_in = [this](const clang::Decl *decl) -> std::optional<unsigned> {
+      if (auto it = stand_ins_.find(decl->getCanonicalDecl());
+          it != stand_ins_.end()) {
+        return it->second;
+      }
+      return std::nullopt;
+    };
+    return b;
+  }
+
+  Entry entry(const clang::Expr *expr, const clang::NamedDecl *rule) {
+    auto ir = builder().FromExpr(expr);
+    if (!ir) {
+      llvm::errs() << "ERROR: " << rule->getQualifiedNameAsString()
+                   << ": unsupported expression\n";
+      expr->dump();
+      std::exit(EXIT_FAILURE);
+    }
+    return {std::move(*ir), std::nullopt};
+  }
+
+  Entry entry(const clang::NamedDecl *decl) {
+    return {builder().FromDecl(decl), std::nullopt};
+  }
+
+  std::optional<Entry>
+  build(const clang::ast_matchers::MatchFinder::MatchResult &R) {
     if (auto var = R.Nodes.getNodeAs<clang::TypedefNameDecl>("tvar")) {
       clang::QualType type = var->getUnderlyingType();
       if (auto *alias = llvm::dyn_cast<clang::TypeAliasDecl>(var)) {
@@ -125,121 +269,88 @@ public:
           type = lookupType(tdecl);
         }
       }
-      auto src = Mapper::ToString(type, Mapper::ScalarSugar::kPreserve);
-      out_.try_emplace(var->getQualifiedNameAsString(), std::move(src));
-      return;
+      auto b = builder();
+      b.keep_builtin_typedef = true;
+      return Entry{b.FromType(type), std::nullopt};
     }
 
-    if (auto func = R.Nodes.getNodeAs<clang::FunctionDecl>("func")) {
-      auto add = [&](std::string &&src) {
-        out_.try_emplace(func->getQualifiedNameAsString(), std::move(src));
-      };
+    const auto *func = R.Nodes.getNodeAs<clang::FunctionDecl>("func");
+    if (const auto *fcall = R.Nodes.getNodeAs<clang::CallExpr>("fcall")) {
+      if (fcall->getDirectCallee()) {
+        return entry(fcall, func);
+      }
 
-      if (const auto *fcall = R.Nodes.getNodeAs<clang::CallExpr>("fcall")) {
-        if (fcall->getDirectCallee()) {
-          add(Mapper::ToString(fcall));
-          return;
-        }
-
-        LookupInfo lookup(fcall->getCallee());
-        clang::FunctionDecl *rule = nullptr;
-        clang::FunctionDecl *decl = lookupCalledDecl(
-            func->getDescribedFunctionTemplate(), lookup, &rule);
-        if (Mapper::HasFunctionParameterPack(func) &&
-            Mapper::HasFunctionParameterPack(decl)) {
-          addPackRule(func, rule, decl);
-          return;
-        }
-        add(Mapper::ToString(decl));
-        return;
+      LookupInfo lookup(fcall->getCallee());
+      clang::FunctionDecl *rule = nullptr;
+      clang::FunctionDecl *decl =
+          lookupCalledDecl(func->getDescribedFunctionTemplate(), lookup, &rule);
+      if (Mapper::HasFunctionParameterPack(func) &&
+          Mapper::HasFunctionParameterPack(decl)) {
+        return packEntry(func, rule, decl);
       }
-      if (const auto *ctor =
-              R.Nodes.getNodeAs<clang::CXXConstructExpr>("ctor")) {
-        if (ctor->getConstructor()) {
-          add(Mapper::ToString(ctor));
-          return;
-        }
-      }
-      if (const auto *muse = R.Nodes.getNodeAs<clang::MemberExpr>("muse")) {
-        if (llvm::isa<clang::FieldDecl>(muse->getMemberDecl())) {
-          add(Mapper::ToString(muse));
-          return;
-        }
-      }
-      if (const auto *um =
-              R.Nodes.getNodeAs<clang::UnresolvedMemberExpr>("umuse")) {
-        add(Mapper::ToString(um));
-        return;
-      }
-      if (R.Nodes.getNodeAs<clang::DeclRefExpr>("declref")) {
-        if (const auto *enum_val =
-                R.Nodes.getNodeAs<clang::EnumConstantDecl>("enum_val")) {
-          add(Mapper::ToString(enum_val));
-          return;
-        } else if (const auto *decl =
-                       R.Nodes.getNodeAs<clang::VarDecl>("decl")) {
-          add(Mapper::ToString(decl));
-          return;
-        }
-      }
-      if (const auto *uop =
-              R.Nodes.getNodeAs<clang::UnaryOperator>("udeclref")) {
-        add(Mapper::ToString(uop));
-        return;
-      }
-      if (const auto *dsme =
-              R.Nodes.getNodeAs<clang::CXXDependentScopeMemberExpr>("dsme")) {
-        if (dsme->isArrow()) {
-          clang::MemberExpr *expr = lookupArrowAccess(
-              func->getDescribedFunctionTemplate(), dsme->getMemberNameInfo(),
-              dsme->getQualifierLoc());
-          add(Mapper::ToString(expr));
-          return;
-        }
-        clang::NamedDecl *decl = lookupMemberAccess(
-            func->getDescribedFunctionTemplate(), dsme->getMember());
-        add(Mapper::ToString(decl));
-        return;
-      }
-      if (const auto *uctor =
-              R.Nodes.getNodeAs<clang::CXXUnresolvedConstructExpr>("uctor")) {
-        LookupInfo lookup(uctor);
-        clang::NamedDecl *decl = lookupCalledDecl(
-            func->getDescribedFunctionTemplate(), lookup, nullptr);
-        add(Mapper::ToString(decl));
-        return;
-      }
-      if (const auto *lit =
-              R.Nodes.getNodeAs<clang::IntegerLiteral>("macro_int")) {
-        if (lit->getBeginLoc().isMacroID()) {
-          add(Mapper::ToString(lit));
-        }
-        return;
+      return entry(decl);
+    }
+    if (const auto *ctor = R.Nodes.getNodeAs<clang::CXXConstructExpr>("ctor")) {
+      if (ctor->getConstructor()) {
+        return entry(ctor, func);
       }
     }
+    if (const auto *muse = R.Nodes.getNodeAs<clang::MemberExpr>("muse")) {
+      if (llvm::isa<clang::FieldDecl>(muse->getMemberDecl())) {
+        return entry(muse, func);
+      }
+    }
+    if (const auto *um =
+            R.Nodes.getNodeAs<clang::UnresolvedMemberExpr>("umuse")) {
+      return entry(um, func);
+    }
+    if (R.Nodes.getNodeAs<clang::DeclRefExpr>("declref")) {
+      if (const auto *enum_val =
+              R.Nodes.getNodeAs<clang::EnumConstantDecl>("enum_val")) {
+        return entry(enum_val);
+      } else if (const auto *decl = R.Nodes.getNodeAs<clang::VarDecl>("decl")) {
+        return entry(decl);
+      }
+    }
+    if (const auto *uop = R.Nodes.getNodeAs<clang::UnaryOperator>("udeclref")) {
+      return entry(uop, func);
+    }
+    if (const auto *dsme =
+            R.Nodes.getNodeAs<clang::CXXDependentScopeMemberExpr>("dsme")) {
+      if (dsme->isArrow()) {
+        clang::MemberExpr *expr = lookupArrowAccess(
+            func->getDescribedFunctionTemplate(), dsme->getMemberNameInfo(),
+            dsme->getQualifierLoc());
+        return entry(expr, func);
+      }
+      clang::NamedDecl *decl = lookupMemberAccess(
+          func->getDescribedFunctionTemplate(), dsme->getMember());
+      return entry(decl);
+    }
+    if (const auto *uctor =
+            R.Nodes.getNodeAs<clang::CXXUnresolvedConstructExpr>("uctor")) {
+      LookupInfo lookup(uctor);
+      clang::NamedDecl *decl = lookupCalledDecl(
+          func->getDescribedFunctionTemplate(), lookup, nullptr);
+      return entry(decl);
+    }
+    if (const auto *lit =
+            R.Nodes.getNodeAs<clang::IntegerLiteral>("macro_int")) {
+      if (lit->getBeginLoc().isMacroID()) {
+        return entry(lit, func);
+      }
+    }
+    return std::nullopt;
   }
 
-private:
-  llvm::json::Object &out_;
-  clang::Sema *sema_ = nullptr;
-  clang::SourceLocation loc_;
-
-  void addPackRule(const clang::FunctionDecl *func, clang::FunctionDecl *rule,
-                   clang::FunctionDecl *callee) {
-    auto key = Mapper::ToString(callee);
+  Entry packEntry(const clang::FunctionDecl *func, clang::FunctionDecl *rule,
+                  clang::FunctionDecl *callee) {
+    auto res = entry(callee);
     auto init_type = getInitType(func, rule);
-    if (init_type.isNull()) {
-      out_.try_emplace(func->getQualifiedNameAsString(), std::move(key));
-      return;
+    if (!init_type.isNull()) {
+      res.init_type = findTemplateArgument(callee, init_type);
     }
-
-    auto [depth, index] = findTemplateArgument(callee, init_type);
-    out_.try_emplace(func->getQualifiedNameAsString(),
-                     llvm::json::Object{
-                         {"key", std::move(key)},
-                         {"init_type", llvm::json::Object{{"depth", depth},
-                                                          {"index", index}}},
-                     });
+    return res;
   }
 
   clang::QualType getInitType(const clang::FunctionDecl *func,
@@ -589,7 +700,7 @@ private:
     clang::ASTContext &ctx = sema_->Context;
     if (type->isIntegerType()) {
       init = clang::IntegerLiteral::Create(
-          ctx, llvm::APInt(ctx.getIntWidth(type), 1), type, loc_);
+          ctx, nttpAPInt(type, name == nttp_alternate_), type, loc_);
     } else {
       init = new (ctx) clang::ImplicitValueInitExpr(type);
     }
@@ -624,6 +735,9 @@ private:
                                            rdecl->getQualifier(), rdecl, false);
         }
         assert(!type.isNull() && "Template type argument creation failed");
+        if (auto n = paramNumber(param->getName())) {
+          stand_ins_[type->getAsRecordDecl()->getCanonicalDecl()] = *n;
+        }
         out.emplace_back(type);
       } else if (const auto *nttp =
                      llvm::dyn_cast<clang::NonTypeTemplateParmDecl>(param)) {
