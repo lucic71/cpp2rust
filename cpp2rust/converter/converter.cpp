@@ -2252,7 +2252,8 @@ static std::string getTypedLiteral(const char *num, std::string_view type) {
 std::string Converter::getIntegerLiteral(clang::IntegerLiteral *expr,
                                          bool incl_type,
                                          const clang::QualType *type) {
-  auto num_as_string = GetNumAsString(expr->getValue());
+  auto num_as_string =
+      GetNumAsString(expr->getValue(), expr->getType()->isSignedIntegerType());
   if (num_as_string[0] != '-' && !incl_type) {
     if (type && (*type)->isFloatingType() &&
         num_as_string.find('.') == llvm::StringRef::npos) {

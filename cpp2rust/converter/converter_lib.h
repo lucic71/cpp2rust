@@ -9,6 +9,7 @@
 #include <clang/AST/Expr.h>
 #include <clang/AST/StmtCXX.h>
 #include <clang/AST/Type.h>
+#include <llvm/ADT/APSInt.h>
 #include <llvm/ADT/STLFunctionalExtras.h>
 
 #include <optional>
@@ -173,6 +174,17 @@ template <class T> llvm::SmallString<16> GetNumAsString(const T &num) {
   llvm::SmallString<16> small_string;
   num.toString(small_string, 10, false);
   return small_string;
+}
+
+inline llvm::SmallString<16> GetNumAsString(const llvm::APInt &num,
+                                            bool is_signed = false) {
+  llvm::SmallString<16> small_string;
+  num.toString(small_string, 10, is_signed);
+  return small_string;
+}
+
+inline llvm::SmallString<16> GetNumAsString(const llvm::APSInt &num) {
+  return GetNumAsString(num, num.isSigned());
 }
 
 clang::QualType GetReturnTypeOfFunction(const clang::CallExpr *expr);
