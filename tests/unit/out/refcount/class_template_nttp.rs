@@ -110,6 +110,32 @@ impl ByteRepr for Step_neg1_ {
         }
     }
 }
+#[derive(Default)]
+pub struct Step_1_ {
+    pub value: Value<i32>,
+}
+impl Clone for Step_1_ {
+    fn clone(&self) -> Self {
+        let __this: Value<Step_1_> = Rc::new(RefCell::new(Self {
+            value: Rc::new(RefCell::new((*self.value.borrow()))),
+        }));
+        let this: Ptr<Step_1_> = __this.as_pointer();
+        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+    }
+}
+impl ByteRepr for Step_1_ {
+    fn byte_size() -> usize {
+        4
+    }
+    fn to_bytes(&self, buf: &mut [u8]) {
+        (*self.value.borrow()).to_bytes(&mut buf[0..4]);
+    }
+    fn from_bytes(buf: &[u8]) -> Self {
+        Self {
+            value: Rc::new(RefCell::new(<i32>::from_bytes(&buf[0..4]))),
+        }
+    }
+}
 #[derive(Clone, ByteRepr, Default)]
 pub struct Choice_true_ {}
 #[derive(Clone, ByteRepr, Default)]
@@ -220,9 +246,15 @@ fn main_0() -> i32 {
     let sn: Value<Step_neg1_> = Rc::new(RefCell::new(Step_neg1_ {
         value: Rc::new(RefCell::new(5)),
     }));
+    let sp: Value<Step_1_> = Rc::new(RefCell::new(Step_1_ {
+        value: Rc::new(RefCell::new(5)),
+    }));
     ({ Step_neg1_Impl::advance(&sn.as_pointer()) });
+    ({ Step_1_Impl::advance(&sp.as_pointer()) });
     assert!(((*(*sn.borrow()).value.borrow()) == 4));
+    assert!(((*(*sp.borrow()).value.borrow()) == 6));
     assert!((({ Step_neg1_Impl::scaled(&sn.as_pointer(),) }) == -4_i32));
+    assert!((({ Step_1_Impl::scaled(&sp.as_pointer(),) }) == 6));
     let s0: Value<Step_0_> = Rc::new(RefCell::new(Step_0_ {
         value: Rc::new(RefCell::new(5)),
     }));
@@ -588,7 +620,7 @@ pub trait Mix___xc8___neg3__10000000000_Impl {
 }
 impl Mix___xc8___neg3__10000000000_Impl for Ptr<Mix___xc8___neg3__10000000000_> {
     fn total(&self) -> i64 {
-        return (((((b'\xc8' as u8) as i32) + (65533_i16 as i32)) as i64) + 10000000000_i64);
+        return (((((b'\xc8' as u8) as i32) + (-3_i16 as i32)) as i64) + 10000000000_i64);
     }
 }
 pub trait Range_0__10_Impl {
@@ -624,10 +656,10 @@ pub trait Range_neg3__0_Impl {
 impl Range_neg3__0_Impl for Ptr<Range_neg3__0_> {
     fn contains(&self, x: i32) -> bool {
         let x: Value<i32> = Rc::new(RefCell::new(x));
-        return ((*x.borrow()) >= 4294967293) && ((*x.borrow()) <= 0);
+        return ((*x.borrow()) >= -3) && ((*x.borrow()) <= 0);
     }
     fn width(&self) -> i32 {
-        return (0 - 4294967293);
+        return (0 - -3);
     }
 }
 pub trait Step_0_Impl {
@@ -640,6 +672,18 @@ impl Step_0_Impl for Ptr<Step_0_> {
     }
     fn scaled(&self) -> i32 {
         return 0;
+    }
+}
+pub trait Step_1_Impl {
+    fn advance(&self);
+    fn scaled(&self) -> i32;
+}
+impl Step_1_Impl for Ptr<Step_1_> {
+    fn advance(&self) {
+        (*(*(*self).upgrade().deref()).value.borrow_mut()) += 1;
+    }
+    fn scaled(&self) -> i32 {
+        return ((*(*(*self).upgrade().deref()).value.borrow()) * 1);
     }
 }
 pub trait Step_2_Impl {
@@ -672,10 +716,10 @@ pub trait Step_neg1_Impl {
 }
 impl Step_neg1_Impl for Ptr<Step_neg1_> {
     fn advance(&self) {
-        (*(*(*self).upgrade().deref()).value.borrow_mut()) += 4294967295;
+        (*(*(*self).upgrade().deref()).value.borrow_mut()) += -1;
     }
     fn scaled(&self) -> i32 {
-        return ((*(*(*self).upgrade().deref()).value.borrow()) * 4294967295);
+        return ((*(*(*self).upgrade().deref()).value.borrow()) * -1);
     }
 }
 pub fn __cpp2rust_init_globals() {}

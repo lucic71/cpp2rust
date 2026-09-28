@@ -52,10 +52,23 @@ pub struct Step_neg1_ {
 }
 impl Step_neg1_ {
     pub unsafe fn advance(&mut self) {
-        self.value += 4294967295;
+        self.value += -1;
     }
     pub unsafe fn scaled(&self) -> i32 {
-        return ((self.value) * (4294967295));
+        return ((self.value) * (-1));
+    }
+}
+#[repr(C)]
+#[derive(Copy, Clone, Default)]
+pub struct Step_1_ {
+    pub value: i32,
+}
+impl Step_1_ {
+    pub unsafe fn advance(&mut self) {
+        self.value += 1;
+    }
+    pub unsafe fn scaled(&self) -> i32 {
+        return ((self.value) * (1));
     }
 }
 #[repr(C)]
@@ -203,10 +216,10 @@ impl Range_5__6_ {
 pub struct Range_neg3__0_ {}
 impl Range_neg3__0_ {
     pub unsafe fn contains(&self, mut x: i32) -> bool {
-        return ((x) >= (4294967293)) && ((x) <= (0));
+        return ((x) >= (-3)) && ((x) <= (0));
     }
     pub unsafe fn width(&self) -> i32 {
-        return ((0) - (4294967293));
+        return ((0) - (-3));
     }
 }
 #[repr(C)]
@@ -214,7 +227,7 @@ impl Range_neg3__0_ {
 pub struct Mix___xc8___neg3__10000000000_ {}
 impl Mix___xc8___neg3__10000000000_ {
     pub unsafe fn total(&self) -> i64 {
-        return (((((b'\xc8' as u8) as i32) + (65533_i16 as i32)) as i64) + (10000000000_i64));
+        return (((((b'\xc8' as u8) as i32) + (-3_i16 as i32)) as i64) + (10000000000_i64));
     }
 }
 #[repr(C)]
@@ -241,9 +254,13 @@ unsafe fn main_0() -> i32 {
     assert!(((unsafe { Step_2_::scaled(&s2,) }) == (6)));
     assert!(((unsafe { Step_3_::scaled(&s3,) }) == (12)));
     let mut sn: Step_neg1_ = Step_neg1_ { value: 5 };
+    let mut sp: Step_1_ = Step_1_ { value: 5 };
     (unsafe { Step_neg1_::advance(&mut sn) });
+    (unsafe { Step_1_::advance(&mut sp) });
     assert!(((sn.value) == (4)));
+    assert!(((sp.value) == (6)));
     assert!(((unsafe { Step_neg1_::scaled(&sn,) }) == (-4_i32)));
+    assert!(((unsafe { Step_1_::scaled(&sp,) }) == (6)));
     let mut s0: Step_0_ = Step_0_ { value: 5 };
     (unsafe { Step_0_::advance(&mut s0) });
     assert!(((s0.value) == (-1_i32)));

@@ -65,9 +65,13 @@ int main() {
   assert(s3.scaled() == 12);
 
   Step<-1> sn{5};
+  Step<1> sp{5};
   sn.advance();
+  sp.advance();
   assert(sn.value == 4);
+  assert(sp.value == 6);
   assert(sn.scaled() == -4);
+  assert(sp.scaled() == 6);
 
   Step<0> s0{5};
   s0.advance();
