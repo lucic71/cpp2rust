@@ -62,22 +62,29 @@ Node ParseNodeJSON(const llvm::json::Value &value) {
   const auto *obj = value.getAsObject();
   assert(obj && "IR node must be an object");
   Node node;
-  node.kind = kindFromName(*obj->getString("k"));
-  if (auto name = obj->getString("n")) {
+  node.kind = kindFromName(*obj->getString("kind"));
+  if (auto name = obj->getString("name")) {
     node.name = name->str();
   }
-  if (auto param = obj->getInteger("i")) {
+  if (auto param = obj->getInteger("param")) {
     node.param = *param;
   }
-  node.is_const = obj->getBoolean("c").value_or(false);
-  node.is_volatile = obj->getBoolean("v").value_or(false);
-  node.variadic = obj->getBoolean("va").value_or(false);
-  if (auto ref = obj->getString("r")) {
+  node.is_const = obj->getBoolean("is_const").value_or(false);
+  node.is_volatile = obj->getBoolean("is_volatile").value_or(false);
+  node.variadic = obj->getBoolean("variadic").value_or(false);
+  if (auto ref = obj->getString("ref")) {
     node.ref = ref->str();
   }
-  if (const auto *children = obj->getArray("a")) {
-    for (const auto &child : *children) {
-      node.children.push_back(ParseNodeJSON(child));
+  for (const auto &[key, field] : kNodeFields) {
+    if (const auto *child = obj->get(key)) {
+      node.*field = std::make_shared<Node>(ParseNodeJSON(*child));
+    }
+  }
+  for (const auto &[key, field] : kNodeLists) {
+    if (const auto *list = obj->getArray(key)) {
+      for (const auto &child : *list) {
+        (node.*field).push_back(ParseNodeJSON(child));
+      }
     }
   }
   return node;
@@ -107,14 +114,16 @@ bool Node::operator==(const Node &other) const {
   return kind == other.kind && name == other.name && param == other.param &&
          is_const == other.is_const && is_volatile == other.is_volatile &&
          variadic == other.variadic && ref == other.ref &&
-         children == other.children;
+         zipChildren(*this, other,
+                     [](const Node &a, const Node &b) { return a == b; });
 }
 
 unsigned Node::specificity() const {
   unsigned n = kind == Kind::kParam ? 0 : 1;
-  for (const auto &child : children) {
+  zipChildren(*this, *this, [&](const Node &child, const Node &) {
     n += child.specificity();
-  }
+    return true;
+  });
   return n;
 }
 
@@ -122,9 +131,10 @@ void Node::forEachParam(const std::function<void(unsigned)> &fn) const {
   if (kind == Kind::kParam) {
     fn(param);
   }
-  for (const auto &child : children) {
+  zipChildren(*this, *this, [&](const Node &child, const Node &) {
     child.forEachParam(fn);
-  }
+    return true;
+  });
 }
 
 std::string Node::str() const {
@@ -142,10 +152,25 @@ std::string Node::str() const {
   if (!name.empty()) {
     out += " " + name;
   }
-  if (!children.empty()) {
+  std::vector<std::string> fields;
+  for (const auto &[key, field] : kNodeFields) {
+    if (this->*field) {
+      fields.push_back(std::string(key) + ": " + (this->*field)->str());
+    }
+  }
+  for (const auto &[key, field] : kNodeLists) {
+    if (!(this->*field).empty()) {
+      std::string list;
+      for (const auto &child : this->*field) {
+        list += (list.empty() ? "" : ", ") + child.str();
+      }
+      fields.push_back(std::string(key) + ": [" + list + "]");
+    }
+  }
+  if (!fields.empty()) {
     out += "(";
-    for (size_t i = 0; i < children.size(); ++i) {
-      out += (i ? ", " : "") + children[i].str();
+    for (size_t i = 0; i < fields.size(); ++i) {
+      out += (i ? ", " : "") + fields[i];
     }
     out += ")";
   }
@@ -153,31 +178,38 @@ std::string Node::str() const {
 }
 
 llvm::json::Value ToJSON(const Node &node) {
-  llvm::json::Object obj{{"k", kindName(node.kind)}};
+  llvm::json::Object obj{{"kind", kindName(node.kind)}};
   if (!node.name.empty()) {
-    obj["n"] = node.name;
+    obj["name"] = node.name;
   }
   if (node.kind == Kind::kParam) {
-    obj["i"] = node.param;
+    obj["param"] = node.param;
   }
   if (node.is_const) {
-    obj["c"] = true;
+    obj["is_const"] = true;
   }
   if (node.is_volatile) {
-    obj["v"] = true;
+    obj["is_volatile"] = true;
   }
   if (node.variadic) {
-    obj["va"] = true;
+    obj["variadic"] = true;
   }
   if (!node.ref.empty()) {
-    obj["r"] = node.ref;
+    obj["ref"] = node.ref;
   }
-  if (!node.children.empty()) {
-    llvm::json::Array children;
-    for (const auto &child : node.children) {
-      children.push_back(ToJSON(child));
+  for (const auto &[key, field] : kNodeFields) {
+    if (node.*field) {
+      obj[key] = ToJSON(*(node.*field));
     }
-    obj["a"] = std::move(children);
+  }
+  for (const auto &[key, field] : kNodeLists) {
+    if (!(node.*field).empty()) {
+      llvm::json::Array list;
+      for (const auto &child : node.*field) {
+        list.push_back(ToJSON(child));
+      }
+      obj[key] = std::move(list);
+    }
   }
   return obj;
 }

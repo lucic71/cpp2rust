@@ -21,6 +21,10 @@ namespace {
 
 using Kind = Node::Kind;
 
+std::shared_ptr<Node> share(Node node) {
+  return std::make_shared<Node>(std::move(node));
+}
+
 Node make(Kind kind, std::string name = {}) {
   Node node;
   node.kind = kind;
@@ -86,18 +90,18 @@ std::string IndexKey(const Node &node) {
   case Kind::kMacro:
     return "macro:" + node.name;
   case Kind::kUnary:
-    return "unary" + node.name + ":" + IndexKey(node.children[0]);
+    return "unary" + node.name + ":" + IndexKey(*node.operand);
   case Kind::kArrow:
-    return IndexKey(node.children[1]);
+    return IndexKey(*node.member);
   case Kind::kPointer:
-    return "*" + IndexKey(node.children[0]);
+    return "*" + IndexKey(*node.pointee);
   case Kind::kLRef:
-    return "&" + IndexKey(node.children[0]);
+    return "&" + IndexKey(*node.pointee);
   case Kind::kRRef:
-    return "&&" + IndexKey(node.children[0]);
+    return "&&" + IndexKey(*node.pointee);
   case Kind::kArray:
   case Kind::kIncompleteArray:
-    return "[]" + IndexKey(node.children[0]);
+    return "[]" + IndexKey(*node.element);
   default:
     return "";
   }
@@ -136,7 +140,7 @@ Node Builder::fromType(clang::QualType type, bool top) {
         ptr && keep_pointee_sugar &&
         keep_pointee_sugar(ptr->getPointeeType())) {
       Node node = make(Kind::kPointer);
-      node.children.push_back(fromType(ptr->getPointeeType(), true));
+      node.pointee = share(fromType(ptr->getPointeeType(), true));
       node.is_const = canonical.isConstQualified();
       node.is_volatile = canonical.isVolatileQualified();
       node.type = canonical;
@@ -156,24 +160,24 @@ Node Builder::fromCanonical(clang::QualType canonical) {
     node = make(Kind::kBuiltin, builtin->getName(policy).str());
   } else if (const auto *ptr = llvm::dyn_cast<clang::PointerType>(type)) {
     node = make(Kind::kPointer);
-    node.children.push_back(fromType(ptr->getPointeeType(), false));
+    node.pointee = share(fromType(ptr->getPointeeType(), false));
   } else if (const auto *ref =
                  llvm::dyn_cast<clang::LValueReferenceType>(type)) {
     node = make(Kind::kLRef);
-    node.children.push_back(fromType(ref->getPointeeType(), false));
+    node.pointee = share(fromType(ref->getPointeeType(), false));
   } else if (const auto *ref =
                  llvm::dyn_cast<clang::RValueReferenceType>(type)) {
     node = make(Kind::kRRef);
-    node.children.push_back(fromType(ref->getPointeeType(), false));
+    node.pointee = share(fromType(ref->getPointeeType(), false));
   } else if (const auto *array = ctx_.getAsConstantArrayType(canonical)) {
     node = make(Kind::kArray);
-    node.children.push_back(fromType(array->getElementType(), false));
-    node.children.push_back(
-        make(Kind::kValue, llvm::toString(array->getSize(), 10, false)));
+    node.element = share(fromType(array->getElementType(), false));
+    node.size =
+        share(make(Kind::kValue, llvm::toString(array->getSize(), 10, false)));
     quals_on_element = true;
   } else if (const auto *array = ctx_.getAsIncompleteArrayType(canonical)) {
     node = make(Kind::kIncompleteArray);
-    node.children.push_back(fromType(array->getElementType(), false));
+    node.element = share(fromType(array->getElementType(), false));
     quals_on_element = true;
   } else if (const auto *record = type->getAsRecordDecl()) {
     node = fromRecord(record);
@@ -183,9 +187,9 @@ Node Builder::fromCanonical(clang::QualType canonical) {
                  llvm::dyn_cast<clang::FunctionProtoType>(type)) {
     node = make(Kind::kFunctionType);
     node.variadic = proto->isVariadic();
-    node.children.push_back(fromType(proto->getReturnType(), false));
+    node.return_type = share(fromType(proto->getReturnType(), false));
     for (auto param : proto->getParamTypes()) {
-      node.children.push_back(fromType(param, false));
+      node.params.push_back(fromType(param, false));
     }
   } else {
     node = make(Kind::kOpaque, canonical.getUnqualifiedType().getAsString());
@@ -214,7 +218,7 @@ Node Builder::fromRecord(const clang::RecordDecl *decl) {
   if (const auto *spec =
           llvm::dyn_cast<clang::ClassTemplateSpecializationDecl>(decl)) {
     for (const auto &arg : spec->getTemplateArgs().asArray()) {
-      node.children.push_back(fromTemplateArg(arg));
+      node.args.push_back(fromTemplateArg(arg));
     }
   }
   return node;
@@ -232,7 +236,7 @@ Node Builder::fromTemplateArg(const clang::TemplateArgument &arg) {
   case clang::TemplateArgument::Pack: {
     Node node = make(Kind::kPack);
     for (const auto &element : arg.pack_elements()) {
-      node.children.push_back(fromTemplateArg(element));
+      node.args.push_back(fromTemplateArg(element));
     }
     return node;
   }
@@ -246,14 +250,14 @@ Node Builder::fromTemplateArg(const clang::TemplateArgument &arg) {
   }
 }
 
-Node Builder::classOf(const clang::Decl *decl) {
+std::shared_ptr<Node> Builder::classOf(const clang::Decl *decl) {
   if (const auto *record =
           llvm::dyn_cast<clang::RecordDecl>(decl->getDeclContext())) {
     Node node = fromRecord(record);
     node.type = ctx_.getCanonicalTagType(record);
-    return node;
+    return share(std::move(node));
   }
-  return make(Kind::kNone);
+  return nullptr;
 }
 
 Node Builder::FromDecl(const clang::NamedDecl *decl) {
@@ -263,14 +267,14 @@ Node Builder::FromDecl(const clang::NamedDecl *decl) {
   const auto *func = llvm::dyn_cast<clang::FunctionDecl>(decl);
   if (!func) {
     Node node = make(Kind::kDecl, QualifiedName(decl));
-    node.children.push_back(classOf(decl));
+    node.class_ = classOf(decl);
     return node;
   }
 
   Node node = make(Kind::kFunction, QualifiedName(func));
   node.variadic = func->isVariadic();
-  node.children.push_back(classOf(func));
-  node.children.push_back(fromType(func->getReturnType(), false));
+  node.class_ = classOf(func);
+  node.return_type = share(fromType(func->getReturnType(), false));
   bool has_pack = Mapper::HasFunctionParameterPack(func);
   unsigned num_params = func->getNumParams();
   if (has_pack) {
@@ -279,10 +283,10 @@ Node Builder::FromDecl(const clang::NamedDecl *decl) {
         (primary ? primary->getTemplatedDecl() : func)->getNumParams() - 1;
   }
   for (unsigned i = 0; i < num_params; ++i) {
-    node.children.push_back(fromType(func->getParamDecl(i)->getType(), false));
+    node.params.push_back(fromType(func->getParamDecl(i)->getType(), false));
   }
   if (has_pack) {
-    node.children.push_back(make(Kind::kPackParams));
+    node.params.push_back(make(Kind::kPackParams));
   }
   if (const auto *method = llvm::dyn_cast<clang::CXXMethodDecl>(func)) {
     node.is_const = method->isConst();
@@ -332,8 +336,8 @@ std::optional<Node> Builder::FromExpr(const clang::Expr *expr) {
     }
     auto arrow = [&](clang::QualType object) {
       Node node = make(Kind::kArrow);
-      node.children.push_back(FromType(object));
-      node.children.push_back(FromDecl(decl));
+      node.object = share(FromType(object));
+      node.member = share(FromDecl(decl));
       return node;
     };
     if (member->isArrow()) {
@@ -369,7 +373,7 @@ std::optional<Node> Builder::FromExpr(const clang::Expr *expr) {
         make(Kind::kUnary,
              (uop->isPostfix() ? "post" : "") +
                  clang::UnaryOperator::getOpcodeStr(uop->getOpcode()).str());
-    node.children.push_back(std::move(*sub));
+    node.operand = share(std::move(*sub));
     return node;
   }
 
@@ -403,16 +407,12 @@ bool Match(const Node &rule, const Node &use, Bindings &bindings) {
   }
   if (rule.kind != use.kind || rule.name != use.name ||
       rule.is_const != use.is_const || rule.is_volatile != use.is_volatile ||
-      rule.variadic != use.variadic || rule.ref != use.ref ||
-      rule.children.size() != use.children.size()) {
+      rule.variadic != use.variadic || rule.ref != use.ref) {
     return false;
   }
-  for (size_t i = 0; i < rule.children.size(); ++i) {
-    if (!Match(rule.children[i], use.children[i], bindings)) {
-      return false;
-    }
-  }
-  return true;
+  return Node::zipChildren(rule, use, [&](const Node &r, const Node &u) {
+    return Match(r, u, bindings);
+  });
 }
 
 } // namespace cpp2rust::IrSrc

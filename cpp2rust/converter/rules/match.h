@@ -9,6 +9,7 @@
 #include <clang/AST/Type.h>
 
 #include <functional>
+#include <memory>
 #include <optional>
 #include <string>
 #include <vector>
@@ -38,7 +39,7 @@ private:
   Node fromCanonical(clang::QualType canonical);
   Node fromTemplateArg(const clang::TemplateArgument &arg);
   Node fromRecord(const clang::RecordDecl *decl);
-  Node classOf(const clang::Decl *decl);
+  std::shared_ptr<Node> classOf(const clang::Decl *decl);
 };
 
 std::string QualifiedName(const clang::NamedDecl *decl);

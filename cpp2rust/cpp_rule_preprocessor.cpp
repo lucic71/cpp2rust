@@ -220,17 +220,13 @@ private:
     if (ir.kind != alternate.kind || ir.name != alternate.name ||
         ir.param != alternate.param || ir.is_const != alternate.is_const ||
         ir.is_volatile != alternate.is_volatile ||
-        ir.variadic != alternate.variadic || ir.ref != alternate.ref ||
-        ir.children.size() != alternate.children.size()) {
+        ir.variadic != alternate.variadic || ir.ref != alternate.ref) {
       return false;
     }
-    for (size_t i = 0; i < ir.children.size(); ++i) {
-      if (!markNTTP(ir.children[i], alternate.children[i], n, value,
-                    alternate_value)) {
-        return false;
-      }
-    }
-    return true;
+    return IrSrc::Node::zipChildren(
+        ir, alternate, [&](IrSrc::Node &a, const IrSrc::Node &b) {
+          return markNTTP(a, b, n, value, alternate_value);
+        });
   }
 
   IrSrc::Builder builder() {
