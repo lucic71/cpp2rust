@@ -7,15 +7,13 @@
 
 #include <filesystem>
 #include <string>
-#include <unordered_map>
 #include <variant>
 #include <vector>
 
 #include "converter/factory.h"
+#include "converter/rules/ir.h"
 
-namespace cpp2rust::TranslationRule {
-
-static inline constexpr unsigned kMaxGenerics = 9;
+namespace cpp2rust::IrTgt {
 
 struct TextFragment {
   std::string text;
@@ -72,16 +70,7 @@ struct TypeInfo {
   void dump() const;
 };
 
-struct InitTypeLocation {
-  unsigned depth = -1u;
-  unsigned index = -1u;
-
-  bool valid() const { return depth != -1u; }
-};
-
 struct ExprRule {
-  std::string src;
-  InitTypeLocation init_type;
   std::vector<TypeInfo> params;
   TypeInfo return_type;
   std::vector<std::vector<std::string>> generics; // "T1" -> ["Ord", "Clone"]
@@ -89,31 +78,29 @@ struct ExprRule {
   bool multi_statement = false;
   bool is_extern = false;
 
+  bool usesInit() const;
   void dump() const;
-  void validate(const std::string &name) const;
 };
 
 struct TypeRule {
-  std::string src;
   std::string initializer; // Rust initializer expression
   TypeInfo type_info;
 
   void dump() const;
 
   static TypeRule Plain(std::string type) {
-    return {{}, {}, {{}, std::move(type), false, false}};
+    return {{}, {{}, std::move(type), false, false}};
   }
   static TypeRule RefcountPtr(std::string type) {
-    return {{}, {}, {{}, std::move(type), true, false}};
+    return {{}, {{}, std::move(type), true, false}};
   }
   static TypeRule UnsafePtr(std::string type) {
-    return {{}, {}, {{}, std::move(type), false, true}};
+    return {{}, {{}, std::move(type), false, true}};
   }
 };
 
-using ExprRules = std::unordered_map<std::string, ExprRule>;
-using TypeRules = std::unordered_map<std::string, TypeRule>;
+using Rules = Ir::Rules<ExprRule, TypeRule>;
 
-std::pair<ExprRules, TypeRules> Load(const std::filesystem::path &dir,
-                                     Model model);
-} // namespace cpp2rust::TranslationRule
+Rules Load(const std::filesystem::path &dir, Model model);
+
+} // namespace cpp2rust::IrTgt
