@@ -5,6 +5,54 @@ fn t1() -> u8 {
     Default::default()
 }
 
+fn t2() -> usize {
+    0_usize
+}
+
+fn t3() -> *mut usize {
+    std::ptr::null_mut()
+}
+
+fn t4() -> *const usize {
+    std::ptr::null()
+}
+
+fn t5() -> usize {
+    0_usize
+}
+
+fn t6() -> *mut usize {
+    std::ptr::null_mut()
+}
+
+fn t7() -> *const usize {
+    std::ptr::null()
+}
+
+fn t8() -> usize {
+    0_usize
+}
+
+fn t9() -> *mut usize {
+    std::ptr::null_mut()
+}
+
+fn t10() -> *const usize {
+    std::ptr::null()
+}
+
+fn t11() -> isize {
+    0_isize
+}
+
+fn t12() -> *mut isize {
+    std::ptr::null_mut()
+}
+
+fn t13() -> *const isize {
+    std::ptr::null()
+}
+
 fn f1(a0: &mut u8, a1: u32) -> u8 {
     *a0 << a1
 }

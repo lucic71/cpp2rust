@@ -42,7 +42,6 @@ struct TypeRule {
 
 std::unordered_multimap<std::string, ExprRule> exprs_;
 std::unordered_multimap<std::string, TypeRule> types_;
-std::unordered_multimap<std::string, IrTgt::TypeRule> plain_types_;
 
 clang::PrintingPolicy getPrintPolicy() {
   assert(ctx_);
@@ -58,8 +57,16 @@ clang::PrintingPolicy getPrintPolicy() {
 
 constexpr const char kPackMarker[] = "&&...";
 
-void AddTypeRule(std::string src, IrTgt::TypeRule &&rule) {
-  plain_types_.emplace(std::move(src), std::move(rule));
+void AddTypeRule(clang::QualType type, IrTgt::TypeRule &&rule) {
+  auto src = IrSrc::Builder(*ctx_).FromType(type);
+  auto key = IrSrc::IndexKey(src);
+  auto [begin, end] = types_.equal_range(key);
+  for (auto it = begin; it != end; ++it) {
+    if (it->second.src.ir == src) {
+      return;
+    }
+  }
+  types_.emplace(std::move(key), TypeRule{{std::move(src)}, std::move(rule)});
 }
 
 std::string instantiateTgt(const IrSrc::Bindings &bindings,
@@ -169,13 +176,6 @@ search(clang::QualType qual_type) {
             << ", result: " << rule->tgt.type_info.type << '\n';
       return {&rule->tgt, std::move(bindings)};
     }
-    auto spelling = sugared ? ToString(qual_type, ScalarSugar::kPreserve)
-                            : ToString(qual_type);
-    if (auto it = plain_types_.find(spelling); it != plain_types_.end()) {
-      log() << "search type " << spelling
-            << ", result: " << it->second.type_info.type << '\n';
-      return {&it->second, {}};
-    }
   }
   log() << "search type " << ToString(qual_type) << ", result: None\n";
   return {};
@@ -269,49 +269,28 @@ void addRulesFromDirectory(const std::filesystem::path &dir, Model model) {
 void addBuiltinTypes(Model model) {
   assert(ctx_);
 
-  auto add_scalar_rule = [&](const std::string &cxx, const std::string &rust,
-                             const std::string &initializer = {}) {
+  auto add_builtin_rule = [&](clang::QualType qt, const std::string &rust) {
     auto plain = IrTgt::TypeRule::Plain(rust);
-    plain.initializer = initializer;
     std::vector<std::string> derives = {"Copy",  "Clone",     "Default",
                                         "Debug", "PartialEq", "PartialOrd"};
     if (!(rust == "f32" || rust == "f64")) {
       derives.insert(derives.end(), {"Eq", "Ord", "Hash"});
     }
     plain.type_info.derives = std::move(derives);
-    AddTypeRule(cxx, IrTgt::TypeRule(plain));
-    AddTypeRule("const " + cxx, std::move(plain));
+    AddTypeRule(qt, std::move(plain));
 
+    auto ptr = ctx_->getPointerType(qt);
+    auto const_ptr = ctx_->getPointerType(qt.withConst());
     switch (model) {
     case Model::kUnsafe:
-      AddTypeRule(cxx + " *", IrTgt::TypeRule::UnsafePtr("*mut " + rust));
-      AddTypeRule("const " + cxx + " *",
-                  IrTgt::TypeRule::UnsafePtr("*const " + rust));
+      AddTypeRule(ptr, IrTgt::TypeRule::UnsafePtr("*mut " + rust));
+      AddTypeRule(const_ptr, IrTgt::TypeRule::UnsafePtr("*const " + rust));
       break;
     case Model::kRefCount:
-      AddTypeRule(cxx + " *",
-                  IrTgt::TypeRule::RefcountPtr("Ptr::<" + rust + ">"));
-      AddTypeRule("const " + cxx + " *",
+      AddTypeRule(ptr, IrTgt::TypeRule::RefcountPtr("Ptr::<" + rust + ">"));
+      AddTypeRule(const_ptr,
                   IrTgt::TypeRule::RefcountPtr("Ptr::<" + rust + ">"));
       break;
-    }
-  };
-
-  auto add_builtin_rule = [&](clang::QualType qt, const std::string &rust) {
-    add_scalar_rule(ToString(qt), rust);
-  };
-
-  auto add_size_rules = [&](clang::QualType size_type,
-                            std::initializer_list<const char *> aliases,
-                            const std::string &rust) {
-    auto initializer = "0_" + rust;
-    for (const char *alias : aliases) {
-      add_scalar_rule(alias, rust, initializer);
-    }
-    if (const auto *predef = clang::dyn_cast<clang::PredefinedSugarType>(
-            size_type.getTypePtr())) {
-      add_scalar_rule(predef->getIdentifier()->getName().str(), rust,
-                      initializer);
     }
   };
 
@@ -326,18 +305,17 @@ void addBuiltinTypes(Model model) {
   add_builtin_rule(ctx_->FloatTy, "f32");
   add_builtin_rule(ctx_->DoubleTy, "f64");
 
+  auto void_ptr = ctx_->getPointerType(ctx_->VoidTy);
+  auto const_void_ptr = ctx_->getPointerType(ctx_->VoidTy.withConst());
   switch (model) {
   case Model::kUnsafe:
-    AddTypeRule(ToString(ctx_->VoidTy) + " *",
-                IrTgt::TypeRule::UnsafePtr("*mut ::libc::c_void"));
-    AddTypeRule("const " + ToString(ctx_->VoidTy) + " *",
+    AddTypeRule(void_ptr, IrTgt::TypeRule::UnsafePtr("*mut ::libc::c_void"));
+    AddTypeRule(const_void_ptr,
                 IrTgt::TypeRule::UnsafePtr("*const ::libc::c_void"));
     break;
   case Model::kRefCount:
-    AddTypeRule(ToString(ctx_->VoidTy) + " *",
-                IrTgt::TypeRule::RefcountPtr("AnyPtr"));
-    AddTypeRule("const " + ToString(ctx_->VoidTy) + " *",
-                IrTgt::TypeRule::RefcountPtr("AnyPtr"));
+    AddTypeRule(void_ptr, IrTgt::TypeRule::RefcountPtr("AnyPtr"));
+    AddTypeRule(const_void_ptr, IrTgt::TypeRule::RefcountPtr("AnyPtr"));
     break;
   }
 
@@ -364,9 +342,6 @@ void addBuiltinTypes(Model model) {
   add_builtin_rule(ctx_->LongLongTy, build_rust_type(ctx_->LongLongTy));
   add_builtin_rule(ctx_->UnsignedLongLongTy,
                    build_rust_type(ctx_->UnsignedLongLongTy));
-
-  add_size_rules(ctx_->getSizeType(), {"size_t", "size_type"}, "usize");
-  add_size_rules(ctx_->getSignedSizeType(), {"ssize_t"}, "isize");
 }
 
 clang::QualType normalizeQualType(clang::QualType qual_type) {
@@ -554,10 +529,11 @@ clang::QualType GetTypeForDecl(const clang::NamedDecl *decl) {
 }
 
 void AddRuleForUserDefinedType(clang::NamedDecl *decl) {
-  auto cpp_name = ToString(GetTypeForDecl(decl));
-  auto rs_name = ToRustName(cpp_name);
+  auto type = GetTypeForDecl(decl);
+  auto ptr = ctx_->getPointerType(type);
+  auto rs_name = ToRustName(ToString(type));
 
-  AddTypeRule(cpp_name, IrTgt::TypeRule::Plain(rs_name));
+  AddTypeRule(type, IrTgt::TypeRule::Plain(rs_name));
 
   if (auto record_decl = llvm::dyn_cast<clang::RecordDecl>(decl)) {
     // Forward declaration
@@ -569,22 +545,20 @@ void AddRuleForUserDefinedType(clang::NamedDecl *decl) {
       if (cxx_decl->isAbstract()) {
         switch (model_) {
         case Model::kUnsafe:
-          AddTypeRule(cpp_name + " *",
-                      IrTgt::TypeRule::UnsafePtr("*mut dyn " + rs_name));
+          AddTypeRule(ptr, IrTgt::TypeRule::UnsafePtr("*mut dyn " + rs_name));
           break;
         case Model::kRefCount:
-          AddTypeRule(cpp_name + " *", IrTgt::TypeRule::RefcountPtr(
-                                           "PtrDyn<dyn " + rs_name + '>'));
+          AddTypeRule(
+              ptr, IrTgt::TypeRule::RefcountPtr("PtrDyn<dyn " + rs_name + '>'));
           break;
         }
       } else {
         switch (model_) {
         case Model::kUnsafe:
-          AddTypeRule(cpp_name + " *",
-                      IrTgt::TypeRule::UnsafePtr("*mut " + rs_name));
+          AddTypeRule(ptr, IrTgt::TypeRule::UnsafePtr("*mut " + rs_name));
           break;
         case Model::kRefCount:
-          AddTypeRule(cpp_name + " *",
+          AddTypeRule(ptr,
                       IrTgt::TypeRule::RefcountPtr("Ptr<" + rs_name + '>'));
           break;
         }

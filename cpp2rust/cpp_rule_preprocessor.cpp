@@ -267,6 +267,11 @@ private:
       }
       auto b = builder();
       b.keep_builtin_typedef = true;
+      b.keep_pointee_sugar = [](clang::QualType pointee) {
+        return pointee.getCanonicalType()->isBuiltinType() &&
+               (pointee->getAs<clang::TypedefType>() ||
+                pointee->getAs<clang::PredefinedSugarType>());
+      };
       return Entry{b.FromType(type), std::nullopt};
     }
 
