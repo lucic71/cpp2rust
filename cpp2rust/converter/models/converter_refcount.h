@@ -236,11 +236,10 @@ public:
 
   bool IsReferenceType(const clang::Expr *expr) const override;
 
-  std::string
-  ConvertMappedMethodCall(clang::Expr *expr,
-                          const TranslationRule::MethodCallFragment &mc,
-                          clang::Expr **args, unsigned num_args,
-                          TempMaterializationCtx *ctx) override;
+  std::string ConvertMappedMethodCall(clang::Expr *expr,
+                                      const IrTgt::MethodCallFragment &mc,
+                                      clang::Expr **args, unsigned num_args,
+                                      TempMaterializationCtx *ctx) override;
 
 private:
   void SetUFCSReceiver(clang::Expr *base, bool is_arrow,

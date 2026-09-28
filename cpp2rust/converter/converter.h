@@ -20,7 +20,7 @@
 #include "converter/converter_lib.h"
 #include "converter/factory.h"
 #include "converter/lex.h"
-#include "converter/translation_rule.h"
+#include "converter/rules/ir_tgt.h"
 #include "logging.h"
 
 namespace cpp2rust {
@@ -247,7 +247,7 @@ public:
     std::optional<clang::QualType> implicit_convert_to;
     TempMaterializationCtx *materialize_ctx;
     int materialize_idx; // <0 = no idx, >=0 idx valid
-    TranslationRule::Access access;
+    IrTgt::Access access;
     bool is_receiver;
     bool is_cpp_ptr;
     bool maps_to_rust_ptr;
@@ -272,9 +272,7 @@ public:
              declared_in_rule_as_rust_ptr;
     }
 
-    bool needs_lvalue() const {
-      return access == TranslationRule::Access::kBorrowMut;
-    }
+    bool needs_lvalue() const { return access == IrTgt::Access::kBorrowMut; }
 
     void dump() const;
   };
@@ -692,7 +690,7 @@ protected:
                                 TempMaterializationCtx *ctx = nullptr);
 
   std::string
-  ConvertIRFragment(const std::vector<TranslationRule::BodyFragment> &fragments,
+  ConvertIRFragment(const std::vector<IrTgt::BodyFragment> &fragments,
                     clang::Expr *expr, clang::Expr **args, unsigned num_args,
                     TempMaterializationCtx *ctx);
 
@@ -713,7 +711,7 @@ protected:
                                        clang::CXXConstructExpr *ctor);
 
   virtual std::string ConvertMappedMethodCall(
-      clang::Expr *expr, const TranslationRule::MethodCallFragment &mc,
+      clang::Expr *expr, const IrTgt::MethodCallFragment &mc,
       clang::Expr **args, unsigned num_args, TempMaterializationCtx *ctx);
 
   virtual std::string AccessLValueObject(clang::MemberExpr *member);

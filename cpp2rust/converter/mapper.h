@@ -10,7 +10,8 @@
 #include <string>
 
 #include "converter/factory.h"
-#include "converter/translation_rule.h"
+#include "converter/rules/ir_src.h"
+#include "converter/rules/ir_tgt.h"
 
 namespace cpp2rust::Mapper {
 class PushASTContext {
@@ -29,7 +30,9 @@ bool Contains(const clang::Expr *expr);
 
 std::string Map(clang::QualType qual_type);
 std::string MapInitializer(clang::QualType qual_type);
-const TranslationRule::ExprRule *GetExprRule(const clang::Expr *expr);
+const IrTgt::ExprRule *GetExprRule(const clang::Expr *expr);
+
+const IrSrc::InitTypeLocation &GetInitType(const clang::Expr *expr);
 bool IsLibcPassthrough(const clang::Expr *expr);
 std::string MapFunctionName(const clang::FunctionDecl *decl);
 std::string InstantiateTemplate(const clang::Expr *expr, unsigned n);
