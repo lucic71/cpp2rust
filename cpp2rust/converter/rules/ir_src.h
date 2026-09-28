@@ -75,10 +75,10 @@ struct Node {
 
 inline constexpr std::pair<const char *, std::shared_ptr<Node> Node::*>
     kNodeFields[] = {
-        {"class", &Node::class_},     {"return_type", &Node::return_type},
-        {"pointee", &Node::pointee},  {"element", &Node::element},
-        {"size", &Node::size},        {"operand", &Node::operand},
-        {"object", &Node::object},    {"member", &Node::member},
+        {"class", &Node::class_},    {"return_type", &Node::return_type},
+        {"pointee", &Node::pointee}, {"element", &Node::element},
+        {"size", &Node::size},       {"operand", &Node::operand},
+        {"object", &Node::object},   {"member", &Node::member},
 };
 
 inline constexpr std::pair<const char *, std::vector<Node> Node::*>

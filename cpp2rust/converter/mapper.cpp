@@ -62,9 +62,7 @@ void AddTypeRule(std::string src, IrTgt::TypeRule &&rule) {
   plain_types_.emplace(std::move(src), std::move(rule));
 }
 
-using IrSrc::Bindings;
-
-std::string instantiateTgt(const Bindings &bindings,
+std::string instantiateTgt(const IrSrc::Bindings &bindings,
                            const std::string &tgt_template) {
   std::string instantiated_template = tgt_template;
   std::string::size_type pos = 0;
@@ -98,15 +96,15 @@ std::string instantiateTgt(const Bindings &bindings,
 }
 
 template <typename T>
-std::pair<T *, Bindings> search(std::unordered_multimap<std::string, T> &map,
-                                const IrSrc::Node &use,
-                                const std::string &key) {
+std::pair<T *, IrSrc::Bindings>
+search(std::unordered_multimap<std::string, T> &map, const IrSrc::Node &use,
+       const std::string &key) {
   auto [it, end] = map.equal_range(key);
   T *rule = nullptr;
-  Bindings bindings;
+  IrSrc::Bindings bindings;
   unsigned specificity = 0;
   for (; it != end; ++it) {
-    Bindings these;
+    IrSrc::Bindings these;
     const auto &ir = it->second.src.ir;
     if (!IrSrc::Match(ir, use, these)) {
       continue;
@@ -120,7 +118,7 @@ std::pair<T *, Bindings> search(std::unordered_multimap<std::string, T> &map,
   return {rule, std::move(bindings)};
 }
 
-std::pair<ExprRule *, Bindings> search(const clang::Expr *expr) {
+std::pair<ExprRule *, IrSrc::Bindings> search(const clang::Expr *expr) {
   if (RefersToUserDefinedDecl(expr)) {
     return {};
   }
@@ -157,7 +155,8 @@ IrSrc::Node typeIR(clang::QualType qual_type, bool sugared) {
   return node;
 }
 
-std::pair<IrTgt::TypeRule *, Bindings> search(clang::QualType qual_type) {
+std::pair<IrTgt::TypeRule *, IrSrc::Bindings>
+search(clang::QualType qual_type) {
   for (bool sugared : {true, false}) {
     auto use = typeIR(qual_type, sugared);
     auto key = IrSrc::IndexKey(use);
