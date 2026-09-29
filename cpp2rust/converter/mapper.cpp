@@ -3,7 +3,10 @@
 
 #include "converter/mapper.h"
 
+#include <clang/AST/DeclCXX.h>
+#include <clang/AST/DeclTemplate.h>
 #include <clang/AST/ExprCXX.h>
+#include <clang/AST/PrettyPrinter.h>
 #include <clang/Basic/OperatorKinds.h>
 #include <clang/Basic/SourceManager.h>
 #include <clang/Lex/Lexer.h>
@@ -19,7 +22,8 @@
 #include <vector>
 
 #include "converter/converter_lib.h"
-#include "converter/translation_rule.h"
+#include "converter/rules/ir_src.h"
+#include "converter/rules/ir_tgt.h"
 
 namespace cpp2rust::Mapper {
 
@@ -29,10 +33,18 @@ clang::ASTContext *ctx_ = nullptr;
 Model model_ = Model::kUnsafe;
 bool translation_rules_loaded_ = false;
 
-std::unordered_multimap<std::string, TranslationRule::ExprRule>
-    exprs_; // src -> ExprRule
-std::unordered_multimap<std::string, TranslationRule::TypeRule>
-    types_; // src -> TypeRule
+struct ExprRule {
+  IrSrc::ExprRule src;
+  IrTgt::ExprRule tgt;
+};
+
+struct TypeRule {
+  IrSrc::TypeRule src;
+  IrTgt::TypeRule tgt;
+};
+
+std::unordered_multimap<std::string, ExprRule> exprs_;
+std::unordered_multimap<std::string, TypeRule> types_;
 
 clang::PrintingPolicy getPrintPolicy() {
   assert(ctx_);
@@ -46,310 +58,144 @@ clang::PrintingPolicy getPrintPolicy() {
   return policy;
 }
 
-std::string GetExprMapKey(const std::string &str) {
-  // Extract the function name from something like
-  // const T1 & std::foo<T1, T2>::fn_name(args)
-  auto n = str.find_first_of('(');
-  if (n == std::string::npos) {
-    n = str.size();
-  }
-
-  // Walk backwards from '(' tracking <> depth:
-  // - skip characters inside template arguments (depth > 0)
-  // - stop at the first space outside all angle brackets
-  std::string result;
-  int depth = 0;
-  for (int i = (int)n - 1; i >= 0; --i) {
-    char c = str[i];
-    if (c == '>')
-      ++depth;
-    else if (c == '<')
-      --depth;
-    else if (c == ' ' && depth == 0)
-      break;
-    else if (depth == 0)
-      result += c;
-  }
-  std::reverse(result.begin(), result.end());
-  return result;
-}
-
 constexpr const char kPackMarker[] = "&&...";
 
-std::string GetTypeMapKey(const std::string &str) {
-  auto n = str.find_first_of("<[");
-  if (n == std::string::npos || str[n] == '<') {
-    return str.substr(0, n);
-  }
-  // something like int[][] or T1[] -> []
-  return str.substr(n + 1);
+using Node = IrSrc::Node;
+using Kind = Node::Kind;
+using Bindings = std::vector<std::optional<Node>>;
+
+std::shared_ptr<Node> share(Node node) {
+  return std::make_shared<Node>(std::move(node));
 }
 
-void AddTypeRule(std::string src, TranslationRule::TypeRule &&rule) {
-  auto key = GetTypeMapKey(src);
-  rule.src = std::move(src);
-  types_.emplace(std::move(key), std::move(rule));
+Node make(Kind kind, std::string name = {}) {
+  Node node;
+  node.kind = kind;
+  node.name = std::move(name);
+  return node;
 }
 
-// Attempts to unify an instantiated C++ type or function signature with a
-// corresponding template pattern. If the two match structurally, it returns
-// a mapping from template parameter names (e.g., "T1") to their concrete
-// instantiated types (e.g., "int"). If no match is possible, returns nullopt.
-//
-// Example:
-//   template_str   = "std::vector<T1>::vector()"
-//   instantiated   = "std::vector<int>::vector()"
-//   result         = { "int" }
-std::optional<std::vector<std::optional<std::string>>>
-matchTemplate(const std::string &template_str,
-              const std::string &instantiated) {
-  auto matchLiteralAt = [&](const std::string &input_str, size_t pos,
-                            std::string_view literal, size_t &end_pos) -> bool {
-    size_t i = pos;
-    size_t j = 0;
-
-    while (true) {
-      while (i < input_str.size() && std::isspace(input_str[i])) {
-        i++;
-      }
-
-      while (j < literal.size() && std::isspace(literal[j])) {
-        j++;
-      }
-
-      if (j == literal.size()) {
-        end_pos = i;
-        return true;
-      }
-
-      if (i >= input_str.size()) {
-        return false;
-      }
-
-      if (input_str[i] != literal[j]) {
-        return false;
-      }
-
-      i++;
-      j++;
-    }
-  };
-
-  auto findNextLiteralSameDepth = [&](const std::string &s, size_t start,
-                                      std::string_view lit) -> size_t {
-    int ang = 0;
-    int par = 0;
-    int sq = 0;
-
-    for (size_t i = 0; i < s.size() && i < start; i++) {
-      switch (s[i]) {
-      case '<': {
-        ang++;
-        break;
-      }
-      case '>': {
-        ang--;
-        break;
-      }
-      case '(': {
-        par++;
-        break;
-      }
-      case ')': {
-        par--;
-        break;
-      }
-      case '[': {
-        sq++;
-        break;
-      }
-      case ']': {
-        sq--;
-        break;
-      }
-      default:
-        break;
-      }
-      assert(ang >= 0 && par >= 0 && sq >= 0 && "Unbalanced ang, par or sq");
-    }
-
-    int base_ang = ang;
-    int base_par = par;
-    int base_sq = sq;
-
-    for (size_t i = start; i <= s.size(); i++) {
-      if (ang == base_ang && par == base_par && sq == base_sq) {
-        size_t end_i = 0;
-        if (matchLiteralAt(s, i, lit, end_i)) {
-          return i;
-        }
-      }
-
-      if (i == s.size()) {
-        break;
-      }
-
-      char c = s[i];
-      switch (c) {
-      case '<': {
-        ang++;
-        break;
-      }
-      case '>': {
-        ang--;
-        break;
-      }
-      case '(': {
-        par++;
-        break;
-      }
-      case ')': {
-        par--;
-        break;
-      }
-      case '[': {
-        sq++;
-        break;
-      }
-      case ']': {
-        sq--;
-        break;
-      }
-      default:
-        break;
-      }
-
-      if (ang < 0 || par < 0 || sq < 0) {
-        return std::string::npos;
-      }
-    }
-
-    return std::string::npos;
-  };
-
-  std::vector<std::optional<std::string>> captured;
-
-  size_t ti = 0;
-  size_t si = 0;
-
-  while (ti < template_str.size()) {
-    if (template_str[ti] == 'T' && ti + 1 < template_str.size() &&
-        std::isdigit(template_str[ti + 1])) {
-      size_t tj = ti + 2;
-      while (tj < template_str.size() && std::isdigit(template_str[tj])) {
-        tj++;
-      }
-
-      size_t type_idx = std::stoi(&template_str[ti + 1]) - 1;
-      assert(type_idx < TranslationRule::kMaxGenerics &&
-             "template placeholder exceeds kMaxGenerics");
-      ti = tj;
-
-      std::string_view nextLit;
-      size_t scan = ti;
-      while (scan < template_str.size()) {
-        if (template_str[scan] == 'T' && scan + 1 < template_str.size() &&
-            std::isdigit(template_str[scan + 1])) {
-          break;
-        }
-        scan++;
-      }
-      nextLit = std::string_view(template_str).substr(ti, scan - ti);
-
-      captured.resize(std::max(captured.size(), type_idx + 1));
-      auto &repl = captured[type_idx];
-      if (repl.has_value()) {
-        size_t end_pos = 0;
-        if (!matchLiteralAt(instantiated, si, *repl, end_pos)) {
-          return std::nullopt;
-        }
-        si = end_pos;
-      } else {
-        if (!nextLit.empty()) {
-          size_t k = findNextLiteralSameDepth(instantiated, si, nextLit);
-          if (k == std::string::npos) {
-            return std::nullopt;
-          }
-
-          size_t a = si;
-          size_t b = k;
-
-          while (a < b && std::isspace(instantiated[a])) {
-            a++;
-          }
-          while (b > a && std::isspace(instantiated[b - 1])) {
-            b--;
-          }
-
-          repl = instantiated.substr(a, b - a);
-          si = k;
-        } else {
-          size_t a = si;
-          size_t b = instantiated.size();
-
-          while (a < b && std::isspace(instantiated[a])) {
-            a++;
-          }
-          while (b > a && std::isspace(instantiated[b - 1])) {
-            b--;
-          }
-
-          repl = instantiated.substr(a, b - a);
-          si = instantiated.size();
-        }
-      }
-
-      if (!nextLit.empty()) {
-        size_t end_pos = 0;
-        if (!matchLiteralAt(instantiated, si, nextLit, end_pos)) {
-          return std::nullopt;
-        }
-        si = end_pos;
-        ti += nextLit.size();
-      }
-    } else {
-      size_t tj = ti;
-      while (tj < template_str.size()) {
-        if (template_str[tj] == 'T' && tj + 1 < template_str.size() &&
-            std::isdigit(template_str[tj + 1])) {
-          break;
-        }
-        ++tj;
-      }
-
-      auto lit = std::string_view(template_str).substr(ti, tj - ti);
-      size_t end_pos = 0;
-      if (!matchLiteralAt(instantiated, si, lit, end_pos)) {
-        return std::nullopt;
-      }
-      si = end_pos;
-      ti = tj;
-    }
+std::string nameOf(const clang::NamedDecl *decl) {
+  if (const auto *ctor = llvm::dyn_cast<clang::CXXConstructorDecl>(decl)) {
+    return ctor->getParent()->getName().str();
   }
-
-  while (si < instantiated.size() && std::isspace(instantiated[si])) {
-    si++;
+  if (const auto *dtor = llvm::dyn_cast<clang::CXXDestructorDecl>(decl)) {
+    return "~" + dtor->getParent()->getName().str();
   }
-
-  if (si != instantiated.size()) {
-    return std::nullopt;
+  auto name = decl->getDeclName();
+  if (name.getNameKind() == clang::DeclarationName::CXXConversionFunctionName) {
+    return "operator conversion";
   }
-
-  return captured;
+  if (const auto *tag = llvm::dyn_cast<clang::TagDecl>(decl);
+      tag && !tag->getIdentifier()) {
+    if (const auto *tdef = tag->getTypedefNameForAnonDecl()) {
+      return tdef->getName().str();
+    }
+    return "(anonymous)";
+  }
+  return name.getAsString();
 }
 
-// Substitutes concrete types into a target template string using the provided
-// type mapping. Each template parameter in `tgt_template` is replaced with its
-// corresponding instantiated type from `types`.
-//
-// Example:
-//   types        = { {"i32"} }
-//   tgt_template = "Vec<T1>"
-//   result       = "Vec<i32>"
-std::string instantiateTgt(const std::vector<std::optional<std::string>> &types,
+std::string QualifiedName(const clang::NamedDecl *decl) {
+  std::vector<std::string> parts{nameOf(decl)};
+  for (const auto *dc = decl->getDeclContext(); dc; dc = dc->getParent()) {
+    if (const auto *ns = llvm::dyn_cast<clang::NamespaceDecl>(dc)) {
+      if (!ns->isInline() && !ns->isAnonymousNamespace()) {
+        parts.push_back(ns->getName().str());
+      }
+    } else if (const auto *named = llvm::dyn_cast<clang::NamedDecl>(dc);
+               named && (llvm::isa<clang::RecordDecl>(named) ||
+                         llvm::isa<clang::FunctionDecl>(named))) {
+      parts.push_back(nameOf(named));
+    }
+  }
+  std::string out;
+  for (auto it = parts.rbegin(); it != parts.rend(); ++it) {
+    if (!out.empty()) {
+      out += "::";
+    }
+    out += *it;
+  }
+  return out;
+}
+
+std::string IndexKey(const Node &node) {
+  switch (node.kind) {
+  case Kind::kFunction:
+  case Kind::kDecl:
+  case Kind::kRecord:
+  case Kind::kEnum:
+  case Kind::kTypedef:
+  case Kind::kBuiltin:
+    return node.name;
+  case Kind::kMacro:
+    return "macro:" + node.name;
+  case Kind::kUnary:
+    return "unary" + node.name + ":" + IndexKey(*node.operand);
+  case Kind::kArrow:
+    return IndexKey(*node.member);
+  case Kind::kPointer:
+    return "*" + IndexKey(*node.pointee);
+  case Kind::kLRef:
+    return "&" + IndexKey(*node.pointee);
+  case Kind::kRRef:
+    return "&&" + IndexKey(*node.pointee);
+  case Kind::kArray:
+    return "[]" + IndexKey(*node.element);
+  default:
+    return "";
+  }
+}
+
+bool Match(const Node &rule, const Node &use, Bindings &bindings) {
+  if (rule.kind == Kind::kParam) {
+    if ((rule.is_const && !use.is_const) ||
+        (rule.is_volatile && !use.is_volatile)) {
+      return false;
+    }
+    Node bound = use;
+    if (rule.is_const) {
+      bound.is_const = false;
+      bound.type.removeLocalConst();
+    }
+    if (rule.is_volatile) {
+      bound.is_volatile = false;
+      bound.type.removeLocalVolatile();
+    }
+    if (bindings.size() <= rule.param) {
+      bindings.resize(rule.param + 1);
+    }
+    auto &slot = bindings[rule.param];
+    if (!slot) {
+      slot = std::move(bound);
+      return true;
+    }
+    return *slot == bound;
+  }
+  if (rule.kind != use.kind || rule.name != use.name ||
+      rule.is_const != use.is_const || rule.is_volatile != use.is_volatile ||
+      rule.variadic != use.variadic || rule.ref != use.ref) {
+    return false;
+  }
+  return Node::zipChildren(rule, use, [&](const Node &r, const Node &u) {
+    return Match(r, u, bindings);
+  });
+}
+
+void AddTypeRule(clang::QualType type, IrTgt::TypeRule &&rule) {
+  auto src = IrSrcBuilder(*ctx_).FromType(type);
+  auto key = IndexKey(src);
+  auto [begin, end] = types_.equal_range(key);
+  for (auto it = begin; it != end; ++it) {
+    if (it->second.src.ir == src) {
+      return;
+    }
+  }
+  types_.emplace(std::move(key), TypeRule{{std::move(src)}, std::move(rule)});
+}
+
+std::string instantiateTgt(const Bindings &bindings,
                            const std::string &tgt_template) {
-  assert(types.size() <= TranslationRule::kMaxGenerics &&
-         "template placeholder exceeds kMaxGenerics");
   std::string instantiated_template = tgt_template;
   std::string::size_type pos = 0;
   while ((pos = instantiated_template.find('T', pos)) != std::string::npos) {
@@ -360,7 +206,21 @@ std::string instantiateTgt(const std::vector<std::optional<std::string>> &types,
       ++pos;
       continue;
     }
-    const auto &repl = types.at(instantiated_template[pos + 1] - '1').value();
+    unsigned n = instantiated_template[pos + 1] - '0';
+    assert(n < bindings.size() && bindings[n] &&
+           "target uses a template parameter the use site does not bind");
+    const auto &bound = *bindings[n];
+    std::string repl;
+    if (bound.kind == Kind::kValue) {
+      repl = bound.name;
+    } else {
+      assert(!bound.type.isNull() && "template parameter bound to a non-type");
+      repl = Map(bound.type);
+      if (repl.empty()) {
+        llvm::errs() << "cpp_type: " << ToString(bound.type) << '\n';
+        assert(0 && "Type is not present in types_");
+      }
+    }
     instantiated_template.replace(pos, 2, repl);
     pos += repl.length();
   }
@@ -368,62 +228,125 @@ std::string instantiateTgt(const std::vector<std::optional<std::string>> &types,
 }
 
 template <typename T>
-std::pair<T *, std::vector<std::optional<std::string>>>
-search(std::unordered_multimap<std::string, T> &map, const std::string &txt,
-       const std::string &key) {
+std::pair<T *, Bindings> search(std::unordered_multimap<std::string, T> &map,
+                                const Node &use, const std::string &key) {
   auto [it, end] = map.equal_range(key);
   T *rule = nullptr;
-  std::vector<std::optional<std::string>> subs;
-
+  Bindings bindings;
+  unsigned specificity = 0;
   for (; it != end; ++it) {
-    auto &this_rule = it->second;
-    auto this_subs = matchTemplate(this_rule.src, txt);
-    if (!this_subs) {
+    Bindings these;
+    const auto &ir = it->second.src.ir;
+    if (!Match(ir, use, these)) {
       continue;
     }
-    // tie breaker: prefer more specific rules (usually the longer ones)
-    if (!rule || this_rule.src.size() > rule->src.size()) {
-      rule = &this_rule;
-      subs = *std::move(this_subs);
+    if (!rule || ir.specificity() > specificity) {
+      rule = &it->second;
+      bindings = std::move(these);
+      specificity = ir.specificity();
     }
   }
-  return {rule, std::move(subs)};
+  return {rule, std::move(bindings)};
 }
 
-TranslationRule::ExprRule *search(const clang::Expr *expr) {
+std::pair<ExprRule *, Bindings> search(const clang::Expr *expr) {
   if (RefersToUserDefinedDecl(expr)) {
-    return nullptr;
+    return {};
   }
-  auto qualified_name = ToString(expr);
-  auto [rule, subs] =
-      search(exprs_, qualified_name, GetExprMapKey(qualified_name));
-  log() << "search expr " << qualified_name << ", result:\n";
-  if (rule) {
-    rule->dump();
+  auto use = IrSrcBuilder(*ctx_).FromExpr(expr);
+  if (!use) {
+    return {};
+  }
+  auto res = search(exprs_, *use, IndexKey(*use));
+  log() << "search expr " << use->str() << ", result:\n";
+  if (res.first) {
+    res.first->src.dump();
+    res.first->tgt.dump();
   } else {
     log() << "None\n";
   }
-  return rule;
+  return res;
 }
 
-std::pair<TranslationRule::TypeRule *, std::vector<std::optional<std::string>>>
-search(clang::QualType qual_type) {
-  auto sugared = ToString(qual_type, ScalarSugar::kPreserve);
-  if (auto res = search(types_, sugared, GetTypeMapKey(sugared)); res.first) {
-    log() << "search type " << sugared
-          << ", result: " << res.first->type_info.type << '\n';
-    return res;
+Node typeIR(clang::QualType qual_type, bool sugared) {
+  IrSrcBuilder builder(*ctx_);
+  if (sugared) {
+    builder.keep_builtin_typedef = true;
+    builder.keep_pointee_sugar = [](clang::QualType pointee) {
+      auto canonical = pointee.getCanonicalType().getDesugaredType(*ctx_);
+      bool builtin_alias = canonical->isBuiltinType() &&
+                           (pointee->getAs<clang::TypedefType>() ||
+                            pointee->getAs<clang::PredefinedSugarType>());
+      return builtin_alias || Map(pointee) != Map(canonical);
+    };
   }
-  auto type = ToString(qual_type);
-  if (type == sugared) {
-    log() << "search type " << type << ", result: None\n";
-    return {};
+  auto node = builder.FromType(qual_type);
+  if (node.kind != Kind::kArray) {
+    node.is_const = false;
+    node.is_volatile = false;
   }
-  auto res = search(types_, type, GetTypeMapKey(type));
-  log() << "search type " << type
-        << ", result: " << (res.first ? res.first->type_info.type : "None")
-        << '\n';
-  return res;
+  return node;
+}
+
+std::pair<IrTgt::TypeRule *, Bindings> search(clang::QualType qual_type) {
+  for (bool sugared : {true, false}) {
+    auto use = typeIR(qual_type, sugared);
+    auto key = IndexKey(use);
+    auto [rule, bindings] = search(types_, use, key);
+    if (!rule && !key.empty()) {
+      std::tie(rule, bindings) = search(types_, use, "");
+    }
+    if (rule) {
+      log() << "search type " << use.str()
+            << ", result: " << rule->tgt.type_info.type << '\n';
+      return {&rule->tgt, std::move(bindings)};
+    }
+  }
+  log() << "search type " << ToString(qual_type) << ", result: None\n";
+  return {};
+}
+
+void validate(const std::string &name, const ExprRule &rule) {
+  const auto &[src, tgt] = rule;
+  if (tgt.usesInit() && !src.init_type.valid()) {
+    llvm::errs() << name << '\n';
+    tgt.dump();
+    llvm::report_fatal_error(
+        "Expr rule uses init but its src pack is not declared as Init<T, "
+        "Args>");
+  }
+
+  bool has_generic[Ir::kMaxGenerics] = {false};
+  src.ir.forEachParam([&](unsigned n) {
+    if (n >= 1 && n <= Ir::kMaxGenerics) {
+      has_generic[n - 1] = true;
+    }
+  });
+
+  for (size_t i = 0, e = tgt.generics.size(); i < e; ++i) {
+    if (!has_generic[i]) {
+      llvm::errs() << name << '\n';
+      tgt.dump();
+      llvm::errs() << "generic T" << (i + 1)
+                   << " declared but missing from src: " << src.ir.str()
+                   << '\n';
+      llvm::report_fatal_error("Absent generic from src");
+    }
+  }
+}
+
+template <typename Src>
+Src takeSrc(std::unordered_map<std::string, Src> &src, const std::string &name,
+            const std::filesystem::path &dir) {
+  auto it = src.find(name);
+  if (it == src.end()) {
+    llvm::errs() << "ERROR: " << dir.string() << ": rule " << name
+                 << " has no entry in ir_src.json\n";
+    std::exit(EXIT_FAILURE);
+  }
+  auto rule = std::move(it->second);
+  src.erase(it);
+  return rule;
 }
 
 void addRulesFromDirectory(const std::filesystem::path &dir, Model model) {
@@ -433,27 +356,37 @@ void addRulesFromDirectory(const std::filesystem::path &dir, Model model) {
     assert(fs::exists(path / "ir_src.json") &&
            (fs::exists(path / "ir_unsafe.json") ||
             fs::exists(path / "ir_refcount.json")));
-    auto [expr_rules, type_rules] = TranslationRule::Load(path, model);
-    if (expr_rules.empty() && type_rules.empty()) {
+    auto src = IrSrc::Load(path);
+    auto tgt = IrTgt::Load(path, model);
+    if (tgt.exprs.empty() && tgt.types.empty()) {
       log() << "No rules found in " << path << '\n';
       continue;
     }
-    for (auto &[_, rule] : expr_rules) {
-      exprs_.emplace(GetExprMapKey(rule.src), std::move(rule));
+    for (auto &[name, rule] : tgt.exprs) {
+      ExprRule paired{takeSrc(src.exprs, name, path), std::move(rule)};
+      validate(name, paired);
+      auto key = IndexKey(paired.src.ir);
+      exprs_.emplace(std::move(key), std::move(paired));
     }
-    for (auto &[_, rule] : type_rules) {
-      auto key = GetTypeMapKey(rule.src);
+    for (auto &[name, rule] : tgt.types) {
+      TypeRule paired{takeSrc(src.types, name, path), std::move(rule)};
+      auto key = IndexKey(paired.src.ir);
       auto [begin, end] = types_.equal_range(key);
       for (auto it = begin; it != end; ++it) {
-        if (it->second.src == rule.src) {
+        if (it->second.src.ir == paired.src.ir) {
           llvm::errs() << "ERROR: duplicate type rule for C++ type '"
-                       << rule.src << "': maps to both '"
-                       << it->second.type_info.type << "' and '"
-                       << rule.type_info.type << "'\n";
+                       << paired.src.ir.str() << "': maps to both '"
+                       << it->second.tgt.type_info.type << "' and '"
+                       << paired.tgt.type_info.type << "'\n";
           std::exit(EXIT_FAILURE);
         }
       }
-      types_.emplace(std::move(key), std::move(rule));
+      types_.emplace(std::move(key), std::move(paired));
+    }
+    if (!src.exprs.empty() || !src.types.empty()) {
+      llvm::errs() << "ERROR: " << path.string()
+                   << ": ir_src.json has rules without a target rule\n";
+      std::exit(EXIT_FAILURE);
     }
   }
 }
@@ -501,20 +434,6 @@ clang::QualType normalizeQualType(clang::QualType qual_type) {
       *ctx_);
 }
 
-std::string mapTypeStringRecursive(const std::string &cpp_type) {
-  auto [rule, subs] = search(types_, cpp_type, GetTypeMapKey(cpp_type));
-  if (!rule) {
-    llvm::errs() << "cpp_type: " << cpp_type << '\n';
-    assert(0 && "Type is not present in types_");
-  }
-  for (auto &ty : subs) {
-    if (ty) {
-      ty = mapTypeStringRecursive(*ty);
-    }
-  }
-  return instantiateTgt(subs, rule->type_info.type);
-}
-
 std::string normalizeTranslationRule(std::string rule) {
   // Detach pointer from double reference. Useful for matching translation
   // rules.
@@ -535,6 +454,274 @@ std::string normalizeTranslationRule(std::string rule) {
 
 } // namespace
 
+Node IrSrcBuilder::FromType(clang::QualType type) {
+  return fromType(type, true);
+}
+
+Node IrSrcBuilder::fromType(clang::QualType type, bool top) {
+  if (keep_builtin_typedef && top) {
+    if (const auto *decltype_type =
+            llvm::dyn_cast<clang::DecltypeType>(type.getTypePtr())) {
+      type = decltype_type->getUnderlyingType();
+    }
+    auto canonical = type.getCanonicalType();
+    const clang::NamedDecl *name = nullptr;
+    if (const auto *typedef_type = type->getAs<clang::TypedefType>();
+        typedef_type && canonical->isBuiltinType()) {
+      name = typedef_type->getDecl();
+    }
+    if (name) {
+      Node node = make(Kind::kTypedef, name->getName().str());
+      node.is_const = canonical.isConstQualified();
+      node.is_volatile = canonical.isVolatileQualified();
+      node.type = canonical;
+      return node;
+    }
+    if (const auto *predef = type->getAs<clang::PredefinedSugarType>()) {
+      Node node =
+          make(Kind::kTypedef, predef->getIdentifier()->getName().str());
+      node.is_const = canonical.isConstQualified();
+      node.is_volatile = canonical.isVolatileQualified();
+      node.type = canonical;
+      return node;
+    }
+    if (const auto *ptr = type->getAs<clang::PointerType>();
+        ptr && keep_pointee_sugar &&
+        keep_pointee_sugar(ptr->getPointeeType())) {
+      Node node = make(Kind::kPointer);
+      node.pointee = share(fromType(ptr->getPointeeType(), true));
+      node.is_const = canonical.isConstQualified();
+      node.is_volatile = canonical.isVolatileQualified();
+      node.type = canonical;
+      return node;
+    }
+  }
+  return fromCanonical(type.getCanonicalType());
+}
+
+Node IrSrcBuilder::fromCanonical(clang::QualType canonical) {
+  Node node;
+  const auto *type = canonical.getTypePtr();
+  bool quals_on_element = false;
+  if (const auto *builtin = llvm::dyn_cast<clang::BuiltinType>(type)) {
+    clang::PrintingPolicy policy(ctx_.getLangOpts());
+    policy.Bool = true;
+    node = make(Kind::kBuiltin, builtin->getName(policy).str());
+  } else if (const auto *ptr = llvm::dyn_cast<clang::PointerType>(type)) {
+    node = make(Kind::kPointer);
+    node.pointee = share(fromType(ptr->getPointeeType(), false));
+  } else if (const auto *ref =
+                 llvm::dyn_cast<clang::LValueReferenceType>(type)) {
+    node = make(Kind::kLRef);
+    node.pointee = share(fromType(ref->getPointeeType(), false));
+  } else if (const auto *ref =
+                 llvm::dyn_cast<clang::RValueReferenceType>(type)) {
+    node = make(Kind::kRRef);
+    node.pointee = share(fromType(ref->getPointeeType(), false));
+  } else if (const auto *array = ctx_.getAsConstantArrayType(canonical)) {
+    node = make(Kind::kArray);
+    node.element = share(fromType(array->getElementType(), false));
+    node.size =
+        share(make(Kind::kValue, llvm::toString(array->getSize(), 10, false)));
+    quals_on_element = true;
+  } else if (const auto *array = ctx_.getAsIncompleteArrayType(canonical)) {
+    node = make(Kind::kArray);
+    node.element = share(fromType(array->getElementType(), false));
+    quals_on_element = true;
+  } else if (const auto *record = type->getAsRecordDecl()) {
+    node = fromRecord(record);
+  } else if (const auto *enum_type = llvm::dyn_cast<clang::EnumType>(type)) {
+    node = make(Kind::kEnum, QualifiedName(enum_type->getDecl()));
+  } else if (const auto *proto =
+                 llvm::dyn_cast<clang::FunctionProtoType>(type)) {
+    node = make(Kind::kFunctionType);
+    node.variadic = proto->isVariadic();
+    node.return_type = share(fromType(proto->getReturnType(), false));
+    for (auto param : proto->getParamTypes()) {
+      node.params.push_back(fromType(param, false));
+    }
+  } else {
+    node = make(Kind::kOpaque, canonical.getUnqualifiedType().getAsString());
+  }
+  if (!quals_on_element) {
+    node.is_const |= canonical.isConstQualified();
+    node.is_volatile |= canonical.isVolatileQualified();
+  }
+  node.type = canonical;
+  return node;
+}
+
+Node IrSrcBuilder::fromRecord(const clang::RecordDecl *decl) {
+  if (stand_in) {
+    if (auto param = stand_in(decl)) {
+      Node node = make(Kind::kParam);
+      node.param = *param;
+      return node;
+    }
+  }
+  if (const auto *cxx = llvm::dyn_cast<clang::CXXRecordDecl>(decl);
+      cxx && cxx->isLambda()) {
+    return make(Kind::kOpaque, "lambda");
+  }
+  Node node = make(Kind::kRecord, QualifiedName(decl));
+  if (const auto *spec =
+          llvm::dyn_cast<clang::ClassTemplateSpecializationDecl>(decl)) {
+    for (const auto &arg : spec->getTemplateArgs().asArray()) {
+      node.args.push_back(fromTemplateArg(arg));
+    }
+  }
+  return node;
+}
+
+Node IrSrcBuilder::fromTemplateArg(const clang::TemplateArgument &arg) {
+  switch (arg.getKind()) {
+  case clang::TemplateArgument::Type:
+    return fromType(arg.getAsType(), false);
+  case clang::TemplateArgument::Integral: {
+    Node node = make(Kind::kValue, llvm::toString(arg.getAsIntegral(), 10));
+    node.type = arg.getIntegralType();
+    return node;
+  }
+  default: {
+    std::string spelling;
+    llvm::raw_string_ostream os(spelling);
+    arg.print(clang::PrintingPolicy(ctx_.getLangOpts()), os,
+              /*IncludeType=*/true);
+    return make(Kind::kOpaque, spelling);
+  }
+  }
+}
+
+std::shared_ptr<Node> IrSrcBuilder::classOf(const clang::Decl *decl) {
+  if (const auto *record =
+          llvm::dyn_cast<clang::RecordDecl>(decl->getDeclContext())) {
+    Node node = fromRecord(record);
+    node.type = ctx_.getCanonicalTagType(record);
+    return share(std::move(node));
+  }
+  return nullptr;
+}
+
+Node IrSrcBuilder::FromDecl(const clang::NamedDecl *decl) {
+  if (const auto *tmpl = llvm::dyn_cast<clang::FunctionTemplateDecl>(decl)) {
+    decl = tmpl->getTemplatedDecl();
+  }
+  const auto *func = llvm::dyn_cast<clang::FunctionDecl>(decl);
+  if (!func) {
+    Node node = make(Kind::kDecl, QualifiedName(decl));
+    node.class_ = classOf(decl);
+    return node;
+  }
+
+  Node node = make(Kind::kFunction, QualifiedName(func));
+  node.variadic = func->isVariadic();
+  node.class_ = classOf(func);
+  node.return_type = share(fromType(func->getReturnType(), false));
+  bool has_pack = HasFunctionParameterPack(func);
+  unsigned num_params = func->getNumParams();
+  if (has_pack) {
+    const auto *primary = func->getPrimaryTemplate();
+    num_params =
+        (primary ? primary->getTemplatedDecl() : func)->getNumParams() - 1;
+  }
+  for (unsigned i = 0; i < num_params; ++i) {
+    node.params.push_back(fromType(func->getParamDecl(i)->getType(), false));
+  }
+  if (has_pack) {
+    node.params.push_back(make(Kind::kPackParams));
+  }
+  if (const auto *method = llvm::dyn_cast<clang::CXXMethodDecl>(func)) {
+    node.is_const = method->isConst();
+    node.is_volatile = method->isVolatile();
+    switch (method->getRefQualifier()) {
+    case clang::RQ_LValue:
+      node.ref = "&";
+      break;
+    case clang::RQ_RValue:
+      node.ref = "&&";
+      break;
+    default:
+      break;
+    }
+  }
+  return node;
+}
+
+std::optional<Node> IrSrcBuilder::FromExpr(const clang::Expr *expr) {
+  expr = expr->IgnoreParenImpCasts();
+
+  if (llvm::isa<clang::IntegerLiteral>(expr) &&
+      expr->getBeginLoc().isMacroID()) {
+    auto name = clang::Lexer::getImmediateMacroName(
+        expr->getBeginLoc(), ctx_.getSourceManager(), ctx_.getLangOpts());
+    if (!name.empty()) {
+      return make(Kind::kMacro, name.str());
+    }
+  }
+
+  if (const auto *call = llvm::dyn_cast<clang::CallExpr>(expr)) {
+    if (const auto *callee = call->getDirectCallee()) {
+      return FromDecl(callee);
+    }
+  }
+
+  if (const auto *ctor = llvm::dyn_cast<clang::CXXConstructExpr>(expr)) {
+    assert(ctor->getConstructor() &&
+           "expr is a CXXConstructExpr but could not get constructor");
+    return FromDecl(ctor->getConstructor());
+  }
+
+  if (const auto *member = llvm::dyn_cast<clang::MemberExpr>(expr)) {
+    const auto *decl = member->getMemberDecl();
+    if (llvm::isa<clang::CXXMethodDecl>(decl)) {
+      return FromDecl(decl);
+    }
+    auto arrow = [&](clang::QualType object) {
+      Node node = make(Kind::kArrow);
+      node.object = share(FromType(object));
+      node.member = share(FromDecl(decl));
+      return node;
+    };
+    if (member->isArrow()) {
+      const auto *base = member->getBase()->IgnoreParenImpCasts();
+      if (const auto *op = llvm::dyn_cast<clang::CXXOperatorCallExpr>(base);
+          op && op->getOperator() == clang::OO_Arrow) {
+        return arrow(op->getArg(0)->IgnoreImpCasts()->getType());
+      }
+    } else if (auto for_range = GetParentForRange(ctx_, member)) {
+      const auto *range =
+          for_range->getRangeInit()->getType()->getAsCXXRecordDecl();
+      if (range && llvm::isa<clang::ClassTemplateSpecializationDecl>(range) &&
+          QualifiedName(range) == "std::map") {
+        auto iter_type = GetForRangeIteratorType(for_range);
+        if (!iter_type.isNull()) {
+          return arrow(iter_type);
+        }
+      }
+    }
+    return FromDecl(decl);
+  }
+
+  if (const auto *ref = llvm::dyn_cast<clang::DeclRefExpr>(expr)) {
+    return FromDecl(ref->getDecl());
+  }
+
+  if (const auto *uop = llvm::dyn_cast<clang::UnaryOperator>(expr)) {
+    auto sub = FromExpr(uop->getSubExpr());
+    if (!sub) {
+      return std::nullopt;
+    }
+    Node node =
+        make(Kind::kUnary,
+             (uop->isPostfix() ? "post" : "") +
+                 clang::UnaryOperator::getOpcodeStr(uop->getOpcode()).str());
+    node.operand = share(std::move(*sub));
+    return node;
+  }
+
+  return std::nullopt;
+}
+
 PushASTContext::PushASTContext(clang::ASTContext &ctx) : prev_(ctx_) {
   ctx_ = &ctx;
 }
@@ -544,10 +731,17 @@ bool Contains(clang::QualType qual_type) {
   return search(qual_type).first != nullptr;
 }
 
-bool Contains(const clang::Expr *expr) { return search(expr) != nullptr; }
+bool Contains(const clang::Expr *expr) { return search(expr).first != nullptr; }
 
-const TranslationRule::ExprRule *GetExprRule(const clang::Expr *expr) {
-  return search(expr);
+const IrTgt::ExprRule *GetExprRule(const clang::Expr *expr) {
+  auto rule = search(expr).first;
+  return rule ? &rule->tgt : nullptr;
+}
+
+const IrSrc::InitTypeLocation &GetInitType(const clang::Expr *expr) {
+  auto rule = search(expr).first;
+  assert(rule && "expression must have a translation rule");
+  return rule->src.init_type;
 }
 
 bool IsLibcPassthrough(const clang::Expr *expr) {
@@ -566,7 +760,7 @@ bool IsLibcPassthrough(const clang::Expr *expr) {
 std::string MapFunctionName(const clang::FunctionDecl *decl) {
   assert(decl);
   if (!IsUserDefinedDecl(decl) &&
-      exprs_.contains(GetExprMapKey(ToString(decl)))) {
+      exprs_.contains(IndexKey(IrSrcBuilder(*ctx_).FromDecl(decl)))) {
     return std::format("libcc2rs::{}_{}", decl->getNameAsString(),
                        model_ == Model::kRefCount ? "refcount" : "unsafe");
   }
@@ -574,41 +768,26 @@ std::string MapFunctionName(const clang::FunctionDecl *decl) {
 }
 
 std::string InstantiateTemplate(const clang::Expr *expr, unsigned n) {
-  auto expr_str = ToString(expr);
-  auto [rule, subs] = search(exprs_, expr_str, GetExprMapKey(expr_str));
+  auto [rule, bindings] = search(expr);
   auto text = std::format("T{}", n);
   if (!rule) {
     return text;
   }
-  auto &ty = subs.at(n - 1);
-  if (ty) {
-    ty = mapTypeStringRecursive(*ty);
-  }
-  return instantiateTgt(subs, text);
+  return instantiateTgt(bindings, text);
 }
 
 std::string Map(clang::QualType qual_type) {
-  auto [rule, subs] = search(qual_type);
+  auto [rule, bindings] = search(qual_type);
   if (rule) {
-    for (auto &ty : subs) {
-      if (ty) {
-        ty = mapTypeStringRecursive(*ty);
-      }
-    }
-    return instantiateTgt(subs, rule->type_info.type);
+    return instantiateTgt(bindings, rule->type_info.type);
   }
   return {};
 }
 
 std::string MapInitializer(clang::QualType qual_type) {
-  auto [rule, subs] = search(qual_type);
+  auto [rule, bindings] = search(qual_type);
   if (rule && !rule->initializer.empty()) {
-    for (auto &ty : subs) {
-      if (ty) {
-        ty = mapTypeStringRecursive(*ty);
-      }
-    }
-    return instantiateTgt(subs, rule->initializer);
+    return instantiateTgt(bindings, rule->initializer);
   }
   return {};
 }
@@ -634,26 +813,20 @@ void SetDerives(clang::QualType qual_type, std::vector<std::string> derives) {
   }
 }
 bool ReturnsPointer(const clang::Expr *expr) {
-  auto rule = search(expr);
-  return rule && rule->return_type.is_pointer();
+  auto rule = search(expr).first;
+  return rule && rule->tgt.return_type.is_pointer();
 }
 
-const TranslationRule::TypeInfo &GetParamInfo(const clang::Expr *expr,
-                                              unsigned index) {
-  auto rule = search(expr);
+const IrTgt::TypeInfo &GetParamInfo(const clang::Expr *expr, unsigned index) {
+  auto rule = search(expr).first;
   assert(rule && "expression must have a translation rule");
-  return rule->params.at(index);
+  return rule->tgt.params.at(index);
 }
 
 std::string GetParamType(const clang::Expr *expr, unsigned index) {
-  auto expr_str = ToString(expr);
-  auto [rule, subs] = search(exprs_, expr_str, GetExprMapKey(expr_str));
-  for (auto &ty : subs) {
-    if (ty) {
-      ty = mapTypeStringRecursive(*ty);
-    }
-  }
-  return instantiateTgt(subs, rule->params.at(index).type);
+  auto [rule, bindings] = search(expr);
+  assert(rule && "expression must have a translation rule");
+  return instantiateTgt(bindings, rule->tgt.params.at(index).type);
 }
 
 bool ParamIsPointer(const clang::Expr *expr, unsigned index) {
@@ -682,10 +855,11 @@ clang::QualType GetTypeForDecl(const clang::NamedDecl *decl) {
 }
 
 void AddRuleForUserDefinedType(clang::NamedDecl *decl) {
-  auto cpp_name = ToString(GetTypeForDecl(decl));
-  auto rs_name = ToRustName(cpp_name);
+  auto type = GetTypeForDecl(decl);
+  auto ptr = ctx_->getPointerType(type);
+  auto rs_name = ToRustName(ToString(type));
 
-  AddTypeRule(cpp_name, TranslationRule::TypeRule::Plain(rs_name));
+  AddTypeRule(type, IrTgt::TypeRule::Plain(rs_name));
 
   if (auto record_decl = llvm::dyn_cast<clang::RecordDecl>(decl)) {
     // Forward declaration
@@ -697,23 +871,21 @@ void AddRuleForUserDefinedType(clang::NamedDecl *decl) {
       if (cxx_decl->isAbstract()) {
         switch (model_) {
         case Model::kUnsafe:
-          AddTypeRule(cpp_name + " *", TranslationRule::TypeRule::UnsafePtr(
-                                           "*mut dyn " + rs_name));
+          AddTypeRule(ptr, IrTgt::TypeRule::UnsafePtr("*mut dyn " + rs_name));
           break;
         case Model::kRefCount:
-          AddTypeRule(cpp_name + " *", TranslationRule::TypeRule::RefcountPtr(
-                                           "PtrDyn<dyn " + rs_name + '>'));
+          AddTypeRule(
+              ptr, IrTgt::TypeRule::RefcountPtr("PtrDyn<dyn " + rs_name + '>'));
           break;
         }
       } else {
         switch (model_) {
         case Model::kUnsafe:
-          AddTypeRule(cpp_name + " *",
-                      TranslationRule::TypeRule::UnsafePtr("*mut " + rs_name));
+          AddTypeRule(ptr, IrTgt::TypeRule::UnsafePtr("*mut " + rs_name));
           break;
         case Model::kRefCount:
-          AddTypeRule(cpp_name + " *", TranslationRule::TypeRule::RefcountPtr(
-                                           "Ptr<" + rs_name + '>'));
+          AddTypeRule(ptr,
+                      IrTgt::TypeRule::RefcountPtr("Ptr<" + rs_name + '>'));
           break;
         }
       }
