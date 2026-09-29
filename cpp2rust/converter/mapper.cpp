@@ -63,6 +63,15 @@ struct Binding {
 };
 using Bindings = std::vector<std::optional<Binding>>;
 
+std::unordered_map<const clang::Expr *, std::pair<ExprRule *, Bindings>>
+    expr_cache_;
+std::unordered_map<void *, std::pair<IrTgt::TypeRule *, Bindings>> type_cache_;
+
+void clearCaches() {
+  expr_cache_.clear();
+  type_cache_.clear();
+}
+
 bool Match(const Node &rule, const Node &use,
            std::vector<const Node *> &bindings) {
   if (const auto *param = llvm::dyn_cast<IrSrc::ParamNode>(&rule)) {
@@ -95,6 +104,7 @@ void AddTypeRule(clang::QualType type, IrTgt::TypeRule &&rule) {
     }
   }
   types_.emplace(std::move(key), TypeRule{{std::move(src)}, std::move(rule)});
+  type_cache_.clear();
 }
 
 std::string instantiateTgt(const Bindings &bindings,
@@ -166,21 +176,23 @@ std::pair<T *, Bindings> search(std::unordered_multimap<std::string, T> &map,
 }
 
 std::pair<ExprRule *, Bindings> search(const clang::Expr *expr) {
-  if (RefersToUserDefinedDecl(expr)) {
-    return {};
+  if (auto it = expr_cache_.find(expr); it != expr_cache_.end()) {
+    return it->second;
   }
-  auto use = IrSrc::Builder(*ctx_).FromExpr(expr);
-  if (!use) {
-    return {};
+  std::pair<ExprRule *, Bindings> res;
+  if (!RefersToUserDefinedDecl(expr)) {
+    if (auto use = IrSrc::Builder(*ctx_).FromExpr(expr)) {
+      res = search(exprs_, *use, use->indexKey());
+      log() << "search expr " << use->str() << ", result:\n";
+      if (res.first) {
+        res.first->src.dump();
+        res.first->tgt.dump();
+      } else {
+        log() << "None\n";
+      }
+    }
   }
-  auto res = search(exprs_, *use, use->indexKey());
-  log() << "search expr " << use->str() << ", result:\n";
-  if (res.first) {
-    res.first->src.dump();
-    res.first->tgt.dump();
-  } else {
-    log() << "None\n";
-  }
+  expr_cache_.emplace(expr, res);
   return res;
 }
 
@@ -204,6 +216,11 @@ NodePtr typeIR(clang::QualType qual_type, bool sugared) {
 }
 
 std::pair<IrTgt::TypeRule *, Bindings> search(clang::QualType qual_type) {
+  auto *cache_key = qual_type.getAsOpaquePtr();
+  if (auto it = type_cache_.find(cache_key); it != type_cache_.end()) {
+    return it->second;
+  }
+  std::pair<IrTgt::TypeRule *, Bindings> res;
   for (bool sugared : {true, false}) {
     auto use = typeIR(qual_type, sugared);
     auto key = use->indexKey();
@@ -214,11 +231,15 @@ std::pair<IrTgt::TypeRule *, Bindings> search(clang::QualType qual_type) {
     if (rule) {
       log() << "search type " << use->str()
             << ", result: " << rule->tgt.type_info.type << '\n';
-      return {&rule->tgt, std::move(bindings)};
+      res = {&rule->tgt, std::move(bindings)};
+      break;
     }
   }
-  log() << "search type " << ToString(qual_type) << ", result: None\n";
-  return {};
+  if (!res.first) {
+    log() << "search type " << ToString(qual_type) << ", result: None\n";
+  }
+  type_cache_.emplace(cache_key, res);
+  return res;
 }
 
 void validate(const std::string &name, const ExprRule &rule) {
@@ -303,8 +324,12 @@ void addRulesFromDirectory(const std::filesystem::path &dir, Model model) {
 
 PushASTContext::PushASTContext(clang::ASTContext &ctx) : prev_(ctx_) {
   ctx_ = &ctx;
+  clearCaches();
 }
-PushASTContext::~PushASTContext() { ctx_ = prev_; }
+PushASTContext::~PushASTContext() {
+  ctx_ = prev_;
+  clearCaches();
+}
 
 bool Contains(clang::QualType qual_type) {
   return search(qual_type).first != nullptr;
@@ -650,6 +675,7 @@ void LoadTranslationRules(Model model, clang::ASTContext &ctx,
                           const std::string &rules_dir) {
   ctx_ = &ctx;
   model_ = model;
+  clearCaches();
 
   if (translation_rules_loaded_) {
     return;
