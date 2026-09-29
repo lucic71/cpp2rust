@@ -850,9 +850,9 @@ clang::QualType GetTypeForDecl(const clang::NamedDecl *decl) {
 }
 
 void AddRuleForUserDefinedType(clang::NamedDecl *decl) {
-  auto type = GetTypeForDecl(decl);
+  auto type = ctx_->getCanonicalTagType(clang::cast<clang::TagDecl>(decl));
   auto ptr = ctx_->getPointerType(type);
-  auto rs_name = ToRustName(ToString(type));
+  auto rs_name = ToRustName(ToString(GetTypeForDecl(decl)));
 
   AddTypeRule(type, IrTgt::TypeRule::Plain(rs_name));
 
