@@ -119,6 +119,13 @@ std::string QualifiedName(const clang::NamedDecl *decl) {
   return out;
 }
 
+std::string tagName(const clang::TagDecl *tag) {
+  if (!tag->getIdentifier() || tag->getDeclContext()->isFunctionOrMethod()) {
+    return ToString(tag->getASTContext().getCanonicalTagType(tag));
+  }
+  return QualifiedName(tag);
+}
+
 std::string IndexKey(const Node &node) {
   switch (node.kind) {
   case Kind::kFunction:
@@ -531,7 +538,7 @@ Node IrSrcBuilder::fromCanonical(clang::QualType canonical) {
   } else if (const auto *record = type->getAsRecordDecl()) {
     node = fromRecord(record);
   } else if (const auto *enum_type = llvm::dyn_cast<clang::EnumType>(type)) {
-    node = make(Kind::kEnum, QualifiedName(enum_type->getDecl()));
+    node = make(Kind::kEnum, tagName(enum_type->getDecl()));
   } else if (const auto *proto =
                  llvm::dyn_cast<clang::FunctionProtoType>(type)) {
     node = make(Kind::kFunctionType);
@@ -563,7 +570,7 @@ Node IrSrcBuilder::fromRecord(const clang::RecordDecl *decl) {
       cxx && cxx->isLambda()) {
     return make(Kind::kOpaque, "lambda");
   }
-  Node node = make(Kind::kRecord, QualifiedName(decl));
+  Node node = make(Kind::kRecord, tagName(decl));
   if (const auto *spec =
           llvm::dyn_cast<clang::ClassTemplateSpecializationDecl>(decl)) {
     for (const auto &arg : spec->getTemplateArgs().asArray()) {
