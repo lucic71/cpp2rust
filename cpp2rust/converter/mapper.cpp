@@ -332,49 +332,6 @@ void addRulesFromDirectory(const std::filesystem::path &dir, Model model) {
   }
 }
 
-clang::QualType normalizeQualType(clang::QualType qual_type) {
-  assert(ctx_);
-
-  bool isLRef = qual_type->isLValueReferenceType();
-  bool isRRef = qual_type->isRValueReferenceType();
-  qual_type = qual_type.getNonReferenceType();
-
-  clang::Qualifiers qualifiers = qual_type.getQualifiers();
-
-  while (true) {
-    if (const auto *attributed =
-            llvm::dyn_cast<clang::AttributedType>(qual_type)) {
-      qual_type = attributed->getModifiedType();
-      continue;
-    }
-    if (const auto *dcltype = llvm::dyn_cast<clang::DecltypeType>(qual_type)) {
-      qual_type = dcltype->getUnderlyingType();
-      continue;
-    }
-    break;
-  }
-
-  if (llvm::isa<clang::InjectedClassNameType>(qual_type)) {
-    qual_type = qual_type.getCanonicalType();
-  }
-
-  qual_type = qual_type.withFastQualifiers(qualifiers.getFastQualifiers());
-  if (qualifiers.hasNonFastQualifiers()) {
-    qual_type = ctx_->getQualifiedType(qual_type, qualifiers);
-  }
-
-  if (isLRef) {
-    qual_type = ctx_->getLValueReferenceType(qual_type);
-  }
-
-  if (isRRef) {
-    qual_type = ctx_->getRValueReferenceType(qual_type);
-  }
-
-  return qual_type.getCanonicalType().getUnqualifiedType().getDesugaredType(
-      *ctx_);
-}
-
 std::string normalizeTranslationRule(std::string rule) {
   // Detach pointer from double reference. Useful for matching translation
   // rules.
@@ -629,7 +586,7 @@ std::string ToString(clang::QualType qual_type, ScalarSugar sugar) {
 
   std::string type;
   llvm::raw_string_ostream os(type);
-  normalizeQualType(qual_type).print(os, getPrintPolicy());
+  qual_type.getCanonicalType().getUnqualifiedType().print(os, getPrintPolicy());
   return normalizeTranslationRule(std::move(type));
 }
 
