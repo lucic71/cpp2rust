@@ -2761,11 +2761,11 @@ bool ConverterRefCount::IsReferenceType(const clang::Expr *expr) const {
 }
 
 std::string ConverterRefCount::ConvertMappedMethodCall(
-    clang::Expr *expr, const TranslationRule::MethodCallFragment &mc,
-    clang::Expr **args, unsigned num_args, TempMaterializationCtx *ctx) {
+    clang::Expr *expr, const IrTgt::MethodCallFragment &mc, clang::Expr **args,
+    unsigned num_args, TempMaterializationCtx *ctx) {
   auto receiver_ph = mc.getReceiverPlaceholder();
-  if (!receiver_ph || receiver_ph->access == TranslationRule::Access::kBorrow ||
-      receiver_ph->access == TranslationRule::Access::kMove) {
+  if (!receiver_ph || receiver_ph->access == IrTgt::Access::kBorrow ||
+      receiver_ph->access == IrTgt::Access::kMove) {
     return Converter::ConvertMappedMethodCall(expr, mc, args, num_args, ctx);
   }
 

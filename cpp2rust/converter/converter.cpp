@@ -673,8 +673,7 @@ bool Converter::RecordDerivesDefault(const clang::RecordDecl *decl) {
 bool Converter::IsPassThroughRule(clang::Expr *expr) const {
   const auto *rule = Mapper::GetExprRule(GetCalleeOrExpr(expr));
   return rule && rule->body.size() == 1 &&
-         std::holds_alternative<TranslationRule::PlaceholderFragment>(
-             rule->body[0]);
+         std::holds_alternative<IrTgt::PlaceholderFragment>(rule->body[0]);
 }
 
 bool Converter::RecordDerivesCopy(const clang::RecordDecl *decl) const {
@@ -4886,8 +4885,7 @@ std::string Converter::ConvertPlaceholder(clang::Expr *expr, clang::Expr *arg,
     Buffer buf(*this);
     PushExplicitAutoref autoref(
         *this, ph_ctx.is_index_base
-                   ? std::optional(ph_ctx.access ==
-                                   TranslationRule::Access::kBorrowMut)
+                   ? std::optional(ph_ctx.access == IrTgt::Access::kBorrowMut)
                    : std::nullopt);
     PushExprKind push(*this, ExprKind::RValue);
     ConvertDeref(arg);
@@ -4902,7 +4900,7 @@ std::string Converter::ConvertPlaceholder(clang::Expr *expr, clang::Expr *arg,
     return ConvertLValue(arg);
   }
 
-  if (ph_ctx.access == TranslationRule::Access::kTake) {
+  if (ph_ctx.access == IrTgt::Access::kTake) {
     if (clang::isa<clang::MaterializeTemporaryExpr>(arg)) {
       return ConvertRValue(arg);
     }
@@ -4926,7 +4924,7 @@ std::string Converter::ConvertPlaceholder(clang::Expr *expr, clang::Expr *arg,
     return std::format("std::mem::take(&mut {})", std::move(lvalue));
   }
 
-  if (ph_ctx.access == TranslationRule::Access::kMove) {
+  if (ph_ctx.access == IrTgt::Access::kMove) {
     return ConvertFreshRValue(arg, ph_ctx.implicit_convert_to);
   }
 
@@ -4934,8 +4932,8 @@ std::string Converter::ConvertPlaceholder(clang::Expr *expr, clang::Expr *arg,
 }
 
 std::string Converter::ConvertMappedMethodCall(
-    clang::Expr *expr, const TranslationRule::MethodCallFragment &mc,
-    clang::Expr **args, unsigned num_args, TempMaterializationCtx *ctx) {
+    clang::Expr *expr, const IrTgt::MethodCallFragment &mc, clang::Expr **args,
+    unsigned num_args, TempMaterializationCtx *ctx) {
   return ConvertIRFragment(mc.receiver, expr, args, num_args, ctx) +
          ConvertIRFragment(mc.body, expr, args, num_args, ctx);
 }
@@ -4954,11 +4952,11 @@ std::string Converter::GetMappedAsString(clang::Expr *expr, clang::Expr **args,
   return result;
 }
 
-std::string Converter::ConvertIRFragment(
-    const std::vector<TranslationRule::BodyFragment> &fragments,
-    clang::Expr *expr, clang::Expr **args, unsigned num_args,
-    TempMaterializationCtx *ctx) {
-  using namespace TranslationRule;
+std::string
+Converter::ConvertIRFragment(const std::vector<IrTgt::BodyFragment> &fragments,
+                             clang::Expr *expr, clang::Expr **args,
+                             unsigned num_args, TempMaterializationCtx *ctx) {
+  using namespace IrTgt;
 
   auto all_args = BuildUnifiedArgs(expr, args, num_args);
 
@@ -4989,9 +4987,9 @@ std::string Converter::ConvertIRFragment(
           .is_index_base = ph->is_index_base,
       };
       result += ConvertPlaceholder(expr, arg, ph_ctx);
-    } else if (std::get_if<TranslationRule::VaArgsFragment>(&frag)) {
+    } else if (std::get_if<IrTgt::VaArgsFragment>(&frag)) {
       result += ConvertVariadicTail(expr, all_args);
-    } else if (std::get_if<TranslationRule::InitFragment>(&frag)) {
+    } else if (std::get_if<IrTgt::InitFragment>(&frag)) {
       result += ConvertInitFragment(expr, all_args);
     } else if (auto *mc =
                    std::get_if<std::unique_ptr<MethodCallFragment>>(&frag)) {
@@ -5025,12 +5023,13 @@ std::string
 Converter::ConvertInitFragment(clang::Expr *expr,
                                const std::vector<clang::Expr *> &all_args) {
   const auto *tgt_ir = Mapper::GetExprRule(GetCalleeOrExpr(expr));
-  assert(tgt_ir && tgt_ir->init_type.valid());
+  const auto &init_type = Mapper::GetInitType(GetCalleeOrExpr(expr));
+  assert(tgt_ir && init_type.valid());
   auto *callee = clang::cast<clang::CallExpr>(expr)->getDirectCallee();
   assert(callee);
   auto type = GetSema()
-                  .getTemplateInstantiationArgs(callee)(tgt_ir->init_type.depth,
-                                                        tgt_ir->init_type.index)
+                  .getTemplateInstantiationArgs(callee)(init_type.depth,
+                                                        init_type.index)
                   .getAsType();
 
   Buffer buf(*this);
