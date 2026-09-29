@@ -158,6 +158,7 @@ struct InitTypeLocation {
 
 struct ExprRule {
   Node ir;
+  unsigned num_params = 0;
   InitTypeLocation init_type;
 
   void dump() const;
@@ -165,6 +166,7 @@ struct ExprRule {
 
 struct TypeRule {
   Node ir;
+  unsigned num_params = 0;
 
   void dump() const;
 };

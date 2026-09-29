@@ -59,9 +59,7 @@ using Bindings = std::vector<std::optional<Node>>;
 
 bool Match(const Node &rule, const Node &use, Bindings &bindings) {
   if (rule.kind == Kind::kParam) {
-    if (bindings.size() <= rule.param) {
-      bindings.resize(rule.param + 1);
-    }
+    assert(rule.param < bindings.size());
     auto &slot = bindings[rule.param];
     if (!slot) {
       slot = use;
@@ -130,8 +128,9 @@ std::pair<T *, Bindings> search(std::unordered_multimap<std::string, T> &map,
   Bindings bindings;
   unsigned specificity = 0;
   for (; it != end; ++it) {
-    Bindings these;
-    const auto &ir = it->second.src.ir;
+    const auto &src = it->second.src;
+    const auto &ir = src.ir;
+    Bindings these(src.num_params + 1);
     if (!Match(ir, use, these)) {
       continue;
     }

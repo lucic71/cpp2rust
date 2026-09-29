@@ -9,6 +9,7 @@
 #include <clang/AST/PrettyPrinter.h>
 #include <clang/Lex/Lexer.h>
 
+#include <algorithm>
 #include <cassert>
 #include <cstdlib>
 
@@ -86,9 +87,16 @@ Node ParseNodeJSON(const llvm::json::Value &value) {
   return node;
 }
 
+unsigned NumParams(const Node &ir) {
+  unsigned n = 0;
+  ir.forEachParam([&](unsigned param) { n = std::max(n, param); });
+  return n;
+}
+
 ExprRule ParseExprRuleJSON(const llvm::json::Object &obj) {
   ExprRule rule;
   rule.ir = ParseNodeJSON(*obj.get("ir"));
+  rule.num_params = NumParams(rule.ir);
   if (const auto *init_type = obj.getObject("init_type")) {
     rule.init_type = InitTypeLocation{
         (unsigned)*init_type->getInteger("depth"),
@@ -101,6 +109,7 @@ ExprRule ParseExprRuleJSON(const llvm::json::Object &obj) {
 TypeRule ParseTypeRuleJSON(const llvm::json::Object &obj) {
   TypeRule rule;
   rule.ir = ParseNodeJSON(*obj.get("ir"));
+  rule.num_params = NumParams(rule.ir);
   return rule;
 }
 
