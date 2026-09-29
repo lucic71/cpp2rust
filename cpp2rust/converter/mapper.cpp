@@ -54,16 +54,23 @@ clang::PrintingPolicy getPrintPolicy() {
 }
 
 using Node = IrSrc::Node;
+using NodePtr = IrSrc::NodePtr;
 using Kind = Node::Kind;
-using Bindings = std::vector<std::optional<Node>>;
 
-bool Match(const Node &rule, const Node &use, Bindings &bindings) {
-  if (rule.kind == Kind::kParam) {
-    assert(rule.param < bindings.size());
-    auto &slot = bindings[rule.param];
+struct Binding {
+  clang::QualType type;
+  std::optional<std::string> value;
+};
+using Bindings = std::vector<std::optional<Binding>>;
+
+bool Match(const Node &rule, const Node &use,
+           std::vector<const Node *> &bindings) {
+  if (const auto *param = llvm::dyn_cast<IrSrc::ParamNode>(&rule)) {
+    assert(param->param < bindings.size());
+    auto &slot = bindings[param->param];
     // First time we see the binding, always succeed.
     if (!slot) {
-      slot = use;
+      slot = &use;
       return true;
     }
     // Second time we see the binding, check that it equals the first usage.
@@ -72,17 +79,17 @@ bool Match(const Node &rule, const Node &use, Bindings &bindings) {
   if (!rule.shallowEquals(use)) {
     return false;
   }
-  return Node::zipChildren(rule, use, [&](const Node &r, const Node &u) {
-    return Match(r, u, bindings);
+  return IrSrc::zipChildren(rule, use, [&](const NodePtr &r, const NodePtr &u) {
+    return Match(*r, *u, bindings);
   });
 }
 
 void AddTypeRule(clang::QualType type, IrTgt::TypeRule &&rule) {
   auto src = IrSrc::Builder(*ctx_).FromType(type);
-  auto key = src.indexKey();
+  auto key = src->indexKey();
   auto [begin, end] = types_.equal_range(key);
   for (auto it = begin; it != end; ++it) {
-    if (it->second.src.ir == src) {
+    if (*it->second.src.ir == *src) {
       // Skip if the rule already exists
       return;
     }
@@ -107,8 +114,8 @@ std::string instantiateTgt(const Bindings &bindings,
            "target uses a template parameter the use site does not bind");
     const auto &bound = *bindings[n];
     std::string repl;
-    if (bound.kind == Kind::kValue) {
-      repl = bound.name;
+    if (bound.value) {
+      repl = *bound.value;
     } else {
       assert(!bound.type.isNull() && "template parameter bound to a non-type");
       repl = Map(bound.type);
@@ -128,20 +135,32 @@ std::pair<T *, Bindings> search(std::unordered_multimap<std::string, T> &map,
                                 const Node &use, const std::string &key) {
   auto [it, end] = map.equal_range(key);
   T *rule = nullptr;
-  Bindings bindings;
+  std::vector<const Node *> best;
   unsigned specificity = 0;
   for (; it != end; ++it) {
     const auto &src = it->second.src;
-    const auto &ir = src.ir;
-    Bindings these(src.num_params + 1);
+    const auto &ir = *src.ir;
+    std::vector<const Node *> these(src.num_params + 1);
     if (!Match(ir, use, these)) {
       continue;
     }
     if (!rule || ir.specificity() > specificity) {
       rule = &it->second;
-      bindings = std::move(these);
+      best = std::move(these);
       specificity = ir.specificity();
     }
+  }
+  Bindings bindings;
+  for (const auto *bound : best) {
+    if (!bound) {
+      bindings.emplace_back();
+      continue;
+    }
+    std::optional<std::string> value;
+    if (bound->kind == Kind::kValue) {
+      value = bound->name;
+    }
+    bindings.push_back(Binding{bound->type, std::move(value)});
   }
   return {rule, std::move(bindings)};
 }
@@ -165,7 +184,7 @@ std::pair<ExprRule *, Bindings> search(const clang::Expr *expr) {
   return res;
 }
 
-Node typeIR(clang::QualType qual_type, bool sugared) {
+NodePtr typeIR(clang::QualType qual_type, bool sugared) {
   IrSrc::Builder builder(*ctx_);
   if (sugared) {
     builder.keep_builtin_typedef = true;
@@ -178,8 +197,8 @@ Node typeIR(clang::QualType qual_type, bool sugared) {
     };
   }
   auto node = builder.FromType(qual_type);
-  while (node.kind == Kind::kConst || node.kind == Kind::kVolatile) {
-    node = Node(*node.operand);
+  while (auto *qual = llvm::dyn_cast<IrSrc::QualNode>(node.get())) {
+    node = std::move(qual->operand);
   }
   return node;
 }
@@ -187,13 +206,13 @@ Node typeIR(clang::QualType qual_type, bool sugared) {
 std::pair<IrTgt::TypeRule *, Bindings> search(clang::QualType qual_type) {
   for (bool sugared : {true, false}) {
     auto use = typeIR(qual_type, sugared);
-    auto key = use.indexKey();
-    auto [rule, bindings] = search(types_, use, key);
+    auto key = use->indexKey();
+    auto [rule, bindings] = search(types_, *use, key);
     if (!rule && !key.empty()) {
-      std::tie(rule, bindings) = search(types_, use, "");
+      std::tie(rule, bindings) = search(types_, *use, "");
     }
     if (rule) {
-      log() << "search type " << use.str()
+      log() << "search type " << use->str()
             << ", result: " << rule->tgt.type_info.type << '\n';
       return {&rule->tgt, std::move(bindings)};
     }
@@ -213,11 +232,11 @@ void validate(const std::string &name, const ExprRule &rule) {
   }
 
   for (size_t i = 0, e = tgt.generics.size(); i < e; ++i) {
-    if (!src.ir.hasParam(i + 1)) {
+    if (!src.ir->hasParam(i + 1)) {
       llvm::errs() << name << '\n';
       tgt.dump();
       llvm::errs() << "generic T" << (i + 1)
-                   << " declared but missing from src: " << src.ir.str()
+                   << " declared but missing from src: " << src.ir->str()
                    << '\n';
       llvm::report_fatal_error("Absent generic from src");
     }
@@ -254,17 +273,17 @@ void addRulesFromDirectory(const std::filesystem::path &dir, Model model) {
     for (auto &[name, rule] : tgt.exprs) {
       ExprRule paired{takeSrc(src.exprs, name, path), std::move(rule)};
       validate(name, paired);
-      auto key = paired.src.ir.indexKey();
+      auto key = paired.src.ir->indexKey();
       exprs_.emplace(std::move(key), std::move(paired));
     }
     for (auto &[name, rule] : tgt.types) {
       TypeRule paired{takeSrc(src.types, name, path), std::move(rule)};
-      auto key = paired.src.ir.indexKey();
+      auto key = paired.src.ir->indexKey();
       auto [begin, end] = types_.equal_range(key);
       for (auto it = begin; it != end; ++it) {
-        if (it->second.src.ir == paired.src.ir) {
+        if (*it->second.src.ir == *paired.src.ir) {
           llvm::errs() << "ERROR: duplicate type rule for C++ type '"
-                       << paired.src.ir.str() << "': maps to both '"
+                       << paired.src.ir->str() << "': maps to both '"
                        << it->second.tgt.type_info.type << "' and '"
                        << paired.tgt.type_info.type << "'\n";
           std::exit(EXIT_FAILURE);
@@ -320,7 +339,7 @@ bool IsLibcPassthrough(const clang::Expr *expr) {
 std::string MapFunctionName(const clang::FunctionDecl *decl) {
   assert(decl);
   if (!IsUserDefinedDecl(decl) &&
-      exprs_.contains(IrSrc::Builder(*ctx_).FromDecl(decl).indexKey())) {
+      exprs_.contains(IrSrc::Builder(*ctx_).FromDecl(decl)->indexKey())) {
     return std::format("libcc2rs::{}_{}", decl->getNameAsString(),
                        model_ == Model::kRefCount ? "refcount" : "unsafe");
   }

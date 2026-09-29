@@ -7,20 +7,26 @@
 #include <clang/AST/Decl.h>
 #include <clang/AST/Expr.h>
 #include <clang/AST/Type.h>
+#include <llvm/Support/Casting.h>
 #include <llvm/Support/JSON.h>
 
+#include <cassert>
 #include <cstddef>
 #include <filesystem>
 #include <functional>
 #include <memory>
 #include <optional>
 #include <string>
+#include <type_traits>
 #include <utility>
 #include <vector>
 
 #include "converter/rules/ir.h"
 
 namespace cpp2rust::IrSrc {
+
+struct Node;
+using NodePtr = std::unique_ptr<Node>;
 
 struct Node {
   enum class Kind {
@@ -46,26 +52,15 @@ struct Node {
     kPackParams,
   };
 
-  Kind kind = Kind::kOpaque;
+  const Kind kind;
   std::string name;
-  unsigned param = 0;
-  bool is_const = false;
-  bool is_volatile = false;
-  bool variadic = false;
-  std::string ref;
-
-  std::shared_ptr<Node> class_;
-  std::shared_ptr<Node> return_type;
-  std::vector<Node> params;
-  std::vector<Node> args;
-  std::shared_ptr<Node> pointee;
-  std::shared_ptr<Node> element;
-  std::shared_ptr<Node> size;
-  std::shared_ptr<Node> operand;
-  std::shared_ptr<Node> object;
-  std::shared_ptr<Node> member;
-
   clang::QualType type;
+
+  explicit Node(Kind kind, std::string name = {})
+      : kind(kind), name(std::move(name)) {}
+  Node(const Node &) = delete;
+  Node &operator=(const Node &) = delete;
+  virtual ~Node() = default;
 
   bool operator==(const Node &other) const;
   bool shallowEquals(const Node &other) const;
@@ -74,57 +69,163 @@ struct Node {
   void forEachParam(const std::function<void(unsigned)> &fn) const;
   bool hasParam(unsigned n) const;
   std::string str() const;
-
-  template <typename A, typename B, typename Fn>
-  static bool zipChildren(A &a, B &b, Fn fn);
 };
 
-inline constexpr std::pair<const char *, std::shared_ptr<Node> Node::*>
-    kNodeFields[] = {
-        {"class", &Node::class_},    {"return_type", &Node::return_type},
-        {"pointee", &Node::pointee}, {"element", &Node::element},
-        {"size", &Node::size},       {"operand", &Node::operand},
-        {"object", &Node::object},   {"member", &Node::member},
+struct ParamNode : Node {
+  unsigned param;
+
+  explicit ParamNode(unsigned param) : Node(Kind::kParam), param(param) {}
+  static bool classof(const Node *node) { return node->kind == Kind::kParam; }
 };
 
-inline constexpr std::pair<const char *, std::vector<Node> Node::*>
-    kNodeLists[] = {
-        {"params", &Node::params},
-        {"args", &Node::args},
+struct QualNode : Node {
+  NodePtr operand;
+
+  QualNode(Kind kind, NodePtr operand)
+      : Node(kind), operand(std::move(operand)) {}
+  static bool classof(const Node *node) {
+    return node->kind == Kind::kConst || node->kind == Kind::kVolatile;
+  }
+};
+
+struct PointerNode : Node {
+  NodePtr pointee;
+
+  PointerNode(Kind kind, NodePtr pointee)
+      : Node(kind), pointee(std::move(pointee)) {}
+  static bool classof(const Node *node) {
+    return node->kind == Kind::kPointer || node->kind == Kind::kLRef ||
+           node->kind == Kind::kRRef;
+  }
+};
+
+struct ArrayNode : Node {
+  NodePtr element;
+  NodePtr size;
+
+  explicit ArrayNode(NodePtr element)
+      : Node(Kind::kArray), element(std::move(element)) {}
+  static bool classof(const Node *node) { return node->kind == Kind::kArray; }
+};
+
+struct RecordNode : Node {
+  NodePtr class_;
+  std::vector<NodePtr> args;
+
+  explicit RecordNode(std::string name)
+      : Node(Kind::kRecord, std::move(name)) {}
+  static bool classof(const Node *node) { return node->kind == Kind::kRecord; }
+};
+
+struct DeclNode : Node {
+  NodePtr class_;
+
+  explicit DeclNode(std::string name) : Node(Kind::kDecl, std::move(name)) {}
+  static bool classof(const Node *node) { return node->kind == Kind::kDecl; }
+};
+
+struct FunctionNode : Node {
+  NodePtr class_;
+  NodePtr return_type;
+  std::vector<NodePtr> params;
+  bool variadic = false;
+  bool is_const = false;
+  bool is_volatile = false;
+  std::string ref;
+
+  explicit FunctionNode(Kind kind, std::string name = {})
+      : Node(kind, std::move(name)) {}
+  static bool classof(const Node *node) {
+    return node->kind == Kind::kFunction || node->kind == Kind::kFunctionType;
+  }
+};
+
+struct UnaryNode : Node {
+  NodePtr operand;
+
+  UnaryNode(std::string op, NodePtr operand)
+      : Node(Kind::kUnary, std::move(op)), operand(std::move(operand)) {}
+  static bool classof(const Node *node) { return node->kind == Kind::kUnary; }
+};
+
+struct ArrowNode : Node {
+  NodePtr object;
+  NodePtr member;
+
+  ArrowNode(NodePtr object, NodePtr member)
+      : Node(Kind::kArrow), object(std::move(object)),
+        member(std::move(member)) {}
+  static bool classof(const Node *node) { return node->kind == Kind::kArrow; }
 };
 
 template <typename A, typename B, typename Fn>
-bool Node::zipChildren(A &a, B &b, Fn fn) {
-  for (const auto &entry : kNodeFields) {
-    auto &x = a.*entry.second;
-    auto &y = b.*entry.second;
-    if (!x || !y) {
-      if (x || y) {
-        return false;
-      }
-      continue;
-    }
-    if (!fn(*x, *y)) {
-      return false;
-    }
+bool forEachField(A &a, B &b, Fn fn) {
+  using Kind = Node::Kind;
+  using llvm::cast;
+  assert(a.kind == b.kind);
+  switch (a.kind) {
+  case Kind::kConst:
+  case Kind::kVolatile:
+    return fn("operand", cast<QualNode>(a).operand, cast<QualNode>(b).operand);
+  case Kind::kPointer:
+  case Kind::kLRef:
+  case Kind::kRRef:
+    return fn("pointee", cast<PointerNode>(a).pointee,
+              cast<PointerNode>(b).pointee);
+  case Kind::kArray:
+    return fn("element", cast<ArrayNode>(a).element,
+              cast<ArrayNode>(b).element) &&
+           fn("size", cast<ArrayNode>(a).size, cast<ArrayNode>(b).size);
+  case Kind::kRecord:
+    return fn("class", cast<RecordNode>(a).class_,
+              cast<RecordNode>(b).class_) &&
+           fn("args", cast<RecordNode>(a).args, cast<RecordNode>(b).args);
+  case Kind::kDecl:
+    return fn("class", cast<DeclNode>(a).class_, cast<DeclNode>(b).class_);
+  case Kind::kFunction:
+  case Kind::kFunctionType:
+    return fn("class", cast<FunctionNode>(a).class_,
+              cast<FunctionNode>(b).class_) &&
+           fn("return_type", cast<FunctionNode>(a).return_type,
+              cast<FunctionNode>(b).return_type) &&
+           fn("params", cast<FunctionNode>(a).params,
+              cast<FunctionNode>(b).params);
+  case Kind::kUnary:
+    return fn("operand", cast<UnaryNode>(a).operand,
+              cast<UnaryNode>(b).operand);
+  case Kind::kArrow:
+    return fn("object", cast<ArrowNode>(a).object, cast<ArrowNode>(b).object) &&
+           fn("member", cast<ArrowNode>(a).member, cast<ArrowNode>(b).member);
+  default:
+    return true;
   }
-  for (const auto &entry : kNodeLists) {
-    auto &x = a.*entry.second;
-    auto &y = b.*entry.second;
-    if (x.size() != y.size()) {
-      return false;
-    }
-    for (std::size_t i = 0; i < x.size(); ++i) {
-      if (!fn(x[i], y[i])) {
-        return false;
-      }
-    }
-  }
-  return true;
 }
 
-Node Make(Node::Kind kind, std::string name = {});
-std::shared_ptr<Node> Share(Node node);
+template <typename T>
+inline constexpr bool kIsNodeList =
+    std::is_same_v<std::remove_cvref_t<T>, std::vector<NodePtr>>;
+
+template <typename A, typename B, typename Fn>
+bool zipChildren(A &a, B &b, Fn fn) {
+  return forEachField(a, b, [&](const char *, auto &x, auto &y) {
+    if constexpr (kIsNodeList<decltype(x)>) {
+      if (x.size() != y.size()) {
+        return false;
+      }
+      for (std::size_t i = 0; i < x.size(); ++i) {
+        if (!fn(x[i], y[i])) {
+          return false;
+        }
+      }
+      return true;
+    } else {
+      if (!x || !y) {
+        return !x && !y;
+      }
+      return fn(x, y);
+    }
+  });
+}
 
 llvm::json::Value ToJSON(const Node &node);
 
@@ -136,18 +237,18 @@ public:
   bool keep_builtin_typedef = false;
   std::function<bool(clang::QualType pointee)> keep_pointee_sugar;
 
-  Node FromType(clang::QualType type);
-  Node FromDecl(const clang::NamedDecl *decl);
-  std::optional<Node> FromExpr(const clang::Expr *expr);
+  NodePtr FromType(clang::QualType type);
+  NodePtr FromDecl(const clang::NamedDecl *decl);
+  NodePtr FromExpr(const clang::Expr *expr);
 
 private:
   clang::ASTContext &ctx_;
 
-  Node fromType(clang::QualType type, bool top);
-  Node fromCanonical(clang::QualType canonical);
-  Node fromTemplateArg(const clang::TemplateArgument &arg);
-  Node fromRecord(const clang::RecordDecl *decl);
-  std::shared_ptr<Node> classOf(const clang::Decl *decl);
+  NodePtr fromType(clang::QualType type, bool top);
+  NodePtr fromCanonical(clang::QualType canonical);
+  NodePtr fromTemplateArg(const clang::TemplateArgument &arg);
+  NodePtr fromRecord(const clang::RecordDecl *decl);
+  NodePtr classOf(const clang::Decl *decl);
 };
 
 struct InitTypeLocation {
@@ -158,7 +259,7 @@ struct InitTypeLocation {
 };
 
 struct ExprRule {
-  Node ir;
+  NodePtr ir;
   unsigned num_params = 0;
   InitTypeLocation init_type;
 
@@ -166,7 +267,7 @@ struct ExprRule {
 };
 
 struct TypeRule {
-  Node ir;
+  NodePtr ir;
   unsigned num_params = 0;
 
   void dump() const;

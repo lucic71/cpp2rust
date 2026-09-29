@@ -165,7 +165,7 @@ public:
       }
     }
 
-    llvm::json::Object obj{{"ir", IrSrc::ToJSON(entry->ir)}};
+    llvm::json::Object obj{{"ir", IrSrc::ToJSON(*entry->ir)}};
     if (entry->init_type) {
       obj.try_emplace("init_type",
                       llvm::json::Object{{"depth", entry->init_type->first},
@@ -182,7 +182,7 @@ private:
   std::string nttp_alternate_;
 
   struct Entry {
-    IrSrc::Node ir;
+    IrSrc::NodePtr ir;
     std::optional<std::pair<unsigned, unsigned>> init_type;
   };
 
@@ -202,25 +202,23 @@ private:
     return std::to_string(nttpAPInt(type, alternate).getZExtValue());
   }
 
-  static bool markNTTP(IrSrc::Node &ir, const IrSrc::Node &alternate,
+  static bool markNTTP(IrSrc::NodePtr &ir, const IrSrc::NodePtr &alternate,
                        unsigned n, const std::string &value,
                        const std::string &alternate_value) {
     using Kind = IrSrc::Node::Kind;
-    if (ir.kind == Kind::kValue && alternate.kind == Kind::kValue &&
-        ir.name != alternate.name) {
-      if (ir.name != value || alternate.name != alternate_value) {
+    if (ir->kind == Kind::kValue && alternate->kind == Kind::kValue &&
+        ir->name != alternate->name) {
+      if (ir->name != value || alternate->name != alternate_value) {
         return false;
       }
-      ir.kind = Kind::kParam;
-      ir.name.clear();
-      ir.param = n;
+      ir = std::make_unique<IrSrc::ParamNode>(n);
       return true;
     }
-    if (!ir.shallowEquals(alternate)) {
+    if (!ir->shallowEquals(*alternate)) {
       return false;
     }
-    return IrSrc::Node::zipChildren(
-        ir, alternate, [&](IrSrc::Node &a, const IrSrc::Node &b) {
+    return IrSrc::zipChildren(
+        *ir, *alternate, [&](IrSrc::NodePtr &a, const IrSrc::NodePtr &b) {
           return markNTTP(a, b, n, value, alternate_value);
         });
   }
@@ -245,7 +243,7 @@ private:
       expr->dump();
       std::exit(EXIT_FAILURE);
     }
-    return {std::move(*ir), std::nullopt};
+    return {std::move(ir), std::nullopt};
   }
 
   Entry entry(const clang::NamedDecl *decl) {

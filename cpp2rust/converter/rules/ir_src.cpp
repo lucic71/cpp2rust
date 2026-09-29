@@ -21,6 +21,8 @@ namespace cpp2rust::IrSrc {
 namespace {
 
 using Kind = Node::Kind;
+using llvm::cast;
+using llvm::dyn_cast;
 
 constexpr std::pair<Kind, const char *> kKindNames[] = {
     {Kind::kParam, "param"},         {Kind::kValue, "value"},
@@ -55,35 +57,66 @@ Kind kindFromName(llvm::StringRef name) {
   std::exit(EXIT_FAILURE);
 }
 
-Node ParseNodeJSON(const llvm::json::Value &value) {
+NodePtr ParseNodeJSON(const llvm::json::Value &value) {
   const auto *obj = value.getAsObject();
   assert(obj && "IR node must be an object");
-  Node node;
-  node.kind = kindFromName(*obj->getString("kind"));
-  if (auto name = obj->getString("name")) {
-    node.name = name->str();
+  auto kind = kindFromName(*obj->getString("kind"));
+  auto name = obj->getString("name").value_or("").str();
+  NodePtr node;
+  switch (kind) {
+  case Kind::kParam:
+    node = std::make_unique<ParamNode>(*obj->getInteger("param"));
+    break;
+  case Kind::kConst:
+  case Kind::kVolatile:
+    node = std::make_unique<QualNode>(kind, nullptr);
+    break;
+  case Kind::kPointer:
+  case Kind::kLRef:
+  case Kind::kRRef:
+    node = std::make_unique<PointerNode>(kind, nullptr);
+    break;
+  case Kind::kArray:
+    node = std::make_unique<ArrayNode>(nullptr);
+    break;
+  case Kind::kRecord:
+    node = std::make_unique<RecordNode>(std::move(name));
+    break;
+  case Kind::kDecl:
+    node = std::make_unique<DeclNode>(std::move(name));
+    break;
+  case Kind::kFunction:
+  case Kind::kFunctionType: {
+    auto fn = std::make_unique<FunctionNode>(kind, std::move(name));
+    fn->variadic = obj->getBoolean("variadic").value_or(false);
+    fn->is_const = obj->getBoolean("is_const").value_or(false);
+    fn->is_volatile = obj->getBoolean("is_volatile").value_or(false);
+    fn->ref = obj->getString("ref").value_or("").str();
+    node = std::move(fn);
+    break;
   }
-  if (auto param = obj->getInteger("param")) {
-    node.param = *param;
+  case Kind::kUnary:
+    node = std::make_unique<UnaryNode>(std::move(name), nullptr);
+    break;
+  case Kind::kArrow:
+    node = std::make_unique<ArrowNode>(nullptr, nullptr);
+    break;
+  default:
+    node = std::make_unique<Node>(kind, std::move(name));
+    break;
   }
-  node.is_const = obj->getBoolean("is_const").value_or(false);
-  node.is_volatile = obj->getBoolean("is_volatile").value_or(false);
-  node.variadic = obj->getBoolean("variadic").value_or(false);
-  if (auto ref = obj->getString("ref")) {
-    node.ref = ref->str();
-  }
-  for (const auto &[key, field] : kNodeFields) {
-    if (const auto *child = obj->get(key)) {
-      node.*field = Share(ParseNodeJSON(*child));
-    }
-  }
-  for (const auto &[key, field] : kNodeLists) {
-    if (const auto *list = obj->getArray(key)) {
-      for (const auto &child : *list) {
-        (node.*field).push_back(ParseNodeJSON(child));
+  forEachField(*node, *node, [&](const char *key, auto &field, auto &) {
+    if constexpr (kIsNodeList<decltype(field)>) {
+      if (const auto *list = obj->getArray(key)) {
+        for (const auto &child : *list) {
+          field.push_back(ParseNodeJSON(child));
+        }
       }
+    } else if (const auto *child = obj->get(key)) {
+      field = ParseNodeJSON(*child);
     }
-  }
+    return true;
+  });
   return node;
 }
 
@@ -97,7 +130,7 @@ unsigned NumParams(const Node &ir) {
 ExprRule ParseExprRuleJSON(const llvm::json::Object &obj) {
   ExprRule rule;
   rule.ir = ParseNodeJSON(*obj.get("ir"));
-  rule.num_params = NumParams(rule.ir);
+  rule.num_params = NumParams(*rule.ir);
   if (const auto *init_type = obj.getObject("init_type")) {
     rule.init_type = InitTypeLocation{
         (unsigned)*init_type->getInteger("depth"),
@@ -110,22 +143,20 @@ ExprRule ParseExprRuleJSON(const llvm::json::Object &obj) {
 TypeRule ParseTypeRuleJSON(const llvm::json::Object &obj) {
   TypeRule rule;
   rule.ir = ParseNodeJSON(*obj.get("ir"));
-  rule.num_params = NumParams(rule.ir);
+  rule.num_params = NumParams(*rule.ir);
   return rule;
 }
 
-Node qualify(Node node, clang::QualType type) {
+NodePtr qualify(NodePtr node, clang::QualType type) {
   if (type.isVolatileQualified()) {
-    Node wrapper = Make(Kind::kVolatile);
-    wrapper.type = node.type.withVolatile();
-    wrapper.operand = Share(std::move(node));
-    node = std::move(wrapper);
+    auto qualified = node->type.withVolatile();
+    node = std::make_unique<QualNode>(Kind::kVolatile, std::move(node));
+    node->type = qualified;
   }
   if (type.isConstQualified()) {
-    Node wrapper = Make(Kind::kConst);
-    wrapper.type = node.type.withConst();
-    wrapper.operand = Share(std::move(node));
-    node = std::move(wrapper);
+    auto qualified = node->type.withConst();
+    node = std::make_unique<QualNode>(Kind::kConst, std::move(node));
+    node->type = qualified;
   }
   return node;
 }
@@ -191,14 +222,25 @@ std::string tagName(const clang::TagDecl *tag) {
 
 bool Node::operator==(const Node &other) const {
   return shallowEquals(other) &&
-         zipChildren(*this, other,
-                     [](const Node &a, const Node &b) { return a == b; });
+         zipChildren(*this, other, [](const NodePtr &a, const NodePtr &b) {
+           return *a == *b;
+         });
 }
 
 bool Node::shallowEquals(const Node &other) const {
-  return kind == other.kind && name == other.name && param == other.param &&
-         is_const == other.is_const && is_volatile == other.is_volatile &&
-         variadic == other.variadic && ref == other.ref;
+  if (kind != other.kind || name != other.name) {
+    return false;
+  }
+  if (const auto *param = dyn_cast<ParamNode>(this)) {
+    return param->param == cast<ParamNode>(other).param;
+  }
+  if (const auto *fn = dyn_cast<FunctionNode>(this)) {
+    const auto &other_fn = cast<FunctionNode>(other);
+    return fn->variadic == other_fn.variadic &&
+           fn->is_const == other_fn.is_const &&
+           fn->is_volatile == other_fn.is_volatile && fn->ref == other_fn.ref;
+  }
+  return true;
 }
 
 std::string Node::indexKey() const {
@@ -213,20 +255,20 @@ std::string Node::indexKey() const {
   case Kind::kMacro:
     return "macro:" + name;
   case Kind::kUnary:
-    return "unary" + name + ":" + operand->indexKey();
+    return "unary" + name + ":" + cast<UnaryNode>(this)->operand->indexKey();
   case Kind::kArrow:
-    return member->indexKey();
+    return cast<ArrowNode>(this)->member->indexKey();
   case Kind::kConst:
   case Kind::kVolatile:
-    return operand->indexKey();
+    return cast<QualNode>(this)->operand->indexKey();
   case Kind::kPointer:
-    return "*" + pointee->indexKey();
+    return "*" + cast<PointerNode>(this)->pointee->indexKey();
   case Kind::kLRef:
-    return "&" + pointee->indexKey();
+    return "&" + cast<PointerNode>(this)->pointee->indexKey();
   case Kind::kRRef:
-    return "&&" + pointee->indexKey();
+    return "&&" + cast<PointerNode>(this)->pointee->indexKey();
   case Kind::kArray:
-    return "[]" + element->indexKey();
+    return "[]" + cast<ArrayNode>(this)->element->indexKey();
   default:
     return "";
   }
@@ -234,65 +276,68 @@ std::string Node::indexKey() const {
 
 unsigned Node::specificity() const {
   unsigned n = kind == Kind::kParam ? 0 : 1;
-  zipChildren(*this, *this, [&](const Node &child, const Node &) {
-    n += child.specificity();
+  zipChildren(*this, *this, [&](const NodePtr &child, const NodePtr &) {
+    n += child->specificity();
     return true;
   });
   return n;
 }
 
 bool Node::hasParam(unsigned n) const {
-  if (kind == Kind::kParam) {
-    return param == n;
+  if (const auto *param = dyn_cast<ParamNode>(this)) {
+    return param->param == n;
   }
-  return !zipChildren(*this, *this, [&](const Node &child, const Node &) {
-    return !child.hasParam(n);
+  return !zipChildren(*this, *this, [&](const NodePtr &child, const NodePtr &) {
+    return !child->hasParam(n);
   });
 }
 
 void Node::forEachParam(const std::function<void(unsigned)> &fn) const {
-  if (kind == Kind::kParam) {
-    fn(param);
+  if (const auto *param = dyn_cast<ParamNode>(this)) {
+    fn(param->param);
   }
-  zipChildren(*this, *this, [&](const Node &child, const Node &) {
-    child.forEachParam(fn);
+  zipChildren(*this, *this, [&](const NodePtr &child, const NodePtr &) {
+    child->forEachParam(fn);
     return true;
   });
 }
 
 std::string Node::str() const {
+  if (const auto *param = dyn_cast<ParamNode>(this)) {
+    return "T" + std::to_string(param->param);
+  }
+  if (const auto *qual = dyn_cast<QualNode>(this)) {
+    return std::string(kindName(kind)) + " " + qual->operand->str();
+  }
   std::string out;
-  if (is_const) {
-    out += "const ";
-  }
-  if (is_volatile) {
-    out += "volatile ";
-  }
-  if (kind == Kind::kParam) {
-    return out + "T" + std::to_string(param);
-  }
-  if (kind == Kind::kConst || kind == Kind::kVolatile) {
-    return out + kindName(kind) + " " + operand->str();
+  if (const auto *fn = dyn_cast<FunctionNode>(this)) {
+    if (fn->is_const) {
+      out += "const ";
+    }
+    if (fn->is_volatile) {
+      out += "volatile ";
+    }
   }
   out += kindName(kind);
   if (!name.empty()) {
     out += " " + name;
   }
   std::vector<std::string> fields;
-  for (const auto &[key, field] : kNodeFields) {
-    if (this->*field) {
-      fields.push_back(std::string(key) + ": " + (this->*field)->str());
-    }
-  }
-  for (const auto &[key, field] : kNodeLists) {
-    if (!(this->*field).empty()) {
-      std::string list;
-      for (const auto &child : this->*field) {
-        list += (list.empty() ? "" : ", ") + child.str();
-      }
-      fields.push_back(std::string(key) + ": [" + list + "]");
-    }
-  }
+  forEachField(*this, *this,
+               [&](const char *key, const auto &field, const auto &) {
+                 if constexpr (kIsNodeList<decltype(field)>) {
+                   if (!field.empty()) {
+                     std::string list;
+                     for (const auto &child : field) {
+                       list += (list.empty() ? "" : ", ") + child->str();
+                     }
+                     fields.push_back(std::string(key) + ": [" + list + "]");
+                   }
+                 } else if (field) {
+                   fields.push_back(std::string(key) + ": " + field->str());
+                 }
+                 return true;
+               });
   if (!fields.empty()) {
     out += "(";
     for (size_t i = 0; i < fields.size(); ++i) {
@@ -303,63 +348,55 @@ std::string Node::str() const {
   return out;
 }
 
-Node Make(Kind kind, std::string name) {
-  Node node;
-  node.kind = kind;
-  node.name = std::move(name);
-  return node;
-}
-
-std::shared_ptr<Node> Share(Node node) {
-  return std::make_shared<Node>(std::move(node));
-}
-
 llvm::json::Value ToJSON(const Node &node) {
   llvm::json::Object obj{{"kind", kindName(node.kind)}};
   if (!node.name.empty()) {
     obj["name"] = node.name;
   }
-  if (node.kind == Kind::kParam) {
-    obj["param"] = node.param;
+  if (const auto *param = dyn_cast<ParamNode>(&node)) {
+    obj["param"] = param->param;
   }
-  if (node.is_const) {
-    obj["is_const"] = true;
-  }
-  if (node.is_volatile) {
-    obj["is_volatile"] = true;
-  }
-  if (node.variadic) {
-    obj["variadic"] = true;
-  }
-  if (!node.ref.empty()) {
-    obj["ref"] = node.ref;
-  }
-  for (const auto &[key, field] : kNodeFields) {
-    if (node.*field) {
-      obj[key] = ToJSON(*(node.*field));
+  if (const auto *fn = dyn_cast<FunctionNode>(&node)) {
+    if (fn->is_const) {
+      obj["is_const"] = true;
+    }
+    if (fn->is_volatile) {
+      obj["is_volatile"] = true;
+    }
+    if (fn->variadic) {
+      obj["variadic"] = true;
+    }
+    if (!fn->ref.empty()) {
+      obj["ref"] = fn->ref;
     }
   }
-  for (const auto &[key, field] : kNodeLists) {
-    if (!(node.*field).empty()) {
-      llvm::json::Array list;
-      for (const auto &child : node.*field) {
-        list.push_back(ToJSON(child));
-      }
-      obj[key] = std::move(list);
-    }
-  }
+  forEachField(node, node,
+               [&](const char *key, const auto &field, const auto &) {
+                 if constexpr (kIsNodeList<decltype(field)>) {
+                   if (!field.empty()) {
+                     llvm::json::Array list;
+                     for (const auto &child : field) {
+                       list.push_back(ToJSON(*child));
+                     }
+                     obj[key] = std::move(list);
+                   }
+                 } else if (field) {
+                   obj[key] = ToJSON(*field);
+                 }
+                 return true;
+               });
   return obj;
 }
 
 void ExprRule::dump() const {
-  log() << "Matching: " << ir.str() << '\n';
+  log() << "Matching: " << ir->str() << '\n';
   if (init_type.valid()) {
     log() << "  init type: depth " << init_type.depth << ", index "
           << init_type.index << '\n';
   }
 }
 
-void TypeRule::dump() const { log() << "name: " << ir.str() << '\n'; }
+void TypeRule::dump() const { log() << "name: " << ir->str() << '\n'; }
 
 Rules Load(const std::filesystem::path &dir) {
   Rules rules;
@@ -368,9 +405,9 @@ Rules Load(const std::filesystem::path &dir) {
   return rules;
 }
 
-Node Builder::FromType(clang::QualType type) { return fromType(type, true); }
+NodePtr Builder::FromType(clang::QualType type) { return fromType(type, true); }
 
-Node Builder::fromType(clang::QualType type, bool top) {
+NodePtr Builder::fromType(clang::QualType type, bool top) {
   if (keep_builtin_typedef && top) {
     if (const auto *decltype_type =
             llvm::dyn_cast<clang::DecltypeType>(type.getTypePtr())) {
@@ -383,110 +420,113 @@ Node Builder::fromType(clang::QualType type, bool top) {
       name = typedef_type->getDecl();
     }
     if (name) {
-      Node node = Make(Kind::kTypedef, name->getName().str());
-      node.type = canonical.getUnqualifiedType();
+      auto node = std::make_unique<Node>(Kind::kTypedef, name->getName().str());
+      node->type = canonical.getUnqualifiedType();
       return qualify(std::move(node), canonical);
     }
     if (const auto *predef = type->getAs<clang::PredefinedSugarType>()) {
-      Node node =
-          Make(Kind::kTypedef, predef->getIdentifier()->getName().str());
-      node.type = canonical.getUnqualifiedType();
+      auto node = std::make_unique<Node>(
+          Kind::kTypedef, predef->getIdentifier()->getName().str());
+      node->type = canonical.getUnqualifiedType();
       return qualify(std::move(node), canonical);
     }
     if (const auto *ptr = type->getAs<clang::PointerType>();
         ptr && keep_pointee_sugar &&
         keep_pointee_sugar(ptr->getPointeeType())) {
-      Node node = Make(Kind::kPointer);
-      node.pointee = Share(fromType(ptr->getPointeeType(), true));
-      node.type = canonical.getUnqualifiedType();
+      auto node = std::make_unique<PointerNode>(
+          Kind::kPointer, fromType(ptr->getPointeeType(), true));
+      node->type = canonical.getUnqualifiedType();
       return qualify(std::move(node), canonical);
     }
   }
   return fromCanonical(type.getCanonicalType());
 }
 
-Node Builder::fromCanonical(clang::QualType canonical) {
-  Node node;
+NodePtr Builder::fromCanonical(clang::QualType canonical) {
+  NodePtr node;
   const auto *type = canonical.getTypePtr();
   bool quals_on_element = false;
   if (const auto *builtin = llvm::dyn_cast<clang::BuiltinType>(type)) {
     clang::PrintingPolicy policy(ctx_.getLangOpts());
     policy.Bool = true;
-    node = Make(Kind::kBuiltin, builtin->getName(policy).str());
+    node =
+        std::make_unique<Node>(Kind::kBuiltin, builtin->getName(policy).str());
   } else if (const auto *ptr = llvm::dyn_cast<clang::PointerType>(type)) {
-    node = Make(Kind::kPointer);
-    node.pointee = Share(fromType(ptr->getPointeeType(), false));
+    node = std::make_unique<PointerNode>(
+        Kind::kPointer, fromType(ptr->getPointeeType(), false));
   } else if (const auto *ref =
                  llvm::dyn_cast<clang::LValueReferenceType>(type)) {
-    node = Make(Kind::kLRef);
-    node.pointee = Share(fromType(ref->getPointeeType(), false));
+    node = std::make_unique<PointerNode>(
+        Kind::kLRef, fromType(ref->getPointeeType(), false));
   } else if (const auto *ref =
                  llvm::dyn_cast<clang::RValueReferenceType>(type)) {
-    node = Make(Kind::kRRef);
-    node.pointee = Share(fromType(ref->getPointeeType(), false));
+    node = std::make_unique<PointerNode>(
+        Kind::kRRef, fromType(ref->getPointeeType(), false));
   } else if (const auto *array = ctx_.getAsConstantArrayType(canonical)) {
-    node = Make(Kind::kArray);
-    node.element = Share(fromType(array->getElementType(), false));
-    node.size =
-        Share(Make(Kind::kValue, llvm::toString(array->getSize(), 10, false)));
+    auto array_node =
+        std::make_unique<ArrayNode>(fromType(array->getElementType(), false));
+    array_node->size = std::make_unique<Node>(
+        Kind::kValue, llvm::toString(array->getSize(), 10, false));
+    node = std::move(array_node);
     quals_on_element = true;
   } else if (const auto *array = ctx_.getAsIncompleteArrayType(canonical)) {
-    node = Make(Kind::kArray);
-    node.element = Share(fromType(array->getElementType(), false));
+    node =
+        std::make_unique<ArrayNode>(fromType(array->getElementType(), false));
     quals_on_element = true;
   } else if (const auto *record = type->getAsRecordDecl()) {
     node = fromRecord(record);
   } else if (const auto *enum_type = llvm::dyn_cast<clang::EnumType>(type)) {
-    node = Make(Kind::kEnum, tagName(enum_type->getDecl()));
+    node = std::make_unique<Node>(Kind::kEnum, tagName(enum_type->getDecl()));
   } else if (const auto *proto =
                  llvm::dyn_cast<clang::FunctionProtoType>(type)) {
-    node = Make(Kind::kFunctionType);
-    node.variadic = proto->isVariadic();
-    node.return_type = Share(fromType(proto->getReturnType(), false));
+    auto fn = std::make_unique<FunctionNode>(Kind::kFunctionType);
+    fn->variadic = proto->isVariadic();
+    fn->return_type = fromType(proto->getReturnType(), false);
     for (auto param : proto->getParamTypes()) {
-      node.params.push_back(fromType(param, false));
+      fn->params.push_back(fromType(param, false));
     }
+    node = std::move(fn);
   } else {
-    node = Make(Kind::kOpaque, canonical.getUnqualifiedType().getAsString());
+    node = std::make_unique<Node>(Kind::kOpaque,
+                                  canonical.getUnqualifiedType().getAsString());
   }
   if (quals_on_element) {
-    node.type = canonical;
+    node->type = canonical;
     return node;
   }
-  node.type = canonical.getUnqualifiedType();
+  node->type = canonical.getUnqualifiedType();
   return qualify(std::move(node), canonical);
 }
 
-Node Builder::fromRecord(const clang::RecordDecl *decl) {
+NodePtr Builder::fromRecord(const clang::RecordDecl *decl) {
   if (stand_in) {
     if (auto param = stand_in(decl)) {
-      Node node = Make(Kind::kParam);
-      node.param = *param;
-      return node;
+      return std::make_unique<ParamNode>(*param);
     }
   }
   if (const auto *cxx = llvm::dyn_cast<clang::CXXRecordDecl>(decl);
       cxx && cxx->isLambda()) {
-    return Make(Kind::kOpaque, "lambda");
+    return std::make_unique<Node>(Kind::kOpaque, "lambda");
   }
-  Node node = Make(Kind::kRecord, tagName(decl));
-  node.class_ = classOf(decl);
+  auto node = std::make_unique<RecordNode>(tagName(decl));
+  node->class_ = classOf(decl);
   if (const auto *spec =
           llvm::dyn_cast<clang::ClassTemplateSpecializationDecl>(decl)) {
     for (const auto &arg : spec->getTemplateArgs().asArray()) {
-      node.args.push_back(fromTemplateArg(arg));
+      node->args.push_back(fromTemplateArg(arg));
     }
   }
   return node;
 }
 
-Node Builder::fromTemplateArg(const clang::TemplateArgument &arg) {
+NodePtr Builder::fromTemplateArg(const clang::TemplateArgument &arg) {
   switch (arg.getKind()) {
   case clang::TemplateArgument::Type:
     return fromType(arg.getAsType(), false);
   case clang::TemplateArgument::Integral: {
-    Node node = Make(Kind::kValue, llvm::toString(arg.getAsIntegral(), 10));
-    node.type = arg.getIntegralType();
+    auto node = std::make_unique<Node>(Kind::kValue,
+                                       llvm::toString(arg.getAsIntegral(), 10));
+    node->type = arg.getIntegralType();
     return node;
   }
   default: {
@@ -494,36 +534,37 @@ Node Builder::fromTemplateArg(const clang::TemplateArgument &arg) {
     llvm::raw_string_ostream os(spelling);
     arg.print(clang::PrintingPolicy(ctx_.getLangOpts()), os,
               /*IncludeType=*/true);
-    return Make(Kind::kOpaque, spelling);
+    return std::make_unique<Node>(Kind::kOpaque, spelling);
   }
   }
 }
 
-std::shared_ptr<Node> Builder::classOf(const clang::Decl *decl) {
+NodePtr Builder::classOf(const clang::Decl *decl) {
   if (const auto *record =
           llvm::dyn_cast<clang::RecordDecl>(decl->getDeclContext())) {
-    Node node = fromRecord(record);
-    node.type = ctx_.getCanonicalTagType(record);
-    return Share(std::move(node));
+    auto node = fromRecord(record);
+    node->type = ctx_.getCanonicalTagType(record);
+    return node;
   }
   return nullptr;
 }
 
-Node Builder::FromDecl(const clang::NamedDecl *decl) {
+NodePtr Builder::FromDecl(const clang::NamedDecl *decl) {
   if (const auto *tmpl = llvm::dyn_cast<clang::FunctionTemplateDecl>(decl)) {
     decl = tmpl->getTemplatedDecl();
   }
   const auto *func = llvm::dyn_cast<clang::FunctionDecl>(decl);
   if (!func) {
-    Node node = Make(Kind::kDecl, QualifiedName(decl));
-    node.class_ = classOf(decl);
+    auto node = std::make_unique<DeclNode>(QualifiedName(decl));
+    node->class_ = classOf(decl);
     return node;
   }
 
-  Node node = Make(Kind::kFunction, QualifiedName(func));
-  node.variadic = func->isVariadic();
-  node.class_ = classOf(func);
-  node.return_type = Share(fromType(func->getReturnType(), false));
+  auto node =
+      std::make_unique<FunctionNode>(Kind::kFunction, QualifiedName(func));
+  node->variadic = func->isVariadic();
+  node->class_ = classOf(func);
+  node->return_type = fromType(func->getReturnType(), false);
   bool has_pack = HasFunctionParameterPack(func);
   unsigned num_params = func->getNumParams();
   if (has_pack) {
@@ -532,20 +573,20 @@ Node Builder::FromDecl(const clang::NamedDecl *decl) {
         (primary ? primary->getTemplatedDecl() : func)->getNumParams() - 1;
   }
   for (unsigned i = 0; i < num_params; ++i) {
-    node.params.push_back(fromType(func->getParamDecl(i)->getType(), false));
+    node->params.push_back(fromType(func->getParamDecl(i)->getType(), false));
   }
   if (has_pack) {
-    node.params.push_back(Make(Kind::kPackParams));
+    node->params.push_back(std::make_unique<Node>(Kind::kPackParams));
   }
   if (const auto *method = llvm::dyn_cast<clang::CXXMethodDecl>(func)) {
-    node.is_const = method->isConst();
-    node.is_volatile = method->isVolatile();
+    node->is_const = method->isConst();
+    node->is_volatile = method->isVolatile();
     switch (method->getRefQualifier()) {
     case clang::RQ_LValue:
-      node.ref = "&";
+      node->ref = "&";
       break;
     case clang::RQ_RValue:
-      node.ref = "&&";
+      node->ref = "&&";
       break;
     default:
       break;
@@ -554,7 +595,7 @@ Node Builder::FromDecl(const clang::NamedDecl *decl) {
   return node;
 }
 
-std::optional<Node> Builder::FromExpr(const clang::Expr *expr) {
+NodePtr Builder::FromExpr(const clang::Expr *expr) {
   expr = expr->IgnoreParenImpCasts();
 
   if (llvm::isa<clang::IntegerLiteral>(expr) &&
@@ -562,7 +603,7 @@ std::optional<Node> Builder::FromExpr(const clang::Expr *expr) {
     auto name = clang::Lexer::getImmediateMacroName(
         expr->getBeginLoc(), ctx_.getSourceManager(), ctx_.getLangOpts());
     if (!name.empty()) {
-      return Make(Kind::kMacro, name.str());
+      return std::make_unique<Node>(Kind::kMacro, name.str());
     }
   }
 
@@ -584,10 +625,7 @@ std::optional<Node> Builder::FromExpr(const clang::Expr *expr) {
       return FromDecl(decl);
     }
     auto arrow = [&](clang::QualType object) {
-      Node node = Make(Kind::kArrow);
-      node.object = Share(FromType(object));
-      node.member = Share(FromDecl(decl));
-      return node;
+      return std::make_unique<ArrowNode>(FromType(object), FromDecl(decl));
     };
     if (member->isArrow()) {
       const auto *base = member->getBase()->IgnoreParenImpCasts();
@@ -616,17 +654,15 @@ std::optional<Node> Builder::FromExpr(const clang::Expr *expr) {
   if (const auto *uop = llvm::dyn_cast<clang::UnaryOperator>(expr)) {
     auto sub = FromExpr(uop->getSubExpr());
     if (!sub) {
-      return std::nullopt;
+      return nullptr;
     }
-    Node node =
-        Make(Kind::kUnary,
-             (uop->isPostfix() ? "post" : "") +
-                 clang::UnaryOperator::getOpcodeStr(uop->getOpcode()).str());
-    node.operand = Share(std::move(*sub));
-    return node;
+    return std::make_unique<UnaryNode>(
+        (uop->isPostfix() ? "post" : "") +
+            clang::UnaryOperator::getOpcodeStr(uop->getOpcode()).str(),
+        std::move(sub));
   }
 
-  return std::nullopt;
+  return nullptr;
 }
 
 } // namespace cpp2rust::IrSrc
