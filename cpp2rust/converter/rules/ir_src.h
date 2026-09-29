@@ -72,6 +72,7 @@ struct Node {
   std::string indexKey() const;
   unsigned specificity() const;
   void forEachParam(const std::function<void(unsigned)> &fn) const;
+  bool hasParam(unsigned n) const;
   std::string str() const;
 
   template <typename A, typename B, typename Fn>

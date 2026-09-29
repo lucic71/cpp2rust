@@ -212,15 +212,8 @@ void validate(const std::string &name, const ExprRule &rule) {
         "Args>");
   }
 
-  bool has_generic[Ir::kMaxGenerics] = {false};
-  src.ir.forEachParam([&](unsigned n) {
-    if (n >= 1 && n <= Ir::kMaxGenerics) {
-      has_generic[n - 1] = true;
-    }
-  });
-
   for (size_t i = 0, e = tgt.generics.size(); i < e; ++i) {
-    if (!has_generic[i]) {
+    if (!src.ir.hasParam(i + 1)) {
       llvm::errs() << name << '\n';
       tgt.dump();
       llvm::errs() << "generic T" << (i + 1)

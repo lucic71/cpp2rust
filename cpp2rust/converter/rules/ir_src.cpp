@@ -90,6 +90,7 @@ Node ParseNodeJSON(const llvm::json::Value &value) {
 unsigned NumParams(const Node &ir) {
   unsigned n = 0;
   ir.forEachParam([&](unsigned param) { n = std::max(n, param); });
+  assert(n <= Ir::kMaxGenerics && "template placeholder exceeds kMaxGenerics");
   return n;
 }
 
@@ -238,6 +239,15 @@ unsigned Node::specificity() const {
     return true;
   });
   return n;
+}
+
+bool Node::hasParam(unsigned n) const {
+  if (kind == Kind::kParam) {
+    return param == n;
+  }
+  return !zipChildren(*this, *this, [&](const Node &child, const Node &) {
+    return !child.hasParam(n);
+  });
 }
 
 void Node::forEachParam(const std::function<void(unsigned)> &fn) const {
