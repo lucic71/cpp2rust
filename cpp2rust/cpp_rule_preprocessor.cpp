@@ -228,8 +228,8 @@ private:
         });
   }
 
-  Mapper::IrSrcBuilder builder() {
-    Mapper::IrSrcBuilder b(sema_->Context);
+  IrSrc::Builder builder() {
+    IrSrc::Builder b(sema_->Context);
     b.stand_in = [this](const clang::Decl *decl) -> std::optional<unsigned> {
       if (auto it = stand_ins_.find(decl->getCanonicalDecl());
           it != stand_ins_.end()) {
@@ -284,8 +284,7 @@ private:
       clang::FunctionDecl *rule = nullptr;
       clang::FunctionDecl *decl =
           lookupCalledDecl(func->getDescribedFunctionTemplate(), lookup, &rule);
-      if (Mapper::HasFunctionParameterPack(func) &&
-          Mapper::HasFunctionParameterPack(decl)) {
+      if (HasFunctionParameterPack(func) && HasFunctionParameterPack(decl)) {
         return packEntry(func, rule, decl);
       }
       return entry(decl);

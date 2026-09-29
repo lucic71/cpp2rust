@@ -3,10 +3,7 @@
 
 #include "converter/mapper.h"
 
-#include <clang/AST/DeclCXX.h>
-#include <clang/AST/DeclTemplate.h>
 #include <clang/AST/ExprCXX.h>
-#include <clang/AST/PrettyPrinter.h>
 #include <clang/Basic/OperatorKinds.h>
 #include <clang/Basic/SourceManager.h>
 #include <clang/Lex/Lexer.h>
@@ -62,68 +59,6 @@ constexpr const char kPackMarker[] = "&&...";
 using Node = IrSrc::Node;
 using Kind = Node::Kind;
 using Bindings = std::vector<std::optional<Node>>;
-
-std::shared_ptr<Node> share(Node node) {
-  return std::make_shared<Node>(std::move(node));
-}
-
-Node make(Kind kind, std::string name = {}) {
-  Node node;
-  node.kind = kind;
-  node.name = std::move(name);
-  return node;
-}
-
-std::string nameOf(const clang::NamedDecl *decl) {
-  if (const auto *ctor = llvm::dyn_cast<clang::CXXConstructorDecl>(decl)) {
-    return ctor->getParent()->getName().str();
-  }
-  if (const auto *dtor = llvm::dyn_cast<clang::CXXDestructorDecl>(decl)) {
-    return "~" + dtor->getParent()->getName().str();
-  }
-  auto name = decl->getDeclName();
-  if (name.getNameKind() == clang::DeclarationName::CXXConversionFunctionName) {
-    return "operator conversion";
-  }
-  if (const auto *tag = llvm::dyn_cast<clang::TagDecl>(decl);
-      tag && !tag->getIdentifier()) {
-    if (const auto *tdef = tag->getTypedefNameForAnonDecl()) {
-      return tdef->getName().str();
-    }
-    return "(anonymous)";
-  }
-  return name.getAsString();
-}
-
-std::string QualifiedName(const clang::NamedDecl *decl) {
-  std::vector<std::string> parts{nameOf(decl)};
-  for (const auto *dc = decl->getDeclContext(); dc; dc = dc->getParent()) {
-    if (const auto *ns = llvm::dyn_cast<clang::NamespaceDecl>(dc)) {
-      if (!ns->isInline() && !ns->isAnonymousNamespace()) {
-        parts.push_back(ns->getName().str());
-      }
-    } else if (const auto *named = llvm::dyn_cast<clang::NamedDecl>(dc);
-               named && (llvm::isa<clang::RecordDecl>(named) ||
-                         llvm::isa<clang::FunctionDecl>(named))) {
-      parts.push_back(nameOf(named));
-    }
-  }
-  std::string out;
-  for (auto it = parts.rbegin(); it != parts.rend(); ++it) {
-    if (!out.empty()) {
-      out += "::";
-    }
-    out += *it;
-  }
-  return out;
-}
-
-std::string tagName(const clang::TagDecl *tag) {
-  if (!tag->getIdentifier() || tag->getDeclContext()->isFunctionOrMethod()) {
-    return ToString(tag->getASTContext().getCanonicalTagType(tag));
-  }
-  return QualifiedName(tag);
-}
 
 std::string IndexKey(const Node &node) {
   switch (node.kind) {
@@ -189,7 +124,7 @@ bool Match(const Node &rule, const Node &use, Bindings &bindings) {
 }
 
 void AddTypeRule(clang::QualType type, IrTgt::TypeRule &&rule) {
-  auto src = IrSrcBuilder(*ctx_).FromType(type);
+  auto src = IrSrc::Builder(*ctx_).FromType(type);
   auto key = IndexKey(src);
   auto [begin, end] = types_.equal_range(key);
   for (auto it = begin; it != end; ++it) {
@@ -259,7 +194,7 @@ std::pair<ExprRule *, Bindings> search(const clang::Expr *expr) {
   if (RefersToUserDefinedDecl(expr)) {
     return {};
   }
-  auto use = IrSrcBuilder(*ctx_).FromExpr(expr);
+  auto use = IrSrc::Builder(*ctx_).FromExpr(expr);
   if (!use) {
     return {};
   }
@@ -275,7 +210,7 @@ std::pair<ExprRule *, Bindings> search(const clang::Expr *expr) {
 }
 
 Node typeIR(clang::QualType qual_type, bool sugared) {
-  IrSrcBuilder builder(*ctx_);
+  IrSrc::Builder builder(*ctx_);
   if (sugared) {
     builder.keep_builtin_typedef = true;
     builder.keep_pointee_sugar = [](clang::QualType pointee) {
@@ -449,275 +384,6 @@ std::string normalizeTranslationRule(std::string rule) {
 
 } // namespace
 
-Node IrSrcBuilder::FromType(clang::QualType type) {
-  return fromType(type, true);
-}
-
-Node IrSrcBuilder::fromType(clang::QualType type, bool top) {
-  if (keep_builtin_typedef && top) {
-    if (const auto *decltype_type =
-            llvm::dyn_cast<clang::DecltypeType>(type.getTypePtr())) {
-      type = decltype_type->getUnderlyingType();
-    }
-    auto canonical = type.getCanonicalType();
-    const clang::NamedDecl *name = nullptr;
-    if (const auto *typedef_type = type->getAs<clang::TypedefType>();
-        typedef_type && canonical->isBuiltinType()) {
-      name = typedef_type->getDecl();
-    }
-    if (name) {
-      Node node = make(Kind::kTypedef, name->getName().str());
-      node.is_const = canonical.isConstQualified();
-      node.is_volatile = canonical.isVolatileQualified();
-      node.type = canonical;
-      return node;
-    }
-    if (const auto *predef = type->getAs<clang::PredefinedSugarType>()) {
-      Node node =
-          make(Kind::kTypedef, predef->getIdentifier()->getName().str());
-      node.is_const = canonical.isConstQualified();
-      node.is_volatile = canonical.isVolatileQualified();
-      node.type = canonical;
-      return node;
-    }
-    if (const auto *ptr = type->getAs<clang::PointerType>();
-        ptr && keep_pointee_sugar &&
-        keep_pointee_sugar(ptr->getPointeeType())) {
-      Node node = make(Kind::kPointer);
-      node.pointee = share(fromType(ptr->getPointeeType(), true));
-      node.is_const = canonical.isConstQualified();
-      node.is_volatile = canonical.isVolatileQualified();
-      node.type = canonical;
-      return node;
-    }
-  }
-  return fromCanonical(type.getCanonicalType());
-}
-
-Node IrSrcBuilder::fromCanonical(clang::QualType canonical) {
-  Node node;
-  const auto *type = canonical.getTypePtr();
-  bool quals_on_element = false;
-  if (const auto *builtin = llvm::dyn_cast<clang::BuiltinType>(type)) {
-    clang::PrintingPolicy policy(ctx_.getLangOpts());
-    policy.Bool = true;
-    node = make(Kind::kBuiltin, builtin->getName(policy).str());
-  } else if (const auto *ptr = llvm::dyn_cast<clang::PointerType>(type)) {
-    node = make(Kind::kPointer);
-    node.pointee = share(fromType(ptr->getPointeeType(), false));
-  } else if (const auto *ref =
-                 llvm::dyn_cast<clang::LValueReferenceType>(type)) {
-    node = make(Kind::kLRef);
-    node.pointee = share(fromType(ref->getPointeeType(), false));
-  } else if (const auto *ref =
-                 llvm::dyn_cast<clang::RValueReferenceType>(type)) {
-    node = make(Kind::kRRef);
-    node.pointee = share(fromType(ref->getPointeeType(), false));
-  } else if (const auto *array = ctx_.getAsConstantArrayType(canonical)) {
-    node = make(Kind::kArray);
-    node.element = share(fromType(array->getElementType(), false));
-    node.size =
-        share(make(Kind::kValue, llvm::toString(array->getSize(), 10, false)));
-    quals_on_element = true;
-  } else if (const auto *array = ctx_.getAsIncompleteArrayType(canonical)) {
-    node = make(Kind::kArray);
-    node.element = share(fromType(array->getElementType(), false));
-    quals_on_element = true;
-  } else if (const auto *record = type->getAsRecordDecl()) {
-    node = fromRecord(record);
-  } else if (const auto *enum_type = llvm::dyn_cast<clang::EnumType>(type)) {
-    node = make(Kind::kEnum, tagName(enum_type->getDecl()));
-  } else if (const auto *proto =
-                 llvm::dyn_cast<clang::FunctionProtoType>(type)) {
-    node = make(Kind::kFunctionType);
-    node.variadic = proto->isVariadic();
-    node.return_type = share(fromType(proto->getReturnType(), false));
-    for (auto param : proto->getParamTypes()) {
-      node.params.push_back(fromType(param, false));
-    }
-  } else {
-    node = make(Kind::kOpaque, canonical.getUnqualifiedType().getAsString());
-  }
-  if (!quals_on_element) {
-    node.is_const |= canonical.isConstQualified();
-    node.is_volatile |= canonical.isVolatileQualified();
-  }
-  node.type = canonical;
-  return node;
-}
-
-Node IrSrcBuilder::fromRecord(const clang::RecordDecl *decl) {
-  if (stand_in) {
-    if (auto param = stand_in(decl)) {
-      Node node = make(Kind::kParam);
-      node.param = *param;
-      return node;
-    }
-  }
-  if (const auto *cxx = llvm::dyn_cast<clang::CXXRecordDecl>(decl);
-      cxx && cxx->isLambda()) {
-    return make(Kind::kOpaque, "lambda");
-  }
-  Node node = make(Kind::kRecord, tagName(decl));
-  node.class_ = classOf(decl);
-  if (const auto *spec =
-          llvm::dyn_cast<clang::ClassTemplateSpecializationDecl>(decl)) {
-    for (const auto &arg : spec->getTemplateArgs().asArray()) {
-      node.args.push_back(fromTemplateArg(arg));
-    }
-  }
-  return node;
-}
-
-Node IrSrcBuilder::fromTemplateArg(const clang::TemplateArgument &arg) {
-  switch (arg.getKind()) {
-  case clang::TemplateArgument::Type:
-    return fromType(arg.getAsType(), false);
-  case clang::TemplateArgument::Integral: {
-    Node node = make(Kind::kValue, llvm::toString(arg.getAsIntegral(), 10));
-    node.type = arg.getIntegralType();
-    return node;
-  }
-  default: {
-    std::string spelling;
-    llvm::raw_string_ostream os(spelling);
-    arg.print(clang::PrintingPolicy(ctx_.getLangOpts()), os,
-              /*IncludeType=*/true);
-    return make(Kind::kOpaque, spelling);
-  }
-  }
-}
-
-std::shared_ptr<Node> IrSrcBuilder::classOf(const clang::Decl *decl) {
-  if (const auto *record =
-          llvm::dyn_cast<clang::RecordDecl>(decl->getDeclContext())) {
-    Node node = fromRecord(record);
-    node.type = ctx_.getCanonicalTagType(record);
-    return share(std::move(node));
-  }
-  return nullptr;
-}
-
-Node IrSrcBuilder::FromDecl(const clang::NamedDecl *decl) {
-  if (const auto *tmpl = llvm::dyn_cast<clang::FunctionTemplateDecl>(decl)) {
-    decl = tmpl->getTemplatedDecl();
-  }
-  const auto *func = llvm::dyn_cast<clang::FunctionDecl>(decl);
-  if (!func) {
-    Node node = make(Kind::kDecl, QualifiedName(decl));
-    node.class_ = classOf(decl);
-    return node;
-  }
-
-  Node node = make(Kind::kFunction, QualifiedName(func));
-  node.variadic = func->isVariadic();
-  node.class_ = classOf(func);
-  node.return_type = share(fromType(func->getReturnType(), false));
-  bool has_pack = HasFunctionParameterPack(func);
-  unsigned num_params = func->getNumParams();
-  if (has_pack) {
-    const auto *primary = func->getPrimaryTemplate();
-    num_params =
-        (primary ? primary->getTemplatedDecl() : func)->getNumParams() - 1;
-  }
-  for (unsigned i = 0; i < num_params; ++i) {
-    node.params.push_back(fromType(func->getParamDecl(i)->getType(), false));
-  }
-  if (has_pack) {
-    node.params.push_back(make(Kind::kPackParams));
-  }
-  if (const auto *method = llvm::dyn_cast<clang::CXXMethodDecl>(func)) {
-    node.is_const = method->isConst();
-    node.is_volatile = method->isVolatile();
-    switch (method->getRefQualifier()) {
-    case clang::RQ_LValue:
-      node.ref = "&";
-      break;
-    case clang::RQ_RValue:
-      node.ref = "&&";
-      break;
-    default:
-      break;
-    }
-  }
-  return node;
-}
-
-std::optional<Node> IrSrcBuilder::FromExpr(const clang::Expr *expr) {
-  expr = expr->IgnoreParenImpCasts();
-
-  if (llvm::isa<clang::IntegerLiteral>(expr) &&
-      expr->getBeginLoc().isMacroID()) {
-    auto name = clang::Lexer::getImmediateMacroName(
-        expr->getBeginLoc(), ctx_.getSourceManager(), ctx_.getLangOpts());
-    if (!name.empty()) {
-      return make(Kind::kMacro, name.str());
-    }
-  }
-
-  if (const auto *call = llvm::dyn_cast<clang::CallExpr>(expr)) {
-    if (const auto *callee = call->getDirectCallee()) {
-      return FromDecl(callee);
-    }
-  }
-
-  if (const auto *ctor = llvm::dyn_cast<clang::CXXConstructExpr>(expr)) {
-    assert(ctor->getConstructor() &&
-           "expr is a CXXConstructExpr but could not get constructor");
-    return FromDecl(ctor->getConstructor());
-  }
-
-  if (const auto *member = llvm::dyn_cast<clang::MemberExpr>(expr)) {
-    const auto *decl = member->getMemberDecl();
-    if (llvm::isa<clang::CXXMethodDecl>(decl)) {
-      return FromDecl(decl);
-    }
-    auto arrow = [&](clang::QualType object) {
-      Node node = make(Kind::kArrow);
-      node.object = share(FromType(object));
-      node.member = share(FromDecl(decl));
-      return node;
-    };
-    if (member->isArrow()) {
-      const auto *base = member->getBase()->IgnoreParenImpCasts();
-      if (const auto *op = llvm::dyn_cast<clang::CXXOperatorCallExpr>(base);
-          op && op->getOperator() == clang::OO_Arrow) {
-        return arrow(op->getArg(0)->IgnoreImpCasts()->getType());
-      }
-    } else if (auto for_range = GetParentForRange(ctx_, member)) {
-      const auto *range =
-          for_range->getRangeInit()->getType()->getAsCXXRecordDecl();
-      if (range && llvm::isa<clang::ClassTemplateSpecializationDecl>(range) &&
-          QualifiedName(range) == "std::map") {
-        auto iter_type = GetForRangeIteratorType(for_range);
-        if (!iter_type.isNull()) {
-          return arrow(iter_type);
-        }
-      }
-    }
-    return FromDecl(decl);
-  }
-
-  if (const auto *ref = llvm::dyn_cast<clang::DeclRefExpr>(expr)) {
-    return FromDecl(ref->getDecl());
-  }
-
-  if (const auto *uop = llvm::dyn_cast<clang::UnaryOperator>(expr)) {
-    auto sub = FromExpr(uop->getSubExpr());
-    if (!sub) {
-      return std::nullopt;
-    }
-    Node node =
-        make(Kind::kUnary,
-             (uop->isPostfix() ? "post" : "") +
-                 clang::UnaryOperator::getOpcodeStr(uop->getOpcode()).str());
-    node.operand = share(std::move(*sub));
-    return node;
-  }
-
-  return std::nullopt;
-}
-
 PushASTContext::PushASTContext(clang::ASTContext &ctx) : prev_(ctx_) {
   ctx_ = &ctx;
 }
@@ -756,7 +422,7 @@ bool IsLibcPassthrough(const clang::Expr *expr) {
 std::string MapFunctionName(const clang::FunctionDecl *decl) {
   assert(decl);
   if (!IsUserDefinedDecl(decl) &&
-      exprs_.contains(IndexKey(IrSrcBuilder(*ctx_).FromDecl(decl)))) {
+      exprs_.contains(IndexKey(IrSrc::Builder(*ctx_).FromDecl(decl)))) {
     return std::format("libcc2rs::{}_{}", decl->getNameAsString(),
                        model_ == Model::kRefCount ? "refcount" : "unsafe");
   }
@@ -965,13 +631,6 @@ std::string ToString(clang::QualType qual_type, ScalarSugar sugar) {
   llvm::raw_string_ostream os(type);
   normalizeQualType(qual_type).print(os, getPrintPolicy());
   return normalizeTranslationRule(std::move(type));
-}
-
-bool HasFunctionParameterPack(const clang::FunctionDecl *decl) {
-  if (auto *primary = decl->getPrimaryTemplate()) {
-    decl = primary->getTemplatedDecl();
-  }
-  return decl->getNumParams() && decl->parameters().back()->isParameterPack();
 }
 
 std::string ToString(const clang::NamedDecl *decl) {

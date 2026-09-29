@@ -3,6 +3,9 @@
 // Copyright (c) 2022-present INESC-ID.
 // Distributed under the MIT license that can be found in the LICENSE file.
 
+#include <clang/AST/ASTContext.h>
+#include <clang/AST/Decl.h>
+#include <clang/AST/Expr.h>
 #include <clang/AST/Type.h>
 #include <llvm/Support/JSON.h>
 
@@ -10,6 +13,7 @@
 #include <filesystem>
 #include <functional>
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -114,7 +118,32 @@ bool Node::zipChildren(A &a, B &b, Fn fn) {
   return true;
 }
 
+Node Make(Node::Kind kind, std::string name = {});
+std::shared_ptr<Node> Share(Node node);
+
 llvm::json::Value ToJSON(const Node &node);
+
+class Builder {
+public:
+  explicit Builder(clang::ASTContext &ctx) : ctx_(ctx) {}
+
+  std::function<std::optional<unsigned>(const clang::Decl *)> stand_in;
+  bool keep_builtin_typedef = false;
+  std::function<bool(clang::QualType pointee)> keep_pointee_sugar;
+
+  Node FromType(clang::QualType type);
+  Node FromDecl(const clang::NamedDecl *decl);
+  std::optional<Node> FromExpr(const clang::Expr *expr);
+
+private:
+  clang::ASTContext &ctx_;
+
+  Node fromType(clang::QualType type, bool top);
+  Node fromCanonical(clang::QualType canonical);
+  Node fromTemplateArg(const clang::TemplateArgument &arg);
+  Node fromRecord(const clang::RecordDecl *decl);
+  std::shared_ptr<Node> classOf(const clang::Decl *decl);
+};
 
 struct InitTypeLocation {
   unsigned depth = -1u;

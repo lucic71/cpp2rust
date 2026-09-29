@@ -1049,6 +1049,13 @@ std::string GetFunctionBaseName(const clang::FunctionDecl *decl) {
   return decl->getNameAsString();
 }
 
+bool HasFunctionParameterPack(const clang::FunctionDecl *decl) {
+  if (auto *primary = decl->getPrimaryTemplate()) {
+    decl = primary->getTemplatedDecl();
+  }
+  return decl->getNumParams() && decl->parameters().back()->isParameterPack();
+}
+
 void ToIdentifier(std::string &name) {
   ReplaceAll(name, "[", "arr");
   ReplaceAll(name, "]", "arr");

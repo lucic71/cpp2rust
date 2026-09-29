@@ -193,6 +193,8 @@ const char *GetOverloadedOperator(const clang::FunctionDecl *decl);
 
 std::string GetFunctionBaseName(const clang::FunctionDecl *decl);
 
+bool HasFunctionParameterPack(const clang::FunctionDecl *decl);
+
 void ToIdentifier(std::string &name);
 
 std::string GetConversionName(const clang::CXXConversionDecl *decl,
