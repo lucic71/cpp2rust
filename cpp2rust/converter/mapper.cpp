@@ -559,6 +559,7 @@ Node IrSrcBuilder::fromRecord(const clang::RecordDecl *decl) {
     return make(Kind::kOpaque, "lambda");
   }
   Node node = make(Kind::kRecord, tagName(decl));
+  node.class_ = classOf(decl);
   if (const auto *spec =
           llvm::dyn_cast<clang::ClassTemplateSpecializationDecl>(decl)) {
     for (const auto &arg : spec->getTemplateArgs().asArray()) {
