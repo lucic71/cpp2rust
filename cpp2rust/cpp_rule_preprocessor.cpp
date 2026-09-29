@@ -35,6 +35,7 @@
 #include "compat/platform_flags.h"
 #include "converter/converter_lib.h"
 #include "converter/mapper.h"
+#include "converter/rules/ir_src_builder.h"
 
 namespace fs = std::filesystem;
 

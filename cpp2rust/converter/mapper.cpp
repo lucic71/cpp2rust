@@ -18,6 +18,7 @@
 
 #include "converter/converter_lib.h"
 #include "converter/rules/ir_src.h"
+#include "converter/rules/ir_src_builder.h"
 #include "converter/rules/ir_tgt.h"
 
 namespace cpp2rust::Mapper {
