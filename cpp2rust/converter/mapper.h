@@ -43,14 +43,8 @@ bool MapsToRefcountPointer(clang::QualType qual_type);
 const std::vector<std::string> *MappedDerives(clang::QualType qual_type);
 void SetDerives(clang::QualType qual_type, std::vector<std::string> derives);
 
-enum class ScalarSugar {
-  kDesugar,
-  kPreserve,
-};
-
 clang::QualType GetTypeForDecl(const clang::NamedDecl *decl);
-std::string ToString(clang::QualType qual_type,
-                     ScalarSugar sugar = ScalarSugar::kDesugar);
+std::string ToString(clang::QualType qual_type);
 std::string ToString(const clang::Expr *expr);
 std::string ToString(const clang::NamedDecl *decl);
 std::string ToRustName(std::string name);
