@@ -1,0 +1,106 @@
+#pragma once
+
+// Copyright (c) 2022-present INESC-ID.
+// Distributed under the MIT license that can be found in the LICENSE file.
+
+#include <clang/AST/Expr.h>
+
+#include <filesystem>
+#include <string>
+#include <variant>
+#include <vector>
+
+#include "converter/factory.h"
+#include "converter/rules/ir.h"
+
+namespace cpp2rust::IrTgt {
+
+struct TextFragment {
+  std::string text;
+
+  void dump() const;
+};
+
+enum class Access : int8_t { kBorrow, kBorrowMut, kMove, kTake };
+
+struct PlaceholderFragment {
+  unsigned n; // "a0", "a1", ...
+  Access access;
+  bool is_index_base = false;
+
+  void dump() const;
+};
+
+struct GenericFragment {
+  unsigned n; // "T1", "T2", ...
+
+  void dump() const;
+};
+
+struct VaArgsFragment {
+  void dump() const;
+};
+
+struct InitFragment {
+  void dump() const;
+};
+
+struct MethodCallFragment; // forward declaration
+
+using BodyFragment = std::variant<TextFragment, PlaceholderFragment,
+                                  GenericFragment, VaArgsFragment, InitFragment,
+                                  std::unique_ptr<MethodCallFragment>>;
+
+struct MethodCallFragment {
+  std::vector<BodyFragment> receiver;
+  std::vector<BodyFragment> body;
+
+  const PlaceholderFragment *getReceiverPlaceholder() const;
+  void dump() const;
+};
+
+struct TypeInfo {
+  std::vector<std::string> derives;
+  std::string type;
+  bool is_refcount_pointer = false;
+  bool is_unsafe_pointer = false;
+
+  bool is_pointer() const { return is_refcount_pointer || is_unsafe_pointer; }
+
+  void dump() const;
+};
+
+struct ExprRule {
+  std::vector<TypeInfo> params;
+  TypeInfo return_type;
+  std::vector<std::vector<std::string>> generics; // "T1" -> ["Ord", "Clone"]
+  std::vector<BodyFragment> body;
+  bool multi_statement = false;
+  bool is_extern = false;
+
+  bool usesInit() const;
+  void dump() const;
+};
+
+struct TypeRule {
+  std::string initializer; // Rust initializer expression
+  TypeInfo type_info;
+
+  void dump() const;
+
+  static TypeRule Plain(std::string type) {
+    return {{}, {{}, std::move(type), false, false}};
+  }
+  static TypeRule RefcountPtr(std::string type) {
+    return {{}, {{}, std::move(type), true, false}};
+  }
+  static TypeRule UnsafePtr(std::string type) {
+    return {{}, {{}, std::move(type), false, true}};
+  }
+};
+
+using Rules = Ir::Rules<ExprRule, TypeRule>;
+
+Rules Load(const std::filesystem::path &dir, Model model);
+
+} // namespace cpp2rust::IrTgt
