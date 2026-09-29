@@ -216,10 +216,7 @@ private:
       ir.param = n;
       return true;
     }
-    if (ir.kind != alternate.kind || ir.name != alternate.name ||
-        ir.param != alternate.param || ir.is_const != alternate.is_const ||
-        ir.is_volatile != alternate.is_volatile ||
-        ir.variadic != alternate.variadic || ir.ref != alternate.ref) {
+    if (!ir.shallowEquals(alternate)) {
       return false;
     }
     return IrSrc::Node::zipChildren(

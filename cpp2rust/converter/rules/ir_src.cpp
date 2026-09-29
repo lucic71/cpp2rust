@@ -25,6 +25,7 @@ constexpr std::pair<Kind, const char *> kKindNames[] = {
     {Kind::kParam, "param"},         {Kind::kValue, "value"},
     {Kind::kBuiltin, "builtin"},     {Kind::kRecord, "record"},
     {Kind::kEnum, "enum"},           {Kind::kTypedef, "typedef"},
+    {Kind::kConst, "const"},         {Kind::kVolatile, "volatile"},
     {Kind::kPointer, "ptr"},         {Kind::kLRef, "lref"},
     {Kind::kRRef, "rref"},           {Kind::kArray, "array"},
     {Kind::kFunctionType, "fntype"}, {Kind::kOpaque, "opaque"},
@@ -103,6 +104,22 @@ TypeRule ParseTypeRuleJSON(const llvm::json::Object &obj) {
   return rule;
 }
 
+Node qualify(Node node, clang::QualType type) {
+  if (type.isVolatileQualified()) {
+    Node wrapper = Make(Kind::kVolatile);
+    wrapper.type = node.type.withVolatile();
+    wrapper.operand = Share(std::move(node));
+    node = std::move(wrapper);
+  }
+  if (type.isConstQualified()) {
+    Node wrapper = Make(Kind::kConst);
+    wrapper.type = node.type.withConst();
+    wrapper.operand = Share(std::move(node));
+    node = std::move(wrapper);
+  }
+  return node;
+}
+
 std::string nameOf(const clang::NamedDecl *decl) {
   if (const auto *ctor = llvm::dyn_cast<clang::CXXConstructorDecl>(decl)) {
     return ctor->getParent()->getName().str();
@@ -163,11 +180,46 @@ std::string tagName(const clang::TagDecl *tag) {
 } // namespace
 
 bool Node::operator==(const Node &other) const {
-  return kind == other.kind && name == other.name && param == other.param &&
-         is_const == other.is_const && is_volatile == other.is_volatile &&
-         variadic == other.variadic && ref == other.ref &&
+  return shallowEquals(other) &&
          zipChildren(*this, other,
                      [](const Node &a, const Node &b) { return a == b; });
+}
+
+bool Node::shallowEquals(const Node &other) const {
+  return kind == other.kind && name == other.name && param == other.param &&
+         is_const == other.is_const && is_volatile == other.is_volatile &&
+         variadic == other.variadic && ref == other.ref;
+}
+
+std::string Node::indexKey() const {
+  switch (kind) {
+  case Kind::kFunction:
+  case Kind::kDecl:
+  case Kind::kRecord:
+  case Kind::kEnum:
+  case Kind::kTypedef:
+  case Kind::kBuiltin:
+    return name;
+  case Kind::kMacro:
+    return "macro:" + name;
+  case Kind::kUnary:
+    return "unary" + name + ":" + operand->indexKey();
+  case Kind::kArrow:
+    return member->indexKey();
+  case Kind::kConst:
+  case Kind::kVolatile:
+    return operand->indexKey();
+  case Kind::kPointer:
+    return "*" + pointee->indexKey();
+  case Kind::kLRef:
+    return "&" + pointee->indexKey();
+  case Kind::kRRef:
+    return "&&" + pointee->indexKey();
+  case Kind::kArray:
+    return "[]" + element->indexKey();
+  default:
+    return "";
+  }
 }
 
 unsigned Node::specificity() const {
@@ -199,6 +251,9 @@ std::string Node::str() const {
   }
   if (kind == Kind::kParam) {
     return out + "T" + std::to_string(param);
+  }
+  if (kind == Kind::kConst || kind == Kind::kVolatile) {
+    return out + kindName(kind) + " " + operand->str();
   }
   out += kindName(kind);
   if (!name.empty()) {
@@ -310,28 +365,22 @@ Node Builder::fromType(clang::QualType type, bool top) {
     }
     if (name) {
       Node node = Make(Kind::kTypedef, name->getName().str());
-      node.is_const = canonical.isConstQualified();
-      node.is_volatile = canonical.isVolatileQualified();
-      node.type = canonical;
-      return node;
+      node.type = canonical.getUnqualifiedType();
+      return qualify(std::move(node), canonical);
     }
     if (const auto *predef = type->getAs<clang::PredefinedSugarType>()) {
       Node node =
           Make(Kind::kTypedef, predef->getIdentifier()->getName().str());
-      node.is_const = canonical.isConstQualified();
-      node.is_volatile = canonical.isVolatileQualified();
-      node.type = canonical;
-      return node;
+      node.type = canonical.getUnqualifiedType();
+      return qualify(std::move(node), canonical);
     }
     if (const auto *ptr = type->getAs<clang::PointerType>();
         ptr && keep_pointee_sugar &&
         keep_pointee_sugar(ptr->getPointeeType())) {
       Node node = Make(Kind::kPointer);
       node.pointee = Share(fromType(ptr->getPointeeType(), true));
-      node.is_const = canonical.isConstQualified();
-      node.is_volatile = canonical.isVolatileQualified();
-      node.type = canonical;
-      return node;
+      node.type = canonical.getUnqualifiedType();
+      return qualify(std::move(node), canonical);
     }
   }
   return fromCanonical(type.getCanonicalType());
@@ -381,12 +430,12 @@ Node Builder::fromCanonical(clang::QualType canonical) {
   } else {
     node = Make(Kind::kOpaque, canonical.getUnqualifiedType().getAsString());
   }
-  if (!quals_on_element) {
-    node.is_const |= canonical.isConstQualified();
-    node.is_volatile |= canonical.isVolatileQualified();
+  if (quals_on_element) {
+    node.type = canonical;
+    return node;
   }
-  node.type = canonical;
-  return node;
+  node.type = canonical.getUnqualifiedType();
+  return qualify(std::move(node), canonical);
 }
 
 Node Builder::fromRecord(const clang::RecordDecl *decl) {

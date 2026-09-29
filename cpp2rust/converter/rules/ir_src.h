@@ -30,6 +30,8 @@ struct Node {
     kRecord,
     kEnum,
     kTypedef,
+    kConst,
+    kVolatile,
     kPointer,
     kLRef,
     kRRef,
@@ -66,6 +68,8 @@ struct Node {
   clang::QualType type;
 
   bool operator==(const Node &other) const;
+  bool shallowEquals(const Node &other) const;
+  std::string indexKey() const;
   unsigned specificity() const;
   void forEachParam(const std::function<void(unsigned)> &fn) const;
   std::string str() const;

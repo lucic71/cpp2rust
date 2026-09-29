@@ -57,62 +57,19 @@ using Node = IrSrc::Node;
 using Kind = Node::Kind;
 using Bindings = std::vector<std::optional<Node>>;
 
-std::string IndexKey(const Node &node) {
-  switch (node.kind) {
-  case Kind::kFunction:
-  case Kind::kDecl:
-  case Kind::kRecord:
-  case Kind::kEnum:
-  case Kind::kTypedef:
-  case Kind::kBuiltin:
-    return node.name;
-  case Kind::kMacro:
-    return "macro:" + node.name;
-  case Kind::kUnary:
-    return "unary" + node.name + ":" + IndexKey(*node.operand);
-  case Kind::kArrow:
-    return IndexKey(*node.member);
-  case Kind::kPointer:
-    return "*" + IndexKey(*node.pointee);
-  case Kind::kLRef:
-    return "&" + IndexKey(*node.pointee);
-  case Kind::kRRef:
-    return "&&" + IndexKey(*node.pointee);
-  case Kind::kArray:
-    return "[]" + IndexKey(*node.element);
-  default:
-    return "";
-  }
-}
-
 bool Match(const Node &rule, const Node &use, Bindings &bindings) {
   if (rule.kind == Kind::kParam) {
-    if ((rule.is_const && !use.is_const) ||
-        (rule.is_volatile && !use.is_volatile)) {
-      return false;
-    }
-    Node bound = use;
-    if (rule.is_const) {
-      bound.is_const = false;
-      bound.type.removeLocalConst();
-    }
-    if (rule.is_volatile) {
-      bound.is_volatile = false;
-      bound.type.removeLocalVolatile();
-    }
     if (bindings.size() <= rule.param) {
       bindings.resize(rule.param + 1);
     }
     auto &slot = bindings[rule.param];
     if (!slot) {
-      slot = std::move(bound);
+      slot = use;
       return true;
     }
-    return *slot == bound;
+    return *slot == use;
   }
-  if (rule.kind != use.kind || rule.name != use.name ||
-      rule.is_const != use.is_const || rule.is_volatile != use.is_volatile ||
-      rule.variadic != use.variadic || rule.ref != use.ref) {
+  if (!rule.shallowEquals(use)) {
     return false;
   }
   return Node::zipChildren(rule, use, [&](const Node &r, const Node &u) {
@@ -122,7 +79,7 @@ bool Match(const Node &rule, const Node &use, Bindings &bindings) {
 
 void AddTypeRule(clang::QualType type, IrTgt::TypeRule &&rule) {
   auto src = IrSrc::Builder(*ctx_).FromType(type);
-  auto key = IndexKey(src);
+  auto key = src.indexKey();
   auto [begin, end] = types_.equal_range(key);
   for (auto it = begin; it != end; ++it) {
     if (it->second.src.ir == src) {
@@ -195,7 +152,7 @@ std::pair<ExprRule *, Bindings> search(const clang::Expr *expr) {
   if (!use) {
     return {};
   }
-  auto res = search(exprs_, *use, IndexKey(*use));
+  auto res = search(exprs_, *use, use->indexKey());
   log() << "search expr " << use->str() << ", result:\n";
   if (res.first) {
     res.first->src.dump();
@@ -219,9 +176,8 @@ Node typeIR(clang::QualType qual_type, bool sugared) {
     };
   }
   auto node = builder.FromType(qual_type);
-  if (node.kind != Kind::kArray) {
-    node.is_const = false;
-    node.is_volatile = false;
+  while (node.kind == Kind::kConst || node.kind == Kind::kVolatile) {
+    node = Node(*node.operand);
   }
   return node;
 }
@@ -229,7 +185,7 @@ Node typeIR(clang::QualType qual_type, bool sugared) {
 std::pair<IrTgt::TypeRule *, Bindings> search(clang::QualType qual_type) {
   for (bool sugared : {true, false}) {
     auto use = typeIR(qual_type, sugared);
-    auto key = IndexKey(use);
+    auto key = use.indexKey();
     auto [rule, bindings] = search(types_, use, key);
     if (!rule && !key.empty()) {
       std::tie(rule, bindings) = search(types_, use, "");
@@ -303,12 +259,12 @@ void addRulesFromDirectory(const std::filesystem::path &dir, Model model) {
     for (auto &[name, rule] : tgt.exprs) {
       ExprRule paired{takeSrc(src.exprs, name, path), std::move(rule)};
       validate(name, paired);
-      auto key = IndexKey(paired.src.ir);
+      auto key = paired.src.ir.indexKey();
       exprs_.emplace(std::move(key), std::move(paired));
     }
     for (auto &[name, rule] : tgt.types) {
       TypeRule paired{takeSrc(src.types, name, path), std::move(rule)};
-      auto key = IndexKey(paired.src.ir);
+      auto key = paired.src.ir.indexKey();
       auto [begin, end] = types_.equal_range(key);
       for (auto it = begin; it != end; ++it) {
         if (it->second.src.ir == paired.src.ir) {
@@ -369,7 +325,7 @@ bool IsLibcPassthrough(const clang::Expr *expr) {
 std::string MapFunctionName(const clang::FunctionDecl *decl) {
   assert(decl);
   if (!IsUserDefinedDecl(decl) &&
-      exprs_.contains(IndexKey(IrSrc::Builder(*ctx_).FromDecl(decl)))) {
+      exprs_.contains(IrSrc::Builder(*ctx_).FromDecl(decl).indexKey())) {
     return std::format("libcc2rs::{}_{}", decl->getNameAsString(),
                        model_ == Model::kRefCount ? "refcount" : "unsafe");
   }
