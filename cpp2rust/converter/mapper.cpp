@@ -61,10 +61,12 @@ bool Match(const Node &rule, const Node &use, Bindings &bindings) {
   if (rule.kind == Kind::kParam) {
     assert(rule.param < bindings.size());
     auto &slot = bindings[rule.param];
+    // First time we see the binding, always succeed.
     if (!slot) {
       slot = use;
       return true;
     }
+    // Second time we see the binding, check that it equals the first usage.
     return *slot == use;
   }
   if (!rule.shallowEquals(use)) {
@@ -81,6 +83,7 @@ void AddTypeRule(clang::QualType type, IrTgt::TypeRule &&rule) {
   auto [begin, end] = types_.equal_range(key);
   for (auto it = begin; it != end; ++it) {
     if (it->second.src.ir == src) {
+      // Skip if the rule already exists
       return;
     }
   }
