@@ -4988,9 +4988,9 @@ Converter::ConvertIRFragment(const std::vector<IrTgt::BodyFragment> &fragments,
           .is_index_base = ph->is_index_base,
       };
       result += ConvertPlaceholder(expr, arg, ph_ctx);
-    } else if (std::get_if<IrTgt::VaArgsFragment>(&frag)) {
+    } else if (std::get_if<VaArgsFragment>(&frag)) {
       result += ConvertVariadicTail(expr, all_args);
-    } else if (std::get_if<IrTgt::InitFragment>(&frag)) {
+    } else if (std::get_if<InitFragment>(&frag)) {
       result += ConvertInitFragment(expr, all_args);
     } else if (auto *mc =
                    std::get_if<std::unique_ptr<MethodCallFragment>>(&frag)) {
