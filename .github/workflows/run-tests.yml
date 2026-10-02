@@ -15,11 +15,14 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, macos-latest]
+        config:
+          - { name: ubuntu-libstdcxx, os: ubuntu-latest }
+          - { name: ubuntu-libcxx, os: ubuntu-latest, stdlib: libc++ }
+          - { name: macos, os: macos-latest }
         build_type: [Debug, Release]
 
-    runs-on: ${{ matrix.os }}
-    name: Run Tests (${{ matrix.os }}, ${{ matrix.build_type }})
+    runs-on: ${{ matrix.config.os }}
+    name: Run Tests (${{ matrix.config.name }}, ${{ matrix.build_type }})
 
     permissions:
       contents: read
@@ -32,6 +35,12 @@ jobs:
         uses: ZhongRuoyu/setup-llvm@v0
         with:
           llvm-version: 23
+
+      - name: Install libc++
+        if: matrix.config.stdlib == 'libc++'
+        run: |
+          sudo apt-get install -y libc++-23-dev libc++abi-23-dev
+          echo "CPP2RUST_STDLIB=libc++" >> "$GITHUB_ENV"
 
       - name: Configure
         run: |
