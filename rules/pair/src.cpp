@@ -31,7 +31,7 @@ std::pair<T1, T2> f6(T3 &a0, T4 &a1) {
 
 template <typename T1, typename T2, typename T3, typename T4>
 std::pair<T1, T2> f7(T3 &&a0, T4 &&a1) {
-  return std::pair<T1, T2>(std::move(a0), std::move(a1));
+  return std::pair<T1, T2>(std::forward<T3>(a0), std::forward<T4>(a1));
 }
 
 #if __cplusplus >= 201402L

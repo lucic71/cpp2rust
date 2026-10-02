@@ -8,6 +8,8 @@
 using t1 = std::byte;
 #endif
 
+using std::size_t;
+
 typedef size_t t2;
 typedef size_t *t3;
 typedef const size_t *t4;

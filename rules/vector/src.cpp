@@ -3,23 +3,42 @@
 
 #include <algorithm>
 #include <initializer_list>
+#include <iterator>
+#include <type_traits>
 #include <vector>
 
 template <typename T, typename A> using Init = A;
 
 template <typename T1> using t1 = std::vector<T1>;
-template <typename T1> using t2 = typename std::vector<T1>::iterator;
+template <
+    typename It, typename T1 = typename std::iterator_traits<It>::value_type,
+    typename = typename std::enable_if<
+        std::is_same<It, typename std::vector<T1>::iterator>::value>::type>
+void t2(It *);
 template <typename T1> using t3 = std::vector<std::vector<T1>>;
-template <typename T1> using t4 = typename std::vector<T1>::const_iterator;
+template <typename It,
+
+          typename T1 = typename std::iterator_traits<It>::value_type,
+          typename = typename std::enable_if<std::is_same<
+              It, typename std::vector<T1>::const_iterator>::value>::type>
+void t4(It *);
 
 template <typename T1, typename T2 = std::allocator<T1>>
 using t5 = std::vector<T1, T2>;
 
 #if defined(__linux__)
-template <typename T1, typename T2 = std::allocator<T1>>
-using t6 = typename std::vector<T1, T2>::iterator;
-template <typename T1, typename T2 = std::allocator<T1>>
-using t7 = typename std::vector<T1, T2>::const_iterator;
+template <template <typename...> class Iterator, typename Pointer, typename T1,
+          typename T2,
+          typename = typename std::enable_if<std::is_same<
+              Iterator<Pointer, std::vector<T1, T2>>,
+              typename std::vector<T1, T2>::iterator>::value>::type>
+void t6(Iterator<Pointer, std::vector<T1, T2>> *);
+template <template <typename...> class Iterator, typename Pointer, typename T1,
+          typename T2,
+          typename = typename std::enable_if<std::is_same<
+              Iterator<Pointer, std::vector<T1, T2>>,
+              typename std::vector<T1, T2>::const_iterator>::value>::type>
+void t7(Iterator<Pointer, std::vector<T1, T2>> *);
 #endif
 
 template <typename T1>
@@ -101,44 +120,59 @@ template <typename T1> void f21(std::vector<T1> &o, const T1 &value) {
   return o.push_back(value);
 }
 
-template <typename T1>
-typename std::vector<T1>::reference f22(typename std::vector<T1>::iterator it) {
+template <
+    typename It, typename T1 = typename std::iterator_traits<It>::value_type,
+    typename = typename std::enable_if<
+        std::is_same<It, typename std::vector<T1>::iterator>::value>::type>
+typename std::vector<T1>::reference f22(It it) {
   return it.operator*();
 }
 
-template <typename T1>
-typename std::vector<T1>::iterator
-f23(const typename std::vector<T1>::iterator &it) {
+template <
+    typename It, typename T1 = typename std::iterator_traits<It>::value_type,
+    typename = typename std::enable_if<
+        std::is_same<It, typename std::vector<T1>::iterator>::value>::type>
+typename std::vector<T1>::iterator f23(const It &it) {
   return typename std::vector<T1>::iterator(it);
 }
 
-template <typename T1>
-typename std::vector<T1>::const_iterator
-f24(const typename std::vector<T1>::iterator &it) {
+template <
+    typename It, typename T1 = typename std::iterator_traits<It>::value_type,
+    typename = typename std::enable_if<
+        std::is_same<It, typename std::vector<T1>::iterator>::value>::type>
+typename std::vector<T1>::const_iterator f24(const It &it) {
   return typename std::vector<T1>::const_iterator(it);
 }
 
-template <typename T1>
-typename std::vector<T1>::iterator f25(typename std::vector<T1>::iterator it,
-                                       std::size_t n) {
+template <
+    typename It, typename T1 = typename std::iterator_traits<It>::value_type,
+    typename = typename std::enable_if<
+        std::is_same<It, typename std::vector<T1>::iterator>::value>::type>
+typename std::vector<T1>::iterator f25(It it, std::size_t n) {
   return it.operator+(n);
 }
 
-template <typename T1>
-bool f26(const typename std::vector<T1>::iterator &it1,
-         const typename std::vector<T1>::iterator &it2) {
+template <
+    typename It, typename T1 = typename std::iterator_traits<It>::value_type,
+    typename = typename std::enable_if<
+        std::is_same<It, typename std::vector<T1>::iterator>::value>::type>
+bool f26(const It &it1, const It &it2) {
   return operator!=(it1, it2);
 }
 
-template <typename T1>
-bool f27(const typename std::vector<T1>::iterator &it1,
-         const typename std::vector<T1>::iterator &it2) {
+template <
+    typename It, typename T1 = typename std::iterator_traits<It>::value_type,
+    typename = typename std::enable_if<
+        std::is_same<It, typename std::vector<T1>::iterator>::value>::type>
+bool f27(const It &it1, const It &it2) {
   return operator==(it1, it2);
 }
 
-template <typename T1>
-typename std::vector<T1>::iterator f28(typename std::vector<T1>::iterator a0,
-                                       int a1) {
+template <
+    typename It, typename T1 = typename std::iterator_traits<It>::value_type,
+    typename = typename std::enable_if<
+        std::is_same<It, typename std::vector<T1>::iterator>::value>::type>
+typename std::vector<T1>::iterator f28(It a0, int a1) {
   return a0.operator++(a1);
 }
 
@@ -161,16 +195,20 @@ void f32(std::vector<std::vector<T1>> &o, std::size_t n) {
   return o.resize(n);
 }
 
-template <typename T1>
-typename std::vector<T1>::iterator::difference_type
-f33(const typename std::vector<T1>::iterator &it1,
-    const typename std::vector<T1>::iterator &it2) {
+template <
+    typename It, typename T1 = typename std::iterator_traits<It>::value_type,
+    typename = typename std::enable_if<
+        std::is_same<It, typename std::vector<T1>::iterator>::value>::type>
+typename std::vector<T1>::iterator::difference_type f33(const It &it1,
+                                                        const It &it2) {
   return operator-(it1, it2);
 }
 
-template <typename T1>
-typename std::vector<T1>::iterator &
-f34(typename std::vector<T1>::iterator &it) {
+template <
+    typename It, typename T1 = typename std::iterator_traits<It>::value_type,
+    typename = typename std::enable_if<
+        std::is_same<It, typename std::vector<T1>::iterator>::value>::type>
+typename std::vector<T1>::iterator &f34(It &it) {
   return it.operator++();
 }
 
@@ -199,10 +237,12 @@ template <typename T1> const T1 *f41(const std::vector<T1> &o) {
   return o.data();
 }
 
-template <typename T1>
-typename std::vector<T1>::const_iterator
-f42(typename std::vector<T1>::const_iterator first,
-    typename std::vector<T1>::const_iterator last) {
+template <typename It,
+
+          typename T1 = typename std::iterator_traits<It>::value_type,
+          typename = typename std::enable_if<std::is_same<
+              It, typename std::vector<T1>::const_iterator>::value>::type>
+typename std::vector<T1>::const_iterator f42(It first, It last) {
   return std::max_element(first, last);
 }
 
@@ -382,58 +422,94 @@ void f80(std::vector<T1, T2> &o, const T1 &value) {
   return o.push_back(value);
 }
 
-template <typename T1, typename T2 = std::allocator<T1>>
+template <template <typename...> class Iterator, typename Pointer, typename T1,
+          typename T2,
+          typename = typename std::enable_if<std::is_same<
+              Iterator<Pointer, std::vector<T1, T2>>,
+              typename std::vector<T1, T2>::iterator>::value>::type>
 typename std::vector<T1, T2>::reference
-f81(typename std::vector<T1, T2>::iterator it) {
+f81(Iterator<Pointer, std::vector<T1, T2>> it) {
   return it.operator*();
 }
 
-template <typename T1, typename T2 = std::allocator<T1>>
+template <template <typename...> class Iterator, typename Pointer, typename T1,
+          typename T2,
+          typename = typename std::enable_if<std::is_same<
+              Iterator<Pointer, std::vector<T1, T2>>,
+              typename std::vector<T1, T2>::iterator>::value>::type>
 typename std::vector<T1, T2>::iterator
-f82(const typename std::vector<T1, T2>::iterator &it) {
+f82(const Iterator<Pointer, std::vector<T1, T2>> &it) {
   return typename std::vector<T1, T2>::iterator(it);
 }
 
-template <typename T1, typename T2 = std::allocator<T1>>
+template <template <typename...> class Iterator, typename Pointer, typename T1,
+          typename T2,
+          typename = typename std::enable_if<std::is_same<
+              Iterator<Pointer, std::vector<T1, T2>>,
+              typename std::vector<T1, T2>::iterator>::value>::type>
 typename std::vector<T1, T2>::const_iterator
-f83(const typename std::vector<T1, T2>::iterator &it) {
+f83(const Iterator<Pointer, std::vector<T1, T2>> &it) {
   return typename std::vector<T1, T2>::const_iterator(it);
 }
 
-template <typename T1, typename T2 = std::allocator<T1>>
+template <template <typename...> class Iterator, typename Pointer, typename T1,
+          typename T2,
+          typename = typename std::enable_if<std::is_same<
+              Iterator<Pointer, std::vector<T1, T2>>,
+              typename std::vector<T1, T2>::iterator>::value>::type>
 typename std::vector<T1, T2>::iterator
-f84(typename std::vector<T1, T2>::iterator it, std::size_t n) {
+f84(Iterator<Pointer, std::vector<T1, T2>> it, std::size_t n) {
   return it.operator+(n);
 }
 
-template <typename T1, typename T2 = std::allocator<T1>>
-bool f85(const typename std::vector<T1, T2>::iterator &it1,
-         const typename std::vector<T1, T2>::iterator &it2) {
+template <template <typename...> class Iterator, typename Pointer, typename T1,
+          typename T2,
+          typename = typename std::enable_if<std::is_same<
+              Iterator<Pointer, std::vector<T1, T2>>,
+              typename std::vector<T1, T2>::iterator>::value>::type>
+bool f85(const Iterator<Pointer, std::vector<T1, T2>> &it1,
+         const Iterator<Pointer, std::vector<T1, T2>> &it2) {
   return operator!=(it1, it2);
 }
 
-template <typename T1, typename T2 = std::allocator<T1>>
-bool f86(const typename std::vector<T1, T2>::iterator &it1,
-         const typename std::vector<T1, T2>::iterator &it2) {
+template <template <typename...> class Iterator, typename Pointer, typename T1,
+          typename T2,
+          typename = typename std::enable_if<std::is_same<
+              Iterator<Pointer, std::vector<T1, T2>>,
+              typename std::vector<T1, T2>::iterator>::value>::type>
+bool f86(const Iterator<Pointer, std::vector<T1, T2>> &it1,
+         const Iterator<Pointer, std::vector<T1, T2>> &it2) {
   return operator==(it1, it2);
 }
 
-template <typename T1, typename T2 = std::allocator<T1>>
+template <template <typename...> class Iterator, typename Pointer, typename T1,
+          typename T2,
+          typename = typename std::enable_if<std::is_same<
+              Iterator<Pointer, std::vector<T1, T2>>,
+              typename std::vector<T1, T2>::iterator>::value>::type>
 typename std::vector<T1, T2>::iterator
-f87(typename std::vector<T1, T2>::iterator a0, int a1) {
+f87(Iterator<Pointer, std::vector<T1, T2>> a0, int a1) {
   return a0.operator++(a1);
 }
 
-template <typename T1, typename T2 = std::allocator<T1>>
+template <template <typename...> class Iterator, typename Pointer, typename T1,
+          typename T2,
+          typename = typename std::enable_if<std::is_same<
+              Iterator<Pointer, std::vector<T1, T2>>,
+              typename std::vector<T1, T2>::iterator>::value>::type>
 typename std::vector<T1, T2>::iterator::difference_type
-f88(const typename std::vector<T1, T2>::iterator &it1,
-    const typename std::vector<T1, T2>::iterator &it2) {
+f88(const Iterator<Pointer, std::vector<T1, T2>> &it1,
+    const Iterator<Pointer, std::vector<T1, T2>> &it2) {
   return operator-(it1, it2);
 }
 
-template <typename T1, typename T2 = std::allocator<T1>>
+template <template <typename...> class Iterator, typename Pointer, typename T1,
+          typename T2,
+          typename = typename std::enable_if<std::is_same<
+              Iterator<Pointer, std::vector<T1, T2>>,
+              typename std::vector<T1, T2>::iterator>::value>::type>
 typename std::vector<T1, T2>::iterator &
-f89(typename std::vector<T1, T2>::iterator &it) {
+f89(Iterator<Pointer, std::vector<T1, T2>> &it) {
   return it.operator++();
 }
 
@@ -457,10 +533,14 @@ const T1 *f93(const std::vector<T1, T2> &o) {
   return o.data();
 }
 
-template <typename T1, typename T2 = std::allocator<T1>>
+template <template <typename...> class Iterator, typename Pointer, typename T1,
+          typename T2,
+          typename = typename std::enable_if<std::is_same<
+              Iterator<Pointer, std::vector<T1, T2>>,
+              typename std::vector<T1, T2>::const_iterator>::value>::type>
 typename std::vector<T1, T2>::const_iterator
-f94(typename std::vector<T1, T2>::const_iterator first,
-    typename std::vector<T1, T2>::const_iterator last) {
+f94(Iterator<Pointer, std::vector<T1, T2>> first,
+    Iterator<Pointer, std::vector<T1, T2>> last) {
   return std::max_element(first, last);
 }
 
