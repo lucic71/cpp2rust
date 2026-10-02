@@ -89,20 +89,27 @@ void addCxxModule(std::string &out, const fs::path &module_dir) {
   out += std::format("namespace cpp2rust_rules_{} {{\n",
                      module_dir.filename().string());
   out += withoutIncludes(readFile(module_dir / "src.cpp"));
-  out += "}\n";
+  out += "namespace other {\n";
+  out += withoutIncludes(readFile(module_dir / "src.c"));
+  out += "}\n}\n";
 }
 
-void addCModule(std::string &out, const fs::path &module_dir) {
-  auto module = module_dir.filename().string();
-  auto text = readFile(module_dir / "src.c");
+void addCRules(std::string &out, const std::string &prefix,
+               const std::string &text) {
   auto names = getRuleNames(text);
   for (const auto &name : names) {
-    out += std::format("#define {} cpp2rust_rules_{}_{}\n", name, module, name);
+    out += std::format("#define {} {}_{}\n", name, prefix, name);
   }
   out += withoutIncludes(text);
   for (const auto &name : names) {
     out += std::format("#undef {}\n", name);
   }
+}
+
+void addCModule(std::string &out, const fs::path &module_dir) {
+  auto prefix = "cpp2rust_rules_" + module_dir.filename().string();
+  addCRules(out, prefix, readFile(module_dir / "src.c"));
+  addCRules(out, prefix + "_other", readFile(module_dir / "src.cpp"));
 }
 
 } // namespace
@@ -137,10 +144,9 @@ std::string BuildRulesPrelude(RulesLanguage language) {
 
   std::string out = "#pragma GCC system_header\n";
   for (const auto &module_dir : modules) {
-    if (language == RulesLanguage::kCxx && fs::exists(module_dir / "src.cpp")) {
+    if (language == RulesLanguage::kCxx) {
       addCxxModule(out, module_dir);
-    }
-    if (language == RulesLanguage::kC && fs::exists(module_dir / "src.c")) {
+    } else {
       addCModule(out, module_dir);
     }
   }
