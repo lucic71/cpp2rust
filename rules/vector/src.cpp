@@ -26,6 +26,9 @@ void t4(It *);
 template <typename T1, typename T2 = std::allocator<T1>>
 using t5 = std::vector<T1, T2>;
 
+template <typename T1, typename T2>
+using t8 = typename std::vector<T1, T2>::size_type;
+
 #if defined(__linux__)
 template <template <typename...> class Iterator, typename Pointer, typename T1,
           typename T2,

@@ -52,4 +52,7 @@ ExprCandidates(const std::string &key);
 
 std::ranges::subrange<TypeRuleDeclMap::iterator>
 TypeCandidates(const std::string &key);
+
+std::ranges::subrange<TypeRuleDeclMap::iterator>
+MemberTypeCandidates(const std::string &key);
 } // namespace cpp2rust::RuleDecls

@@ -28,6 +28,7 @@ constexpr std::string_view kPrefix = "cpp2rust_rules_";
 
 ExprRuleDeclMap exprs_;
 TypeRuleDeclMap types_;
+TypeRuleDeclMap member_types_;
 std::unordered_map<const void *, TranslationRule::TypeRule *> plain_types_;
 std::unordered_map<std::string, TranslationRule::TypeRule *> alias_types_;
 clang::Sema *sema_ = nullptr;
@@ -444,6 +445,14 @@ void addTypeRule(clang::ASTContext &ctx, const clang::NamedDecl *decl) {
                           .getAsOpaquePtr());
     return;
   }
+  if (const auto *member =
+          alias->getUnderlyingType()->getAs<clang::DependentNameType>()) {
+    auto key = member->getIdentifier()->getName().str();
+    log() << "rule " << id->module << "::" << id->name << " -> member '" << key
+          << "'\n";
+    member_types_.emplace(std::move(key), TypeRuleDecl{decl, rule});
+    return;
+  }
   auto key = GetTypeKey(alias->getUnderlyingType());
   log() << "rule " << id->module << "::" << id->name << " -> '" << key << "'\n";
   types_.emplace(std::move(key), TypeRuleDecl{decl, rule});
@@ -478,6 +487,7 @@ void Collect(clang::Sema &sema) {
   sema_ = &sema;
   exprs_.clear();
   types_.clear();
+  member_types_.clear();
   plain_types_.clear();
   alias_types_.clear();
   addRules(ctx, ctx.getTranslationUnitDecl());
@@ -509,6 +519,12 @@ TranslationRule::TypeRule *FindPlainType(clang::QualType type) {
 std::ranges::subrange<ExprRuleDeclMap::iterator>
 ExprCandidates(const std::string &key) {
   auto [begin, end] = exprs_.equal_range(key);
+  return {begin, end};
+}
+
+std::ranges::subrange<TypeRuleDeclMap::iterator>
+MemberTypeCandidates(const std::string &key) {
+  auto [begin, end] = member_types_.equal_range(key);
   return {begin, end};
 }
 

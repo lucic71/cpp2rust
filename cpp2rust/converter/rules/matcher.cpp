@@ -461,9 +461,50 @@ bool isInstanceOf(clang::Sema &sema, const clang::TypeAliasTemplateDecl *a,
          clang::TemplateDeductionResult::Success;
 }
 
+TypeMatch findMemberType(clang::ASTContext &ctx, clang::QualType type) {
+  auto &sema = RuleDecls::GetSema();
+  while (const auto *typedef_type = type->getAs<clang::TypedefType>()) {
+    const auto *decl = typedef_type->getDecl();
+    if (const auto *owner =
+            llvm::dyn_cast<clang::ClassTemplateSpecializationDecl>(
+                decl->getDeclContext())) {
+      for (auto &[_, entry] :
+           RuleDecls::MemberTypeCandidates(decl->getName().str())) {
+        const auto *alias =
+            llvm::cast<clang::TypeAliasTemplateDecl>(entry.decl);
+        const auto *member = alias->getTemplatedDecl()
+                                 ->getUnderlyingType()
+                                 ->getAs<clang::DependentNameType>();
+        const auto *pattern = member->getQualifier().getAsType();
+        if (!pattern) {
+          continue;
+        }
+        auto *params = alias->getTemplateParameters();
+        llvm::SmallVector<clang::DeducedTemplateArgument, 4> deduced(
+            params->size());
+        clang::sema::TemplateDeductionInfo info(alias->getLocation());
+        Trial trial(sema);
+        if (sema.DeduceTemplateArguments(
+                params, clang::TemplateArgument(clang::QualType(pattern, 0)),
+                clang::TemplateArgument(ctx.getCanonicalTagType(owner)), info,
+                deduced, true) == clang::TemplateDeductionResult::Success) {
+          return {entry.rule,
+                  getBindings(params, std::vector<clang::TemplateArgument>(
+                                          deduced.begin(), deduced.end()))};
+        }
+      }
+    }
+    type = typedef_type->desugar();
+  }
+  return {};
+}
+
 TypeMatch findType(clang::ASTContext &ctx, clang::QualType type) {
   if (auto *rule = RuleRegistry::FindUserType(type)) {
     return {rule, {}};
+  }
+  if (auto match = findMemberType(ctx, type); match.first) {
+    return match;
   }
   if (auto *rule = RuleDecls::FindPlainType(type)) {
     return {rule, {}};
