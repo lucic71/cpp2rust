@@ -3,4 +3,6 @@
 
 #include <iomanip>
 
+#if __cplusplus >= 201402L
 auto f1(int n) { return std::setw(n); }
+#endif
