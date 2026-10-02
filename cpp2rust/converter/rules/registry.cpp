@@ -23,6 +23,9 @@ bool translation_rules_loaded_ = false;
 ExprRuleMap exprs_; // key -> ExprRule
 TypeRuleMap types_; // key -> TypeRule
 
+std::unordered_map<std::string, TranslationRule::ExprRule *> exprs_by_name_;
+std::unordered_map<std::string, TranslationRule::TypeRule *> types_by_name_;
+
 void AddTypeRule(std::string src, TranslationRule::TypeRule &&rule) {
   rule.src = std::move(src);
   auto key = Matcher::Key(rule);
@@ -41,10 +44,12 @@ void addRulesFromDirectory(const std::filesystem::path &dir, Model model) {
       log() << "No rules found in " << path << '\n';
       continue;
     }
-    for (auto &[_, rule] : expr_rules) {
-      exprs_.emplace(Matcher::Key(rule), std::move(rule));
+    auto module = path.filename().string();
+    for (auto &[name, rule] : expr_rules) {
+      auto it = exprs_.emplace(Matcher::Key(rule), std::move(rule));
+      exprs_by_name_[module + '/' + name] = &it->second;
     }
-    for (auto &[_, rule] : type_rules) {
+    for (auto &[name, rule] : type_rules) {
       auto key = Matcher::Key(rule);
       auto [begin, end] = types_.equal_range(key);
       for (auto it = begin; it != end; ++it) {
@@ -56,7 +61,8 @@ void addRulesFromDirectory(const std::filesystem::path &dir, Model model) {
           std::exit(EXIT_FAILURE);
         }
       }
-      types_.emplace(std::move(key), std::move(rule));
+      auto it = types_.emplace(std::move(key), std::move(rule));
+      types_by_name_[module + '/' + name] = &it->second;
     }
   }
 }
@@ -69,6 +75,18 @@ GetParamInfo(clang::ASTContext &ctx, const clang::Expr *expr, unsigned index) {
 }
 
 } // namespace
+
+TranslationRule::ExprRule *FindExprRule(const std::string &module,
+                                        const std::string &name) {
+  auto it = exprs_by_name_.find(module + '/' + name);
+  return it == exprs_by_name_.end() ? nullptr : it->second;
+}
+
+TranslationRule::TypeRule *FindTypeRule(const std::string &module,
+                                        const std::string &name) {
+  auto it = types_by_name_.find(module + '/' + name);
+  return it == types_by_name_.end() ? nullptr : it->second;
+}
 
 std::ranges::subrange<ExprRuleMap::iterator>
 ExprCandidates(const std::string &key) {

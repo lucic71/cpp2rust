@@ -28,6 +28,12 @@ ExprCandidates(const std::string &key);
 std::ranges::subrange<TypeRuleMap::iterator>
 TypeCandidates(const std::string &key);
 
+TranslationRule::ExprRule *FindExprRule(const std::string &module,
+                                        const std::string &name);
+
+TranslationRule::TypeRule *FindTypeRule(const std::string &module,
+                                        const std::string &name);
+
 Matcher::Match<TranslationRule::ExprRule> Search(clang::ASTContext &ctx,
                                                  const clang::Expr *expr);
 Matcher::Match<TranslationRule::TypeRule> Search(clang::ASTContext &ctx,
