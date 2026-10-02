@@ -18,21 +18,15 @@
 #include "converter/translation_rule.h"
 
 namespace cpp2rust::RuleRegistry {
-using ExprRuleMap =
-    std::unordered_multimap<std::string, TranslationRule::ExprRule>;
-using TypeRuleMap =
-    std::unordered_multimap<std::string, TranslationRule::TypeRule>;
-
-std::ranges::subrange<ExprRuleMap::iterator>
-ExprCandidates(const std::string &key);
-std::ranges::subrange<TypeRuleMap::iterator>
-TypeCandidates(const std::string &key);
-
 TranslationRule::ExprRule *FindExprRule(const std::string &module,
                                         const std::string &name);
 
 TranslationRule::TypeRule *FindTypeRule(const std::string &module,
                                         const std::string &name);
+
+TranslationRule::TypeRule *FindUserType(clang::QualType type);
+
+void ResetUserTypes();
 
 Matcher::Match<TranslationRule::ExprRule> Search(clang::ASTContext &ctx,
                                                  const clang::Expr *expr);
