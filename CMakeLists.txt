@@ -215,7 +215,6 @@ add_custom_command(
 )
 
 file(GLOB rule_subdirs CONFIGURE_DEPENDS ${PROJECT_SOURCE_DIR}/rules/*)
-set(cpp_rules_ir_outputs)
 set(rust_rules_ir_outputs)
 foreach(_rule_dir IN LISTS rule_subdirs)
   file(GLOB _cpp_srcs ${_rule_dir}/src.c ${_rule_dir}/src.cpp)
@@ -224,25 +223,6 @@ foreach(_rule_dir IN LISTS rule_subdirs)
   endif()
   get_filename_component(_rule_name ${_rule_dir} NAME)
   set(_out_dir ${RULES_IR_DIR}/${_rule_name})
-  set(_cpp_out ${_out_dir}/ir_src.json)
-  set(_cxxflags)
-  set(_cxxflags_file)
-  if(EXISTS ${_rule_dir}/cxxflags)
-    set(_cxxflags_file ${_rule_dir}/cxxflags)
-    file(STRINGS ${_cxxflags_file} _flags)
-    foreach(_flag IN LISTS _flags)
-      list(APPEND _cxxflags --cxxflags=${_flag})
-    endforeach()
-  endif()
-  add_custom_command(
-    OUTPUT ${_cpp_out}
-    COMMAND ${CMAKE_COMMAND} -E make_directory ${_out_dir}
-    COMMAND $<TARGET_FILE:cpp-rule-preprocessor> --dir ${_rule_dir} --out ${_cpp_out} ${_cxxflags}
-    DEPENDS ${_cpp_srcs} ${_cxxflags_file} ${PROJECT_SOURCE_DIR}/cpp2rust/cpp_rule_preprocessor.cpp ${RUSTLS_HEADER} ${BROTLI_HEADERS}
-    VERBATIM
-  )
-  list(APPEND cpp_rules_ir_outputs ${_cpp_out})
-
   set(_rust_srcs)
   set(_rust_out)
   if(EXISTS ${_rule_dir}/tgt_unsafe.rs)
@@ -270,8 +250,6 @@ foreach(_rule_dir IN LISTS rule_subdirs)
   )
   list(APPEND rust_rules_ir_outputs ${_rust_out})
 endforeach()
-
-add_custom_target("preprocess-cpp-rules" ALL DEPENDS ${cpp_rules_ir_outputs})
 
 add_custom_target("preprocess-rust-rules" ALL
                   DEPENDS ${rust_rules_ir_outputs})
