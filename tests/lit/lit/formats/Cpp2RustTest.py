@@ -16,7 +16,6 @@ import shutil
 
 
 MODELS = ("refcount", "unsafe")
-STDLIB = os.environ.get("CPP2RUST_STDLIB")
 PTR_RE = re.compile(r"0x[0-9a-fA-F]+")
 
 RE_XFAIL = re.compile(r"//\s*XFAIL:\s*(.*)")
@@ -110,8 +109,7 @@ class TestContext:
             tmp_dir=tmp_dir,
             rs_file=tmp_dir / "main.rs",
             expectations=TestExpectations.parse(source_text, model),
-            extra_cxxflags=stdlib_flags(cc_input)
-            + parse_additional_compile_flags(source_text),
+            extra_cxxflags=parse_additional_compile_flags(source_text),
             replace_expected=bool(os.environ.get("REPLACE_EXPECTED", False)),
             skip_run=bool(os.environ.get("SKIP_RUN", False)),
         )
@@ -436,18 +434,10 @@ def setup_build_dir(tmp_dir, cc_input):
         str(build_dir),
         "-DCMAKE_EXPORT_COMPILE_COMMANDS=ON",
     ]
-    if STDLIB:
-        cmd.append(f"-DCMAKE_CXX_FLAGS=-stdlib={STDLIB}")
     _, err, rc = lit.util.executeCommand(cmd)
     if rc != 0:
         return None, "cmake configure failed\n" + err
     return build_dir, None
-
-
-def stdlib_flags(cc_input):
-    if STDLIB and cc_input.suffix == ".cpp":
-        return [f"-stdlib={STDLIB}"]
-    return []
 
 
 def parse_additional_compile_flags(text):
