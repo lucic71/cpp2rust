@@ -5,6 +5,7 @@
 #include <fstream>
 #include <iterator>
 #include <string>
+#include <type_traits>
 #include <vector>
 
 template <typename T1> void f1(T1 first, T1 last) {
@@ -30,15 +31,19 @@ template <typename T1> T1 *f8(T1 *first, T1 *last) {
 
 template <typename T1> void f9(T1 &a0, T1 &a1) { return std::swap(a0, a1); }
 
-template <typename T1>
-typename std::vector<T1>::iterator f10(typename std::vector<T1>::iterator a0,
-                                       typename std::vector<T1>::iterator a1) {
+template <
+    typename It, typename T1 = typename std::iterator_traits<It>::value_type,
+    typename = typename std::enable_if<
+        std::is_same<It, typename std::vector<T1>::iterator>::value>::type>
+typename std::vector<T1>::iterator f10(It a0, It a1) {
   return std::unique(a0, a1);
 }
 
-template <typename T1, typename T2>
-void f12(typename std::vector<T1>::iterator a0,
-         typename std::vector<T1>::iterator a1, const T2 &a2) {
+template <typename It, typename T2,
+          typename T1 = typename std::iterator_traits<It>::value_type,
+          typename = typename std::enable_if<std::is_same<
+              It, typename std::vector<T1>::iterator>::value>::type>
+void f12(It a0, It a1, const T2 &a2) {
   return std::fill(a0, a1, a2);
 }
 

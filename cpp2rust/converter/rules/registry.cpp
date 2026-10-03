@@ -20,43 +20,41 @@ namespace {
 Model model_ = Model::kUnsafe;
 bool translation_rules_loaded_ = false;
 
-ExprRuleMap exprs_; // key -> ExprRule
-TypeRuleMap types_; // key -> TypeRule
+std::unordered_map<std::string, TranslationRule::ExprRule> exprs_;
+std::unordered_map<std::string, TranslationRule::TypeRule> types_;
 
-void AddTypeRule(std::string src, TranslationRule::TypeRule &&rule) {
-  rule.src = std::move(src);
-  auto key = Matcher::Key(rule);
-  types_.emplace(std::move(key), std::move(rule));
+std::unordered_map<const void *, TranslationRule::TypeRule> user_types_;
+
+TranslationRule::TypeRule userPointerRule(const std::string &rs_name,
+                                          bool abstract) {
+  switch (model_) {
+  case Model::kUnsafe:
+    return TranslationRule::TypeRule::UnsafePtr(
+        (abstract ? "*mut dyn " : "*mut ") + rs_name);
+  case Model::kRefCount:
+    return TranslationRule::TypeRule::RefcountPtr(
+        (abstract ? "PtrDyn<dyn " : "Ptr<") + rs_name + '>');
+  }
+  __builtin_unreachable();
 }
 
 void addRulesFromDirectory(const std::filesystem::path &dir, Model model) {
   namespace fs = std::filesystem;
   for (const auto &entry : fs::directory_iterator(dir)) {
     const auto &path = entry.path();
-    assert(fs::exists(path / "ir_src.json") &&
-           (fs::exists(path / "ir_unsafe.json") ||
-            fs::exists(path / "ir_refcount.json")));
+    assert(fs::exists(path / "ir_unsafe.json") ||
+           fs::exists(path / "ir_refcount.json"));
     auto [expr_rules, type_rules] = TranslationRule::Load(path, model);
     if (expr_rules.empty() && type_rules.empty()) {
       log() << "No rules found in " << path << '\n';
       continue;
     }
-    for (auto &[_, rule] : expr_rules) {
-      exprs_.emplace(Matcher::Key(rule), std::move(rule));
+    auto module = path.filename().string();
+    for (auto &[name, rule] : expr_rules) {
+      exprs_.emplace(module + '/' + name, std::move(rule));
     }
-    for (auto &[_, rule] : type_rules) {
-      auto key = Matcher::Key(rule);
-      auto [begin, end] = types_.equal_range(key);
-      for (auto it = begin; it != end; ++it) {
-        if (it->second.src == rule.src) {
-          llvm::errs() << "ERROR: duplicate type rule for C++ type '"
-                       << rule.src << "': maps to both '"
-                       << it->second.type_info.type << "' and '"
-                       << rule.type_info.type << "'\n";
-          std::exit(EXIT_FAILURE);
-        }
-      }
-      types_.emplace(std::move(key), std::move(rule));
+    for (auto &[name, rule] : type_rules) {
+      types_.emplace(module + '/' + name, std::move(rule));
     }
   }
 }
@@ -70,17 +68,54 @@ GetParamInfo(clang::ASTContext &ctx, const clang::Expr *expr, unsigned index) {
 
 } // namespace
 
-std::ranges::subrange<ExprRuleMap::iterator>
-ExprCandidates(const std::string &key) {
-  auto [begin, end] = exprs_.equal_range(key);
-  return {begin, end};
+TranslationRule::ExprRule *FindExprRule(const std::string &module,
+                                        const std::string &name) {
+  auto it = exprs_.find(module + '/' + name);
+  return it == exprs_.end() ? nullptr : &it->second;
 }
 
-std::ranges::subrange<TypeRuleMap::iterator>
-TypeCandidates(const std::string &key) {
-  auto [begin, end] = types_.equal_range(key);
-  return {begin, end};
+TranslationRule::TypeRule *FindTypeRule(const std::string &module,
+                                        const std::string &name) {
+  auto it = types_.find(module + '/' + name);
+  return it == types_.end() ? nullptr : &it->second;
 }
+
+TranslationRule::TypeRule *FindUserType(clang::ASTContext &ctx,
+                                        clang::QualType type) {
+  type = type.getCanonicalType().getUnqualifiedType();
+  auto it = user_types_.find(type.getAsOpaquePtr());
+  if (it != user_types_.end()) {
+    return &it->second;
+  }
+  bool pointer = type->isPointerType();
+  auto tag_type = pointer ? type->getPointeeType() : type;
+  if (tag_type.hasQualifiers()) {
+    return nullptr;
+  }
+  auto *tag = tag_type->getAsTagDecl();
+  if (!tag || !IsUserDefinedDecl(tag)) {
+    return nullptr;
+  }
+  auto rs_name =
+      Printer::ToRustName(Printer::ToString(ctx, GetTypeForDecl(ctx, tag)));
+  if (!pointer) {
+    return &user_types_
+                .emplace(type.getAsOpaquePtr(),
+                         TranslationRule::TypeRule::Plain(rs_name))
+                .first->second;
+  }
+  auto *cxx = llvm::dyn_cast<clang::CXXRecordDecl>(tag);
+  auto *definition = cxx ? cxx->getDefinition() : nullptr;
+  if (!definition) {
+    return nullptr;
+  }
+  return &user_types_
+              .emplace(type.getAsOpaquePtr(),
+                       userPointerRule(rs_name, definition->isAbstract()))
+              .first->second;
+}
+
+void ResetUserTypes() { user_types_.clear(); }
 
 Matcher::Match<TranslationRule::ExprRule> Search(clang::ASTContext &ctx,
                                                  const clang::Expr *expr) {
@@ -110,19 +145,6 @@ bool MapsToRefcountPointer(clang::ASTContext &ctx, clang::QualType qual_type) {
   return rule && rule->type_info.is_refcount_pointer;
 }
 
-const std::vector<std::string> *MappedDerives(clang::ASTContext &ctx,
-                                              clang::QualType qual_type) {
-  auto rule = Search(ctx, qual_type).first;
-  return rule ? &rule->type_info.derives : nullptr;
-}
-
-void SetDerives(clang::ASTContext &ctx, clang::QualType qual_type,
-                std::vector<std::string> derives) {
-  if (auto *rule = Search(ctx, qual_type).first) {
-    rule->type_info.derives = std::move(derives);
-  }
-}
-
 bool ReturnsPointer(clang::ASTContext &ctx, const clang::Expr *expr) {
   auto rule = Search(ctx, expr).first;
   return rule && rule->return_type.is_pointer();
@@ -138,6 +160,9 @@ bool IsLibcPassthrough(clang::ASTContext &ctx, const clang::Expr *expr) {
   if (tgt_ir == nullptr || !tgt_ir->body.empty() || !tgt_ir->is_extern) {
     return false;
   }
+  if (const auto *call = clang::dyn_cast<clang::CallExpr>(expr)) {
+    expr = call->getCallee();
+  }
   const auto *ref =
       clang::dyn_cast<clang::DeclRefExpr>(expr->IgnoreParenImpCasts());
   const auto *decl = ref != nullptr ? ref->getDecl() : nullptr;
@@ -147,50 +172,6 @@ bool IsLibcPassthrough(clang::ASTContext &ctx, const clang::Expr *expr) {
 }
 
 Model CurrentModel() { return model_; }
-
-void AddRuleForUserDefinedType(clang::ASTContext &ctx, clang::NamedDecl *decl) {
-  auto cpp_name = Printer::ToString(ctx, GetTypeForDecl(ctx, decl));
-  auto rs_name = Printer::ToRustName(cpp_name);
-
-  AddTypeRule(cpp_name, TranslationRule::TypeRule::Plain(rs_name));
-
-  if (auto record_decl = llvm::dyn_cast<clang::RecordDecl>(decl)) {
-    // Forward declaration
-    if (!record_decl->isThisDeclarationADefinition()) {
-      return;
-    }
-
-    if (auto cxx_decl = llvm::dyn_cast<clang::CXXRecordDecl>(record_decl)) {
-      if (cxx_decl->isAbstract()) {
-        switch (model_) {
-        case Model::kUnsafe:
-          AddTypeRule(cpp_name + " *", TranslationRule::TypeRule::UnsafePtr(
-                                           "*mut dyn " + rs_name));
-          break;
-        case Model::kRefCount:
-          AddTypeRule(cpp_name + " *", TranslationRule::TypeRule::RefcountPtr(
-                                           "PtrDyn<dyn " + rs_name + '>'));
-          break;
-        }
-      } else {
-        switch (model_) {
-        case Model::kUnsafe:
-          AddTypeRule(cpp_name + " *",
-                      TranslationRule::TypeRule::UnsafePtr("*mut " + rs_name));
-          break;
-        case Model::kRefCount:
-          AddTypeRule(cpp_name + " *", TranslationRule::TypeRule::RefcountPtr(
-                                           "Ptr<" + rs_name + '>'));
-          break;
-        }
-      }
-
-      for (auto *nested : GetNestedStructs(cxx_decl)) {
-        AddRuleForUserDefinedType(ctx, nested);
-      }
-    }
-  }
-}
 
 void Load(Model model, const std::string &rules_dir) {
   model_ = model;

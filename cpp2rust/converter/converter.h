@@ -345,7 +345,7 @@ public:
   // Option<fn> implements Copy
   virtual bool FunctionPointerImplementsCopy() const { return true; }
 
-  bool TypeIsCopyable(clang::QualType ty) const {
+  bool TypeIsCopyable(clang::QualType ty) {
     if (ty->isFunctionPointerType() || ty->isFunctionType()) {
       return FunctionPointerImplementsCopy();
     }
@@ -736,7 +736,7 @@ protected:
 
   virtual bool TypeDerivesDefault(clang::QualType qual_type);
 
-  bool RecordDerivesCopy(const clang::RecordDecl *decl) const;
+  bool RecordDerivesCopy(const clang::RecordDecl *decl);
 
   bool IsPassThroughRule(clang::Expr *expr) const;
 

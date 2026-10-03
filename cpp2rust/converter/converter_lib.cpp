@@ -1248,18 +1248,6 @@ clang::CXXConstructExpr *MakeConstructExpr(clang::ASTContext &ctx,
       clang::SourceRange());
 }
 
-std::vector<clang::CXXRecordDecl *>
-GetNestedStructs(const clang::CXXRecordDecl *decl) {
-  std::vector<clang::CXXRecordDecl *> nested_record_decls;
-  for (auto *d : decl->decls()) {
-    if (auto *rec = clang::dyn_cast<clang::CXXRecordDecl>(d);
-        rec && !rec->isImplicit()) {
-      nested_record_decls.push_back(rec);
-    }
-  }
-  return nested_record_decls;
-}
-
 std::optional<clang::ArrayRef<clang::TemplateArgument>>
 GetTemplateArgs(clang::QualType qual_type, clang::Expr *expr) {
   if (auto ty = clang::dyn_cast<clang::TemplateSpecializationType>(qual_type)) {
@@ -1458,11 +1446,16 @@ clang::Expr *GetCallee(clang::CallExpr *expr) {
   return expr->getCallee();
 }
 
-clang::Expr *GetCalleeOrExpr(clang::Expr *expr) {
-  if (auto *call = clang::dyn_cast<clang::CallExpr>(expr)) {
-    return call->getCallee();
+bool IsStdSetw(const clang::Expr *expr) {
+  expr = expr->IgnoreImplicit();
+  if (const auto *construct = llvm::dyn_cast<clang::CXXConstructExpr>(expr);
+      construct && construct->isElidable()) {
+    expr = construct->getArg(0)->IgnoreImplicit();
   }
-  return expr;
+  const auto *call = llvm::dyn_cast<clang::CallExpr>(expr);
+  const auto *callee = call ? call->getDirectCallee() : nullptr;
+  return callee && callee->isInStdNamespace() && callee->getIdentifier() &&
+         callee->getName() == "setw";
 }
 
 bool HasReceiver(clang::Expr *expr) {

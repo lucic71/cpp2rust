@@ -4,10 +4,15 @@
 #include "ast_consumer.h"
 
 #include "converter/converter.h"
+#include "converter/rules/matcher.h"
+#include "converter/rules/registry.h"
+#include "converter/rules/rule_decls.h"
 
 namespace cpp2rust {
 void ASTConsumer::HandleTranslationUnit(clang::ASTContext &ctx) {
   auto converter = CreateConverter(rs_code_, ctx, model_, rules_dir_);
+  RuleDecls::Collect(CI_.getSema());
+  RuleRegistry::ResetUserTypes();
   converter->SetSema(CI_.getSema());
   if (first_) {
     converter->EmitFilePreamble();

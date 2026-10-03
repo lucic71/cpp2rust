@@ -8,7 +8,6 @@
 #include <clang/AST/Expr.h>
 #include <clang/AST/Type.h>
 
-#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -16,23 +15,25 @@
 #include "converter/translation_rule.h"
 
 namespace cpp2rust::Matcher {
-using Bindings = std::vector<std::optional<std::string>>;
+using Bindings = std::vector<clang::QualType>;
 
 template <typename Rule> using Match = std::pair<Rule *, Bindings>;
 
-std::string Key(const TranslationRule::ExprRule &rule);
-std::string Key(const TranslationRule::TypeRule &rule);
-
 Match<TranslationRule::ExprRule> Find(clang::ASTContext &ctx,
                                       const clang::Expr *expr);
+TranslationRule::TypeRule *FindLoaded(clang::ASTContext &ctx,
+                                      clang::QualType type);
+
 Match<TranslationRule::TypeRule> Find(clang::ASTContext &ctx,
                                       clang::QualType type);
 
-bool HasRuleNamed(clang::ASTContext &ctx, const clang::FunctionDecl *decl);
+clang::QualType GetInitType(clang::ASTContext &ctx, const clang::Expr *expr);
 
-std::string MapBinding(const Bindings &bindings, unsigned n);
-Bindings MapBindings(const Bindings &bindings);
+bool HasRuleNamed(const clang::FunctionDecl *decl);
 
-std::string InstantiateTgt(const Bindings &types,
+std::string MapBinding(clang::ASTContext &ctx, const Bindings &bindings,
+                       unsigned n);
+
+std::string InstantiateTgt(clang::ASTContext &ctx, const Bindings &types,
                            const std::string &tgt_template);
 } // namespace cpp2rust::Matcher

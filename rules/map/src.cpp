@@ -1,16 +1,30 @@
 // Copyright (c) 2022-present INESC-ID.
 // Distributed under the MIT license that can be found in the LICENSE file.
 
+#include <iterator>
 #include <map>
+#include <type_traits>
 #include <utility>
 
 template <typename T1, typename T2> using t1 = std::map<T1, T2>;
 
-template <typename T1, typename T2>
-using t2 = typename std::map<T1, T2>::const_iterator;
+template <
+    typename It,
+    typename T1 = typename std::remove_const<
+        typename std::iterator_traits<It>::value_type::first_type>::type,
+    typename T2 = typename std::iterator_traits<It>::value_type::second_type,
+    typename = typename std::enable_if<std::is_same<
+        It, typename std::map<T1, T2>::const_iterator>::value>::type>
+void t2(It *);
 
-template <typename T1, typename T2>
-using t3 = typename std::map<T1, T2>::iterator;
+template <
+    typename It,
+    typename T1 = typename std::remove_const<
+        typename std::iterator_traits<It>::value_type::first_type>::type,
+    typename T2 = typename std::iterator_traits<It>::value_type::second_type,
+    typename = typename std::enable_if<
+        std::is_same<It, typename std::map<T1, T2>::iterator>::value>::type>
+void t3(It *);
 
 template <typename T1, typename T2> T2 &f1(std::map<T1, T2> &o, const T1 &key) {
   return o.operator[](key);
@@ -53,9 +67,14 @@ typename std::map<T1, T2>::iterator f10(std::map<T1, T2> &o, const T1 &key) {
   return o.find(key);
 }
 
-template <typename T1, typename T2>
-bool f11(typename std::map<T1, T2>::iterator a,
-         typename std::map<T1, T2>::iterator b) {
+template <
+    typename It,
+    typename T1 = typename std::remove_const<
+        typename std::iterator_traits<It>::value_type::first_type>::type,
+    typename T2 = typename std::iterator_traits<It>::value_type::second_type,
+    typename = typename std::enable_if<
+        std::is_same<It, typename std::map<T1, T2>::iterator>::value>::type>
+bool f11(It a, It b) {
   return operator!=(a, b);
 }
 
@@ -64,9 +83,14 @@ typename std::map<T1, T2>::iterator f12(std::map<T1, T2> &o) {
   return o.begin();
 }
 
-template <typename T1, typename T2>
-bool f13(typename std::map<T1, T2>::const_iterator a,
-         typename std::map<T1, T2>::const_iterator b) {
+template <
+    typename It,
+    typename T1 = typename std::remove_const<
+        typename std::iterator_traits<It>::value_type::first_type>::type,
+    typename T2 = typename std::iterator_traits<It>::value_type::second_type,
+    typename = typename std::enable_if<std::is_same<
+        It, typename std::map<T1, T2>::const_iterator>::value>::type>
+bool f13(It a, It b) {
   return operator==(a, b);
 }
 
@@ -80,9 +104,14 @@ const T2 &f15(const std::map<T1, T2> &o, const T1 &key) {
   return o.at(key);
 }
 
-template <typename T1, typename T2>
-bool f16(typename std::map<T1, T2>::iterator a,
-         typename std::map<T1, T2>::iterator b) {
+template <
+    typename It,
+    typename T1 = typename std::remove_const<
+        typename std::iterator_traits<It>::value_type::first_type>::type,
+    typename T2 = typename std::iterator_traits<It>::value_type::second_type,
+    typename = typename std::enable_if<
+        std::is_same<It, typename std::map<T1, T2>::iterator>::value>::type>
+bool f16(It a, It b) {
   return operator==(a, b);
 }
 
@@ -92,29 +121,58 @@ typename std::map<T1, T2>::const_iterator f17(const std::map<T1, T2> &o,
   return o.find(key);
 }
 
-template <typename T1, typename T2>
-typename std::map<T1, T2>::const_iterator
-f19(const typename std::map<T1, T2>::iterator &it) {
+template <
+    typename It,
+    typename T1 = typename std::remove_const<
+        typename std::iterator_traits<It>::value_type::first_type>::type,
+    typename T2 = typename std::iterator_traits<It>::value_type::second_type,
+    typename = typename std::enable_if<
+        std::is_same<It, typename std::map<T1, T2>::iterator>::value>::type>
+typename std::map<T1, T2>::const_iterator f19(const It &it) {
   return typename std::map<T1, T2>::const_iterator(it);
 }
 
-template <typename T1, typename T2>
-const T1 &f20(typename std::map<T1, T2>::const_iterator it) {
+template <
+    typename It,
+    typename T1 = typename std::remove_const<
+        typename std::iterator_traits<It>::value_type::first_type>::type,
+    typename T2 = typename std::iterator_traits<It>::value_type::second_type,
+    typename = typename std::enable_if<std::is_same<
+        It, typename std::map<T1, T2>::const_iterator>::value>::type>
+const T1 &f20(It it) {
   return it->first;
 }
 
-template <typename T1, typename T2>
-const T2 &f21(typename std::map<T1, T2>::const_iterator it) {
+template <
+    typename It,
+    typename T1 = typename std::remove_const<
+        typename std::iterator_traits<It>::value_type::first_type>::type,
+    typename T2 = typename std::iterator_traits<It>::value_type::second_type,
+    typename = typename std::enable_if<std::is_same<
+        It, typename std::map<T1, T2>::const_iterator>::value>::type>
+const T2 &f21(It it) {
   return it->second;
 }
 
-template <typename T1, typename T2>
-const T1 &f22(typename std::map<T1, T2>::iterator it) {
+template <
+    typename It,
+    typename T1 = typename std::remove_const<
+        typename std::iterator_traits<It>::value_type::first_type>::type,
+    typename T2 = typename std::iterator_traits<It>::value_type::second_type,
+    typename = typename std::enable_if<
+        std::is_same<It, typename std::map<T1, T2>::iterator>::value>::type>
+const T1 &f22(It it) {
   return it->first;
 }
 
-template <typename T1, typename T2>
-T2 &f23(typename std::map<T1, T2>::iterator it) {
+template <
+    typename It,
+    typename T1 = typename std::remove_const<
+        typename std::iterator_traits<It>::value_type::first_type>::type,
+    typename T2 = typename std::iterator_traits<It>::value_type::second_type,
+    typename = typename std::enable_if<
+        std::is_same<It, typename std::map<T1, T2>::iterator>::value>::type>
+T2 &f23(It it) {
   return it->second;
 }
 

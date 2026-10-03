@@ -23,6 +23,7 @@
 #include "converter/lex.h"
 #include "converter/mapper.h"
 #include "converter/printer.h"
+#include "converter/rules/matcher.h"
 #include "converter/rules/registry.h"
 
 namespace cpp2rust {
@@ -181,7 +182,6 @@ bool Converter::VisitRecordType(clang::RecordType *type) {
   }
 
   StrCat(GetRecordName(decl));
-  RuleRegistry::AddRuleForUserDefinedType(ctx_, decl);
   return false;
 }
 
@@ -334,13 +334,16 @@ bool Converter::Convert(clang::Decl *decl) { return TraverseDecl(decl); }
 
 bool Converter::VisitTranslationUnitDecl(clang::TranslationUnitDecl *decl) {
   for (auto *child : decl->decls()) {
-    if (IsUserDefinedDecl(child) &&
-        (IsInMainFile(child) || !decl_ids_.contains(GetID(child)))) {
-      Convert(child);
-      if (!hoisted_records_.empty()) {
-        StrCat(hoisted_records_);
-        hoisted_records_.clear();
-      }
+    if (!IsUserDefinedDecl(child)) {
+      continue;
+    }
+    if (!IsInMainFile(child) && decl_ids_.contains(GetID(child))) {
+      continue;
+    }
+    Convert(child);
+    if (!hoisted_records_.empty()) {
+      StrCat(hoisted_records_);
+      hoisted_records_.clear();
     }
   }
   return false;
@@ -681,17 +684,24 @@ bool Converter::TypeDerivesDefault(clang::QualType qual_type) {
 }
 
 bool Converter::IsPassThroughRule(clang::Expr *expr) const {
-  const auto *rule = RuleRegistry::GetExprRule(ctx_, GetCalleeOrExpr(expr));
+  const auto *rule = RuleRegistry::GetExprRule(ctx_, expr);
   return rule && rule->body.size() == 1 &&
          std::holds_alternative<TranslationRule::PlaceholderFragment>(
              rule->body[0]);
 }
 
-bool Converter::RecordDerivesCopy(const clang::RecordDecl *decl) const {
-  auto *derives =
-      RuleRegistry::MappedDerives(ctx_, ctx_.getCanonicalTagType(decl));
-  return derives &&
-         std::find(derives->begin(), derives->end(), "Copy") != derives->end();
+bool Converter::RecordDerivesCopy(const clang::RecordDecl *decl) {
+  if (auto *rule = Matcher::FindLoaded(ctx_, ctx_.getCanonicalTagType(decl))) {
+    auto &derives = rule->type_info.derives;
+    return std::find(derives.begin(), derives.end(), "Copy") != derives.end();
+  }
+  decl = decl->getDefinition();
+  if (!decl) {
+    return false;
+  }
+  auto attrs = GetStructAttributes(decl);
+  return std::find(attrs.begin(), attrs.end(), std::string_view("Copy")) !=
+         attrs.end();
 }
 
 bool Converter::RecordHasCopyableFields(const clang::RecordDecl *decl) {
@@ -750,7 +760,6 @@ bool Converter::VisitRecordDecl(clang::RecordDecl *decl) {
     return false;
   }
 
-  RuleRegistry::AddRuleForUserDefinedType(ctx_, decl);
   EmitRustStructOrUnion(decl);
 
   return false;
@@ -817,9 +826,6 @@ void Converter::EmitRustStructOrUnion(clang::RecordDecl *decl) {
     EmitReprC(decl);
   }
   auto attrs = GetStructAttributes(decl);
-  RuleRegistry::SetDerives(
-      ctx_, ctx_.getCanonicalTagType(decl),
-      std::vector<std::string>(attrs.begin(), attrs.end()));
   StrCat("#[derive(");
   for (auto *attr : attrs) {
     StrCat(attr, ',');
@@ -917,9 +923,6 @@ void Converter::EmitReprC(clang::RecordDecl *decl) {
 void Converter::EmitRustUnion(clang::RecordDecl *decl) {
   EmitReprC(decl);
   auto attrs = GetStructAttributes(decl);
-  RuleRegistry::SetDerives(
-      ctx_, ctx_.getCanonicalTagType(decl),
-      std::vector<std::string>(attrs.begin(), attrs.end()));
   StrCat("#[derive(");
   for (auto *attr : attrs) {
     StrCat(attr, ',');
@@ -943,7 +946,6 @@ void Converter::EmitRustUnion(clang::RecordDecl *decl) {
 bool Converter::VisitCXXRecordDecl(clang::CXXRecordDecl *decl) {
   decl->dump(log());
 
-  RuleRegistry::AddRuleForUserDefinedType(ctx_, decl);
   if (!IsConvertibleCXXRecordDecl(decl)) {
     return false;
   }
@@ -1657,7 +1659,7 @@ bool Converter::GetFmtArg(clang::Expr *arg, std::string &fmt,
     fmt_trait = "x";
   } else if (arg_str.contains("std::dec")) {
     fmt_trait = "";
-  } else if (arg_str.contains("Setw")) {
+  } else if (IsStdSetw(arg)) {
     fmt_width = Trim(ToString(arg));
   } else if (!arg->getType()->isCharType() &&
              Mapper::Map(ctx_, arg->getType()) !=
@@ -1834,15 +1836,14 @@ bool Converter::VisitCallExpr(clang::CallExpr *expr) {
     return false;
   }
 
-  if (IsImplicitAssignmentCall(expr) &&
-      !Mapper::Contains(ctx_, expr->getCallee())) {
+  if (IsImplicitAssignmentCall(expr) && !Mapper::Contains(ctx_, expr)) {
     auto *call = clang::cast<clang::CXXMemberCallExpr>(expr);
     ConvertAssignment(call->getImplicitObjectArgument(), call->getArg(0), "=");
     return false;
   }
 
-  if (Mapper::Contains(ctx_, expr->getCallee())) {
-    if (RuleRegistry::IsLibcPassthrough(ctx_, GetCalleeOrExpr(expr))) {
+  if (Mapper::Contains(ctx_, expr)) {
+    if (RuleRegistry::IsLibcPassthrough(ctx_, expr)) {
       ConvertGenericCallExpr(expr);
       return false;
     }
@@ -1882,8 +1883,7 @@ bool Converter::VisitCallExpr(clang::CallExpr *expr) {
   }
 
   if (auto *opcall = clang::dyn_cast<clang::CXXOperatorCallExpr>(expr);
-      opcall && !IsUserOperatorCall(opcall) &&
-      !Mapper::Contains(ctx_, expr->getCallee())) {
+      opcall && !IsUserOperatorCall(opcall) && !Mapper::Contains(ctx_, expr)) {
     return ConvertCXXOperatorCallExpr(opcall);
   }
 
@@ -1981,8 +1981,7 @@ Converter::CallInfo Converter::CollectCallInfo(clang::CallExpr *expr) {
       function ? function->getNumParams() : proto->getNumParams();
   info.is_variadic = function ? function->isVariadic() : proto->isVariadic();
   info.is_fn_ptr_call = !function;
-  info.is_libc_passthrough =
-      RuleRegistry::IsLibcPassthrough(ctx_, GetCalleeOrExpr(expr));
+  info.is_libc_passthrough = RuleRegistry::IsLibcPassthrough(ctx_, expr);
 
   for (unsigned i = 0; i < num_named_params && i < num_args; ++i) {
     auto *arg = expr->getArg(i + arg_begin);
@@ -2130,9 +2129,8 @@ void Converter::EmitArgList(const CallInfo &info) {
       case Kind::Inline:
         ConvertParamTy(ca.param_type, ca.expr);
         if (info.is_libc_passthrough) {
-          StrCat(std::format(
-              "as {}",
-              Mapper::GetParamType(ctx_, GetCalleeOrExpr(info.expr), i)));
+          StrCat(
+              std::format("as {}", Mapper::GetParamType(ctx_, info.expr, i)));
         }
         break;
       }
@@ -2224,7 +2222,7 @@ Converter::ConvertCallExpr(clang::CallExpr *expr) {
                                                 )
                ? token::kOne
                : token::kZero);
-  } else if (Mapper::Contains(ctx_, callee)) {
+  } else if (Mapper::Contains(ctx_, expr)) {
     auto **args = expr->getArgs();
     auto num_args = expr->getNumArgs();
     auto ctx = CollectRefBindingTempArgs(expr);
@@ -3787,10 +3785,9 @@ bool Converter::VisitOffsetOfExpr(clang::OffsetOfExpr *expr) {
 
 bool Converter::VisitEnumDecl(clang::EnumDecl *decl) {
   ENSURE(decl_ids_.insert(GetID(decl)).second);
-  if (Mapper::Contains(ctx_, ctx_.getCanonicalTagType(decl))) {
+  if (Matcher::FindLoaded(ctx_, ctx_.getCanonicalTagType(decl))) {
     return false;
   }
-  RuleRegistry::AddRuleForUserDefinedType(ctx_, decl);
   auto name = GetRecordName(decl);
   StrCat(std::format("pub type {} = {};", name,
                      GetUnsafeTypeAsString(decl->getIntegerType())));
@@ -4889,9 +4886,8 @@ std::string Converter::ConvertPlaceholder(clang::Expr *expr, clang::Expr *arg,
   }
 
   if (ph_ctx.declared_in_rule_as_rust_ptr && arg->getType()->isArrayType()) {
-    return std::format(
-        "({} as {})", ConvertFreshPointer(arg),
-        Mapper::GetParamType(ctx_, GetCalleeOrExpr(expr), ph_ctx.arg_idx));
+    return std::format("({} as {})", ConvertFreshPointer(arg),
+                       Mapper::GetParamType(ctx_, expr, ph_ctx.arg_idx));
   }
 
   if (ph_ctx.needs_materialization()) {
@@ -4906,8 +4902,7 @@ std::string Converter::ConvertPlaceholder(clang::Expr *expr, clang::Expr *arg,
   }
 
   if (ph_ctx.needs_pointer_receiver()) {
-    auto param_type =
-        Mapper::GetParamType(ctx_, GetCalleeOrExpr(expr), ph_ctx.arg_idx);
+    auto param_type = Mapper::GetParamType(ctx_, expr, ph_ctx.arg_idx);
     return std::format("({} as {})", ConvertFreshObject(arg, param_type),
                        param_type);
   }
@@ -4973,7 +4968,7 @@ std::string Converter::ConvertMappedMethodCall(
 std::string Converter::GetMappedAsString(clang::Expr *expr, clang::Expr **args,
                                          unsigned num_args,
                                          TempMaterializationCtx *ctx) {
-  auto *tgt_ir = RuleRegistry::GetExprRule(ctx_, GetCalleeOrExpr(expr));
+  auto *tgt_ir = RuleRegistry::GetExprRule(ctx_, expr);
   if (!tgt_ir)
     return {};
 
@@ -4997,7 +4992,7 @@ std::string Converter::ConvertIRFragment(
     if (auto *t = std::get_if<TextFragment>(&frag)) {
       result += t->text;
     } else if (auto *g = std::get_if<GenericFragment>(&frag)) {
-      result += Mapper::InstantiateTemplate(ctx_, GetCalleeOrExpr(expr), g->n);
+      result += Mapper::InstantiateTemplate(ctx_, expr, g->n);
     } else if (auto *ph = std::get_if<PlaceholderFragment>(&frag)) {
       auto arg_idx = ph->n;
       assert(arg_idx < all_args.size());
@@ -5014,8 +5009,8 @@ std::string Converter::ConvertIRFragment(
           .is_receiver = is_receiver,
           .is_cpp_ptr = arg->getType()->isPointerType(),
           .maps_to_rust_ptr = RuleRegistry::MapsToPointer(ctx_, arg->getType()),
-          .declared_in_rule_as_rust_ptr = RuleRegistry::ParamIsPointer(
-              ctx_, GetCalleeOrExpr(expr), arg_idx),
+          .declared_in_rule_as_rust_ptr =
+              RuleRegistry::ParamIsPointer(ctx_, expr, arg_idx),
           .is_index_base = ph->is_index_base,
       };
       result += ConvertPlaceholder(expr, arg, ph_ctx);
@@ -5035,7 +5030,7 @@ std::string Converter::ConvertIRFragment(
 std::string
 Converter::ConvertVariadicTail(clang::Expr *expr,
                                const std::vector<clang::Expr *> &all_args) {
-  const auto *tgt_ir = RuleRegistry::GetExprRule(ctx_, GetCalleeOrExpr(expr));
+  const auto *tgt_ir = RuleRegistry::GetExprRule(ctx_, expr);
   unsigned fixed = tgt_ir ? tgt_ir->params.size() : 0;
 
   Buffer buf(*this);
@@ -5054,14 +5049,9 @@ Converter::ConvertVariadicTail(clang::Expr *expr,
 std::string
 Converter::ConvertInitFragment(clang::Expr *expr,
                                const std::vector<clang::Expr *> &all_args) {
-  const auto *tgt_ir = RuleRegistry::GetExprRule(ctx_, GetCalleeOrExpr(expr));
-  assert(tgt_ir && tgt_ir->init_type.valid());
-  auto *callee = clang::cast<clang::CallExpr>(expr)->getDirectCallee();
-  assert(callee);
-  auto type = GetSema()
-                  .getTemplateInstantiationArgs(callee)(tgt_ir->init_type.depth,
-                                                        tgt_ir->init_type.index)
-                  .getAsType();
+  const auto *tgt_ir = RuleRegistry::GetExprRule(ctx_, expr);
+  assert(tgt_ir && tgt_ir->usesInit());
+  auto type = Matcher::GetInitType(ctx_, expr);
 
   Buffer buf(*this);
   ConvertConstructFromArgs(
