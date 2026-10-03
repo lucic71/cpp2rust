@@ -46,6 +46,10 @@ template <typename T1> void f9(std::unique_ptr<T1[]> &o) {
   return o.reset(nullptr);
 }
 
+template <typename T1> void f16(std::unique_ptr<T1> &o) {
+  return o.reset(nullptr);
+}
+
 template <typename T1> std::unique_ptr<T1> f10() {
   return std::unique_ptr<T1>();
 }

@@ -3,6 +3,4 @@
 
 #include <iomanip>
 
-#if __cplusplus >= 201402L
-auto f1(int n) { return std::setw(n); }
-#endif
+decltype(std::setw(0)) f1(int n) { return std::setw(n); }

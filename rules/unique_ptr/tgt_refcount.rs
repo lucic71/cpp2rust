@@ -75,3 +75,7 @@ fn f14<T1: ByteRepr>(a0: Ptr<Option<Value<T1>>>, a1: &mut Option<Value<T1>>) {
 fn f15<T1: ByteRepr>(a0: Ptr<Option<Value<Box<[T1]>>>>, a1: &mut Option<Value<Box<[T1]>>>) {
     a0.write(a1.take())
 }
+
+fn f16<T1: ByteRepr>(a0: Ptr<Option<Value<T1>>>) {
+    a0.write(None)
+}
