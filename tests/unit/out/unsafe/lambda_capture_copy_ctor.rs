@@ -124,8 +124,7 @@ unsafe fn main_0() -> i32 {
     );
     let mut a2: _ = (|| {
         return ((arr[(0) as usize].copies) + (arr[(1) as usize].copies));
-    })
-    .clone();
+    });
     assert!(((unsafe { a2() }) == (4)));
     {
         let mut m2: _ = (|| {});

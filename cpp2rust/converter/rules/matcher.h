@@ -21,6 +21,9 @@ template <typename Rule> using Match = std::pair<Rule *, Bindings>;
 
 Match<TranslationRule::ExprRule> Find(clang::ASTContext &ctx,
                                       const clang::Expr *expr);
+TranslationRule::TypeRule *FindLoaded(clang::ASTContext &ctx,
+                                      clang::QualType type);
+
 Match<TranslationRule::TypeRule> Find(clang::ASTContext &ctx,
                                       clang::QualType type);
 

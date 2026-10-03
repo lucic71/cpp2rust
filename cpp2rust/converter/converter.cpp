@@ -182,7 +182,6 @@ bool Converter::VisitRecordType(clang::RecordType *type) {
   }
 
   StrCat(GetRecordName(decl));
-  RuleRegistry::AddRuleForUserDefinedType(ctx_, decl);
   return false;
 }
 
@@ -333,29 +332,12 @@ bool Converter::VisitUsingType(clang::UsingType *type) {
 
 bool Converter::Convert(clang::Decl *decl) { return TraverseDecl(decl); }
 
-void Converter::RegisterUserTypes(clang::Decl *decl) {
-  if (auto *ns = llvm::dyn_cast<clang::NamespaceDecl>(decl)) {
-    for (auto *child : ns->decls()) {
-      RegisterUserTypes(child);
-    }
-  } else if (auto *tmpl = llvm::dyn_cast<clang::ClassTemplateDecl>(decl)) {
-    for (auto *specialization : tmpl->specializations()) {
-      RegisterUserTypes(specialization);
-    }
-  } else if (auto *tag = llvm::dyn_cast<clang::TagDecl>(decl)) {
-    if (!Mapper::Contains(ctx_, ctx_.getCanonicalTagType(tag))) {
-      RuleRegistry::AddRuleForUserDefinedType(ctx_, tag);
-    }
-  }
-}
-
 bool Converter::VisitTranslationUnitDecl(clang::TranslationUnitDecl *decl) {
   for (auto *child : decl->decls()) {
     if (!IsUserDefinedDecl(child)) {
       continue;
     }
     if (!IsInMainFile(child) && decl_ids_.contains(GetID(child))) {
-      RegisterUserTypes(child);
       continue;
     }
     Convert(child);
@@ -708,11 +690,18 @@ bool Converter::IsPassThroughRule(clang::Expr *expr) const {
              rule->body[0]);
 }
 
-bool Converter::RecordDerivesCopy(const clang::RecordDecl *decl) const {
-  auto *derives =
-      RuleRegistry::MappedDerives(ctx_, ctx_.getCanonicalTagType(decl));
-  return derives &&
-         std::find(derives->begin(), derives->end(), "Copy") != derives->end();
+bool Converter::RecordDerivesCopy(const clang::RecordDecl *decl) {
+  if (auto *rule = Matcher::FindLoaded(ctx_, ctx_.getCanonicalTagType(decl))) {
+    auto &derives = rule->type_info.derives;
+    return std::find(derives.begin(), derives.end(), "Copy") != derives.end();
+  }
+  decl = decl->getDefinition();
+  if (!decl) {
+    return false;
+  }
+  auto attrs = GetStructAttributes(decl);
+  return std::find(attrs.begin(), attrs.end(), std::string_view("Copy")) !=
+         attrs.end();
 }
 
 bool Converter::RecordHasCopyableFields(const clang::RecordDecl *decl) {
@@ -771,7 +760,6 @@ bool Converter::VisitRecordDecl(clang::RecordDecl *decl) {
     return false;
   }
 
-  RuleRegistry::AddRuleForUserDefinedType(ctx_, decl);
   EmitRustStructOrUnion(decl);
 
   return false;
@@ -838,9 +826,6 @@ void Converter::EmitRustStructOrUnion(clang::RecordDecl *decl) {
     EmitReprC(decl);
   }
   auto attrs = GetStructAttributes(decl);
-  RuleRegistry::SetDerives(
-      ctx_, ctx_.getCanonicalTagType(decl),
-      std::vector<std::string>(attrs.begin(), attrs.end()));
   StrCat("#[derive(");
   for (auto *attr : attrs) {
     StrCat(attr, ',');
@@ -938,9 +923,6 @@ void Converter::EmitReprC(clang::RecordDecl *decl) {
 void Converter::EmitRustUnion(clang::RecordDecl *decl) {
   EmitReprC(decl);
   auto attrs = GetStructAttributes(decl);
-  RuleRegistry::SetDerives(
-      ctx_, ctx_.getCanonicalTagType(decl),
-      std::vector<std::string>(attrs.begin(), attrs.end()));
   StrCat("#[derive(");
   for (auto *attr : attrs) {
     StrCat(attr, ',');
@@ -964,7 +946,6 @@ void Converter::EmitRustUnion(clang::RecordDecl *decl) {
 bool Converter::VisitCXXRecordDecl(clang::CXXRecordDecl *decl) {
   decl->dump(log());
 
-  RuleRegistry::AddRuleForUserDefinedType(ctx_, decl);
   if (!IsConvertibleCXXRecordDecl(decl)) {
     return false;
   }
@@ -1251,8 +1232,6 @@ bool Converter::VisitNamespaceDecl(clang::NamespaceDecl *decl) {
   for (auto *child : decl->decls()) {
     if (IsInMainFile(child) || !decl_ids_.contains(GetID(child))) {
       Convert(child);
-    } else {
-      RegisterUserTypes(child);
     }
   }
   return false;
@@ -3806,10 +3785,9 @@ bool Converter::VisitOffsetOfExpr(clang::OffsetOfExpr *expr) {
 
 bool Converter::VisitEnumDecl(clang::EnumDecl *decl) {
   ENSURE(decl_ids_.insert(GetID(decl)).second);
-  if (Mapper::Contains(ctx_, ctx_.getCanonicalTagType(decl))) {
+  if (Matcher::FindLoaded(ctx_, ctx_.getCanonicalTagType(decl))) {
     return false;
   }
-  RuleRegistry::AddRuleForUserDefinedType(ctx_, decl);
   auto name = GetRecordName(decl);
   StrCat(std::format("pub type {} = {};", name,
                      GetUnsafeTypeAsString(decl->getIntegerType())));

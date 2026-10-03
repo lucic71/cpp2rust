@@ -217,9 +217,6 @@ clang::CXXConstructExpr *MakeConstructExpr(clang::ASTContext &ctx,
                                            clang::CXXConstructorDecl *ctor,
                                            llvm::ArrayRef<clang::Expr *> args);
 
-std::vector<clang::CXXRecordDecl *>
-GetNestedStructs(const clang::CXXRecordDecl *decl);
-
 std::optional<clang::ArrayRef<clang::TemplateArgument>>
 GetTemplateArgs(clang::QualType qual_type, clang::Expr *expr = nullptr);
 

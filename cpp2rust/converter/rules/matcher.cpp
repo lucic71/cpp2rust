@@ -499,10 +499,7 @@ TypeMatch findMemberType(clang::ASTContext &ctx, clang::QualType type) {
   return {};
 }
 
-TypeMatch findType(clang::ASTContext &ctx, clang::QualType type) {
-  if (auto *rule = RuleRegistry::FindUserType(type)) {
-    return {rule, {}};
-  }
+TypeMatch findLoadedType(clang::ASTContext &ctx, clang::QualType type) {
   if (auto match = findMemberType(ctx, type); match.first) {
     return match;
   }
@@ -574,6 +571,16 @@ TypeMatch findType(clang::ASTContext &ctx, clang::QualType type) {
   return {best, std::move(best_bindings)};
 }
 
+TypeMatch findType(clang::ASTContext &ctx, clang::QualType type) {
+  auto match = findLoadedType(ctx, type);
+  if (!match.first) {
+    if (auto *rule = RuleRegistry::FindUserType(ctx, type)) {
+      return {rule, {}};
+    }
+  }
+  return match;
+}
+
 } // namespace
 
 clang::QualType GetInitType(clang::ASTContext &ctx, const clang::Expr *expr) {
@@ -585,6 +592,11 @@ clang::QualType GetInitType(clang::ASTContext &ctx, const clang::Expr *expr) {
 
 ExprMatch Find(clang::ASTContext &ctx, const clang::Expr *expr) {
   return findExpr(ctx, expr, nullptr);
+}
+
+TranslationRule::TypeRule *FindLoaded(clang::ASTContext &ctx,
+                                      clang::QualType type) {
+  return findLoadedType(ctx, type).first;
 }
 
 TypeMatch Find(clang::ASTContext &ctx, clang::QualType type) {

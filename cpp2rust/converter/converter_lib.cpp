@@ -1248,18 +1248,6 @@ clang::CXXConstructExpr *MakeConstructExpr(clang::ASTContext &ctx,
       clang::SourceRange());
 }
 
-std::vector<clang::CXXRecordDecl *>
-GetNestedStructs(const clang::CXXRecordDecl *decl) {
-  std::vector<clang::CXXRecordDecl *> nested_record_decls;
-  for (auto *d : decl->decls()) {
-    if (auto *rec = clang::dyn_cast<clang::CXXRecordDecl>(d);
-        rec && !rec->isImplicit()) {
-      nested_record_decls.push_back(rec);
-    }
-  }
-  return nested_record_decls;
-}
-
 std::optional<clang::ArrayRef<clang::TemplateArgument>>
 GetTemplateArgs(clang::QualType qual_type, clang::Expr *expr) {
   if (auto ty = clang::dyn_cast<clang::TemplateSpecializationType>(qual_type)) {

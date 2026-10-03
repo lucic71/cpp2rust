@@ -24,7 +24,8 @@ TranslationRule::ExprRule *FindExprRule(const std::string &module,
 TranslationRule::TypeRule *FindTypeRule(const std::string &module,
                                         const std::string &name);
 
-TranslationRule::TypeRule *FindUserType(clang::QualType type);
+TranslationRule::TypeRule *FindUserType(clang::ASTContext &ctx,
+                                        clang::QualType type);
 
 void ResetUserTypes();
 
@@ -41,13 +42,8 @@ bool ParamIsPointer(clang::ASTContext &ctx, const clang::Expr *expr,
                     unsigned index);
 bool MapsToPointer(clang::ASTContext &ctx, clang::QualType qual_type);
 bool MapsToRefcountPointer(clang::ASTContext &ctx, clang::QualType qual_type);
-const std::vector<std::string> *MappedDerives(clang::ASTContext &ctx,
-                                              clang::QualType qual_type);
-void SetDerives(clang::ASTContext &ctx, clang::QualType qual_type,
-                std::vector<std::string> derives);
 
 Model CurrentModel();
 
 void Load(Model model, const std::string &rules_dir);
-void AddRuleForUserDefinedType(clang::ASTContext &ctx, clang::NamedDecl *decl);
 } // namespace cpp2rust::RuleRegistry
