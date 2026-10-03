@@ -1657,7 +1657,7 @@ bool Converter::GetFmtArg(clang::Expr *arg, std::string &fmt,
     fmt_trait = "x";
   } else if (arg_str.contains("std::dec")) {
     fmt_trait = "";
-  } else if (arg_str.contains("Setw")) {
+  } else if (IsStdSetw(arg)) {
     fmt_width = Trim(ToString(arg));
   } else if (!arg->getType()->isCharType() &&
              Mapper::Map(ctx_, arg->getType()) !=

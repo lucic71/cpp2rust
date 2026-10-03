@@ -1458,6 +1458,18 @@ clang::Expr *GetCallee(clang::CallExpr *expr) {
   return expr->getCallee();
 }
 
+bool IsStdSetw(const clang::Expr *expr) {
+  expr = expr->IgnoreImplicit();
+  if (const auto *construct = llvm::dyn_cast<clang::CXXConstructExpr>(expr);
+      construct && construct->isElidable()) {
+    expr = construct->getArg(0)->IgnoreImplicit();
+  }
+  const auto *call = llvm::dyn_cast<clang::CallExpr>(expr);
+  const auto *callee = call ? call->getDirectCallee() : nullptr;
+  return callee && callee->isInStdNamespace() && callee->getIdentifier() &&
+         callee->getName() == "setw";
+}
+
 bool HasReceiver(clang::Expr *expr) {
   if (clang::isa<clang::CXXMemberCallExpr>(expr))
     return true;
