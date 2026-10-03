@@ -26,8 +26,7 @@ std::unordered_map<std::string, TranslationRule::TypeRule> types_;
 std::unordered_map<const void *, TranslationRule::TypeRule> user_types_;
 
 void AddTypeRule(clang::QualType type, TranslationRule::TypeRule &&rule) {
-  user_types_.try_emplace(type.getCanonicalType().getAsOpaquePtr(),
-                          std::move(rule));
+  user_types_.try_emplace(type.getAsOpaquePtr(), std::move(rule));
 }
 
 void addRulesFromDirectory(const std::filesystem::path &dir, Model model) {

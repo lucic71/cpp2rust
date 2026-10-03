@@ -23,6 +23,7 @@
 #include "converter/lex.h"
 #include "converter/mapper.h"
 #include "converter/printer.h"
+#include "converter/rules/matcher.h"
 #include "converter/rules/registry.h"
 
 namespace cpp2rust {
@@ -332,15 +333,35 @@ bool Converter::VisitUsingType(clang::UsingType *type) {
 
 bool Converter::Convert(clang::Decl *decl) { return TraverseDecl(decl); }
 
+void Converter::RegisterUserTypes(clang::Decl *decl) {
+  if (auto *ns = llvm::dyn_cast<clang::NamespaceDecl>(decl)) {
+    for (auto *child : ns->decls()) {
+      RegisterUserTypes(child);
+    }
+  } else if (auto *tmpl = llvm::dyn_cast<clang::ClassTemplateDecl>(decl)) {
+    for (auto *specialization : tmpl->specializations()) {
+      RegisterUserTypes(specialization);
+    }
+  } else if (auto *tag = llvm::dyn_cast<clang::TagDecl>(decl)) {
+    if (!Mapper::Contains(ctx_, ctx_.getCanonicalTagType(tag))) {
+      RuleRegistry::AddRuleForUserDefinedType(ctx_, tag);
+    }
+  }
+}
+
 bool Converter::VisitTranslationUnitDecl(clang::TranslationUnitDecl *decl) {
   for (auto *child : decl->decls()) {
-    if (IsUserDefinedDecl(child) &&
-        (IsInMainFile(child) || !decl_ids_.contains(GetID(child)))) {
-      Convert(child);
-      if (!hoisted_records_.empty()) {
-        StrCat(hoisted_records_);
-        hoisted_records_.clear();
-      }
+    if (!IsUserDefinedDecl(child)) {
+      continue;
+    }
+    if (!IsInMainFile(child) && decl_ids_.contains(GetID(child))) {
+      RegisterUserTypes(child);
+      continue;
+    }
+    Convert(child);
+    if (!hoisted_records_.empty()) {
+      StrCat(hoisted_records_);
+      hoisted_records_.clear();
     }
   }
   return false;
@@ -1230,6 +1251,8 @@ bool Converter::VisitNamespaceDecl(clang::NamespaceDecl *decl) {
   for (auto *child : decl->decls()) {
     if (IsInMainFile(child) || !decl_ids_.contains(GetID(child))) {
       Convert(child);
+    } else {
+      RegisterUserTypes(child);
     }
   }
   return false;

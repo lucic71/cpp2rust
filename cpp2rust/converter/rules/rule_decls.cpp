@@ -91,7 +91,16 @@ const clang::Expr *GetReturned(const clang::FunctionDecl *decl) {
     return nullptr;
   }
   const auto *ret = llvm::dyn_cast<clang::ReturnStmt>(*body->body_begin());
-  return ret ? ret->getRetValue() : nullptr;
+  const clang::Expr *returned = ret ? ret->getRetValue() : nullptr;
+  while (returned) {
+    const auto *construct =
+        llvm::dyn_cast<clang::CXXConstructExpr>(SkipImplicit(returned));
+    if (!construct || !construct->isElidable()) {
+      break;
+    }
+    returned = construct->getArg(0);
+  }
+  return returned;
 }
 
 namespace {

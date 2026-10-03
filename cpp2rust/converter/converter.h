@@ -178,6 +178,8 @@ public:
 
   virtual bool VisitNamespaceDecl(clang::NamespaceDecl *decl);
 
+  void RegisterUserTypes(clang::Decl *decl);
+
   virtual bool VisitTypedefDecl(clang::TypedefDecl *decl);
   virtual bool VisitTypeAliasDecl(clang::TypeAliasDecl *decl);
   virtual bool VisitTypeAliasTemplateDecl(clang::TypeAliasTemplateDecl *decl);
