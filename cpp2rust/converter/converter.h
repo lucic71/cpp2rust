@@ -48,6 +48,10 @@ public:
     return *sema_;
   }
 
+  clang::ASTContext &GetASTContext() { return ctx_; }
+
+  virtual std::string GetUnboxedTypeAsString(clang::QualType qual_type);
+
   bool VisitRecoveryExpr(clang::RecoveryExpr *expr);
 
   virtual void EmitFilePreamble();
@@ -60,6 +64,8 @@ public:
   virtual bool VisitBuiltinType(clang::BuiltinType *type);
 
   virtual bool VisitRecordType(clang::RecordType *type);
+
+  bool VisitEnumType(clang::EnumType *type);
 
   virtual bool VisitConstantArrayType(clang::ConstantArrayType *type);
 
@@ -345,7 +351,7 @@ public:
   // Option<fn> implements Copy
   virtual bool FunctionPointerImplementsCopy() const { return true; }
 
-  bool TypeIsCopyable(clang::QualType ty) const {
+  bool TypeIsCopyable(clang::QualType ty) {
     if (ty->isFunctionPointerType() || ty->isFunctionType()) {
       return FunctionPointerImplementsCopy();
     }
@@ -736,7 +742,7 @@ protected:
 
   virtual bool TypeDerivesDefault(clang::QualType qual_type);
 
-  bool RecordDerivesCopy(const clang::RecordDecl *decl) const;
+  bool RecordDerivesCopy(const clang::RecordDecl *decl);
 
   bool IsPassThroughRule(clang::Expr *expr) const;
 

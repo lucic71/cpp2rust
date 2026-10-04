@@ -231,6 +231,13 @@ bool IsUserDefinedDecl(const clang::Decl *decl) {
          !src_mgr.isInSystemMacro(src_loc);
 }
 
+bool IsAbstractUserClass(const clang::RecordDecl *decl) {
+  auto *cxx = llvm::dyn_cast<clang::CXXRecordDecl>(decl);
+  auto *definition = cxx ? cxx->getDefinition() : nullptr;
+  return definition && IsUserDefinedDecl(definition) &&
+         definition->isAbstract();
+}
+
 bool RefersToUserDefinedDecl(const clang::Expr *expr) {
   expr = expr->IgnoreParenImpCasts();
   const clang::Decl *decl = nullptr;
@@ -1248,18 +1255,6 @@ clang::CXXConstructExpr *MakeConstructExpr(clang::ASTContext &ctx,
       clang::SourceRange());
 }
 
-std::vector<clang::CXXRecordDecl *>
-GetNestedStructs(const clang::CXXRecordDecl *decl) {
-  std::vector<clang::CXXRecordDecl *> nested_record_decls;
-  for (auto *d : decl->decls()) {
-    if (auto *rec = clang::dyn_cast<clang::CXXRecordDecl>(d);
-        rec && !rec->isImplicit()) {
-      nested_record_decls.push_back(rec);
-    }
-  }
-  return nested_record_decls;
-}
-
 std::optional<clang::ArrayRef<clang::TemplateArgument>>
 GetTemplateArgs(clang::QualType qual_type, clang::Expr *expr) {
   if (auto ty = clang::dyn_cast<clang::TemplateSpecializationType>(qual_type)) {
@@ -1458,11 +1453,16 @@ clang::Expr *GetCallee(clang::CallExpr *expr) {
   return expr->getCallee();
 }
 
-clang::Expr *GetCalleeOrExpr(clang::Expr *expr) {
-  if (auto *call = clang::dyn_cast<clang::CallExpr>(expr)) {
-    return call->getCallee();
+bool IsStdSetw(const clang::Expr *expr) {
+  expr = expr->IgnoreImplicit();
+  if (const auto *construct = llvm::dyn_cast<clang::CXXConstructExpr>(expr);
+      construct && construct->isElidable()) {
+    expr = construct->getArg(0)->IgnoreImplicit();
   }
-  return expr;
+  const auto *call = llvm::dyn_cast<clang::CallExpr>(expr);
+  const auto *callee = call ? call->getDirectCallee() : nullptr;
+  return callee && callee->isInStdNamespace() && callee->getIdentifier() &&
+         callee->getName() == "setw";
 }
 
 bool HasReceiver(clang::Expr *expr) {
@@ -1497,13 +1497,10 @@ std::optional<clang::QualType> GetParamImplicitConvertTarget(clang::Expr *expr,
 std::optional<IteratorCategory>
 GetStrongestIteratorCategory(clang::ASTContext &ctx, clang::QualType type) {
   type = type.getNonReferenceType().getUnqualifiedType();
-  if (!Mapper::Contains(ctx, type)) {
-    return std::nullopt;
-  }
   if (RuleRegistry::MapsToRefcountPointer(ctx, type)) {
     return IteratorCategory::Contiguous;
   }
-  auto mapped = Mapper::Map(ctx, type);
+  auto mapped = Mapper::MapUninstantiated(ctx, type);
   if (mapped.empty()) {
     return std::nullopt;
   }
@@ -1586,7 +1583,8 @@ bool NeedsImplicitScalarCast(clang::ASTContext &ctx, clang::QualType from,
          to->isIntegerType() &&
          from.getCanonicalType().getUnqualifiedType() ==
              to.getCanonicalType().getUnqualifiedType() &&
-         Mapper::Map(ctx, from) != Mapper::Map(ctx, to);
+         Mapper::MapUninstantiated(ctx, from) !=
+             Mapper::MapUninstantiated(ctx, to);
 }
 
 clang::QualType GetExprPointee(clang::ASTContext &ctx, const clang::Expr *from,
@@ -1640,7 +1638,8 @@ static bool PointeeMappingDiffers(clang::ASTContext &ctx, clang::QualType from,
   }
   return from.getCanonicalType().getUnqualifiedType() ==
              to.getCanonicalType().getUnqualifiedType() &&
-         Mapper::Map(ctx, from) != Mapper::Map(ctx, to);
+         Mapper::MapUninstantiated(ctx, from) !=
+             Mapper::MapUninstantiated(ctx, to);
 }
 
 bool NeedsImplicitPointeeCast(clang::ASTContext &ctx, const clang::Expr *from,
@@ -1679,7 +1678,7 @@ bool NeedsRefBindingTemp(clang::ASTContext &ctx, const clang::Expr *arg,
 }
 
 bool IsSizeType(clang::ASTContext &ctx, clang::QualType type) {
-  auto rust_type = Mapper::Map(ctx, type);
+  auto rust_type = Mapper::MapUninstantiated(ctx, type);
   return rust_type == "usize" || rust_type == "isize";
 }
 

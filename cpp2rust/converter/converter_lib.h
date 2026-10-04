@@ -62,6 +62,8 @@ bool IsCodeUnitStringLiteral(const clang::StringLiteral *expr);
 
 bool IsUserDefinedDecl(const clang::Decl *decl);
 
+bool IsAbstractUserClass(const clang::RecordDecl *decl);
+
 bool RefersToUserDefinedDecl(const clang::Expr *expr);
 
 bool IsUnsignedArithOp(const clang::BinaryOperator *expr);
@@ -217,9 +219,6 @@ clang::CXXConstructExpr *MakeConstructExpr(clang::ASTContext &ctx,
                                            clang::CXXConstructorDecl *ctor,
                                            llvm::ArrayRef<clang::Expr *> args);
 
-std::vector<clang::CXXRecordDecl *>
-GetNestedStructs(const clang::CXXRecordDecl *decl);
-
 std::optional<clang::ArrayRef<clang::TemplateArgument>>
 GetTemplateArgs(clang::QualType qual_type, clang::Expr *expr = nullptr);
 
@@ -255,7 +254,7 @@ bool MayCauseBorrowMutError(const clang::Expr *lhs, const clang::Expr *rhs);
 
 bool ArgsMayAlias(const clang::Expr *a, const clang::Expr *b);
 
-clang::Expr *GetCalleeOrExpr(clang::Expr *expr);
+bool IsStdSetw(const clang::Expr *expr);
 
 bool HasReceiver(clang::Expr *expr);
 

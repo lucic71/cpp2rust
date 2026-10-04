@@ -52,7 +52,7 @@ static bool IsBoxedType(std::string_view type) {
 }
 
 static bool IsBoxedType(clang::ASTContext &ctx, clang::QualType type) {
-  return IsBoxedType(Mapper::Map(ctx, type.getUnqualifiedType()));
+  return IsBoxedType(Mapper::MapUninstantiated(ctx, type.getUnqualifiedType()));
 }
 
 // Virtual methods take &mut self, as the fields of the struct are stored in
@@ -196,6 +196,12 @@ std::string ConverterRefCount::BoxValue(std::string &&str) const {
   std::unreachable();
 }
 
+std::string
+ConverterRefCount::GetUnboxedTypeAsString(clang::QualType qual_type) {
+  PushConversionKind push(*this, ConversionKind::Unboxed);
+  return ToString(qual_type);
+}
+
 bool ConverterRefCount::Convert(clang::QualType qual_type) {
   // Catch va_list before desugaring
   if (IsVaListType(qual_type)) {
@@ -276,7 +282,7 @@ bool ConverterRefCount::VisitPointerType(clang::PointerType *type) {
   PushConversionKind push2(*this, ConversionKind::FullRefCount,
                            pointee_type->isArrayType());
   if (pointee_type->isRecordType() &&
-      abstract_structs_.contains(GetID(pointee_type->getAsRecordDecl()))) {
+      IsAbstractUserClass(pointee_type->getAsRecordDecl())) {
     StrCat("PtrDyn<dyn");
   } else {
     StrCat("Ptr<");
@@ -631,9 +637,6 @@ void ConverterRefCount::EmitRustUnion(clang::RecordDecl *decl) {
   auto name = GetRecordName(decl);
 
   auto attrs = GetStructAttributes(decl);
-  RuleRegistry::SetDerives(
-      ctx_, ctx_.getCanonicalTagType(decl),
-      std::vector<std::string>(attrs.begin(), attrs.end()));
 
   auto size = ctx_.getTypeSizeInChars(ctx_.getCanonicalTagType(decl));
   StrCat(std::format(
@@ -1162,8 +1165,7 @@ bool ConverterRefCount::VisitCallExpr(clang::CallExpr *expr) {
     return false;
   }
 
-  if (IsImplicitAssignmentCall(expr) &&
-      !Mapper::Contains(ctx_, expr->getCallee())) {
+  if (IsImplicitAssignmentCall(expr) && !Mapper::Contains(ctx_, expr)) {
     auto *call = clang::cast<clang::CXXMemberCallExpr>(expr);
     ConvertAssignment(call->getImplicitObjectArgument(), call->getArg(0), "=");
     return false;
@@ -1174,8 +1176,7 @@ bool ConverterRefCount::VisitCallExpr(clang::CallExpr *expr) {
   }
 
   if (auto *opcall = clang::dyn_cast<clang::CXXOperatorCallExpr>(expr);
-      opcall && !IsUserOperatorCall(opcall) &&
-      !Mapper::Contains(ctx_, expr->getCallee())) {
+      opcall && !IsUserOperatorCall(opcall) && !Mapper::Contains(ctx_, expr)) {
     return ConvertCXXOperatorCallExpr(opcall);
   }
 
@@ -2016,7 +2017,7 @@ bool ConverterRefCount::VisitCXXForRangeStmtMap(clang::CXXForRangeStmt *stmt) {
 
   EmitByValueShadow(
       loop_var_name, loop_var->getType(), std::string(loop_var_name),
-      "Value<" + Mapper::Map(ctx_, GetForRangeIteratorType(stmt)) + '>');
+      "Value<" + Mapper::Map(*this, GetForRangeIteratorType(stmt)) + '>');
 
   ConvertForRangeBody(stmt, loop_var);
 
@@ -2246,7 +2247,7 @@ std::string ConverterRefCount::GetDefaultAsString(clang::QualType qual_type) {
     return BoxValue(std::move(arr));
   }
 
-  if (auto init = Mapper::MapInitializer(ctx_, qual_type); !init.empty()) {
+  if (auto init = Mapper::MapInitializer(*this, qual_type); !init.empty()) {
     computed_expr_type_ = ComputedExprType::FreshValue;
     return BoxValue(std::move(init));
   }
@@ -2962,7 +2963,7 @@ std::string ConverterRefCount::ConvertMappedMethodCall(
     arg = call->getArg(0);
   }
 
-  auto param_type = Mapper::GetParamType(ctx_, GetCalleeOrExpr(expr), arg_idx);
+  auto param_type = Mapper::GetParamType(*this, expr, arg_idx);
 
   if (arg->getType()->isPointerType()) {
     return std::format("{}.with_mut(|__v: {}| __v{})", ConvertPointer(arg),

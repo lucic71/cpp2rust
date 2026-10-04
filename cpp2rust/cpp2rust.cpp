@@ -94,8 +94,8 @@ static bool HasIRFiles(const fs::path &dir) {
       continue;
     }
     const auto &p = it->path();
-    if (fs::exists(p / "ir_src.json") && (fs::exists(p / "ir_unsafe.json") ||
-                                          fs::exists(p / "ir_refcount.json"))) {
+    if (fs::exists(p / "ir_unsafe.json") ||
+        fs::exists(p / "ir_refcount.json")) {
       return true;
     }
   }

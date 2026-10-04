@@ -8,11 +8,14 @@
 #include <clang/Tooling/Tooling.h>
 
 #include <filesystem>
+#include <fstream>
+#include <iterator>
 
 #include "compat/platform_flags.h"
 #include "converter/converter.h"
 #include "converter/models/converter_refcount.h"
 #include "frontend_action.h"
+#include "rules_prelude.h"
 
 namespace cpp2rust {
 std::string TranspileSrc(std::string_view cc_code, Model model,
@@ -20,17 +23,23 @@ std::string TranspileSrc(std::string_view cc_code, Model model,
                          const std::string &rules_dir,
                          std::string_view filename) {
   auto tool_args = getPlatformClangBeginFlags();
+  tool_args.push_back("-fno-spell-checking");
   tool_args.push_back("-fparse-all-comments");
   tool_args.insert(tool_args.end(), cxx_flags.begin(), cxx_flags.end());
   auto end_flags = getPlatformClangEndFlags();
   tool_args.insert(tool_args.end(), end_flags.begin(), end_flags.end());
 
+  auto language = GetRulesLanguage(filename);
+  auto code = std::string(cc_code) + GetRulesPreludeInclude(language);
+
   std::string rs_code;
   clang::tooling::runToolOnCodeWithArgs(
       std::make_unique<FrontendAction>(rs_code, model, /*first=*/true,
                                        rules_dir),
-      cc_code, tool_args, std::filesystem::path(filename).filename().string(),
-      filename.ends_with(".c") ? CLANG_C_COMPILER : CLANG_CXX_COMPILER);
+      code, tool_args, std::filesystem::path(filename).filename().string(),
+      filename.ends_with(".c") ? CLANG_C_COMPILER : CLANG_CXX_COMPILER,
+      std::make_shared<clang::PCHContainerOperations>(),
+      {{GetRulesPreludePath(language), BuildRulesPrelude(language)}});
   Converter::EmitOpaqueRecords(rs_code);
   Converter::EmitVirtualMethods(rs_code);
   if (model == Model::kRefCount) {
@@ -55,9 +64,10 @@ std::string TranspileDir(std::string_view build_dir, Model model,
   }
 
   clang::tooling::ClangTool Tool(*compile_dbase, files);
+  auto begin_flags = getPlatformClangBeginFlags();
+  begin_flags.push_back("-fno-spell-checking");
   Tool.appendArgumentsAdjuster(clang::tooling::getInsertArgumentAdjuster(
-      getPlatformClangBeginFlags(),
-      clang::tooling::ArgumentInsertPosition::BEGIN));
+      begin_flags, clang::tooling::ArgumentInsertPosition::BEGIN));
   Tool.appendArgumentsAdjuster(clang::tooling::getInsertArgumentAdjuster(
       getPlatformClangEndFlags(), clang::tooling::ArgumentInsertPosition::END));
   // Redefine __FILE__ to use just the basename, so the generated code
@@ -72,6 +82,28 @@ std::string TranspileDir(std::string_view build_dir, Model model,
         result.push_back("-D__FILE__=\"" + basename + "\"");
         return result;
       });
+
+  std::vector<std::string> mapped;
+  mapped.reserve(2 * compile_dbase->getAllCompileCommands().size() + 4);
+  auto map = [&](std::string path, std::string content) {
+    mapped.push_back(std::move(path));
+    mapped.push_back(std::move(content));
+    Tool.mapVirtualFile(mapped[mapped.size() - 2], mapped.back());
+  };
+  for (auto language : {RulesLanguage::kC, RulesLanguage::kCxx}) {
+    map(GetRulesPreludePath(language), BuildRulesPrelude(language));
+  }
+  for (const auto &compile_command : compile_dbase->getAllCompileCommands()) {
+    std::filesystem::path path(compile_command.Filename);
+    if (path.is_relative()) {
+      path = std::filesystem::path(compile_command.Directory) / path;
+    }
+    std::ifstream file(path);
+    std::string content{std::istreambuf_iterator<char>(file),
+                        std::istreambuf_iterator<char>()};
+    map(path.string(),
+        content + GetRulesPreludeInclude(GetRulesLanguage(path.string())));
+  }
 
   std::string rs_code;
   FrontendActionFactory factory(rs_code, model, rules_dir);
