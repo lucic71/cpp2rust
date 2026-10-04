@@ -5,3 +5,9 @@
 
 typedef DIR *t1;
 typedef struct dirent t2;
+
+DIR *f1(const char *name) { return opendir(name); }
+
+struct dirent *f2(DIR *dirp) { return readdir(dirp); }
+
+int f3(DIR *dirp) { return closedir(dirp); }
