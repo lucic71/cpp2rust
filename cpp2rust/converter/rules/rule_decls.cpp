@@ -353,8 +353,7 @@ void addExprRule(clang::ASTContext &ctx, const clang::NamedDecl *decl) {
       return;
     }
     auto key = GetExprKey(ctx, init);
-    log() << "rule " << id->dir << "::" << id->name << " -> '" << key
-          << "'\n";
+    log() << "rule " << id->dir << "::" << id->name << " -> '" << key << "'\n";
     exprs_.emplace(std::move(key), ExprRuleDecl{nullptr, init, rule, {}});
     return;
   }
