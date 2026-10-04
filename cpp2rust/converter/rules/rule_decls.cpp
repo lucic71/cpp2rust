@@ -40,7 +40,7 @@ bool isRuleName(std::string_view name, char kind) {
 }
 
 struct RuleId {
-  std::string module;
+  std::string dir;
   std::string name;
 };
 
@@ -51,12 +51,11 @@ std::optional<RuleId> getRuleId(const clang::NamedDecl *decl) {
   std::string_view name = decl->getName();
   if (const auto *ns =
           llvm::dyn_cast<clang::NamespaceDecl>(decl->getDeclContext())) {
-    std::string_view module = ns->getIdentifier() ? ns->getName() : "";
-    if (!module.starts_with(kPrefix)) {
+    std::string_view dir = ns->getIdentifier() ? ns->getName() : "";
+    if (!dir.starts_with(kPrefix)) {
       return std::nullopt;
     }
-    return RuleId{std::string(module.substr(kPrefix.size())),
-                  std::string(name)};
+    return RuleId{std::string(dir.substr(kPrefix.size())), std::string(name)};
   }
   if (!name.starts_with(kPrefix)) {
     return std::nullopt;
@@ -328,13 +327,13 @@ void checkGenerics(const RuleId &id, const clang::FunctionDecl *function,
   }
   for (size_t i = 0, e = rule.generics.size(); i < e; ++i) {
     if (!declared[i + 1]) {
-      llvm::errs() << id.module << "::" << id.name << ": generic T" << (i + 1)
+      llvm::errs() << id.dir << "::" << id.name << ": generic T" << (i + 1)
                    << " declared but missing from src\n";
       llvm::report_fatal_error("Absent generic from src");
     }
   }
   if (rule.usesInit() && getInitType(function).isNull()) {
-    llvm::errs() << id.module << "::" << id.name << '\n';
+    llvm::errs() << id.dir << "::" << id.name << '\n';
     llvm::report_fatal_error(
         "Expr rule uses init but its src pack is not declared as Init<T, "
         "Args>");
@@ -348,13 +347,13 @@ void addExprRule(clang::ASTContext &ctx, const clang::NamedDecl *decl) {
   }
   if (const auto *var = llvm::dyn_cast<clang::VarDecl>(decl)) {
     const auto *init = var->getInit();
-    auto *rule = RuleRegistry::FindExprRule(id->module, id->name);
+    auto *rule = RuleRegistry::FindExprRule(id->dir, id->name);
     if (var->isInvalidDecl() || !init || init->containsErrors() || !rule) {
-      log() << "rule " << id->module << "::" << id->name << " does not apply\n";
+      log() << "rule " << id->dir << "::" << id->name << " does not apply\n";
       return;
     }
     auto key = GetExprKey(ctx, init);
-    log() << "rule " << id->module << "::" << id->name << " -> '" << key
+    log() << "rule " << id->dir << "::" << id->name << " -> '" << key
           << "'\n";
     exprs_.emplace(std::move(key), ExprRuleDecl{nullptr, init, rule, {}});
     return;
@@ -371,17 +370,17 @@ void addExprRule(clang::ASTContext &ctx, const clang::NamedDecl *decl) {
   const auto *returned = GetReturned(function);
   if (decl->isInvalidDecl() || function->isInvalidDecl() || !returned ||
       returned->containsErrors() || refersToUndeclared(returned)) {
-    log() << "rule " << id->module << "::" << id->name << " does not apply\n";
+    log() << "rule " << id->dir << "::" << id->name << " does not apply\n";
     return;
   }
-  auto *rule = RuleRegistry::FindExprRule(id->module, id->name);
+  auto *rule = RuleRegistry::FindExprRule(id->dir, id->name);
   if (!rule) {
-    log() << "rule " << id->module << "::" << id->name << " has no target\n";
+    log() << "rule " << id->dir << "::" << id->name << " has no target\n";
     return;
   }
   checkGenerics(*id, function, *rule);
   auto key = GetExprKey(ctx, returned);
-  log() << "rule " << id->module << "::" << id->name << " -> '" << key << "'\n";
+  log() << "rule " << id->dir << "::" << id->name << " -> '" << key << "'\n";
   exprs_.emplace(std::move(key),
                  ExprRuleDecl{function, returned, rule, getInitType(function)});
 }
@@ -392,8 +391,8 @@ void addTypeRule(clang::ASTContext &ctx, const clang::NamedDecl *decl) {
     return;
   }
   if (llvm::isa<clang::FunctionTemplateDecl>(decl)) {
-    if (auto *rule = RuleRegistry::FindTypeRule(id->module, id->name)) {
-      log() << "rule " << id->module << "::" << id->name << " -> ''\n";
+    if (auto *rule = RuleRegistry::FindTypeRule(id->dir, id->name)) {
+      log() << "rule " << id->dir << "::" << id->name << " -> ''\n";
       types_.emplace("", TypeRuleDecl{decl, rule});
     }
     return;
@@ -410,16 +409,16 @@ void addTypeRule(clang::ASTContext &ctx, const clang::NamedDecl *decl) {
   if (decl->isInvalidDecl() || alias->isInvalidDecl() ||
       alias->getUnderlyingType()->containsErrors() ||
       refersToUndeclared(ctx, alias->getUnderlyingType())) {
-    log() << "rule " << id->module << "::" << id->name << " does not apply\n";
+    log() << "rule " << id->dir << "::" << id->name << " does not apply\n";
     return;
   }
-  auto *rule = RuleRegistry::FindTypeRule(id->module, id->name);
+  auto *rule = RuleRegistry::FindTypeRule(id->dir, id->name);
   if (!rule) {
-    log() << "rule " << id->module << "::" << id->name << " has no target\n";
+    log() << "rule " << id->dir << "::" << id->name << " has no target\n";
     return;
   }
   if (!llvm::isa<clang::TypeAliasTemplateDecl>(decl)) {
-    log() << "rule " << id->module << "::" << id->name << " is a plain type\n";
+    log() << "rule " << id->dir << "::" << id->name << " is a plain type\n";
     auto add = [&](auto &types, auto key) {
       auto [it, inserted] = types.try_emplace(std::move(key), rule);
       if (!inserted && it->second != rule) {
@@ -443,13 +442,13 @@ void addTypeRule(clang::ASTContext &ctx, const clang::NamedDecl *decl) {
   if (const auto *member =
           alias->getUnderlyingType()->getAs<clang::DependentNameType>()) {
     auto key = member->getIdentifier()->getName().str();
-    log() << "rule " << id->module << "::" << id->name << " -> member '" << key
+    log() << "rule " << id->dir << "::" << id->name << " -> member '" << key
           << "'\n";
     member_types_.emplace(std::move(key), TypeRuleDecl{decl, rule});
     return;
   }
   auto key = GetTypeKey(alias->getUnderlyingType());
-  log() << "rule " << id->module << "::" << id->name << " -> '" << key << "'\n";
+  log() << "rule " << id->dir << "::" << id->name << " -> '" << key << "'\n";
   types_.emplace(std::move(key), TypeRuleDecl{decl, rule});
 }
 

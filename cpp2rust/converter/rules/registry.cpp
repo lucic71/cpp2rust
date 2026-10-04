@@ -49,12 +49,12 @@ void addRulesFromDirectory(const std::filesystem::path &dir, Model model) {
       log() << "No rules found in " << path << '\n';
       continue;
     }
-    auto module = path.filename().string();
+    auto rule_dir = path.filename().string();
     for (auto &[name, rule] : expr_rules) {
-      exprs_.emplace(module + '/' + name, std::move(rule));
+      exprs_.emplace(rule_dir + '/' + name, std::move(rule));
     }
     for (auto &[name, rule] : type_rules) {
-      types_.emplace(module + '/' + name, std::move(rule));
+      types_.emplace(rule_dir + '/' + name, std::move(rule));
     }
   }
 }
@@ -68,15 +68,15 @@ GetParamInfo(clang::ASTContext &ctx, const clang::Expr *expr, unsigned index) {
 
 } // namespace
 
-TranslationRule::ExprRule *FindExprRule(const std::string &module,
+TranslationRule::ExprRule *FindExprRule(const std::string &dir,
                                         const std::string &name) {
-  auto it = exprs_.find(module + '/' + name);
+  auto it = exprs_.find(dir + '/' + name);
   return it == exprs_.end() ? nullptr : &it->second;
 }
 
-TranslationRule::TypeRule *FindTypeRule(const std::string &module,
+TranslationRule::TypeRule *FindTypeRule(const std::string &dir,
                                         const std::string &name) {
-  auto it = types_.find(module + '/' + name);
+  auto it = types_.find(dir + '/' + name);
   return it == types_.end() ? nullptr : &it->second;
 }
 

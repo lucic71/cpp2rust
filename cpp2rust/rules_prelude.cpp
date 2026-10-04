@@ -85,16 +85,16 @@ std::set<std::string> getRuleNames(const std::string &text) {
   return names;
 }
 
-void addCxxModule(std::string &out, const fs::path &module_dir) {
+void addCxxRules(std::string &out, const fs::path &rule_dir) {
   out += std::format("namespace cpp2rust_rules_{} {{\n",
-                     module_dir.filename().string());
-  out += withoutIncludes(readFile(module_dir / "src.cpp"));
-  out += withoutIncludes(readFile(module_dir / "src.c"));
+                     rule_dir.filename().string());
+  out += withoutIncludes(readFile(rule_dir / "src.cpp"));
+  out += withoutIncludes(readFile(rule_dir / "src.c"));
   out += "}\n";
 }
 
-void addCRules(std::string &out, const std::string &prefix,
-               const std::string &text) {
+void addPrefixedRules(std::string &out, const std::string &prefix,
+                      const std::string &text) {
   auto names = getRuleNames(text);
   for (const auto &name : names) {
     out += std::format("#define {} {}_{}\n", name, prefix, name);
@@ -105,9 +105,9 @@ void addCRules(std::string &out, const std::string &prefix,
   }
 }
 
-void addCModule(std::string &out, const fs::path &module_dir) {
-  auto prefix = "cpp2rust_rules_" + module_dir.filename().string();
-  addCRules(out, prefix, readFile(module_dir / "src.c"));
+void addCRules(std::string &out, const fs::path &rule_dir) {
+  auto prefix = "cpp2rust_rules_" + rule_dir.filename().string();
+  addPrefixedRules(out, prefix, readFile(rule_dir / "src.c"));
 }
 
 } // namespace
@@ -132,20 +132,20 @@ std::string GetRulesPreludeInclude(RulesLanguage language) {
 }
 
 std::string BuildRulesPrelude(RulesLanguage language) {
-  std::vector<fs::path> modules;
+  std::vector<fs::path> rule_dirs;
   for (const auto &entry : fs::directory_iterator(RULES_SOURCE_DIR)) {
     if (entry.is_directory()) {
-      modules.push_back(entry.path());
+      rule_dirs.push_back(entry.path());
     }
   }
-  std::sort(modules.begin(), modules.end());
+  std::sort(rule_dirs.begin(), rule_dirs.end());
 
   std::string out = "#pragma GCC system_header\n";
-  for (const auto &module_dir : modules) {
+  for (const auto &rule_dir : rule_dirs) {
     if (language == RulesLanguage::kCxx) {
-      addCxxModule(out, module_dir);
+      addCxxRules(out, rule_dir);
     } else {
-      addCModule(out, module_dir);
+      addCRules(out, rule_dir);
     }
   }
   return out;

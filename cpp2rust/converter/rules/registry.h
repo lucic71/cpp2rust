@@ -18,10 +18,10 @@
 #include "converter/translation_rule.h"
 
 namespace cpp2rust::RuleRegistry {
-TranslationRule::ExprRule *FindExprRule(const std::string &module,
+TranslationRule::ExprRule *FindExprRule(const std::string &dir,
                                         const std::string &name);
 
-TranslationRule::TypeRule *FindTypeRule(const std::string &module,
+TranslationRule::TypeRule *FindTypeRule(const std::string &dir,
                                         const std::string &name);
 
 TranslationRule::TypeRule *FindUserType(clang::ASTContext &ctx,
