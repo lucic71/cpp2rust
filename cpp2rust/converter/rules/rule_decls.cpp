@@ -42,28 +42,21 @@ bool isRuleName(std::string_view name, char kind) {
 struct RuleId {
   std::string module;
   std::string name;
-  bool native = true;
 };
 
 std::optional<RuleId> getRuleId(const clang::NamedDecl *decl) {
   if (!decl->getIdentifier()) {
     return std::nullopt;
   }
-  constexpr std::string_view kOther = "other";
   std::string_view name = decl->getName();
   if (const auto *ns =
           llvm::dyn_cast<clang::NamespaceDecl>(decl->getDeclContext())) {
-    bool native = true;
-    if (ns->getIdentifier() && std::string_view(ns->getName()) == kOther) {
-      native = false;
-      ns = llvm::dyn_cast<clang::NamespaceDecl>(ns->getDeclContext());
-    }
-    std::string_view module = ns && ns->getIdentifier() ? ns->getName() : "";
+    std::string_view module = ns->getIdentifier() ? ns->getName() : "";
     if (!module.starts_with(kPrefix)) {
       return std::nullopt;
     }
-    return RuleId{std::string(module.substr(kPrefix.size())), std::string(name),
-                  native};
+    return RuleId{std::string(module.substr(kPrefix.size())),
+                  std::string(name)};
   }
   if (!name.starts_with(kPrefix)) {
     return std::nullopt;
@@ -73,13 +66,8 @@ std::optional<RuleId> getRuleId(const clang::NamedDecl *decl) {
   if (split == std::string_view::npos) {
     return std::nullopt;
   }
-  auto module = name.substr(0, split);
-  bool native = !module.ends_with("_other");
-  if (!native) {
-    module.remove_suffix(kOther.size() + 1);
-  }
-  return RuleId{std::string(module), std::string(name.substr(split + 1)),
-                native};
+  return RuleId{std::string(name.substr(0, split)),
+                std::string(name.substr(split + 1))};
 }
 
 } // namespace
@@ -368,8 +356,7 @@ void addExprRule(clang::ASTContext &ctx, const clang::NamedDecl *decl) {
     auto key = GetExprKey(ctx, init);
     log() << "rule " << id->module << "::" << id->name << " -> '" << key
           << "'\n";
-    exprs_.emplace(std::move(key),
-                   ExprRuleDecl{nullptr, init, rule, id->native, {}});
+    exprs_.emplace(std::move(key), ExprRuleDecl{nullptr, init, rule, {}});
     return;
   }
   const clang::FunctionDecl *function = nullptr;
@@ -396,8 +383,7 @@ void addExprRule(clang::ASTContext &ctx, const clang::NamedDecl *decl) {
   auto key = GetExprKey(ctx, returned);
   log() << "rule " << id->module << "::" << id->name << " -> '" << key << "'\n";
   exprs_.emplace(std::move(key),
-                 ExprRuleDecl{function, returned, rule, id->native,
-                              getInitType(function)});
+                 ExprRuleDecl{function, returned, rule, getInitType(function)});
 }
 
 void addTypeRule(clang::ASTContext &ctx, const clang::NamedDecl *decl) {
@@ -470,9 +456,7 @@ void addTypeRule(clang::ASTContext &ctx, const clang::NamedDecl *decl) {
 void addRules(clang::ASTContext &ctx, const clang::DeclContext *context) {
   for (const auto *child : context->decls()) {
     if (const auto *ns = llvm::dyn_cast<clang::NamespaceDecl>(child)) {
-      if (ns->getIdentifier() && (ns->getName().starts_with(kPrefix) ||
-                                  (ns->getName() == "other" &&
-                                   context != ctx.getTranslationUnitDecl()))) {
+      if (ns->getIdentifier() && ns->getName().starts_with(kPrefix)) {
         addRules(ctx, ns);
       }
       continue;

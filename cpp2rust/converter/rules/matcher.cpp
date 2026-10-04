@@ -364,7 +364,6 @@ Bindings getBindings(const clang::TemplateParameterList *params,
 
 struct Candidate {
   TranslationRule::ExprRule *rule = nullptr;
-  bool native = true;
   clang::QualType init_type;
   clang::FunctionTemplateDecl *tmpl = nullptr;
   clang::FunctionDecl *specialization = nullptr;
@@ -372,9 +371,6 @@ struct Candidate {
 
 bool isBetter(clang::Sema &sema, const Candidate &a, const Candidate &b,
               clang::SourceLocation loc, unsigned num_operands) {
-  if (a.native != b.native) {
-    return a.native;
-  }
   if (!a.tmpl || !b.tmpl) {
     return !a.tmpl && b.tmpl;
   }
@@ -401,7 +397,7 @@ ExprMatch findExpr(clang::ASTContext &ctx, const clang::Expr *expr,
   Candidate best;
   auto consider = [&](const std::string &bucket) {
     for (auto &[_, entry] : RuleDecls::ExprCandidates(bucket)) {
-      Candidate candidate{entry.rule, entry.native, entry.init_type};
+      Candidate candidate{entry.rule, entry.init_type};
       auto *function = const_cast<clang::FunctionDecl *>(entry.decl);
       if (auto *tmpl =
               function ? function->getDescribedFunctionTemplate() : nullptr) {

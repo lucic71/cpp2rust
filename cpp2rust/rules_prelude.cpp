@@ -89,9 +89,8 @@ void addCxxModule(std::string &out, const fs::path &module_dir) {
   out += std::format("namespace cpp2rust_rules_{} {{\n",
                      module_dir.filename().string());
   out += withoutIncludes(readFile(module_dir / "src.cpp"));
-  out += "namespace other {\n";
   out += withoutIncludes(readFile(module_dir / "src.c"));
-  out += "}\n}\n";
+  out += "}\n";
 }
 
 void addCRules(std::string &out, const std::string &prefix,
@@ -109,7 +108,6 @@ void addCRules(std::string &out, const std::string &prefix,
 void addCModule(std::string &out, const fs::path &module_dir) {
   auto prefix = "cpp2rust_rules_" + module_dir.filename().string();
   addCRules(out, prefix, readFile(module_dir / "src.c"));
-  addCRules(out, prefix + "_other", readFile(module_dir / "src.cpp"));
 }
 
 } // namespace

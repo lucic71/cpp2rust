@@ -19,7 +19,6 @@ struct ExprRuleDecl {
   const clang::FunctionDecl *decl;
   const clang::Expr *returned;
   TranslationRule::ExprRule *rule;
-  bool native;
   clang::QualType init_type;
 };
 
