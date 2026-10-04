@@ -6,6 +6,12 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(4)]
+pub struct S {
+    #[offset(0)]
+    pub x: i32,
+}
 pub fn copy_0(copy_vector: Vec<i32>) {
     let copy_vector: Value<Vec<i32>> = Rc::new(RefCell::new(copy_vector));
 }
@@ -250,6 +256,29 @@ fn main_0() -> i32 {
                 .read()) as usize)
         ) == 103_usize)
     );
+    let a: Value<S> = Rc::new(RefCell::new(S { x: 1 }));
+    let pa: Value<Ptr<S>> = Rc::new(RefCell::new((a.as_pointer())));
+    let v8: Value<Vec<Ptr<Ptr<S>>>> = Rc::new(RefCell::new(Vec::new()));
+    {
+        let __a1 = (pa.as_pointer());
+        (*v8.borrow_mut()).push(__a1)
+    };
+    assert!(
+        (((elem!((v8.as_pointer() as Ptr<Ptr<Ptr<S>>>), 0_usize).read()).read()).with(|__s| __s.x)
+            == 1)
+    );
+    let ppa: Value<Ptr<Ptr<S>>> = Rc::new(RefCell::new((pa.as_pointer())));
+    let v9: Value<Vec<Ptr<Ptr<Ptr<S>>>>> = Rc::new(RefCell::new(Vec::new()));
+    {
+        let __a1 = (ppa.as_pointer());
+        (*v9.borrow_mut()).push(__a1)
+    };
+    field!(
+        (((elem!((v9.as_pointer() as Ptr<Ptr<Ptr<Ptr<S>>>>), 0_usize).read()).read()).read()),
+        x
+    )
+    .write(2);
+    assert!(({ (*a.borrow()).x } == 2));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}
