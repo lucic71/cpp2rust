@@ -334,16 +334,13 @@ bool Converter::Convert(clang::Decl *decl) { return TraverseDecl(decl); }
 
 bool Converter::VisitTranslationUnitDecl(clang::TranslationUnitDecl *decl) {
   for (auto *child : decl->decls()) {
-    if (!IsUserDefinedDecl(child)) {
-      continue;
-    }
-    if (!IsInMainFile(child) && decl_ids_.contains(GetID(child))) {
-      continue;
-    }
-    Convert(child);
-    if (!hoisted_records_.empty()) {
-      StrCat(hoisted_records_);
-      hoisted_records_.clear();
+    if (IsUserDefinedDecl(child) &&
+        (IsInMainFile(child) || !decl_ids_.contains(GetID(child)))) {
+      Convert(child);
+      if (!hoisted_records_.empty()) {
+        StrCat(hoisted_records_);
+        hoisted_records_.clear();
+      }
     }
   }
   return false;
