@@ -8,7 +8,9 @@
   typedef volatile T *N3;                                                      \
   typedef const volatile T *N4;
 
+#ifndef __cplusplus
 BUILTIN_TYPE(_Bool, t10, t11, t12, t13, t14)
+#endif
 BUILTIN_TYPE(char, t20, t21, t22, t23, t24)
 BUILTIN_TYPE(signed char, t30, t31, t32, t33, t34)
 BUILTIN_TYPE(unsigned char, t40, t41, t42, t43, t44)

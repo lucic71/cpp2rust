@@ -12,6 +12,7 @@
 
 typedef decltype(nullptr) t0;
 
+BUILTIN_TYPE(1, bool)
 BUILTIN_TYPE(5, char8_t)
 BUILTIN_TYPE(8, char16_t)
 BUILTIN_TYPE(11, wchar_t)
