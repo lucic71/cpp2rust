@@ -697,7 +697,8 @@ bool Converter::IsPassThroughRule(clang::Expr *expr) const {
 }
 
 bool Converter::RecordDerivesCopy(const clang::RecordDecl *decl) {
-  if (auto *rule = Matcher::FindLoaded(ctx_, ctx_.getCanonicalTagType(decl))) {
+  if (auto *rule =
+          RuleRegistry::Search(ctx_, ctx_.getCanonicalTagType(decl)).first) {
     auto &derives = rule->type_info.derives;
     return std::find(derives.begin(), derives.end(), "Copy") != derives.end();
   }
@@ -3791,7 +3792,7 @@ bool Converter::VisitOffsetOfExpr(clang::OffsetOfExpr *expr) {
 
 bool Converter::VisitEnumDecl(clang::EnumDecl *decl) {
   ENSURE(decl_ids_.insert(GetID(decl)).second);
-  if (Matcher::FindLoaded(ctx_, ctx_.getCanonicalTagType(decl))) {
+  if (Mapper::Contains(ctx_, ctx_.getCanonicalTagType(decl))) {
     return false;
   }
   auto name = GetRecordName(decl);

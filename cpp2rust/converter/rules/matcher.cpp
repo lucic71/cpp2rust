@@ -496,7 +496,7 @@ TypeMatch findMemberType(clang::ASTContext &ctx, clang::QualType type) {
   return {};
 }
 
-TypeMatch findLoadedType(clang::ASTContext &ctx, clang::QualType type) {
+TypeMatch findType(clang::ASTContext &ctx, clang::QualType type) {
   if (auto match = findMemberType(ctx, type); match.first) {
     return match;
   }
@@ -581,13 +581,8 @@ ExprMatch Find(clang::ASTContext &ctx, const clang::Expr *expr) {
   return findExpr(ctx, expr, nullptr);
 }
 
-TranslationRule::TypeRule *FindLoaded(clang::ASTContext &ctx,
-                                      clang::QualType type) {
-  return findLoadedType(ctx, type).first;
-}
-
 TypeMatch Find(clang::ASTContext &ctx, clang::QualType type) {
-  auto match = findLoadedType(ctx, type);
+  auto match = findType(ctx, type);
   log() << "search type " << Printer::ToString(ctx, type)
         << ", result: " << (match.first ? match.first->type_info.type : "None")
         << '\n';
