@@ -23,19 +23,12 @@ bool translation_rules_loaded_ = false;
 std::unordered_map<std::string, TranslationRule::ExprRule> exprs_;
 std::unordered_map<std::string, TranslationRule::TypeRule> types_;
 
-std::unordered_map<const void *, TranslationRule::TypeRule> user_types_;
-
-TranslationRule::TypeRule userPointerRule(const std::string &rs_name,
-                                          bool abstract) {
-  switch (model_) {
-  case Model::kUnsafe:
-    return TranslationRule::TypeRule::UnsafePtr(
-        (abstract ? "*mut dyn " : "*mut ") + rs_name);
-  case Model::kRefCount:
-    return TranslationRule::TypeRule::RefcountPtr(
-        (abstract ? "PtrDyn<dyn " : "Ptr<") + rs_name + '>');
+bool pointsToUserType(clang::QualType type) {
+  if (!type->isPointerType()) {
+    return false;
   }
-  __builtin_unreachable();
+  auto *tag = type->getPointeeType()->getAsTagDecl();
+  return tag && IsUserDefinedDecl(tag);
 }
 
 void addRulesFromDirectory(const std::filesystem::path &dir, Model model) {
@@ -80,43 +73,6 @@ TranslationRule::TypeRule *FindTypeRule(const std::string &dir,
   return it == types_.end() ? nullptr : &it->second;
 }
 
-TranslationRule::TypeRule *FindUserType(clang::ASTContext &ctx,
-                                        clang::QualType type) {
-  type = type.getCanonicalType().getUnqualifiedType();
-  auto it = user_types_.find(type.getAsOpaquePtr());
-  if (it != user_types_.end()) {
-    return &it->second;
-  }
-  bool pointer = type->isPointerType();
-  auto tag_type = pointer ? type->getPointeeType() : type;
-  if (tag_type.hasQualifiers()) {
-    return nullptr;
-  }
-  auto *tag = tag_type->getAsTagDecl();
-  if (!tag || !IsUserDefinedDecl(tag)) {
-    return nullptr;
-  }
-  auto rs_name =
-      Printer::ToRustName(Printer::ToString(ctx, GetTypeForDecl(ctx, tag)));
-  if (!pointer) {
-    return &user_types_
-                .emplace(type.getAsOpaquePtr(),
-                         TranslationRule::TypeRule::Plain(rs_name))
-                .first->second;
-  }
-  auto *cxx = llvm::dyn_cast<clang::CXXRecordDecl>(tag);
-  auto *definition = cxx ? cxx->getDefinition() : nullptr;
-  if (!definition) {
-    return nullptr;
-  }
-  return &user_types_
-              .emplace(type.getAsOpaquePtr(),
-                       userPointerRule(rs_name, definition->isAbstract()))
-              .first->second;
-}
-
-void ResetUserTypes() { user_types_.clear(); }
-
 Matcher::Match<TranslationRule::ExprRule> Search(clang::ASTContext &ctx,
                                                  const clang::Expr *expr) {
   if (RefersToUserDefinedDecl(expr)) {
@@ -137,12 +93,18 @@ const TranslationRule::ExprRule *GetExprRule(clang::ASTContext &ctx,
 
 bool MapsToPointer(clang::ASTContext &ctx, clang::QualType qual_type) {
   auto rule = Search(ctx, qual_type).first;
-  return rule && rule->type_info.is_pointer();
+  if (!rule) {
+    return pointsToUserType(qual_type);
+  }
+  return rule->type_info.is_pointer();
 }
 
 bool MapsToRefcountPointer(clang::ASTContext &ctx, clang::QualType qual_type) {
   auto rule = Search(ctx, qual_type).first;
-  return rule && rule->type_info.is_refcount_pointer;
+  if (!rule) {
+    return model_ == Model::kRefCount && pointsToUserType(qual_type);
+  }
+  return rule->type_info.is_refcount_pointer;
 }
 
 bool ReturnsPointer(clang::ASTContext &ctx, const clang::Expr *expr) {

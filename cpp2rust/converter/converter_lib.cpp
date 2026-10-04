@@ -231,6 +231,13 @@ bool IsUserDefinedDecl(const clang::Decl *decl) {
          !src_mgr.isInSystemMacro(src_loc);
 }
 
+bool IsAbstractUserClass(const clang::RecordDecl *decl) {
+  auto *cxx = llvm::dyn_cast<clang::CXXRecordDecl>(decl);
+  auto *definition = cxx ? cxx->getDefinition() : nullptr;
+  return definition && IsUserDefinedDecl(definition) &&
+         definition->isAbstract();
+}
+
 bool RefersToUserDefinedDecl(const clang::Expr *expr) {
   expr = expr->IgnoreParenImpCasts();
   const clang::Decl *decl = nullptr;
@@ -1490,13 +1497,10 @@ std::optional<clang::QualType> GetParamImplicitConvertTarget(clang::Expr *expr,
 std::optional<IteratorCategory>
 GetStrongestIteratorCategory(clang::ASTContext &ctx, clang::QualType type) {
   type = type.getNonReferenceType().getUnqualifiedType();
-  if (!Mapper::Contains(ctx, type)) {
-    return std::nullopt;
-  }
   if (RuleRegistry::MapsToRefcountPointer(ctx, type)) {
     return IteratorCategory::Contiguous;
   }
-  auto mapped = Mapper::Map(ctx, type);
+  auto mapped = Mapper::MapUninstantiated(ctx, type);
   if (mapped.empty()) {
     return std::nullopt;
   }
@@ -1579,7 +1583,8 @@ bool NeedsImplicitScalarCast(clang::ASTContext &ctx, clang::QualType from,
          to->isIntegerType() &&
          from.getCanonicalType().getUnqualifiedType() ==
              to.getCanonicalType().getUnqualifiedType() &&
-         Mapper::Map(ctx, from) != Mapper::Map(ctx, to);
+         Mapper::MapUninstantiated(ctx, from) !=
+             Mapper::MapUninstantiated(ctx, to);
 }
 
 clang::QualType GetExprPointee(clang::ASTContext &ctx, const clang::Expr *from,
@@ -1633,7 +1638,8 @@ static bool PointeeMappingDiffers(clang::ASTContext &ctx, clang::QualType from,
   }
   return from.getCanonicalType().getUnqualifiedType() ==
              to.getCanonicalType().getUnqualifiedType() &&
-         Mapper::Map(ctx, from) != Mapper::Map(ctx, to);
+         Mapper::MapUninstantiated(ctx, from) !=
+             Mapper::MapUninstantiated(ctx, to);
 }
 
 bool NeedsImplicitPointeeCast(clang::ASTContext &ctx, const clang::Expr *from,
@@ -1672,7 +1678,7 @@ bool NeedsRefBindingTemp(clang::ASTContext &ctx, const clang::Expr *arg,
 }
 
 bool IsSizeType(clang::ASTContext &ctx, clang::QualType type) {
-  auto rust_type = Mapper::Map(ctx, type);
+  auto rust_type = Mapper::MapUninstantiated(ctx, type);
   return rust_type == "usize" || rust_type == "isize";
 }
 

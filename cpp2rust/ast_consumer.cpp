@@ -12,7 +12,6 @@ namespace cpp2rust {
 void ASTConsumer::HandleTranslationUnit(clang::ASTContext &ctx) {
   auto converter = CreateConverter(rs_code_, ctx, model_, rules_dir_);
   RuleDecls::Collect(CI_.getSema());
-  RuleRegistry::ResetUserTypes();
   converter->SetSema(CI_.getSema());
   if (first_) {
     converter->EmitFilePreamble();

@@ -17,6 +17,7 @@
 #include <cctype>
 #include <vector>
 
+#include "converter/converter.h"
 #include "converter/converter_lib.h"
 #include "converter/mapper.h"
 #include "converter/printer.h"
@@ -567,16 +568,6 @@ TypeMatch findLoadedType(clang::ASTContext &ctx, clang::QualType type) {
   return {best, std::move(best_bindings)};
 }
 
-TypeMatch findType(clang::ASTContext &ctx, clang::QualType type) {
-  auto match = findLoadedType(ctx, type);
-  if (!match.first) {
-    if (auto *rule = RuleRegistry::FindUserType(ctx, type)) {
-      return {rule, {}};
-    }
-  }
-  return match;
-}
-
 } // namespace
 
 clang::QualType GetInitType(clang::ASTContext &ctx, const clang::Expr *expr) {
@@ -596,7 +587,7 @@ TranslationRule::TypeRule *FindLoaded(clang::ASTContext &ctx,
 }
 
 TypeMatch Find(clang::ASTContext &ctx, clang::QualType type) {
-  auto match = findType(ctx, type);
+  auto match = findLoadedType(ctx, type);
   log() << "search type " << Printer::ToString(ctx, type)
         << ", result: " << (match.first ? match.first->type_info.type : "None")
         << '\n';
@@ -608,23 +599,18 @@ bool HasRuleNamed(const clang::FunctionDecl *decl) {
          !RuleDecls::ExprCandidates(decl->getName().str()).empty();
 }
 
-std::string MapBinding(clang::ASTContext &ctx, const Bindings &bindings,
+std::string MapBinding(Converter &converter, const Bindings &bindings,
                        unsigned n) {
   auto type = bindings.at(n);
   assert(!type.isNull() && "template parameter is not bound to a type");
-  auto mapped = Mapper::Map(ctx, type);
-  if (mapped.empty()) {
-    llvm::errs() << "cpp_type: " << Printer::ToString(ctx, type) << '\n';
-    assert(0 && "Type is not present in the registry");
-  }
-  return mapped;
+  return converter.GetUnboxedTypeAsString(type);
 }
 
 //
 // Example:
 //   tgt_template = "Vec<T1>"
 //   result       = "Vec<i32>"
-std::string InstantiateTgt(clang::ASTContext &ctx, const Bindings &types,
+std::string InstantiateTgt(Converter &converter, const Bindings &types,
                            const std::string &tgt_template) {
   assert(types.size() <= TranslationRule::kMaxGenerics &&
          "template placeholder exceeds kMaxGenerics");
@@ -638,7 +624,8 @@ std::string InstantiateTgt(clang::ASTContext &ctx, const Bindings &types,
       ++pos;
       continue;
     }
-    auto repl = MapBinding(ctx, types, instantiated_template[pos + 1] - '1');
+    auto repl =
+        MapBinding(converter, types, instantiated_template[pos + 1] - '1');
     instantiated_template.replace(pos, 2, repl);
     pos += repl.length();
   }

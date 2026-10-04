@@ -122,7 +122,7 @@ bool Converter::Convert(clang::QualType qual_type) {
     record_decls_.MarkReferenced(GetRecordName(decl));
   }
 
-  auto mapped = Mapper::Map(ctx_, qual_type);
+  auto mapped = Mapper::Map(*this, qual_type);
   if (!mapped.empty() && mapped != token::kIgnoreRule) {
     StrCat(mapped);
     return false;
@@ -132,8 +132,12 @@ bool Converter::Convert(clang::QualType qual_type) {
   return TraverseType(qual_type);
 }
 
+std::string Converter::GetUnboxedTypeAsString(clang::QualType qual_type) {
+  return ToString(qual_type);
+}
+
 bool Converter::ConvertMappedType(clang::QualType qual_type) {
-  std::string type_as_string = Mapper::Map(ctx_, qual_type);
+  std::string type_as_string = Mapper::Map(*this, qual_type);
   if (type_as_string == token::kIgnoreRule) {
     return false;
   }
@@ -155,7 +159,7 @@ std::string Converter::ConvertPointeeType(clang::QualType ptr_type) {
 }
 
 bool Converter::VisitBuiltinType(clang::BuiltinType *type) {
-  auto mapped = Mapper::Map(ctx_, clang::QualType(type, 0));
+  auto mapped = Mapper::Map(*this, clang::QualType(type, 0));
   if (mapped.empty()) {
     llvm::report_fatal_error(llvm::Twine("no type rule for builtin type: ") +
                              type->getName(ctx_.getPrintingPolicy()));
@@ -182,6 +186,11 @@ bool Converter::VisitRecordType(clang::RecordType *type) {
   }
 
   StrCat(GetRecordName(decl));
+  return false;
+}
+
+bool Converter::VisitEnumType(clang::EnumType *type) {
+  StrCat(GetRecordName(type->getDecl()));
   return false;
 }
 
@@ -312,7 +321,7 @@ bool Converter::VisitPointerType(clang::PointerType *type) {
   auto pointee_type = type->getPointeeType();
   StrCat(pointee_type.isConstQualified() ? "*const" : "*mut");
   if (pointee_type->isRecordType() &&
-      abstract_structs_.contains(GetID(pointee_type->getAsRecordDecl()))) {
+      IsAbstractUserClass(pointee_type->getAsRecordDecl())) {
     StrCat(keyword::kDyn);
   }
   return Convert(pointee_type);
@@ -709,7 +718,7 @@ bool Converter::RecordHasCopyableFields(const clang::RecordDecl *decl) {
   for (auto f : decl->fields()) {
     // Records that contain std::vector, std::array, std::string or anything
     // that is translated to Vec<>, do not derive Copy
-    auto mapped = Mapper::Map(ctx_, f->getType());
+    auto mapped = Mapper::Map(*this, f->getType());
     if (mapped.starts_with("Vec<")) {
       return false;
     }
@@ -1490,7 +1499,7 @@ bool Converter::VisitCXXForRangeStmtMap(clang::CXXForRangeStmt *stmt) {
   auto loop_var_name = GetNamedDeclAsString(loop_var);
 
   StrCat("'loop_:");
-  auto map_type = Mapper::Map(ctx_, stmt->getRangeInit()->getType());
+  auto map_type = Mapper::Map(*this, stmt->getRangeInit()->getType());
   StrCat(keyword::kFor, loop_var_name, keyword::kIn,
          "UnsafeMapIterator::begin(&");
   Convert(stmt->getRangeInit());
@@ -1659,7 +1668,7 @@ bool Converter::GetFmtArg(clang::Expr *arg, std::string &fmt,
   } else if (IsStdSetw(arg)) {
     fmt_width = Trim(ToString(arg));
   } else if (!arg->getType()->isCharType() &&
-             Mapper::Map(ctx_, arg->getType()) !=
+             Mapper::Map(*this, arg->getType()) !=
                  std::format("Vec<{}>", CharRustType())) {
     fmt += ("{:" + fmt_width + fmt_trait + "}");
     fmt_width.clear(); // Reset setw after first usage
@@ -1677,7 +1686,7 @@ bool Converter::GetFmtArg(clang::Expr *arg, std::string &fmt,
 bool Converter::GetRawArg(clang::Expr *arg, std::string &raw_args) {
   if (arg->getType()->isCharType()) {
     raw_args += "(&[" + ToString(arg) + " as u8]";
-  } else if (Mapper::Map(ctx_, arg->getType()) ==
+  } else if (Mapper::Map(*this, arg->getType()) ==
              std::format("Vec<{}>", CharRustType())) {
     PushExprKind push(*this, ExprKind::RValue);
     std::string str = ToString(arg);
@@ -2127,7 +2136,7 @@ void Converter::EmitArgList(const CallInfo &info) {
         ConvertParamTy(ca.param_type, ca.expr);
         if (info.is_libc_passthrough) {
           StrCat(
-              std::format("as {}", Mapper::GetParamType(ctx_, info.expr, i)));
+              std::format("as {}", Mapper::GetParamType(*this, info.expr, i)));
         }
         break;
       }
@@ -2263,7 +2272,7 @@ std::string Converter::getIntegerLiteral(clang::IntegerLiteral *expr,
 
   if (ty->isFloatingType() || incl_type) {
     if (value.isZero()) {
-      if (auto init = Mapper::MapInitializer(ctx_, ty); !init.empty()) {
+      if (auto init = Mapper::MapInitializer(*this, ty); !init.empty()) {
         return init;
       }
     }
@@ -2279,7 +2288,7 @@ bool Converter::VisitIntegerLiteral(clang::IntegerLiteral *expr) {
     computed_expr_type_ = ComputedExprType::FreshValue;
     return false;
   }
-  StrCat(getIntegerLiteral(expr, Mapper::Map(ctx_, expr->getType()) != "i32"));
+  StrCat(getIntegerLiteral(expr, Mapper::Map(*this, expr->getType()) != "i32"));
   computed_expr_type_ = ComputedExprType::FreshValue;
   return false;
 }
@@ -4046,7 +4055,7 @@ std::string Converter::GetDefaultAsString(clang::QualType qual_type) {
     return arr;
   }
 
-  if (auto init = Mapper::MapInitializer(ctx_, qual_type); !init.empty()) {
+  if (auto init = Mapper::MapInitializer(*this, qual_type); !init.empty()) {
     computed_expr_type_ = ComputedExprType::FreshValue;
     return init;
   }
@@ -4239,7 +4248,7 @@ void Converter::ConvertUnsignedArithOperand(clang::Expr *expr,
   bool needs_cast =
       (expr->isIntegerConstantExpr(ctx_) &&
        !clang::isa<clang::ImplicitCastExpr>(expr)) ||
-      Mapper::Map(ctx_, expr->getType()) != Mapper::Map(ctx_, type);
+      Mapper::Map(*this, expr->getType()) != Mapper::Map(*this, type);
   PushParen paren(*this, needs_cast);
   Convert(expr);
   if (needs_cast) {
@@ -4339,7 +4348,7 @@ void Converter::ConvertArraySubscript(clang::Expr *base, clang::Expr *idx,
     Convert(idx);
   }
 
-  if (Mapper::Map(ctx_, idx->getType()) != "usize") {
+  if (Mapper::Map(*this, idx->getType()) != "usize") {
     StrCat(keyword::kAs, "usize");
   }
 }
@@ -4884,7 +4893,7 @@ std::string Converter::ConvertPlaceholder(clang::Expr *expr, clang::Expr *arg,
 
   if (ph_ctx.declared_in_rule_as_rust_ptr && arg->getType()->isArrayType()) {
     return std::format("({} as {})", ConvertFreshPointer(arg),
-                       Mapper::GetParamType(ctx_, expr, ph_ctx.arg_idx));
+                       Mapper::GetParamType(*this, expr, ph_ctx.arg_idx));
   }
 
   if (ph_ctx.needs_materialization()) {
@@ -4899,7 +4908,7 @@ std::string Converter::ConvertPlaceholder(clang::Expr *expr, clang::Expr *arg,
   }
 
   if (ph_ctx.needs_pointer_receiver()) {
-    auto param_type = Mapper::GetParamType(ctx_, expr, ph_ctx.arg_idx);
+    auto param_type = Mapper::GetParamType(*this, expr, ph_ctx.arg_idx);
     return std::format("({} as {})", ConvertFreshObject(arg, param_type),
                        param_type);
   }
@@ -4989,7 +4998,7 @@ std::string Converter::ConvertIRFragment(
     if (auto *t = std::get_if<TextFragment>(&frag)) {
       result += t->text;
     } else if (auto *g = std::get_if<GenericFragment>(&frag)) {
-      result += Mapper::InstantiateTemplate(ctx_, expr, g->n);
+      result += Mapper::InstantiateTemplate(*this, expr, g->n);
     } else if (auto *ph = std::get_if<PlaceholderFragment>(&frag)) {
       auto arg_idx = ph->n;
       assert(arg_idx < all_args.size());

@@ -151,7 +151,8 @@ std::string ToString(clang::ASTContext &ctx, clang::QualType qual_type,
                            ToString(ctx, pointee.getUnqualifiedType(),
                                     ScalarSugar::kPreserve));
       }
-      if (Mapper::Map(ctx, pointee) == Mapper::Map(ctx, canonical)) {
+      if (Mapper::MapUninstantiated(ctx, pointee) ==
+          Mapper::MapUninstantiated(ctx, canonical)) {
         pointee = canonical;
       }
       std::string out;

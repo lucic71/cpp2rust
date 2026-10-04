@@ -48,6 +48,10 @@ public:
     return *sema_;
   }
 
+  clang::ASTContext &GetASTContext() { return ctx_; }
+
+  virtual std::string GetUnboxedTypeAsString(clang::QualType qual_type);
+
   bool VisitRecoveryExpr(clang::RecoveryExpr *expr);
 
   virtual void EmitFilePreamble();
@@ -60,6 +64,8 @@ public:
   virtual bool VisitBuiltinType(clang::BuiltinType *type);
 
   virtual bool VisitRecordType(clang::RecordType *type);
+
+  bool VisitEnumType(clang::EnumType *type);
 
   virtual bool VisitConstantArrayType(clang::ConstantArrayType *type);
 

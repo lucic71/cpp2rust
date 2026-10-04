@@ -12,6 +12,8 @@ public:
 
   void EmitFilePreamble() override;
 
+  std::string GetUnboxedTypeAsString(clang::QualType qual_type) override;
+
   static void EmitMethodsOnPtr(std::string &out);
 
   bool VisitRecordType(clang::RecordType *type) override;

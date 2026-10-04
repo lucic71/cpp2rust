@@ -52,7 +52,7 @@ static bool IsBoxedType(std::string_view type) {
 }
 
 static bool IsBoxedType(clang::ASTContext &ctx, clang::QualType type) {
-  return IsBoxedType(Mapper::Map(ctx, type.getUnqualifiedType()));
+  return IsBoxedType(Mapper::MapUninstantiated(ctx, type.getUnqualifiedType()));
 }
 
 // Virtual methods take &mut self, as the fields of the struct are stored in
@@ -196,6 +196,12 @@ std::string ConverterRefCount::BoxValue(std::string &&str) const {
   std::unreachable();
 }
 
+std::string
+ConverterRefCount::GetUnboxedTypeAsString(clang::QualType qual_type) {
+  PushConversionKind push(*this, ConversionKind::Unboxed);
+  return ToString(qual_type);
+}
+
 bool ConverterRefCount::Convert(clang::QualType qual_type) {
   // Catch va_list before desugaring
   if (IsVaListType(qual_type)) {
@@ -276,7 +282,7 @@ bool ConverterRefCount::VisitPointerType(clang::PointerType *type) {
   PushConversionKind push2(*this, ConversionKind::FullRefCount,
                            pointee_type->isArrayType());
   if (pointee_type->isRecordType() &&
-      abstract_structs_.contains(GetID(pointee_type->getAsRecordDecl()))) {
+      IsAbstractUserClass(pointee_type->getAsRecordDecl())) {
     StrCat("PtrDyn<dyn");
   } else {
     StrCat("Ptr<");
@@ -2011,7 +2017,7 @@ bool ConverterRefCount::VisitCXXForRangeStmtMap(clang::CXXForRangeStmt *stmt) {
 
   EmitByValueShadow(
       loop_var_name, loop_var->getType(), std::string(loop_var_name),
-      "Value<" + Mapper::Map(ctx_, GetForRangeIteratorType(stmt)) + '>');
+      "Value<" + Mapper::Map(*this, GetForRangeIteratorType(stmt)) + '>');
 
   ConvertForRangeBody(stmt, loop_var);
 
@@ -2241,7 +2247,7 @@ std::string ConverterRefCount::GetDefaultAsString(clang::QualType qual_type) {
     return BoxValue(std::move(arr));
   }
 
-  if (auto init = Mapper::MapInitializer(ctx_, qual_type); !init.empty()) {
+  if (auto init = Mapper::MapInitializer(*this, qual_type); !init.empty()) {
     computed_expr_type_ = ComputedExprType::FreshValue;
     return BoxValue(std::move(init));
   }
@@ -2957,7 +2963,7 @@ std::string ConverterRefCount::ConvertMappedMethodCall(
     arg = call->getArg(0);
   }
 
-  auto param_type = Mapper::GetParamType(ctx_, expr, arg_idx);
+  auto param_type = Mapper::GetParamType(*this, expr, arg_idx);
 
   if (arg->getType()->isPointerType()) {
     return std::format("{}.with_mut(|__v: {}| __v{})", ConvertPointer(arg),

@@ -89,16 +89,6 @@ struct TypeRule {
   TypeInfo type_info;
 
   void dump() const;
-
-  static TypeRule Plain(std::string type) {
-    return {{}, {{}, std::move(type), false, false}};
-  }
-  static TypeRule RefcountPtr(std::string type) {
-    return {{}, {{}, std::move(type), true, false}};
-  }
-  static TypeRule UnsafePtr(std::string type) {
-    return {{}, {{}, std::move(type), false, true}};
-  }
 };
 
 using ExprRules = std::unordered_map<std::string, ExprRule>;

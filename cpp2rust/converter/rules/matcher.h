@@ -14,6 +14,10 @@
 
 #include "converter/translation_rule.h"
 
+namespace cpp2rust {
+class Converter;
+}
+
 namespace cpp2rust::Matcher {
 using Bindings = std::vector<clang::QualType>;
 
@@ -31,9 +35,9 @@ clang::QualType GetInitType(clang::ASTContext &ctx, const clang::Expr *expr);
 
 bool HasRuleNamed(const clang::FunctionDecl *decl);
 
-std::string MapBinding(clang::ASTContext &ctx, const Bindings &bindings,
+std::string MapBinding(Converter &converter, const Bindings &bindings,
                        unsigned n);
 
-std::string InstantiateTgt(clang::ASTContext &ctx, const Bindings &types,
+std::string InstantiateTgt(Converter &converter, const Bindings &types,
                            const std::string &tgt_template);
 } // namespace cpp2rust::Matcher

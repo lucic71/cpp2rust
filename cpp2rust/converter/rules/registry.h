@@ -24,11 +24,6 @@ TranslationRule::ExprRule *FindExprRule(const std::string &dir,
 TranslationRule::TypeRule *FindTypeRule(const std::string &dir,
                                         const std::string &name);
 
-TranslationRule::TypeRule *FindUserType(clang::ASTContext &ctx,
-                                        clang::QualType type);
-
-void ResetUserTypes();
-
 Matcher::Match<TranslationRule::ExprRule> Search(clang::ASTContext &ctx,
                                                  const clang::Expr *expr);
 Matcher::Match<TranslationRule::TypeRule> Search(clang::ASTContext &ctx,
