@@ -560,17 +560,20 @@ std::vector<std::vector<T1>> &f111(std::vector<std::vector<T1>> &dst,
 }
 
 template <typename T1, typename... Args>
-T1 &f112(std::vector<T1> &o, Init<T1, Args> &&...args) {
+auto f112(std::vector<T1> &o, Init<T1, Args> &&...args)
+    -> decltype(o.emplace_back(std::forward<Args>(args)...)) {
   return o.emplace_back(std::forward<Args>(args)...);
 }
 
 template <typename T1, typename... Args>
-std::vector<T1> &f113(std::vector<std::vector<T1>> &o,
-                      Init<std::vector<T1>, Args> &&...args) {
+auto f113(std::vector<std::vector<T1>> &o,
+          Init<std::vector<T1>, Args> &&...args)
+    -> decltype(o.emplace_back(std::forward<Args>(args)...)) {
   return o.emplace_back(std::forward<Args>(args)...);
 }
 
 template <typename T1, typename T2 = std::allocator<T1>, typename... Args>
-T1 &f114(std::vector<T1, T2> &o, Init<T1, Args> &&...args) {
+auto f114(std::vector<T1, T2> &o, Init<T1, Args> &&...args)
+    -> decltype(o.emplace_back(std::forward<Args>(args)...)) {
   return o.emplace_back(std::forward<Args>(args)...);
 }

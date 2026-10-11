@@ -46,13 +46,14 @@ std::deque<T1> &f11(std::deque<T1> &dst, std::deque<T1> &&src) {
 }
 
 template <typename T1, typename... Args>
-T1 &f12(std::deque<T1> &o, Init<T1, Args> &&...args) {
+auto f12(std::deque<T1> &o, Init<T1, Args> &&...args)
+    -> decltype(o.emplace_back(std::forward<Args>(args)...)) {
   return o.emplace_back(std::forward<Args>(args)...);
 }
 
 template <typename T1, typename... Args>
-std::vector<T1> &f13(std::deque<std::vector<T1>> &o,
-                     Init<std::vector<T1>, Args> &&...args) {
+auto f13(std::deque<std::vector<T1>> &o, Init<std::vector<T1>, Args> &&...args)
+    -> decltype(o.emplace_back(std::forward<Args>(args)...)) {
   return o.emplace_back(std::forward<Args>(args)...);
 }
 
