@@ -136,32 +136,30 @@ fn main_0() -> i32 {
         Ptr::<i8>::from_string_literal(b"cde"),
     ])));
     assert!((({ total_len_13(names.as_pointer(),) }) == 5));
-    let rows: Value<Box<[Value<Box<[i32]>>]>> = Rc::new(RefCell::new(Box::new([
-        Rc::new(RefCell::new(Box::new([1, 2, 3]))),
-        Rc::new(RefCell::new(Box::new([4, 5, 6]))),
+    let rows: Value<Box<[Box<[i32]>]>> = Rc::new(RefCell::new(Box::new([
+        Box::new([1, 2, 3]),
+        Box::new([4, 5, 6]),
     ])));
-    let mut p: Ptr<Value<Box<[i32]>>> = (rows.as_pointer() as Ptr<Value<Box<[i32]>>>);
+    let mut p: Ptr<Box<[i32]>> = (rows.as_pointer() as Ptr<Box<[i32]>>);
     p.prefix_inc();
     assert!(
-        ({ ((p).read().as_pointer() as Ptr::<i32>).clone() } == {
-            ((((rows.as_pointer() as Ptr<Value<Box<[i32]>>>)
+        ({ ((p).as_pointer() as Ptr::<i32>).clone() } == {
+            ((((rows.as_pointer() as Ptr<Box<[i32]>>)
                 .offset(1)
-                .read()
                 .as_pointer()) as Ptr<i32>)
                 .offset(0))
         })
     );
-    let r: Ptr<i32> = ((p).read().as_pointer()).clone();
+    let r: Ptr<i32> = ((p).as_pointer()).clone();
     assert!(((elem!((r), 0).read()) == 4));
     assert!((({ sum_2((r).clone(),) }) == 15));
-    assert!((({ sum_2(((p).read().as_pointer()).clone(),) }) == 15));
-    let mut q: Ptr<Value<Box<[i32]>>> = (rows.as_pointer() as Ptr<Value<Box<[i32]>>>);
-    assert!((({ sum_2(q.offset((1) as isize).read().as_pointer(),) }) == 15));
+    assert!((({ sum_2(((p).as_pointer()).clone(),) }) == 15));
+    let mut q: Ptr<Box<[i32]>> = (rows.as_pointer() as Ptr<Box<[i32]>>);
+    assert!((({ sum_2(q.offset((1) as isize).as_pointer(),) }) == 15));
     assert!(
-        ({ (q.offset((1) as isize).read().as_pointer() as Ptr::<i32>) } == {
-            ((((rows.as_pointer() as Ptr<Value<Box<[i32]>>>)
+        ({ (q.offset((1) as isize).as_pointer() as Ptr::<i32>) } == {
+            ((((rows.as_pointer() as Ptr<Box<[i32]>>)
                 .offset(1)
-                .read()
                 .as_pointer()) as Ptr<i32>)
                 .offset(0))
         })
