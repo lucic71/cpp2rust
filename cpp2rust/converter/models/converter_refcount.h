@@ -496,8 +496,7 @@ private:
 
   struct PushUnboxedIfSimple {
     ConverterRefCount &c;
-    PushUnboxedIfSimple(ConverterRefCount &c, std::string_view outer_type,
-                        clang::QualType inner_type);
+    PushUnboxedIfSimple(ConverterRefCount &c, clang::QualType inner_type);
 
     ~PushUnboxedIfSimple() { c.conversion_kind_.pop_back(); }
   };
@@ -514,32 +513,25 @@ private:
   // emit ptr.write(rhs), or by ConvertMappedMethodCall to emit
   // ptr.with_mut(...).
   struct PendingDeref {
-    PendingDeref(ComputedExprType &type, clang::ASTContext &ctx)
-        : type(type), ctx(ctx) {}
-    void set(std::string str, bool fresh, clang::Expr *expr = nullptr);
-    void set_unchecked(std::string str, bool fresh,
-                       clang::Expr *expr = nullptr);
+    PendingDeref(ComputedExprType &type) : type(type) {}
+    void set(std::string str, bool fresh);
+    void set_unchecked(std::string str, bool fresh);
     std::string take() {
       auto result = std::move(value);
       value.clear();
-      pointee_is_boxed = false;
       ptr_is_fresh = false;
       return result;
     }
     bool empty() const { return value.empty(); }
-    bool is_boxed() const { return pointee_is_boxed; }
     bool is_fresh() const { return ptr_is_fresh; }
     void assert_consumed() const {
       assert(value.empty() && "pending_deref_ not consumed");
     }
 
   private:
-    bool compute_inner_boxed(clang::Expr *expr) const;
     ComputedExprType &type;
-    clang::ASTContext &ctx;
     std::string value;
-    bool pointee_is_boxed = false;
     bool ptr_is_fresh = false;
-  } pending_deref_{computed_expr_type_, ctx_};
+  } pending_deref_{computed_expr_type_};
 };
 } // namespace cpp2rust

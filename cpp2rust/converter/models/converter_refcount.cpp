@@ -101,36 +101,14 @@ static bool IsPointerType(clang::ASTContext &ctx, clang::QualType type) {
                                       IteratorCategory::Contiguous;
 }
 
-bool ConverterRefCount::PendingDeref::compute_inner_boxed(
-    clang::Expr *expr) const {
-  if (!expr) {
-    return false;
-  }
-  if (!IsBoxedType(ctx, expr->getType().getNonReferenceType())) {
-    return false;
-  }
-  if (auto *ase = clang::dyn_cast<clang::ArraySubscriptExpr>(expr)) {
-    auto base_type = ase->getBase()->IgnoreCasts()->getType();
-    if (base_type->isPointerType())
-      return IsBoxedType(ctx, base_type->getPointeeType());
-    return IsBoxedType(ctx, base_type.getNonReferenceType());
-  }
-  if (auto *oce = clang::dyn_cast<clang::CXXOperatorCallExpr>(expr)) {
-    return IsBoxedType(ctx, oce->getArg(0)->getType().getNonReferenceType());
-  }
-  return false;
-}
-
-void ConverterRefCount::PendingDeref::set(std::string str, bool fresh,
-                                          clang::Expr *expr) {
+void ConverterRefCount::PendingDeref::set(std::string str, bool fresh) {
   assert_consumed();
-  set_unchecked(std::move(str), fresh, expr);
+  set_unchecked(std::move(str), fresh);
 }
 
-void ConverterRefCount::PendingDeref::set_unchecked(std::string str, bool fresh,
-                                                    clang::Expr *expr) {
+void ConverterRefCount::PendingDeref::set_unchecked(std::string str,
+                                                    bool fresh) {
   value = std::move(str);
-  pointee_is_boxed = compute_inner_boxed(expr);
   ptr_is_fresh = fresh;
   type = ComputedExprType::Pending;
 }
@@ -149,19 +127,11 @@ std::string ConverterRefCount::GetInnerType(clang::QualType type) {
 }
 
 ConverterRefCount::PushUnboxedIfSimple::PushUnboxedIfSimple(
-    ConverterRefCount &c, std::string_view outer, clang::QualType inner_type)
+    ConverterRefCount &c, clang::QualType inner_type)
     : c(c) {
-  bool unboxed = outer == "Ptr<%>" || outer == "%";
-
-  // Vectors are boxed until the last element
-  if (!unboxed && (outer == "Vec<%>" || outer == "Box<%>")) {
-    if (!IsBoxedType(c.ctx_, inner_type)) {
-      unboxed = true;
-    }
-  }
-
-  c.conversion_kind_.push_back(unboxed ? ConversionKind::Unboxed
-                                       : ConversionKind::FullRefCount);
+  c.conversion_kind_.push_back(IsBoxedType(c.ctx_, inner_type)
+                                   ? ConversionKind::FullRefCount
+                                   : ConversionKind::Unboxed);
 }
 
 std::string
@@ -278,7 +248,7 @@ bool ConverterRefCount::VisitIncompleteArrayType(
     clang::IncompleteArrayType *type) {
   std::string str;
   {
-    PushUnboxedIfSimple push(*this, "Box<%>", type->getElementType());
+    PushUnboxedIfSimple push(*this, type->getElementType());
     str = std::format("Box<[{}]>", ToString(type->getElementType()));
   }
   StrCat(BoxType(std::move(str)));
@@ -546,7 +516,7 @@ bool ConverterRefCount::VisitArraySubscriptExpr(
         pending_deref_.assert_consumed();
         Buffer buf(*this);
         ConvertArraySubscript(base, expr->getIdx(), expr->getType());
-        pending_deref_.set_unchecked(std::move(buf).str(), isFresh(), expr);
+        pending_deref_.set_unchecked(std::move(buf).str(), isFresh());
         return false;
       }
       PushParen paren(*this);
@@ -2301,28 +2271,10 @@ bool ConverterRefCount::VisitCXXForRangeStmtVector(
 
   PushBrace brace(*this);
 
-  // handle multi-level types such as Vec<Value<Vec<T>>>
-  if (IsBoxedType(ctx_, stmt->getRangeInit()->getType()) &&
-      GetInnerType(stmt->getRangeInit()->getType()).starts_with("Value<")) {
-    StrCat(keyword::kLet, loop_var_name, token::kColon);
-
-    if (loop_var->getType()->isReferenceType()) {
-      StrCat(ToString(loop_var->getType()), token::kAssign, loop_var_name,
-             GetPointerDerefSuffix(loop_var->getType().getNonReferenceType()),
-             ".as_pointer()");
-    } else {
-      PushConversionKind push(*this, ConversionKind::FullRefCount);
-      StrCat(ToString(loop_var->getType()), token::kAssign,
-             "Rc::new(RefCell::new(", loop_var_name,
-             GetPointerDerefSuffix(loop_var->getType()), ".borrow().clone()))");
-    }
-    StrCat(token::kSemiColon);
-  } else {
-    auto type = loop_var->getType();
-    bool copy = type.isPODType(ctx_) && !type->isRecordType();
-    EmitByValueShadow(loop_var, loop_var_name + GetPointerDerefSuffix(type) +
-                                    (copy ? "" : ".clone()"));
-  }
+  auto type = loop_var->getType();
+  bool copy = type.isPODType(ctx_) && !type->isRecordType();
+  EmitByValueShadow(loop_var, loop_var_name + GetPointerDerefSuffix(type) +
+                                  (copy ? "" : ".clone()"));
 
   ConvertForRangeBody(stmt);
 
@@ -2947,7 +2899,7 @@ bool ConverterRefCount::ConvertCXXOperatorCallExpr(
                       ConvertObject(expr->getArg(0), ObjectShape::Element),
                       ConvertPtrType(expr->getArg(0)->getType()),
                       ConvertSubscriptIndex(expr->getArg(1))),
-          /*fresh=*/true, expr);
+          /*fresh=*/true);
       break;
     }
 
@@ -2971,7 +2923,7 @@ bool ConverterRefCount::ConvertCXXOperatorCallExpr(
                                       : std::format("{}.offset({})", ptr, idx));
 
       if (is_inner_boxed) {
-        StrCat(GetPointerDerefSuffix(expr->getType()), ".as_pointer()");
+        StrCat(".as_pointer()");
         if (!isObject()) {
           StrCat(std::format("as Ptr<{}>)", ToString(expr->getType())));
         }
@@ -3110,7 +3062,7 @@ void ConverterRefCount::ConvertPointerSubscript(
     pending_deref_.assert_consumed();
     Buffer buf(*this);
     ConvertPointerElem(base, idx);
-    pending_deref_.set_unchecked(std::move(buf).str(), isFresh(), expr);
+    pending_deref_.set_unchecked(std::move(buf).str(), isFresh());
     return;
   }
 
@@ -3354,16 +3306,9 @@ std::string ConverterRefCount::ConvertMappedMethodCall(
     return receiver + ConvertIRFragment(mc.body, expr, args, num_args, ctx);
   }
 
-  bool is_boxed = pending_deref_.is_boxed();
   auto ptr = pending_deref_.take();
   auto body = ConvertIRFragment(mc.body, expr, args, num_args, ctx);
   SetFreshType(expr->getType());
-
-  if (is_boxed) {
-    return std::format(
-        "{}.with_mut(|__v: &mut Value<{}>| (*__v.borrow_mut()){})", ptr,
-        ToString(arg->getType()), body);
-  }
 
   return std::format("{}.with_mut(|__v: {}| __v{})", ptr, param_type, body);
 }
