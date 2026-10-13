@@ -1193,7 +1193,11 @@ impl<T: 'static> Ptr<Vec<T>> {
                 offset: self.offset,
                 kind: PtrKind::HeapVec(weak.clone()),
             },
-            PtrKind::StackVec(_) | PtrKind::HeapVec(_) | PtrKind::Nested(_) => Ptr {
+            PtrKind::StackVec(_)
+            | PtrKind::HeapVec(_)
+            | PtrKind::StackArray(_)
+            | PtrKind::HeapArray(_)
+            | PtrKind::Nested(_) => Ptr {
                 offset: 0,
                 kind: PtrKind::Nested(Rc::new(self.clone())),
             },
@@ -1202,7 +1206,21 @@ impl<T: 'static> Ptr<Vec<T>> {
     }
 }
 
-impl<T> Ptr<Box<[T]>> {
+impl<T> AsPointer<Box<[T]>> for Ptr<Box<[T]>> {
+    #[inline]
+    fn as_pointer(&self) -> Ptr<Box<[T]>> {
+        self.clone()
+    }
+}
+
+impl<T: 'static> AsPointer<T> for Ptr<Box<[T]>> {
+    #[inline]
+    fn as_pointer(&self) -> Ptr<T> {
+        self.decay()
+    }
+}
+
+impl<T: 'static> Ptr<Box<[T]>> {
     #[inline]
     pub fn decay(&self) -> Ptr<T> {
         match &self.kind {
@@ -1214,6 +1232,14 @@ impl<T> Ptr<Box<[T]>> {
             PtrKind::HeapSingle(weak) => Ptr {
                 offset: self.offset,
                 kind: PtrKind::HeapArray(weak.clone()),
+            },
+            PtrKind::StackVec(_)
+            | PtrKind::HeapVec(_)
+            | PtrKind::StackArray(_)
+            | PtrKind::HeapArray(_)
+            | PtrKind::Nested(_) => Ptr {
+                offset: 0,
+                kind: PtrKind::Nested(Rc::new(self.clone())),
             },
             _ => panic!("ub: invalid decay"),
         }
@@ -1295,7 +1321,9 @@ impl<T> fmt::Debug for Ptr<T> {
             PtrKind::StackVec(w) | PtrKind::HeapVec(w) => {
                 (Weak::as_ptr(w) as usize).wrapping_add(self.byte_offset())
             }
-            PtrKind::Nested(..) | PtrKind::Field(..) => self.kind.address().wrapping_add(self.byte_offset()),
+            PtrKind::Nested(..) | PtrKind::Field(..) => {
+                self.kind.address().wrapping_add(self.byte_offset())
+            }
             PtrKind::Reinterpreted(data) => data.alloc.address().wrapping_add(self.byte_offset()),
         };
         write!(f, "0x{:x}", addr)

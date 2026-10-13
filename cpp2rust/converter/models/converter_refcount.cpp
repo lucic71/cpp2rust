@@ -126,14 +126,6 @@ std::string ConverterRefCount::GetInnerType(clang::QualType type) {
   return std::move(str).substr(pos + 1, end - pos - 1);
 }
 
-ConverterRefCount::PushUnboxedIfSimple::PushUnboxedIfSimple(
-    ConverterRefCount &c, clang::QualType inner_type)
-    : c(c) {
-  c.conversion_kind_.push_back(IsBoxedType(c.ctx_, inner_type)
-                                   ? ConversionKind::FullRefCount
-                                   : ConversionKind::Unboxed);
-}
-
 std::string
 ConverterRefCount::GetSafeTypeAsString(clang::QualType qual_type) const {
   std::string type_as_string;
@@ -248,7 +240,9 @@ bool ConverterRefCount::VisitIncompleteArrayType(
     clang::IncompleteArrayType *type) {
   std::string str;
   {
-    PushUnboxedIfSimple push(*this, type->getElementType());
+    PushConversionKind push(*this, type->getElementType()->isArrayType()
+                                       ? ConversionKind::Pointee
+                                       : ConversionKind::Unboxed);
     str = std::format("Box<[{}]>", ToString(type->getElementType()));
   }
   StrCat(BoxType(std::move(str)));
@@ -268,7 +262,7 @@ bool ConverterRefCount::VisitReferenceType(clang::ReferenceType *type) {
     auto element_type = pointee_type->getAsArrayTypeUnsafe()->getElementType();
     PushConversionKind push1(*this, ConversionKind::Ptr,
                              !element_type->isArrayType());
-    PushConversionKind push2(*this, ConversionKind::FullRefCount,
+    PushConversionKind push2(*this, ConversionKind::Pointee,
                              element_type->isArrayType());
     StrCat("Ptr<");
     Convert(element_type);
@@ -308,7 +302,7 @@ bool ConverterRefCount::VisitPointerType(clang::PointerType *type) {
   bool pointee_is_array =
       pointee_type->isArrayType() && !IsVaListType(pointee_type);
   PushConversionKind push1(*this, ConversionKind::Ptr, !pointee_is_array);
-  PushConversionKind push2(*this, ConversionKind::FullRefCount,
+  PushConversionKind push2(*this, ConversionKind::Pointee,
                            pointee_is_array);
   if (pointee_type->isRecordType() &&
       IsAbstractUserClass(pointee_type->getAsRecordDecl())) {
@@ -337,14 +331,14 @@ bool ConverterRefCount::VisitConstantArrayType(clang::ConstantArrayType *type) {
     StrCat(std::format("; {}]", GetNumAsString(type->getSize()).c_str()));
     break;
   case ConversionKind::Ptr: {
-    PushConversionKind elem(*this, ConversionKind::FullRefCount,
+    PushConversionKind elem(*this, ConversionKind::Pointee,
                             type->getElementType()->isArrayType());
     Convert(type->getElementType());
     break;
   }
   case ConversionKind::Pointee:
   case ConversionKind::FullRefCount: {
-    PushConversionKind elem(*this, ConversionKind::FullRefCount,
+    PushConversionKind elem(*this, ConversionKind::Pointee,
                             type->getElementType()->isArrayType());
     StrCat("Box<[");
     Convert(type->getElementType());
@@ -373,6 +367,7 @@ std::string ConverterRefCount::ConvertObject(clang::Expr *expr,
   if (shape == ObjectShape::Element && expr->getType()->isPointerType()) {
     auto pointee = expr->getType()->getPointeeType();
     if (IsBoxedType(ctx_, pointee) || pointee->isArrayType()) {
+      PushConversionKind push(*this, ConversionKind::Pointee);
       computed_expr_type_ = ComputedExprType::FreshPointer;
       return std::format("Ptr::<{}>::decay(&({}))", ToString(pointee),
                          std::move(str));
@@ -1915,10 +1910,13 @@ bool ConverterRefCount::VisitInitListExpr(clang::InitListExpr *expr) {
   }
 
   auto conv = getConversionKind();
-  // 2D arrays are FullRefCount'ed on the second level as well.
-  PushConversionKind push(
-      *this, ConversionKind::Unboxed,
-      !(expr->getNumInits() > 0 && expr->getInit(0)->getType()->isArrayType()));
+  bool rows =
+      expr->getNumInits() > 0 && expr->getInit(0)->getType()->isArrayType();
+  PushConversionKind push(*this,
+                          rows && conv == ConversionKind::FullRefCount
+                              ? ConversionKind::Pointee
+                              : ConversionKind::Unboxed,
+                          !rows || conv == ConversionKind::FullRefCount);
 
   switch (conv) {
   case ConversionKind::Unboxed:
@@ -2481,7 +2479,7 @@ ConverterRefCount::GetArrayDefaultAsString(clang::QualType qual_type) {
                          size_as_string.c_str(), default_as_string);
     }
     PushConversionKind push(*this, element_type->isArrayType()
-                                       ? ConversionKind::FullRefCount
+                                       ? ConversionKind::Pointee
                                        : ConversionKind::Unboxed);
     auto element_type_as_string = ToString(element_type);
     auto default_as_string = GetDefaultAsString(element_type);
@@ -3014,7 +3012,7 @@ void ConverterRefCount::ConvertArraySubscript(clang::Expr *base,
       }
 
       if (is_inner_boxed) {
-        StrCat(GetPointerDerefSuffix(type), ".as_pointer()");
+        StrCat(".as_pointer()");
       }
     }
 
@@ -3074,7 +3072,7 @@ void ConverterRefCount::ConvertPointerSubscript(
   } else {
     ConvertPointerOffset(base, idx);
     if (expr->getType()->isArrayType()) {
-      StrCat(GetPointerDerefSuffix(expr->getType()), ".as_pointer()");
+      StrCat(".as_pointer()");
     }
   }
   if (deref) {
@@ -3117,8 +3115,10 @@ void ConverterRefCount::ConvertAddrOf(clang::Expr *expr,
   auto pointee_type = pointer_type->getPointeeType();
   if (isObject() && WantsElementPtr() &&
       (IsBoxedType(ctx_, pointee_type) || pointee_type->isArrayType())) {
+    auto ptr = ConvertPointer(expr);
+    PushConversionKind push(*this, ConversionKind::Pointee);
     StrCat(std::format("Ptr::<{}>::decay(&({}))", ToString(pointee_type),
-                       ConvertPointer(expr)));
+                       std::move(ptr)));
     computed_expr_type_ = ComputedExprType::FreshPointer;
     return;
   }
@@ -3158,12 +3158,12 @@ void ConverterRefCount::ConvertDeref(clang::Expr *expr) {
   }
 
   if (isAddrOf() && pointee_type->isArrayType()) {
-    str = std::format("({}){}.as_pointer()", std::move(str),
-                      GetPointerDerefSuffix(pointee_type));
+    str = std::format("({}).as_pointer()", std::move(str));
   }
 
   if (isObject() && WantsElementPtr() &&
       (IsBoxedType(ctx_, pointee_type) || pointee_type->isArrayType())) {
+    PushConversionKind push(*this, ConversionKind::Pointee);
     StrCat(std::format("Ptr::<{}>::decay(&({}))", ToString(pointee_type),
                        std::move(str)));
     computed_expr_type_ = ComputedExprType::FreshPointer;
@@ -3318,7 +3318,7 @@ std::string ConverterRefCount::ConvertPointeeType(clang::QualType ptr_type) {
   PushConversionKind push(*this, ConversionKind::Unboxed);
   auto pointee = ptr_type->getPointeeType();
   if (pointee->isArrayType()) {
-    PushConversionKind array(*this, ConversionKind::FullRefCount);
+    PushConversionKind array(*this, ConversionKind::Pointee);
     return std::string(Trim(ToString(pointee)));
   }
   if (!pointee->isRecordType()) {

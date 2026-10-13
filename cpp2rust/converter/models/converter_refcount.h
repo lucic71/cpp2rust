@@ -494,13 +494,6 @@ private:
     }
   };
 
-  struct PushUnboxedIfSimple {
-    ConverterRefCount &c;
-    PushUnboxedIfSimple(ConverterRefCount &c, clang::QualType inner_type);
-
-    ~PushUnboxedIfSimple() { c.conversion_kind_.pop_back(); }
-  };
-
   std::string BoxType(std::string &&str) const;
   std::string BoxValue(std::string &&str) const;
 
