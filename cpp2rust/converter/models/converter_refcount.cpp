@@ -2983,9 +2983,8 @@ clang::DeclRefExpr *ConverterRefCount::GetGlobalArrayRValue(clang::Expr *base) {
     return nullptr;
   }
   // Records are accessed in place, as their fields may be written to.
-  auto elem_ty = arr_ty->getElementType();
-  if (!TypeIsCopyable(elem_ty) && !elem_ty->isPointerType() &&
-      !elem_ty->isArrayType()) {
+  auto elem_ty = ctx_.getBaseElementType(arr_ty->getElementType());
+  if (!TypeIsCopyable(elem_ty) && !elem_ty->isPointerType()) {
     return nullptr;
   }
   return ref;
@@ -3026,13 +3025,24 @@ void ConverterRefCount::ConvertArraySubscript(clang::Expr *base,
     }
 
     computed_expr_type_ = ComputedExprType::FreshPointer;
-  } else if (auto *global = GetGlobalArrayRValue(base)) {
-    // Read just the element instead of cloning the whole global array.
-    // The index is evaluated first, as it may itself access the global.
-    StrCat(std::format(
-        "({{ let __idx = ({}) as usize; {}.with(|rc| rc.borrow()[__idx]{}) }})",
-        ConvertRValue(idx), ConvertDeclRef(global, global->getDecl()),
-        TypeIsCopyable(type) ? "" : ".clone()"));
+  } else if (auto *global = GetGlobalArrayRValue(SubscriptedArray(base))) {
+    std::vector<clang::Expr *> idxs = {idx};
+    for (auto *row = base->IgnoreImplicit();
+         auto *sub = clang::dyn_cast<clang::ArraySubscriptExpr>(row);
+         row = sub->getBase()->IgnoreImplicit()) {
+      idxs.push_back(sub->getIdx());
+    }
+    std::string lets;
+    std::string path;
+    for (unsigned i = idxs.size(); i-- > 0;) {
+      auto n = idxs.size() - 1 - i;
+      lets += std::format("let __idx{} = ({}) as usize; ", n,
+                          ConvertRValue(idxs[i]));
+      path += std::format("[__idx{}]", n);
+    }
+    StrCat(std::format("({{ {}{}.with(|rc| rc.borrow(){}{}) }})", lets,
+                       ConvertDeclRef(global, global->getDecl()), path,
+                       TypeIsCopyable(type) ? "" : ".clone()"));
     SetFreshType(type);
   } else {
     Convert(base->IgnoreImplicit());

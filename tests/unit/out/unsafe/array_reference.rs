@@ -188,6 +188,13 @@ unsafe fn main_0() -> i32 {
             diff
         }) != (0))
     );
+    assert!(
+        (((*std::cell::LazyCell::force_mut(&mut *&raw mut kTable_14))[(1) as usize][(2) as usize])
+            == (6))
+            && (((*std::cell::LazyCell::force_mut(&mut *&raw mut kTable_14))[(0) as usize]
+                [(1) as usize])
+                == (2))
+    );
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {

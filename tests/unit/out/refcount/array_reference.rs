@@ -214,6 +214,18 @@ fn main_0() -> i32 {
             )
             != 0)
     );
+    assert!(
+        (({
+            let __idx0 = (1) as usize;
+            let __idx1 = (2) as usize;
+            kTable_14.with(|rc| rc.borrow()[__idx0][__idx1])
+        }) == 6)
+            && (({
+                let __idx0 = (0) as usize;
+                let __idx1 = (1) as usize;
+                kTable_14.with(|rc| rc.borrow()[__idx0][__idx1])
+            }) == 2)
+    );
     return 0;
 }
 pub fn __cpp2rust_init_globals() {

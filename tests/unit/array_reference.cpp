@@ -114,5 +114,6 @@ int main() {
   int key[4] = {0, 4, 5, 6};
   assert(memcmp(&key[1], kTable[1], sizeof(kTable[1])) == 0);
   assert(memcmp(&key[1], kTable[0], sizeof(kTable[0])) != 0);
+  assert(kTable[1][2] == 6 && kTable[0][1] == 2);
   return 0;
 }
