@@ -535,9 +535,10 @@ impl<T> Ptr<T> {
                 OriginalAlloc::slice(weak),
                 self.offset.wrapping_mul(T::byte_size()),
             ),
-            PtrKind::Nested(_) => {
-                panic!("reinterpret_cast of a pointer into a nested container is not supported")
-            }
+            PtrKind::Nested(parent) => (
+                OriginalAlloc::nested(parent),
+                self.offset.wrapping_mul(T::byte_size()),
+            ),
             PtrKind::StackArray(weak) | PtrKind::HeapArray(weak) => (
                 OriginalAlloc::slice(weak),
                 self.offset.wrapping_mul(T::byte_size()),
