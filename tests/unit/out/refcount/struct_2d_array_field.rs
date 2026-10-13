@@ -77,7 +77,7 @@ fn main_0() -> i32 {
             != 0)
     );
     assert!(
-        (((((*{ (*T1_0.with(Value::clone).borrow()).rows.clone() }.borrow())[(1) as usize].borrow()
+        (((((*{ (*T1_0.with(Value::clone).borrow()).rows.clone() }.borrow())[(1) as usize]
             [(0) as usize] as i32)
             == ('\0' as i32)) as i32)
             != 0)
@@ -126,7 +126,7 @@ fn main_0() -> i32 {
             != 0)
     );
     assert!(
-        (((((*{ (*T2_1.with(Value::clone).borrow()).rows.clone() }.borrow())[(2) as usize].borrow()
+        (((((*{ (*T2_1.with(Value::clone).borrow()).rows.clone() }.borrow())[(2) as usize]
             [(0) as usize] as i32)
             == ('\0' as i32)) as i32)
             != 0)
@@ -159,7 +159,7 @@ fn main_0() -> i32 {
         } == 0) as i32)
             != 0)
     );
-    (*{ (*local.borrow()).rows.clone() }.borrow())[(1) as usize].borrow_mut()[(0) as usize] =
+    (*{ (*local.borrow()).rows.clone() }.borrow_mut())[(1) as usize][(0) as usize] =
         (('T' as i32) as i8);
     assert!(
         ((({

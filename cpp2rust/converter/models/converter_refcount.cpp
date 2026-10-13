@@ -302,8 +302,7 @@ bool ConverterRefCount::VisitPointerType(clang::PointerType *type) {
   bool pointee_is_array =
       pointee_type->isArrayType() && !IsVaListType(pointee_type);
   PushConversionKind push1(*this, ConversionKind::Ptr, !pointee_is_array);
-  PushConversionKind push2(*this, ConversionKind::Pointee,
-                           pointee_is_array);
+  PushConversionKind push2(*this, ConversionKind::Pointee, pointee_is_array);
   if (pointee_type->isRecordType() &&
       IsAbstractUserClass(pointee_type->getAsRecordDecl())) {
     StrCat("PtrDyn<dyn");
@@ -3026,20 +3025,7 @@ void ConverterRefCount::ConvertArraySubscript(clang::Expr *base,
         TypeIsCopyable(type) ? "" : ".clone()"));
     SetFreshType(type);
   } else {
-    if (isLValue() &&
-        clang::isa<clang::ArraySubscriptExpr>(base->IgnoreImplicit())) {
-      PushExprKind push(*this, ExprKind::RValue);
-      Convert(base->IgnoreImplicit());
-    } else {
-      Convert(base->IgnoreImplicit());
-    }
-    if (clang::isa<clang::ArraySubscriptExpr>(base->IgnoreImplicit())) {
-      if (isRValue()) {
-        StrCat(".borrow()");
-      } else {
-        StrCat(".borrow_mut()");
-      }
-    }
+    Convert(base->IgnoreImplicit());
     StrCat(std::format("[({}) as usize]", ConvertRValue(idx)));
     SetValueFreshness(type);
   }
