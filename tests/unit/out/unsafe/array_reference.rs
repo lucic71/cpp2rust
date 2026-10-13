@@ -131,6 +131,10 @@ unsafe fn main_0() -> i32 {
         (((*q.offset((1) as isize)).as_mut_ptr())
             == (&mut rows[(1) as usize][(0) as usize] as *mut i32))
     );
+    (*q.offset((1) as isize))[(2) as usize] = 8;
+    assert!(
+        ((rows[(1) as usize][(2) as usize]) == (8)) && ((rows[(0) as usize][(2) as usize]) == (3))
+    );
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

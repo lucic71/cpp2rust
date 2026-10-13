@@ -164,6 +164,11 @@ fn main_0() -> i32 {
                 .offset(0))
         })
     );
+    elem!((q.offset((1) as isize).as_pointer() as Ptr::<i32>), 2).write(8);
+    assert!(
+        ((*rows.borrow())[(1) as usize][(2) as usize] == 8)
+            && ((*rows.borrow())[(0) as usize][(2) as usize] == 3)
+    );
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

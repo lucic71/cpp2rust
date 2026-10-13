@@ -496,13 +496,23 @@ std::string ConverterRefCount::ConvertPtrType(clang::QualType type) {
   return std::format("Ptr<{}>", std::move(str));
 }
 
-bool ConverterRefCount::VisitArraySubscriptExpr(
-    clang::ArraySubscriptExpr *expr) {
+bool ConverterRefCount::IsPointerSubscript(
+    const clang::ArraySubscriptExpr *expr) const {
   auto *base = expr->getBase();
   if (base->IgnoreCasts()->getType()->isPointerType() ||
       IsUnionArrayMember(base) || IsArrayFieldPtr(ctx_, base) ||
       (IsReferenceType(base) &&
        base->IgnoreCasts()->getType()->isArrayType())) {
+    return true;
+  }
+  auto *row = clang::dyn_cast<clang::ArraySubscriptExpr>(base->IgnoreCasts());
+  return row && IsPointerSubscript(row);
+}
+
+bool ConverterRefCount::VisitArraySubscriptExpr(
+    clang::ArraySubscriptExpr *expr) {
+  auto *base = expr->getBase();
+  if (IsPointerSubscript(expr)) {
     ConvertPointerSubscript(expr);
   } else {
     if (!base->IgnoreCasts()->getType()->isArrayType()) {

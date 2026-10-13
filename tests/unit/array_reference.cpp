@@ -101,5 +101,7 @@ int main() {
   int (*q)[3] = rows;
   assert(sum(q[1]) == 15);
   assert(q[1] == &rows[1][0]);
+  q[1][2] = 8;
+  assert(rows[1][2] == 8 && rows[0][2] == 3);
   return 0;
 }

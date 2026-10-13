@@ -294,6 +294,8 @@ public:
   clang::DeclRefExpr *GetGlobalArrayRValue(clang::Expr *base);
   void ConvertPointerSubscript(clang::ArraySubscriptExpr *expr) override;
 
+  bool IsPointerSubscript(const clang::ArraySubscriptExpr *expr) const;
+
   void ConvertFunctionMain(const clang::FunctionDecl *decl,
                            const std::string_view main_function_name) override;
 
