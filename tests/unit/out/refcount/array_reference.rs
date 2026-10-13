@@ -89,6 +89,12 @@ pub fn shift_points_12(p: Ptr<Point>, mut d: i32) {
 pub fn total_len_13(names: Ptr<Ptr<i8>>) -> i32 {
     return (({ len5_1((elem!((names), 0).read())) }) + ({ len5_1((elem!((names), 1).read())) }));
 }
+thread_local!(
+    pub static kTable_14: Value<Box<[Box<[i32]>]>> = Rc::new(RefCell::new(Box::new([
+        Box::new([1, 2, 3]),
+        Box::new([4, 5, 6]),
+    ])));
+);
 pub fn main() {
     __cpp2rust_init_globals();
     std::process::exit(main_0());
@@ -169,6 +175,47 @@ fn main_0() -> i32 {
         ((*rows.borrow())[(1) as usize][(2) as usize] == 8)
             && ((*rows.borrow())[(0) as usize][(2) as usize] == 3)
     );
+    (*rows.borrow_mut())[(0) as usize][(1) as usize] =
+        { (*rows.borrow())[(0) as usize][(2) as usize] };
+    elem!((q.offset((1) as isize).as_pointer() as Ptr::<i32>), 0)
+        .write({ (elem!((q.offset((0) as isize).as_pointer() as Ptr::<i32>), 1).read()) });
+    {
+        let __rhs = { (elem!((q.offset((0) as isize).as_pointer() as Ptr::<i32>), 2).read()) };
+        elem!((q.offset((1) as isize).as_pointer() as Ptr::<i32>), 1)
+            .with_mut(|__v| *__v = *__v + __rhs)
+    };
+    assert!(
+        (((*rows.borrow())[(0) as usize][(1) as usize] == 3)
+            && ((*rows.borrow())[(1) as usize][(0) as usize] == 3))
+            && ((*rows.borrow())[(1) as usize][(1) as usize] == 8)
+    );
+    let key: Value<Box<[i32]>> = Rc::new(RefCell::new(Box::new([0, 4, 5, 6])));
+    assert!(
+        ((((key.as_pointer() as Ptr<i32>).offset(1)) as Ptr::<i32>)
+            .to_any()
+            .memcmp(
+                &((((kTable_14.with(|v| v.as_pointer()) as Ptr<Box<[i32]>>)
+                    .offset(1)
+                    .as_pointer()) as Ptr::<i32>) as Ptr::<i32>)
+                    .to_any(),
+                ::std::mem::size_of::<[i32; 3]>()
+            )
+            == 0)
+    );
+    assert!(
+        ((((key.as_pointer() as Ptr<i32>).offset(1)) as Ptr::<i32>)
+            .to_any()
+            .memcmp(
+                &((((kTable_14.with(|v| v.as_pointer()) as Ptr<Box<[i32]>>)
+                    .offset(0)
+                    .as_pointer()) as Ptr::<i32>) as Ptr::<i32>)
+                    .to_any(),
+                ::std::mem::size_of::<[i32; 3]>()
+            )
+            != 0)
+    );
     return 0;
 }
-pub fn __cpp2rust_init_globals() {}
+pub fn __cpp2rust_init_globals() {
+    let _ = kTable_14.with(|_| ());
+}
