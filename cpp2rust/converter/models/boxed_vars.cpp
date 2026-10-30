@@ -59,6 +59,17 @@ bool CanUnbox(clang::ASTContext &ctx, const clang::VarDecl *decl) {
          !IsVaListType(decl->getType());
 }
 
+// A user-defined record wrapped in std::move is moved out of a rule argument
+// by a call to its move constructor, which takes a pointer to it.
+bool MovedByConstructor(const clang::Expr *arg) {
+  if (IgnoreTransparentStdCall(arg) == arg) {
+    return false;
+  }
+  auto *record = arg->getType()->getAsCXXRecordDecl();
+  return record && IsUserDefinedDecl(record) &&
+         llvm::any_of(record->ctors(), IsConvertibleMoveConstructor);
+}
+
 template <typename E> E *IgnoreNoOpCasts(E *expr) {
   while (auto *cast = clang::dyn_cast<clang::ImplicitCastExpr>(expr)) {
     if (cast->getCastKind() != clang::CK_NoOp) {
@@ -111,6 +122,10 @@ const clang::Expr *GetEnclosingObject(const clang::Expr *expr) {
   }
   if (auto *op = clang::dyn_cast<clang::CXXOperatorCallExpr>(expr);
       op && op->getOperator() == clang::OO_Subscript) {
+    // A ruled subscript passes the container to its rule like any argument.
+    if (Mapper::Contains(op->getCalleeDecl()->getASTContext(), op)) {
+      return nullptr;
+    }
     auto *vec = IgnoreNoOpCasts(op->getArg(0));
     return IsFlatVec(vec->getType()) ? vec : nullptr;
   }
@@ -253,6 +268,9 @@ private:
       auto *arg = IgnoreNoOpCasts(all_args[i]);
       if (auto *init = RuleRegistry::BuildParamConversion(ctx_, expr, i, arg)) {
         TraverseStmt(init);
+        continue;
+      }
+      if (MovedByConstructor(arg)) {
         continue;
       }
       if (!rule->params[i].is_pointer() || arg->getType()->isPointerType() ||
