@@ -68,15 +68,33 @@ std::string MapInitializer(Converter &converter, clang::QualType qual_type) {
   return {};
 }
 
+namespace {
+Matcher::Bindings bindIteratorElements(clang::ASTContext &ctx,
+                                       const clang::Expr *expr,
+                                       const TranslationRule::ExprRule &rule,
+                                       Matcher::Bindings subs) {
+  for (unsigned n = subs.size() + 1; n <= rule.generics.size(); ++n) {
+    subs.emplace_back(RuleRegistry::GetGenericType(ctx, expr, n));
+  }
+  return subs;
+}
+} // namespace
+
 std::string GetParamType(Converter &converter, const clang::Expr *expr,
                          unsigned index) {
-  auto [rule, subs] = RuleRegistry::Search(converter.GetASTContext(), expr);
-  return Matcher::InstantiateTgt(converter, subs, rule->params.at(index).type);
+  auto &ctx = converter.GetASTContext();
+  auto [rule, subs] = RuleRegistry::Search(ctx, expr);
+  return Matcher::InstantiateTgt(
+      converter, bindIteratorElements(ctx, expr, *rule, std::move(subs)),
+      rule->params.at(index).type);
 }
 
 std::string GetReturnType(Converter &converter, const clang::Expr *expr) {
-  auto [rule, subs] = RuleRegistry::Search(converter.GetASTContext(), expr);
-  return Matcher::InstantiateTgt(converter, subs, rule->return_type.type);
+  auto &ctx = converter.GetASTContext();
+  auto [rule, subs] = RuleRegistry::Search(ctx, expr);
+  return Matcher::InstantiateTgt(
+      converter, bindIteratorElements(ctx, expr, *rule, std::move(subs)),
+      rule->return_type.type);
 }
 
 } // namespace cpp2rust::Mapper
