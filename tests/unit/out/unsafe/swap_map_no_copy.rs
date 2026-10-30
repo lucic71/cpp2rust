@@ -98,47 +98,47 @@ impl Arrays {
     pub unsafe fn move_from(_a0: *mut Arrays) -> Self {
         let mut this = Self {
             a: std::array::from_fn::<_, 2, _>(|__i: usize| {
-                Tracked::move_from({ &mut (*_a0).a[(__i)] })
+                Tracked::move_from({ &mut (*_a0).a[(__i) as usize] })
             }),
             b: std::array::from_fn::<_, 2, _>(|__i: usize| {
-                Tracked::move_from({ &mut (*_a0).b[(__i)] })
+                Tracked::move_from({ &mut (*_a0).b[(__i) as usize] })
             }),
         };
         this
     }
     pub unsafe fn copy_assign(&mut self, _a0: *const Arrays) -> *mut Arrays {
-        let mut __i0: usize = 0_usize;
-        'loop_: while ((__i0) != (2_usize)) {
+        let mut __i0: () = 0_();
+        'loop_: while ((__i0) != (2_())) {
             (unsafe {
-                let _o: *const Tracked = &(*_a0).a[(__i0)];
-                Tracked::copy_assign(&mut self.a[(__i0)], _o)
+                let _o: *const Tracked = &(*_a0).a[(__i0) as usize];
+                Tracked::copy_assign(&mut self.a[(__i0) as usize], _o)
             });
             __i0.prefix_inc();
         }
-        let mut __i0: usize = 0_usize;
-        'loop_: while ((__i0) != (2_usize)) {
+        let mut __i0: () = 0_();
+        'loop_: while ((__i0) != (2_())) {
             (unsafe {
-                let _o: *const Tracked = &(*_a0).b[(__i0)];
-                Tracked::copy_assign(&mut self.b[(__i0)], _o)
+                let _o: *const Tracked = &(*_a0).b[(__i0) as usize];
+                Tracked::copy_assign(&mut self.b[(__i0) as usize], _o)
             });
             __i0.prefix_inc();
         }
         return &mut (*(self as *mut Arrays));
     }
     pub unsafe fn move_assign(&mut self, _a0: *mut Arrays) -> *mut Arrays {
-        let mut __i0: usize = 0_usize;
-        'loop_: while ((__i0) != (2_usize)) {
+        let mut __i0: () = 0_();
+        'loop_: while ((__i0) != (2_())) {
             (unsafe {
-                let _o: *mut Tracked = &mut (*_a0).a[(__i0)];
-                Tracked::move_assign(&mut self.a[(__i0)], _o)
+                let _o: *mut Tracked = &mut (*_a0).a[(__i0) as usize];
+                Tracked::move_assign(&mut self.a[(__i0) as usize], _o)
             });
             __i0.prefix_inc();
         }
-        let mut __i0: usize = 0_usize;
-        'loop_: while ((__i0) != (2_usize)) {
+        let mut __i0: () = 0_();
+        'loop_: while ((__i0) != (2_())) {
             (unsafe {
-                let _o: *mut Tracked = &mut (*_a0).b[(__i0)];
-                Tracked::move_assign(&mut self.b[(__i0)], _o)
+                let _o: *mut Tracked = &mut (*_a0).b[(__i0) as usize];
+                Tracked::move_assign(&mut self.b[(__i0) as usize], _o)
             });
             __i0.prefix_inc();
         }
@@ -383,7 +383,7 @@ unsafe fn main_0() -> i32 {
             && (((*m1.subscript_move(&mut 2, |__k| cpp_move_unsafe!(__k))).v) == (10))
     );
     assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut copies_0)) == (0)));
-    cpp_swap_unsafe!(&mut m1, &mut m2);
+    unimplemented!();
     assert!(
         ((m1.len()) == (1_usize))
             && (((*m1.subscript_move(&mut 3, |__k| cpp_move_unsafe!(__k))).v) == (30))
@@ -413,8 +413,8 @@ unsafe fn main_0() -> i32 {
         let __init = Tracked::new_1({ 5 });
         vec_.push(__init)
     };
-    cpp_swap_unsafe!(&mut vec_[(0_usize)], &mut vec_[(1_usize)]);
-    assert!(((vec_[(0_usize)].v) == (5)) && ((vec_[(1_usize)].v) == (4)));
+    cpp_swap_unsafe!(unimplemented!(), unimplemented!());
+    assert!((((*unimplemented!()).v) == (5)) && (((*unimplemented!()).v) == (4)));
     assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut copies_0)) == (0)));
     let mut pairs: [Pair; 2] = [
         Pair {
@@ -448,28 +448,23 @@ unsafe fn main_0() -> i32 {
     cpp_swap_unsafe!(&mut arrays.a[(0) as usize], &mut arrays.a[(1) as usize]);
     assert!(((arrays.a[(0) as usize].v) == (0)) && ((arrays.a[(1) as usize].v) == (2)));
     assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut copies_0)) == (0)));
-    let mut grid: Vec<Vec<Tracked>> = (0..(2_usize) as usize)
-        .map(|_| Default::default())
-        .collect::<Vec<_>>();
+    let mut grid: Vec<Vec<Tracked>> = unimplemented!();
     {
         let __init = Tracked::new_1({ 1 });
-        grid[(0_usize)].push(__init)
+        (*unimplemented!()).push(__init)
     };
     {
         let __init = Tracked::new_1({ 2 });
-        grid[(0_usize)].push(__init)
+        (*unimplemented!()).push(__init)
     };
     {
         let __init = Tracked::new_1({ 3 });
-        grid[(1_usize)].push(__init)
+        (*unimplemented!()).push(__init)
     };
-    cpp_swap_unsafe!(
-        &mut grid[(0_usize)][(1_usize)],
-        &mut grid[(1_usize)][(0_usize)]
-    );
-    assert!(((grid[(0_usize)][(1_usize)].v) == (3)) && ((grid[(1_usize)][(0_usize)].v) == (2)));
-    cpp_swap_unsafe!(&mut grid[(0_usize)], &mut grid[(1_usize)]);
-    assert!(((grid[(0_usize)].len()) == (1_usize)) && ((grid[(0_usize)][(0_usize)].v) == (2)));
+    cpp_swap_unsafe!(unimplemented!(), unimplemented!());
+    assert!((((*unimplemented!()).v) == (3)) && (((*unimplemented!()).v) == (2)));
+    unimplemented!();
+    assert!((((*unimplemented!()).len()) == (1_usize)) && (((*unimplemented!()).v) == (2)));
     assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut copies_0)) == (0)));
     let mut maps: [UnsafeMap<i32, (i32, Tracked)>; 2] =
         std::array::from_fn::<_, 2, _>(|_| UnsafeMap::new());
@@ -487,7 +482,7 @@ unsafe fn main_0() -> i32 {
             &mut _o,
         )
     });
-    cpp_swap_unsafe!(&mut maps[(0) as usize], &mut maps[(1) as usize]);
+    unimplemented!();
     assert!(
         ((maps[(0) as usize].len()) == (1_usize))
             && (((*maps[(0) as usize].subscript_move(&mut 2, |__k| cpp_move_unsafe!(__k))).v)

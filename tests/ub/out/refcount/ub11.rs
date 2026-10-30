@@ -10,10 +10,10 @@ pub fn main() {
     __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
-fn main_0() -> () {
-    let mut element: Ptr<()> = Ptr::alloc(10_());
-    let mut ptr: Ptr<()> = element.offset((1_()) as isize);
-    let out: Value<()> = Rc::new(RefCell::new((ptr.read())));
+fn main_0() -> i32 {
+    let mut element: Ptr<i32> = Ptr::alloc(10);
+    let mut ptr: Ptr<i32> = element.offset((1) as isize);
+    let out: Value<i32> = Rc::new(RefCell::new((ptr.read())));
     element.delete();
     return (*out.borrow());
 }

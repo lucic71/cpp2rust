@@ -11,9 +11,9 @@ use std::rc::Rc;
 pub struct node_t {
     pub left: *mut node_t,
     pub right: *mut node_t,
-    pub value: (),
+    pub value: i32,
 }
-pub unsafe fn find_0(mut node: *mut node_t, mut value: ()) -> *mut node_t {
+pub unsafe fn find_0(mut node: *mut node_t, mut value: i32) -> *mut node_t {
     if ((value) < ((*node).value)) && (!(((*node).left).is_null())) {
         return (unsafe { find_0((*node).left, value) });
     } else if ((value) > ((*node).value)) && (!(((*node).right).is_null())) {
@@ -40,18 +40,75 @@ pub fn main() {
         std::process::exit(main_0() as i32);
     }
 }
-unsafe fn main_0() -> () {
-    let mut tree: () = unimplemented!();
-    let mut n1: () = unimplemented!();
-    let mut n2: () = unimplemented!();
-    let mut n3: () = unimplemented!();
-    let mut n4: () = unimplemented!();
-    let mut ptr1: *mut node_t = (&mut (*unimplemented!()) as *mut node_t);
-    ptr1 = (unsafe { insert_1(ptr1, (&mut (*unimplemented!()) as *mut node_t)) });
-    ptr1 = (unsafe { insert_1(ptr1, (&mut (*unimplemented!()) as *mut node_t)) });
-    ptr1 = (unsafe { insert_1(ptr1, (&mut (*unimplemented!()) as *mut node_t)) });
-    ptr1 = (unsafe { insert_1(ptr1, (&mut (*unimplemented!()) as *mut node_t)) });
-    unimplemented!();
-    return 0_();
+unsafe fn main_0() -> i32 {
+    let mut tree: Option<Box<node_t>> = Some(Box::new(node_t {
+        left: std::ptr::null_mut(),
+        right: std::ptr::null_mut(),
+        value: 0,
+    }));
+    let mut n1: Option<Box<node_t>> = Some(Box::new(node_t {
+        left: std::ptr::null_mut(),
+        right: std::ptr::null_mut(),
+        value: 1,
+    }));
+    let mut n2: Option<Box<node_t>> = Some(Box::new(node_t {
+        left: std::ptr::null_mut(),
+        right: std::ptr::null_mut(),
+        value: 2,
+    }));
+    let mut n3: Option<Box<node_t>> = Some(Box::new(node_t {
+        left: std::ptr::null_mut(),
+        right: std::ptr::null_mut(),
+        value: 3,
+    }));
+    let mut n4: Option<Box<node_t>> = Some(Box::new(node_t {
+        left: std::ptr::null_mut(),
+        right: std::ptr::null_mut(),
+        value: 4,
+    }));
+    let mut ptr1: *mut node_t = (&mut (*tree.as_deref().map_or(::std::ptr::null_mut(), |v| {
+        v as *const node_t as *mut node_t
+    })) as *mut node_t);
+    ptr1 = (unsafe {
+        insert_1(
+            ptr1,
+            (&mut (*n1.as_deref().map_or(::std::ptr::null_mut(), |v| {
+                v as *const node_t as *mut node_t
+            })) as *mut node_t),
+        )
+    });
+    ptr1 = (unsafe {
+        insert_1(
+            ptr1,
+            (&mut (*n2.as_deref().map_or(::std::ptr::null_mut(), |v| {
+                v as *const node_t as *mut node_t
+            })) as *mut node_t),
+        )
+    });
+    ptr1 = (unsafe {
+        insert_1(
+            ptr1,
+            (&mut (*n3.as_deref().map_or(::std::ptr::null_mut(), |v| {
+                v as *const node_t as *mut node_t
+            })) as *mut node_t),
+        )
+    });
+    ptr1 = (unsafe {
+        insert_1(
+            ptr1,
+            (&mut (*n4.as_deref().map_or(::std::ptr::null_mut(), |v| {
+                v as *const node_t as *mut node_t
+            })) as *mut node_t),
+        )
+    });
+    assert!(
+        (((((((*(unsafe { find_0(ptr1, 0,) })).value) == (0))
+            && (((*(unsafe { find_0(ptr1, 1,) })).value) == (1)))
+            && (((*(unsafe { find_0(ptr1, 2,) })).value) == (2)))
+            && (((*(unsafe { find_0(ptr1, 3,) })).value) == (3)))
+            && (((*(unsafe { find_0(ptr1, 4,) })).value) == (4)))
+            && ((unsafe { find_0(ptr1, 5,) }).is_null())
+    );
+    return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

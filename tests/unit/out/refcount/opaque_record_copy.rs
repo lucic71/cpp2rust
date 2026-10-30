@@ -16,18 +16,18 @@ pub struct Wrapper_Probe_ {
     #[byte_size(1)]
     pub base_: Probe,
     #[offset(4)]
-    pub tag: (),
+    pub tag: i32,
 }
 pub fn main() {
     __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
-fn main_0() -> () {
+fn main_0() -> i32 {
     let mut a: Wrapper_Probe_ = <Wrapper_Probe_>::default();
-    a.tag = 3_();
+    a.tag = 3;
     let mut b: Wrapper_Probe_ = (a).clone();
-    unimplemented!();
-    return 0_();
+    assert!((b.tag == 3));
+    return 0;
 }
 pub trait ProbeImpl {
     fn operator_inc(&self) -> Ptr<Probe> {

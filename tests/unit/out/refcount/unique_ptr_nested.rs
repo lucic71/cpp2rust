@@ -10,21 +10,21 @@ use std::rc::{Rc, Weak};
 #[byte_size(8)]
 pub struct Inner {
     #[offset(0)]
-    pub x: (),
+    pub x: i32,
     #[offset(4)]
-    pub y: (),
+    pub y: i32,
 }
 #[derive(Record, ByteRepr, FnPtrArg, MoveCtor, MoveAssign, Default)]
 #[byte_size(8)]
 pub struct Outer {
     #[offset(0)]
     #[byte_size(8)]
-    pub inner: (),
+    pub inner: Option<Value<Inner>>,
 }
 impl Outer {
     pub fn move_from(_a0: Ptr<Outer>) -> Self {
         Self {
-            inner: unimplemented!(),
+            inner: field!(_a0, inner).with_mut(|__v: &mut Option<Value<Inner>>| __v.take()),
         }
     }
 }
@@ -32,23 +32,37 @@ pub fn main() {
     __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
-fn main_0() -> () {
-    let mut o: () = unimplemented!();
-    unimplemented!().x += 5_();
-    let mut sum: () = ({ unimplemented!().x } + { unimplemented!().y });
-    let mut a: () = unimplemented!();
-    let mut b: () = unimplemented!();
-    let __rhs = (unimplemented!().read());
-    unimplemented!().write(__rhs);
-    unimplemented!();
-    return 0_();
+fn main_0() -> i32 {
+    let mut o: Option<Value<Outer>> = Some(Rc::new(RefCell::new(Outer {
+        inner: Some(Rc::new(RefCell::new(Inner { x: 10, y: 20 }))),
+    })));
+    {
+        field!(o.as_pointer().with(|__s| __s.inner.clone()).as_pointer(), x)
+            .with_mut(|__v| *__v = *__v + 5)
+    };
+    let mut sum: i32 = (o
+        .as_pointer()
+        .with(|__s| __s.inner.clone())
+        .as_pointer()
+        .with(|__s| __s.x)
+        + o.as_pointer()
+            .with(|__s| __s.inner.clone())
+            .as_pointer()
+            .with(|__s| __s.y));
+    let mut a: Option<Value<i32>> = Some(Rc::new(RefCell::new(100)));
+    let mut b: Option<Value<i32>> = Some(Rc::new(RefCell::new(0)));
+    let __rhs = (a.as_pointer().read());
+    b.as_pointer().write(__rhs);
+    assert!(((sum + (b.as_pointer().read())) == 135));
+    return 0;
 }
 pub trait OuterImpl {
     fn move_assign(&self, _a0: Ptr<Outer>) -> Ptr<Outer>;
 }
 impl OuterImpl for Ptr<Outer> {
     fn move_assign(&self, _a0: Ptr<Outer>) -> Ptr<Outer> {
-        unimplemented!();
+        field_ptr!((*self), inner)
+            .write(field!(_a0, inner).with_mut(|__v: &mut Option<Value<Inner>>| __v.take()));
         return (*self).clone();
     }
 }

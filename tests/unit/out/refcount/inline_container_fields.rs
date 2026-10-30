@@ -89,13 +89,13 @@ impl Default for State {
     }
 }
 pub fn sum_0(mut p: Ptr<i32>, mut n: i32) -> i32 {
-    let mut s: i32 = 0;
+    let s: Value<i32> = Rc::new(RefCell::new(0));
     let mut i: i32 = 0;
     'loop_: while (i < n) {
-        s += { (elem!(p, i).read()) };
+        (*s.borrow_mut()) += { (elem!(p, i).read()) };
         i.prefix_inc();
     }
-    return s;
+    return (*s.borrow());
 }
 pub fn fill_1(mut s: Ptr<State>) {
     let mut i: i32 = 0;
@@ -107,7 +107,7 @@ pub fn fill_1(mut s: Ptr<State>) {
         }
         i.prefix_inc();
     }
-    vec_elem!(s, arr, 1_usize).write(7);
+    field_ref!(s, arr).decay().offset(1_usize as isize).write(7);
     {
         let __a0 = 3_usize as usize;
         field!(s, elems).with_mut(|__v: &mut Vec<Elem>| __v.resize_with(__a0, || <Elem>::default()))
@@ -115,13 +115,25 @@ pub fn fill_1(mut s: Ptr<State>) {
     let mut i: i32 = 0;
     'loop_: while (i < 3) {
         let __rhs = i;
-        field!(vec_elem!(s, elems, (i as usize)), id).write(__rhs);
+        field!(
+            field_ref!(s, elems).decay().offset((i as usize) as isize),
+            id
+        )
+        .write(__rhs);
         let __rhs = (10 * i);
-        index!(field!(vec_elem!(s, elems, (i as usize)), hist), i).write(__rhs);
+        array_elem!(
+            field_ref!(s, elems).decay().offset((i as usize) as isize),
+            hist,
+            i
+        )
+        .write(__rhs);
         {
             let __a0 = 4_usize as usize;
-            field!(vec_elem!(s, elems, (i as usize)), coeffs)
-                .with_mut(|__v: &mut Vec<i16>| __v.resize(__a0, (i as i16)))
+            field!(
+                field_ref!(s, elems).decay().offset((i as usize) as isize),
+                coeffs
+            )
+            .with_mut(|__v: &mut Vec<i16>| __v.resize(__a0, (i as i16)))
         };
         i.prefix_inc();
     }
@@ -148,12 +160,22 @@ fn main_0() -> i32 {
                 )
             }) == 12)
     );
-    assert!(((vec_elem!(s.as_pointer(), arr, 1_usize).read()) == 7));
-    let mut e: Ptr<Elem> = (field_ref!(s.as_pointer(), elems).decay().offset(2_usize));
+    assert!(
+        ((field_ref!(s.as_pointer(), arr)
+            .decay()
+            .offset(1_usize as isize)
+            .read())
+            == 7)
+    );
+    let mut e: Ptr<Elem> = (field_ref!(s.as_pointer(), elems)
+        .decay()
+        .offset(2_usize as isize));
     let mut h: Ptr<i32> = (array_field_ptr!(e, hist) as Ptr<i32>);
-    let mut c: Ptr<i16> = (field_ref!(e, coeffs).decay().offset(1_usize));
+    let mut c: Ptr<i16> = (field_ref!(e, coeffs).decay().offset(1_usize as isize));
     let mut id: Ptr<i32> = (field_ptr!(
-        field_ref!(s.as_pointer(), elems).decay().offset(1_usize),
+        field_ref!(s.as_pointer(), elems)
+            .decay()
+            .offset(1_usize as isize),
         id
     ));
     let mut k: i32 = 0;
@@ -171,24 +193,36 @@ fn main_0() -> i32 {
         (({
             sum_0(
                 (array_field_ptr!(
-                    field_ref!(s.as_pointer(), elems).decay().offset(2_usize),
+                    field_ref!(s.as_pointer(), elems)
+                        .decay()
+                        .offset(2_usize as isize),
                     hist
                 ) as Ptr<i32>),
                 4,
             )
         }) == 26)
-            && (((index!(
-                field!(vec_elem!(s.as_pointer(), elems, 2_usize), coeffs),
-                1_usize
+            && (((field_ref!(
+                field_ref!(s.as_pointer(), elems)
+                    .decay()
+                    .offset(2_usize as isize),
+                coeffs
             )
+            .decay()
+            .offset(1_usize as isize)
             .read()) as i32)
                 == 7)
     );
     assert!(
-        (vec_elem!(s.as_pointer(), elems, 1_usize).with(|__s| __s.id) == 11)
+        (field_ref!(s.as_pointer(), elems)
+            .decay()
+            .offset(1_usize as isize)
+            .with(|__s| __s.id)
+            == 11)
             && ({ h.offset((3) as isize) } == {
                 ((array_field_ptr!(
-                    field_ref!(s.as_pointer(), elems).decay().offset(2_usize),
+                    field_ref!(s.as_pointer(), elems)
+                        .decay()
+                        .offset(2_usize as isize),
                     hist
                 ) as Ptr<i32>)
                     .offset((3) as isize))
@@ -196,59 +230,129 @@ fn main_0() -> i32 {
     );
     let mut row: Ptr<i32> = (field_ref!(s.as_pointer(), rows)
         .decay()
-        .offset(0_usize)
+        .offset(0_usize as isize)
         .decay()
-        .offset(0_usize));
+        .offset(0_usize as isize));
     elem!(row, 2).write(9);
-    assert!(((index!(vec_elem!(s.as_pointer(), rows, 0_usize), 2_usize).read()) == 9));
-    let t: Value<State> = Rc::new(RefCell::new((*s.borrow()).clone()));
-    index!(field!(vec_elem!(t.as_pointer(), elems, 2_usize), hist), 0).write(100);
-    (*t.borrow_mut()).grid[(0) as usize][(0) as usize] = 100;
-    index!(vec_elem!(t.as_pointer(), rows, 0_usize), 0_usize).write(100);
     assert!(
-        (((index!(field!(vec_elem!(s.as_pointer(), elems, 2_usize), hist), 0).read()) == 0)
+        ((field_ref!(s.as_pointer(), rows)
+            .decay()
+            .offset(0_usize as isize)
+            .decay()
+            .offset(2_usize as isize)
+            .read())
+            == 9)
+    );
+    let t: Value<State> = Rc::new(RefCell::new((*s.borrow()).clone()));
+    array_elem!(
+        field_ref!(t.as_pointer(), elems)
+            .decay()
+            .offset(2_usize as isize),
+        hist,
+        0
+    )
+    .write(100);
+    (*t.borrow_mut()).grid[(0) as usize][(0) as usize] = 100;
+    field_ref!(t.as_pointer(), rows)
+        .decay()
+        .offset(0_usize as isize)
+        .decay()
+        .offset(0_usize as isize)
+        .write(100);
+    assert!(
+        (((array_elem!(
+            field_ref!(s.as_pointer(), elems)
+                .decay()
+                .offset(2_usize as isize),
+            hist,
+            0
+        )
+        .read())
+            == 0)
             && ((*s.borrow()).grid[(0) as usize][(0) as usize] == 0))
-            && ((index!(vec_elem!(s.as_pointer(), rows, 0_usize), 0_usize).read()) == 1)
+            && ((field_ref!(s.as_pointer(), rows)
+                .decay()
+                .offset(0_usize as isize)
+                .decay()
+                .offset(0_usize as isize)
+                .read())
+                == 1)
     );
     assert!(
-        (((index!(
-            field!(vec_elem!(t.as_pointer(), elems, 2_usize), coeffs),
-            1_usize
+        (((field_ref!(
+            field_ref!(t.as_pointer(), elems)
+                .decay()
+                .offset(2_usize as isize),
+            coeffs
         )
+        .decay()
+        .offset(1_usize as isize)
         .read()) as i32)
             == 7)
     );
     let mut p: Ptr<State> = (t.as_pointer());
     let __rhs = ({ (*p.upgrade().deref()).grid[(1) as usize][(1) as usize] } + {
-        (vec_elem!(p, arr, 1_usize).read())
+        (field_ref!(p, arr).decay().offset(1_usize as isize).read())
     });
-    index!(field!(vec_elem!(p, elems, 0_usize), hist), 3).write(__rhs);
-    assert!(((index!(field!(vec_elem!(t.as_pointer(), elems, 0_usize), hist), 3).read()) == 11));
+    array_elem!(
+        field_ref!(p, elems).decay().offset(0_usize as isize),
+        hist,
+        3
+    )
+    .write(__rhs);
+    assert!(
+        ((array_elem!(
+            field_ref!(t.as_pointer(), elems)
+                .decay()
+                .offset(0_usize as isize),
+            hist,
+            3
+        )
+        .read())
+            == 11)
+    );
     {
-        let a0_clone = (*vec_elem!(p, elems, 2_usize).upgrade().deref()).clone();
+        let a0_clone = (*field_ref!(p, elems)
+            .decay()
+            .offset(2_usize as isize)
+            .upgrade()
+            .deref())
+        .clone();
         field!(p, elems).with_mut(|__v: &mut Vec<Elem>| __v.push(a0_clone))
     };
     assert!(
         ((*p.upgrade().deref()).elems.len() == 4_usize)
-            && ((index!(field!(vec_elem!(p, elems, 3_usize), hist), 0).read()) == 100)
+            && ((array_elem!(
+                field_ref!(p, elems).decay().offset(3_usize as isize),
+                hist,
+                0
+            )
+            .read())
+                == 100)
     );
     let elems: Value<Vec<Elem>> = Rc::new(RefCell::new(
         (0..(2_usize) as usize)
             .map(|_| <Elem>::default())
             .collect::<Vec<_>>(),
     ));
-    let mut first: Ptr<Elem> = (elems.decay().offset(0_usize));
+    let mut first: Ptr<Elem> = (elems.decay().offset(0_usize as isize));
     {
         let __a0 = 2_usize as usize;
-        (*elems.borrow_mut())[1_usize]
-            .coeffs
-            .resize_with(__a0, || 0_i16)
+        field!(elems.decay().offset(1_usize as isize), coeffs)
+            .with_mut(|__v: &mut Vec<i16>| __v.resize_with(__a0, || 0_i16))
     };
-    vec_elem!(elems.decay().offset(1_usize), coeffs, 1_usize).write(4_i16);
-    let __rhs = (((vec_elem!(elems.decay().offset(1_usize), coeffs, 1_usize).read()) as i32) + 1);
-    array_elem!(elems.decay().offset(1_usize), hist, 2).write(__rhs);
+    field_ref!(elems.decay().offset(1_usize as isize), coeffs)
+        .decay()
+        .offset(1_usize as isize)
+        .write(4_i16);
+    let __rhs = (((field_ref!(elems.decay().offset(1_usize as isize), coeffs)
+        .decay()
+        .offset(1_usize as isize)
+        .read()) as i32)
+        + 1);
+    array_elem!(elems.decay().offset(1_usize as isize), hist, 2).write(__rhs);
     assert!(
-        ((array_elem!(elems.decay().offset(1_usize), hist, 2).read()) == 5)
+        ((array_elem!(elems.decay().offset(1_usize as isize), hist, 2).read()) == 5)
             && ((array_elem!(first, hist, 2).read()) == 0)
     );
     let moved: Value<State> = Rc::new(RefCell::new(State::move_from({ t.as_pointer() })));
@@ -267,10 +371,14 @@ fn main_0() -> i32 {
             && ((*assigned.borrow()).grid[(1) as usize][(1) as usize] == 4)
     );
     assert!(
-        (((index!(
-            field!(vec_elem!(assigned.as_pointer(), elems, 2_usize), coeffs),
-            1_usize
+        (((field_ref!(
+            field_ref!(assigned.as_pointer(), elems)
+                .decay()
+                .offset(2_usize as isize),
+            coeffs
         )
+        .decay()
+        .offset(1_usize as isize)
         .read()) as i32)
             == 7)
             && ((*moved.borrow()).elems.is_empty())

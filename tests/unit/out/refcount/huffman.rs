@@ -77,17 +77,9 @@ pub fn AllocMinHeap_1(mut capacity: i32) -> Option<Value<MinHeap>> {
     let mut minHeap: Option<Value<MinHeap>> = Some(Rc::new(RefCell::new(MinHeap {
         size: 0,
         capacity: capacity,
-        arr: Some(Rc::new(RefCell::new(
-            (0..(capacity as usize))
-                .map(|_| Ptr::<MinHeapNode>::null())
-                .collect::<Box<[_]>>(),
-        ))),
+        arr: unimplemented!(),
         next: 0,
-        alloc: Some(Rc::new(RefCell::new(
-            (0..10000_usize)
-                .map(|_| <MinHeapNode>::default())
-                .collect::<Box<[_]>>(),
-        ))),
+        alloc: unimplemented!(),
     })));
     return minHeap.take();
 }
@@ -208,12 +200,8 @@ pub fn HuffmanCodes_5(
         Huffman_2(_data, _freq, _size)
     });
     let mut root: Ptr<MinHeapNode> = ({ MinHeapImpl::ExtractMin(&(minHeap.as_pointer())) });
-    let arr: Value<Option<Value<Box<[i32]>>>> = Rc::new(RefCell::new(Some(Rc::new(RefCell::new(
-        (0..100_usize).map(|_| 0_i32).collect::<Box<[_]>>(),
-    )))));
-    let out: Value<Option<Value<Box<[i32]>>>> = Rc::new(RefCell::new(Some(Rc::new(RefCell::new(
-        (0..100_usize).map(|_| 0_i32).collect::<Box<[_]>>(),
-    )))));
+    let arr: Value<Option<Value<Box<[i32]>>>> = Rc::new(RefCell::new(unimplemented!()));
+    let out: Value<Option<Value<Box<[i32]>>>> = Rc::new(RefCell::new(unimplemented!()));
     let mut top: i32 = 0;
     let next: Value<i32> = Rc::new(RefCell::new(0));
     ({
@@ -242,12 +230,8 @@ fn main_0() -> i32 {
         ('f' as i8),
     ];
     let mut arr2: [i32; 6] = [5, 9, 12, 13, 16, 45];
-    let data: Value<Option<Value<Box<[i8]>>>> = Rc::new(RefCell::new(Some(Rc::new(RefCell::new(
-        (0..(size as usize)).map(|_| 0_i8).collect::<Box<[_]>>(),
-    )))));
-    let freq: Value<Option<Value<Box<[i32]>>>> = Rc::new(RefCell::new(Some(Rc::new(
-        RefCell::new((0..(size as usize)).map(|_| 0_i32).collect::<Box<[_]>>()),
-    ))));
+    let data: Value<Option<Value<Box<[i8]>>>> = Rc::new(RefCell::new(unimplemented!()));
+    let freq: Value<Option<Value<Box<[i32]>>>> = Rc::new(RefCell::new(unimplemented!()));
     let mut i: i32 = 0;
     'loop_: while (i < size) {
         let __rhs = arr1[(i) as usize];
@@ -360,10 +344,11 @@ impl MinHeapImpl for Ptr<MinHeap> {
         }
     }
     fn ExtractMin(&self) -> Ptr<MinHeapNode> {
-        let mut out: Ptr<MinHeapNode> = (((*self).with(|__s| __s.arr.clone()).as_pointer()
-            as Ptr<Ptr<MinHeapNode>>)
-            .offset(0_usize as isize)
-            .read());
+        let out: Value<Ptr<MinHeapNode>> = Rc::new(RefCell::new(
+            (((*self).with(|__s| __s.arr.clone()).as_pointer() as Ptr<Ptr<MinHeapNode>>)
+                .offset(0_usize as isize)
+                .read()),
+        ));
         field!((*self), size).with_mut(|__v| __v.prefix_dec());
         let __rhs = (((*self).with(|__s| __s.arr.clone()).as_pointer() as Ptr<Ptr<MinHeapNode>>)
             .offset(((*self).with(|__s| __s.size) as usize) as isize)
@@ -372,7 +357,7 @@ impl MinHeapImpl for Ptr<MinHeap> {
             .offset(0_usize as isize)
             .write(__rhs);
         ({ MinHeapImpl::Heapify(self, 0) });
-        return out;
+        return (*out.borrow()).clone();
     }
     fn Insert(&self, mut node: Ptr<MinHeapNode>) {
         field!((*self), size).with_mut(|__v| __v.prefix_inc());

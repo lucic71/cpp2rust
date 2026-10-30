@@ -6,11 +6,11 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-pub fn borrow_in_condition_and_in_body_0(mut x: ()) -> () {
+pub fn borrow_in_condition_and_in_body_0(mut x: i32) -> i32 {
     switch!(match x {
-        __v if __v == 0_() => {}
+        __v if __v == 0 => {}
         _ => {
-            return (x + 1_());
+            return (x + 1);
         }
     });
     panic!("ub: non-void function does not return a value")
@@ -19,9 +19,9 @@ pub fn main() {
     __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
-fn main_0() -> () {
-    unimplemented!();
-    unimplemented!();
-    return 0_();
+fn main_0() -> i32 {
+    assert!((({ borrow_in_condition_and_in_body_0(0,) }) == 1));
+    assert!((({ borrow_in_condition_and_in_body_0(1,) }) == 2));
+    return 0;
 }
 pub fn __cpp2rust_init_globals() {}

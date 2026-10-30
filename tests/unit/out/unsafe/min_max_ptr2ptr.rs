@@ -12,16 +12,24 @@ pub fn main() {
         std::process::exit(main_0() as i32);
     }
 }
-unsafe fn main_0() -> () {
-    let mut a: () = 10_();
-    let mut b: () = 20_();
-    let mut pa: *mut () = (&mut a as *mut ());
-    let mut pb: *mut () = (&mut b as *mut ());
-    let mut ppa: *mut *mut () = (&mut pa as *mut *mut ());
-    let mut ppb: *mut *mut () = (&mut pb as *mut *mut ());
-    let mut r1: () = (*unimplemented!());
-    let mut r2: () = (*unimplemented!());
-    unimplemented!();
-    return 0_();
+unsafe fn main_0() -> i32 {
+    let mut a: i32 = 10;
+    let mut b: i32 = 20;
+    let mut pa: *mut i32 = (&mut a as *mut i32);
+    let mut pb: *mut i32 = (&mut b as *mut i32);
+    let mut ppa: *mut *mut i32 = (&mut pa as *mut *mut i32);
+    let mut ppb: *mut *mut i32 = (&mut pb as *mut *mut i32);
+    let mut r1: i32 = (*{
+        let __a: *const _ = (*ppa);
+        let __b: *const _ = (*ppb);
+        if *__a < *__b { __b } else { __a }
+    });
+    let mut r2: i32 = (*{
+        let __a: *const _ = (*ppa);
+        let __b: *const _ = (*ppb);
+        if *__b < *__a { __b } else { __a }
+    });
+    assert!((((r1) + (r2)) == (30)));
+    return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

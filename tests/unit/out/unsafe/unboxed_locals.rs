@@ -6,55 +6,55 @@ use std::collections::BTreeMap;
 use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
-pub unsafe fn set_0(mut p: *mut (), mut v: ()) {
+pub unsafe fn set_0(mut p: *mut i32, mut v: i32) {
     (*p) = v;
 }
-pub unsafe fn inc_1(r: *mut ()) {
+pub unsafe fn inc_1(r: *mut i32) {
     (*r).prefix_inc();
 }
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct Pair {
-    pub first: (),
-    pub second: (),
+    pub first: i32,
+    pub second: i32,
 }
-pub unsafe fn total_2(v: *const ()) -> () {
-    let mut s: () = 0_();
-    'loop_: for x in IterRange::new(unimplemented!(), unimplemented!()) {
-        let mut x: () = (*unimplemented!());
+pub unsafe fn total_2(v: *const Vec<i32>) -> i32 {
+    let mut s: i32 = 0;
+    'loop_: for x in IterRange::new((*v).begin(), (*v).end()) {
+        let mut x: i32 = (*x.iter_deref());
         s += x;
     }
     return s;
 }
-pub unsafe fn sum_3(mut arr: *const (), mut n: ()) -> () {
-    let mut s: () = 0_();
-    let mut i: () = 0_();
+pub unsafe fn sum_3(mut arr: *const i32, mut n: i32) -> i32 {
+    let mut s: i32 = 0;
+    let mut i: i32 = 0;
     'loop_: while ((i) < (n)) {
         s += (*arr.offset((i) as isize));
         i.prefix_inc();
     }
     return s;
 }
-pub unsafe fn countdown_4(mut n: (), mut step: Option<()>) -> () {
-    let mut step: () = step.unwrap_or_else(|| unsafe { 1_() });
-    let mut steps: () = 0_();
-    'loop_: while ((n) > (0_())) {
+pub unsafe fn countdown_4(mut n: i32, mut step: Option<i32>) -> i32 {
+    let mut step: i32 = step.unwrap_or_else(|| unsafe { 1 });
+    let mut steps: i32 = 0;
+    'loop_: while ((n) > (0)) {
         n -= step;
         steps.postfix_inc();
     }
     return steps;
 }
 pub unsafe trait Shape {
-    unsafe fn scale(&mut self, factor: ()) -> ();
+    unsafe fn scale(&mut self, factor: i32) -> i32;
 }
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg)]
 pub struct Square {
-    pub side: (),
+    pub side: i32,
 }
 impl Default for Square {
     fn default() -> Self {
-        unsafe { Square { side: 2_() } }
+        unsafe { Square { side: 2 } }
     }
 }
 pub fn main() {
@@ -63,112 +63,157 @@ pub fn main() {
         std::process::exit(main_0() as i32);
     }
 }
-unsafe fn main_0() -> () {
-    let mut plain: () = 1_();
-    plain += 2_();
+unsafe fn main_0() -> i32 {
+    let mut plain: i32 = 1;
+    plain += 2;
     plain.postfix_inc();
-    unimplemented!();
-    &(::std::mem::size_of::<()>());
-    let mut addr: () = 0_();
-    (unsafe { set_0((&mut addr as *mut ()), 5_()) });
-    unimplemented!();
-    let mut ref_: () = 1_();
+    assert!(((plain) == (4)));
+    &(::std::mem::size_of::<i32>());
+    let mut addr: i32 = 0;
+    (unsafe { set_0((&mut addr as *mut i32), 5) });
+    assert!(((addr) == (5)));
+    let mut ref_: i32 = 1;
     (unsafe { inc_1(&mut ref_) });
-    let alias: *mut () = &mut ref_;
+    let alias: *mut i32 = &mut ref_;
     (*alias).postfix_inc();
-    unimplemented!();
-    let mut captured: () = 7_();
-    let mut get: FnPtr<fn() -> ()> = lambda_unsafe!(
+    assert!(((ref_) == (3)));
+    let mut captured: i32 = 7;
+    let mut get: FnPtr<fn() -> i32> = lambda_unsafe!(
         {
-            let captured: *mut () = &mut captured;
+            let captured: *mut i32 = &mut captured;
         },
-        || -> () {
+        || -> i32 {
             return (*captured);
         }
     );
-    captured = 8_();
-    unimplemented!();
-    let mut arr: [(); 4] = [1_(), 2_(), 3_(), 4_()];
-    arr[(0_()) as usize] = ((arr[(3_()) as usize]) * (2_()));
-    arr[(1_()) as usize].postfix_inc();
-    unimplemented!();
-    let mut elem: [(); 2] = [0_(), 0_()];
-    (unsafe { set_0((&mut elem[(1_()) as usize] as *mut ()), 6_()) });
-    unimplemented!();
-    let mut decayed: [(); 3] = [1_(), 2_(), 3_()];
-    unimplemented!();
-    let mut elem_ref: [(); 2] = [1_(), 1_()];
-    (unsafe { inc_1(&mut elem_ref[(0_()) as usize]) });
-    unimplemented!();
-    let mut p: *mut () = (&mut addr as *mut ());
-    p = (&mut elem[(0_()) as usize] as *mut ());
-    (*p) = 9_();
-    unimplemented!();
-    let mut str: [(); 8] = std::mem::transmute(*b"abc\0\0\0\0\0");
-    str[(0_()) as usize] = ('x' as ());
-    unimplemented!();
-    let mut zeros: [(); 16] = [
-        unimplemented!(),
-        unimplemented!(),
-        unimplemented!(),
-        unimplemented!(),
-        unimplemented!(),
-        unimplemented!(),
-        unimplemented!(),
-        unimplemented!(),
-        unimplemented!(),
-        unimplemented!(),
-        unimplemented!(),
-        unimplemented!(),
-        unimplemented!(),
-        unimplemented!(),
-        unimplemented!(),
-        unimplemented!(),
+    captured = 8;
+    assert!(((unsafe { get.call() }) == (8)));
+    let mut arr: [i32; 4] = [1, 2, 3, 4];
+    arr[(0) as usize] = ((arr[(3) as usize]) * (2));
+    arr[(1) as usize].postfix_inc();
+    assert!((((arr[(0) as usize]) + (arr[(1) as usize])) == (11)));
+    let mut elem: [i32; 2] = [0, 0];
+    (unsafe { set_0((&mut elem[(1) as usize] as *mut i32), 6) });
+    assert!(((elem[(1) as usize]) == (6)));
+    let mut decayed: [i32; 3] = [1, 2, 3];
+    assert!(((unsafe { sum_3((decayed.as_mut_ptr()).cast_const(), 3,) }) == (6)));
+    let mut elem_ref: [i32; 2] = [1, 1];
+    (unsafe { inc_1(&mut elem_ref[(0) as usize]) });
+    assert!(((elem_ref[(0) as usize]) == (2)));
+    let mut p: *mut i32 = (&mut addr as *mut i32);
+    p = (&mut elem[(0) as usize] as *mut i32);
+    (*p) = 9;
+    assert!(((elem[(0) as usize]) == (9)));
+    let mut str: [libc::c_char; 8] = std::mem::transmute(*b"abc\0\0\0\0\0");
+    str[(0) as usize] = ('x' as libc::c_char);
+    assert!(
+        ((str[(0) as usize] as i32) == (('x' as libc::c_char) as i32))
+            && ((str[(3) as usize] as i32) == (('\0' as libc::c_char) as i32))
+    );
+    let mut zeros: [f64; 16] = [
+        0_f64, 0_f64, 0_f64, 0_f64, 0_f64, 0_f64, 0_f64, 0_f64, 0_f64, 0_f64, 0_f64, 0_f64, 0_f64,
+        0_f64, 0_f64, 0_f64,
     ];
-    zeros[(15_()) as usize] = 1.5_f64;
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    let mut init: () = 3_();
+    zeros[(15) as usize] = 1.5_f64;
+    assert!(((zeros[(0) as usize]) == (0_f64)) && ((zeros[(15) as usize]) == (1.5_f64)));
+    assert!(((unsafe { countdown_4(10, None,) }) == (10)));
+    assert!(((unsafe { countdown_4(10, Some(3),) }) == (4)));
+    let mut init: i32 = 3;
     let mut pair: Pair = Pair {
         first: init,
-        second: ((init) + (1_())),
+        second: ((init) + (1)),
     };
     let mut heap: *mut Pair = (Box::leak(Box::new(Pair {
         first: init,
         second: init,
     })) as *mut Pair);
-    unimplemented!();
+    assert!(((pair.second) == (4)) && (((*heap).first) == (3)));
     {
         let __p = heap;
         if !__p.is_null() {
             ::std::mem::drop(Box::from_raw(__p))
         }
     };
-    let mut vec_: () = unimplemented!();
-    let mut four: () = 4_();
-    unimplemented!();
-    (*unimplemented!()) = ((*unimplemented!()) + (1_()));
-    (*unimplemented!()).postfix_inc();
-    unimplemented!();
-    let mut high: () = 3_();
-    let mut low: () = (*unimplemented!());
-    unimplemented!();
-    let mut by_ref: () = unimplemented!();
-    unimplemented!();
-    let mut elem_ptr: () = unimplemented!();
-    (unsafe { set_0((&mut (*unimplemented!()) as *mut ()), 7_()) });
-    unimplemented!();
-    let mut data: () = unimplemented!();
-    (unsafe { set_0(unimplemented!(), 8_()) });
-    unimplemented!();
+    let mut vec_: Vec<i32> = vec![1; 3_usize as usize];
+    let mut four: i32 = 4;
+    {
+        let a0_clone = four.clone();
+        vec_.push(a0_clone)
+    };
+    (*{
+        let __idx = 0_usize as usize;
+        let __v: &mut Vec<i32> = &mut vec_;
+        __v.as_mut_ptr().add(__idx)
+    }) = ((*{
+        let __idx = 3_usize as usize;
+        let __v: &mut Vec<i32> = &mut vec_;
+        __v.as_mut_ptr().add(__idx)
+    }) + (1));
+    (*{
+        let __idx = 1_usize as usize;
+        let __v: &mut Vec<i32> = &mut vec_;
+        __v.as_mut_ptr().add(__idx)
+    })
+    .postfix_inc();
+    assert!(
+        (((vec_.len()) == (4_usize))
+            && ((*{
+                let __idx = 0_usize as usize;
+                let __v: &mut Vec<i32> = &mut vec_;
+                __v.as_mut_ptr().add(__idx)
+            }) == (5)))
+            && ((*{
+                let __idx = 1_usize as usize;
+                let __v: &mut Vec<i32> = &mut vec_;
+                __v.as_mut_ptr().add(__idx)
+            }) == (2))
+    );
+    let mut high: i32 = 3;
+    let mut low: i32 = {
+        let mut __tmp_0: i32 = 2;
+        (*{
+            let __a: *const _ = &mut high;
+            let __b: *const _ = &mut __tmp_0;
+            if *__b < *__a { __b } else { __a }
+        })
+    };
+    assert!(((low) == (2)));
+    let mut by_ref: Vec<i32> = vec![3; 2_usize as usize];
+    assert!(((unsafe { total_2(&by_ref,) }) == (6)));
+    let mut elem_ptr: Vec<i32> = vec![0; 2_usize as usize];
+    (unsafe {
+        set_0(
+            (&mut (*{
+                let __idx = 1_usize as usize;
+                let __v: &mut Vec<i32> = &mut elem_ptr;
+                __v.as_mut_ptr().add(__idx)
+            }) as *mut i32),
+            7,
+        )
+    });
+    assert!(
+        ((*{
+            let __idx = 1_usize as usize;
+            let __v: &mut Vec<i32> = &mut elem_ptr;
+            __v.as_mut_ptr().add(__idx)
+        }) == (7))
+    );
+    let mut data: Vec<i32> = vec![0; 2_usize as usize];
+    (unsafe { set_0(data.as_mut_ptr(), 8) });
+    assert!(
+        ((*{
+            let __idx = 0_usize as usize;
+            let __v: &mut Vec<i32> = &mut data;
+            __v.as_mut_ptr().add(__idx)
+        }) == (8))
+    );
     let mut square: Square = <Square>::default();
     let mut shape: *mut dyn Shape = (&mut square as *mut Square);
-    unimplemented!();
-    return 0_();
+    assert!(((unsafe { (*shape).scale(3,) }) == (6)));
+    return 0;
 }
 unsafe impl Shape for Square {
-    unsafe fn scale(&mut self, factor: ()) -> () {
+    unsafe fn scale(&mut self, factor: i32) -> i32 {
         return ((factor) * (self.side));
     }
 }

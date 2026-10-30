@@ -10,29 +10,32 @@ use std::rc::{Rc, Weak};
 #[byte_size(8)]
 pub struct Point {
     #[offset(0)]
-    pub x: (),
+    pub x: u32,
     #[offset(4)]
-    pub y: (),
+    pub y: u32,
 }
 #[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(8)]
 pub struct Pair {
     #[offset(0)]
-    pub first: (),
+    pub first: u32,
     #[offset(4)]
-    pub second: (),
+    pub second: u32,
 }
 pub fn main() {
     __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
-fn main_0() -> () {
-    let pt: Value<Point> = Rc::new(RefCell::new(Point { x: 10_(), y: 20_() }));
+fn main_0() -> i32 {
+    let pt: Value<Point> = Rc::new(RefCell::new(Point {
+        x: 10_u32,
+        y: 20_u32,
+    }));
     let mut pair: Ptr<Pair> = (pt.as_pointer()).reinterpret_cast::<Pair>();
-    unimplemented!();
-    unimplemented!();
-    field!(pair, first).write(42_());
-    unimplemented!();
-    return 0_();
+    assert!((pair.with(|__s| __s.first) == 10_u32));
+    assert!((pair.with(|__s| __s.second) == 20_u32));
+    field!(pair, first).write(42_u32);
+    assert!(({ (*pt.borrow()).x } == 42_u32));
+    return 0;
 }
 pub fn __cpp2rust_init_globals() {}

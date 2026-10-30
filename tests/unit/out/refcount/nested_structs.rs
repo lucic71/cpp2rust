@@ -10,35 +10,35 @@ use std::rc::{Rc, Weak};
 #[byte_size(4)]
 pub struct Level0_Level1_1_Level2_1_Level3_1 {
     #[offset(0)]
-    pub x1: (),
+    pub x1: i32,
 }
 #[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(8)]
 pub struct Level0_Level1_1_Level2_1_Level3_2 {
     #[offset(0)]
-    pub x1: (),
+    pub x1: i32,
     #[offset(4)]
-    pub x2: (),
+    pub x2: i32,
 }
 #[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(4)]
 pub struct Level0_Level1_1_Level2_1 {
     #[offset(0)]
-    pub x1: (),
+    pub x1: i32,
 }
 #[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(4)]
 pub struct Level0_Level1_1 {
     #[offset(0)]
-    pub x1: (),
+    pub x1: i32,
 }
 #[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(8)]
 pub struct Level0_Level1_2 {
     #[offset(0)]
-    pub x1: (),
+    pub x1: i32,
     #[offset(4)]
-    pub x2: (),
+    pub x2: i32,
 }
 #[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(1)]
@@ -47,13 +47,13 @@ pub fn main() {
     __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
-fn main_0() -> () {
-    let mut x1: Level0_Level1_1 = Level0_Level1_1 { x1: 0_() };
-    let mut x2: Level0_Level1_2 = Level0_Level1_2 { x1: 1_(), x2: 2_() };
-    let mut x3: Level0_Level1_1_Level2_1 = Level0_Level1_1_Level2_1 { x1: 3_() };
-    let mut x4: Level0_Level1_1_Level2_1_Level3_1 = Level0_Level1_1_Level2_1_Level3_1 { x1: 4_() };
+fn main_0() -> i32 {
+    let mut x1: Level0_Level1_1 = Level0_Level1_1 { x1: 0 };
+    let mut x2: Level0_Level1_2 = Level0_Level1_2 { x1: 1, x2: 2 };
+    let mut x3: Level0_Level1_1_Level2_1 = Level0_Level1_1_Level2_1 { x1: 3 };
+    let mut x4: Level0_Level1_1_Level2_1_Level3_1 = Level0_Level1_1_Level2_1_Level3_1 { x1: 4 };
     let mut x5: Level0_Level1_1_Level2_1_Level3_2 =
-        Level0_Level1_1_Level2_1_Level3_2 { x1: 5_(), x2: 6_() };
-    return 0_();
+        Level0_Level1_1_Level2_1_Level3_2 { x1: 5, x2: 6 };
+    return 0;
 }
 pub fn __cpp2rust_init_globals() {}

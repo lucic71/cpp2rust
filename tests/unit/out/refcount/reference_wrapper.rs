@@ -10,46 +10,44 @@ use std::rc::{Rc, Weak};
 #[byte_size(8)]
 pub struct Point {
     #[offset(0)]
-    pub x: (),
+    pub x: i32,
     #[offset(4)]
-    pub y: (),
+    pub y: i32,
 }
-pub fn set_0(ref_: (), mut val: ()) {
-    let ref_: Value<()> = Rc::new(RefCell::new(ref_));
-    unimplemented!().write(val);
+pub fn set_0(mut ref_: Ptr<i32>, mut val: i32) {
+    ref_.write(val);
 }
-pub fn read_1(ref_: ()) -> () {
-    let ref_: Value<()> = Rc::new(RefCell::new(ref_));
-    let r: Ptr<()> = unimplemented!();
+pub fn read_1(mut ref_: Ptr<i32>) -> i32 {
+    let r: Ptr<i32> = (ref_).clone();
     return (r.read());
 }
 pub fn main() {
     __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
-fn main_0() -> () {
-    let mut i1: () = 10_();
-    let ref_1: Value<()> = Rc::new(RefCell::new(unimplemented!()));
-    unimplemented!().write(20_());
-    let i2: Ptr<()> = unimplemented!();
+fn main_0() -> i32 {
+    let i1: Value<i32> = Rc::new(RefCell::new(10));
+    let mut ref_1: Ptr<i32> = i1.as_pointer();
+    ref_1.write(20);
+    let i2: Ptr<i32> = (ref_1).clone();
     {
-        i2.with_mut(|__v| *__v = *__v + 5_())
+        i2.with_mut(|__v| *__v = *__v + 5)
     };
     unimplemented!();
-    let mut i3: () = 1_();
-    let mut i4: () = 2_();
-    let ref_3: Value<()> = Rc::new(RefCell::new(unimplemented!()));
-    let ref_4: Value<()> = Rc::new(RefCell::new(unimplemented!()));
-    let __rhs = (unimplemented!().read());
-    unimplemented!().write(__rhs);
+    let i3: Value<i32> = Rc::new(RefCell::new(1));
+    let i4: Value<i32> = Rc::new(RefCell::new(2));
+    let mut ref_3: Ptr<i32> = i3.as_pointer();
+    let mut ref_4: Ptr<i32> = i4.as_pointer();
+    let __rhs = (ref_4.read());
+    ref_3.write(__rhs);
     unimplemented!();
-    ({ set_0(unimplemented!(), 99_()) });
+    ({ set_0(unimplemented!(), 99) });
     unimplemented!();
-    let mut point: Point = Point { x: 3_(), y: 4_() };
-    let point_ref: Value<()> = Rc::new(RefCell::new(unimplemented!()));
-    field!(unimplemented!(), x).write(30_());
-    field!(unimplemented!(), y).write(40_());
+    let point: Value<Point> = Rc::new(RefCell::new(Point { x: 3, y: 4 }));
+    let mut point_ref: Ptr<Point> = point.as_pointer();
+    field!(point_ref, x).write(30);
+    field!(point_ref, y).write(40);
     unimplemented!();
-    return 0_();
+    return 0;
 }
 pub fn __cpp2rust_init_globals() {}

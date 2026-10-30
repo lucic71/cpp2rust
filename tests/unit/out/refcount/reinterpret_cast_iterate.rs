@@ -10,17 +10,17 @@ pub fn main() {
     __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
-fn main_0() -> () {
-    let arr: Value<Box<[()]>> = Rc::new(RefCell::new(Box::new([
-        1125912791875585_(),
-        2251829878849541_(),
+fn main_0() -> i32 {
+    let arr: Value<Box<[u64]>> = Rc::new(RefCell::new(Box::new([
+        1125912791875585_u64,
+        2251829878849541_u64,
     ])));
-    let mut words: Ptr<()> = (arr.as_pointer() as Ptr<()>).reinterpret_cast::<()>();
-    let mut i: () = 0_();
-    'loop_: while (i < 8_()) {
-        unimplemented!();
+    let mut words: Ptr<u16> = (arr.as_pointer() as Ptr<u64>).reinterpret_cast::<u16>();
+    let mut i: i32 = 0;
+    'loop_: while (i < 8) {
+        assert!(({ ((elem!(words, i).read()) as i32) } == { (((i + 1) as u16) as i32) }));
         i.postfix_inc();
     }
-    return 0_();
+    return 0;
 }
 pub fn __cpp2rust_init_globals() {}

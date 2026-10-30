@@ -10,11 +10,11 @@ pub fn main() {
     __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
-fn main_0() -> () {
-    let x: Value<()> = Rc::new(RefCell::new(1_()));
-    let r: Ptr<()> = x.as_pointer();
-    r.write(5_());
-    unimplemented!();
-    return 0_();
+fn main_0() -> i32 {
+    let x: Value<i32> = Rc::new(RefCell::new(1));
+    let r: Ptr<i32> = x.as_pointer();
+    r.write(5);
+    assert!(((*x.borrow()) == 5));
+    return 0;
 }
 pub fn __cpp2rust_init_globals() {}

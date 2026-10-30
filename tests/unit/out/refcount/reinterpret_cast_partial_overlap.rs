@@ -10,15 +10,15 @@ pub fn main() {
     __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
-fn main_0() -> () {
-    let arr: Value<Box<[()]>> = Rc::new(RefCell::new(Box::new([67305985_(), 134678021_()])));
-    let mut bytes: Ptr<()> = (arr.as_pointer() as Ptr<()>).reinterpret_cast::<()>();
-    unimplemented!();
-    unimplemented!();
-    elem!(bytes, 3_()).write(255_());
-    unimplemented!();
-    elem!(bytes, 4_()).write(170_());
-    unimplemented!();
-    return 0_();
+fn main_0() -> i32 {
+    let arr: Value<Box<[u32]>> = Rc::new(RefCell::new(Box::new([67305985_u32, 134678021_u32])));
+    let mut bytes: Ptr<u8> = (arr.as_pointer() as Ptr<u32>).reinterpret_cast::<u8>();
+    assert!((((elem!(bytes, 3).read()) as i32) == 4));
+    assert!((((elem!(bytes, 4).read()) as i32) == 5));
+    elem!(bytes, 3).write(255_u8);
+    assert!(((*arr.borrow())[(0) as usize] == 4278387201_u32));
+    elem!(bytes, 4).write(170_u8);
+    assert!(((*arr.borrow())[(1) as usize] == 134678186_u32));
+    return 0;
 }
 pub fn __cpp2rust_init_globals() {}

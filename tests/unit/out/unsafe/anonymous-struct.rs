@@ -9,41 +9,41 @@ use std::rc::Rc;
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct Outer_Named {
-    pub a: (),
-    pub b: (),
+    pub a: i32,
+    pub b: i32,
 }
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct anon_0 {
-    pub c: (),
-    pub d: (),
+    pub c: i32,
+    pub d: i32,
 }
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct anon_1 {
-    pub g: (),
-    pub h: (),
+    pub g: i32,
+    pub h: i32,
 }
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct anon_2 {
-    pub e: (),
-    pub f: (),
+    pub e: i32,
+    pub f: i32,
 }
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct anon_4 {
-    pub j: (),
+    pub j: i32,
 }
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct anon_5 {
-    pub k: (),
+    pub k: i32,
 }
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct anon_3 {
-    pub i: (),
+    pub i: i32,
     pub inner_named: anon_4,
     pub anon_5: anon_5,
 }
@@ -62,41 +62,51 @@ pub fn main() {
         std::process::exit(main_0() as i32);
     }
 }
-unsafe fn main_0() -> () {
+unsafe fn main_0() -> i32 {
     let mut o: Outer = <Outer>::default();
-    o.named.a = 1_();
-    o.named.b = 2_();
-    o.anonymous_named_0.c = 3_();
-    o.anonymous_named_0.d = 4_();
-    o.anonymous_named_1.g = 5_();
-    o.anonymous_named_1.h = 6_();
-    o.anon_2.e = 7_();
-    o.anon_2.f = 8_();
-    o.anon_3.i = 9_();
-    o.anon_3.inner_named.j = 10_();
-    o.anon_3.anon_5.k = 11_();
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
+    o.named.a = 1;
+    o.named.b = 2;
+    o.anonymous_named_0.c = 3;
+    o.anonymous_named_0.d = 4;
+    o.anonymous_named_1.g = 5;
+    o.anonymous_named_1.h = 6;
+    o.anon_2.e = 7;
+    o.anon_2.f = 8;
+    o.anon_3.i = 9;
+    o.anon_3.inner_named.j = 10;
+    o.anon_3.anon_5.k = 11;
+    assert!(((o.named.a) == (1)));
+    assert!(((o.named.b) == (2)));
+    assert!(((o.anonymous_named_0.c) == (3)));
+    assert!(((o.anonymous_named_0.d) == (4)));
+    assert!(((o.anonymous_named_1.g) == (5)));
+    assert!(((o.anonymous_named_1.h) == (6)));
+    assert!(((o.anon_2.e) == (7)));
+    assert!(((o.anon_2.f) == (8)));
+    assert!(((o.anon_3.i) == (9)));
+    assert!(((o.anon_3.inner_named.j) == (10)));
+    assert!(((o.anon_3.anon_5.k) == (11)));
     let mut s: anon_6 = <anon_6>::default();
-    s.x = 1_();
-    s.z = 2_();
-    unimplemented!();
-    unimplemented!();
-    return 0_();
+    s.x = 1;
+    s.z = 2;
+    assert!(
+        ({
+            s.x = 1;
+            s.x
+        } != 0)
+    );
+    assert!(
+        ({
+            s.z = 2;
+            s.z
+        } != 0)
+    );
+    return 0;
 }
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct anon_6 {
-    pub x: (),
-    pub z: (),
+    pub x: i32,
+    pub z: i32,
 }
 pub unsafe fn __cpp2rust_init_globals() {}

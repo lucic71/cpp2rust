@@ -6,20 +6,25 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-pub fn foo_0(v: Ptr<()>) -> () {
+pub fn foo_0(v: Ptr<i32>) -> i32 {
     return (v.read());
 }
 pub fn main() {
     __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
-fn main_0() -> () {
-    let __tmp_0: Value<()> = Rc::new(RefCell::new(5_()));
-    let i2: Ptr<()> = __tmp_0.as_pointer();
-    unimplemented!();
-    let mut i3: () = ({ foo_0((i2).clone()) });
-    unimplemented!();
-    unimplemented!();
-    return 0_();
+fn main_0() -> i32 {
+    let __tmp_0: Value<i32> = Rc::new(RefCell::new(5));
+    let i2: Ptr<i32> = __tmp_0.as_pointer();
+    assert!(((i2.read()) == 5));
+    let mut i3: i32 = ({ foo_0((i2).reinterpret_cast::<i32>()) });
+    assert!((i3 == 5));
+    assert!(
+        (({
+            let _v: Value<i32> = Rc::new(RefCell::new(5));
+            foo_0(_v.as_pointer())
+        }) == 5)
+    );
+    return 0;
 }
 pub fn __cpp2rust_init_globals() {}

@@ -152,78 +152,21 @@ fn main_0() -> i32 {
         reorder(__order, |__i| __first.iter_at(__i));
     };
     assert!(
-        ((({ (*vec_.borrow())[0_usize].v } == 1) && ({ (*vec_.borrow())[1_usize].v } == 2))
-            && ({ (*vec_.borrow())[2_usize].v } == 7))
-            && ({ (*vec_.borrow())[3_usize].v } == 8)
+        (((unimplemented!().with(|__s| __s.v) == 1) && (unimplemented!().with(|__s| __s.v) == 2))
+            && (unimplemented!().with(|__s| __s.v) == 7))
+            && (unimplemented!().with(|__s| __s.v) == 8)
     );
     assert!((copies_0.with(|rc| *rc.borrow()) == 0));
-    {
-        let __first = vec_.decay().begin();
-        let __n = vec_.decay().end().iter_distance(&__first);
-        let __cmp = greater_2;
-        let mut __order: Vec<isize> = (0..__n).collect();
-        __order.sort_by(|&__x, &__y| {
-            let __a = __first.iter_at(__x);
-            let __b = __first.iter_at(__y);
-            if __cmp.call(__a.clone(), __b.clone()) {
-                std::cmp::Ordering::Less
-            } else if __cmp.call(__b, __a) {
-                std::cmp::Ordering::Greater
-            } else {
-                std::cmp::Ordering::Equal
-            }
-        });
-        reorder(__order, |__i| __first.iter_at(__i));
-    };
-    assert!(({ (*vec_.borrow())[0_usize].v } == 8) && ({ (*vec_.borrow())[3_usize].v } == 1));
+    unimplemented!();
+    assert!((unimplemented!().with(|__s| __s.v) == 8) && (unimplemented!().with(|__s| __s.v) == 1));
     assert!((copies_0.with(|rc| *rc.borrow()) == 0));
-    {
-        let __first = vec_.decay().begin();
-        let __n = vec_.decay().end().iter_distance(&__first);
-        let __cmp = FnPtr::<fn(Ptr<Tracked>, Ptr<Tracked>) -> bool>::new(
-            |a: Ptr<Tracked>, b: Ptr<Tracked>| -> bool {
-                {
-                    return ({ a.with(|__s| __s.v) } < { b.with(|__s| __s.v) });
-                }
-            },
-        );
-        let mut __order: Vec<isize> = (0..__n).collect();
-        __order.sort_by(|&__x, &__y| {
-            let __a = __first.iter_at(__x);
-            let __b = __first.iter_at(__y);
-            if __cmp.call(__a.clone(), __b.clone()) {
-                std::cmp::Ordering::Less
-            } else if __cmp.call(__b, __a) {
-                std::cmp::Ordering::Greater
-            } else {
-                std::cmp::Ordering::Equal
-            }
-        });
-        reorder(__order, |__i| __first.iter_at(__i));
-    };
-    assert!(({ (*vec_.borrow())[0_usize].v } == 1) && ({ (*vec_.borrow())[3_usize].v } == 8));
+    unimplemented!();
+    assert!((unimplemented!().with(|__s| __s.v) == 1) && (unimplemented!().with(|__s| __s.v) == 8));
     assert!((copies_0.with(|rc| *rc.borrow()) == 0));
-    {
-        let __first = vec_.decay().begin().iter_add(1_isize);
-        let __n = vec_.decay().end().iter_distance(&__first);
-        let __cmp = greater_2;
-        let mut __order: Vec<isize> = (0..__n).collect();
-        __order.sort_by(|&__x, &__y| {
-            let __a = __first.iter_at(__x);
-            let __b = __first.iter_at(__y);
-            if __cmp.call(__a.clone(), __b.clone()) {
-                std::cmp::Ordering::Less
-            } else if __cmp.call(__b, __a) {
-                std::cmp::Ordering::Greater
-            } else {
-                std::cmp::Ordering::Equal
-            }
-        });
-        reorder(__order, |__i| __first.iter_at(__i));
-    };
+    unimplemented!();
     assert!(
-        (({ (*vec_.borrow())[0_usize].v } == 1) && ({ (*vec_.borrow())[1_usize].v } == 8))
-            && ({ (*vec_.borrow())[3_usize].v } == 2)
+        ((unimplemented!().with(|__s| __s.v) == 1) && (unimplemented!().with(|__s| __s.v) == 8))
+            && (unimplemented!().with(|__s| __s.v) == 2)
     );
     assert!((copies_0.with(|rc| *rc.borrow()) == 0));
     let bags: Value<Box<[Bag]>> = Rc::new(RefCell::new(
@@ -256,22 +199,18 @@ fn main_0() -> i32 {
             && ((*bags.borrow())[(2) as usize].items.len() == 2_usize)
     );
     assert!((copies_0.with(|rc| *rc.borrow()) == 0));
-    let bag_vec: Value<Vec<Bag>> = Rc::new(RefCell::new(
-        (0..(3_usize) as usize)
-            .map(|_| <Bag>::default())
-            .collect::<Vec<_>>(),
-    ));
+    let bag_vec: Value<Vec<Bag>> = Rc::new(RefCell::new(unimplemented!()));
     {
         let __init = Tracked::new_1({ 4 });
-        (*bag_vec.borrow_mut())[1_usize].items.push(__init)
+        field!(unimplemented!(), items).with_mut(|__v: &mut Vec<Tracked>| __v.push(__init))
     };
     {
         let __init = Tracked::new_1({ 5 });
-        (*bag_vec.borrow_mut())[1_usize].items.push(__init)
+        field!(unimplemented!(), items).with_mut(|__v: &mut Vec<Tracked>| __v.push(__init))
     };
     {
         let __init = Tracked::new_1({ 6 });
-        (*bag_vec.borrow_mut())[2_usize].items.push(__init)
+        field!(unimplemented!(), items).with_mut(|__v: &mut Vec<Tracked>| __v.push(__init))
     };
     {
         let __first = bag_vec.decay().begin();
@@ -281,40 +220,13 @@ fn main_0() -> i32 {
         reorder(__order, |__i| __first.iter_at(__i));
     };
     assert!(
-        (((*bag_vec.borrow())[0_usize].items.is_empty())
-            && ((*bag_vec.borrow())[1_usize].items.len() == 1_usize))
-            && (vec_elem!(bag_vec.decay().offset(2_usize), items, 1_usize).with(|__s| __s.v) == 5)
+        (((*unimplemented!().upgrade().deref()).items.is_empty())
+            && ((*unimplemented!().upgrade().deref()).items.len() == 1_usize))
+            && (unimplemented!().with(|__s| __s.v) == 5)
     );
     assert!((copies_0.with(|rc| *rc.borrow()) == 0));
-    assert!(
-        {
-            let mut __it = bag_vec.decay().begin();
-            let __last = bag_vec.decay().end();
-            let __value = (bags.as_pointer() as Ptr<Bag>).offset(1);
-            while __it != __last && !CppEq::equal(&__it.iter_deref(), &__value) {
-                __it.iter_inc();
-            }
-            __it
-        } == bag_vec.decay().begin().iter_add(1_isize)
-    );
-    assert!(
-        {
-            let __first = bag_vec.decay().begin();
-            let __last = bag_vec.decay().end();
-            let mut __best = __first.clone();
-            if __first != __last {
-                let mut __it = __first;
-                __it.iter_inc();
-                while __it != __last {
-                    if CppLess::less(&__best.iter_deref(), &__it.iter_deref()) {
-                        __best = __it.clone();
-                    }
-                    __it.iter_inc();
-                }
-            }
-            __best
-        } == bag_vec.decay().begin().iter_add(2_isize)
-    );
+    assert!(unimplemented!());
+    assert!(unimplemented!());
     assert!(
         (({
             let __a = (bags.as_pointer() as Ptr<Bag>).offset(0);
@@ -331,39 +243,20 @@ fn main_0() -> i32 {
     );
     assert!((copies_0.with(|rc| *rc.borrow()) == 0));
     let bag_map: Value<Map<Bag, (Value<Bag>, Value<i32>)>> = Rc::new(RefCell::new(Map::new()));
-    Map::subscript_move(
-        bag_map.as_pointer(),
-        bag_vec.decay().offset(2_usize),
-        |__k| cpp_move!(__k),
-    )
-    .write(2);
-    Map::subscript_move(
-        bag_map.as_pointer(),
-        bag_vec.decay().offset(0_usize),
-        |__k| cpp_move!(__k),
-    )
-    .write(0);
+    Map::subscript_move(bag_map.as_pointer(), unimplemented!(), |__k| cpp_move!(__k)).write(2);
+    Map::subscript_move(bag_map.as_pointer(), unimplemented!(), |__k| cpp_move!(__k)).write(0);
     assert!(
-        ((*(*bag_map
-            .as_pointer()
-            .with(|__m: &Map<Bag, (Value<Bag>, Value<i32>)>| __m
-                .find(&(bags.as_pointer() as Ptr<Bag>).offset(2)))
-            .iter_deref()
-            .upgrade()
-            .deref())
-        .1
-        .borrow())
-            == 2)
-    );
-    assert!(
-        bag_map
-            .as_pointer()
-            .with(|__m: &Map<Bag, (Value<Bag>, Value<i32>)>| __m
-                .find(&(bags.as_pointer() as Ptr<Bag>).offset(1)))
-            == bag_map
+        ({
+            (bag_map
                 .as_pointer()
-                .with(|__m: &Map<Bag, (Value<Bag>, Value<i32>)>| __m.end())
+                .with(|__m: &Map<Bag, (Value<Bag>, Value<i32>)>| {
+                    __m.find(&(bags.as_pointer() as Ptr<Bag>).offset(2))
+                })
+                .read())
+            .second
+        } == 2)
     );
+    assert!(unimplemented!());
     assert!((copies_0.with(|rc| *rc.borrow()) == 0));
     return copies_0.with(|rc| *rc.borrow());
 }

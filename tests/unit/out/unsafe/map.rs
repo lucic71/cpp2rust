@@ -88,8 +88,8 @@ unsafe fn main_0() -> i32 {
     assert!((((*const_it4.iter_deref()).1) == (6_u32)));
     let r: *mut UnsafeMap<i16, (i16, u32)> = &mut m;
     assert!((((*r).len()) == (4_usize)));
-    assert!(m.find(&4_i16) != m.end());
-    (*r).erase(&(it4).clone());
+    assert!(!(m.find(&4_i16) == m.end()));
+    (*r).erase(&it4.clone());
     assert!((((*r).len()) == (3_usize)));
     assert!(m.find(&4_i16) == m.end());
     (*m.subscript_move(&mut 7_i16, |__k| cpp_move_unsafe!(__k))) = 7_u32;
@@ -102,9 +102,9 @@ unsafe fn main_0() -> i32 {
     assert!((((*r).len()) == (5_usize)));
     let mut cit: UnsafeBidirectionalIterator<(i16, u32)> =
         <UnsafeBidirectionalIterator<(i16, u32)>>::from(m.find(&7_i16));
-    let mut next: UnsafeBidirectionalIterator<(i16, u32)> = m.erase(&(cit).clone());
+    let mut next: UnsafeBidirectionalIterator<(i16, u32)> = m.erase(&cit.clone());
     assert!(next == m.find(&8_i16));
-    next = m.erase(&(next).clone());
+    next = m.erase(&next.clone());
     assert!(next == m.end());
     assert!((((*r).len()) == (3_usize)));
     assert!(m.find(&8_i16) == m.end());
@@ -152,7 +152,13 @@ unsafe fn main_0() -> i32 {
     }
     let mut i: u32 = 0_u32;
     'loop_: while ((i as usize) < (indexes.len())) {
-        (*m2.subscript(&indexes[(i as usize)])) = ((i).wrapping_rem(2_u32) != 0);
+        (*m2.subscript(
+            &(*{
+                let __idx = (i as usize) as usize;
+                let __v: &mut Vec<i32> = &mut indexes;
+                __v.as_mut_ptr().add(__idx)
+            }),
+        )) = ((i).wrapping_rem(2_u32) != 0);
         i.prefix_inc();
     }
     assert!(((m2.len()) == (indexes.len())));

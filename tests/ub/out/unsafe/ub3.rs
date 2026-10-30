@@ -6,9 +6,9 @@ use std::collections::BTreeMap;
 use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
-pub unsafe fn dangling_0() -> *mut () {
-    let mut x: () = 1_();
-    let mut p: *mut () = (&mut x as *mut ());
+pub unsafe fn dangling_0() -> *mut i32 {
+    let mut x: i32 = 1;
+    let mut p: *mut i32 = (&mut x as *mut i32);
     return p;
 }
 pub fn main() {
@@ -17,8 +17,8 @@ pub fn main() {
         std::process::exit(main_0() as i32);
     }
 }
-unsafe fn main_0() -> () {
-    let mut x: *mut () = (unsafe { dangling_0() });
+unsafe fn main_0() -> i32 {
+    let mut x: *mut i32 = (unsafe { dangling_0() });
     return (*x);
 }
 pub unsafe fn __cpp2rust_init_globals() {}

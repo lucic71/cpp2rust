@@ -107,18 +107,41 @@ unsafe fn main_0() -> i32 {
     let mut v2: Vec<i32> = v1.clone();
     let mut i: i32 = 0;
     'loop_: while ((i) < (N)) {
-        assert!(((v2[(i as usize)]) == (i)));
+        assert!(
+            ((*{
+                let __idx = (i as usize) as usize;
+                let __v: &mut Vec<i32> = &mut v2;
+                __v.as_mut_ptr().add(__idx)
+            }) == (i))
+        );
         i.prefix_inc();
     }
     let mut i: i32 = 0;
     'loop_: while ((i) < (N)) {
-        v2[(i as usize)].prefix_inc();
+        (*{
+            let __idx = (i as usize) as usize;
+            let __v: &mut Vec<i32> = &mut v2;
+            __v.as_mut_ptr().add(__idx)
+        })
+        .prefix_inc();
         i.prefix_inc();
     }
     let mut i: i32 = 0;
     'loop_: while ((i) < (N)) {
-        assert!(((v2[(i as usize)]) == ((i) + (1))));
-        assert!(((v1[(i as usize)]) == (i)));
+        assert!(
+            ((*{
+                let __idx = (i as usize) as usize;
+                let __v: &mut Vec<i32> = &mut v2;
+                __v.as_mut_ptr().add(__idx)
+            }) == ((i) + (1)))
+        );
+        assert!(
+            ((*{
+                let __idx = (i as usize) as usize;
+                let __v: &mut Vec<i32> = &mut v1;
+                __v.as_mut_ptr().add(__idx)
+            }) == (i))
+        );
         i.prefix_inc();
     }
     let mut m1: Vec<Vec<i32>> = Vec::new();
@@ -133,12 +156,48 @@ unsafe fn main_0() -> i32 {
     let mut m2: Vec<Vec<i32>> = m1.clone();
     let mut i: i32 = 0;
     'loop_: while ((i) < (N)) {
-        assert!(((m1[(i as usize)].len()) == (10_usize)));
-        assert!(((m2[(i as usize)].len()) == (10_usize)));
+        assert!(
+            (((*{
+                let __idx = (i as usize) as usize;
+                let __v: &mut Vec<Vec<i32>> = &mut m1;
+                __v.as_mut_ptr().add(__idx)
+            })
+            .len())
+                == (10_usize))
+        );
+        assert!(
+            (((*{
+                let __idx = (i as usize) as usize;
+                let __v: &mut Vec<Vec<i32>> = &mut m2;
+                __v.as_mut_ptr().add(__idx)
+            })
+            .len())
+                == (10_usize))
+        );
         let mut j: i32 = 0;
         'loop_: while ((j) < (10)) {
-            assert!(((m1[(i as usize)][(j as usize)]) == (0)));
-            assert!(((m2[(i as usize)][(j as usize)]) == (0)));
+            assert!(
+                ((*{
+                    let __idx = (j as usize) as usize;
+                    let __v: &mut Vec<i32> = &mut (*{
+                        let __idx = (i as usize) as usize;
+                        let __v: &mut Vec<Vec<i32>> = &mut m1;
+                        __v.as_mut_ptr().add(__idx)
+                    });
+                    __v.as_mut_ptr().add(__idx)
+                }) == (0))
+            );
+            assert!(
+                ((*{
+                    let __idx = (j as usize) as usize;
+                    let __v: &mut Vec<i32> = &mut (*{
+                        let __idx = (i as usize) as usize;
+                        let __v: &mut Vec<Vec<i32>> = &mut m2;
+                        __v.as_mut_ptr().add(__idx)
+                    });
+                    __v.as_mut_ptr().add(__idx)
+                }) == (0))
+            );
             j.prefix_inc();
         }
         i.prefix_inc();
@@ -147,19 +206,64 @@ unsafe fn main_0() -> i32 {
     'loop_: while ((i) < (N)) {
         let mut j: i32 = 0;
         'loop_: while ((j) < (10)) {
-            m2[(i as usize)][(j as usize)].postfix_inc();
+            (*{
+                let __idx = (j as usize) as usize;
+                let __v: &mut Vec<i32> = &mut (*{
+                    let __idx = (i as usize) as usize;
+                    let __v: &mut Vec<Vec<i32>> = &mut m2;
+                    __v.as_mut_ptr().add(__idx)
+                });
+                __v.as_mut_ptr().add(__idx)
+            })
+            .postfix_inc();
             j.prefix_inc();
         }
         i.prefix_inc();
     }
     let mut i: i32 = 0;
     'loop_: while ((i) < (N)) {
-        assert!(((m1[(i as usize)].len()) == (10_usize)));
-        assert!(((m2[(i as usize)].len()) == (10_usize)));
+        assert!(
+            (((*{
+                let __idx = (i as usize) as usize;
+                let __v: &mut Vec<Vec<i32>> = &mut m1;
+                __v.as_mut_ptr().add(__idx)
+            })
+            .len())
+                == (10_usize))
+        );
+        assert!(
+            (((*{
+                let __idx = (i as usize) as usize;
+                let __v: &mut Vec<Vec<i32>> = &mut m2;
+                __v.as_mut_ptr().add(__idx)
+            })
+            .len())
+                == (10_usize))
+        );
         let mut j: i32 = 0;
         'loop_: while ((j) < (10)) {
-            assert!(((m1[(i as usize)][(j as usize)]) == (0)));
-            assert!(((m2[(i as usize)][(j as usize)]) == (1)));
+            assert!(
+                ((*{
+                    let __idx = (j as usize) as usize;
+                    let __v: &mut Vec<i32> = &mut (*{
+                        let __idx = (i as usize) as usize;
+                        let __v: &mut Vec<Vec<i32>> = &mut m1;
+                        __v.as_mut_ptr().add(__idx)
+                    });
+                    __v.as_mut_ptr().add(__idx)
+                }) == (0))
+            );
+            assert!(
+                ((*{
+                    let __idx = (j as usize) as usize;
+                    let __v: &mut Vec<i32> = &mut (*{
+                        let __idx = (i as usize) as usize;
+                        let __v: &mut Vec<Vec<i32>> = &mut m2;
+                        __v.as_mut_ptr().add(__idx)
+                    });
+                    __v.as_mut_ptr().add(__idx)
+                }) == (1))
+            );
             j.prefix_inc();
         }
         i.prefix_inc();
@@ -184,7 +288,10 @@ unsafe fn main_0() -> i32 {
         i.prefix_inc();
     }
     let mut pair1: (i32, i32) = (1, 2);
-    let mut pair2: (i32, i32) = pair1.clone();
+    let mut pair2: (i32, i32) = {
+        let __a0 = (pair1).clone();
+        ((*&__a0.0), (*&__a0.1))
+    };
     pair2.0 = ((pair2.0) * (10));
     pair2.1 = ((pair2.1) * (10));
     assert!(((pair2.0) == (10)));
@@ -195,7 +302,13 @@ unsafe fn main_0() -> i32 {
         (0..(0_usize) as usize).map(|_| 0_i32).collect::<Vec<_>>(),
         0,
     );
-    let mut pair4: (Vec<i32>, i32) = pair3.clone();
+    let mut pair4: (Vec<i32>, i32) = {
+        let __a0 = (pair3).clone();
+        (
+            <Vec<i32> as CppFromUnsafe<Vec<i32>>>::cpp_from(&__a0.0),
+            (*&__a0.1),
+        )
+    };
     {
         let __a1 = 1;
         pair4.0.push(__a1)
@@ -211,15 +324,69 @@ unsafe fn main_0() -> i32 {
         .chain(std::iter::once(0))
         .collect();
     let mut s2: Vec<libc::c_char> = s1.clone();
-    s2[(0_usize)] = ('b' as libc::c_char);
-    s2[(1_usize)] = ('b' as libc::c_char);
-    s2[(2_usize)] = ('b' as libc::c_char);
-    assert!(((s2[(0_usize)] as i32) == (('b' as libc::c_char) as i32)));
-    assert!(((s2[(1_usize)] as i32) == (('b' as libc::c_char) as i32)));
-    assert!(((s2[(2_usize)] as i32) == (('b' as libc::c_char) as i32)));
-    assert!(((s1[(0_usize)] as i32) == (('a' as libc::c_char) as i32)));
-    assert!(((s1[(1_usize)] as i32) == (('a' as libc::c_char) as i32)));
-    assert!(((s1[(2_usize)] as i32) == (('a' as libc::c_char) as i32)));
+    (*{
+        let __idx = 0_usize as usize;
+        let __v: &mut Vec<libc::c_char> = &mut s2;
+        __v.as_mut_ptr().add(__idx)
+    }) = ('b' as libc::c_char);
+    (*{
+        let __idx = 1_usize as usize;
+        let __v: &mut Vec<libc::c_char> = &mut s2;
+        __v.as_mut_ptr().add(__idx)
+    }) = ('b' as libc::c_char);
+    (*{
+        let __idx = 2_usize as usize;
+        let __v: &mut Vec<libc::c_char> = &mut s2;
+        __v.as_mut_ptr().add(__idx)
+    }) = ('b' as libc::c_char);
+    assert!(
+        (((*{
+            let __idx = 0_usize as usize;
+            let __v: &mut Vec<libc::c_char> = &mut s2;
+            __v.as_mut_ptr().add(__idx)
+        }) as i32)
+            == (('b' as libc::c_char) as i32))
+    );
+    assert!(
+        (((*{
+            let __idx = 1_usize as usize;
+            let __v: &mut Vec<libc::c_char> = &mut s2;
+            __v.as_mut_ptr().add(__idx)
+        }) as i32)
+            == (('b' as libc::c_char) as i32))
+    );
+    assert!(
+        (((*{
+            let __idx = 2_usize as usize;
+            let __v: &mut Vec<libc::c_char> = &mut s2;
+            __v.as_mut_ptr().add(__idx)
+        }) as i32)
+            == (('b' as libc::c_char) as i32))
+    );
+    assert!(
+        (((*{
+            let __idx = 0_usize as usize;
+            let __v: &mut Vec<libc::c_char> = &mut s1;
+            __v.as_mut_ptr().add(__idx)
+        }) as i32)
+            == (('a' as libc::c_char) as i32))
+    );
+    assert!(
+        (((*{
+            let __idx = 1_usize as usize;
+            let __v: &mut Vec<libc::c_char> = &mut s1;
+            __v.as_mut_ptr().add(__idx)
+        }) as i32)
+            == (('a' as libc::c_char) as i32))
+    );
+    assert!(
+        (((*{
+            let __idx = 2_usize as usize;
+            let __v: &mut Vec<libc::c_char> = &mut s1;
+            __v.as_mut_ptr().add(__idx)
+        }) as i32)
+            == (('a' as libc::c_char) as i32))
+    );
     let mut b1: Bar = Bar { w: 1 };
     let mut b2: Bar = Bar { w: 2 };
     b2 = b1;
@@ -230,14 +397,37 @@ unsafe fn main_0() -> i32 {
     v4 = v2.clone();
     let mut i: i32 = 0;
     'loop_: while ((i) < (N)) {
-        assert!(((v4[(i as usize)]) == ((i) + (1))));
-        v4[(i as usize)].prefix_inc();
+        assert!(
+            ((*{
+                let __idx = (i as usize) as usize;
+                let __v: &mut Vec<i32> = &mut v4;
+                __v.as_mut_ptr().add(__idx)
+            }) == ((i) + (1)))
+        );
+        (*{
+            let __idx = (i as usize) as usize;
+            let __v: &mut Vec<i32> = &mut v4;
+            __v.as_mut_ptr().add(__idx)
+        })
+        .prefix_inc();
         i.prefix_inc();
     }
     let mut i: i32 = 0;
     'loop_: while ((i) < (N)) {
-        assert!(((v4[(i as usize)]) == ((i) + (2))));
-        assert!(((v2[(i as usize)]) == ((i) + (1))));
+        assert!(
+            ((*{
+                let __idx = (i as usize) as usize;
+                let __v: &mut Vec<i32> = &mut v4;
+                __v.as_mut_ptr().add(__idx)
+            }) == ((i) + (2)))
+        );
+        assert!(
+            ((*{
+                let __idx = (i as usize) as usize;
+                let __v: &mut Vec<i32> = &mut v2;
+                __v.as_mut_ptr().add(__idx)
+            }) == ((i) + (1)))
+        );
         i.prefix_inc();
     }
     let mut ra: i32 = 1;

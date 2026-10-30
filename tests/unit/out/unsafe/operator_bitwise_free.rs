@@ -9,7 +9,7 @@ use std::rc::Rc;
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct S {
-    pub v: (),
+    pub v: u32,
 }
 pub unsafe fn operator_bitnot_0(a: *const S) -> S {
     return S { v: !(*a).v };
@@ -29,12 +29,12 @@ pub unsafe fn operator_bitxor_3(a: *const S, b: *const S) -> S {
         v: (((*a).v) ^ ((*b).v)),
     };
 }
-pub unsafe fn operator_shl_4(a: *const S, mut n: ()) -> S {
+pub unsafe fn operator_shl_4(a: *const S, mut n: i32) -> S {
     return S {
         v: (((*a).v) << (n)),
     };
 }
-pub unsafe fn operator_shr_5(a: *const S, mut n: ()) -> S {
+pub unsafe fn operator_shr_5(a: *const S, mut n: i32) -> S {
     return S {
         v: (((*a).v) >> (n)),
     };
@@ -45,15 +45,51 @@ pub fn main() {
         std::process::exit(main_0() as i32);
     }
 }
-unsafe fn main_0() -> () {
-    let mut a: S = S { v: 12_() };
-    let mut b: S = S { v: 10_() };
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    return 0_();
+unsafe fn main_0() -> i32 {
+    let mut a: S = S { v: 12_u32 };
+    let mut b: S = S { v: 10_u32 };
+    assert!(
+        (((unsafe {
+            let _a: *const S = &a;
+            operator_bitnot_0(_a)
+        })
+        .v) == (!12_u32))
+    );
+    assert!(
+        (((unsafe {
+            let _a: *const S = &a;
+            operator_bitand_1(_a, &b)
+        })
+        .v) == (8_u32))
+    );
+    assert!(
+        (((unsafe {
+            let _a: *const S = &a;
+            operator_bitor_2(_a, &b)
+        })
+        .v) == (14_u32))
+    );
+    assert!(
+        (((unsafe {
+            let _a: *const S = &a;
+            operator_bitxor_3(_a, &b)
+        })
+        .v) == (6_u32))
+    );
+    assert!(
+        (((unsafe {
+            let _a: *const S = &a;
+            operator_shl_4(_a, 2)
+        })
+        .v) == (48_u32))
+    );
+    assert!(
+        (((unsafe {
+            let _a: *const S = &a;
+            operator_shr_5(_a, 2)
+        })
+        .v) == (3_u32))
+    );
+    return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

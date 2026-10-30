@@ -6,7 +6,7 @@ use std::collections::BTreeMap;
 use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
-pub unsafe fn foo_0(a: *const ()) -> *const () {
+pub unsafe fn foo_0(a: *const i32) -> *const i32 {
     return a;
 }
 pub fn main() {
@@ -15,11 +15,11 @@ pub fn main() {
         std::process::exit(main_0() as i32);
     }
 }
-unsafe fn main_0() -> () {
-    let mut a: () = 1_();
-    let mut pa: *mut () = (&mut a as *mut ());
-    let b: *const () = (unsafe { foo_0(&(*pa)) });
-    unimplemented!();
-    return 0_();
+unsafe fn main_0() -> i32 {
+    let mut a: i32 = 1;
+    let mut pa: *mut i32 = (&mut a as *mut i32);
+    let b: *const i32 = (unsafe { foo_0(&(*pa)) });
+    assert!(((*b) == (1)));
+    return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

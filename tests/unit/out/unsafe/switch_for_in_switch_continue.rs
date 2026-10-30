@@ -6,14 +6,14 @@ use std::collections::BTreeMap;
 use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
-pub unsafe fn for_in_switch_continue_0(mut n: ()) -> () {
-    let mut r: () = 0_();
+pub unsafe fn for_in_switch_continue_0(mut n: i32) -> i32 {
+    let mut r: i32 = 0;
     'switch: {
         match { n } {
-            __v if __v == 0_() => {
-                let mut i: () = 0_();
-                'loop_: while ((i) < (5_())) {
-                    if (((i) % (2_())) == (0_())) {
+            __v if __v == 0 => {
+                let mut i: i32 = 0;
+                'loop_: while ((i) < (5)) {
+                    if (((i) % (2)) == (0)) {
                         i.prefix_inc();
                         continue 'loop_;
                     }
@@ -23,7 +23,7 @@ pub unsafe fn for_in_switch_continue_0(mut n: ()) -> () {
                 break 'switch;
             }
             _ => {
-                r = -1_();
+                r = -1_i32;
                 break 'switch;
             }
         }
@@ -36,9 +36,9 @@ pub fn main() {
         std::process::exit(main_0() as i32);
     }
 }
-unsafe fn main_0() -> () {
-    unimplemented!();
-    unimplemented!();
-    return 0_();
+unsafe fn main_0() -> i32 {
+    assert!(((unsafe { for_in_switch_continue_0(0,) }) == (4)));
+    assert!(((unsafe { for_in_switch_continue_0(99,) }) == (-1_i32)));
+    return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

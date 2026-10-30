@@ -10,9 +10,9 @@ pub fn main() {
     __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
-fn main_0() -> () {
-    unimplemented!();
-    unimplemented!();
-    return 0_();
+fn main_0() -> i32 {
+    assert!(!(0 != 0));
+    assert!((1 == 1));
+    return 0;
 }
 pub fn __cpp2rust_init_globals() {}

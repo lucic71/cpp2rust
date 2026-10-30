@@ -10,22 +10,19 @@ use std::rc::{Rc, Weak};
 #[byte_size(8)]
 pub struct pair {
     #[offset(0)]
-    pub a: (),
+    pub a: i32,
     #[offset(4)]
-    pub b: (),
+    pub b: i32,
 }
 pub fn main() {
     __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
-fn main_0() -> () {
-    let mut x: () = unimplemented!();
-    x = (x + 1_());
+fn main_0() -> i32 {
+    let mut x: i32 = 0_i32;
+    x = (x + 1);
     let mut p: pair = <pair>::default();
-    p = pair {
-        a: 1_(),
-        b: (p.a + 1_()),
-    };
+    p = pair { a: 1, b: (p.a + 1) };
     return (x + p.b);
 }
 pub fn __cpp2rust_init_globals() {}

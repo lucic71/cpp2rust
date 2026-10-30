@@ -6,16 +6,16 @@ use std::collections::BTreeMap;
 use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
-pub unsafe fn identity_0(mut x: ()) -> () {
+pub unsafe fn identity_0(mut x: i32) -> i32 {
     return x;
 }
-pub unsafe fn swap_by_ptr_1(mut a: *mut (), mut b: *mut ()) {
-    let mut tmp: () = (*a);
+pub unsafe fn swap_by_ptr_1(mut a: *mut i32, mut b: *mut i32) {
+    let mut tmp: i32 = (*a);
     (*a) = (*b);
     (*b) = tmp;
 }
-pub unsafe fn swap_by_ref_2(a: *mut (), b: *mut ()) {
-    let mut tmp: () = (*a);
+pub unsafe fn swap_by_ref_2(a: *mut i32, b: *mut i32) {
+    let mut tmp: i32 = (*a);
     (*a) = (*b);
     (*b) = tmp;
 }
@@ -25,22 +25,22 @@ pub fn main() {
         std::process::exit(main_0() as i32);
     }
 }
-unsafe fn main_0() -> () {
-    let mut x: () = 0_();
+unsafe fn main_0() -> i32 {
+    let mut x: i32 = 0;
     unimplemented!();
-    let mut a: () = 1_();
-    let mut b: () = (unsafe { identity_0(a) });
+    let mut a: i32 = 1;
+    let mut b: i32 = (unsafe { identity_0(a) });
     unimplemented!();
-    let mut c: () = 2_();
-    let mut p: *mut () = (&mut c as *mut ());
+    let mut c: i32 = 2;
+    let mut p: *mut i32 = (&mut c as *mut i32);
     unimplemented!();
-    let mut d: () = 3_();
-    let mut e: () = 4_();
-    (unsafe { swap_by_ptr_1((&mut d as *mut ()), (&mut e as *mut ())) });
-    let mut f: () = 4_();
-    let mut g: () = 5_();
+    let mut d: i32 = 3;
+    let mut e: i32 = 4;
+    (unsafe { swap_by_ptr_1((&mut d as *mut i32), (&mut e as *mut i32)) });
+    let mut f: i32 = 4;
+    let mut g: i32 = 5;
     (unsafe { swap_by_ref_2(&mut f, &mut g) });
-    let mut h: *mut () = (Box::leak(Box::new(6_())) as *mut ());
+    let mut h: *mut i32 = (Box::leak(Box::new(6)) as *mut i32);
     unimplemented!();
     {
         let __p = h;
@@ -48,7 +48,7 @@ unsafe fn main_0() -> () {
             ::std::mem::drop(Box::from_raw(__p))
         }
     };
-    let mut i: *mut () = Box::leak(Box::new([7_(), 8_(), unimplemented!()])).as_mut_ptr();
+    let mut i: *mut i32 = Box::leak(Box::new([7, 8, 0_i32])).as_mut_ptr();
     unimplemented!();
     {
         let __p = i;
@@ -56,41 +56,45 @@ unsafe fn main_0() -> () {
             ::std::mem::drop(Box::from_raw(::std::slice::from_raw_parts_mut(
                 __p,
                 libcc2rs::malloc_usable_size(__p as *mut ::libc::c_void)
-                    / ::std::mem::size_of::<()>(),
+                    / ::std::mem::size_of::<i32>(),
             )))
         }
     };
     (unsafe {
         swap_by_ptr_1(
-            (Box::leak(Box::new(7_())) as *mut ()),
-            (Box::leak(Box::new(8_())) as *mut ()),
+            (Box::leak(Box::new(7)) as *mut i32),
+            (Box::leak(Box::new(8)) as *mut i32),
         )
     });
     (unsafe {
         swap_by_ptr_1(
-            (Box::leak(Box::new(7_())) as *mut ()).offset((0_()) as isize),
-            (Box::leak(Box::new(8_())) as *mut ()).offset((0_()) as isize),
+            (Box::leak(Box::new(7)) as *mut i32).offset((0) as isize),
+            (Box::leak(Box::new(8)) as *mut i32).offset((0) as isize),
         )
     });
     (unsafe {
         swap_by_ref_2(
-            &mut (*(Box::leak(Box::new(9_())) as *mut ())),
-            &mut (*(Box::leak(Box::new(10_())) as *mut ())),
+            &mut (*(Box::leak(Box::new(9)) as *mut i32)),
+            &mut (*(Box::leak(Box::new(10)) as *mut i32)),
         )
     });
     (unsafe {
         swap_by_ref_2(
-            &mut (*(Box::leak(Box::new(9_())) as *mut ()).offset((0_()) as isize)),
-            &mut (*(Box::leak(Box::new(10_())) as *mut ()).offset((0_()) as isize)),
+            &mut (*(Box::leak(Box::new(9)) as *mut i32).offset((0) as isize)),
+            &mut (*(Box::leak(Box::new(10)) as *mut i32).offset((0) as isize)),
         )
     });
-    let mut j: () = unimplemented!();
-    let mut k: *mut () = unimplemented!();
+    let mut j: Option<Box<i32>> = Some(Box::from_raw((Box::leak(Box::new(11)) as *mut i32)));
+    let mut k: *mut i32 = j
+        .as_deref_mut()
+        .map_or(::std::ptr::null_mut(), |v| v as *mut i32);
     unimplemented!();
-    let mut l: () = unimplemented!();
-    let mut m: *mut () = unimplemented!();
+    let mut l: Option<Box<i32>> = Some(Box::new(11));
+    let mut m: *mut i32 = l
+        .as_deref_mut()
+        .map_or(::std::ptr::null_mut(), |v| v as *mut i32);
     unimplemented!();
-    unimplemented!();
-    return 0_();
+    assert!(((c) == (2)));
+    return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

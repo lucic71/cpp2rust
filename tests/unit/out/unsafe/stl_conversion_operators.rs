@@ -12,15 +12,21 @@ pub fn main() {
         std::process::exit(main_0() as i32);
     }
 }
-unsafe fn main_0() -> () {
-    let mut n: () = 17_();
-    let mut d: () = unimplemented!();
-    unimplemented!();
-    let mut name: *const () = c"dir/file.txt".as_ptr();
-    let mut p: () = unimplemented!();
-    let mut s: () = unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    return 0_();
+unsafe fn main_0() -> i32 {
+    let mut n: u32 = 17_u32;
+    let mut d: u32 = n;
+    assert!(((d) == (17_u32)));
+    let mut name: *const libc::c_char = c"dir/file.txt".as_ptr();
+    let mut p: Vec<libc::c_char> = unimplemented!();
+    let mut s: Vec<libc::c_char> = p;
+    assert!(((s.len() - 1) == (12_usize)));
+    assert!(
+        s == {
+            let __s = c"dir/file.txt".as_ptr();
+            std::slice::from_raw_parts(__s, (0..).take_while(|&__i| *__s.add(__i) != 0).count() + 1)
+                .to_vec()
+        }
+    );
+    return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

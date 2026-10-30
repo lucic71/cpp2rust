@@ -9,12 +9,12 @@ use std::rc::Rc;
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg)]
 pub struct S {
-    pub a: (),
-    pub b: (),
+    pub a: i32,
+    pub b: bool,
 }
 impl S {
     pub unsafe fn new() -> Self {
-        let mut this = Self { a: 11_(), b: true };
+        let mut this = Self { a: 11, b: true };
         this
     }
 }
@@ -26,7 +26,7 @@ impl Default for S {
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct Declared {
-    pub v: (),
+    pub v: i32,
 }
 impl Declared {}
 #[repr(C)]
@@ -34,11 +34,11 @@ impl Declared {}
 pub struct Holder {
     pub items: [S; 2],
 }
-pub static mut kInit_0: std::cell::LazyCell<()> = std::cell::LazyCell::new(|| unsafe { 3_() });
+pub static mut kInit_0: std::cell::LazyCell<i32> = std::cell::LazyCell::new(|| unsafe { 3 });
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg)]
 pub struct FromStatic {
-    pub v: (),
+    pub v: i32,
 }
 impl Default for FromStatic {
     fn default() -> Self {
@@ -55,19 +55,19 @@ pub fn main() {
         std::process::exit(main_0() as i32);
     }
 }
-unsafe fn main_0() -> () {
+unsafe fn main_0() -> i32 {
     let mut d: *mut Declared = std::ptr::null_mut();
-    unimplemented!();
+    assert!((d).is_null());
     let mut s: S = S::new();
-    unimplemented!();
-    unimplemented!();
+    assert!(((s.a) == (11)));
+    assert!(((s.b as i32) == (true as i32)));
     let mut h: *mut Holder = Box::leak(
-        (0..1_())
+        (0..1_usize)
             .map(|_| <Holder>::default())
             .collect::<Box<[Holder]>>(),
     )
     .as_mut_ptr();
-    unimplemented!();
+    assert!((((*h.offset((0) as isize)).items[(1) as usize].a) == (11)));
     {
         let __p = h;
         if !__p.is_null() {
@@ -79,12 +79,12 @@ unsafe fn main_0() -> () {
         }
     };
     let mut fs: *mut FromStatic = Box::leak(
-        (0..2_())
+        (0..2_usize)
             .map(|_| <FromStatic>::default())
             .collect::<Box<[FromStatic]>>(),
     )
     .as_mut_ptr();
-    unimplemented!();
+    assert!((((*fs.offset((1) as isize)).v) == (3)));
     {
         let __p = fs;
         if !__p.is_null() {
@@ -95,7 +95,7 @@ unsafe fn main_0() -> () {
             )))
         }
     };
-    return 0_();
+    return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {
     std::cell::LazyCell::force(&*&raw const kInit_0);

@@ -19,12 +19,15 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    index!(({ get_1() }), 1_usize).write(4_u8);
+    ({ get_1() }).decay().offset(1_usize as isize).write(4_u8);
     let mut v: Option<Value<Vec<u8>>> =
         Ptr::alloc((0..(3_usize) as usize).map(|_| 0_u8).collect::<Vec<_>>()).to_owned_opt();
-    elem!((v.as_pointer()).decay(), 2_usize).write(5_u8);
-    assert!((((index!(({ get_1() }), 1_usize).read()) as i32) == 4));
-    assert!((((elem!((v.as_pointer()).decay(), 2_usize).read()) as i32) == 5));
+    (v.as_pointer())
+        .decay()
+        .offset(2_usize as isize)
+        .write(5_u8);
+    assert!((((({ get_1() }).decay().offset(1_usize as isize).read()) as i32) == 4));
+    assert!(((((v.as_pointer()).decay().offset(2_usize as isize).read()) as i32) == 5));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {

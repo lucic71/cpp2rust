@@ -9,48 +9,48 @@ use std::rc::Rc;
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct S {
-    pub v: (),
+    pub v: i32,
 }
 impl S {
-    pub unsafe fn operator_eq(&self, mut o: ()) -> () {
+    pub unsafe fn operator_eq(&self, mut o: i32) -> bool {
         return ((self.v) == (o));
     }
-    pub unsafe fn operator_ne(&self, mut o: ()) -> () {
+    pub unsafe fn operator_ne(&self, mut o: i32) -> bool {
         return ((self.v) != (o));
     }
-    pub unsafe fn operator_lt(&self, mut o: ()) -> () {
+    pub unsafe fn operator_lt(&self, mut o: i32) -> bool {
         return ((self.v) < (o));
     }
-    pub unsafe fn operator_gt(&self, mut o: ()) -> () {
-        return ((self.v) > (o));
+    pub unsafe fn operator_gt(&self, mut o: f64) -> bool {
+        return ((self.v as f64) > (o));
     }
-    pub unsafe fn operator_le(&self, mut o: ()) -> () {
-        return ((self.v) <= (o));
+    pub unsafe fn operator_le(&self, mut o: i64) -> bool {
+        return ((self.v as i64) <= (o));
     }
-    pub unsafe fn operator_ge(&self, mut o: *const ()) -> () {
-        return ((self.v) >= ((*o) - ('0' as ())));
+    pub unsafe fn operator_ge(&self, mut o: *const libc::c_char) -> bool {
+        return ((self.v) >= (((*o) as i32) - (('0' as libc::c_char) as i32)));
     }
 }
-pub unsafe fn operator_eq_0(mut a: (), b: *const S) -> () {
+pub unsafe fn operator_eq_0(mut a: i32, b: *const S) -> bool {
     return ((a) == ((*b).v));
 }
-pub unsafe fn operator_ne_1(mut a: (), b: *const S) -> () {
+pub unsafe fn operator_ne_1(mut a: i32, b: *const S) -> bool {
     return ((a) != ((*b).v));
 }
-pub unsafe fn operator_lt_2(mut a: (), b: *const S) -> () {
+pub unsafe fn operator_lt_2(mut a: i32, b: *const S) -> bool {
     return ((a) < ((*b).v));
 }
-pub unsafe fn operator_gt_3(mut a: (), b: *const S) -> () {
-    return ((a) > ((*b).v));
+pub unsafe fn operator_gt_3(mut a: f64, b: *const S) -> bool {
+    return ((a) > ((*b).v as f64));
 }
-pub unsafe fn operator_le_4(mut a: (), b: *const S) -> () {
-    return ((a) <= ((*b).v));
+pub unsafe fn operator_le_4(mut a: i64, b: *const S) -> bool {
+    return ((a) <= ((*b).v as i64));
 }
-pub unsafe fn operator_ge_5(mut a: *const (), b: *const S) -> () {
-    return (((*a) - ('0' as ())) >= ((*b).v));
+pub unsafe fn operator_ge_5(mut a: *const libc::c_char, b: *const S) -> bool {
+    return ((((*a) as i32) - (('0' as libc::c_char) as i32)) >= ((*b).v));
 }
-pub unsafe fn operator_lt_6(a: *mut S, mut b: ()) -> () {
-    return ((((*a).v) + (1_())) < (b));
+pub unsafe fn operator_lt_6(a: *mut S, mut b: i32) -> bool {
+    return ((((*a).v) + (1)) < (b));
 }
 pub fn main() {
     unsafe {
@@ -58,23 +58,33 @@ pub fn main() {
         std::process::exit(main_0() as i32);
     }
 }
-unsafe fn main_0() -> () {
-    let mut s: S = S { v: 5_() };
+unsafe fn main_0() -> i32 {
+    let mut s: S = S { v: 5 };
     let cs: *const S = &s;
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    return 0_();
+    assert!((unsafe { S::operator_eq(&(*cs), 5,) }));
+    assert!((unsafe { S::operator_ne(&(*cs), 4,) }));
+    assert!((unsafe { S::operator_lt(&(*cs), 6,) }));
+    assert!((unsafe { S::operator_gt(&(*cs), 4.5_f64,) }));
+    assert!((unsafe { S::operator_le(&(*cs), 5_i64,) }));
+    assert!((unsafe { S::operator_ge(&(*cs), c"3".as_ptr(),) }));
+    assert!((unsafe { operator_eq_0(5, &s,) }));
+    assert!((unsafe { operator_ne_1(4, &s,) }));
+    assert!((unsafe { operator_lt_2(4, &s,) }));
+    assert!((unsafe { operator_gt_3(5.5_f64, &s,) }));
+    assert!((unsafe { operator_le_4(5_i64, &s,) }));
+    assert!((unsafe { operator_ge_5(c"7".as_ptr(), &s,) }));
+    assert!(
+        (unsafe {
+            let _a: *mut S = &mut s;
+            operator_lt_6(_a, 7)
+        })
+    );
+    assert!(
+        !(unsafe {
+            let _a: *mut S = &mut s;
+            operator_lt_6(_a, 6)
+        })
+    );
+    return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

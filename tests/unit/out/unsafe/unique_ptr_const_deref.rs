@@ -9,25 +9,31 @@ use std::rc::Rc;
 #[repr(C)]
 #[derive(FnPtrArg, MoveCtorUnsafe, MoveAssignUnsafe, Default)]
 pub struct Holder {
-    pub val: (),
+    pub val: Option<Box<i32>>,
 }
 impl Holder {
     pub unsafe fn move_from(_a0: *mut Holder) -> Self {
         let mut this = Self {
-            val: unimplemented!(),
+            val: (*_a0).val.take(),
         };
         this
     }
     pub unsafe fn move_assign(&mut self, _a0: *mut Holder) -> *mut Holder {
-        unimplemented!();
+        self.val = (*_a0).val.take();
         return &mut (*(self as *mut Holder));
     }
 }
-pub unsafe fn read_val_0(mut h: *const Holder) -> () {
-    return (*unimplemented!());
+pub unsafe fn read_val_0(mut h: *const Holder) -> i32 {
+    return (*(*h)
+        .val
+        .as_deref()
+        .map_or(::std::ptr::null_mut(), |v| v as *const i32 as *mut i32));
 }
-pub unsafe fn write_val_1(mut h: *const Holder, mut v: ()) {
-    (*unimplemented!()) = v;
+pub unsafe fn write_val_1(mut h: *const Holder, mut v: i32) {
+    (*(*h)
+        .val
+        .as_deref()
+        .map_or(::std::ptr::null_mut(), |v| v as *const i32 as *mut i32)) = v;
 }
 pub fn main() {
     unsafe {
@@ -35,11 +41,11 @@ pub fn main() {
         std::process::exit(main_0() as i32);
     }
 }
-unsafe fn main_0() -> () {
+unsafe fn main_0() -> i32 {
     let mut h: Holder = <Holder>::default();
-    unimplemented!();
-    (unsafe { write_val_1((&mut h as *mut Holder).cast_const(), 42_()) });
-    unimplemented!();
-    return 0_();
+    h.val = Some(Box::new(10)).take();
+    (unsafe { write_val_1((&mut h as *mut Holder).cast_const(), 42) });
+    assert!(((unsafe { read_val_0((&mut h as *mut Holder).cast_const(),) }) == (42)));
+    return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

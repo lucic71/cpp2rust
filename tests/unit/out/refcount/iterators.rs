@@ -10,27 +10,46 @@ pub fn main() {
     __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
-fn main_0() -> () {
-    let x: Value<()> = Rc::new(RefCell::new(unimplemented!()));
-    'loop_: for c in IterRange::new(unimplemented!(), unimplemented!()) {
-        let c: Ptr<()> = unimplemented!();
+fn main_0() -> i32 {
+    let x: Value<Vec<i8>> = Rc::new(RefCell::new({
+        let mut __bytes = Ptr::<i8>::from_string_literal(b"hello").to_c_bytes();
+        __bytes.push(0);
+        __bytes
+    }));
+    'loop_: for c in IterRange::new(
+        RandomAccessIterator::Vec(x.decay()),
+        RandomAccessIterator::Vec(x.decay().to_last()),
+    ) {
+        let c: Ptr<i8> = c.iter_deref();
         c.with_mut(|__v| __v.prefix_inc());
     }
-    'loop_: for c in IterRange::new(unimplemented!(), unimplemented!()) {
-        let c: Ptr<()> = unimplemented!();
-        println!("{}", (c.read()) as u8 as char);
+    'loop_: for c in IterRange::new(
+        RandomAccessIterator::Vec(x.decay()),
+        RandomAccessIterator::Vec(x.decay().to_last()),
+    ) {
+        let c: Ptr<i8> = c.iter_deref();
+        println!("{}", ((c.read()) as i32) as u8 as char);
     }
-    'loop_: for c in IterRange::new(unimplemented!(), unimplemented!()) {
-        let mut c: () = (unimplemented!().read());
-        println!("{}", c as u8 as char);
+    'loop_: for c in IterRange::new(
+        RandomAccessIterator::Vec(x.decay()),
+        RandomAccessIterator::Vec(x.decay().to_last()),
+    ) {
+        let mut c: i8 = (c.iter_deref().read());
+        println!("{}", (c as i32) as u8 as char);
     }
-    let v: Value<()> = Rc::new(RefCell::new(unimplemented!()));
-    unimplemented!();
-    unimplemented!();
-    'loop_: for p in IterRange::new(unimplemented!(), unimplemented!()) {
-        let mut p: Ptr<()> = (unimplemented!().read());
+    let v: Value<Vec<Ptr<i32>>> = Rc::new(RefCell::new(Vec::new()));
+    {
+        let __a1 = Ptr::alloc(2);
+        (*v.borrow_mut()).push(__a1)
+    };
+    {
+        let __a1 = Ptr::alloc(3);
+        (*v.borrow_mut()).push(__a1)
+    };
+    'loop_: for p in IterRange::new(v.decay().begin(), v.decay().end()) {
+        let mut p: Ptr<i32> = (p.iter_deref().read());
         println!("{}", (p.read()));
     }
-    return 0_();
+    return 0;
 }
 pub fn __cpp2rust_init_globals() {}

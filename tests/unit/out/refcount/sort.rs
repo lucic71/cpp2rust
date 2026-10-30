@@ -10,24 +10,65 @@ pub fn main() {
     __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
-fn main_0() -> () {
-    let mut v: () = unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    let mut i: () = 0_();
-    'loop_: while (i < (unimplemented!()).wrapping_sub(1_())) {
-        unimplemented!();
+fn main_0() -> i32 {
+    let v: Value<Vec<i32>> = Rc::new(RefCell::new(Vec::new()));
+    {
+        let __a1 = 10;
+        (*v.borrow_mut()).push(__a1)
+    };
+    {
+        let __a1 = 1;
+        (*v.borrow_mut()).push(__a1)
+    };
+    {
+        let __a1 = 9;
+        (*v.borrow_mut()).push(__a1)
+    };
+    {
+        let __a1 = 2;
+        (*v.borrow_mut()).push(__a1)
+    };
+    {
+        let __a1 = 8;
+        (*v.borrow_mut()).push(__a1)
+    };
+    {
+        let __a1 = 3;
+        (*v.borrow_mut()).push(__a1)
+    };
+    {
+        let __a1 = 7;
+        (*v.borrow_mut()).push(__a1)
+    };
+    {
+        let __a1 = 4;
+        (*v.borrow_mut()).push(__a1)
+    };
+    {
+        let __a1 = 5;
+        (*v.borrow_mut()).push(__a1)
+    };
+    {
+        let __a1 = 6;
+        (*v.borrow_mut()).push(__a1)
+    };
+    {
+        let __first = v.decay().begin();
+        let __n = v.decay().end().iter_distance(&__first);
+        let mut __order: Vec<isize> = (0..__n).collect();
+        __order.sort_by(|&__x, &__y| cpp_cmp(&__first.iter_at(__x), &__first.iter_at(__y)));
+        reorder(__order, |__i| __first.iter_at(__i));
+    };
+    let mut i: u32 = 0_u32;
+    'loop_: while ((i as usize) < ((*v.borrow()).len()).wrapping_sub(1_usize)) {
+        assert!(
+            ((v.decay().offset((i as usize) as isize).read())
+                < (v.decay()
+                    .offset((((i).wrapping_add(1_u32)) as usize) as isize)
+                    .read()))
+        );
         i.prefix_inc();
     }
-    return 0_();
+    return 0;
 }
 pub fn __cpp2rust_init_globals() {}

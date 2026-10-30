@@ -9,19 +9,19 @@ use std::rc::Rc;
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct Inner {
-    pub x: (),
+    pub x: i32,
 }
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct S {
-    pub data: [(); 3],
+    pub data: [i32; 3],
     pub inner: Inner,
 }
 pub unsafe fn operator_deref_0(s: *mut S) -> *mut Inner {
     return &mut (*s).inner;
 }
-pub unsafe fn operator_addr_1(s: *mut S) -> *mut () {
-    return (&mut (*s).data[(0_()) as usize] as *mut ());
+pub unsafe fn operator_addr_1(s: *mut S) -> *mut i32 {
+    return (&mut (*s).data[(0) as usize] as *mut i32);
 }
 pub fn main() {
     unsafe {
@@ -29,25 +29,31 @@ pub fn main() {
         std::process::exit(main_0() as i32);
     }
 }
-unsafe fn main_0() -> () {
+unsafe fn main_0() -> i32 {
     let mut s: S = S {
-        data: [1_(), 2_(), 3_()],
-        inner: Inner { x: 9_() },
+        data: [1, 2, 3],
+        inner: Inner { x: 9 },
     };
-    unimplemented!();
+    assert!(
+        (((*(unsafe {
+            let _s: *mut S = &mut s;
+            operator_deref_0(_s)
+        }))
+        .x) == (9))
+    );
     (*(unsafe {
         let _s: *mut S = &mut s;
         operator_deref_0(_s)
     }))
-    .x = 10_();
-    unimplemented!();
-    let mut p: *mut () = (unsafe {
+    .x = 10;
+    assert!(((s.inner.x) == (10)));
+    let mut p: *mut i32 = (unsafe {
         let _s: *mut S = &mut s;
         operator_addr_1(_s)
     });
-    unimplemented!();
-    (*p) = 5_();
-    unimplemented!();
-    return 0_();
+    assert!(((*p) == (1)));
+    (*p) = 5;
+    assert!(((s.data[(0) as usize]) == (5)));
+    return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

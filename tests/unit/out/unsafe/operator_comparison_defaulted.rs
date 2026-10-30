@@ -9,11 +9,11 @@ use std::rc::Rc;
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct Eq {
-    pub a: (),
-    pub b: (),
+    pub a: i32,
+    pub b: i32,
 }
 impl Eq {
-    pub unsafe fn operator_eq(&self, _a0: *const Eq) -> () {
+    pub unsafe fn operator_eq(&self, _a0: *const Eq) -> bool {
         return (((*(self as *const Eq)).a) == ((*_a0).a))
             && (((*(self as *const Eq)).b) == ((*_a0).b));
     }
@@ -27,26 +27,28 @@ impl std::cmp::Eq for Eq {}
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct Cmp {
-    pub a: (),
-    pub b: (),
+    pub a: i32,
+    pub b: i32,
 }
 impl Cmp {
-    pub unsafe fn operator_cmp(&self, _a0: *const Cmp) -> () {
+    pub unsafe fn operator_cmp(&self, _a0: *const Cmp) -> std::cmp::Ordering {
         {
-            let mut cmp: () = std::cmp::Ord::cmp(&((*(self as *const Cmp)).a), &((*_a0).a));
+            let mut cmp: std::cmp::Ordering =
+                std::cmp::Ord::cmp(&((*(self as *const Cmp)).a), &((*_a0).a));
             if !(unimplemented!()) {
                 return unimplemented!();
             }
         }
         {
-            let mut cmp: () = std::cmp::Ord::cmp(&((*(self as *const Cmp)).b), &((*_a0).b));
+            let mut cmp: std::cmp::Ordering =
+                std::cmp::Ord::cmp(&((*(self as *const Cmp)).b), &((*_a0).b));
             if !(unimplemented!()) {
                 return unimplemented!();
             }
         }
         return unimplemented!();
     }
-    pub unsafe fn operator_eq(&self, _a0: *const Cmp) -> () {
+    pub unsafe fn operator_eq(&self, _a0: *const Cmp) -> bool {
         return (((*(self as *const Cmp)).a) == ((*_a0).a))
             && (((*(self as *const Cmp)).b) == ((*_a0).b));
     }
@@ -70,15 +72,16 @@ impl std::cmp::Eq for Cmp {}
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct Both {
-    pub a: (),
+    pub a: i32,
 }
 impl Both {
-    pub unsafe fn operator_eq(&self, _a0: *const Both) -> () {
+    pub unsafe fn operator_eq(&self, _a0: *const Both) -> bool {
         return (((*(self as *const Both)).a) == ((*_a0).a));
     }
-    pub unsafe fn operator_cmp(&self, _a0: *const Both) -> () {
+    pub unsafe fn operator_cmp(&self, _a0: *const Both) -> std::cmp::Ordering {
         {
-            let mut cmp: () = std::cmp::Ord::cmp(&((*(self as *const Both)).a), &((*_a0).a));
+            let mut cmp: std::cmp::Ordering =
+                std::cmp::Ord::cmp(&((*(self as *const Both)).a), &((*_a0).a));
             if !(unimplemented!()) {
                 return unimplemented!();
             }
@@ -105,12 +108,13 @@ impl std::cmp::Eq for Both {}
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct OrdOnly {
-    pub a: (),
+    pub a: i32,
 }
 impl OrdOnly {
-    pub unsafe fn operator_cmp(&self, _a0: *const OrdOnly) -> () {
+    pub unsafe fn operator_cmp(&self, _a0: *const OrdOnly) -> std::cmp::Ordering {
         {
-            let mut cmp: () = std::cmp::Ord::cmp(&((*(self as *const OrdOnly)).a), &((*_a0).a));
+            let mut cmp: std::cmp::Ordering =
+                std::cmp::Ord::cmp(&((*(self as *const OrdOnly)).a), &((*_a0).a));
             if !(unimplemented!()) {
                 return unimplemented!();
             }
@@ -137,19 +141,20 @@ impl std::cmp::Eq for OrdOnly {}
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct Inner {
-    pub x: (),
+    pub x: i32,
 }
 impl Inner {
-    pub unsafe fn operator_cmp(&self, _a0: *const Inner) -> () {
+    pub unsafe fn operator_cmp(&self, _a0: *const Inner) -> std::cmp::Ordering {
         {
-            let mut cmp: () = std::cmp::Ord::cmp(&((*(self as *const Inner)).x), &((*_a0).x));
+            let mut cmp: std::cmp::Ordering =
+                std::cmp::Ord::cmp(&((*(self as *const Inner)).x), &((*_a0).x));
             if !(unimplemented!()) {
                 return unimplemented!();
             }
         }
         return unimplemented!();
     }
-    pub unsafe fn operator_eq(&self, _a0: *const Inner) -> () {
+    pub unsafe fn operator_eq(&self, _a0: *const Inner) -> bool {
         return (((*(self as *const Inner)).x) == ((*_a0).x));
     }
 }
@@ -173,12 +178,12 @@ impl std::cmp::Eq for Inner {}
 #[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct Outer {
     pub i: Inner,
-    pub y: (),
+    pub y: i32,
 }
 impl Outer {
-    pub unsafe fn operator_cmp(&self, _a0: *const Outer) -> () {
+    pub unsafe fn operator_cmp(&self, _a0: *const Outer) -> std::cmp::Ordering {
         {
-            let mut cmp: () = (unsafe {
+            let mut cmp: std::cmp::Ordering = (unsafe {
                 let _arg0: *const Inner = &(*_a0).i;
                 Inner::operator_cmp(&(*(self as *const Outer)).i, _arg0)
             });
@@ -187,14 +192,15 @@ impl Outer {
             }
         }
         {
-            let mut cmp: () = std::cmp::Ord::cmp(&((*(self as *const Outer)).y), &((*_a0).y));
+            let mut cmp: std::cmp::Ordering =
+                std::cmp::Ord::cmp(&((*(self as *const Outer)).y), &((*_a0).y));
             if !(unimplemented!()) {
                 return unimplemented!();
             }
         }
         return unimplemented!();
     }
-    pub unsafe fn operator_eq(&self, _a0: *const Outer) -> () {
+    pub unsafe fn operator_eq(&self, _a0: *const Outer) -> bool {
         return (unsafe {
             let _arg0: *const Inner = &(*_a0).i;
             Inner::operator_eq(&(*(self as *const Outer)).i, _arg0)
@@ -220,31 +226,32 @@ impl std::cmp::Eq for Outer {}
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct Secondary {
-    pub a: (),
+    pub a: i32,
 }
 impl Secondary {
-    pub unsafe fn operator_eq(&self, _a0: *const Secondary) -> () {
+    pub unsafe fn operator_eq(&self, _a0: *const Secondary) -> bool {
         return (((*(self as *const Secondary)).a) == ((*_a0).a));
     }
-    pub unsafe fn operator_ne(&self, _a0: *const Secondary) -> () {
+    pub unsafe fn operator_ne(&self, _a0: *const Secondary) -> bool {
         return !(unsafe {
             let _arg0: *const Secondary = _a0;
             Secondary::operator_eq(&(*(self as *const Secondary)), _arg0)
         });
     }
-    pub unsafe fn operator_cmp(&self, _a0: *const Secondary) -> () {
+    pub unsafe fn operator_cmp(&self, _a0: *const Secondary) -> std::cmp::Ordering {
         {
-            let mut cmp: () = std::cmp::Ord::cmp(&((*(self as *const Secondary)).a), &((*_a0).a));
+            let mut cmp: std::cmp::Ordering =
+                std::cmp::Ord::cmp(&((*(self as *const Secondary)).a), &((*_a0).a));
             if !(unimplemented!()) {
                 return unimplemented!();
             }
         }
         return unimplemented!();
     }
-    pub unsafe fn operator_lt(&self, _a0: *const Secondary) -> () {
+    pub unsafe fn operator_lt(&self, _a0: *const Secondary) -> bool {
         return unimplemented!();
     }
-    pub unsafe fn operator_ge(&self, _a0: *const Secondary) -> () {
+    pub unsafe fn operator_ge(&self, _a0: *const Secondary) -> bool {
         return unimplemented!();
     }
 }
@@ -267,19 +274,20 @@ impl std::cmp::Eq for Secondary {}
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct PtrMember {
-    pub p: *mut (),
+    pub p: *mut i32,
 }
 impl PtrMember {
-    pub unsafe fn operator_cmp(&self, _a0: *const PtrMember) -> () {
+    pub unsafe fn operator_cmp(&self, _a0: *const PtrMember) -> std::cmp::Ordering {
         {
-            let mut cmp: () = std::cmp::Ord::cmp(&((*(self as *const PtrMember)).p), &((*_a0).p));
+            let mut cmp: std::cmp::Ordering =
+                std::cmp::Ord::cmp(&((*(self as *const PtrMember)).p), &((*_a0).p));
             if !(unimplemented!()) {
                 return unimplemented!();
             }
         }
         return unimplemented!();
     }
-    pub unsafe fn operator_eq(&self, _a0: *const PtrMember) -> () {
+    pub unsafe fn operator_eq(&self, _a0: *const PtrMember) -> bool {
         return (((*(self as *const PtrMember)).p) == ((*_a0).p));
     }
 }
@@ -307,62 +315,72 @@ pub fn main() {
         std::process::exit(main_0() as i32);
     }
 }
-unsafe fn main_0() -> () {
-    let mut e1: Eq = Eq { a: 1_(), b: 2_() };
-    let mut e2: Eq = Eq { a: 1_(), b: 2_() };
-    let mut e3: Eq = Eq { a: 1_(), b: 3_() };
-    unimplemented!();
-    unimplemented!();
-    let mut c1: Cmp = Cmp { a: 1_(), b: 2_() };
-    let mut c2: Cmp = Cmp { a: 1_(), b: 3_() };
-    let mut c3: Cmp = Cmp { a: 2_(), b: 0_() };
-    let mut c4: Cmp = Cmp { a: 1_(), b: 9_() };
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    let mut b1: Both = Both { a: 1_() };
-    let mut b2: Both = Both { a: 2_() };
-    unimplemented!();
-    unimplemented!();
-    let mut o1: OrdOnly = OrdOnly { a: 1_() };
-    let mut o2: OrdOnly = OrdOnly { a: 2_() };
-    unimplemented!();
-    unimplemented!();
+unsafe fn main_0() -> i32 {
+    let mut e1: Eq = Eq { a: 1, b: 2 };
+    let mut e2: Eq = Eq { a: 1, b: 2 };
+    let mut e3: Eq = Eq { a: 1, b: 3 };
+    assert!((unsafe { Eq::operator_eq(&e1, &e2,) }));
+    assert!(!(unsafe { Eq::operator_eq(&e1, &e3,) }));
+    let mut c1: Cmp = Cmp { a: 1, b: 2 };
+    let mut c2: Cmp = Cmp { a: 1, b: 3 };
+    let mut c3: Cmp = Cmp { a: 2, b: 0 };
+    let mut c4: Cmp = Cmp { a: 1, b: 9 };
+    assert!(unimplemented!());
+    assert!(unimplemented!());
+    assert!(
+        (unsafe {
+            let _arg0: *const Cmp = &c1;
+            Cmp::operator_eq(&c1, _arg0)
+        })
+    );
+    assert!(unimplemented!());
+    let mut b1: Both = Both { a: 1 };
+    let mut b2: Both = Both { a: 2 };
+    assert!(unimplemented!());
+    assert!(
+        (unsafe {
+            let _arg0: *const Both = &b2;
+            Both::operator_eq(&b2, _arg0)
+        })
+    );
+    let mut o1: OrdOnly = OrdOnly { a: 1 };
+    let mut o2: OrdOnly = OrdOnly { a: 2 };
+    assert!(unimplemented!());
+    assert!(unimplemented!());
     let mut x1: Outer = Outer {
-        i: Inner { x: 1_() },
-        y: 9_(),
+        i: Inner { x: 1 },
+        y: 9,
     };
     let mut x2: Outer = Outer {
-        i: Inner { x: 2_() },
-        y: 0_(),
+        i: Inner { x: 2 },
+        y: 0,
     };
     let mut x3: Outer = Outer {
-        i: Inner { x: 1_() },
-        y: 9_(),
+        i: Inner { x: 1 },
+        y: 9,
     };
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    let mut s1: Secondary = Secondary { a: 1_() };
-    let mut s2: Secondary = Secondary { a: 2_() };
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    let mut arr: [(); 2] = [0_(), 0_()];
+    assert!(unimplemented!());
+    assert!((unsafe { Outer::operator_eq(&x1, &x3,) }));
+    assert!(unimplemented!());
+    let mut s1: Secondary = Secondary { a: 1 };
+    let mut s2: Secondary = Secondary { a: 2 };
+    assert!((unsafe { Secondary::operator_ne(&s1, &s2,) }));
+    assert!((unsafe { Secondary::operator_lt(&s1, &s2,) }));
+    assert!((unsafe { Secondary::operator_ge(&s2, &s1,) }));
+    assert!(!(unsafe { Secondary::operator_lt(&s2, &s1,) }));
+    let mut arr: [i32; 2] = [0, 0];
     let mut p1: PtrMember = PtrMember {
         p: arr.as_mut_ptr(),
     };
     let mut p2: PtrMember = PtrMember {
-        p: arr.as_mut_ptr().offset((1_()) as isize),
+        p: arr.as_mut_ptr().offset((1) as isize),
     };
     let mut p3: PtrMember = PtrMember {
         p: arr.as_mut_ptr(),
     };
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    return 0_();
+    assert!(unimplemented!());
+    assert!((unsafe { PtrMember::operator_eq(&p1, &p3,) }));
+    assert!(unimplemented!());
+    return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

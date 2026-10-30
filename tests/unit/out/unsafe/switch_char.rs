@@ -6,29 +6,29 @@ use std::collections::BTreeMap;
 use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
-pub unsafe fn switch_char_0(mut c: ()) -> () {
+pub unsafe fn switch_char_0(mut c: libc::c_char) -> i32 {
     'switch: {
-        match { c } {
-            __v if __v == ('a' as ()) => {
-                return 1_();
+        match { (c as i32) } {
+            __v if __v == (('a' as libc::c_char) as i32) => {
+                return 1;
             }
-            __v if __v == ('b' as ()) => {
-                return 2_();
+            __v if __v == (('b' as libc::c_char) as i32) => {
+                return 2;
             }
-            __v if __v == ('\n' as ()) => {
-                return 3_();
+            __v if __v == (('\n' as libc::c_char) as i32) => {
+                return 3;
             }
-            __v if __v == ('\0' as ()) => {
-                return 4_();
+            __v if __v == (('\0' as libc::c_char) as i32) => {
+                return 4;
             }
             _ => {
-                return 0_();
+                return 0;
             }
         }
     };
     panic!("ub: non-void function does not return a value")
 }
-pub type Color = ();
+pub type Color = u32;
 pub const Color_kRed: Color = 0;
 pub const Color_kGreen: Color = 1;
 pub const Color_kBlue: Color = 2;
@@ -38,12 +38,12 @@ pub fn main() {
         std::process::exit(main_0() as i32);
     }
 }
-unsafe fn main_0() -> () {
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    return 0_();
+unsafe fn main_0() -> i32 {
+    assert!(((unsafe { switch_char_0(('a' as libc::c_char),) }) == (1)));
+    assert!(((unsafe { switch_char_0(('b' as libc::c_char),) }) == (2)));
+    assert!(((unsafe { switch_char_0(('\n' as libc::c_char),) }) == (3)));
+    assert!(((unsafe { switch_char_0(('\0' as libc::c_char),) }) == (4)));
+    assert!(((unsafe { switch_char_0(('z' as libc::c_char),) }) == (0)));
+    return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

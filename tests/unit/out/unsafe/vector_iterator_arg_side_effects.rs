@@ -12,19 +12,47 @@ pub fn main() {
         std::process::exit(main_0() as i32);
     }
 }
-unsafe fn main_0() -> () {
-    let mut v: () = unimplemented!();
-    let mut it: () = unimplemented!();
-    unimplemented!();
-    let mut r: () = unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    let mut it2: () = unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    let c: *const () = &v;
-    let mut i: () = 1_();
-    unimplemented!();
-    return 0_();
+unsafe fn main_0() -> i32 {
+    let mut v: Vec<i32> = Vec::from([1, 2, 3, 4]);
+    let mut it: UnsafeRandomAccessIterator<i32> = v.begin();
+    it.iter_inc();
+    let mut r: UnsafeRandomAccessIterator<i32> = {
+        let __it = <UnsafeRandomAccessIterator<i32>>::from(it.iter_post_inc());
+        let pos = __it.iter_distance(&UnsafeRandomAccessIterator::Vec(v.as_mut_ptr())) as usize;
+        v.remove(pos);
+        __it
+    };
+    assert!(((*r.iter_deref()) == (3)));
+    assert!(((v.len()) == (3_usize)));
+    let mut it2: UnsafeRandomAccessIterator<i32> = v.begin();
+    r = {
+        let __it = <UnsafeRandomAccessIterator<i32>>::from(it2.iter_post_inc());
+        let pos = __it.iter_distance(&UnsafeRandomAccessIterator::Vec(v.as_mut_ptr())) as usize;
+        v.insert(pos, 9);
+        __it
+    };
+    assert!(
+        (((*r.iter_deref()) == (9))
+            && ((*{
+                let __idx = 0_usize as usize;
+                let __v: &mut Vec<i32> = &mut v;
+                __v.as_mut_ptr().add(__idx)
+            }) == (9)))
+            && ((v.len()) == (4_usize))
+    );
+    let c: *const Vec<i32> = &v;
+    let mut i: i32 = 1;
+    assert!(
+        ((*{
+            let __idx = (i.postfix_inc() as usize);
+            if __idx as usize >= (*c).len() {
+                panic!("out of bounds access")
+            } else {
+                (*c).as_ptr().add(__idx as usize)
+            }
+        }) == (1))
+            && ((i) == (2))
+    );
+    return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

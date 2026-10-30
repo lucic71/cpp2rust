@@ -10,10 +10,9 @@ pub fn main() {
     __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
-fn main_0() -> () {
-    let mut arr: Ptr<()> =
-        Ptr::alloc_array((0..10_()).map(|_| unimplemented!()).collect::<Box<[()]>>());
-    let out: Value<()> = Rc::new(RefCell::new((elem!(arr, 10_()).read())));
+fn main_0() -> i32 {
+    let mut arr: Ptr<i32> = Ptr::alloc_array((0..10_usize).map(|_| 0_i32).collect::<Box<[i32]>>());
+    let out: Value<i32> = Rc::new(RefCell::new((elem!(arr, 10).read())));
     arr.delete();
     return (*out.borrow());
 }

@@ -120,30 +120,32 @@ fn main_0() -> i32 {
     assert!((f2.bar.w == 20));
     assert!((f1.bar.w == 10));
     let mut N: i32 = 5;
-    let mut v1: Vec<i32> = Vec::new();
+    let v1: Value<Vec<i32>> = Rc::new(RefCell::new(Vec::new()));
     let mut i: i32 = 0;
     'loop_: while (i < N) {
         {
             let a0_clone = i.clone();
-            v1.push(a0_clone)
+            (*v1.borrow_mut()).push(a0_clone)
         };
         i.prefix_inc();
     }
-    let mut v2: Vec<i32> = v1.clone();
+    let v2: Value<Vec<i32>> = Rc::new(RefCell::new((*v1.borrow()).clone()));
     let mut i: i32 = 0;
     'loop_: while (i < N) {
-        assert!((v2[(i as usize)] == i));
+        assert!(((v2.decay().offset((i as usize) as isize).read()) == i));
         i.prefix_inc();
     }
     let mut i: i32 = 0;
     'loop_: while (i < N) {
-        v2[(i as usize)].prefix_inc();
+        v2.decay()
+            .offset((i as usize) as isize)
+            .with_mut(|__v| __v.prefix_inc());
         i.prefix_inc();
     }
     let mut i: i32 = 0;
     'loop_: while (i < N) {
-        assert!((v2[(i as usize)] == (i + 1)));
-        assert!((v1[(i as usize)] == i));
+        assert!(((v2.decay().offset((i as usize) as isize).read()) == (i + 1)));
+        assert!(((v1.decay().offset((i as usize) as isize).read()) == i));
         i.prefix_inc();
     }
     let m1: Value<Vec<Vec<i32>>> = Rc::new(RefCell::new(Vec::new()));
@@ -158,12 +160,26 @@ fn main_0() -> i32 {
     let m2: Value<Vec<Vec<i32>>> = Rc::new(RefCell::new((*m1.borrow()).clone()));
     let mut i: i32 = 0;
     'loop_: while (i < N) {
-        assert!(((*m1.decay().offset((i as usize)).upgrade().deref()).len() == 10_usize));
-        assert!(((*m2.decay().offset((i as usize)).upgrade().deref()).len() == 10_usize));
+        assert!(((*m1.decay().offset((i as usize) as isize).upgrade().deref()).len() == 10_usize));
+        assert!(((*m2.decay().offset((i as usize) as isize).upgrade().deref()).len() == 10_usize));
         let mut j: i32 = 0;
         'loop_: while (j < 10) {
-            assert!(((index!(elem!(m1.decay(), (i as usize)), (j as usize)).read()) == 0));
-            assert!(((index!(elem!(m2.decay(), (i as usize)), (j as usize)).read()) == 0));
+            assert!(
+                ((m1.decay()
+                    .offset((i as usize) as isize)
+                    .decay()
+                    .offset((j as usize) as isize)
+                    .read())
+                    == 0)
+            );
+            assert!(
+                ((m2.decay()
+                    .offset((i as usize) as isize)
+                    .decay()
+                    .offset((j as usize) as isize)
+                    .read())
+                    == 0)
+            );
             j.prefix_inc();
         }
         i.prefix_inc();
@@ -172,19 +188,37 @@ fn main_0() -> i32 {
     'loop_: while (i < N) {
         let mut j: i32 = 0;
         'loop_: while (j < 10) {
-            index!(elem!(m2.decay(), (i as usize)), (j as usize)).with_mut(|__v| __v.postfix_inc());
+            m2.decay()
+                .offset((i as usize) as isize)
+                .decay()
+                .offset((j as usize) as isize)
+                .with_mut(|__v| __v.postfix_inc());
             j.prefix_inc();
         }
         i.prefix_inc();
     }
     let mut i: i32 = 0;
     'loop_: while (i < N) {
-        assert!(((*m1.decay().offset((i as usize)).upgrade().deref()).len() == 10_usize));
-        assert!(((*m2.decay().offset((i as usize)).upgrade().deref()).len() == 10_usize));
+        assert!(((*m1.decay().offset((i as usize) as isize).upgrade().deref()).len() == 10_usize));
+        assert!(((*m2.decay().offset((i as usize) as isize).upgrade().deref()).len() == 10_usize));
         let mut j: i32 = 0;
         'loop_: while (j < 10) {
-            assert!(((index!(elem!(m1.decay(), (i as usize)), (j as usize)).read()) == 0));
-            assert!(((index!(elem!(m2.decay(), (i as usize)), (j as usize)).read()) == 1));
+            assert!(
+                ((m1.decay()
+                    .offset((i as usize) as isize)
+                    .decay()
+                    .offset((j as usize) as isize)
+                    .read())
+                    == 0)
+            );
+            assert!(
+                ((m2.decay()
+                    .offset((i as usize) as isize)
+                    .decay()
+                    .offset((j as usize) as isize)
+                    .read())
+                    == 1)
+            );
             j.prefix_inc();
         }
         i.prefix_inc();
@@ -216,10 +250,13 @@ fn main_0() -> i32 {
         Rc::new(RefCell::new(1)),
         Rc::new(RefCell::new(2)),
     )));
-    let pair2: Value<(Value<i32>, Value<i32>)> = Rc::new(RefCell::new((
-        Rc::new(RefCell::new((*pair1.borrow()).0.borrow().clone())),
-        Rc::new(RefCell::new((*pair1.borrow()).1.borrow().clone())),
-    )));
+    let pair2: Value<(Value<i32>, Value<i32>)> = Rc::new(RefCell::new({
+        let __a0 = (*pair1.borrow()).clone();
+        (
+            Rc::new(RefCell::new((__a0.0.as_pointer().read()))),
+            Rc::new(RefCell::new((__a0.1.as_pointer().read()))),
+        )
+    }));
     (*(*pair2.borrow()).0.borrow_mut()) = { ((*(*pair2.borrow()).0.borrow()) * 10) };
     (*(*pair2.borrow()).1.borrow_mut()) = { ((*(*pair2.borrow()).1.borrow()) * 10) };
     assert!(((*(*pair2.borrow()).0.borrow()) == 10));
@@ -232,10 +269,15 @@ fn main_0() -> i32 {
         )),
         Rc::new(RefCell::new(0)),
     )));
-    let pair4: Value<(Value<Vec<i32>>, Value<i32>)> = Rc::new(RefCell::new((
-        Rc::new(RefCell::new((*pair3.borrow()).0.borrow().clone())),
-        Rc::new(RefCell::new((*pair3.borrow()).1.borrow().clone())),
-    )));
+    let pair4: Value<(Value<Vec<i32>>, Value<i32>)> = Rc::new(RefCell::new({
+        let __a0 = (*pair3.borrow()).clone();
+        (
+            Rc::new(RefCell::new(<Vec<i32> as CppFrom<Vec<i32>>>::cpp_from(
+                __a0.0.as_pointer(),
+            ))),
+            Rc::new(RefCell::new((__a0.1.as_pointer().read()))),
+        )
+    }));
     {
         let __a1 = 1;
         (*(*pair4.borrow()).0.borrow_mut()).push(__a1)
@@ -245,21 +287,23 @@ fn main_0() -> i32 {
     assert!(((*(*pair4.borrow()).1.borrow()) == 1));
     assert!(((*(*pair3.borrow()).0.borrow()).len() == 0_usize));
     assert!(((*(*pair3.borrow()).1.borrow()) == 0));
-    let mut s1: Vec<i8> = vec![('a' as i8); (3_usize) as usize]
-        .iter()
-        .cloned()
-        .chain(std::iter::once(0))
-        .collect();
-    let mut s2: Vec<i8> = (s1).clone();
-    s2[0_usize] = ('b' as i8);
-    s2[1_usize] = ('b' as i8);
-    s2[2_usize] = ('b' as i8);
-    assert!(((s2[0_usize] as i32) == (('b' as i8) as i32)));
-    assert!(((s2[1_usize] as i32) == (('b' as i8) as i32)));
-    assert!(((s2[2_usize] as i32) == (('b' as i8) as i32)));
-    assert!(((s1[0_usize] as i32) == (('a' as i8) as i32)));
-    assert!(((s1[1_usize] as i32) == (('a' as i8) as i32)));
-    assert!(((s1[2_usize] as i32) == (('a' as i8) as i32)));
+    let s1: Value<Vec<i8>> = Rc::new(RefCell::new(
+        vec![('a' as i8); (3_usize) as usize]
+            .iter()
+            .cloned()
+            .chain(std::iter::once(0))
+            .collect(),
+    ));
+    let s2: Value<Vec<i8>> = Rc::new(RefCell::new((*s1.borrow()).clone()));
+    s2.decay().offset(0_usize as isize).write(('b' as i8));
+    s2.decay().offset(1_usize as isize).write(('b' as i8));
+    s2.decay().offset(2_usize as isize).write(('b' as i8));
+    assert!((((s2.decay().offset(0_usize as isize).read()) as i32) == (('b' as i8) as i32)));
+    assert!((((s2.decay().offset(1_usize as isize).read()) as i32) == (('b' as i8) as i32)));
+    assert!((((s2.decay().offset(2_usize as isize).read()) as i32) == (('b' as i8) as i32)));
+    assert!((((s1.decay().offset(0_usize as isize).read()) as i32) == (('a' as i8) as i32)));
+    assert!((((s1.decay().offset(1_usize as isize).read()) as i32) == (('a' as i8) as i32)));
+    assert!((((s1.decay().offset(2_usize as isize).read()) as i32) == (('a' as i8) as i32)));
     let mut b1: Bar = Bar { w: 1 };
     let mut b2: Bar = Bar { w: 2 };
     b2 = (b1).clone();
@@ -267,17 +311,19 @@ fn main_0() -> i32 {
     assert!((b1.w == 1));
     assert!((b2.w == 2));
     let v4: Value<Vec<i32>> = Rc::new(RefCell::new(Vec::new()));
-    v4.as_pointer().write((v2).clone());
+    v4.as_pointer().write((*v2.borrow()).clone());
     let mut i: i32 = 0;
     'loop_: while (i < N) {
-        assert!(({ (*v4.borrow())[(i as usize)] } == (i + 1)));
-        (*v4.borrow_mut())[(i as usize)].prefix_inc();
+        assert!(((v4.decay().offset((i as usize) as isize).read()) == (i + 1)));
+        v4.decay()
+            .offset((i as usize) as isize)
+            .with_mut(|__v| __v.prefix_inc());
         i.prefix_inc();
     }
     let mut i: i32 = 0;
     'loop_: while (i < N) {
-        assert!(({ (*v4.borrow())[(i as usize)] } == (i + 2)));
-        assert!((v2[(i as usize)] == (i + 1)));
+        assert!(((v4.decay().offset((i as usize) as isize).read()) == (i + 2)));
+        assert!(((v2.decay().offset((i as usize) as isize).read()) == (i + 1)));
         i.prefix_inc();
     }
     let ra: Value<i32> = Rc::new(RefCell::new(1));

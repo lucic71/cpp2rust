@@ -6,16 +6,16 @@ use std::collections::BTreeMap;
 use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
-pub static mut copies_0: std::cell::LazyCell<()> = std::cell::LazyCell::new(|| unsafe { 0_() });
-pub static mut moves_1: std::cell::LazyCell<()> = std::cell::LazyCell::new(|| unsafe { 0_() });
+pub static mut copies_0: std::cell::LazyCell<i32> = std::cell::LazyCell::new(|| unsafe { 0 });
+pub static mut moves_1: std::cell::LazyCell<i32> = std::cell::LazyCell::new(|| unsafe { 0 });
 #[repr(C)]
 #[derive(VaArg, FnPtrArg, MoveCtorUnsafe, Default)]
 pub struct Movable {
-    pub x: (),
-    pub y: (),
+    pub x: i32,
+    pub y: i32,
 }
 impl Movable {
-    pub unsafe fn new(mut x: (), mut y: ()) -> Self {
+    pub unsafe fn new(mut x: i32, mut y: i32) -> Self {
         let mut this = Self { x: x, y: y };
         this
     }
@@ -32,8 +32,8 @@ impl Movable {
             x: (*other).x,
             y: (*other).y,
         };
-        (*other).x = 0_();
-        (*other).y = 0_();
+        (*other).x = 0;
+        (*other).y = 0;
         (*std::cell::LazyCell::force_mut(&mut *&raw mut moves_1)).prefix_inc();
         this
     }
@@ -46,26 +46,26 @@ impl Clone for Movable {
 #[repr(C)]
 #[derive(Clone, VaArg, FnPtrArg, MoveCtorUnsafe, MoveAssignUnsafe, Default)]
 pub struct Holder {
-    pub xs: (),
-    pub ys: (),
+    pub xs: Vec<i32>,
+    pub ys: Vec<i32>,
 }
 impl Holder {
     pub unsafe fn extract(&mut self) -> Holder {
         return Holder {
-            xs: unimplemented!(),
-            ys: unimplemented!(),
+            xs: std::mem::take(&mut self.xs),
+            ys: std::mem::take(&mut self.ys),
         };
     }
     pub unsafe fn move_from(_a0: *mut Holder) -> Self {
         let mut this = Self {
-            xs: unimplemented!(),
-            ys: unimplemented!(),
+            xs: std::mem::take(&mut (*_a0).xs),
+            ys: std::mem::take(&mut (*_a0).ys),
         };
         this
     }
     pub unsafe fn move_assign(&mut self, _a0: *mut Holder) -> *mut Holder {
-        unimplemented!();
-        unimplemented!();
+        self.xs = std::mem::take(&mut (*_a0).xs);
+        self.ys = std::mem::take(&mut (*_a0).ys);
         return &mut (*(self as *mut Holder));
     }
 }
@@ -75,27 +75,39 @@ pub fn main() {
         std::process::exit(main_0() as i32);
     }
 }
-unsafe fn main_0() -> () {
-    let mut m: Movable = Movable::new({ 3_() }, { 4_() });
+unsafe fn main_0() -> i32 {
+    let mut m: Movable = Movable::new({ 3 }, { 4 });
     let mut __decomp_2: Movable = Movable::move_from({ &mut m });
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
+    assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut moves_1)) == (1)));
+    assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut copies_0)) == (0)));
+    assert!(((__decomp_2.x) == (3)));
+    assert!(((__decomp_2.y) == (4)));
+    assert!(((m.x) == (0)));
+    assert!(((m.y) == (0)));
     let mut h: Holder = Holder {
-        xs: unimplemented!(),
-        ys: unimplemented!(),
+        xs: Vec::from([1, 2, 3]),
+        ys: Vec::from([4, 5]),
     };
     let mut __decomp_3: Holder = (unsafe { Holder::extract(&mut h) });
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    return 0_();
+    assert!(((__decomp_3.xs.len()) == (3_usize)));
+    assert!(((__decomp_3.ys.len()) == (2_usize)));
+    assert!(
+        ((*{
+            let __idx = 2_usize as usize;
+            let __v: &mut Vec<i32> = &mut __decomp_3.xs;
+            __v.as_mut_ptr().add(__idx)
+        }) == (3))
+    );
+    assert!(
+        ((*{
+            let __idx = 0_usize as usize;
+            let __v: &mut Vec<i32> = &mut __decomp_3.ys;
+            __v.as_mut_ptr().add(__idx)
+        }) == (4))
+    );
+    assert!(h.xs.is_empty());
+    assert!(h.ys.is_empty());
+    return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {
     std::cell::LazyCell::force(&*&raw const copies_0);

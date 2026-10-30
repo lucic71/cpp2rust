@@ -7,7 +7,7 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 pub unsafe trait Animal {
-    unsafe fn bark(&self) -> ();
+    unsafe fn bark(&self) -> bool;
 }
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
@@ -16,7 +16,7 @@ pub struct Dog {}
 #[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct Cat {}
 impl Cat {
-    unsafe fn meow(&self) -> () {
+    unsafe fn meow(&self) -> bool {
         return true;
     }
 }
@@ -26,23 +26,23 @@ pub fn main() {
         std::process::exit(main_0() as i32);
     }
 }
-unsafe fn main_0() -> () {
+unsafe fn main_0() -> i32 {
     let mut dog: Dog = <Dog>::default();
     let mut animal: *mut dyn Animal = (&mut dog as *mut Dog);
-    let mut eat1: () = (unsafe { (*(animal).cast_const()).bark() });
+    let mut eat1: bool = (unsafe { (*(animal).cast_const()).bark() });
     let mut cat: Cat = <Cat>::default();
     animal = (&mut cat as *mut Cat);
-    let mut eat2: () = (unsafe { (*(animal).cast_const()).bark() });
-    unimplemented!();
-    return 0_();
+    let mut eat2: bool = (unsafe { (*(animal).cast_const()).bark() });
+    assert!((eat1) && (!(eat2)));
+    return 0;
 }
 unsafe impl Animal for Cat {
-    unsafe fn bark(&self) -> () {
+    unsafe fn bark(&self) -> bool {
         return false;
     }
 }
 unsafe impl Animal for Dog {
-    unsafe fn bark(&self) -> () {
+    unsafe fn bark(&self) -> bool {
         return true;
     }
 }

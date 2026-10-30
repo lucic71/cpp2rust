@@ -10,26 +10,26 @@ use std::rc::{Rc, Weak};
 #[byte_size(4)]
 pub struct S {
     #[offset(0)]
-    pub a: (),
+    pub a: i32,
 }
 thread_local!(
     pub static s_0: Value<Ptr<S>> = Rc::new(RefCell::new(Ptr::<S>::null()));
 );
 thread_local!(
-    pub static file_1: Value<()> = Rc::new(RefCell::new(unimplemented!()));
+    pub static file_1: Value<Ptr<CFile>> = Rc::new(RefCell::new(Ptr::null()));
 );
 thread_local!(
-    pub static size_2: Value<()> = Rc::new(RefCell::new(unimplemented!()));
+    pub static size_2: Value<usize> = Rc::new(RefCell::new(0_usize));
 );
 pub fn main() {
     __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
-fn main_0() -> () {
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    return 0_();
+fn main_0() -> i32 {
+    assert!((*s_0.with(Value::clone).borrow()).is_null());
+    assert!((*file_1.with(Value::clone).borrow()).is_null());
+    assert!((size_2.with(|rc| *rc.borrow()) == 0_usize));
+    return 0;
 }
 pub fn __cpp2rust_init_globals() {
     let _ = s_0.with(|_| ());

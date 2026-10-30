@@ -326,16 +326,8 @@ pub unsafe fn MSTKruskal_2(graph: *mut Graph) -> f64 {
         quicksort_1(_arr, 0, _end)
     });
     let mut set: DisjointSet = DisjointSet {
-        rank: Some(
-            (0..((*graph).V as usize))
-                .map(|_| 0_i32)
-                .collect::<Box<[_]>>(),
-        ),
-        parent: Some(
-            (0..((*graph).V as usize))
-                .map(|_| 0_i32)
-                .collect::<Box<[_]>>(),
-        ),
+        rank: unimplemented!(),
+        parent: unimplemented!(),
         n: (*graph).V,
     };
     (unsafe { DisjointSet::makeSet(&mut set) });
@@ -380,11 +372,7 @@ unsafe fn main_0() -> i32 {
     let mut V: i32 = 4;
     let mut E: i32 = 5;
     let mut graph: Graph = Graph {
-        edges: Some(
-            (0..(E as usize))
-                .map(|_| <Edge>::default())
-                .collect::<Box<[_]>>(),
-        ),
+        edges: unimplemented!(),
         V: V,
         E: E,
     };

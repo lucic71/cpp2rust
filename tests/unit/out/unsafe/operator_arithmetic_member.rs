@@ -9,7 +9,7 @@ use std::rc::Rc;
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct S {
-    pub v: (),
+    pub v: i32,
 }
 impl S {
     pub unsafe fn operator_add_1(&self, o: *const S) -> S {
@@ -47,7 +47,7 @@ impl S {
         self.v.prefix_inc();
         return &mut (*(self as *mut S));
     }
-    pub unsafe fn operator_post_inc_9(&mut self, mut _a0: ()) -> S {
+    pub unsafe fn operator_post_inc_9(&mut self, mut _a0: i32) -> S {
         let mut old: S = (*(self as *mut S));
         self.v.prefix_inc();
         return old;
@@ -56,7 +56,7 @@ impl S {
         self.v.prefix_dec();
         return &mut (*(self as *mut S));
     }
-    pub unsafe fn operator_post_dec_11(&mut self, mut _a0: ()) -> S {
+    pub unsafe fn operator_post_dec_11(&mut self, mut _a0: i32) -> S {
         let mut old: S = (*(self as *mut S));
         self.v.prefix_dec();
         return old;
@@ -68,24 +68,33 @@ pub fn main() {
         std::process::exit(main_0() as i32);
     }
 }
-unsafe fn main_0() -> () {
-    let mut a: S = S { v: 7_() };
-    let mut b: S = S { v: 2_() };
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    return 0_();
+unsafe fn main_0() -> i32 {
+    let mut a: S = S { v: 7 };
+    let mut b: S = S { v: 2 };
+    assert!((((unsafe { S::operator_add_1(&a, &b,) }).v) == (9)));
+    assert!((((unsafe { S::operator_sub_2(&a, &b,) }).v) == (5)));
+    assert!((((unsafe { S::operator_mul(&a, &b,) }).v) == (14)));
+    assert!((((unsafe { S::operator_div(&a, &b,) }).v) == (3)));
+    assert!((((unsafe { S::operator_rem(&a, &b,) }).v) == (1)));
+    assert!((((unsafe { S::operator_pos_6(&a,) }).v) == (7)));
+    assert!((((unsafe { S::operator_neg_7(&a,) }).v) == (-7_i32)));
+    assert!((((*(unsafe { S::operator_inc_8(&mut a,) })).v) == (8)));
+    assert!((((unsafe { S::operator_post_inc_9(&mut a, 0,) }).v) == (8)));
+    assert!(((a.v) == (9)));
+    assert!((((*(unsafe { S::operator_dec_10(&mut a,) })).v) == (8)));
+    assert!((((unsafe { S::operator_post_dec_11(&mut a, 0,) }).v) == (8)));
+    assert!(((a.v) == (7)));
+    assert!(
+        (((*(unsafe { S::operator_inc_8(&mut (*(unsafe { S::operator_inc_8(&mut a,) })),) })).v)
+            == (9))
+    );
+    assert!(
+        (((unsafe {
+            let mut _o: S = S { v: 4 };
+            S::operator_add_1(&S { v: 3 }, &mut _o)
+        })
+        .v) == (7))
+    );
+    return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

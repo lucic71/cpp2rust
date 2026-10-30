@@ -9,7 +9,7 @@ use std::rc::Rc;
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct S {
-    pub v: (),
+    pub v: u32,
 }
 impl S {
     pub unsafe fn operator_bitnot(&self) -> S {
@@ -30,12 +30,12 @@ impl S {
             v: ((self.v) ^ ((*o).v)),
         };
     }
-    pub unsafe fn operator_shl(&self, mut n: ()) -> S {
+    pub unsafe fn operator_shl(&self, mut n: i32) -> S {
         return S {
             v: ((self.v) << (n)),
         };
     }
-    pub unsafe fn operator_shr(&self, mut n: ()) -> S {
+    pub unsafe fn operator_shr(&self, mut n: i32) -> S {
         return S {
             v: ((self.v) >> (n)),
         };
@@ -47,15 +47,15 @@ pub fn main() {
         std::process::exit(main_0() as i32);
     }
 }
-unsafe fn main_0() -> () {
-    let mut a: S = S { v: 12_() };
-    let mut b: S = S { v: 10_() };
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    return 0_();
+unsafe fn main_0() -> i32 {
+    let mut a: S = S { v: 12_u32 };
+    let mut b: S = S { v: 10_u32 };
+    assert!((((unsafe { S::operator_bitnot(&a,) }).v) == (!12_u32)));
+    assert!((((unsafe { S::operator_bitand(&a, &b,) }).v) == (8_u32)));
+    assert!((((unsafe { S::operator_bitor(&a, &b,) }).v) == (14_u32)));
+    assert!((((unsafe { S::operator_bitxor(&a, &b,) }).v) == (6_u32)));
+    assert!((((unsafe { S::operator_shl(&a, 2,) }).v) == (48_u32)));
+    assert!((((unsafe { S::operator_shr(&a, 2,) }).v) == (3_u32)));
+    return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

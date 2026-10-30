@@ -9,11 +9,11 @@ use std::rc::Rc;
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct S {
-    pub a: (),
-    pub b: (),
+    pub a: i32,
+    pub b: i32,
 }
 impl S {
-    pub unsafe fn new(mut a: (), mut b: ()) -> Self {
+    pub unsafe fn new(mut a: i32, mut b: i32) -> Self {
         let mut this = Self { a: a, b: b };
         this
     }
@@ -24,11 +24,11 @@ pub fn main() {
         std::process::exit(main_0() as i32);
     }
 }
-unsafe fn main_0() -> () {
-    let mut s1: S = S::new({ 1_() }, { 2_() });
+unsafe fn main_0() -> i32 {
+    let mut s1: S = S::new({ 1 }, { 2 });
     let s2: *mut S = &mut s1;
-    unimplemented!();
-    unimplemented!();
-    return 0_();
+    assert!((((*s2).a) == (1)));
+    assert!((((*s2).b) == (2)));
+    return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

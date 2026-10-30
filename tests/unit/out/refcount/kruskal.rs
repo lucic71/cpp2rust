@@ -32,16 +32,16 @@ pub fn partition_0(arr: Ptr<Option<Value<Box<[Edge]>>>>, mut start: i32, mut end
         }
         i.prefix_inc();
     }
-    let mut pidx: i32 = (start + count);
+    let pidx: Value<i32> = Rc::new(RefCell::new((start + count)));
     let mut tmp: Edge = Edge {
         u: ((*arr.upgrade().deref()).as_pointer() as Ptr<Edge>)
-            .offset((pidx as usize) as isize)
+            .offset(((*pidx.borrow()) as usize) as isize)
             .with(|__s| __s.u),
         v: ((*arr.upgrade().deref()).as_pointer() as Ptr<Edge>)
-            .offset((pidx as usize) as isize)
+            .offset(((*pidx.borrow()) as usize) as isize)
             .with(|__s| __s.v),
         weight: ((*arr.upgrade().deref()).as_pointer() as Ptr<Edge>)
-            .offset((pidx as usize) as isize)
+            .offset(((*pidx.borrow()) as usize) as isize)
             .with(|__s| __s.weight),
     };
     let __rhs = Edge {
@@ -56,7 +56,7 @@ pub fn partition_0(arr: Ptr<Option<Value<Box<[Edge]>>>>, mut start: i32, mut end
             .with(|__s| __s.weight),
     };
     ((*arr.upgrade().deref()).as_pointer() as Ptr<Edge>)
-        .offset((pidx as usize) as isize)
+        .offset(((*pidx.borrow()) as usize) as isize)
         .write(__rhs);
     ((*arr.upgrade().deref()).as_pointer() as Ptr<Edge>)
         .offset((start as usize) as isize)
@@ -67,7 +67,7 @@ pub fn partition_0(arr: Ptr<Option<Value<Box<[Edge]>>>>, mut start: i32, mut end
         });
     let mut i: i32 = start;
     let mut j: i32 = end;
-    'loop_: while (i < pidx) && (j > pidx) {
+    'loop_: while (i < (*pidx.borrow())) && (j > (*pidx.borrow())) {
         'loop_: while ({
             ((*arr.upgrade().deref()).as_pointer() as Ptr<Edge>)
                 .offset((i as usize) as isize)
@@ -84,7 +84,7 @@ pub fn partition_0(arr: Ptr<Option<Value<Box<[Edge]>>>>, mut start: i32, mut end
         {
             j.prefix_dec();
         }
-        if (i < pidx) && (j > pidx) {
+        if (i < (*pidx.borrow())) && (j > (*pidx.borrow())) {
             tmp = Edge {
                 u: ((*arr.upgrade().deref()).as_pointer() as Ptr<Edge>)
                     .offset((i as usize) as isize)
@@ -121,7 +121,7 @@ pub fn partition_0(arr: Ptr<Option<Value<Box<[Edge]>>>>, mut start: i32, mut end
             j.postfix_dec();
         }
     }
-    return pidx;
+    return (*pidx.borrow());
 }
 pub fn quicksort_1(arr: Ptr<Option<Value<Box<[Edge]>>>>, mut start: i32, mut end: i32) {
     if (start >= end) {
@@ -194,20 +194,12 @@ pub fn MSTKruskal_2(graph: Ptr<Graph>) -> f64 {
         quicksort_1(_arr, 0, _end)
     });
     let set: Value<DisjointSet> = Rc::new(RefCell::new(DisjointSet {
-        rank: Some(Rc::new(RefCell::new(
-            (0..(graph.with(|__s| __s.V) as usize))
-                .map(|_| 0_i32)
-                .collect::<Box<[_]>>(),
-        ))),
-        parent: Some(Rc::new(RefCell::new(
-            (0..(graph.with(|__s| __s.V) as usize))
-                .map(|_| 0_i32)
-                .collect::<Box<[_]>>(),
-        ))),
+        rank: unimplemented!(),
+        parent: unimplemented!(),
         n: graph.with(|__s| __s.V),
     }));
     ({ DisjointSetImpl::makeSet(&set.as_pointer()) });
-    let mut total_weight: f64 = 0_f64;
+    let total_weight: Value<f64> = Rc::new(RefCell::new(0_f64));
     let mut i: i32 = 0;
     'loop_: while ({ i } < { graph.with(|__s| __s.E) }) {
         let mut x: i32 = (graph.with(|__s| __s.edges.clone()).as_pointer() as Ptr<Edge>)
@@ -223,11 +215,11 @@ pub fn MSTKruskal_2(graph: Ptr<Graph>) -> f64 {
             != ({ DisjointSetImpl::find(&set.as_pointer(), y) }))
         {
             ({ DisjointSetImpl::merge(&set.as_pointer(), x, y) });
-            total_weight += w;
+            (*total_weight.borrow_mut()) += w;
         }
         i.prefix_inc();
     }
-    return total_weight;
+    return (*total_weight.borrow());
 }
 pub fn main() {
     __cpp2rust_init_globals();
@@ -237,11 +229,7 @@ fn main_0() -> i32 {
     let mut V: i32 = 4;
     let mut E: i32 = 5;
     let graph: Value<Graph> = Rc::new(RefCell::new(Graph {
-        edges: Some(Rc::new(RefCell::new(
-            (0..(E as usize))
-                .map(|_| <Edge>::default())
-                .collect::<Box<[_]>>(),
-        ))),
+        edges: unimplemented!(),
         V: V,
         E: E,
     }));

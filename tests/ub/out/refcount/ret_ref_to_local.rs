@@ -6,16 +6,16 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-pub fn foo_0() -> Ptr<()> {
-    let __tmp_0: Value<()> = Rc::new(RefCell::new(5_()));
+pub fn foo_0() -> Ptr<i32> {
+    let __tmp_0: Value<i32> = Rc::new(RefCell::new(5));
     return __tmp_0.as_pointer();
 }
 pub fn main() {
     __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
-fn main_0() -> () {
-    let mut bar: () = (({ foo_0() }).read());
-    return 0_();
+fn main_0() -> i32 {
+    let mut bar: i32 = (({ foo_0() }).read());
+    return 0;
 }
 pub fn __cpp2rust_init_globals() {}

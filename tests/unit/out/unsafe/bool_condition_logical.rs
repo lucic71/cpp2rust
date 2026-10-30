@@ -6,21 +6,20 @@ use std::collections::BTreeMap;
 use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
-pub type Code = ();
+pub type Code = u32;
 pub const Code_CODE_OK: Code = 0;
 pub const Code_CODE_ERR: Code = 1;
 pub const Code_CODE_FATAL: Code = 2;
-pub static mut side_effect_0: std::cell::LazyCell<()> =
-    std::cell::LazyCell::new(|| unsafe { 0_() });
-pub unsafe fn observe_1(mut v: ()) -> () {
+pub static mut side_effect_0: std::cell::LazyCell<i32> = std::cell::LazyCell::new(|| unsafe { 0 });
+pub unsafe fn observe_1(mut v: i32) -> i32 {
     (*std::cell::LazyCell::force_mut(&mut *&raw mut side_effect_0)).prefix_inc();
     return v;
 }
-pub unsafe fn returns_one_2() -> () {
-    return 1_();
+pub unsafe fn returns_one_2() -> i32 {
+    return 1;
 }
-pub unsafe fn returns_zero_3() -> () {
-    return 0_();
+pub unsafe fn returns_zero_3() -> i32 {
+    return 0;
 }
 pub fn main() {
     unsafe {
@@ -28,107 +27,107 @@ pub fn main() {
         std::process::exit(main_0() as i32);
     }
 }
-unsafe fn main_0() -> () {
-    let mut n: () = 3_();
-    let mut zero: () = 0_();
-    let mut storage: () = 7_();
-    let mut p: *mut () = (&mut storage as *mut ());
-    let mut np: *mut () = std::ptr::null_mut();
-    let mut u: () = 4_();
+unsafe fn main_0() -> i32 {
+    let mut n: i32 = 3;
+    let mut zero: i32 = 0;
+    let mut storage: i32 = 7;
+    let mut p: *mut i32 = (&mut storage as *mut i32);
+    let mut np: *mut i32 = std::ptr::null_mut();
+    let mut u: u32 = 4_u32;
     let mut code: Code = Code_CODE_OK;
     if (n != 0) && (!(p).is_null()) {
-        unimplemented!();
+        assert!(true);
     }
     if (n != 0) && (!(np).is_null()) {
-        unimplemented!();
+        assert!(false);
     }
     if (zero != 0) || (!(p).is_null()) {
-        unimplemented!();
+        assert!(true);
     }
     if (zero != 0) || (!(np).is_null()) {
-        unimplemented!();
+        assert!(false);
     }
-    if (((n != 0) && (u != 0)) && (!(p).is_null())) && ((code as ()) == (Code_CODE_OK as ())) {
-        unimplemented!();
+    if (((n != 0) && (u != 0)) && (!(p).is_null())) && ((code as i32) == (Code_CODE_OK as i32)) {
+        assert!(true);
     }
-    (*std::cell::LazyCell::force_mut(&mut *&raw mut side_effect_0)) = 0_();
-    if (zero != 0) && ((unsafe { observe_1(1_()) }) != 0) {
-        unimplemented!();
+    (*std::cell::LazyCell::force_mut(&mut *&raw mut side_effect_0)) = 0;
+    if (zero != 0) && ((unsafe { observe_1(1) }) != 0) {
+        assert!(false);
     }
-    unimplemented!();
-    if (n != 0) || ((unsafe { observe_1(1_()) }) != 0) {
-        unimplemented!();
+    assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut side_effect_0)) == (0)));
+    if (n != 0) || ((unsafe { observe_1(1) }) != 0) {
+        assert!(true);
     }
-    unimplemented!();
-    let mut x: () = 5_();
-    let mut y: () = 3_();
-    let mut flags: () = 2_();
-    if ((x) > (y)) || (((flags) & (1_())) != 0) {
-        unimplemented!();
+    assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut side_effect_0)) == (0)));
+    let mut x: i32 = 5;
+    let mut y: i32 = 3;
+    let mut flags: u32 = 2_u32;
+    if ((x) > (y)) || (((flags) & (1_u32)) != 0) {
+        assert!(true);
     }
-    if ((x) < (y)) || (((flags) & (1_())) != 0) {
-        unimplemented!();
+    if ((x) < (y)) || (((flags) & (1_u32)) != 0) {
+        assert!(false);
     }
-    let mut a: () = 1_();
-    let mut b: () = 2_();
-    let mut c: () = 3_();
+    let mut a: u32 = 1_u32;
+    let mut b: u32 = 2_u32;
+    let mut c: u32 = 3_u32;
     if ((a) != (c)) && ((b) != (c)) {
-        unimplemented!();
+        assert!(true);
     }
-    let mut s: () = -1_();
-    if (!((p).is_null())) && ((s) < (0_())) {
-        unimplemented!();
+    let mut s: i32 = -1_i32;
+    if (!((p).is_null())) && ((s) < (0)) {
+        assert!(true);
     }
-    let mut k: () = 2_();
-    let mut done: () = false;
-    if ((k) > (1_())) || (!(done)) {
-        unimplemented!();
+    let mut k: u32 = 2_u32;
+    let mut done: bool = false;
+    if ((k) > (1_u32)) || (!(done)) {
+        assert!(true);
     }
-    if ((x) > (y)) || (((flags) & (4_())) != 0) {
-        unimplemented!();
+    if ((x) > (y)) || (((flags) & (4_u32)) != 0) {
+        assert!(true);
     }
-    let mut ull: () = 7_();
+    let mut ull: u64 = 7_u64;
     if (!((p).is_null())) && (ull != 0) {
-        unimplemented!();
+        assert!(true);
     }
     if ((x) > (y)) && (ull != 0) {
-        unimplemented!();
+        assert!(true);
     }
-    let mut mask: () = (((1_()) << (4_())) | ((1_()) << (5_())));
-    let mut bits: () = ((1_()) << (4_()));
-    if ((n) != (0_())) && (((bits) & (mask)) != 0) {
-        unimplemented!();
+    let mut mask: i64 = (((1_i64) << (4)) | ((1_i64) << (5)));
+    let mut bits: i64 = ((1_i64) << (4));
+    if ((n) != (0)) && (((bits) & (mask)) != 0) {
+        assert!(true);
     }
-    if ((n) != (0_())) || (((bits) & (256_())) != 0) {
-        unimplemented!();
+    if ((n) != (0)) || (((bits) & (256_i64)) != 0) {
+        assert!(true);
     }
-    let mut cp: *const () = c"hi".as_ptr();
-    let mut cnp: *const () = std::ptr::null();
+    let mut cp: *const libc::c_char = c"hi".as_ptr();
+    let mut cnp: *const libc::c_char = std::ptr::null();
     if ((x) > (y)) && (!(cp).is_null()) {
-        unimplemented!();
+        assert!(true);
     }
     if ((x) < (y)) || (!(cnp).is_null()) {
-        unimplemented!();
+        assert!(false);
     }
     if ((x) > (y)) && ((n != 0) && (!(cp).is_null())) {
-        unimplemented!();
+        assert!(true);
     }
     if ((x) > (y)) && ((unsafe { returns_one_2() }) != 0) {
-        unimplemented!();
+        assert!(true);
     }
     if ((x) > (y)) && (!((unsafe { returns_zero_3() }) != 0)) {
-        unimplemented!();
+        assert!(true);
     }
     if ((x) < (y)) || ((unsafe { returns_one_2() }) != 0) {
-        unimplemented!();
+        assert!(true);
     }
     if ((x) < (y)) || (!((unsafe { returns_one_2() }) != 0)) {
-        unimplemented!();
+        assert!(false);
     }
-    if ((!((p).is_null())) && ((unsafe { returns_one_2() }) != 0)) && ((n) != (0_())) {
-        unimplemented!();
+    if ((!((p).is_null())) && ((unsafe { returns_one_2() }) != 0)) && ((n) != (0)) {
+        assert!(true);
     }
-    return 0_();
+    return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {
     std::cell::LazyCell::force(&*&raw const side_effect_0);

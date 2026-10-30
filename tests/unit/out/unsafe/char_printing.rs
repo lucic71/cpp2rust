@@ -12,13 +12,17 @@ pub fn main() {
         std::process::exit(main_0() as i32);
     }
 }
-unsafe fn main_0() -> () {
-    let mut vec_: () = unimplemented!();
-    let mut i: () = 27_();
-    let mut str: () = unimplemented!();
+unsafe fn main_0() -> i32 {
+    let mut vec_: Vec<u8> = Vec::from([195_u8, 167_u8]);
+    let mut i: i32 = 27;
+    let mut str: Vec<libc::c_char> = {
+        let __s = c"foo.".as_ptr();
+        std::slice::from_raw_parts(__s, (0..).take_while(|&__i| *__s.add(__i) != 0).count() + 1)
+            .to_vec()
+    };
     unimplemented!();
     unimplemented!();
     unimplemented!();
-    return 0_();
+    return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

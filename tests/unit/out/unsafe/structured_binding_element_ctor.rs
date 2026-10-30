@@ -97,9 +97,15 @@ unsafe fn main_0() -> i32 {
     assert!(((__decomp_6.a.v) == (1)));
     let mut p: (Elem, Elem) = (Elem::new({ 7 }), Elem::new({ 8 }));
     before_copies = (*std::cell::LazyCell::force_mut(&mut *&raw mut copies_0));
-    let mut __decomp_7: (Elem, Elem) = p.clone();
-    let x: *mut Elem = &mut __decomp_7.0;
-    let y: *mut Elem = &mut __decomp_7.1;
+    let mut __decomp_7: (Elem, Elem) = {
+        let __a0 = (p).clone();
+        (
+            <Elem as CppFromUnsafe<Elem>>::cpp_from(&__a0.0),
+            <Elem as CppFromUnsafe<Elem>>::cpp_from(&__a0.1),
+        )
+    };
+    let x: *mut Elem = unimplemented!();
+    let y: *mut Elem = unimplemented!();
     assert!(
         ((*std::cell::LazyCell::force_mut(&mut *&raw mut copies_0)) == ((before_copies) + (2)))
     );

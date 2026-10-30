@@ -6,9 +6,9 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-pub fn strlen_0(mut ptr: Ptr<()>) -> () {
-    let count: Value<()> = Rc::new(RefCell::new(0_()));
-    'loop_: while ((ptr.postfix_inc().read()) != ('\0' as ())) {
+pub fn strlen_0(mut ptr: Ptr<i8>) -> u32 {
+    let count: Value<u32> = Rc::new(RefCell::new(0_u32));
+    'loop_: while (((ptr.postfix_inc().read()) as i32) != (('\0' as i8) as i32)) {
         (*count.borrow_mut()).prefix_inc();
     }
     return (*count.borrow());
@@ -17,16 +17,16 @@ pub fn main() {
     __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
-fn main_0() -> () {
-    let string: Value<Box<[()]>> = Rc::new(RefCell::new(Box::new([
-        ('h' as ()),
-        ('e' as ()),
-        ('l' as ()),
-        ('l' as ()),
-        ('o' as ()),
-        ('\0' as ()),
+fn main_0() -> i32 {
+    let string: Value<Box<[i8]>> = Rc::new(RefCell::new(Box::new([
+        ('h' as i8),
+        ('e' as i8),
+        ('l' as i8),
+        ('l' as i8),
+        ('o' as i8),
+        ('\0' as i8),
     ])));
-    unimplemented!();
-    return 0_();
+    assert!((({ strlen_0(((string.as_pointer() as Ptr<i8>).offset(0)),) }) == 5_u32));
+    return 0;
 }
 pub fn __cpp2rust_init_globals() {}

@@ -284,13 +284,13 @@ fn main_0() -> i32 {
     let r: Ptr<Map<i16, (Value<i16>, Value<u32>)>> = m.as_pointer();
     assert!(((*r.upgrade().deref()).len() == 4_usize));
     assert!(
-        ({
+        !(({
             let __tmp_4: Value<i16> = Rc::new(RefCell::new(4_i16));
             m.as_pointer()
                 .with(|__m: &Map<i16, (Value<i16>, Value<u32>)>| __m.find(&__tmp_4.as_pointer()))
-        }) != m
+        }) == m
             .as_pointer()
-            .with(|__m: &Map<i16, (Value<i16>, Value<u32>)>| __m.end())
+            .with(|__m: &Map<i16, (Value<i16>, Value<u32>)>| __m.end()))
     );
     {
         let __it = (*it4.borrow()).clone();
@@ -466,7 +466,11 @@ fn main_0() -> i32 {
     let mut i: u32 = 0_u32;
     'loop_: while ((i as usize) < (*indexes.borrow()).len()) {
         let __rhs = ((i).wrapping_rem(2_u32) != 0);
-        Map::subscript(m2.as_pointer(), indexes.decay().offset((i as usize))).write(__rhs);
+        Map::subscript(
+            m2.as_pointer(),
+            indexes.decay().offset((i as usize) as isize),
+        )
+        .write(__rhs);
         i.prefix_inc();
     }
     assert!(((*m2.borrow()).len() == (*indexes.borrow()).len()));

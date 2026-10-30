@@ -20,15 +20,49 @@ unsafe fn main_0() -> i32 {
     };
     {
         let __a0 = 2_usize as usize;
-        v[(0_usize)].resize_with(__a0, || 0_i32)
+        (*{
+            let __idx = 0_usize as usize;
+            let __v: &mut Vec<Vec<i32>> = &mut v;
+            __v.as_mut_ptr().add(__idx)
+        })
+        .resize_with(__a0, || 0_i32)
     };
     {
         let __a0 = 1_usize as usize;
-        v[(1_usize)].resize_with(__a0, || 0_i32)
+        (*{
+            let __idx = 1_usize as usize;
+            let __v: &mut Vec<Vec<i32>> = &mut v;
+            __v.as_mut_ptr().add(__idx)
+        })
+        .resize_with(__a0, || 0_i32)
     };
-    v[(0_usize)][(0_usize)] = 1;
-    v[(0_usize)][(1_usize)] = 5;
-    v[(1_usize)][(0_usize)] = 6;
+    (*{
+        let __idx = 0_usize as usize;
+        let __v: &mut Vec<i32> = &mut (*{
+            let __idx = 0_usize as usize;
+            let __v: &mut Vec<Vec<i32>> = &mut v;
+            __v.as_mut_ptr().add(__idx)
+        });
+        __v.as_mut_ptr().add(__idx)
+    }) = 1;
+    (*{
+        let __idx = 1_usize as usize;
+        let __v: &mut Vec<i32> = &mut (*{
+            let __idx = 0_usize as usize;
+            let __v: &mut Vec<Vec<i32>> = &mut v;
+            __v.as_mut_ptr().add(__idx)
+        });
+        __v.as_mut_ptr().add(__idx)
+    }) = 5;
+    (*{
+        let __idx = 0_usize as usize;
+        let __v: &mut Vec<i32> = &mut (*{
+            let __idx = 1_usize as usize;
+            let __v: &mut Vec<Vec<i32>> = &mut v;
+            __v.as_mut_ptr().add(__idx)
+        });
+        __v.as_mut_ptr().add(__idx)
+    }) = 6;
     'loop_: for v2 in IterRange::new(v.begin(), v.end()) {
         let v2: *mut Vec<i32> = &mut (*v2.iter_deref());
         'loop_: for i in IterRange::new((*v2).begin(), (*v2).end()) {

@@ -16,9 +16,9 @@ pub struct node_t {
     #[byte_size(8)]
     pub right: Ptr<node_t>,
     #[offset(16)]
-    pub value: (),
+    pub value: i32,
 }
-pub fn find_0(node: Ptr<node_t>, mut value: ()) -> Ptr<node_t> {
+pub fn find_0(node: Ptr<node_t>, mut value: i32) -> Ptr<node_t> {
     let node: Value<Ptr<node_t>> = Rc::new(RefCell::new(node));
     if ({ value } < { (*node.borrow()).with(|__s| __s.value) })
         && (!(((*node.borrow()).with(|__s| __s.left.clone())).is_null()))
@@ -65,22 +65,49 @@ pub fn main() {
     __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
-fn main_0() -> () {
-    let mut tree: () = unimplemented!();
-    let mut n1: () = unimplemented!();
-    let mut n2: () = unimplemented!();
-    let mut n3: () = unimplemented!();
-    let mut n4: () = unimplemented!();
-    let mut ptr1: Ptr<node_t> = (unimplemented!());
-    let __rhs = ({ insert_1((ptr1).clone(), (unimplemented!())) });
+fn main_0() -> i32 {
+    let mut tree: Option<Value<node_t>> = Some(Rc::new(RefCell::new(node_t {
+        left: Ptr::<node_t>::null(),
+        right: Ptr::<node_t>::null(),
+        value: 0,
+    })));
+    let mut n1: Option<Value<node_t>> = Some(Rc::new(RefCell::new(node_t {
+        left: Ptr::<node_t>::null(),
+        right: Ptr::<node_t>::null(),
+        value: 1,
+    })));
+    let mut n2: Option<Value<node_t>> = Some(Rc::new(RefCell::new(node_t {
+        left: Ptr::<node_t>::null(),
+        right: Ptr::<node_t>::null(),
+        value: 2,
+    })));
+    let mut n3: Option<Value<node_t>> = Some(Rc::new(RefCell::new(node_t {
+        left: Ptr::<node_t>::null(),
+        right: Ptr::<node_t>::null(),
+        value: 3,
+    })));
+    let mut n4: Option<Value<node_t>> = Some(Rc::new(RefCell::new(node_t {
+        left: Ptr::<node_t>::null(),
+        right: Ptr::<node_t>::null(),
+        value: 4,
+    })));
+    let mut ptr1: Ptr<node_t> = (tree.as_pointer());
+    let __rhs = ({ insert_1((ptr1).clone(), (n1.as_pointer())) });
     ptr1 = __rhs;
-    let __rhs = ({ insert_1((ptr1).clone(), (unimplemented!())) });
+    let __rhs = ({ insert_1((ptr1).clone(), (n2.as_pointer())) });
     ptr1 = __rhs;
-    let __rhs = ({ insert_1((ptr1).clone(), (unimplemented!())) });
+    let __rhs = ({ insert_1((ptr1).clone(), (n3.as_pointer())) });
     ptr1 = __rhs;
-    let __rhs = ({ insert_1((ptr1).clone(), (unimplemented!())) });
+    let __rhs = ({ insert_1((ptr1).clone(), (n4.as_pointer())) });
     ptr1 = __rhs;
-    unimplemented!();
-    return 0_();
+    assert!(
+        (((((({ find_0((ptr1).clone(), 0,) }).with(|__s| __s.value) == 0)
+            && (({ find_0((ptr1).clone(), 1,) }).with(|__s| __s.value) == 1))
+            && (({ find_0((ptr1).clone(), 2,) }).with(|__s| __s.value) == 2))
+            && (({ find_0((ptr1).clone(), 3,) }).with(|__s| __s.value) == 3))
+            && (({ find_0((ptr1).clone(), 4,) }).with(|__s| __s.value) == 4))
+            && (({ find_0((ptr1).clone(), 5,) }).is_null())
+    );
+    return 0;
 }
 pub fn __cpp2rust_init_globals() {}

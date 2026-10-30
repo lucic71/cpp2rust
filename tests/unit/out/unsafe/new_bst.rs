@@ -11,9 +11,9 @@ use std::rc::Rc;
 pub struct node_t {
     pub left: *mut node_t,
     pub right: *mut node_t,
-    pub value: (),
+    pub value: i32,
 }
-pub unsafe fn find_0(mut node: *mut node_t, mut value: ()) -> *mut node_t {
+pub unsafe fn find_0(mut node: *mut node_t, mut value: i32) -> *mut node_t {
     if ((value) < ((*node).value)) && (!(((*node).left).is_null())) {
         return (unsafe { find_0((*node).left, value) });
     } else if ((value) > ((*node).value)) && (!(((*node).right).is_null())) {
@@ -23,7 +23,7 @@ pub unsafe fn find_0(mut node: *mut node_t, mut value: ()) -> *mut node_t {
     }
     return std::ptr::null_mut();
 }
-pub unsafe fn insert_1(mut node: *mut node_t, mut value: ()) -> *mut node_t {
+pub unsafe fn insert_1(mut node: *mut node_t, mut value: i32) -> *mut node_t {
     if (node).is_null() {
         return (Box::leak(Box::new(node_t {
             left: std::ptr::null_mut(),
@@ -58,24 +58,24 @@ pub fn main() {
         std::process::exit(main_0() as i32);
     }
 }
-unsafe fn main_0() -> () {
+unsafe fn main_0() -> i32 {
     let mut root: *mut node_t = (Box::leak(Box::new(node_t {
         left: std::ptr::null_mut(),
         right: std::ptr::null_mut(),
-        value: 0_(),
+        value: 0,
     })) as *mut node_t);
-    root = (unsafe { insert_1(root, 1_()) });
-    root = (unsafe { insert_1(root, 2_()) });
-    root = (unsafe { insert_1(root, 3_()) });
-    root = (unsafe { insert_1(root, 4_()) });
-    let mut out: () = (((((((*(unsafe { find_0(root, 0_()) })).value) == (0_()))
-        && (((*(unsafe { find_0(root, 1_()) })).value) == (1_())))
-        && (((*(unsafe { find_0(root, 2_()) })).value) == (2_())))
-        && (((*(unsafe { find_0(root, 3_()) })).value) == (3_())))
-        && (((*(unsafe { find_0(root, 4_()) })).value) == (4_())))
-        && ((unsafe { find_0(root, 5_()) }).is_null());
+    root = (unsafe { insert_1(root, 1) });
+    root = (unsafe { insert_1(root, 2) });
+    root = (unsafe { insert_1(root, 3) });
+    root = (unsafe { insert_1(root, 4) });
+    let mut out: bool = (((((((*(unsafe { find_0(root, 0) })).value) == (0))
+        && (((*(unsafe { find_0(root, 1) })).value) == (1)))
+        && (((*(unsafe { find_0(root, 2) })).value) == (2)))
+        && (((*(unsafe { find_0(root, 3) })).value) == (3)))
+        && (((*(unsafe { find_0(root, 4) })).value) == (4)))
+        && ((unsafe { find_0(root, 5) }).is_null());
     (unsafe { del_2(root) });
-    unimplemented!();
-    return 0_();
+    assert!(out);
+    return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

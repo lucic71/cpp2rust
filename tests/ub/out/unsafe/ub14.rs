@@ -12,20 +12,20 @@ pub fn main() {
         std::process::exit(main_0() as i32);
     }
 }
-unsafe fn main_0() -> () {
-    let mut arr1: *mut () =
-        Box::leak((0..100_()).map(|_| unimplemented!()).collect::<Box<[()]>>()).as_mut_ptr();
-    (*arr1.offset((100_()) as isize)) = 1_();
+unsafe fn main_0() -> i32 {
+    let mut arr1: *mut i32 =
+        Box::leak((0..100_usize).map(|_| 0_i32).collect::<Box<[i32]>>()).as_mut_ptr();
+    (*arr1.offset((100) as isize)) = 1;
     {
         let __p = arr1;
         if !__p.is_null() {
             ::std::mem::drop(Box::from_raw(::std::slice::from_raw_parts_mut(
                 __p,
                 libcc2rs::malloc_usable_size(__p as *mut ::libc::c_void)
-                    / ::std::mem::size_of::<()>(),
+                    / ::std::mem::size_of::<i32>(),
             )))
         }
     };
-    return 0_();
+    return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

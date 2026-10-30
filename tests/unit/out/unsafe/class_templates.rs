@@ -9,198 +9,207 @@ use std::rc::Rc;
 #[repr(C)]
 #[derive(Clone, VaArg, FnPtrArg, MoveCtorUnsafe, MoveAssignUnsafe, Default)]
 pub struct MyContainer_int_ {
-    vec_: (),
+    vec_: Vec<i32>,
 }
 impl MyContainer_int_ {
-    pub unsafe fn empty(&self) -> () {
-        return unimplemented!();
+    pub unsafe fn empty(&self) -> bool {
+        return self.vec_.is_empty();
     }
-    pub unsafe fn size(&self) -> () {
-        return unimplemented!();
+    pub unsafe fn size(&self) -> usize {
+        return self.vec_.len();
     }
-    pub unsafe fn back_4(&mut self) -> *mut () {
-        return unimplemented!();
+    pub unsafe fn back_4(&mut self) -> *mut i32 {
+        return ((self.vec_).last_mut().unwrap());
     }
     pub unsafe fn pop_back(&mut self) {
-        unimplemented!();
+        self.vec_.pop();
         return;
     }
-    pub unsafe fn push_back(&mut self, item: *const ()) {
-        unimplemented!();
+    pub unsafe fn push_back(&mut self, item: *const i32) {
+        {
+            let a0_clone = (*item).clone();
+            self.vec_.push(a0_clone)
+        };
     }
     pub unsafe fn move_from(_a0: *mut MyContainer_int_) -> Self {
         let mut this = Self {
-            vec_: unimplemented!(),
+            vec_: std::mem::take(&mut (*_a0).vec_),
         };
         this
     }
     pub unsafe fn move_assign(&mut self, _a0: *mut MyContainer_int_) -> *mut MyContainer_int_ {
-        unimplemented!();
+        self.vec_ = std::mem::take(&mut (*_a0).vec_);
         return &mut (*(self as *mut MyContainer_int_));
     }
 }
 #[repr(C)]
 #[derive(Clone, VaArg, FnPtrArg, MoveCtorUnsafe, MoveAssignUnsafe, Default)]
 pub struct MyContainer_char_ {
-    vec_: (),
+    vec_: Vec<libc::c_char>,
 }
 impl MyContainer_char_ {
-    pub unsafe fn empty(&self) -> () {
-        return unimplemented!();
+    pub unsafe fn empty(&self) -> bool {
+        return self.vec_.is_empty();
     }
-    pub unsafe fn size(&self) -> () {
-        return unimplemented!();
+    pub unsafe fn size(&self) -> usize {
+        return self.vec_.len();
     }
-    pub unsafe fn back_4(&mut self) -> *mut () {
-        return unimplemented!();
+    pub unsafe fn back_4(&mut self) -> *mut libc::c_char {
+        return ((self.vec_).last_mut().unwrap());
     }
     pub unsafe fn pop_back(&mut self) {
-        unimplemented!();
+        self.vec_.pop();
         return;
     }
-    pub unsafe fn push_back(&mut self, item: *const ()) {
-        unimplemented!();
+    pub unsafe fn push_back(&mut self, item: *const libc::c_char) {
+        {
+            let a0_clone = (*item).clone();
+            self.vec_.push(a0_clone)
+        };
     }
     pub unsafe fn move_from(_a0: *mut MyContainer_char_) -> Self {
         let mut this = Self {
-            vec_: unimplemented!(),
+            vec_: std::mem::take(&mut (*_a0).vec_),
         };
         this
     }
     pub unsafe fn move_assign(&mut self, _a0: *mut MyContainer_char_) -> *mut MyContainer_char_ {
-        unimplemented!();
+        self.vec_ = std::mem::take(&mut (*_a0).vec_);
         return &mut (*(self as *mut MyContainer_char_));
     }
 }
 #[repr(C)]
 #[derive(Clone, VaArg, FnPtrArg, MoveCtorUnsafe, MoveAssignUnsafe, Default)]
 pub struct MyContainer_float_ {
-    vec_: (),
+    vec_: Vec<f32>,
 }
 impl MyContainer_float_ {
-    pub unsafe fn empty(&self) -> () {
-        return unimplemented!();
+    pub unsafe fn empty(&self) -> bool {
+        return self.vec_.is_empty();
     }
-    pub unsafe fn size(&self) -> () {
-        return unimplemented!();
+    pub unsafe fn size(&self) -> usize {
+        return self.vec_.len();
     }
-    pub unsafe fn back_4(&mut self) -> *mut () {
-        return unimplemented!();
+    pub unsafe fn back_4(&mut self) -> *mut f32 {
+        return ((self.vec_).last_mut().unwrap());
     }
     pub unsafe fn pop_back(&mut self) {
-        unimplemented!();
+        self.vec_.pop();
         return;
     }
-    pub unsafe fn push_back(&mut self, item: *const ()) {
-        unimplemented!();
+    pub unsafe fn push_back(&mut self, item: *const f32) {
+        {
+            let a0_clone = (*item).clone();
+            self.vec_.push(a0_clone)
+        };
     }
     pub unsafe fn move_from(_a0: *mut MyContainer_float_) -> Self {
         let mut this = Self {
-            vec_: unimplemented!(),
+            vec_: std::mem::take(&mut (*_a0).vec_),
         };
         this
     }
     pub unsafe fn move_assign(&mut self, _a0: *mut MyContainer_float_) -> *mut MyContainer_float_ {
-        unimplemented!();
+        self.vec_ = std::mem::take(&mut (*_a0).vec_);
         return &mut (*(self as *mut MyContainer_float_));
     }
 }
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct Boxed_short_ {
-    pub value: (),
+    pub value: i16,
 }
 impl Boxed_short_ {
-    pub unsafe fn twice(mut v: ()) -> () {
-        return ((v) + (v));
+    pub unsafe fn twice(mut v: i16) -> i16 {
+        return (((v as i32) + (v as i32)) as i16);
     }
-    pub unsafe fn plus(&self, mut other: ()) -> () {
-        return ((self.value) + (other));
+    pub unsafe fn plus(&self, mut other: i16) -> i16 {
+        return (((self.value as i32) + (other as i32)) as i16);
     }
 }
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct Boxed_int_ {
-    pub value: (),
+    pub value: i32,
 }
 impl Boxed_int_ {
-    pub unsafe fn twice(mut v: ()) -> () {
+    pub unsafe fn twice(mut v: i32) -> i32 {
         return ((v) + (v));
     }
-    pub unsafe fn plus(&self, mut other: ()) -> () {
+    pub unsafe fn plus(&self, mut other: i32) -> i32 {
         return ((self.value) + (other));
     }
 }
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct Boxed_long_ {
-    pub value: (),
+    pub value: i64,
 }
 impl Boxed_long_ {
-    pub unsafe fn twice(mut v: ()) -> () {
+    pub unsafe fn twice(mut v: i64) -> i64 {
         return ((v) + (v));
     }
-    pub unsafe fn plus(&self, mut other: ()) -> () {
+    pub unsafe fn plus(&self, mut other: i64) -> i64 {
         return ((self.value) + (other));
     }
 }
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct Outer_int__Inner_int_ {
-    pub t: (),
-    pub u: (),
+    pub t: i32,
+    pub u: i32,
 }
 impl Outer_int__Inner_int_ {
-    pub unsafe fn sum(&self) -> () {
-        return ((self.t as ()) + (self.u as ()));
+    pub unsafe fn sum(&self) -> i32 {
+        return ((self.t as i32) + (self.u as i32));
     }
 }
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct Outer_int_ {
-    pub v: (),
+    pub v: i32,
 }
 impl Outer_int_ {
-    pub unsafe fn with(&self, mut n: ()) -> Outer_int__Inner_int_ {
+    pub unsafe fn with(&self, mut n: i32) -> Outer_int__Inner_int_ {
         return Outer_int__Inner_int_ { t: self.v, u: n };
     }
 }
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct Outer_long__Inner_int_ {
-    pub t: (),
-    pub u: (),
+    pub t: i64,
+    pub u: i32,
 }
 impl Outer_long__Inner_int_ {
-    pub unsafe fn sum(&self) -> () {
-        return ((self.t) + (self.u as ()));
+    pub unsafe fn sum(&self) -> i32 {
+        return ((self.t as i32) + (self.u as i32));
     }
 }
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct Outer_long__Inner_char_ {
-    pub t: (),
-    pub u: (),
+    pub t: i64,
+    pub u: libc::c_char,
 }
 impl Outer_long__Inner_char_ {
-    pub unsafe fn sum(&self) -> () {
-        return ((self.t) + (self.u));
+    pub unsafe fn sum(&self) -> i32 {
+        return ((self.t as i32) + (self.u as i32));
     }
 }
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct Outer_long_ {
-    pub v: (),
+    pub v: i64,
 }
 impl Outer_long_ {
-    pub unsafe fn with(&self, mut n: ()) -> Outer_long__Inner_int_ {
+    pub unsafe fn with(&self, mut n: i32) -> Outer_long__Inner_int_ {
         return Outer_long__Inner_int_ { t: self.v, u: n };
     }
 }
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct Elem {
-    pub i: (),
+    pub i: i32,
 }
 pub fn main() {
     unsafe {
@@ -208,53 +217,80 @@ pub fn main() {
         std::process::exit(main_0() as i32);
     }
 }
-unsafe fn main_0() -> () {
-    let mut ev: () = unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    let mut oi: Outer_int_ = Outer_int_ { v: 3_() };
-    unimplemented!();
-    let mut ol: Outer_long_ = Outer_long_ { v: 5_() };
-    let mut ic: Outer_long__Inner_char_ = Outer_long__Inner_char_ {
-        t: 6_(),
-        u: ('a' as ()),
+unsafe fn main_0() -> i32 {
+    let mut ev: Vec<Elem> = Vec::new();
+    {
+        let __a1 = Elem { i: 2 };
+        ev.push(__a1)
     };
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    let mut bi: Boxed_int_ = Boxed_int_ { value: 4_() };
-    unimplemented!();
-    unimplemented!();
-    let mut bl: Boxed_long_ = Boxed_long_ { value: 7_() };
-    unimplemented!();
+    assert!(
+        (((*{
+            let __idx = 0_usize as usize;
+            let __v: &mut Vec<Elem> = &mut ev;
+            __v.as_mut_ptr().add(__idx)
+        })
+        .i) == (2))
+    );
+    assert!((((unsafe { Boxed_short_::twice(2_i16,) }) as i32) == (4)));
+    let mut oi: Outer_int_ = Outer_int_ { v: 3 };
+    assert!(
+        ((unsafe { Outer_int__Inner_int_::sum(&(unsafe { Outer_int_::with(&oi, 4,) }),) }) == (7))
+    );
+    let mut ol: Outer_long_ = Outer_long_ { v: 5_i64 };
+    let mut ic: Outer_long__Inner_char_ = Outer_long__Inner_char_ {
+        t: 6_i64,
+        u: ('a' as libc::c_char),
+    };
+    assert!(
+        ((unsafe { Outer_long__Inner_int_::sum(&(unsafe { Outer_long_::with(&ol, 2,) }),) })
+            == (7))
+    );
+    assert!(
+        ((unsafe { Outer_long__Inner_char_::sum(&ic,) }) == ((6) + (('a' as libc::c_char) as i32)))
+    );
+    assert!(((unsafe { Boxed_int_::twice(3,) }) == (6)));
+    let mut bi: Boxed_int_ = Boxed_int_ { value: 4 };
+    assert!(((unsafe { Boxed_int_::plus(&bi, 5,) }) == (9)));
+    assert!(((unsafe { Boxed_long_::twice(10_i64,) }) == (20_i64)));
+    let mut bl: Boxed_long_ = Boxed_long_ { value: 7_i64 };
+    assert!(((unsafe { Boxed_long_::plus(&bl, 1_i64,) }) == (8_i64)));
     let mut imc: MyContainer_int_ = <MyContainer_int_>::default();
-    unimplemented!();
+    assert!((unsafe { MyContainer_int_::empty(&imc,) }));
     (unsafe {
-        let mut _item: () = 1_();
+        let mut _item: i32 = 1;
         MyContainer_int_::push_back(&mut imc, &mut _item)
     });
-    unimplemented!();
+    assert!(
+        ((unsafe { MyContainer_int_::size(&imc,) }) == (1_usize))
+            && ((*(unsafe { MyContainer_int_::back_4(&mut imc,) })) == (1))
+    );
     (unsafe { MyContainer_int_::pop_back(&mut imc) });
-    unimplemented!();
+    assert!((unsafe { MyContainer_int_::empty(&imc,) }));
     let mut cmc: MyContainer_char_ = <MyContainer_char_>::default();
-    unimplemented!();
+    assert!((unsafe { MyContainer_char_::empty(&cmc,) }));
     (unsafe {
-        let mut _item: () = ('a' as ());
+        let mut _item: libc::c_char = ('a' as libc::c_char);
         MyContainer_char_::push_back(&mut cmc, &mut _item)
     });
-    unimplemented!();
+    assert!(
+        ((unsafe { MyContainer_char_::size(&cmc,) }) == (1_usize))
+            && (((*(unsafe { MyContainer_char_::back_4(&mut cmc,) })) as i32)
+                == (('a' as libc::c_char) as i32))
+    );
     (unsafe { MyContainer_char_::pop_back(&mut cmc) });
-    unimplemented!();
+    assert!((unsafe { MyContainer_char_::empty(&cmc,) }));
     let mut fmc: MyContainer_float_ = <MyContainer_float_>::default();
-    unimplemented!();
+    assert!((unsafe { MyContainer_float_::empty(&fmc,) }));
     (unsafe {
-        let mut _item: () = 1_f64;
+        let mut _item: f32 = (1_f64 as f32);
         MyContainer_float_::push_back(&mut fmc, &mut _item)
     });
-    unimplemented!();
+    assert!(
+        ((unsafe { MyContainer_float_::size(&fmc,) }) == (1_usize))
+            && (((*(unsafe { MyContainer_float_::back_4(&mut fmc,) })) as f64) == (1_f64))
+    );
     (unsafe { MyContainer_float_::pop_back(&mut fmc) });
-    unimplemented!();
-    return 0_();
+    assert!((unsafe { MyContainer_float_::empty(&fmc,) }));
+    return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

@@ -6,14 +6,14 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-pub fn for_in_switch_continue_0(mut n: ()) -> () {
-    let r: Value<()> = Rc::new(RefCell::new(0_()));
+pub fn for_in_switch_continue_0(mut n: i32) -> i32 {
+    let r: Value<i32> = Rc::new(RefCell::new(0));
     'switch: {
         match { n } {
-            __v if __v == 0_() => {
-                let mut i: () = 0_();
-                'loop_: while (i < 5_()) {
-                    if ((i % 2_()) == 0_()) {
+            __v if __v == 0 => {
+                let mut i: i32 = 0;
+                'loop_: while (i < 5) {
+                    if ((i % 2) == 0) {
                         i.prefix_inc();
                         continue 'loop_;
                     }
@@ -23,7 +23,7 @@ pub fn for_in_switch_continue_0(mut n: ()) -> () {
                 break 'switch;
             }
             _ => {
-                (*r.borrow_mut()) = -1_();
+                (*r.borrow_mut()) = -1_i32;
                 break 'switch;
             }
         }
@@ -34,9 +34,9 @@ pub fn main() {
     __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
-fn main_0() -> () {
-    unimplemented!();
-    unimplemented!();
-    return 0_();
+fn main_0() -> i32 {
+    assert!((({ for_in_switch_continue_0(0,) }) == 4));
+    assert!((({ for_in_switch_continue_0(99,) }) == -1_i32));
+    return 0;
 }
 pub fn __cpp2rust_init_globals() {}

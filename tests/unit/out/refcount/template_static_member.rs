@@ -7,37 +7,37 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
 thread_local!(
-    pub static s_0: Value<()> = Rc::new(RefCell::new(55_()));
+    pub static s_0: Value<i32> = Rc::new(RefCell::new(55));
 );
 #[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(1)]
 pub struct Static_int_ {}
 thread_local!(
-    pub static s_1: Value<()> = Rc::new(RefCell::new(55_()));
+    pub static s_1: Value<i8> = Rc::new(RefCell::new(55_i8));
 );
 #[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(1)]
 pub struct Static_char_ {}
 thread_local!(
-    pub static s_2: Value<()> = Rc::new(RefCell::new(55_()));
+    pub static s_2: Value<i64> = Rc::new(RefCell::new(55_i64));
 );
 #[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(1)]
 pub struct Static_long_ {}
 thread_local!(
-    pub static lo_3: Value<()> = Rc::new(RefCell::new(-1_()));
+    pub static lo_3: Value<i32> = Rc::new(RefCell::new(-1_i32));
 );
 thread_local!(
-    pub static hi_4: Value<()> = Rc::new(RefCell::new(1_()));
+    pub static hi_4: Value<i32> = Rc::new(RefCell::new(1));
 );
 #[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(1)]
 pub struct Range_int_ {}
 thread_local!(
-    pub static lo_5: Value<()> = Rc::new(RefCell::new(-2_()));
+    pub static lo_5: Value<i64> = Rc::new(RefCell::new((-2_i32 as i64)));
 );
 thread_local!(
-    pub static hi_6: Value<()> = Rc::new(RefCell::new(2_()));
+    pub static hi_6: Value<i64> = Rc::new(RefCell::new(2_i64));
 );
 #[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(1)]
@@ -46,15 +46,18 @@ pub fn main() {
     __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
-fn main_0() -> () {
-    s_0.with(|rc| *rc.borrow_mut() = 22_());
-    s_1.with(|rc| *rc.borrow_mut() = 33_());
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    return 0_();
+fn main_0() -> i32 {
+    s_0.with(|rc| *rc.borrow_mut() = 22);
+    s_1.with(|rc| *rc.borrow_mut() = 33_i8);
+    assert!((s_0.with(|rc| *rc.borrow()) == 22));
+    assert!(((s_1.with(|rc| *rc.borrow()) as i32) == 33));
+    assert!((s_2.with(|rc| *rc.borrow()) == 55_i64));
+    assert!((lo_3.with(|rc| *rc.borrow()) == -1_i32) && (hi_4.with(|rc| *rc.borrow()) == 1));
+    assert!(
+        (lo_5.with(|rc| *rc.borrow()) == (-2_i32 as i64))
+            && (hi_6.with(|rc| *rc.borrow()) == 2_i64)
+    );
+    return 0;
 }
 pub fn __cpp2rust_init_globals() {
     let _ = s_0.with(|_| ());

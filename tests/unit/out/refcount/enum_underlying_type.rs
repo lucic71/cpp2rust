@@ -6,25 +6,25 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-pub type Flag = ();
+pub type Flag = bool;
 pub const Flag_FLAG_OFF: Flag = false;
 pub const Flag_FLAG_ON: Flag = true;
-pub type Small = ();
+pub type Small = u8;
 pub const Small_SMALL_ZERO: Small = 0;
 pub const Small_SMALL_MAX: Small = 255;
-pub type Signed = ();
+pub type Signed = i8;
 pub const Signed_SIGNED_MIN: Signed = -128;
 pub const Signed_SIGNED_ONE: Signed = 1;
-pub type Wide = ();
+pub type Wide = i64;
 pub const Wide_WIDE_NEG: Wide = -1;
 pub const Wide_WIDE_BIG: Wide = 1099511627776;
-pub type Sized = ();
+pub type Sized = u16;
 pub const Sized_SIZED_A: Sized = 1;
 pub const Sized_SIZED_B: Sized = 65535;
-pub type Scoped = ();
+pub type Scoped = i8;
 pub const Scoped_NEG: Scoped = -2;
 pub const Scoped_POS: Scoped = 2;
-pub type Empty = ();
+pub type Empty = bool;
 #[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg)]
 #[byte_size(1)]
 pub struct HoldsEmpty {
@@ -44,37 +44,37 @@ pub fn main() {
     __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
-fn main_0() -> () {
+fn main_0() -> i32 {
     let mut flag: Flag = Flag_FLAG_ON;
-    unimplemented!();
-    unimplemented!();
+    assert!(flag);
+    assert!(!(Flag_FLAG_OFF));
     flag = Flag_FLAG_OFF;
-    unimplemented!();
-    let mut b: () = flag;
-    unimplemented!();
+    assert!(((flag as i32) == (Flag_FLAG_OFF as i32)));
+    let mut b: bool = flag;
+    assert!(((b as i32) == (false as i32)));
     let mut s: Small = Small_SMALL_MAX;
-    unimplemented!();
-    unimplemented!();
+    assert!(((s as i32) == 255));
+    assert!((::std::mem::size_of::<Small>() == 1_usize));
     s = Small_SMALL_ZERO;
-    unimplemented!();
+    assert!((((s as i32) + 1) == 1));
     let mut sg: Signed = Signed_SIGNED_MIN;
-    unimplemented!();
-    unimplemented!();
+    assert!(((sg as i32) == -128_i32));
+    assert!(((sg as i32) < (Signed_SIGNED_ONE as i32)));
     let mut w: Wide = Wide_WIDE_BIG;
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
+    assert!(((w as i64) == (1_i64 << 40)));
+    assert!((::std::mem::size_of::<Wide>() == 8_usize));
+    assert!(((Wide_WIDE_NEG as i64) < 0_i64));
     let mut z: Sized = Sized_SIZED_B;
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
+    assert!(((z as i32) == 65535));
+    assert!((::std::mem::size_of::<Sized>() == 2_usize));
+    assert!((((Sized_SIZED_A as i32) + 1) == 2));
     let mut sc: Scoped = Scoped_NEG;
-    unimplemented!();
-    unimplemented!();
+    assert!(((sc as i32) == -2_i32));
+    assert!((((Scoped_POS as i8) as i32) == 2));
     let mut he: HoldsEmpty = <HoldsEmpty>::default();
-    unimplemented!();
+    assert!(!(he.e));
     let mut ev: Empty = <Empty>::default();
-    unimplemented!();
-    return 0_();
+    assert!(((ev as i32) == (he.e as i32)));
+    return 0;
 }
 pub fn __cpp2rust_init_globals() {}

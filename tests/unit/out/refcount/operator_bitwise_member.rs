@@ -10,30 +10,30 @@ use std::rc::{Rc, Weak};
 #[byte_size(4)]
 pub struct S {
     #[offset(0)]
-    pub v: (),
+    pub v: u32,
 }
 pub fn main() {
     __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
-fn main_0() -> () {
-    let a: Value<S> = Rc::new(RefCell::new(S { v: 12_() }));
-    let b: Value<S> = Rc::new(RefCell::new(S { v: 10_() }));
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    return 0_();
+fn main_0() -> i32 {
+    let a: Value<S> = Rc::new(RefCell::new(S { v: 12_u32 }));
+    let b: Value<S> = Rc::new(RefCell::new(S { v: 10_u32 }));
+    assert!(({ ({ SImpl::operator_bitnot(&a.as_pointer(),) }).v } == !12_u32));
+    assert!(({ ({ SImpl::operator_bitand(&a.as_pointer(), b.as_pointer(),) }).v } == 8_u32));
+    assert!(({ ({ SImpl::operator_bitor(&a.as_pointer(), b.as_pointer(),) }).v } == 14_u32));
+    assert!(({ ({ SImpl::operator_bitxor(&a.as_pointer(), b.as_pointer(),) }).v } == 6_u32));
+    assert!(({ ({ SImpl::operator_shl(&a.as_pointer(), 2,) }).v } == 48_u32));
+    assert!(({ ({ SImpl::operator_shr(&a.as_pointer(), 2,) }).v } == 3_u32));
+    return 0;
 }
 pub trait SImpl {
     fn operator_bitnot(&self) -> S;
     fn operator_bitand(&self, o: Ptr<S>) -> S;
     fn operator_bitor(&self, o: Ptr<S>) -> S;
     fn operator_bitxor(&self, o: Ptr<S>) -> S;
-    fn operator_shl(&self, n: ()) -> S;
-    fn operator_shr(&self, n: ()) -> S;
+    fn operator_shl(&self, n: i32) -> S;
+    fn operator_shr(&self, n: i32) -> S;
 }
 impl SImpl for Ptr<S> {
     fn operator_bitnot(&self) -> S {
@@ -56,12 +56,12 @@ impl SImpl for Ptr<S> {
             v: ({ (*self).with(|__s| __s.v) } ^ { o.with(|__s| __s.v) }),
         };
     }
-    fn operator_shl(&self, mut n: ()) -> S {
+    fn operator_shl(&self, mut n: i32) -> S {
         return S {
             v: ((*self).with(|__s| __s.v) << n),
         };
     }
-    fn operator_shr(&self, mut n: ()) -> S {
+    fn operator_shr(&self, mut n: i32) -> S {
         return S {
             v: ((*self).with(|__s| __s.v) >> n),
         };

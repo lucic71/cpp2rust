@@ -6,22 +6,22 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-pub fn foo_0(x: ()) -> () {
-    let x: Value<()> = Rc::new(RefCell::new(x));
+pub fn foo_0(x: i32) -> i32 {
+    let x: Value<i32> = Rc::new(RefCell::new(x));
     return (*x.borrow());
 }
-pub fn ptr_1(x: Ptr<()>) -> Ptr<()> {
-    let x: Value<Ptr<()>> = Rc::new(RefCell::new(x));
+pub fn ptr_1(x: Ptr<i32>) -> Ptr<i32> {
+    let x: Value<Ptr<i32>> = Rc::new(RefCell::new(x));
     return (*x.borrow()).clone();
 }
-pub fn bar_2(x: Ptr<()>) -> Ptr<()> {
+pub fn bar_2(x: Ptr<i32>) -> Ptr<i32> {
     return (x).clone();
 }
 #[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(4)]
 pub struct X1 {
     #[offset(0)]
-    pub v: (),
+    pub v: i32,
 }
 #[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(8)]
@@ -48,23 +48,23 @@ pub fn main() {
     __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
-fn main_0() -> () {
-    let x1: Value<()> = Rc::new(RefCell::new(0_()));
-    let x2: Value<()> = Rc::new(RefCell::new(({ foo_0((*x1.borrow())) })));
-    let x3: Value<()> = Rc::new(RefCell::new(
-        ((({ foo_0((*x2.borrow())) }) + ({ foo_0((*x1.borrow())) })) + 1_()),
+fn main_0() -> i32 {
+    let x1: Value<i32> = Rc::new(RefCell::new(0));
+    let x2: Value<i32> = Rc::new(RefCell::new(({ foo_0((*x1.borrow())) })));
+    let x3: Value<i32> = Rc::new(RefCell::new(
+        ((({ foo_0((*x2.borrow())) }) + ({ foo_0((*x1.borrow())) })) + 1),
     ));
-    (*x2.borrow_mut()) += 1_();
+    (*x2.borrow_mut()) += 1;
     (*x2.borrow_mut()) += ({ foo_0((*x1.borrow())) });
-    let __rhs = ((({ foo_0((*x2.borrow())) }) + ({ foo_0((*x3.borrow())) })) + 1_());
+    let __rhs = ((({ foo_0((*x2.borrow())) }) + ({ foo_0((*x3.borrow())) })) + 1);
     (*x3.borrow_mut()) += __rhs;
-    let mut p1: Ptr<()> = (x1.as_pointer());
-    let mut p2: Ptr<()> = ({ ptr_1((p1).clone()) });
+    let mut p1: Ptr<i32> = (x1.as_pointer());
+    let mut p2: Ptr<i32> = ({ ptr_1((p1).clone()) });
     p1 = (p2).clone();
     p2 = ({ ptr_1((p1).clone()) });
-    let r1: Ptr<()> = x1.as_pointer();
-    let r2: Ptr<()> = ({ bar_2(x1.as_pointer()) });
-    let r3: Ptr<()> = ({ bar_2((r1).clone()) });
+    let r1: Ptr<i32> = x1.as_pointer();
+    let r2: Ptr<i32> = ({ bar_2(x1.as_pointer()) });
+    let r3: Ptr<i32> = ({ bar_2((r1).clone()) });
     {
         let __rhs = { (*x1.borrow()) };
         r2.with_mut(|__v| *__v = *__v + __rhs)
@@ -73,22 +73,22 @@ fn main_0() -> () {
         let __rhs = { (r1.read()) };
         r3.with_mut(|__v| *__v = *__v + __rhs)
     };
-    let mut x4: () = ((({ foo_0((*x3.borrow())) }) + (({ ptr_1((x3.as_pointer())) }).read()))
+    let mut x4: i32 = ((({ foo_0((*x3.borrow())) }) + (({ ptr_1((x3.as_pointer())) }).read()))
         + (({ bar_2(x2.as_pointer()) }).read()));
-    let a: Value<X1> = Rc::new(RefCell::new(X1 { v: 0_() }));
+    let a: Value<X1> = Rc::new(RefCell::new(X1 { v: 0 }));
     let b: Value<X2> = Rc::new(RefCell::new(X2 { v: a.as_pointer() }));
     let mut c: X3 = X3 {
         v: (b.as_pointer()),
     };
     let d: Value<X4> = Rc::new(RefCell::new(X4 { v: (c).clone() }));
-    field!({ (*d.borrow()).v.v.clone() }.with(|__s| __s.v.clone()), v).write(0_());
+    field!({ (*d.borrow()).v.v.clone() }.with(|__s| __s.v.clone()), v).write(0);
     field!(
         ({ X2Impl::get(&({ X3Impl::get(&({ X4Impl::get(&d.as_pointer(),) }),) }),) }),
         v
     )
-    .write(0_());
+    .write(0);
     (*d.borrow_mut()).v.v = (b.as_pointer());
-    let r4: Ptr<()> = field_ptr!(
+    let r4: Ptr<i32> = field_ptr!(
         ({ X2Impl::get(&({ X3Impl::get(&({ X4Impl::get(&d.as_pointer(),) }),) }),) }),
         v
     );
@@ -96,26 +96,26 @@ fn main_0() -> () {
     let mut p: Ptr<X2> = ({ X3Impl::get(&({ X4Impl::get(&d.as_pointer()) })) });
     let r6: Ptr<X3> = ({ X4Impl::get(&d.as_pointer()) });
     let r7: Ptr<X3> = field_ptr!(d.as_pointer(), v);
-    let r8: Ptr<()> = field_ptr!(
+    let r8: Ptr<i32> = field_ptr!(
         ({ X2Impl::get(&({ X3Impl::get(&field_ptr!(d.as_pointer(), v),) }),) }),
         v
     );
-    let mut x5: () = ({ X2Impl::get(&({ X3Impl::get(&({ X4Impl::get(&d.as_pointer()) })) })) })
+    let mut x5: i32 = ({ X2Impl::get(&({ X3Impl::get(&({ X4Impl::get(&d.as_pointer()) })) })) })
         .with(|__s| __s.v);
     {
-        ({ bar_2(x1.as_pointer()) }).with_mut(|__v| *__v = *__v + 10_())
+        ({ bar_2(x1.as_pointer()) }).with_mut(|__v| *__v = *__v + 10)
     };
     ({ bar_2(x1.as_pointer()) }).with_mut(|__v| __v.postfix_inc());
-    let mut bar_out: () = (({
+    let mut bar_out: i32 = (({
         bar_2(field_ptr!(
             ({ X2Impl::get(&({ X3Impl::get(&({ X4Impl::get(&d.as_pointer(),) }),) }),) }),
             v
         ))
     })
     .read());
-    let mut bar_inc: () = ({ bar_2(x1.as_pointer()) }).with_mut(|__v| __v.prefix_inc());
+    let mut bar_inc: i32 = ({ bar_2(x1.as_pointer()) }).with_mut(|__v| __v.prefix_inc());
     bar_inc = ({ bar_2(x1.as_pointer()) }).with_mut(|__v| __v.postfix_inc());
-    bar_inc = (((({ bar_2(x1.as_pointer()) }).read()) + ({ foo_0(x4) })) + 1_());
+    bar_inc = (((({ bar_2(x1.as_pointer()) }).read()) + ({ foo_0(x4) })) + 1);
     {
         ({
             bar_2(field_ptr!(
@@ -123,7 +123,7 @@ fn main_0() -> () {
                 v
             ))
         })
-        .with_mut(|__v| *__v = *__v + 10_())
+        .with_mut(|__v| *__v = *__v + 10)
     };
     ({
         bar_2(field_ptr!(
@@ -132,7 +132,7 @@ fn main_0() -> () {
         ))
     })
     .with_mut(|__v| __v.postfix_inc());
-    let mut bar_inc2: () = ({
+    let mut bar_inc2: i32 = ({
         bar_2(field_ptr!(
             ({ X2Impl::get(&({ X3Impl::get(&({ X4Impl::get(&d.as_pointer(),) }),) }),) }),
             v
@@ -148,7 +148,7 @@ fn main_0() -> () {
     .with_mut(|__v| __v.postfix_inc());
     ({ ptr_1((x1.as_pointer())) }).with_mut(|__v| __v.prefix_inc());
     {
-        ({ ptr_1((x1.as_pointer())) }).with_mut(|__v| *__v = *__v + 1_())
+        ({ ptr_1((x1.as_pointer())) }).with_mut(|__v| *__v = *__v + 1)
     };
     ({
         ptr_1(
@@ -168,7 +168,7 @@ fn main_0() -> () {
                 )),
             )
         })
-        .with_mut(|__v| *__v = *__v + 1_())
+        .with_mut(|__v| *__v = *__v + 1)
     };
     {
         ({
@@ -179,9 +179,9 @@ fn main_0() -> () {
                 )),
             )
         })
-        .with_mut(|__v| *__v = *__v + 1_())
+        .with_mut(|__v| *__v = *__v + 1)
     };
-    let mut ptr1: () = ({
+    let mut ptr1: i32 = ({
         ptr_1(
             (field_ptr!(
                 ({ X2Impl::get(&({ X3Impl::get(&({ X4Impl::get(&d.as_pointer(),) }),) }),) }),
@@ -190,7 +190,7 @@ fn main_0() -> () {
         )
     })
     .with_mut(|__v| __v.postfix_inc());
-    let ptr2: Ptr<()> = ({
+    let ptr2: Ptr<i32> = ({
         ptr_1(
             (field_ptr!(
                 ({ X2Impl::get(&({ X3Impl::get(&({ X4Impl::get(&d.as_pointer(),) }),) }),) }),
@@ -198,7 +198,7 @@ fn main_0() -> () {
             )),
         )
     });
-    let mut ptr3: Ptr<()> = ({
+    let mut ptr3: Ptr<i32> = ({
         ptr_1(
             (field_ptr!(
                 ({ X2Impl::get(&({ X3Impl::get(&({ X4Impl::get(&d.as_pointer(),) }),) }),) }),
@@ -206,7 +206,7 @@ fn main_0() -> () {
             )),
         )
     });
-    let mut vptr: () = (({
+    let mut vptr: i32 = (({
         ptr_1(
             (field_ptr!(
                 ({ X2Impl::get(&({ X3Impl::get(&({ X4Impl::get(&d.as_pointer(),) }),) }),) }),
@@ -215,7 +215,7 @@ fn main_0() -> () {
         )
     })
     .read());
-    let mut pref: Ptr<()> = ({
+    let mut pref: Ptr<i32> = ({
         bar_2(field_ptr!(
             ({ X2Impl::get(&({ X3Impl::get(&({ X4Impl::get(&d.as_pointer(),) }),) }),) }),
             v
@@ -228,8 +228,32 @@ fn main_0() -> () {
         ))
     })
     .with_mut(|__v| __v.postfix_inc());
-    unimplemented!();
-    return 0_();
+    assert!(
+        ((((({
+            ptr_1(
+                (field_ptr!(
+                    ({ X2Impl::get(&({ X3Impl::get(&({ X4Impl::get(&d.as_pointer(),) }),) }),) }),
+                    v
+                )),
+            )
+        })
+        .read())
+            + (({
+                bar_2(field_ptr!(
+                    ({ X2Impl::get(&({ X3Impl::get(&({ X4Impl::get(&d.as_pointer(),) }),) }),) }),
+                    v
+                ))
+            })
+            .read()))
+            + ({
+                foo_0(
+                    ({ X2Impl::get(&({ X3Impl::get(&({ X4Impl::get(&d.as_pointer()) })) })) })
+                        .with(|__s| __s.v),
+                )
+            }))
+            == 54)
+    );
+    return 0;
 }
 pub trait X2Impl {
     fn get(&self) -> Ptr<X1>;

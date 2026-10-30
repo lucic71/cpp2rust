@@ -9,11 +9,11 @@ use std::rc::Rc;
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct Pair {
-    pub x: (),
-    pub y: (),
+    pub x: i32,
+    pub y: i32,
 }
 impl Pair {
-    pub unsafe fn operator_lt(&mut self, other: *const Pair) -> () {
+    pub unsafe fn operator_lt(&mut self, other: *const Pair) -> bool {
         return ((self.x) < ((*other).x))
             || (((self.x) == ((*other).x)) && ((self.y) < ((*other).y)));
     }
@@ -51,10 +51,10 @@ pub fn main() {
         std::process::exit(main_0() as i32);
     }
 }
-unsafe fn main_0() -> () {
-    let mut pair1: Pair = Pair { x: 1_(), y: 2_() };
-    let mut pair2: Pair = Pair { x: 1_(), y: 3_() };
-    unimplemented!();
-    return 0_();
+unsafe fn main_0() -> i32 {
+    let mut pair1: Pair = Pair { x: 1, y: 2 };
+    let mut pair2: Pair = Pair { x: 1, y: 3 };
+    assert!((unsafe { Pair::operator_lt(&mut pair1, &pair2,) }));
+    return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

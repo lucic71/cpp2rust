@@ -12,14 +12,14 @@ pub fn main() {
         std::process::exit(main_0() as i32);
     }
 }
-unsafe fn main_0() -> () {
-    let mut arr: [(); 2] = [1125912791875585_(), 2251829878849541_()];
-    let mut words: *mut () = (arr.as_mut_ptr() as *mut ());
-    let mut i: () = 0_();
-    'loop_: while ((i) < (8_())) {
-        unimplemented!();
+unsafe fn main_0() -> i32 {
+    let mut arr: [u64; 2] = [1125912791875585_u64, 2251829878849541_u64];
+    let mut words: *mut u16 = (arr.as_mut_ptr() as *mut u16);
+    let mut i: i32 = 0;
+    'loop_: while ((i) < (8)) {
+        assert!((((*words.offset((i) as isize)) as i32) == ((((i) + (1)) as u16) as i32)));
         i.postfix_inc();
     }
-    return 0_();
+    return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

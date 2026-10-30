@@ -7,18 +7,18 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
 pub fn len_0(s: Ptr<i8>) -> i32 {
-    let mut n: i32 = 0;
-    'loop_: while (((elem!((s), n).read()) as i32) != (('\0' as i8) as i32)) {
-        n.prefix_inc();
+    let n: Value<i32> = Rc::new(RefCell::new(0));
+    'loop_: while (((elem!((s), (*n.borrow())).read()) as i32) != (('\0' as i8) as i32)) {
+        (*n.borrow_mut()).prefix_inc();
     }
-    return n;
+    return (*n.borrow());
 }
 pub fn len5_1(mut s: Ptr<i8>) -> i32 {
-    let mut n: i32 = 0;
-    'loop_: while (((elem!(s, n).read()) as i32) != (('\0' as i8) as i32)) {
-        n.prefix_inc();
+    let n: Value<i32> = Rc::new(RefCell::new(0));
+    'loop_: while (((elem!(s, (*n.borrow())).read()) as i32) != (('\0' as i8) as i32)) {
+        (*n.borrow_mut()).prefix_inc();
     }
-    return n;
+    return (*n.borrow());
 }
 pub fn sum_2(a: Ptr<i32>) -> i32 {
     return (((elem!((a), 0).read()) + (elem!((a), 1).read())) + (elem!((a), 2).read()));

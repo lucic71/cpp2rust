@@ -10,19 +10,19 @@ use std::rc::{Rc, Weak};
 #[byte_size(4)]
 pub struct Test {
     #[offset(0)]
-    pub x: (),
+    pub x: i32,
 }
 pub fn Update_0(t: Ptr<Test>) -> Ptr<Test> {
     let t: Value<Ptr<Test>> = Rc::new(RefCell::new(t));
-    let mut x: () = 1_();
-    let mut y: () = 2_();
+    let mut x: i32 = 1;
+    let mut y: i32 = 2;
     x.prefix_inc();
     ({ TestImpl::update(&(*t.borrow()), x, y) });
     x = (*t.borrow()).with(|__s| (__s).x);
     y = (*t.borrow()).with(|__s| __s.x);
     ({
-        let _x: () = x;
-        let _y: () = y;
+        let _x: i32 = x;
+        let _y: i32 = y;
         TestImpl::update(&(*t.borrow()), _x, _y)
     });
     return (*t.borrow()).clone();
@@ -31,23 +31,26 @@ pub fn main() {
     __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
-fn main_0() -> () {
-    let t1: Value<Test> = Rc::new(RefCell::new(Test { x: 100_() }));
+fn main_0() -> i32 {
+    let t1: Value<Test> = Rc::new(RefCell::new(Test { x: 100 }));
     let mut t2: Ptr<Test> = ({ Update_0((t1.as_pointer())) });
     let mut t3: Ptr<Test> = Ptr::<Test>::null();
     t3 = (t2).clone();
-    field!(t3, x).write(15_());
+    field!(t3, x).write(15);
     {
-        ({ TestImpl::as_ptr(&t3) }).with_mut(|__v| *__v = *__v + 10_())
+        ({ TestImpl::as_ptr(&t3) }).with_mut(|__v| *__v = *__v + 10)
     };
-    unimplemented!();
-    return 0_();
+    assert!(
+        (({ ({ t3.with(|__s| __s.x) } + { t2.with(|__s| __s.x) }) } + { { (*t1.borrow()).x } })
+            == 75)
+    );
+    return 0;
 }
 pub trait TestImpl {
     fn inc(&self);
     fn dec(&self);
-    fn as_ptr(&self) -> Ptr<()>;
-    fn update(&self, x: (), y: ());
+    fn as_ptr(&self) -> Ptr<i32>;
+    fn update(&self, x: i32, y: i32);
 }
 impl TestImpl for Ptr<Test> {
     fn inc(&self) {
@@ -56,10 +59,10 @@ impl TestImpl for Ptr<Test> {
     fn dec(&self) {
         field!((*self), x).with_mut(|__v| __v.postfix_dec());
     }
-    fn as_ptr(&self) -> Ptr<()> {
+    fn as_ptr(&self) -> Ptr<i32> {
         return (field_ptr!((*self), x));
     }
-    fn update(&self, mut x: (), mut y: ()) {
+    fn update(&self, mut x: i32, mut y: i32) {
         field!((*self), x).write((x + y));
     }
 }

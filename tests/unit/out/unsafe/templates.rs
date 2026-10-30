@@ -6,35 +6,35 @@ use std::collections::BTreeMap;
 use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
-pub unsafe fn foo_0(mut x: ()) -> () {
+pub unsafe fn foo_0(mut x: i32) -> i32 {
     return x;
 }
-pub unsafe fn foo_1(mut x: ()) -> () {
+pub unsafe fn foo_1(mut x: f64) -> f64 {
     return x;
 }
-pub unsafe fn pick_2() -> () {
-    return 0_();
+pub unsafe fn pick_2() -> i32 {
+    return 0;
 }
-pub unsafe fn pick_3() -> () {
-    return 1_();
+pub unsafe fn pick_3() -> i32 {
+    return 1;
 }
-pub unsafe fn bar_4(mut p: *mut (), mut flag: ()) -> *mut () {
+pub unsafe fn bar_4(mut p: *mut i32, mut flag: bool) -> *mut i32 {
     return if flag { p } else { std::ptr::null_mut() };
 }
-pub unsafe fn bar_5(mut p: *mut (), mut flag: ()) -> *mut () {
+pub unsafe fn bar_5(mut p: *mut f64, mut flag: bool) -> *mut f64 {
     return if flag { p } else { std::ptr::null_mut() };
 }
-pub unsafe fn func_6(mut x1: (), mut x2: (), mut x3: ()) -> () {
+pub unsafe fn func_6(mut x1: i32, mut x2: i32, mut x3: i32) -> i32 {
     return (((x1) + (x2)) + (x3));
 }
-pub unsafe fn func_7(mut x1: (), mut x2: (), mut x3: ()) -> () {
-    return (((x1) + (x2)) + (x3));
+pub unsafe fn func_7(mut x1: f64, mut x2: i32, mut x3: f64) -> i32 {
+    return ((((x1) + (x2 as f64)) + (x3)) as i32);
 }
-pub static mut half_8: std::cell::LazyCell<()> =
-    std::cell::LazyCell::new(|| unsafe { ((1_()) / (2_())) });
-pub static mut half_9: std::cell::LazyCell<()> =
-    std::cell::LazyCell::new(|| unsafe { ((1_()) / (2_())) });
-pub static mut half_10: std::cell::LazyCell<*mut ()> =
+pub static mut half_8: std::cell::LazyCell<i32> =
+    std::cell::LazyCell::new(|| unsafe { ((1) / (2)) });
+pub static mut half_9: std::cell::LazyCell<f64> =
+    std::cell::LazyCell::new(|| unsafe { ((1_f64) / (2_f64)) });
+pub static mut half_10: std::cell::LazyCell<*mut i32> =
     std::cell::LazyCell::new(|| unsafe { std::ptr::null_mut() });
 pub fn main() {
     unsafe {
@@ -42,21 +42,28 @@ pub fn main() {
         std::process::exit(main_0() as i32);
     }
 }
-unsafe fn main_0() -> () {
-    let mut x: () = 10_();
-    let mut y: () = x;
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    (*std::cell::LazyCell::force_mut(&mut *&raw mut half_8)) = 7_();
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    (*std::cell::LazyCell::force_mut(&mut *&raw mut half_10)) = (&mut x as *mut ());
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    return 0_();
+unsafe fn main_0() -> i32 {
+    let mut x: i32 = 10;
+    let mut y: f64 = (x as f64);
+    assert!(
+        ((((((((unsafe { foo_0(x,) }) as f64) + (unsafe { foo_1(y,) }))
+            + ((*(unsafe { bar_4((&mut x as *mut i32), true,) })) as f64))
+            + (*(unsafe { bar_5((&mut y as *mut f64), true,) })))
+            + ((unsafe { func_6(1, 2, 3,) }) as f64))
+            + ((unsafe { func_7(2_f64, x, y,) }) as f64))
+            == (68_f64))
+    );
+    assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut half_8)) == (0)));
+    assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut half_9)) == (0.5_f64)));
+    (*std::cell::LazyCell::force_mut(&mut *&raw mut half_8)) = 7;
+    assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut half_8)) == (7)));
+    assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut half_9)) == (0.5_f64)));
+    assert!((*std::cell::LazyCell::force_mut(&mut *&raw mut half_10)).is_null());
+    (*std::cell::LazyCell::force_mut(&mut *&raw mut half_10)) = (&mut x as *mut i32);
+    assert!(((*(*std::cell::LazyCell::force_mut(&mut *&raw mut half_10))) == (10)));
+    assert!(((unsafe { pick_3() }) == (1)));
+    assert!(((unsafe { pick_2() }) == (0)));
+    return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {
     std::cell::LazyCell::force(&*&raw const half_8);

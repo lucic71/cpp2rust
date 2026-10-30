@@ -12,11 +12,11 @@ pub fn main() {
         std::process::exit(main_0() as i32);
     }
 }
-unsafe fn main_0() -> () {
-    let mut a: [(); 5] = [1_(), 2_(), 3_(), 4_(), 5_()];
-    let mut p0: *const () = (&mut a[(0_()) as usize] as *mut ()).cast_const();
-    let mut p1: *const () = (&mut a[(4_()) as usize] as *mut ()).cast_const();
-    unimplemented!();
-    return 0_();
+unsafe fn main_0() -> i32 {
+    let mut a: [i32; 5] = [1, 2, 3, 4, 5];
+    let mut p0: *const i32 = (&mut a[(0) as usize] as *mut i32).cast_const();
+    let mut p1: *const i32 = (&mut a[(4) as usize] as *mut i32).cast_const();
+    assert!(((((p1 as usize - p0 as usize) / ::std::mem::size_of::<i32>()) as i64) == (4_i64)));
+    return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

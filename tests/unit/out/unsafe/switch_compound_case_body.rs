@@ -6,23 +6,23 @@ use std::collections::BTreeMap;
 use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
-pub unsafe fn compound_case_body_0(mut x: ()) -> () {
-    let mut r: () = 0_();
+pub unsafe fn compound_case_body_0(mut x: i32) -> i32 {
+    let mut r: i32 = 0;
     'switch: {
         match { x } {
-            __v if __v == 1_() => {
-                let mut y: () = 10_();
-                let mut z: () = 20_();
+            __v if __v == 1 => {
+                let mut y: i32 = 10;
+                let mut z: i32 = 20;
                 r = ((y) + (z));
                 break 'switch;
             }
-            __v if __v == 2_() => {
-                let mut y: () = 100_();
-                r = ((y) - (1_()));
+            __v if __v == 2 => {
+                let mut y: i32 = 100;
+                r = ((y) - (1));
                 break 'switch;
             }
             _ => {
-                r = -1_();
+                r = -1_i32;
                 break 'switch;
             }
         }
@@ -35,10 +35,10 @@ pub fn main() {
         std::process::exit(main_0() as i32);
     }
 }
-unsafe fn main_0() -> () {
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    return 0_();
+unsafe fn main_0() -> i32 {
+    assert!(((unsafe { compound_case_body_0(1,) }) == (30)));
+    assert!(((unsafe { compound_case_body_0(2,) }) == (99)));
+    assert!(((unsafe { compound_case_body_0(9,) }) == (-1_i32)));
+    return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

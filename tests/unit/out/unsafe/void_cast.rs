@@ -6,23 +6,23 @@ use std::collections::BTreeMap;
 use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
-pub unsafe fn unused_param_0(mut x: ()) {
+pub unsafe fn unused_param_0(mut x: i32) {
     &(x);
 }
 #[repr(C)]
 #[derive(Clone, VaArg, FnPtrArg, MoveCtorUnsafe, MoveAssignUnsafe, Default)]
 pub struct NonTrivial {
-    pub data: (),
+    pub data: Vec<i32>,
 }
 impl NonTrivial {
     pub unsafe fn move_from(_a0: *mut NonTrivial) -> Self {
         let mut this = Self {
-            data: unimplemented!(),
+            data: std::mem::take(&mut (*_a0).data),
         };
         this
     }
     pub unsafe fn move_assign(&mut self, _a0: *mut NonTrivial) -> *mut NonTrivial {
-        unimplemented!();
+        self.data = std::mem::take(&mut (*_a0).data);
         return &mut (*(self as *mut NonTrivial));
     }
 }
@@ -32,31 +32,31 @@ pub unsafe fn unused_ref_param_1(x: *const NonTrivial) {
 pub unsafe fn unused_ptr_param_2(mut p: *const NonTrivial) {
     &(*p);
 }
-pub static mut side_effect_counter_3: std::cell::LazyCell<()> =
-    std::cell::LazyCell::new(|| unsafe { 0_() });
-pub unsafe fn bump_and_return_4() -> () {
+pub static mut side_effect_counter_3: std::cell::LazyCell<i32> =
+    std::cell::LazyCell::new(|| unsafe { 0 });
+pub unsafe fn bump_and_return_4() -> i32 {
     (*std::cell::LazyCell::force_mut(&mut *&raw mut side_effect_counter_3)).prefix_inc();
     return (*std::cell::LazyCell::force_mut(&mut *&raw mut side_effect_counter_3));
 }
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct Holder {
-    pub field: (),
+    pub field: i32,
 }
 #[repr(C)]
 #[derive(FnPtrArg, MoveCtorUnsafe, MoveAssignUnsafe, Default)]
 pub struct NonCopyable {
-    pub value: (),
+    pub value: Option<Box<i32>>,
 }
 impl NonCopyable {
     pub unsafe fn move_from(_a0: *mut NonCopyable) -> Self {
         let mut this = Self {
-            value: unimplemented!(),
+            value: (*_a0).value.take(),
         };
         this
     }
     pub unsafe fn move_assign(&mut self, _a0: *mut NonCopyable) -> *mut NonCopyable {
-        unimplemented!();
+        self.value = (*_a0).value.take();
         return &mut (*(self as *mut NonCopyable));
     }
 }
@@ -69,62 +69,62 @@ pub fn main() {
         std::process::exit(main_0() as i32);
     }
 }
-unsafe fn main_0() -> () {
-    (unsafe { unused_param_0(42_()) });
-    let mut y: () = 5_();
+unsafe fn main_0() -> i32 {
+    (unsafe { unused_param_0(42) });
+    let mut y: i32 = 5;
     &(y);
-    let mut z: () = {
+    let mut z: i32 = {
         &(y);
-        7_()
+        7
     };
-    unimplemented!();
-    let mut counter: () = 0_();
-    let mut w: () = {
+    assert!(((z) == (7)));
+    let mut counter: i32 = 0;
+    let mut w: i32 = {
         {
             &(counter);
-            counter = 3_()
+            counter = 3
         };
         counter
     };
-    unimplemented!();
-    unimplemented!();
+    assert!(((w) == (3)));
+    assert!(((counter) == (3)));
     &(unsafe { bump_and_return_4() });
-    unimplemented!();
-    let mut v: () = {
+    assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut side_effect_counter_3)) == (1)));
+    let mut v: i32 = {
         &(unsafe { bump_and_return_4() });
-        99_()
+        99
     };
-    unimplemented!();
-    unimplemented!();
-    &(0_());
-    &(0_());
+    assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut side_effect_counter_3)) == (2)));
+    assert!(((v) == (99)));
+    &(0);
+    &(0);
     &(y);
-    (&(0_()));
+    (&(0));
     (&(y));
-    let mut err: () = 0_();
-    (&(err = 42_()));
-    unimplemented!();
-    let mut chosen: () = {
-        &(err = 7_());
-        123_()
+    let mut err: i32 = 0;
+    (&(err = 42));
+    assert!(((err) == (42)));
+    let mut chosen: i32 = {
+        &(err = 7);
+        123
     };
-    unimplemented!();
-    unimplemented!();
+    assert!(((err) == (7)));
+    assert!(((chosen) == (123)));
     &(bump_and_return_4);
-    unimplemented!();
+    assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut side_effect_counter_3)) == (2)));
     &(Some(bump_and_return_4));
-    unimplemented!();
-    &(std::mem::transmute::<Option<unsafe fn() -> ()>, Option<unsafe fn() -> ()>>(
+    assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut side_effect_counter_3)) == (2)));
+    &(std::mem::transmute::<Option<unsafe fn() -> i32>, Option<unsafe fn() -> i32>>(
         (Some(bump_and_return_4)),
     ));
-    unimplemented!();
-    let mut storage: () = 11_();
-    let mut p: *mut () = (&mut storage as *mut ());
+    assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut side_effect_counter_3)) == (2)));
+    let mut storage: i32 = 11;
+    let mut p: *mut i32 = (&mut storage as *mut i32);
     &(*p);
     &(p);
-    let mut arr: [(); 3] = [1_(), 2_(), 3_()];
-    &(arr[(1_()) as usize]);
-    let mut h: Holder = Holder { field: 17_() };
+    let mut arr: [i32; 3] = [1, 2, 3];
+    &(arr[(1) as usize]);
+    let mut h: Holder = Holder { field: 17 };
     &(h.field);
     let mut hp: *mut Holder = (&mut h as *mut Holder);
     &((*hp).field);
@@ -132,13 +132,18 @@ unsafe fn main_0() -> () {
     (unsafe { unused_ref_param_1(&nt) });
     (unsafe { unused_ptr_param_2((&mut nt as *mut NonTrivial).cast_const()) });
     let mut g: NonCopyable = NonCopyable {
-        value: unimplemented!(),
+        value: Some(Box::new(9)),
     };
     (&(g));
     &(g);
     (unsafe { unused_noncopyable_param_5(&g) });
-    unimplemented!();
-    return 0_();
+    assert!(
+        ((*g.value
+            .as_deref()
+            .map_or(::std::ptr::null_mut(), |v| v as *const i32 as *mut i32))
+            == (9))
+    );
+    return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {
     std::cell::LazyCell::force(&*&raw const side_effect_counter_3);

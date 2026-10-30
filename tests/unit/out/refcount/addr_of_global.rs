@@ -10,7 +10,7 @@ use std::rc::{Rc, Weak};
 #[byte_size(4)]
 pub struct Inner {
     #[offset(0)]
-    pub value: (),
+    pub value: i32,
 }
 #[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(8)]
@@ -20,13 +20,13 @@ pub struct Outer {
     pub p: Ptr<Inner>,
 }
 thread_local!(
-    pub static alpha_0: Value<Inner> = Rc::new(RefCell::new(Inner { value: 1_() }));
+    pub static alpha_0: Value<Inner> = Rc::new(RefCell::new(Inner { value: 1 }));
 );
 thread_local!(
-    pub static beta_1: Value<Inner> = Rc::new(RefCell::new(Inner { value: 2_() }));
+    pub static beta_1: Value<Inner> = Rc::new(RefCell::new(Inner { value: 2 }));
 );
 thread_local!(
-    pub static shared_2: Value<Inner> = Rc::new(RefCell::new(Inner { value: 42_() }));
+    pub static shared_2: Value<Inner> = Rc::new(RefCell::new(Inner { value: 42 }));
 );
 thread_local!(
     pub static items_3: Value<Box<[Ptr<Inner>]>> = Rc::new(RefCell::new(Box::new([
@@ -43,13 +43,41 @@ pub fn main() {
     __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
-fn main_0() -> () {
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    return 0_();
+fn main_0() -> i32 {
+    assert!(
+        (({
+            let __idx0 = (0) as usize;
+            items_3.with(|rc| rc.borrow()[__idx0].clone())
+        })
+        .with(|__s| __s.value)
+            == 1)
+    );
+    assert!(
+        (({
+            let __idx0 = (1) as usize;
+            items_3.with(|rc| rc.borrow()[__idx0].clone())
+        })
+        .with(|__s| __s.value)
+            == 2)
+    );
+    assert!(({ (*obj_4.with(Value::clone).borrow()).p.clone() }.with(|__s| __s.value) == 42));
+    assert!(
+        (({
+            let __idx0 = (0) as usize;
+            cache_5.with(|rc| rc.borrow()[__idx0].clone())
+        })
+        .with(|__s| __s.value)
+            == 1)
+    );
+    assert!(
+        (({
+            let __idx0 = (1) as usize;
+            cache_5.with(|rc| rc.borrow()[__idx0].clone())
+        })
+        .with(|__s| __s.value)
+            == 2)
+    );
+    return 0;
 }
 thread_local!(
     static cache_5: Value<Box<[Ptr<Inner>]>> = Rc::new(RefCell::new(Box::new([

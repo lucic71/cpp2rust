@@ -12,55 +12,73 @@ pub fn main() {
         std::process::exit(main_0() as i32);
     }
 }
-unsafe fn main_0() -> () {
-    let mut v: () = unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    let mut square: () = 0_();
-    'loop_: for e1 in IterRange::new(unimplemented!(), unimplemented!()) {
-        let mut e1: () = (*unimplemented!());
-        'loop_: for e2 in IterRange::new(unimplemented!(), unimplemented!()) {
-            let mut e2: () = (*unimplemented!());
+unsafe fn main_0() -> i32 {
+    let mut v: Vec<i32> = Vec::new();
+    {
+        let __a1 = 1;
+        v.push(__a1)
+    };
+    {
+        let __a1 = 2;
+        v.push(__a1)
+    };
+    {
+        let __a1 = 3;
+        v.push(__a1)
+    };
+    let mut square: i32 = 0;
+    'loop_: for e1 in IterRange::new(v.begin(), v.end()) {
+        let mut e1: i32 = (*e1.iter_deref());
+        'loop_: for e2 in IterRange::new(v.begin(), v.end()) {
+            let mut e2: i32 = (*e2.iter_deref());
             square += ((e1) * (e2));
         }
     }
-    'loop_: for e1 in IterRange::new(unimplemented!(), unimplemented!()) {
-        let e1: *mut () = &mut (*unimplemented!());
-        'loop_: for e2 in IterRange::new(unimplemented!(), unimplemented!()) {
-            let e2: *const () = &(*unimplemented!());
+    'loop_: for e1 in IterRange::new(v.begin(), v.end()) {
+        let e1: *mut i32 = &mut (*e1.iter_deref());
+        'loop_: for e2 in IterRange::new(v.begin(), v.end()) {
+            let e2: *const i32 = &(*e2.iter_deref());
             square += ((*e1) * (*e2));
         }
     }
-    'loop_: for e1 in IterRange::new(unimplemented!(), unimplemented!()) {
-        let e1: *const () = &(*unimplemented!());
-        'loop_: for e2 in IterRange::new(unimplemented!(), unimplemented!()) {
-            let e2: *mut () = &mut (*unimplemented!());
+    'loop_: for e1 in IterRange::new(v.begin(), v.end()) {
+        let e1: *const i32 = &(*e1.iter_deref());
+        'loop_: for e2 in IterRange::new(v.begin(), v.end()) {
+            let e2: *mut i32 = &mut (*e2.iter_deref());
             square += ((*e1) * (*e2));
         }
     }
-    'loop_: for e1 in IterRange::new(unimplemented!(), unimplemented!()) {
-        let e1: *mut () = &mut (*unimplemented!());
-        'loop_: for e2 in IterRange::new(unimplemented!(), unimplemented!()) {
-            let e2: *mut () = &mut (*unimplemented!());
+    'loop_: for e1 in IterRange::new(v.begin(), v.end()) {
+        let e1: *mut i32 = &mut (*e1.iter_deref());
+        'loop_: for e2 in IterRange::new(v.begin(), v.end()) {
+            let e2: *mut i32 = &mut (*e2.iter_deref());
             square += ((*e1) * (*e2));
         }
     }
-    let mut m: () = unimplemented!();
-    let mut v1: () = unimplemented!();
-    unimplemented!();
-    let mut v2: () = unimplemented!();
-    unimplemented!();
-    let mut v3: () = unimplemented!();
-    unimplemented!();
-    'loop_: for row in IterRange::new(unimplemented!(), unimplemented!()) {
-        let row: *mut () = &mut (*unimplemented!());
-        'loop_: for col in IterRange::new(unimplemented!(), unimplemented!()) {
-            let col: *mut () = &mut (*unimplemented!());
+    let mut m: Vec<Vec<i32>> = Vec::new();
+    let mut v1: Vec<i32> = Vec::new();
+    {
+        let __a1 = std::mem::take(&mut v1);
+        m.push(__a1)
+    };
+    let mut v2: Vec<i32> = Vec::new();
+    {
+        let __a1 = std::mem::take(&mut v2);
+        m.push(__a1)
+    };
+    let mut v3: Vec<i32> = Vec::new();
+    {
+        let __a1 = std::mem::take(&mut v3);
+        m.push(__a1)
+    };
+    'loop_: for row in IterRange::new(m.begin(), m.end()) {
+        let row: *mut Vec<i32> = &mut (*row.iter_deref());
+        'loop_: for col in IterRange::new((*row).begin(), (*row).end()) {
+            let col: *mut i32 = &mut (*col.iter_deref());
             square += (*col);
         }
     }
-    unimplemented!();
-    return 0_();
+    assert!(((square) == (144)));
+    return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

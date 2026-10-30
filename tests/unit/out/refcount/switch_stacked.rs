@@ -6,20 +6,20 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-pub fn stacked_0(mut x: ()) -> () {
-    let r: Value<()> = Rc::new(RefCell::new(0_()));
+pub fn stacked_0(mut x: i32) -> i32 {
+    let r: Value<i32> = Rc::new(RefCell::new(0));
     'switch: {
         match { x } {
-            __v if __v == 1_() || __v == 2_() || __v == 3_() => {
-                (*r.borrow_mut()) = 100_();
+            __v if __v == 1 || __v == 2 || __v == 3 => {
+                (*r.borrow_mut()) = 100;
                 break 'switch;
             }
-            __v if __v == 4_() || __v == 5_() => {
-                (*r.borrow_mut()) = 200_();
+            __v if __v == 4 || __v == 5 => {
+                (*r.borrow_mut()) = 200;
                 break 'switch;
             }
             _ => {
-                (*r.borrow_mut()) = 300_();
+                (*r.borrow_mut()) = 300;
                 break 'switch;
             }
         }
@@ -30,11 +30,11 @@ pub fn main() {
     __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
-fn main_0() -> () {
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    return 0_();
+fn main_0() -> i32 {
+    assert!((({ stacked_0(1,) }) == 100));
+    assert!((({ stacked_0(3,) }) == 100));
+    assert!((({ stacked_0(5,) }) == 200));
+    assert!((({ stacked_0(9,) }) == 300));
+    return 0;
 }
 pub fn __cpp2rust_init_globals() {}

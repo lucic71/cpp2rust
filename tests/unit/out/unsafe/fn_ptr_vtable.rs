@@ -9,22 +9,21 @@ use std::rc::Rc;
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct Vtable {
-    pub create: Option<unsafe fn(()) -> ()>,
-    pub get: Option<unsafe fn(()) -> ()>,
-    pub destroy: Option<unsafe fn(())>,
+    pub create: Option<unsafe fn(i32) -> *mut ::libc::c_void>,
+    pub get: Option<unsafe fn(*mut ::libc::c_void) -> i32>,
+    pub destroy: Option<unsafe fn(*mut ::libc::c_void)>,
 }
-pub static mut storage_0: std::cell::LazyCell<()> =
-    std::cell::LazyCell::new(|| unsafe { unimplemented!() });
-pub unsafe fn int_create_1(mut val: ()) -> () {
+pub static mut storage_0: std::cell::LazyCell<i32> = std::cell::LazyCell::new(|| unsafe { 0_i32 });
+pub unsafe fn int_create_1(mut val: i32) -> *mut ::libc::c_void {
     (*std::cell::LazyCell::force_mut(&mut *&raw mut storage_0)) = val;
-    return ((&raw mut (*std::cell::LazyCell::force_mut(&mut *&raw mut storage_0)) as *mut ())
-        as ());
+    return ((&raw mut (*std::cell::LazyCell::force_mut(&mut *&raw mut storage_0)) as *mut i32)
+        as *mut ::libc::c_void);
 }
-pub unsafe fn int_get_2(mut p: ()) -> () {
-    return (*(p as *mut ()));
+pub unsafe fn int_get_2(mut p: *mut ::libc::c_void) -> i32 {
+    return (*(p as *mut i32));
 }
-pub unsafe fn int_destroy_3(mut p: ()) {
-    (*(p as *mut ())) = 0_();
+pub unsafe fn int_destroy_3(mut p: *mut ::libc::c_void) {
+    (*(p as *mut i32)) = 0;
 }
 pub fn main() {
     unsafe {
@@ -32,22 +31,22 @@ pub fn main() {
         std::process::exit(main_0() as i32);
     }
 }
-unsafe fn main_0() -> () {
+unsafe fn main_0() -> i32 {
     let mut vt: Vtable = Vtable {
         create: Some(int_create_1),
         get: Some(int_get_2),
         destroy: Some(int_destroy_3),
     };
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    let mut obj: () = (unsafe { (vt.create).unwrap()(42_()) });
-    unimplemented!();
+    assert!(!((vt.create).is_none()));
+    assert!(!((vt.get).is_none()));
+    assert!(!((vt.destroy).is_none()));
+    let mut obj: *mut ::libc::c_void = (unsafe { (vt.create).unwrap()(42) });
+    assert!(((unsafe { (vt.get).unwrap()(obj,) }) == (42)));
     (unsafe { (vt.destroy).unwrap()(obj) });
-    unimplemented!();
+    assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut storage_0)) == (0)));
     (vt.get) = None;
-    unimplemented!();
-    return 0_();
+    assert!((vt.get).is_none());
+    return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {
     std::cell::LazyCell::force(&*&raw const storage_0);

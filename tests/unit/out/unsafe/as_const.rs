@@ -6,13 +6,13 @@ use std::collections::BTreeMap;
 use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
-pub type Overload = ();
+pub type Overload = u32;
 pub const Overload_kMutableOverload: Overload = 1;
 pub const Overload_kConstOverload: Overload = 2;
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct S {
-    pub v: (),
+    pub v: i32,
 }
 impl S {
     pub unsafe fn f_1(&mut self) -> Overload {
@@ -21,10 +21,10 @@ impl S {
     pub unsafe fn f_2(&self) -> Overload {
         return Overload_kConstOverload;
     }
-    pub unsafe fn value_ref_3(&mut self) -> *mut () {
+    pub unsafe fn value_ref_3(&mut self) -> *mut i32 {
         return &mut self.v;
     }
-    pub unsafe fn value_ref_4(&self) -> *const () {
+    pub unsafe fn value_ref_4(&self) -> *const i32 {
         return &self.v;
     }
 }
@@ -40,22 +40,22 @@ pub fn main() {
         std::process::exit(main_0() as i32);
     }
 }
-unsafe fn main_0() -> () {
-    let mut s: S = S { v: 7_() };
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    (*(unsafe { S::value_ref_3(&mut s) })) = 9_();
-    unimplemented!();
-    unimplemented!();
+unsafe fn main_0() -> i32 {
+    let mut s: S = S { v: 7 };
+    assert!((((unsafe { S::f_1(&mut s,) }) as i32) == (Overload_kMutableOverload as i32)));
+    assert!((((unsafe { S::f_2(&s,) }) as i32) == (Overload_kConstOverload as i32)));
+    assert!((((unsafe { g_0(&mut s,) }) as i32) == (Overload_kMutableOverload as i32)));
+    assert!((((unsafe { g_1(&s,) }) as i32) == (Overload_kConstOverload as i32)));
+    (*(unsafe { S::value_ref_3(&mut s) })) = 9;
+    assert!(((s.v) == (9)));
+    assert!(((*(unsafe { S::value_ref_4(&s,) })) == (9)));
     let cs: *const S = &s;
-    unimplemented!();
-    unimplemented!();
-    let mut p: *mut S = unimplemented!();
-    (*p).v = 11_();
-    unimplemented!();
-    unimplemented!();
-    return 0_();
+    assert!((((unsafe { S::f_2(&(*cs),) }) as i32) == (Overload_kConstOverload as i32)));
+    assert!((((*cs).v) == (9)));
+    let mut p: *mut S = (&mut s as *mut S);
+    (*p).v = 11;
+    assert!(((s.v) == (11)));
+    assert!((((unsafe { S::f_1(&mut (*p),) }) as i32) == (Overload_kMutableOverload as i32)));
+    return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

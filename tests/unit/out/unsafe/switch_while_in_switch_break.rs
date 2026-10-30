@@ -6,24 +6,24 @@ use std::collections::BTreeMap;
 use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
-pub unsafe fn while_in_switch_break_0(mut n: ()) -> () {
-    let mut r: () = 0_();
+pub unsafe fn while_in_switch_break_0(mut n: i32) -> i32 {
+    let mut r: i32 = 0;
     'switch: {
         match { n } {
-            __v if __v == 0_() => {
-                let mut i: () = 0_();
-                'loop_: while ((i) < (10_())) {
-                    if ((i) == (4_())) {
+            __v if __v == 0 => {
+                let mut i: i32 = 0;
+                'loop_: while ((i) < (10)) {
+                    if ((i) == (4)) {
                         break;
                     }
                     r += i;
                     i.prefix_inc();
                 }
-                r += 1000_();
+                r += 1000;
                 break 'switch;
             }
             _ => {
-                r = -1_();
+                r = -1_i32;
                 break 'switch;
             }
         }
@@ -36,9 +36,9 @@ pub fn main() {
         std::process::exit(main_0() as i32);
     }
 }
-unsafe fn main_0() -> () {
-    unimplemented!();
-    unimplemented!();
-    return 0_();
+unsafe fn main_0() -> i32 {
+    assert!(((unsafe { while_in_switch_break_0(0,) }) == (1006)));
+    assert!(((unsafe { while_in_switch_break_0(99,) }) == (-1_i32)));
+    return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

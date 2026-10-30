@@ -12,19 +12,19 @@ pub fn main() {
         std::process::exit(main_0() as i32);
     }
 }
-unsafe fn main_0() -> () {
-    let mut arr: [(); 3] = [1_(), 2_(), 3_()];
-    let mut p: *mut () = arr.as_mut_ptr();
+unsafe fn main_0() -> i32 {
+    let mut arr: [i32; 3] = [1, 2, 3];
+    let mut p: *mut i32 = arr.as_mut_ptr();
     {
         let __p = p;
         if !__p.is_null() {
             ::std::mem::drop(Box::from_raw(::std::slice::from_raw_parts_mut(
                 __p,
                 libcc2rs::malloc_usable_size(__p as *mut ::libc::c_void)
-                    / ::std::mem::size_of::<()>(),
+                    / ::std::mem::size_of::<i32>(),
             )))
         }
     };
-    return 0_();
+    return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

@@ -10,9 +10,9 @@ use std::rc::{Rc, Weak};
 #[byte_size(8)]
 pub struct Pair {
     #[offset(0)]
-    pub first: (),
+    pub first: i32,
     #[offset(4)]
-    pub second: (),
+    pub second: i32,
 }
 #[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(16)]
@@ -21,15 +21,15 @@ pub struct Route {
     #[byte_size(8)]
     pub path: Pair,
     #[offset(8)]
-    pub cost: (),
+    pub cost: f64,
 }
 #[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(8)]
 pub struct Counter {
     #[offset(0)]
-    pub v: (),
+    pub v: i32,
     #[offset(4)]
-    pub calls: (),
+    pub calls: i32,
 }
 impl CppEq for Counter {
     fn equal(__lhs: &Ptr<Self>, __rhs: &Ptr<Self>) -> bool {
@@ -40,17 +40,17 @@ impl CppEq for Counter {
 #[byte_size(4)]
 pub struct Tally {
     #[offset(0)]
-    pub calls: (),
+    pub calls: i32,
 }
-pub fn RandomRoute_0(route: Ptr<Route>) -> () {
-    if ((route.with(|__s| __s.path.first) % 2_()) != 0) {
+pub fn RandomRoute_0(route: Ptr<Route>) -> i32 {
+    if ((route.with(|__s| __s.path.first) % 2) != 0) {
         return ({
-            let _new_first: () = ({ PairImpl::SetSecond(&field_ptr!(route, path), 10_()) });
+            let _new_first: i32 = ({ PairImpl::SetSecond(&field_ptr!(route, path), 10) });
             PairImpl::SetFirst(&field_ptr!(route, path), _new_first)
         });
     } else {
         return ({
-            let _new_second: () = ({ PairImpl::SetFirst(&field_ptr!(route, path), -10_()) });
+            let _new_second: i32 = ({ PairImpl::SetFirst(&field_ptr!(route, path), -10_i32) });
             PairImpl::SetSecond(&field_ptr!(route, path), _new_second)
         });
     }
@@ -60,131 +60,130 @@ pub fn main() {
     __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
-fn main_0() -> () {
+fn main_0() -> i32 {
     let route1: Value<Route> = Rc::new(RefCell::new(Route {
         path: Pair {
-            first: 0_(),
-            second: 1_(),
+            first: 0,
+            second: 1,
         },
-        cost: 5_(),
+        cost: 5_f64,
     }));
     let route2: Value<Route> = Rc::new(RefCell::new(Route {
         path: Pair {
-            first: 1_(),
-            second: 0_(),
+            first: 1,
+            second: 0,
         },
-        cost: 10_(),
+        cost: 10_f64,
     }));
-    let mut old_cost: () = ({
+    let mut old_cost: f64 = ({
         RouteImpl::SetCost(
             &route1.as_pointer(),
-            ({ RouteImpl::SetCost(&route2.as_pointer(), 15_()) }),
+            ({ RouteImpl::SetCost(&route2.as_pointer(), 15_f64) }),
         )
     });
-    unimplemented!();
-    let c1: Value<Counter> = Rc::new(RefCell::new(Counter {
-        v: 3_(),
-        calls: 0_(),
-    }));
-    let c2: Value<Counter> = Rc::new(RefCell::new(Counter {
-        v: 3_(),
-        calls: 0_(),
-    }));
+    assert!(
+        ((((({ RandomRoute_0(route1.as_pointer(),) }) + ({ RandomRoute_0(route2.as_pointer(),) }))
+            as f64)
+            + old_cost)
+            == 9_f64)
+    );
+    let c1: Value<Counter> = Rc::new(RefCell::new(Counter { v: 3, calls: 0 }));
+    let c2: Value<Counter> = Rc::new(RefCell::new(Counter { v: 3, calls: 0 }));
     let mut pc: Ptr<Counter> = (c1.as_pointer());
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    let t: Value<Tally> = Rc::new(RefCell::new(Tally { calls: 0_() }));
-    let ct: Value<Tally> = Rc::new(RefCell::new(Tally { calls: 0_() }));
+    assert!((({ CounterImpl::Get(&c1.as_pointer(),) }) == 3));
+    assert!((({ CounterImpl::Get(&c2.as_pointer(),) }) == 3));
+    assert!((({ CounterImpl::Get(&pc,) }) == 3));
+    assert!(({ CounterImpl::operator_eq(&c1.as_pointer(), c2.as_pointer(),) }));
+    assert!(({ CounterImpl::operator_eq(&c2.as_pointer(), c1.as_pointer(),) }));
+    assert!(({ (*c1.borrow()).calls } == 3));
+    assert!(({ (*c2.borrow()).calls } == 2));
+    let t: Value<Tally> = Rc::new(RefCell::new(Tally { calls: 0 }));
+    let ct: Value<Tally> = Rc::new(RefCell::new(Tally { calls: 0 }));
     let rt: Ptr<Tally> = t.as_pointer();
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    return 0_();
+    assert!((({ TallyImpl::SameNameBetweenConstAndNonConst_1(&t.as_pointer(),) }) == 1));
+    assert!((({ TallyImpl::SameNameBetweenConstAndNonConst_2(&ct.as_pointer(),) }) == 2));
+    assert!((({ TallyImpl::SameNameBetweenConstAndNonConst_2(&rt,) }) == 2));
+    assert!(({ (*t.borrow()).calls } == 11));
+    assert!(({ (*ct.borrow()).calls } == 10));
+    return 0;
 }
 pub trait CounterImpl {
-    fn Get(&self) -> ();
-    fn operator_eq(&self, o: Ptr<Counter>) -> ();
+    fn Get(&self) -> i32;
+    fn operator_eq(&self, o: Ptr<Counter>) -> bool;
 }
 impl CounterImpl for Ptr<Counter> {
-    fn Get(&self) -> () {
+    fn Get(&self) -> i32 {
         field!((*self), calls).with_mut(|__v| __v.prefix_inc());
         return (*self).with(|__s| __s.v);
     }
-    fn operator_eq(&self, o: Ptr<Counter>) -> () {
+    fn operator_eq(&self, o: Ptr<Counter>) -> bool {
         field!((*self), calls).with_mut(|__v| __v.prefix_inc());
         return ({ (*self).with(|__s| __s.v) } == { o.with(|__s| __s.v) });
     }
 }
 pub trait PairImpl {
     fn NOP(&self);
-    fn GetFirst(&self) -> ();
-    fn GetSecond(&self) -> ();
-    fn Set(&self, field: Ptr<()>, new_val: ()) -> ();
-    fn SetFirst(&self, new_first: ()) -> ();
-    fn SetSecond(&self, new_second: ()) -> ();
+    fn GetFirst(&self) -> i32;
+    fn GetSecond(&self) -> i32;
+    fn Set(&self, field: Ptr<i32>, new_val: i32) -> i32;
+    fn SetFirst(&self, new_first: i32) -> i32;
+    fn SetSecond(&self, new_second: i32) -> i32;
 }
 impl PairImpl for Ptr<Pair> {
     fn NOP(&self) {}
-    fn GetFirst(&self) -> () {
+    fn GetFirst(&self) -> i32 {
         return (*self).with(|__s| __s.first);
     }
-    fn GetSecond(&self) -> () {
+    fn GetSecond(&self) -> i32 {
         return (*self).with(|__s| __s.second);
     }
-    fn Set(&self, field: Ptr<()>, mut new_val: ()) -> () {
+    fn Set(&self, field: Ptr<i32>, mut new_val: i32) -> i32 {
         ({ PairImpl::NOP(self) });
-        let old_val: Value<()> = Rc::new(RefCell::new((field.read())));
+        let old_val: Value<i32> = Rc::new(RefCell::new((field.read())));
         field.write({ new_val });
         return (*old_val.borrow());
     }
-    fn SetFirst(&self, mut new_first: ()) -> () {
+    fn SetFirst(&self, mut new_first: i32) -> i32 {
         return (({ PairImpl::GetFirst(self) })
             + ({
-                let _field: Ptr<()> = field_ptr!((*self), first);
+                let _field: Ptr<i32> = field_ptr!((*self), first);
                 PairImpl::Set(self, _field, new_first)
             }));
     }
-    fn SetSecond(&self, mut new_second: ()) -> () {
+    fn SetSecond(&self, mut new_second: i32) -> i32 {
         return (({ PairImpl::GetSecond(self) })
             + ({
-                let _field: Ptr<()> = field_ptr!((*self), second);
+                let _field: Ptr<i32> = field_ptr!((*self), second);
                 PairImpl::Set(self, _field, new_second)
             }));
     }
 }
 pub trait RouteImpl {
-    fn SetCost(&self, new_cost: ()) -> ();
+    fn SetCost(&self, new_cost: f64) -> f64;
 }
 impl RouteImpl for Ptr<Route> {
-    fn SetCost(&self, mut new_cost: ()) -> () {
-        let old_cost: Value<()> = Rc::new(RefCell::new((*self).with(|__s| __s.cost)));
+    fn SetCost(&self, mut new_cost: f64) -> f64 {
+        let old_cost: Value<f64> = Rc::new(RefCell::new((*self).with(|__s| __s.cost)));
         field!((*self), cost).write(new_cost);
         return (*old_cost.borrow());
     }
 }
 pub trait TallyImpl {
-    fn SameNameBetweenConstAndNonConst_1(&self) -> ();
-    fn SameNameBetweenConstAndNonConst_2(&self) -> ();
+    fn SameNameBetweenConstAndNonConst_1(&self) -> i32;
+    fn SameNameBetweenConstAndNonConst_2(&self) -> i32;
 }
 impl TallyImpl for Ptr<Tally> {
-    fn SameNameBetweenConstAndNonConst_1(&self) -> () {
+    fn SameNameBetweenConstAndNonConst_1(&self) -> i32 {
         {
-            field!((*self), calls).with_mut(|__v| *__v = *__v + 1_())
+            field!((*self), calls).with_mut(|__v| *__v = *__v + 1)
         };
-        return 1_();
+        return 1;
     }
-    fn SameNameBetweenConstAndNonConst_2(&self) -> () {
+    fn SameNameBetweenConstAndNonConst_2(&self) -> i32 {
         {
-            field!((*self), calls).with_mut(|__v| *__v = *__v + 10_())
+            field!((*self), calls).with_mut(|__v| *__v = *__v + 10)
         };
-        return 2_();
+        return 2;
     }
 }
 pub fn __cpp2rust_init_globals() {}

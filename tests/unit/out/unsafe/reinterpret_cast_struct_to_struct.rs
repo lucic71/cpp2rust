@@ -9,14 +9,14 @@ use std::rc::Rc;
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct Point {
-    pub x: (),
-    pub y: (),
+    pub x: u32,
+    pub y: u32,
 }
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct Pair {
-    pub first: (),
-    pub second: (),
+    pub first: u32,
+    pub second: u32,
 }
 pub fn main() {
     unsafe {
@@ -24,13 +24,16 @@ pub fn main() {
         std::process::exit(main_0() as i32);
     }
 }
-unsafe fn main_0() -> () {
-    let mut pt: Point = Point { x: 10_(), y: 20_() };
+unsafe fn main_0() -> i32 {
+    let mut pt: Point = Point {
+        x: 10_u32,
+        y: 20_u32,
+    };
     let mut pair: *mut Pair = ((&mut pt as *mut Point) as *mut Pair);
-    unimplemented!();
-    unimplemented!();
-    (*pair).first = 42_();
-    unimplemented!();
-    return 0_();
+    assert!((((*pair).first) == (10_u32)));
+    assert!((((*pair).second) == (20_u32)));
+    (*pair).first = 42_u32;
+    assert!(((pt.x) == (42_u32)));
+    return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

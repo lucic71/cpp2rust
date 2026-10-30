@@ -6,13 +6,13 @@ use std::collections::BTreeMap;
 use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
-pub static mut default_constructions_0: std::cell::LazyCell<()> =
-    std::cell::LazyCell::new(|| unsafe { 0_() });
+pub static mut default_constructions_0: std::cell::LazyCell<i32> =
+    std::cell::LazyCell::new(|| unsafe { 0 });
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct Key {
-    pub order: (),
-    pub identity: (),
+    pub order: i32,
+    pub identity: i32,
 }
 impl std::cmp::Ord for Key {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering {
@@ -38,20 +38,20 @@ impl std::cmp::PartialEq for Key {
     }
 }
 impl std::cmp::Eq for Key {}
-pub unsafe fn operator_lt_1(a: *const Key, b: *const Key) -> () {
+pub unsafe fn operator_lt_1(a: *const Key, b: *const Key) -> bool {
     return (((*a).order) < ((*b).order));
 }
-pub unsafe fn operator_eq_2(a: *const Key, b: *const Key) -> () {
+pub unsafe fn operator_eq_2(a: *const Key, b: *const Key) -> bool {
     return (((*a).identity) == ((*b).identity));
 }
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg)]
 pub struct Mapped {
-    pub value: (),
+    pub value: i32,
 }
 impl Mapped {
     pub unsafe fn new() -> Self {
-        let mut this = Self { value: 0_() };
+        let mut this = Self { value: 0 };
         (*std::cell::LazyCell::force_mut(&mut *&raw mut default_constructions_0)).prefix_inc();
         this
     }
@@ -67,150 +67,191 @@ pub fn main() {
         std::process::exit(main_0() as i32);
     }
 }
-unsafe fn main_0() -> () {
-    let mut ok: () = true;
+unsafe fn main_0() -> i32 {
+    let mut ok: bool = true;
     let distinct_a: Key = Key {
-        order: 1_(),
-        identity: 7_(),
+        order: 1,
+        identity: 7,
     };
     let distinct_b: Key = Key {
-        order: 2_(),
-        identity: 7_(),
+        order: 2,
+        identity: 7,
     };
-    ok &= (unsafe {
-        let _a: *const Key = &distinct_a;
-        operator_eq_2(_a, &distinct_b)
-    });
-    let mut distinct: () = unimplemented!();
-    let a: *mut Mapped = &mut (*unimplemented!());
-    (*a).value = 11_();
-    let mut a_it: () = unimplemented!();
-    let mut a_value: *mut Mapped = (&mut (*a_it).second as *mut Mapped);
-    ok &= ((*std::cell::LazyCell::force_mut(&mut *&raw mut default_constructions_0)) == (1_()));
-    let b: *mut Mapped = &mut (*unimplemented!());
-    (*b).value = 22_();
-    let mut b_it: () = unimplemented!();
-    ok &= ((*std::cell::LazyCell::force_mut(&mut *&raw mut default_constructions_0)) == (2_()));
-    ok &= ((unimplemented!()) == (2_()));
-    ok &= ((a) != (b));
-    ok &= ((((*a).value) == (11_())) && (((*b).value) == (22_())));
-    ok &= (unimplemented!());
-    ok &= (unimplemented!());
-    ok &= (!(unimplemented!()));
-    ok &= ((&mut (*a_it).second as *mut Mapped) == (a_value));
-    ok &= (((*a_it).second.value) == (11_()));
-    ok &= (unsafe {
-        let _a: *const Key = &distinct_a;
-        operator_eq_2(_a, &distinct_b)
-    });
-    let mut distinct_count: () = 0_();
-    'loop_: for entry in IterRange::new(unimplemented!(), unimplemented!()) {
-        let entry: *const () = &(*unimplemented!());
-        if ((distinct_count) == (0_())) {
-            ok &= ((((*entry).first.order) == (1_())) && (((*entry).second.value) == (11_())));
-        } else if ((distinct_count) == (1_())) {
-            ok &= ((((*entry).first.order) == (2_())) && (((*entry).second.value) == (22_())));
+    ok = ((ok as i32)
+        & ((unsafe {
+            let _a: *const Key = &distinct_a;
+            operator_eq_2(_a, &distinct_b)
+        }) as i32))
+        != 0;
+    let mut distinct: UnsafeMap<Key, (Key, Mapped)> = UnsafeMap::new();
+    let a: *mut Mapped = &mut (*distinct.subscript(&distinct_a));
+    (*a).value = 11;
+    let mut a_it: UnsafeBidirectionalIterator<(Key, Mapped)> = distinct.find(&distinct_a);
+    let mut a_value: *mut Mapped = (&mut (*a_it.iter_deref()).1 as *mut Mapped);
+    ok = ((ok as i32)
+        & (((*std::cell::LazyCell::force_mut(&mut *&raw mut default_constructions_0)) == (1))
+            as i32))
+        != 0;
+    let b: *mut Mapped = &mut (*distinct.subscript(&distinct_b));
+    (*b).value = 22;
+    let mut b_it: UnsafeBidirectionalIterator<(Key, Mapped)> = distinct.find(&distinct_b);
+    ok = ((ok as i32)
+        & (((*std::cell::LazyCell::force_mut(&mut *&raw mut default_constructions_0)) == (2))
+            as i32))
+        != 0;
+    ok = ((ok as i32) & (((distinct.len()) == (2_usize)) as i32)) != 0;
+    ok = ((ok as i32) & (((a) != (b)) as i32)) != 0;
+    ok = ((ok as i32) & (((((*a).value) == (11)) && (((*b).value) == (22))) as i32)) != 0;
+    ok = ((ok as i32) & ((a_it == distinct.find(&distinct_a)) as i32)) != 0;
+    ok = ((ok as i32) & ((b_it == distinct.find(&distinct_b)) as i32)) != 0;
+    ok = ((ok as i32) & ((!(b_it == distinct.end())) as i32)) != 0;
+    ok = ((ok as i32) & (((&mut (*a_it.iter_deref()).1 as *mut Mapped) == (a_value)) as i32)) != 0;
+    ok = ((ok as i32) & ((((*a_it.iter_deref()).1.value) == (11)) as i32)) != 0;
+    ok = ((ok as i32)
+        & ((unsafe {
+            let _a: *const Key = &distinct_a;
+            operator_eq_2(_a, &distinct_b)
+        }) as i32))
+        != 0;
+    let mut distinct_count: usize = 0_usize;
+    'loop_: for entry in IterRange::new(distinct.begin(), distinct.end()) {
+        let entry: *const (Key, Mapped) = &(*entry.iter_deref());
+        if ((distinct_count) == (0_usize)) {
+            ok = ((ok as i32)
+                & (((((*entry).0.order) == (1)) && (((*entry).1.value) == (11))) as i32))
+                != 0;
+        } else if ((distinct_count) == (1_usize)) {
+            ok = ((ok as i32)
+                & (((((*entry).0.order) == (2)) && (((*entry).1.value) == (22))) as i32))
+                != 0;
         }
         distinct_count.prefix_inc();
     }
-    ok &= ((distinct_count) == (2_()));
+    ok = ((ok as i32) & (((distinct_count) == (2_usize)) as i32)) != 0;
     let equivalent_a: Key = Key {
-        order: 3_(),
-        identity: 8_(),
+        order: 3,
+        identity: 8,
     };
     let equivalent_b: Key = Key {
-        order: 3_(),
-        identity: 9_(),
+        order: 3,
+        identity: 9,
     };
-    ok &= !(unsafe {
-        let _a: *const Key = &equivalent_a;
-        operator_eq_2(_a, &equivalent_b)
-    });
-    let mut equivalent: () = unimplemented!();
-    let before_equivalent: () =
+    ok = ((ok as i32)
+        & (!(unsafe {
+            let _a: *const Key = &equivalent_a;
+            operator_eq_2(_a, &equivalent_b)
+        }) as i32))
+        != 0;
+    let mut equivalent: UnsafeMap<Key, (Key, Mapped)> = UnsafeMap::new();
+    let before_equivalent: i32 =
         (*std::cell::LazyCell::force_mut(&mut *&raw mut default_constructions_0));
-    let first: *mut Mapped = &mut (*unimplemented!());
-    (*first).value = 31_();
-    let mut first_it: () = unimplemented!();
-    let mut first_value: *mut Mapped = (&mut (*first_it).second as *mut Mapped);
-    ok &= ((*std::cell::LazyCell::force_mut(&mut *&raw mut default_constructions_0))
-        == ((before_equivalent) + (1_())));
-    let second: *mut Mapped = &mut (*unimplemented!());
-    let reused: () = ((*std::cell::LazyCell::force_mut(&mut *&raw mut default_constructions_0))
-        == ((before_equivalent) + (1_())));
-    ok &= reused;
-    ok &= ((unimplemented!()) == (1_()));
+    let first: *mut Mapped = &mut (*equivalent.subscript(&equivalent_a));
+    (*first).value = 31;
+    let mut first_it: UnsafeBidirectionalIterator<(Key, Mapped)> = equivalent.find(&equivalent_a);
+    let mut first_value: *mut Mapped = (&mut (*first_it.iter_deref()).1 as *mut Mapped);
+    ok = ((ok as i32)
+        & (((*std::cell::LazyCell::force_mut(&mut *&raw mut default_constructions_0))
+            == ((before_equivalent) + (1))) as i32))
+        != 0;
+    let second: *mut Mapped = &mut (*equivalent.subscript(&equivalent_b));
+    let reused: bool = ((*std::cell::LazyCell::force_mut(&mut *&raw mut default_constructions_0))
+        == ((before_equivalent) + (1)));
+    ok = ((ok as i32) & (reused as i32)) != 0;
+    ok = ((ok as i32) & (((equivalent.len()) == (1_usize)) as i32)) != 0;
     if reused {
-        ok &= (!(unimplemented!()));
-        ok &= ((first) == (second));
-        ok &= (unimplemented!());
-        ok &= (unimplemented!());
-        ok &= ((&mut (*first_it).second as *mut Mapped) == (first_value));
-        ok &= ((((*first_it).second.value) == (31_())) && (((*second).value) == (31_())));
-        let mut equivalent_count: () = 0_();
-        'loop_: for entry in IterRange::new(unimplemented!(), unimplemented!()) {
-            let entry: *const () = &(*unimplemented!());
-            ok &= ((((*entry).first.order) == (3_())) && (((*entry).second.value) == (31_())));
+        ok = ((ok as i32) & ((!(first_it == equivalent.end())) as i32)) != 0;
+        ok = ((ok as i32) & (((first) == (second)) as i32)) != 0;
+        ok = ((ok as i32) & ((first_it == equivalent.find(&equivalent_a)) as i32)) != 0;
+        ok = ((ok as i32) & ((first_it == equivalent.find(&equivalent_b)) as i32)) != 0;
+        ok = ((ok as i32)
+            & (((&mut (*first_it.iter_deref()).1 as *mut Mapped) == (first_value)) as i32))
+            != 0;
+        ok = ((ok as i32)
+            & (((((*first_it.iter_deref()).1.value) == (31)) && (((*second).value) == (31)))
+                as i32))
+            != 0;
+        let mut equivalent_count: usize = 0_usize;
+        'loop_: for entry in IterRange::new(equivalent.begin(), equivalent.end()) {
+            let entry: *const (Key, Mapped) = &(*entry.iter_deref());
+            ok = ((ok as i32)
+                & (((((*entry).0.order) == (3)) && (((*entry).1.value) == (31))) as i32))
+                != 0;
             equivalent_count.prefix_inc();
         }
-        ok &= ((equivalent_count) == (1_()));
+        ok = ((ok as i32) & (((equivalent_count) == (1_usize)) as i32)) != 0;
     }
-    ok &= !(unsafe {
-        let _a: *const Key = &equivalent_a;
-        operator_eq_2(_a, &equivalent_b)
-    });
+    ok = ((ok as i32)
+        & (!(unsafe {
+            let _a: *const Key = &equivalent_a;
+            operator_eq_2(_a, &equivalent_b)
+        }) as i32))
+        != 0;
     let later_key: Key = Key {
-        order: 4_(),
-        identity: 10_(),
+        order: 4,
+        identity: 10,
     };
-    let later: *mut Mapped = &mut (*unimplemented!());
-    (*later).value = 41_();
-    ok &= ((*std::cell::LazyCell::force_mut(&mut *&raw mut default_constructions_0))
-        == ((before_equivalent) + (2_())));
-    ok &= ((unimplemented!()) == (2_()));
+    let later: *mut Mapped = &mut (*equivalent.subscript(&later_key));
+    (*later).value = 41;
+    ok = ((ok as i32)
+        & (((*std::cell::LazyCell::force_mut(&mut *&raw mut default_constructions_0))
+            == ((before_equivalent) + (2))) as i32))
+        != 0;
+    ok = ((ok as i32) & (((equivalent.len()) == (2_usize)) as i32)) != 0;
     if reused {
-        ok &= (unimplemented!());
-        ok &= ((&mut (*first_it).second as *mut Mapped) == (first_value));
-        ok &= (((*first_it).second.value) == (31_()));
+        ok = ((ok as i32) & ((first_it == equivalent.find(&equivalent_a)) as i32)) != 0;
+        ok = ((ok as i32)
+            & (((&mut (*first_it.iter_deref()).1 as *mut Mapped) == (first_value)) as i32))
+            != 0;
+        ok = ((ok as i32) & ((((*first_it.iter_deref()).1.value) == (31)) as i32)) != 0;
     }
     let matching_a: Key = Key {
-        order: 5_(),
-        identity: 5_(),
+        order: 5,
+        identity: 5,
     };
     let matching_b: Key = Key {
-        order: 5_(),
-        identity: 5_(),
+        order: 5,
+        identity: 5,
     };
     let matching_c: Key = Key {
-        order: 6_(),
-        identity: 6_(),
+        order: 6,
+        identity: 6,
     };
-    let before_matching: () =
+    let before_matching: i32 =
         (*std::cell::LazyCell::force_mut(&mut *&raw mut default_constructions_0));
-    let mut matching: () = unimplemented!();
-    let matched: *mut Mapped = &mut (*unimplemented!());
-    (*matched).value = 51_();
-    let mut matched_it: () = unimplemented!();
-    let mut matched_value: *mut Mapped = (&mut (*matched_it).second as *mut Mapped);
-    ok &= ((*std::cell::LazyCell::force_mut(&mut *&raw mut default_constructions_0))
-        == ((before_matching) + (1_())));
-    let matched_again: *mut Mapped = &mut (*unimplemented!());
-    ok &= ((*std::cell::LazyCell::force_mut(&mut *&raw mut default_constructions_0))
-        == ((before_matching) + (1_())));
-    ok &= ((unimplemented!()) == (1_()));
-    ok &= ((matched) == (matched_again));
-    ok &= (unimplemented!());
-    ok &= ((&mut (*matched_it).second as *mut Mapped) == (matched_value));
-    ok &= (((*matched_it).second.value) == (51_()));
-    let other: *mut Mapped = &mut (*unimplemented!());
-    (*other).value = 61_();
-    ok &= ((*std::cell::LazyCell::force_mut(&mut *&raw mut default_constructions_0))
-        == ((before_matching) + (2_())));
-    ok &= ((unimplemented!()) == (2_()));
-    ok &= (unimplemented!());
-    ok &= ((&mut (*matched_it).second as *mut Mapped) == (matched_value));
-    ok &= (((*matched_it).second.value) == (51_()));
-    return if ok { 0_() } else { 1_() };
+    let mut matching: UnsafeMap<Key, (Key, Mapped)> = UnsafeMap::new();
+    let matched: *mut Mapped = &mut (*matching.subscript(&matching_a));
+    (*matched).value = 51;
+    let mut matched_it: UnsafeBidirectionalIterator<(Key, Mapped)> = matching.find(&matching_a);
+    let mut matched_value: *mut Mapped = (&mut (*matched_it.iter_deref()).1 as *mut Mapped);
+    ok = ((ok as i32)
+        & (((*std::cell::LazyCell::force_mut(&mut *&raw mut default_constructions_0))
+            == ((before_matching) + (1))) as i32))
+        != 0;
+    let matched_again: *mut Mapped = &mut (*matching.subscript(&matching_b));
+    ok = ((ok as i32)
+        & (((*std::cell::LazyCell::force_mut(&mut *&raw mut default_constructions_0))
+            == ((before_matching) + (1))) as i32))
+        != 0;
+    ok = ((ok as i32) & (((matching.len()) == (1_usize)) as i32)) != 0;
+    ok = ((ok as i32) & (((matched) == (matched_again)) as i32)) != 0;
+    ok = ((ok as i32) & ((matched_it == matching.find(&matching_b)) as i32)) != 0;
+    ok = ((ok as i32)
+        & (((&mut (*matched_it.iter_deref()).1 as *mut Mapped) == (matched_value)) as i32))
+        != 0;
+    ok = ((ok as i32) & ((((*matched_it.iter_deref()).1.value) == (51)) as i32)) != 0;
+    let other: *mut Mapped = &mut (*matching.subscript(&matching_c));
+    (*other).value = 61;
+    ok = ((ok as i32)
+        & (((*std::cell::LazyCell::force_mut(&mut *&raw mut default_constructions_0))
+            == ((before_matching) + (2))) as i32))
+        != 0;
+    ok = ((ok as i32) & (((matching.len()) == (2_usize)) as i32)) != 0;
+    ok = ((ok as i32) & ((matched_it == matching.find(&matching_a)) as i32)) != 0;
+    ok = ((ok as i32)
+        & (((&mut (*matched_it.iter_deref()).1 as *mut Mapped) == (matched_value)) as i32))
+        != 0;
+    ok = ((ok as i32) & ((((*matched_it.iter_deref()).1.value) == (51)) as i32)) != 0;
+    return if ok { 0 } else { 1 };
 }
 pub unsafe fn __cpp2rust_init_globals() {
     std::cell::LazyCell::force(&*&raw const default_constructions_0);

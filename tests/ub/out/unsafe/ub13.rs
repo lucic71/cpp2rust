@@ -6,7 +6,7 @@ use std::collections::BTreeMap;
 use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
-pub unsafe fn escape_0(mut p: *mut ()) {
+pub unsafe fn escape_0(mut p: *mut i32) {
     {
         let __p = p;
         if !__p.is_null() {
@@ -20,8 +20,8 @@ pub fn main() {
         std::process::exit(main_0() as i32);
     }
 }
-unsafe fn main_0() -> () {
-    let mut p1: *mut () = (Box::leak(Box::new(1_())) as *mut ());
+unsafe fn main_0() -> i32 {
+    let mut p1: *mut i32 = (Box::leak(Box::new(1)) as *mut i32);
     (unsafe { escape_0(p1) });
     return (*p1);
 }

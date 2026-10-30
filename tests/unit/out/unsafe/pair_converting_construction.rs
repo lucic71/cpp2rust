@@ -170,7 +170,7 @@ unsafe fn main_0() -> i32 {
     assert!(((from_moved_pair.1) == (4_f64)));
     let mut ints: (i32, i32) = (5, 6);
     let mut from_copied_pair: (Celsius, i64) = {
-        let __a0 = ints;
+        let __a0 = (ints).clone();
         (
             <Celsius as CppFromUnsafe<i32>>::cpp_from(&__a0.0),
             ((*&__a0.1) as i64),
@@ -180,7 +180,7 @@ unsafe fn main_0() -> i32 {
     assert!(((from_copied_pair.1) == (6_i64)));
     let mut meters: (Meters, Meters) = (Meters { value: 8 }, Meters { value: 9 });
     let mut from_operator_pair: (i32, i32) = {
-        let __a0 = meters;
+        let __a0 = (meters).clone();
         (
             <i32 as CppFromUnsafe<Meters>>::cpp_from(&__a0.0),
             <i32 as CppFromUnsafe<Meters>>::cpp_from(&__a0.1),
@@ -190,7 +190,7 @@ unsafe fn main_0() -> i32 {
     assert!(((from_operator_pair.1) == (9)));
     let mut celsius: (Celsius, Celsius) = (Celsius::new({ 10 }), Celsius::new({ 11 }));
     let mut from_record_pair: (Label, Owner) = {
-        let __a0 = celsius;
+        let __a0 = (celsius).clone();
         (
             <Label as CppFromUnsafe<Celsius>>::cpp_from(&__a0.0),
             <Owner as CppFromUnsafe<Celsius>>::cpp_from(&__a0.1),
@@ -210,7 +210,7 @@ unsafe fn main_0() -> i32 {
     assert!(((from_moved_record_pair.1.taken) == (13)));
     assert!(((from_moved_record_pair.1.copied) == (0)));
     let mut from_by_value_pair: (Holder, Holder) = {
-        let __a0 = celsius;
+        let __a0 = (celsius).clone();
         (
             <Holder as CppFromUnsafe<Celsius>>::cpp_from(&__a0.0),
             <Holder as CppFromUnsafe<Celsius>>::cpp_from(&__a0.1),
@@ -230,7 +230,7 @@ unsafe fn main_0() -> i32 {
     let mut defaulted: Fallback = Fallback::new(None);
     assert!(((defaulted.value) == (-1_i32)));
     let mut from_defaulted_ctor: (Fallback, i64) = {
-        let __a0 = ints;
+        let __a0 = (ints).clone();
         (
             <Fallback as CppFromUnsafe<i32>>::cpp_from(&__a0.0),
             ((*&__a0.1) as i64),
@@ -243,7 +243,7 @@ unsafe fn main_0() -> i32 {
     assert!(((forwarded_mutable_ref.0.seen) == (3)));
     assert!(((counter.hits) == (4)));
     let mut from_template_ctor: (Tag, Tag) = {
-        let __a0 = celsius;
+        let __a0 = (celsius).clone();
         (
             <Tag as CppFromUnsafe<Celsius>>::cpp_from(&__a0.0),
             <Tag as CppFromUnsafe<Celsius>>::cpp_from(&__a0.1),

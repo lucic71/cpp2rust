@@ -9,7 +9,7 @@ use std::rc::Rc;
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct S {
-    pub v: (),
+    pub v: u32,
 }
 pub unsafe fn operator_add_assign_0(a: *mut S, b: *const S) -> *mut S {
     (*a).v = ((*a).v).wrapping_add((*b).v);
@@ -43,11 +43,11 @@ pub unsafe fn operator_bitxor_assign_7(a: *mut S, b: *const S) -> *mut S {
     (*a).v ^= (*b).v;
     return a;
 }
-pub unsafe fn operator_shl_assign_8(a: *mut S, mut n: ()) -> *mut S {
+pub unsafe fn operator_shl_assign_8(a: *mut S, mut n: i32) -> *mut S {
     (*a).v <<= n;
     return a;
 }
-pub unsafe fn operator_shr_assign_9(a: *mut S, mut n: ()) -> *mut S {
+pub unsafe fn operator_shr_assign_9(a: *mut S, mut n: i32) -> *mut S {
     (*a).v >>= n;
     return a;
 }
@@ -57,60 +57,60 @@ pub fn main() {
         std::process::exit(main_0() as i32);
     }
 }
-unsafe fn main_0() -> () {
-    let mut a: S = S { v: 6_() };
-    let mut b: S = S { v: 4_() };
+unsafe fn main_0() -> i32 {
+    let mut a: S = S { v: 6_u32 };
+    let mut b: S = S { v: 4_u32 };
     (unsafe {
         let _a: *mut S = &mut a;
         operator_add_assign_0(_a, &b)
     });
-    unimplemented!();
+    assert!(((a.v) == (10_u32)));
     (unsafe {
         let _a: *mut S = &mut a;
         operator_sub_assign_1(_a, &b)
     });
-    unimplemented!();
+    assert!(((a.v) == (6_u32)));
     (unsafe {
         let _a: *mut S = &mut a;
         operator_mul_assign_2(_a, &b)
     });
-    unimplemented!();
+    assert!(((a.v) == (24_u32)));
     (unsafe {
         let _a: *mut S = &mut a;
         operator_div_assign_3(_a, &b)
     });
-    unimplemented!();
+    assert!(((a.v) == (6_u32)));
     (unsafe {
         let _a: *mut S = &mut a;
         operator_rem_assign_4(_a, &b)
     });
-    unimplemented!();
+    assert!(((a.v) == (2_u32)));
     (unsafe {
         let _a: *mut S = &mut a;
         operator_bitor_assign_6(_a, &b)
     });
-    unimplemented!();
+    assert!(((a.v) == (6_u32)));
     (unsafe {
         let _a: *mut S = &mut a;
         operator_bitand_assign_5(_a, &b)
     });
-    unimplemented!();
+    assert!(((a.v) == (4_u32)));
     (unsafe {
         let _a: *mut S = &mut a;
         operator_bitxor_assign_7(_a, &b)
     });
-    unimplemented!();
-    a.v = 3_();
+    assert!(((a.v) == (0_u32)));
+    a.v = 3_u32;
     (unsafe {
         let _a: *mut S = &mut a;
-        operator_shl_assign_8(_a, 2_())
+        operator_shl_assign_8(_a, 2)
     });
-    unimplemented!();
+    assert!(((a.v) == (12_u32)));
     (unsafe {
         let _a: *mut S = &mut a;
-        operator_shr_assign_9(_a, 1_())
+        operator_shr_assign_9(_a, 1)
     });
-    unimplemented!();
+    assert!(((a.v) == (6_u32)));
     (unsafe {
         let _a: *mut S = &mut (*(unsafe {
             let _a: *mut S = &mut a;
@@ -119,7 +119,7 @@ unsafe fn main_0() -> () {
         let _b: *const S = &b;
         operator_add_assign_0(_a, _b)
     });
-    unimplemented!();
-    return 0_();
+    assert!(((a.v) == (14_u32)));
+    return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

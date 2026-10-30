@@ -10,31 +10,31 @@ use std::rc::{Rc, Weak};
 #[byte_size(4)]
 pub struct X {
     #[offset(0)]
-    pub x: (),
+    pub x: i32,
 }
-pub fn func_0() -> () {
-    return 42_();
+pub fn func_0() -> i32 {
+    return 42;
 }
 pub fn main() {
     __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
-fn main_0() -> () {
-    let x: Value<()> = Rc::new(RefCell::new(unimplemented!()));
-    let mut p: Ptr<()> = Ptr::<()>::null();
-    let g: Ptr<()> = x.as_pointer();
-    let mut q: Ptr<()> = (x.as_pointer());
-    let mut z: Ptr<()> = (p).clone();
+fn main_0() -> i32 {
+    let x: Value<i32> = Rc::new(RefCell::new(0_i32));
+    let mut p: Ptr<i32> = Ptr::<i32>::null();
+    let g: Ptr<i32> = x.as_pointer();
+    let mut q: Ptr<i32> = (x.as_pointer());
+    let mut z: Ptr<i32> = (p).clone();
     let xx: Value<X> = Rc::new(RefCell::new(<X>::default()));
     let mut zz: Ptr<X> = (xx.as_pointer());
-    (*xx.borrow_mut()).x = 1_();
+    (*xx.borrow_mut()).x = 1;
     q = (field_ptr!(xx.as_pointer(), x));
     q = (field_ptr!(zz, x));
-    field!(zz, x).write(2_());
+    field!(zz, x).write(2);
     let mut ww: X = (*xx.borrow()).clone();
     ww = (*xx.borrow()).clone();
-    let mut aa: () = ({ func_0() });
+    let mut aa: i32 = ({ func_0() });
     aa = ({ func_0() });
-    return 0_();
+    return 0;
 }
 pub fn __cpp2rust_init_globals() {}

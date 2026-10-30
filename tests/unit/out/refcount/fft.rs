@@ -36,11 +36,7 @@ pub fn Neg_2(mut z1: Complex) -> Complex {
     };
 }
 pub fn fft_3(a: Ptr<Option<Value<Box<[Complex]>>>>, mut N: i32) -> Option<Value<Box<[Complex]>>> {
-    let mut y: Option<Value<Box<[Complex]>>> = Some(Rc::new(RefCell::new(
-        (0..(N as usize))
-            .map(|_| <Complex>::default())
-            .collect::<Box<[_]>>(),
-    )));
+    let mut y: Option<Value<Box<[Complex]>>> = unimplemented!();
     if (N == 1) {
         let __rhs = Complex {
             re: ((*a.upgrade().deref()).as_pointer() as Ptr<Complex>)
@@ -55,11 +51,7 @@ pub fn fft_3(a: Ptr<Option<Value<Box<[Complex]>>>>, mut N: i32) -> Option<Value<
             .write(__rhs);
         return y.take();
     }
-    let mut w: Option<Value<Box<[Complex]>>> = Some(Rc::new(RefCell::new(
-        (0..(N as usize))
-            .map(|_| <Complex>::default())
-            .collect::<Box<[_]>>(),
-    )));
+    let mut w: Option<Value<Box<[Complex]>>> = unimplemented!();
     let mut i: i32 = 0;
     'loop_: while (i < N) {
         let mut alpha: f64 =
@@ -73,18 +65,8 @@ pub fn fft_3(a: Ptr<Option<Value<Box<[Complex]>>>>, mut N: i32) -> Option<Value<
             .write(__rhs);
         i.postfix_inc();
     }
-    let A0: Value<Option<Value<Box<[Complex]>>>> =
-        Rc::new(RefCell::new(Some(Rc::new(RefCell::new(
-            (0..((N / 2) as usize))
-                .map(|_| <Complex>::default())
-                .collect::<Box<[_]>>(),
-        )))));
-    let A1: Value<Option<Value<Box<[Complex]>>>> =
-        Rc::new(RefCell::new(Some(Rc::new(RefCell::new(
-            (0..((N / 2) as usize))
-                .map(|_| <Complex>::default())
-                .collect::<Box<[_]>>(),
-        )))));
+    let A0: Value<Option<Value<Box<[Complex]>>>> = Rc::new(RefCell::new(unimplemented!()));
+    let A1: Value<Option<Value<Box<[Complex]>>>> = Rc::new(RefCell::new(unimplemented!()));
     let mut i: i32 = 0;
     'loop_: while (i < (N / 2)) {
         let __rhs = Complex {
@@ -183,12 +165,7 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     let mut N: i32 = 4;
-    let a: Value<Option<Value<Box<[Complex]>>>> =
-        Rc::new(RefCell::new(Some(Rc::new(RefCell::new(
-            (0..(N as usize))
-                .map(|_| <Complex>::default())
-                .collect::<Box<[_]>>(),
-        )))));
+    let a: Value<Option<Value<Box<[Complex]>>>> = Rc::new(RefCell::new(unimplemented!()));
     let mut i: i32 = 0;
     'loop_: while (i < N) {
         let __rhs = Complex {
@@ -201,12 +178,8 @@ fn main_0() -> i32 {
         i.postfix_inc();
     }
     let mut b: Option<Value<Box<[Complex]>>> = ({ fft_3(a.as_pointer(), N) });
-    let mut reals: Option<Value<Box<[i32]>>> = Some(Rc::new(RefCell::new(
-        (0..(N as usize)).map(|_| 0_i32).collect::<Box<[_]>>(),
-    )));
-    let mut imgs: Option<Value<Box<[i32]>>> = Some(Rc::new(RefCell::new(
-        (0..(N as usize)).map(|_| 0_i32).collect::<Box<[_]>>(),
-    )));
+    let mut reals: Option<Value<Box<[i32]>>> = unimplemented!();
+    let mut imgs: Option<Value<Box<[i32]>>> = unimplemented!();
     let mut i: i32 = 0;
     'loop_: while (i < N) {
         let __rhs = ((b.as_pointer() as Ptr<Complex>)

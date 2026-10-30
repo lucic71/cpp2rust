@@ -12,9 +12,9 @@ pub fn main() {
         std::process::exit(main_0() as i32);
     }
 }
-unsafe fn main_0() -> () {
-    let mut x: *mut () = std::ptr::null_mut();
-    unimplemented!();
-    return 0_();
+unsafe fn main_0() -> i32 {
+    let mut x: *mut i32 = std::ptr::null_mut();
+    assert!(!(!(x).is_null()));
+    return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

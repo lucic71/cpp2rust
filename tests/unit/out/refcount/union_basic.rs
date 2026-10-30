@@ -14,10 +14,10 @@ pub struct basic {
     __bytes: Box<[u8]>,
 }
 impl basic {
-    pub fn i(this: Ptr<Self>) -> Ptr<()> {
+    pub fn i(this: Ptr<Self>) -> Ptr<i32> {
         this.reinterpret_cast()
     }
-    pub fn f(this: Ptr<Self>) -> Ptr<()> {
+    pub fn f(this: Ptr<Self>) -> Ptr<f32> {
         this.reinterpret_cast()
     }
 }
@@ -51,10 +51,10 @@ pub struct underscores {
     __bytes: Box<[u8]>,
 }
 impl underscores {
-    pub fn __(this: Ptr<Self>) -> Ptr<()> {
+    pub fn __(this: Ptr<Self>) -> Ptr<i32> {
         this.reinterpret_cast()
     }
-    pub fn ___(this: Ptr<Self>) -> Ptr<()> {
+    pub fn ___(this: Ptr<Self>) -> Ptr<f64> {
         this.reinterpret_cast()
     }
 }
@@ -69,55 +69,58 @@ pub fn main() {
     __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
-fn main_0() -> () {
+fn main_0() -> i32 {
     let u: Value<basic> = Rc::new(RefCell::new(<basic>::default()));
     let e: Value<empty> = Rc::new(RefCell::new(<empty>::default()));
     &(*e.borrow_mut());
-    basic::i(u.as_pointer()).write(42_());
-    unimplemented!();
+    basic::i(u.as_pointer()).write(42);
+    assert!(((basic::i(u.as_pointer()).read()) == 42));
     basic::f(u.as_pointer()).write(3.14_f32);
-    unimplemented!();
-    let buf: Value<Box<[()]>> = Rc::new(RefCell::new(
-        (0..4).map(|_| unimplemented!()).collect::<Box<[()]>>(),
-    ));
-    unimplemented!();
-    let mut ru: Ptr<basic> = (buf.as_pointer() as Ptr<()>).reinterpret_cast::<basic>();
-    let mut pi: Ptr<()> = (basic::i(ru.clone())).clone();
-    let mut pf: Ptr<()> = (basic::f(ru.clone())).clone();
-    basic::i(ru.clone()).write(7_());
-    unimplemented!();
-    pi.write(1065353216_());
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
+    assert!(((basic::f(u.as_pointer()).read()) == 3.14_f32));
+    let buf: Value<Box<[u8]>> = Rc::new(RefCell::new((0..4).map(|_| 0_u8).collect::<Box<[u8]>>()));
+    {
+        ((buf.as_pointer() as Ptr<u8>) as Ptr<u8>)
+            .to_any()
+            .memset((0) as u8, ::std::mem::size_of::<[u8; 4]>() as usize);
+        ((buf.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any()
+    };
+    let mut ru: Ptr<basic> = (buf.as_pointer() as Ptr<u8>).reinterpret_cast::<basic>();
+    let mut pi: Ptr<i32> = (basic::i(ru.clone())).clone();
+    let mut pf: Ptr<f32> = (basic::f(ru.clone())).clone();
+    basic::i(ru.clone()).write(7);
+    assert!(((pi.read()) == 7));
+    pi.write(1065353216);
+    assert!(((basic::i(ru.clone()).read()) == 1065353216));
+    assert!(((pf.read()) == 1_f32));
+    assert!((((*buf.borrow())[(3) as usize] as i32) == 63));
     let braced: Value<basic> = Rc::new(RefCell::new({
         let __u: Value<basic> = Rc::new(RefCell::new(<basic>::default()));
-        basic::i(__u.as_pointer()).write(5_());
+        basic::i(__u.as_pointer()).write(5);
         Rc::try_unwrap(__u).ok().unwrap().into_inner()
     }));
-    unimplemented!();
+    assert!(((basic::i(braced.as_pointer()).read()) == 5));
     let copied: Value<basic> = Rc::new(RefCell::new({
         let __u: Value<basic> = Rc::new(RefCell::new(<basic>::default()));
-        basic::i(__u.as_pointer()).write(7_());
+        basic::i(__u.as_pointer()).write(7);
         Rc::try_unwrap(__u).ok().unwrap().into_inner()
     }));
-    unimplemented!();
+    assert!(((basic::i(copied.as_pointer()).read()) == 7));
     {
         let anon_0: Value<anon_0> = Rc::new(RefCell::new(<anon_0>::default()));
-        anon_0::ai(anon_0.as_pointer()).write(11_());
-        unimplemented!();
-        anon_0::ai(anon_0.as_pointer()).write(1065353216_());
-        unimplemented!();
+        anon_0::ai(anon_0.as_pointer()).write(11);
+        assert!(((anon_0::ai(anon_0.as_pointer()).read()) == 11));
+        anon_0::ai(anon_0.as_pointer()).write(1065353216);
+        assert!(((anon_0::af(anon_0.as_pointer()).read()) == 1_f32));
     }
     let us: Value<underscores> = Rc::new(RefCell::new(<underscores>::default()));
-    underscores::__(us.as_pointer()).write(5_());
-    unimplemented!();
+    underscores::__(us.as_pointer()).write(5);
+    assert!(((underscores::__(us.as_pointer()).read()) == 5));
     underscores::___(us.as_pointer()).write(2.5_f64);
-    unimplemented!();
-    let mut __: () = 1_();
-    let mut ___: () = 2_();
-    unimplemented!();
-    return 0_();
+    assert!(((underscores::___(us.as_pointer()).read()) == 2.5_f64));
+    let mut __: i32 = 1;
+    let mut ___: i32 = 2;
+    assert!(((__ + ___) == 3));
+    return 0;
 }
 #[derive(VaArg, FnPtrArg, ByteRepr, Clone)]
 #[byte_size(4)]
@@ -127,10 +130,10 @@ pub struct anon_0 {
     __bytes: Box<[u8]>,
 }
 impl anon_0 {
-    pub fn ai(this: Ptr<Self>) -> Ptr<()> {
+    pub fn ai(this: Ptr<Self>) -> Ptr<i32> {
         this.reinterpret_cast()
     }
-    pub fn af(this: Ptr<Self>) -> Ptr<()> {
+    pub fn af(this: Ptr<Self>) -> Ptr<f32> {
         this.reinterpret_cast()
     }
 }

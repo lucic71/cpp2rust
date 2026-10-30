@@ -12,46 +12,46 @@ pub fn main() {
         std::process::exit(main_0() as i32);
     }
 }
-unsafe fn main_0() -> () {
-    let mut out: () = 0_();
-    let mut arr: [(); 5] = [1_(), 2_(), 3_(), 4_(), 0_()];
-    let mut ptr: *const () = (&mut arr[(0_()) as usize] as *mut ()).cast_const();
-    'loop_: while ((*ptr) != (0_())) {
+unsafe fn main_0() -> i32 {
+    let mut out: i32 = 0;
+    let mut arr: [i32; 5] = [1, 2, 3, 4, 0];
+    let mut ptr: *const i32 = (&mut arr[(0) as usize] as *mut i32).cast_const();
+    'loop_: while ((*ptr) != (0)) {
         out += (*ptr);
         ptr.prefix_inc();
     }
-    let mut ptr: *mut () = (&mut arr[(1_()) as usize] as *mut ());
-    'loop_: while ((*ptr) != (4_())) {
+    let mut ptr: *mut i32 = (&mut arr[(1) as usize] as *mut i32);
+    'loop_: while ((*ptr) != (4)) {
         out += (*ptr);
         ptr.postfix_inc();
     }
-    let mut ptr: *mut () = (&mut arr[(4_()) as usize] as *mut ());
-    'loop_: while ((*ptr) != (1_())) {
+    let mut ptr: *mut i32 = (&mut arr[(4) as usize] as *mut i32);
+    'loop_: while ((*ptr) != (1)) {
         out += (*ptr);
         ptr.postfix_dec();
     }
-    let mut ptr: *const () = (&mut arr[(3_()) as usize] as *mut ()).cast_const();
-    'loop_: while ((*ptr) != (2_())) {
+    let mut ptr: *const i32 = (&mut arr[(3) as usize] as *mut i32).cast_const();
+    'loop_: while ((*ptr) != (2)) {
         out += (*ptr);
         ptr.prefix_dec();
     }
-    let mut ptr: *mut () = (&mut arr[(0_()) as usize] as *mut ());
-    'loop_: while ((*ptr) != (0_())) {
+    let mut ptr: *mut i32 = (&mut arr[(0) as usize] as *mut i32);
+    'loop_: while ((*ptr) != (0)) {
         out += (*ptr);
-        ptr = ptr.offset((1_()) as isize);
+        ptr = ptr.offset((1) as isize);
     }
-    let mut ptr: *mut () = (&mut arr[(0_()) as usize] as *mut ());
-    let mut i: () = 0_();
-    'loop_: while ((i) < (5_())) {
+    let mut ptr: *mut i32 = (&mut arr[(0) as usize] as *mut i32);
+    let mut i: i32 = 0;
+    'loop_: while ((i) < (5)) {
         out += (*ptr.offset((i) as isize));
         i.prefix_inc();
     }
-    unimplemented!();
-    let mut step: () = 2_();
-    let mut offset: *mut () = arr.as_mut_ptr().offset((step) as isize);
-    unimplemented!();
+    assert!(((out) == (51)));
+    let mut step: i64 = 2_i64;
+    let mut offset: *mut i32 = arr.as_mut_ptr().offset((step) as isize);
+    assert!(((*offset) == (arr[(2) as usize])));
     offset = offset.offset(-((step) as isize));
-    unimplemented!();
-    return 0_();
+    assert!(((offset) == (&mut arr[(0) as usize] as *mut i32)));
+    return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

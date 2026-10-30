@@ -6,20 +6,20 @@ use std::collections::BTreeMap;
 use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
-pub unsafe fn default_then_case_0(mut x: ()) -> () {
-    let mut r: () = 0_();
+pub unsafe fn default_then_case_0(mut x: i32) -> i32 {
+    let mut r: i32 = 0;
     'switch: {
         match { x } {
-            __v if __v == 1_() => {
-                r = 1_();
+            __v if __v == 1 => {
+                r = 1;
                 break 'switch;
             }
-            __v if __v == 3_() => {
-                r = 3_();
+            __v if __v == 3 => {
+                r = 3;
                 break 'switch;
             }
             _ => {
-                r = 77_();
+                r = 77;
                 break 'switch;
             }
         }
@@ -32,11 +32,11 @@ pub fn main() {
         std::process::exit(main_0() as i32);
     }
 }
-unsafe fn main_0() -> () {
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    return 0_();
+unsafe fn main_0() -> i32 {
+    assert!(((unsafe { default_then_case_0(1,) }) == (1)));
+    assert!(((unsafe { default_then_case_0(2,) }) == (77)));
+    assert!(((unsafe { default_then_case_0(3,) }) == (3)));
+    assert!(((unsafe { default_then_case_0(99,) }) == (77)));
+    return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

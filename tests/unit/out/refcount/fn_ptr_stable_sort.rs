@@ -10,26 +10,52 @@ use std::rc::{Rc, Weak};
 #[byte_size(8)]
 pub struct Item {
     #[offset(0)]
-    pub key: (),
+    pub key: i32,
     #[offset(4)]
-    pub value: (),
+    pub value: i32,
 }
-pub fn Compare_0(a: Ptr<Item>, b: Ptr<Item>) -> () {
+pub fn Compare_0(a: Ptr<Item>, b: Ptr<Item>) -> bool {
     return ({ a.with(|__s| __s.key) } < { b.with(|__s| __s.key) });
 }
 pub fn main() {
     __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
-fn main_0() -> () {
-    let mut v: () = unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    return 0_();
+fn main_0() -> i32 {
+    let v: Value<Vec<Item>> = Rc::new(RefCell::new(Vec::new()));
+    {
+        let __a1 = Item { key: 3, value: 30 };
+        (*v.borrow_mut()).push(__a1)
+    };
+    {
+        let __a1 = Item { key: 1, value: 10 };
+        (*v.borrow_mut()).push(__a1)
+    };
+    {
+        let __a1 = Item { key: 2, value: 20 };
+        (*v.borrow_mut()).push(__a1)
+    };
+    {
+        let __first = v.decay().begin();
+        let __n = v.decay().end().iter_distance(&__first);
+        let __cmp = Compare_0;
+        let mut __order: Vec<isize> = (0..__n).collect();
+        __order.sort_by(|&__x, &__y| {
+            let __a = __first.iter_at(__x);
+            let __b = __first.iter_at(__y);
+            if __cmp.call(__a.clone(), __b.clone()) {
+                std::cmp::Ordering::Less
+            } else if __cmp.call(__b, __a) {
+                std::cmp::Ordering::Greater
+            } else {
+                std::cmp::Ordering::Equal
+            }
+        });
+        reorder(__order, |__i| __first.iter_at(__i));
+    };
+    assert!((v.decay().offset(0_usize as isize).with(|__s| __s.key) == 1));
+    assert!((v.decay().offset(1_usize as isize).with(|__s| __s.key) == 2));
+    assert!((v.decay().offset(2_usize as isize).with(|__s| __s.key) == 3));
+    return 0;
 }
 pub fn __cpp2rust_init_globals() {}

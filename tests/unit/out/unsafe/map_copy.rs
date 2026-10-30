@@ -12,17 +12,17 @@ pub fn main() {
         std::process::exit(main_0() as i32);
     }
 }
-unsafe fn main_0() -> () {
-    let mut a: () = unimplemented!();
-    (*unimplemented!()) = 10_();
-    let mut b: () = unimplemented!();
-    (*unimplemented!()) = 20_();
-    unimplemented!();
-    let mut x: () = unimplemented!();
-    (*unimplemented!()) = 3_();
-    let mut y: () = unimplemented!();
-    (*unimplemented!()) = 4_();
-    unimplemented!();
-    return 0_();
+unsafe fn main_0() -> i32 {
+    let mut a: UnsafeMap<i32, (i32, i32)> = UnsafeMap::new();
+    (*a.subscript_move(&mut 1, |__k| cpp_move_unsafe!(__k))) = 10;
+    let mut b: UnsafeMap<i32, (i32, i32)> = a.clone();
+    (*b.subscript_move(&mut 1, |__k| cpp_move_unsafe!(__k))) = 20;
+    assert!(((*a.subscript_move(&mut 1, |__k| cpp_move_unsafe!(__k))) == (10)));
+    let mut x: UnsafeMap<i32, (i32, i32)> = UnsafeMap::new();
+    (*x.subscript_move(&mut 2, |__k| cpp_move_unsafe!(__k))) = 3;
+    let mut y: UnsafeMap<i32, (i32, i32)> = x.clone();
+    (*y.subscript_move(&mut 2, |__k| cpp_move_unsafe!(__k))) = 4;
+    assert!(((*x.subscript_move(&mut 2, |__k| cpp_move_unsafe!(__k))) == (3)));
+    return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

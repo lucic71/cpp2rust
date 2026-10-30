@@ -7,55 +7,55 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
 thread_local!(
-    static inner_const_0: Value<()> = Rc::new(RefCell::new(1_()));
+    static inner_const_0: Value<i32> = Rc::new(RefCell::new(1));
 );
 #[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(1)]
 pub struct C {}
 thread_local!(
-    pub static inner_const_1: Value<()> = Rc::new(RefCell::new(2_()));
+    pub static inner_const_1: Value<i32> = Rc::new(RefCell::new(2));
 );
-pub type anon_3 = ();
+pub type anon_3 = u32;
 pub const anon_3_kValue: anon_3 = 3;
 #[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(1)]
 pub struct S {}
 impl S {
-    pub fn f() -> () {
+    pub fn f() -> i32 {
         return counter_2.with(|rc| *rc.borrow());
     }
 }
 thread_local!(
-    pub static counter_2: Value<()> = Rc::new(RefCell::new(10_()));
+    pub static counter_2: Value<i32> = Rc::new(RefCell::new(10));
 );
 pub fn main() {
     __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
-fn main_0() -> () {
+fn main_0() -> i32 {
     let c: Value<C> = Rc::new(RefCell::new(<C>::default()));
-    unimplemented!();
-    unimplemented!();
+    assert!((({ CImpl::get(&c.as_pointer(),) }) == 1));
+    assert!((inner_const_1.with(|rc| *rc.borrow()) == 2));
     let s: Value<S> = Rc::new(RefCell::new(<S>::default()));
     let mut p: Ptr<S> = (s.as_pointer());
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    (*counter_2.with(Value::clone).borrow_mut()) = 20_();
-    unimplemented!();
-    (*counter_2.with(Value::clone).borrow_mut()) += 5_();
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    return 0_();
+    assert!((inner_const_1.with(|rc| *rc.borrow()) == 2));
+    assert!((inner_const_1.with(|rc| *rc.borrow()) == 2));
+    assert!(((anon_3_kValue as i32) == 3));
+    assert!(((anon_3_kValue as i32) == 3));
+    (*counter_2.with(Value::clone).borrow_mut()) = 20;
+    assert!((counter_2.with(|rc| *rc.borrow()) == 20));
+    (*counter_2.with(Value::clone).borrow_mut()) += 5;
+    assert!((counter_2.with(|rc| *rc.borrow()) == 25));
+    assert!((counter_2.with(|rc| *rc.borrow()) == 25));
+    assert!((({ S::f() }) == 25));
+    assert!((({ S::f() }) == 25));
+    return 0;
 }
 pub trait CImpl {
-    fn get(&self) -> ();
+    fn get(&self) -> i32;
 }
 impl CImpl for Ptr<C> {
-    fn get(&self) -> () {
+    fn get(&self) -> i32 {
         return inner_const_0.with(|rc| *rc.borrow());
     }
 }

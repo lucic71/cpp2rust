@@ -6,12 +6,12 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-pub fn only_default_0(mut x: ()) -> () {
-    let r: Value<()> = Rc::new(RefCell::new(0_()));
+pub fn only_default_0(mut x: i32) -> i32 {
+    let r: Value<i32> = Rc::new(RefCell::new(0));
     'switch: {
         match { x } {
             _ => {
-                (*r.borrow_mut()) = 42_();
+                (*r.borrow_mut()) = 42;
                 break 'switch;
             }
         }
@@ -22,8 +22,8 @@ pub fn main() {
     __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
-fn main_0() -> () {
-    unimplemented!();
-    return 0_();
+fn main_0() -> i32 {
+    assert!((({ only_default_0(1,) }) == 42));
+    return 0;
 }
 pub fn __cpp2rust_init_globals() {}

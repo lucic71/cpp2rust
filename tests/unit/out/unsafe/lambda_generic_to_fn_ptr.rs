@@ -12,43 +12,43 @@ pub fn main() {
         std::process::exit(main_0() as i32);
     }
 }
-unsafe fn main_0() -> () {
+unsafe fn main_0() -> i32 {
     let mut negate: FnPtr<Generic> = lambda_unsafe!(
         Generic,
         {},
-        |mut x: ()| -> () {
+        |mut x: i32| -> i32 {
             return -x;
         },
-        |mut x: ()| -> () {
+        |mut x: f64| -> f64 {
             return -x;
         }
     );
-    let mut fi: Option<unsafe fn(()) -> ()> = Some(|mut x: ()| -> () {
+    let mut fi: Option<unsafe fn(i32) -> i32> = Some(|mut x: i32| -> i32 {
         return -x;
     });
-    let mut fd: Option<unsafe fn(()) -> ()> = Some(|mut x: ()| -> () {
+    let mut fd: Option<unsafe fn(f64) -> f64> = Some(|mut x: f64| -> f64 {
         return -x;
     });
-    unimplemented!();
-    unimplemented!();
+    assert!(((unsafe { (fi).unwrap()(3,) }) == (-3_i32)));
+    assert!(((unsafe { (fd).unwrap()(1.5_f64,) }) == (-1.5_f64)));
     let mut square: FnPtr<Generic> = lambda_unsafe!(
         Generic,
         {},
-        |mut x: ()| -> () {
+        |mut x: i32| -> i32 {
             return ((x) * (x));
         },
-        |mut x: ()| -> () {
+        |mut x: f64| -> f64 {
             return ((x) * (x));
         }
     );
-    let mut si: Option<unsafe fn(()) -> ()> = Some(|mut x: ()| -> () {
+    let mut si: Option<unsafe fn(i32) -> i32> = Some(|mut x: i32| -> i32 {
         return ((x) * (x));
     });
-    let mut sd: Option<unsafe fn(()) -> ()> = Some(|mut x: ()| -> () {
+    let mut sd: Option<unsafe fn(f64) -> f64> = Some(|mut x: f64| -> f64 {
         return ((x) * (x));
     });
-    unimplemented!();
-    unimplemented!();
-    return 0_();
+    assert!(((unsafe { (si).unwrap()(3,) }) == (9)));
+    assert!(((unsafe { (sd).unwrap()(1.5_f64,) }) == (2.25_f64)));
+    return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

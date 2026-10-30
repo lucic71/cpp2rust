@@ -10,24 +10,26 @@ use std::rc::{Rc, Weak};
 #[byte_size(8)]
 pub struct Point {
     #[offset(0)]
-    pub x: (),
+    pub x: i32,
     #[offset(4)]
-    pub y: (),
+    pub y: i32,
 }
-pub fn sum_0(mut p: Point) -> () {
+pub fn sum_0(mut p: Point) -> i32 {
     return (p.x + p.y);
 }
 pub fn main() {
     __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
-fn main_0() -> () {
-    let mut p: () = unimplemented!();
-    unimplemented!().x += 10_();
-    let __rhs = ({ unimplemented!().x } + { unimplemented!().y });
-    unimplemented!().y = __rhs;
-    let mut s: () = ({ sum_0((*unimplemented!().upgrade().deref()).clone()) });
-    unimplemented!();
-    return 0_();
+fn main_0() -> i32 {
+    let mut p: Option<Value<Point>> = Some(Rc::new(RefCell::new(Point { x: 3, y: 4 })));
+    {
+        field!(p.as_pointer(), x).with_mut(|__v| *__v = *__v + 10)
+    };
+    let __rhs = (p.as_pointer().with(|__s| __s.x) + p.as_pointer().with(|__s| __s.y));
+    field!(p.as_pointer(), y).write(__rhs);
+    let mut s: i32 = ({ sum_0((*p.as_pointer().upgrade().deref()).clone()) });
+    assert!((s == 30));
+    return 0;
 }
 pub fn __cpp2rust_init_globals() {}

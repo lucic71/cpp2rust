@@ -9,19 +9,19 @@ use std::rc::Rc;
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg)]
 pub struct Inner {
-    pub x: (),
-    pub y: (),
+    pub x: i32,
+    pub y: i32,
 }
 impl Default for Inner {
     fn default() -> Self {
-        unsafe { Inner { x: 3_(), y: 4_() } }
+        unsafe { Inner { x: 3, y: 4 } }
     }
 }
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg)]
 pub struct S {
-    pub a: (),
-    pub b: (),
+    pub a: i32,
+    pub b: libc::c_char,
     pub c: Inner,
     pub d: Inner,
 }
@@ -29,8 +29,8 @@ impl Default for S {
     fn default() -> Self {
         unsafe {
             S {
-                a: 1_(),
-                b: 2_(),
+                a: 1,
+                b: (2 as libc::c_char),
                 c: <Inner>::default(),
                 d: <Inner>::default(),
             }
@@ -40,11 +40,11 @@ impl Default for S {
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg)]
 pub struct Boxed_int_ {
-    pub v: (),
-    pub tag: (),
+    pub v: i32,
+    pub tag: i32,
 }
 impl Boxed_int_ {
-    pub unsafe fn new(mut x: (), mut t: ()) -> Self {
+    pub unsafe fn new(mut x: i32, mut t: i32) -> Self {
         let mut this = Self { v: x, tag: t };
         this
     }
@@ -53,8 +53,8 @@ impl Default for Boxed_int_ {
     fn default() -> Self {
         unsafe {
             Boxed_int_ {
-                v: unimplemented!(),
-                tag: unimplemented!(),
+                v: 0_i32,
+                tag: 0_i32,
             }
         }
     }
@@ -65,17 +65,17 @@ pub fn main() {
         std::process::exit(main_0() as i32);
     }
 }
-unsafe fn main_0() -> () {
+unsafe fn main_0() -> i32 {
     let mut s: S = <S>::default();
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    let mut boxed: Boxed_int_ = Boxed_int_::new({ 5_() }, { 9_() });
-    unimplemented!();
-    unimplemented!();
-    return 0_();
+    assert!(((s.a) == (1)));
+    assert!(((s.b as i32) == (2)));
+    assert!(((s.c.x) == (3)));
+    assert!(((s.c.y) == (4)));
+    assert!(((s.d.x) == (3)));
+    assert!(((s.d.y) == (4)));
+    let mut boxed: Boxed_int_ = Boxed_int_::new({ 5 }, { 9 });
+    assert!(((boxed.v) == (5)));
+    assert!(((boxed.tag) == (9)));
+    return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

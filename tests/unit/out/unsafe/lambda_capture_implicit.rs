@@ -12,49 +12,49 @@ pub fn main() {
         std::process::exit(main_0() as i32);
     }
 }
-unsafe fn main_0() -> () {
-    let mut a: () = 1_();
-    let mut b: () = 2_();
-    let mut c: () = 3_();
-    let mut by_value: FnPtr<fn(()) -> ()> = lambda_unsafe!(
+unsafe fn main_0() -> i32 {
+    let mut a: i32 = 1;
+    let mut b: i32 = 2;
+    let mut c: i32 = 3;
+    let mut by_value: FnPtr<fn(i32) -> i32> = lambda_unsafe!(
         {
-            let a: () = a;
-            let b: () = b;
-            let c: () = c;
+            let a: i32 = a;
+            let b: i32 = b;
+            let c: i32 = c;
         },
-        |mut x: ()| -> () {
+        |mut x: i32| -> i32 {
             return ((((a) + (b)) + (c)) + (x));
         }
     );
-    unimplemented!();
-    a = 100_();
-    unimplemented!();
-    let mut by_ref: FnPtr<fn(()) -> ()> = lambda_unsafe!(
+    assert!(((unsafe { by_value.call(10,) }) == (16)));
+    a = 100;
+    assert!(((unsafe { by_value.call(10,) }) == (16)));
+    let mut by_ref: FnPtr<fn(i32) -> i32> = lambda_unsafe!(
         {
-            let a: *mut () = &mut a;
-            let b: *mut () = &mut b;
-            let c: *mut () = &mut c;
+            let a: *mut i32 = &mut a;
+            let b: *mut i32 = &mut b;
+            let c: *mut i32 = &mut c;
         },
-        |mut x: ()| -> () {
+        |mut x: i32| -> i32 {
             return ((((*a) + (*b)) + (*c)) + (x));
         }
     );
-    unimplemented!();
-    b = 200_();
-    unimplemented!();
-    let mut mixed: FnPtr<fn(()) -> ()> = lambda_unsafe!(
+    assert!(((unsafe { by_ref.call(10,) }) == (115)));
+    b = 200;
+    assert!(((unsafe { by_ref.call(10,) }) == (313)));
+    let mut mixed: FnPtr<fn(i32) -> i32> = lambda_unsafe!(
         {
-            let c: *mut () = &mut c;
-            let a: () = a;
-            let b: () = b;
+            let c: *mut i32 = &mut c;
+            let a: i32 = a;
+            let b: i32 = b;
         },
-        |mut x: ()| -> () {
+        |mut x: i32| -> i32 {
             (*c) += x;
             return (((a) + (b)) + (*c));
         }
     );
-    unimplemented!();
-    unimplemented!();
-    return 0_();
+    assert!(((unsafe { mixed.call(1,) }) == (((100) + (200)) + (4))));
+    assert!(((c) == (4)));
+    return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

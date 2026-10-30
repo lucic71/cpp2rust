@@ -25,8 +25,9 @@ pub fn ret_size_4(mut v: i32) -> usize {
 pub fn call_fn_5(mut f: FnPtr<fn(i32) -> usize>, mut v: i32) -> usize {
     return ({ f.call(v) }).wrapping_mul(2_usize);
 }
-pub fn identity_hash_6(mut v: bool) -> usize {
-    return (v as usize);
+pub fn identity_hash_6(v: bool) -> usize {
+    let v: Value<bool> = Rc::new(RefCell::new(v));
+    return ((*v.borrow()) as usize);
 }
 #[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, CppFrom, Default)]
 #[cpp_from(FnPtr<fn(bool  ,) -> u64  >  , new, ptr)]

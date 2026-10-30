@@ -9,17 +9,17 @@ use std::rc::Rc;
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct GraphNode {
-    pub dst: (),
+    pub dst: u32,
     pub next: *mut GraphNode,
 }
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct Graph {
-    pub V: (),
+    pub V: u32,
     pub adj: *mut *mut GraphNode,
 }
 impl Graph {
-    pub unsafe fn push(&self, mut src: (), mut dst: ()) {
+    pub unsafe fn push(&self, mut src: u32, mut dst: u32) {
         (*self.adj.offset((src) as isize)) = (Box::leak(Box::new(GraphNode {
             dst: dst,
             next: (*self.adj.offset((src) as isize)),
@@ -33,10 +33,10 @@ impl Graph {
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg)]
 pub struct Partial {
-    pub p: *mut (),
+    pub p: *mut i32,
 }
 impl Partial {
-    pub unsafe fn new_1(mut q: *mut ()) -> Self {
+    pub unsafe fn new_1(mut q: *mut i32) -> Self {
         let mut this = Self { p: q };
         this
     }
@@ -57,7 +57,7 @@ impl Declared {}
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct S {
-    pub i: (),
+    pub i: i32,
     pub d: *mut Declared,
 }
 pub fn main() {
@@ -66,27 +66,27 @@ pub fn main() {
         std::process::exit(main_0() as i32);
     }
 }
-unsafe fn main_0() -> () {
+unsafe fn main_0() -> i32 {
     let mut g: Graph = Graph {
-        V: 5_(),
+        V: 5_u32,
         adj: std::ptr::null_mut(),
     };
-    let mut arr: [(); 3] = [3_(), 1_(), 4_()];
+    let mut arr: [i32; 3] = [3, 1, 4];
     let mut it: Partial = Partial::new_1({ arr.as_mut_ptr() });
     if ((it.p) != (arr.as_mut_ptr())) {
-        return 1_();
+        return 1;
     }
     let mut def: Partial = <Partial>::default();
     if !((def.p).is_null()) {
-        return 1_();
+        return 1;
     }
     let mut s: S = S {
-        i: 7_(),
+        i: 7,
         d: std::ptr::null_mut(),
     };
-    if ((s.i) != (7_())) || (!((s.d).is_null())) {
-        return 1_();
+    if ((s.i) != (7)) || (!((s.d).is_null())) {
+        return 1;
     }
-    return 0_();
+    return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

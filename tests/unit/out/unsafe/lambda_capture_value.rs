@@ -9,10 +9,10 @@ use std::rc::Rc;
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct S {
-    pub x: (),
-    pub y: (),
+    pub x: i32,
+    pub y: i32,
 }
-pub unsafe fn read_0(v: *const ()) -> () {
+pub unsafe fn read_0(v: *const i32) -> i32 {
     return (*v);
 }
 pub fn main() {
@@ -21,89 +21,89 @@ pub fn main() {
         std::process::exit(main_0() as i32);
     }
 }
-unsafe fn main_0() -> () {
-    let mut factor: () = 3_();
-    let mut scale: FnPtr<fn(()) -> ()> = lambda_unsafe!(
+unsafe fn main_0() -> i32 {
+    let mut factor: i32 = 3;
+    let mut scale: FnPtr<fn(i32) -> i32> = lambda_unsafe!(
         {
-            let factor: () = factor;
+            let factor: i32 = factor;
         },
-        |mut x: ()| -> () {
+        |mut x: i32| -> i32 {
             return ((x) * (factor));
         }
     );
-    unimplemented!();
-    factor = 100_();
-    unimplemented!();
-    let mut slot: () = 7_();
-    let mut p: *mut () = (&mut slot as *mut ());
-    let mut read_ptr: FnPtr<fn() -> ()> = lambda_unsafe!(
+    assert!(((unsafe { scale.call(4,) }) == (12)));
+    factor = 100;
+    assert!(((unsafe { scale.call(4,) }) == (12)));
+    let mut slot: i32 = 7;
+    let mut p: *mut i32 = (&mut slot as *mut i32);
+    let mut read_ptr: FnPtr<fn() -> i32> = lambda_unsafe!(
         {
-            let p: *mut () = p;
+            let p: *mut i32 = p;
         },
-        || -> () {
+        || -> i32 {
             return (*p);
         }
     );
-    slot = 8_();
-    unimplemented!();
-    let mut s: S = S { x: 1_(), y: 2_() };
-    let mut sum: FnPtr<fn() -> ()> = lambda_unsafe!(
+    slot = 8;
+    assert!(((unsafe { read_ptr.call() }) == (8)));
+    let mut s: S = S { x: 1, y: 2 };
+    let mut sum: FnPtr<fn() -> i32> = lambda_unsafe!(
         {
             let s: S = s;
         },
-        || -> () {
+        || -> i32 {
             return ((s.x) + (s.y));
         }
     );
-    s.x = 50_();
-    unimplemented!();
-    let mut base: () = 10_();
-    let mut shifted: FnPtr<fn(()) -> ()> = lambda_unsafe!(
+    s.x = 50;
+    assert!(((unsafe { sum.call() }) == (3)));
+    let mut base: i32 = 10;
+    let mut shifted: FnPtr<fn(i32) -> i32> = lambda_unsafe!(
         {
-            let y: () = ((base) + (1_()));
+            let y: i32 = ((base) + (1));
         },
-        |mut x: ()| -> () {
+        |mut x: i32| -> i32 {
             return ((x) + (y));
         }
     );
-    unimplemented!();
-    let k: () = 3_();
-    let mut by_copy: FnPtr<fn(()) -> ()> = lambda_unsafe!(
+    assert!(((unsafe { shifted.call(5,) }) == (16)));
+    let k: i32 = 3;
+    let mut by_copy: FnPtr<fn(i32) -> i32> = lambda_unsafe!(
         {
-            let k: () = k;
+            let k: i32 = k;
         },
-        |mut x: ()| -> () {
-            return ((x) + (3_()));
+        |mut x: i32| -> i32 {
+            return ((x) + (3));
         }
     );
-    unimplemented!();
-    let mut by_copy_used: FnPtr<fn(()) -> ()> = lambda_unsafe!(
+    assert!(((unsafe { by_copy.call(1,) }) == (4)));
+    let mut by_copy_used: FnPtr<fn(i32) -> i32> = lambda_unsafe!(
         {
-            let k: () = k;
+            let k: i32 = k;
         },
-        |mut x: ()| -> () {
+        |mut x: i32| -> i32 {
             return ((x) + (unsafe { read_0(&k) }));
         }
     );
-    unimplemented!();
-    let mut implicit_used: FnPtr<fn(()) -> ()> = lambda_unsafe!(
+    assert!(((unsafe { by_copy_used.call(1,) }) == (4)));
+    let mut implicit_used: FnPtr<fn(i32) -> i32> = lambda_unsafe!(
         {
-            let k: () = k;
+            let k: i32 = k;
         },
-        |mut x: ()| -> () {
+        |mut x: i32| -> i32 {
             return ((x) + (unsafe { read_0(&k) }));
         }
     );
-    unimplemented!();
-    let mut by_ref: FnPtr<fn(()) -> ()> = lambda_unsafe!(
+    assert!(((unsafe { implicit_used.call(1,) }) == (4)));
+    let mut by_ref: FnPtr<fn(i32) -> i32> = lambda_unsafe!(
         {
-            let k: *const () = &k;
+            let k: *const i32 = &k;
         },
-        |mut x: ()| -> () {
-            return ((x) + (3_()));
+        |mut x: i32| -> i32 {
+            return ((x) + (3));
         }
     );
-    unimplemented!();
-    return 0_();
+    assert!(((unsafe { by_ref.call(1,) }) == (4)));
+    return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

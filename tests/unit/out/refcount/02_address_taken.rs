@@ -10,15 +10,16 @@ pub fn main() {
     __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
-fn main_0() -> () {
-    let b: Value<()> = Rc::new(RefCell::new(2_()));
-    let b_ptr: Value<Ptr<()>> = Rc::new(RefCell::new((b.as_pointer())));
-    (*b_ptr.borrow()).write(3_());
-    let mut b_ptr_ptr: Ptr<Ptr<()>> = (b_ptr.as_pointer());
-    (b_ptr_ptr.read()).write(4_());
+fn main_0() -> i32 {
+    let b: Value<i32> = Rc::new(RefCell::new(2));
+    let b_ptr: Value<Ptr<i32>> = Rc::new(RefCell::new((b.as_pointer())));
+    (*b_ptr.borrow()).write(3);
+    let mut b_ptr_ptr: Ptr<Ptr<i32>> = (b_ptr.as_pointer());
+    (b_ptr_ptr.read()).write(4);
     (*b_ptr.borrow()).write({ ((b_ptr_ptr.read()).read()) });
-    let mut offset: () = ((*b_ptr.borrow()).clone() - (*b_ptr.borrow()).clone()) as ();
-    unimplemented!();
-    return 0_();
+    let mut offset: usize =
+        ((((*b_ptr.borrow()).clone() - (*b_ptr.borrow()).clone()) as i64) as usize);
+    assert!(((*b.borrow()) == 4));
+    return 0;
 }
 pub fn __cpp2rust_init_globals() {}

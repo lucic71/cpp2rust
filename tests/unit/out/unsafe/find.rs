@@ -12,27 +12,85 @@ pub fn main() {
         std::process::exit(main_0() as i32);
     }
 }
-unsafe fn main_0() -> () {
-    let mut v: () = unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    let mut v_begin: () = unimplemented!();
-    let mut v_end: () = unimplemented!();
-    let mut it: () = unimplemented!();
-    let mut v_result_true: () = !(unimplemented!());
-    let mut m: () = unimplemented!();
-    (*unimplemented!()) = 1_();
-    (*unimplemented!()) = 2_();
-    (*unimplemented!()) = 3_();
-    let mut m_begin: () = unimplemented!();
-    let mut m_end: () = unimplemented!();
-    let mut m_result_true: () = !(unimplemented!());
-    unimplemented!();
-    let mut w: () = unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    return 0_();
+unsafe fn main_0() -> i32 {
+    let mut v: Vec<i32> = Vec::new();
+    {
+        let __a1 = 1;
+        v.push(__a1)
+    };
+    {
+        let __a1 = 2;
+        v.push(__a1)
+    };
+    {
+        let __a1 = 3;
+        v.push(__a1)
+    };
+    let mut v_begin: UnsafeRandomAccessIterator<i32> = v.begin();
+    let mut v_end: UnsafeRandomAccessIterator<i32> = v.end();
+    let mut it: UnsafeRandomAccessIterator<i32> = {
+        let mut __it = v_begin.clone();
+        let __last = v_end.clone();
+        let __value = &2;
+        while __it != __last && *__it.iter_deref() != *__value {
+            __it.iter_inc();
+        }
+        __it
+    };
+    let mut v_result_true: bool = !(it == v.end());
+    let mut m: UnsafeMap<i32, (i32, f64)> = UnsafeMap::new();
+    (*m.subscript_move(&mut 1, |__k| cpp_move_unsafe!(__k))) = 1_f64;
+    (*m.subscript_move(&mut 2, |__k| cpp_move_unsafe!(__k))) = 2_f64;
+    (*m.subscript_move(&mut 3, |__k| cpp_move_unsafe!(__k))) = 3_f64;
+    let mut m_begin: UnsafeBidirectionalIterator<(i32, f64)> = m.begin();
+    let mut m_end: UnsafeBidirectionalIterator<(i32, f64)> = m.end();
+    let mut m_result_true: bool = !(m_begin == m_end);
+    assert!(
+        ((v_result_true) && (m_result_true))
+            && ({
+                let mut __it = v.begin();
+                let __last = v.begin();
+                let __value = &2;
+                while __it != __last && *__it.iter_deref() != *__value {
+                    __it.iter_inc();
+                }
+                __it
+            } == v.begin())
+    );
+    let mut w: Vec<i32> = Vec::from([1, 2, 3, 4, 5]);
+    assert!(
+        {
+            let mut __it = w.begin().iter_add(2_isize);
+            let __last = w.end();
+            let __value = &4;
+            while __it != __last && *__it.iter_deref() != *__value {
+                __it.iter_inc();
+            }
+            __it
+        } == w.begin().iter_add(3_isize)
+    );
+    assert!(
+        {
+            let mut __it = w.begin().iter_add(2_isize);
+            let __last = w.end();
+            let __value = &1;
+            while __it != __last && *__it.iter_deref() != *__value {
+                __it.iter_inc();
+            }
+            __it
+        } == w.end()
+    );
+    assert!(
+        {
+            let mut __it = w.begin().iter_add(2_isize);
+            let __last = w.begin().iter_add(4_isize);
+            let __value = &5;
+            while __it != __last && *__it.iter_deref() != *__value {
+                __it.iter_inc();
+            }
+            __it
+        } == w.begin().iter_add(4_isize)
+    );
+    return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

@@ -12,48 +12,52 @@ pub fn main() {
         std::process::exit(main_0() as i32);
     }
 }
-unsafe fn main_0() -> () {
-    let mut arr: [(); 3] = [1_(), 2_(), 3_()];
+unsafe fn main_0() -> i32 {
+    let mut arr: [libc::c_char; 3] = [
+        (1 as libc::c_char),
+        (2 as libc::c_char),
+        (3 as libc::c_char),
+    ];
     {
-        let mut p: *mut () = (&mut arr[(0_()) as usize] as *mut ());
-        p = (p).wrapping_add(1_() as usize);
-        unimplemented!();
+        let mut p: *mut libc::c_char = (&mut arr[(0) as usize] as *mut libc::c_char);
+        p = (p).wrapping_add((1_u8 as i32) as usize);
+        assert!((((*p) as i32) == (2)));
     }
     {
-        let mut p: *mut () = (&mut arr[(0_()) as usize] as *mut ());
-        p = (p).wrapping_add(1_() as usize);
-        unimplemented!();
+        let mut p: *mut libc::c_char = (&mut arr[(0) as usize] as *mut libc::c_char);
+        p = (p).wrapping_add((1_i8 as i32) as usize);
+        assert!((((*p) as i32) == (2)));
     }
     {
-        let mut p: *mut () = (&mut arr[(0_()) as usize] as *mut ());
-        p = (p).wrapping_add(1_() as usize);
-        unimplemented!();
+        let mut p: *mut libc::c_char = (&mut arr[(0) as usize] as *mut libc::c_char);
+        p = (p).wrapping_add((1_u16 as i32) as usize);
+        assert!((((*p) as i32) == (2)));
     }
     {
-        let mut p: *mut () = (&mut arr[(0_()) as usize] as *mut ());
-        p = (p).wrapping_add(1_() as usize);
-        unimplemented!();
+        let mut p: *mut libc::c_char = (&mut arr[(0) as usize] as *mut libc::c_char);
+        p = (p).wrapping_add((1_i16 as i32) as usize);
+        assert!((((*p) as i32) == (2)));
     }
     {
-        let mut p: *mut () = (&mut arr[(0_()) as usize] as *mut ());
-        p = (p).wrapping_add((1_() as ()) as usize);
-        unimplemented!();
+        let mut p: *mut libc::c_char = (&mut arr[(0) as usize] as *mut libc::c_char);
+        p = (p).wrapping_add((1_u32 as u32) as usize);
+        assert!((((*p) as i32) == (2)));
     }
     {
-        let mut p: *mut () = (&mut arr[(0_()) as usize] as *mut ());
-        p = (p).wrapping_add(((1_() as ()) as ()) as usize);
-        unimplemented!();
+        let mut p: *mut libc::c_char = (&mut arr[(0) as usize] as *mut libc::c_char);
+        p = (p).wrapping_add(((1 as i32) as i32) as usize);
+        assert!((((*p) as i32) == (2)));
     }
     {
-        let mut p: *mut () = (&mut arr[(0_()) as usize] as *mut ());
-        p = (p).wrapping_add((1_() as ()) as usize);
-        unimplemented!();
+        let mut p: *mut libc::c_char = (&mut arr[(0) as usize] as *mut libc::c_char);
+        p = (p).wrapping_add((1_u64 as u64) as usize);
+        assert!((((*p) as i32) == (2)));
     }
     {
-        let mut p: *mut () = (&mut arr[(0_()) as usize] as *mut ());
-        p = (p).wrapping_add((1_() as ()) as usize);
-        unimplemented!();
+        let mut p: *mut libc::c_char = (&mut arr[(0) as usize] as *mut libc::c_char);
+        p = (p).wrapping_add((1_i64 as i64) as usize);
+        assert!((((*p) as i32) == (2)));
     }
-    return 0_();
+    return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

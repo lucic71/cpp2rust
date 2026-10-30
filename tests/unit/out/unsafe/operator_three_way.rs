@@ -9,10 +9,10 @@ use std::rc::Rc;
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct S {
-    pub v: (),
+    pub v: i32,
 }
 impl S {
-    pub unsafe fn operator_cmp(&self, o: *const S) -> () {
+    pub unsafe fn operator_cmp(&self, o: *const S) -> std::cmp::Ordering {
         if ((self.v) < ((*o).v)) {
             return unimplemented!();
         }
@@ -21,7 +21,7 @@ impl S {
         }
         return unimplemented!();
     }
-    pub unsafe fn operator_eq(&self, o: *const S) -> () {
+    pub unsafe fn operator_eq(&self, o: *const S) -> bool {
         return ((self.v) == ((*o).v));
     }
 }
@@ -47,15 +47,15 @@ pub fn main() {
         std::process::exit(main_0() as i32);
     }
 }
-unsafe fn main_0() -> () {
-    let mut a: S = S { v: 1_() };
-    let mut b: S = S { v: 2_() };
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    return 0_();
+unsafe fn main_0() -> i32 {
+    let mut a: S = S { v: 1 };
+    let mut b: S = S { v: 2 };
+    assert!(unimplemented!());
+    assert!(unimplemented!());
+    assert!(unimplemented!());
+    assert!(unimplemented!());
+    assert!(!(unsafe { S::operator_eq(&a, &b,) }));
+    assert!(unimplemented!());
+    return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

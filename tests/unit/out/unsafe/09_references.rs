@@ -6,12 +6,12 @@ use std::collections::BTreeMap;
 use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
-pub static mut counter_0: std::cell::LazyCell<()> = std::cell::LazyCell::new(|| unsafe { 0_() });
+pub static mut counter_0: std::cell::LazyCell<i32> = std::cell::LazyCell::new(|| unsafe { 0 });
 pub unsafe fn inc_1() {
-    (*std::cell::LazyCell::force_mut(&mut *&raw mut counter_0)) += 1_();
+    (*std::cell::LazyCell::force_mut(&mut *&raw mut counter_0)) += 1;
 }
 pub unsafe fn dec_2() {
-    (*std::cell::LazyCell::force_mut(&mut *&raw mut counter_0)) -= 1_();
+    (*std::cell::LazyCell::force_mut(&mut *&raw mut counter_0)) -= 1;
 }
 pub fn main() {
     unsafe {
@@ -19,84 +19,84 @@ pub fn main() {
         std::process::exit(main_0() as i32);
     }
 }
-unsafe fn main_0() -> () {
-    let mut h: () = 15_();
-    let h_ref1: *mut () = &mut h;
-    (*h_ref1) = 16_();
-    let mut h_ptr: *mut () = (h_ref1);
-    let h_ref2: *mut () = &mut (*h_ptr);
-    (*h_ref2) = 17_();
-    unimplemented!();
-    let mut a: () = 1_();
-    let mut b: () = 2_();
-    let r: *mut () = if ((a) < (b)) {
-        (&mut a as *mut ())
+unsafe fn main_0() -> i32 {
+    let mut h: i32 = 15;
+    let h_ref1: *mut i32 = &mut h;
+    (*h_ref1) = 16;
+    let mut h_ptr: *mut i32 = (h_ref1);
+    let h_ref2: *mut i32 = &mut (*h_ptr);
+    (*h_ref2) = 17;
+    assert!((((*h_ref1) + (*h_ref2)) == (34)));
+    let mut a: i32 = 1;
+    let mut b: i32 = 2;
+    let r: *mut i32 = if ((a) < (b)) {
+        (&mut a as *mut i32)
     } else {
-        (&mut b as *mut ())
+        (&mut b as *mut i32)
     };
-    (*r) = 10_();
-    unimplemented!();
-    let cr: *const () = if ((a) > (b)) {
-        (&mut a as *mut ())
+    (*r) = 10;
+    assert!(((a) == (10)));
+    let cr: *const i32 = if ((a) > (b)) {
+        (&mut a as *mut i32)
     } else {
-        (&mut b as *mut ())
+        (&mut b as *mut i32)
     };
-    unimplemented!();
-    let x: () = 1_();
-    let y: () = 2_();
-    let cx: *const () = if ((x) < (y)) {
-        (&x as *const ())
+    assert!(((*cr) == (10)));
+    let x: i32 = 1;
+    let y: i32 = 2;
+    let cx: *const i32 = if ((x) < (y)) {
+        (&x as *const i32)
     } else {
-        (&y as *const ())
+        (&y as *const i32)
     };
-    unimplemented!();
-    let mut cp: *const () = (if ((a) > (b)) {
-        (&mut a as *mut ())
+    assert!(((*cx) == (1)));
+    let mut cp: *const i32 = (if ((a) > (b)) {
+        (&mut a as *mut i32)
     } else {
-        (&mut b as *mut ())
+        (&mut b as *mut i32)
     })
     .cast_const();
-    unimplemented!();
-    let mut mp: *mut () = if ((a) < (b)) {
-        (&mut a as *mut ())
+    assert!(((*cp) == (10)));
+    let mut mp: *mut i32 = if ((a) < (b)) {
+        (&mut a as *mut i32)
     } else {
-        (&mut b as *mut ())
+        (&mut b as *mut i32)
     };
-    (*mp) = 20_();
-    unimplemented!();
+    (*mp) = 20;
+    assert!(((b) == (20)));
     (*if ((a) < (b)) {
-        (&mut a as *mut ())
+        (&mut a as *mut i32)
     } else {
-        (&mut b as *mut ())
-    }) = 30_();
-    unimplemented!();
-    unimplemented!();
+        (&mut b as *mut i32)
+    }) = 30;
+    assert!(((a) == (30)));
+    assert!(((b) == (20)));
     (*if ((a) < (b)) {
-        (&mut a as *mut ())
+        (&mut a as *mut i32)
     } else {
-        (&mut b as *mut ())
-    }) += 5_();
-    unimplemented!();
-    let mut ap: *mut () = (if ((a) > (b)) {
-        (&mut a as *mut ())
+        (&mut b as *mut i32)
+    }) += 5;
+    assert!(((b) == (25)));
+    let mut ap: *mut i32 = (if ((a) > (b)) {
+        (&mut a as *mut i32)
     } else {
-        (&mut b as *mut ())
+        (&mut b as *mut i32)
     });
-    (*ap) = 40_();
-    unimplemented!();
+    (*ap) = 40;
+    assert!(((a) == (40)));
     if ((a) < (b)) {
         (unsafe { inc_1() });
     } else {
         (unsafe { dec_2() });
     };
-    unimplemented!();
+    assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut counter_0)) == (-1_i32)));
     if ((a) > (b)) {
         (unsafe { inc_1() });
     } else {
         (unsafe { dec_2() });
     };
-    unimplemented!();
-    return 0_();
+    assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut counter_0)) == (0)));
+    return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {
     std::cell::LazyCell::force(&*&raw const counter_0);

@@ -10,25 +10,25 @@ use std::rc::{Rc, Weak};
 #[byte_size(4)]
 pub struct Inner {
     #[offset(0)]
-    pub x: (),
+    pub x: i32,
 }
 #[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(1)]
 pub struct Table {}
 impl Table {
-    pub fn operator_index(mut i: ()) -> Ptr<()> {
-        return (table_0.with(|v| v.as_pointer()) as Ptr<()>).offset(i);
+    pub fn operator_index(mut i: i32) -> Ptr<i32> {
+        return (table_0.with(|v| v.as_pointer()) as Ptr<i32>).offset(i);
     }
 }
 thread_local!(
-    pub static table_0: Value<Box<[()]>> = Rc::new(RefCell::new(Box::new([7_(), 8_(), 9_()])));
+    pub static table_0: Value<Box<[i32]>> = Rc::new(RefCell::new(Box::new([7, 8, 9])));
 );
 #[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg)]
 #[byte_size(16)]
 pub struct S {
     #[offset(0)]
     #[byte_size(12)]
-    pub data: Box<[()]>,
+    pub data: Box<[i32]>,
     #[offset(12)]
     #[byte_size(4)]
     pub inner: Inner,
@@ -37,7 +37,7 @@ impl Default for S {
     fn default() -> Self {
         {
             S {
-                data: (0..3).map(|_| unimplemented!()).collect::<Box<[()]>>(),
+                data: (0..3).map(|_| 0_i32).collect::<Box<[i32]>>(),
                 inner: <Inner>::default(),
             }
         }
@@ -47,44 +47,49 @@ pub fn main() {
     __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
-fn main_0() -> () {
+fn main_0() -> i32 {
     let s: Value<S> = Rc::new(RefCell::new(S {
-        data: Box::new([1_(), 2_(), 3_()]),
-        inner: Inner { x: 9_() },
+        data: Box::new([1, 2, 3]),
+        inner: Inner { x: 9 },
     }));
-    unimplemented!();
-    ({ SImpl::operator_index_1(&s.as_pointer(), 1_()) }).write(20_());
-    unimplemented!();
+    assert!(((({ SImpl::operator_index_1(&s.as_pointer(), 1,) }).read()) == 2));
+    ({ SImpl::operator_index_1(&s.as_pointer(), 1) }).write(20);
+    assert!(((({ SImpl::operator_index_1(&s.as_pointer(), 1,) }).read()) == 20));
     let cs: Ptr<S> = s.as_pointer();
-    unimplemented!();
-    unimplemented!();
-    field!(({ SImpl::operator_deref(&s.as_pointer(),) }), x).write(10_());
-    unimplemented!();
-    field!(({ SImpl::operator_arrow(&s.as_pointer(),) }), x).write(11_());
-    unimplemented!();
-    let mut p: Ptr<()> = ({ SImpl::operator_addr(&s.as_pointer()) });
-    unimplemented!();
-    p.write(5_());
-    unimplemented!();
+    assert!(((({ SImpl::operator_index_2(&cs, 2,) }).read()) == 3));
+    assert!((({ SImpl::operator_deref(&s.as_pointer(),) }).with(|__s| (__s).x) == 9));
+    field!(({ SImpl::operator_deref(&s.as_pointer(),) }), x).write(10);
+    assert!((({ SImpl::operator_arrow(&s.as_pointer(),) }).with(|__s| __s.x) == 10));
+    field!(({ SImpl::operator_arrow(&s.as_pointer(),) }), x).write(11);
+    assert!(({ (*s.borrow()).inner.x } == 11));
+    let mut p: Ptr<i32> = ({ SImpl::operator_addr(&s.as_pointer()) });
+    assert!(((p.read()) == 1));
+    p.write(5);
+    assert!(((array_elem!(s.as_pointer(), data, 0).read()) == 5));
     let t: Value<Table> = Rc::new(RefCell::new(<Table>::default()));
-    unimplemented!();
-    ({ Table::operator_index(1_()) }).write(80_());
-    unimplemented!();
-    return 0_();
+    assert!(((({ Table::operator_index(1,) }).read()) == 8));
+    ({ Table::operator_index(1) }).write(80);
+    assert!(
+        (({
+            let __idx0 = (1) as usize;
+            table_0.with(|rc| rc.borrow()[__idx0])
+        }) == 80)
+    );
+    return 0;
 }
 pub trait SImpl {
-    fn operator_index_1(&self, i: ()) -> Ptr<()>;
-    fn operator_index_2(&self, i: ()) -> Ptr<()>;
+    fn operator_index_1(&self, i: i32) -> Ptr<i32>;
+    fn operator_index_2(&self, i: i32) -> Ptr<i32>;
     fn operator_deref(&self) -> Ptr<Inner>;
     fn operator_arrow(&self) -> Ptr<Inner>;
-    fn operator_addr(&self) -> Ptr<()>;
+    fn operator_addr(&self) -> Ptr<i32>;
 }
 impl SImpl for Ptr<S> {
-    fn operator_index_1(&self, mut i: ()) -> Ptr<()> {
-        return (array_field_ptr!((*self), data) as Ptr<()>).offset((i) as isize);
+    fn operator_index_1(&self, mut i: i32) -> Ptr<i32> {
+        return (array_field_ptr!((*self), data) as Ptr<i32>).offset((i) as isize);
     }
-    fn operator_index_2(&self, mut i: ()) -> Ptr<()> {
-        return (array_field_ptr!((*self), data) as Ptr<()>).offset((i) as isize);
+    fn operator_index_2(&self, mut i: i32) -> Ptr<i32> {
+        return (array_field_ptr!((*self), data) as Ptr<i32>).offset((i) as isize);
     }
     fn operator_deref(&self) -> Ptr<Inner> {
         return field_ptr!((*self), inner);
@@ -92,8 +97,8 @@ impl SImpl for Ptr<S> {
     fn operator_arrow(&self) -> Ptr<Inner> {
         return (field_ptr!((*self), inner));
     }
-    fn operator_addr(&self) -> Ptr<()> {
-        return ((array_field_ptr!((*self), data) as Ptr<()>).offset((0_()) as isize));
+    fn operator_addr(&self) -> Ptr<i32> {
+        return ((array_field_ptr!((*self), data) as Ptr<i32>).offset((0) as isize));
     }
 }
 pub fn __cpp2rust_init_globals() {

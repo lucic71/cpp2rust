@@ -10,23 +10,23 @@ use std::rc::{Rc, Weak};
 #[byte_size(8)]
 pub struct Foo {
     #[offset(0)]
-    pub x1: (),
+    pub x1: i32,
     #[offset(4)]
-    pub x2: (),
+    pub x2: i32,
 }
 pub fn main() {
     __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
-fn main_0() -> () {
+fn main_0() -> i32 {
     let arr: Value<Box<[Foo]>> = Rc::new(RefCell::new(Box::new([
-        Foo { x1: 1_(), x2: 2_() },
-        Foo { x1: 3_(), x2: 4_() },
+        Foo { x1: 1, x2: 2 },
+        Foo { x1: 3, x2: 4 },
     ])));
-    let mut p1: Ptr<()> = (field_ptr!((arr.as_pointer() as Ptr<Foo>).offset(1_()), x1));
-    let mut a: () = (p1.read());
-    let mut p2: Ptr<Foo> = ((arr.as_pointer() as Ptr<Foo>).offset(0_()));
-    unimplemented!();
-    return 0_();
+    let mut p1: Ptr<i32> = (field_ptr!((arr.as_pointer() as Ptr<Foo>).offset(1), x1));
+    let mut a: i32 = (p1.read());
+    let mut p2: Ptr<Foo> = ((arr.as_pointer() as Ptr<Foo>).offset(0));
+    assert!((({ a } + { p2.with(|__s| __s.x2) }) == 5));
+    return 0;
 }
 pub fn __cpp2rust_init_globals() {}

@@ -20,21 +20,17 @@ fn main_0() -> i32 {
         b"test_stdcopy_ostream.txt\0",
     )));
     {
-        let ofs: Value<::std::fs::File> = Rc::new(RefCell::new(
-            ::std::fs::File::create((file.as_pointer() as Ptr<i8>).to_string())
-                .expect("Failed to open file"),
-        ));
+        let ofs: Value<::std::fs::File> = Rc::new(RefCell::new(unimplemented!()));
         {
-            let mut __it = RandomAccessIterator::Vec(str.decay());
+            let mut __first = RandomAccessIterator::Vec(str.decay());
             let __last = RandomAccessIterator::Vec(str.decay().to_last());
-            let __out = &mut (*ofs.borrow_mut());
-            let mut __bytes: Vec<u8> = Vec::new();
-            while __it != __last {
-                __bytes.push(__it.iter_deref().read() as u8);
-                __it.iter_inc();
+            let mut __out = (*ofs.borrow_mut()).clone();
+            while __first != __last {
+                __out.iter_deref().write((__first.iter_deref().read()));
+                __first.iter_inc();
+                __out.iter_inc();
             }
-            __out.write_all(&__bytes);
-            __out.try_clone().unwrap()
+            __out
         };
     }
     match nix::unistd::unlink((file.as_pointer() as Ptr<i8>).to_rust_string().as_str()) {

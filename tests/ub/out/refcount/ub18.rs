@@ -10,10 +10,10 @@ pub fn main() {
     __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
-fn main_0() -> () {
-    let arr: Value<Box<[()]>> = Rc::new(RefCell::new(Box::new([1_(), 2_(), 3_()])));
-    let mut p: Ptr<()> = (arr.as_pointer() as Ptr<()>);
+fn main_0() -> i32 {
+    let arr: Value<Box<[i32]>> = Rc::new(RefCell::new(Box::new([1, 2, 3])));
+    let mut p: Ptr<i32> = (arr.as_pointer() as Ptr<i32>);
     p.delete();
-    return 0_();
+    return 0;
 }
 pub fn __cpp2rust_init_globals() {}

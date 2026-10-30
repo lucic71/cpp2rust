@@ -10,25 +10,31 @@ pub fn main() {
     __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
-fn main_0() -> () {
-    let mut array: Ptr<()> =
-        Ptr::alloc_array((0..100_()).map(|_| unimplemented!()).collect::<Box<[()]>>());
-    unimplemented!();
-    elem!(array, 99_()).write(-1_());
-    let mut p1: Ptr<()> = (array).clone();
-    'loop_: while ((p1.read()) >= 0_()) {
-        p1.write(1_());
+fn main_0() -> i32 {
+    let mut array: Ptr<i32> =
+        Ptr::alloc_array((0..100_usize).map(|_| 0_i32).collect::<Box<[i32]>>());
+    {
+        (array).to_any().memset(
+            (0) as u8,
+            (::std::mem::size_of::<i32>() as usize).wrapping_mul(100_usize) as usize,
+        );
+        (array).to_any()
+    };
+    elem!(array, 99).write(-1_i32);
+    let mut p1: Ptr<i32> = (array).clone();
+    'loop_: while ((p1.read()) >= 0) {
+        p1.write(1);
         p1.prefix_inc();
     }
-    let mut out: () = 0_();
-    let mut p1: Ptr<()> = (array).clone();
-    'loop_: while ((p1.read()) >= 0_()) {
+    let mut out: i32 = 0;
+    let mut p1: Ptr<i32> = (array).clone();
+    'loop_: while ((p1.read()) >= 0) {
         out += { (p1.read()) };
         p1.prefix_inc();
     }
-    let mut p2: Ptr<()> = (array).clone();
+    let mut p2: Ptr<i32> = (array).clone();
     p2.delete();
-    unimplemented!();
-    return 0_();
+    assert!((out == 99));
+    return 0;
 }
 pub fn __cpp2rust_init_globals() {}

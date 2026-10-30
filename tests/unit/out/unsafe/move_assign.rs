@@ -104,8 +104,24 @@ unsafe fn main_0() -> i32 {
         vec_.push(__a1)
     };
     let mut d: MoveOnly = MoveOnly::new({ 8 });
-    (unsafe { MoveOnly::move_assign(&mut vec_[(0_usize)], &mut d) });
-    assert!(((vec_[(0_usize)].v) == (8)));
+    (unsafe {
+        MoveOnly::move_assign(
+            &mut (*{
+                let __idx = 0_usize as usize;
+                let __v: &mut Vec<MoveOnly> = &mut vec_;
+                __v.as_mut_ptr().add(__idx)
+            }),
+            &mut d,
+        )
+    });
+    assert!(
+        (((*{
+            let __idx = 0_usize as usize;
+            let __v: &mut Vec<MoveOnly> = &mut vec_;
+            __v.as_mut_ptr().add(__idx)
+        })
+        .v) == (8))
+    );
     assert!(((d.v) == (0)));
     let mut m: ConstMoveAssign = ConstMoveAssign::new();
     let mut m1: ConstMoveAssign = ConstMoveAssign::new();

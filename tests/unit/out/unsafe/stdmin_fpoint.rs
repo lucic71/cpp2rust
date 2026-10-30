@@ -12,10 +12,14 @@ pub fn main() {
         std::process::exit(main_0() as i32);
     }
 }
-unsafe fn main_0() -> () {
-    let mut a0: () = 3.14_f64;
-    let mut a1: () = 2.71_f64;
-    unimplemented!();
-    return 0_();
+unsafe fn main_0() -> i32 {
+    let mut a0: f64 = 3.14_f64;
+    let mut a1: f64 = 2.71_f64;
+    {
+        let __a: *const _ = &mut a0;
+        let __b: *const _ = &mut a1;
+        if *__b < *__a { __b } else { __a }
+    };
+    return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

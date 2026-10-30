@@ -10,51 +10,51 @@ use std::rc::{Rc, Weak};
 #[byte_size(8)]
 pub struct Outer_Named {
     #[offset(0)]
-    pub a: (),
+    pub a: i32,
     #[offset(4)]
-    pub b: (),
+    pub b: i32,
 }
 #[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(8)]
 pub struct anon_0 {
     #[offset(0)]
-    pub c: (),
+    pub c: i32,
     #[offset(4)]
-    pub d: (),
+    pub d: i32,
 }
 #[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(8)]
 pub struct anon_1 {
     #[offset(0)]
-    pub g: (),
+    pub g: i32,
     #[offset(4)]
-    pub h: (),
+    pub h: i32,
 }
 #[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(8)]
 pub struct anon_2 {
     #[offset(0)]
-    pub e: (),
+    pub e: i32,
     #[offset(4)]
-    pub f: (),
+    pub f: i32,
 }
 #[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(4)]
 pub struct anon_4 {
     #[offset(0)]
-    pub j: (),
+    pub j: i32,
 }
 #[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(4)]
 pub struct anon_5 {
     #[offset(0)]
-    pub k: (),
+    pub k: i32,
 }
 #[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(12)]
 pub struct anon_3 {
     #[offset(0)]
-    pub i: (),
+    pub i: i32,
     #[offset(4)]
     #[byte_size(4)]
     pub inner_named: anon_4,
@@ -85,43 +85,53 @@ pub fn main() {
     __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
-fn main_0() -> () {
+fn main_0() -> i32 {
     let mut o: Outer = <Outer>::default();
-    o.named.a = 1_();
-    o.named.b = 2_();
-    o.anonymous_named_0.c = 3_();
-    o.anonymous_named_0.d = 4_();
-    o.anonymous_named_1.g = 5_();
-    o.anonymous_named_1.h = 6_();
-    o.anon_2.e = 7_();
-    o.anon_2.f = 8_();
-    o.anon_3.i = 9_();
-    o.anon_3.inner_named.j = 10_();
-    o.anon_3.anon_5.k = 11_();
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
+    o.named.a = 1;
+    o.named.b = 2;
+    o.anonymous_named_0.c = 3;
+    o.anonymous_named_0.d = 4;
+    o.anonymous_named_1.g = 5;
+    o.anonymous_named_1.h = 6;
+    o.anon_2.e = 7;
+    o.anon_2.f = 8;
+    o.anon_3.i = 9;
+    o.anon_3.inner_named.j = 10;
+    o.anon_3.anon_5.k = 11;
+    assert!((o.named.a == 1));
+    assert!((o.named.b == 2));
+    assert!((o.anonymous_named_0.c == 3));
+    assert!((o.anonymous_named_0.d == 4));
+    assert!((o.anonymous_named_1.g == 5));
+    assert!((o.anonymous_named_1.h == 6));
+    assert!((o.anon_2.e == 7));
+    assert!((o.anon_2.f == 8));
+    assert!((o.anon_3.i == 9));
+    assert!((o.anon_3.inner_named.j == 10));
+    assert!((o.anon_3.anon_5.k == 11));
     let mut s: anon_6 = <anon_6>::default();
-    s.x = 1_();
-    s.z = 2_();
-    unimplemented!();
-    unimplemented!();
-    return 0_();
+    s.x = 1;
+    s.z = 2;
+    assert!(
+        ({
+            s.x = 1;
+            s.x
+        } != 0)
+    );
+    assert!(
+        ({
+            s.z = 2;
+            s.z
+        } != 0)
+    );
+    return 0;
 }
 #[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(8)]
 pub struct anon_6 {
     #[offset(0)]
-    pub x: (),
+    pub x: i32,
     #[offset(4)]
-    pub z: (),
+    pub z: i32,
 }
 pub fn __cpp2rust_init_globals() {}

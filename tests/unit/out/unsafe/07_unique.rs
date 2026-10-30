@@ -6,9 +6,10 @@ use std::collections::BTreeMap;
 use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
-pub unsafe fn fn_0(mut u: ()) -> () {
-    (*unimplemented!()) = 10_();
-    return unimplemented!();
+pub unsafe fn fn_0(mut u: Option<Box<i32>>) -> Option<Box<i32>> {
+    (*u.as_deref()
+        .map_or(::std::ptr::null_mut(), |v| v as *const i32 as *mut i32)) = 10;
+    return u.take();
 }
 pub fn main() {
     unsafe {
@@ -16,16 +17,26 @@ pub fn main() {
         std::process::exit(main_0() as i32);
     }
 }
-unsafe fn main_0() -> () {
-    let mut f: () = unimplemented!();
-    (*unimplemented!()) = 9_();
-    let mut f_ptr1: *mut () = unimplemented!();
-    (*f_ptr1) = 10_();
-    let mut f_ptr2: *mut () = (&mut (*unimplemented!()) as *mut ());
-    (*f_ptr2) = 11_();
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    return 0_();
+unsafe fn main_0() -> i32 {
+    let mut f: Option<Box<i32>> = Some(Box::new(8));
+    (*f.as_deref()
+        .map_or(::std::ptr::null_mut(), |v| v as *const i32 as *mut i32)) = 9;
+    let mut f_ptr1: *mut i32 = f
+        .as_deref_mut()
+        .map_or(::std::ptr::null_mut(), |v| v as *mut i32);
+    (*f_ptr1) = 10;
+    let mut f_ptr2: *mut i32 = (&mut (*f
+        .as_deref()
+        .map_or(::std::ptr::null_mut(), |v| v as *const i32 as *mut i32))
+        as *mut i32);
+    (*f_ptr2) = 11;
+    f = Some(Box::new(9)).take();
+    f = (unsafe { fn_0(f.take()) }).take();
+    assert!(
+        ((*f.as_deref()
+            .map_or(::std::ptr::null_mut(), |v| v as *const i32 as *mut i32))
+            == (10))
+    );
+    return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

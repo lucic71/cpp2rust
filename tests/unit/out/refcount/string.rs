@@ -20,22 +20,22 @@ fn main_0() -> i32 {
     }));
     assert!((((*s1.borrow()).len() - 1) == 5_usize));
     assert!((((*s1.borrow()).len() - 1) == ((*s1.borrow()).len() - 1)));
-    assert!((({ (*s1.borrow())[0_usize] } as i32) == (('h' as i8) as i32)));
-    assert!((({ (*s1.borrow())[1_usize] } as i32) == (('e' as i8) as i32)));
-    assert!((({ (*s1.borrow())[2_usize] } as i32) == (('l' as i8) as i32)));
-    assert!((({ (*s1.borrow())[3_usize] } as i32) == (('l' as i8) as i32)));
-    assert!((({ (*s1.borrow())[4_usize] } as i32) == (('o' as i8) as i32)));
+    assert!((((s1.decay().offset(0_usize as isize).read()) as i32) == (('h' as i8) as i32)));
+    assert!((((s1.decay().offset(1_usize as isize).read()) as i32) == (('e' as i8) as i32)));
+    assert!((((s1.decay().offset(2_usize as isize).read()) as i32) == (('l' as i8) as i32)));
+    assert!((((s1.decay().offset(3_usize as isize).read()) as i32) == (('l' as i8) as i32)));
+    assert!((((s1.decay().offset(4_usize as isize).read()) as i32) == (('o' as i8) as i32)));
     assert!(
         Ptr::<i8>::from_string_literal(b"hello")
             .with_c_str(|__s| (*s1.borrow())[..(*s1.borrow()).len().saturating_sub(1)] == *__s)
     );
     assert!(
-        Ptr::<i8>::from_string_literal(b"world")
-            .with_c_str(|__s| (*s1.borrow())[..(*s1.borrow()).len().saturating_sub(1)] != *__s)
+        !(Ptr::<i8>::from_string_literal(b"world")
+            .with_c_str(|__s| (*s1.borrow())[..(*s1.borrow()).len().saturating_sub(1)] == *__s))
     );
     assert!(
-        !(Ptr::<i8>::from_string_literal(b"hello")
-            .with_c_str(|__s| (*s1.borrow())[..(*s1.borrow()).len().saturating_sub(1)] != *__s))
+        !(!(Ptr::<i8>::from_string_literal(b"hello")
+            .with_c_str(|__s| (*s1.borrow())[..(*s1.borrow()).len().saturating_sub(1)] == *__s)))
     );
     let mut p1: Ptr<i8> = s1.decay();
     assert!((((elem!(p1, 0).read()) as i32) == (('h' as i8) as i32)));
@@ -55,21 +55,23 @@ fn main_0() -> i32 {
     'loop_: while ((i as usize) < ((*s2.borrow()).len() - 1)) {
         assert!(
             (((elem!(p2, i).read()) as i32) == (('a' as i8) as i32))
-                && (({ (*s2.borrow())[(i as usize)] } as i32) == (('a' as i8) as i32))
+                && (((s2.decay().offset((i as usize) as isize).read()) as i32)
+                    == (('a' as i8) as i32))
         );
         i.prefix_inc();
     }
     assert!((((*s2.borrow()).len() - 1) == 10_usize));
     assert!((((*s2.borrow()).len() - 1) == ((*s2.borrow()).len() - 1)));
-    (*s2.borrow_mut())[0_usize] = ('b' as i8);
-    (*s2.borrow_mut())[1_usize] = ('c' as i8);
-    assert!((({ (*s2.borrow())[0_usize] } as i32) == (('b' as i8) as i32)));
-    assert!((({ (*s2.borrow())[1_usize] } as i32) == (('c' as i8) as i32)));
+    s2.decay().offset(0_usize as isize).write(('b' as i8));
+    s2.decay().offset(1_usize as isize).write(('c' as i8));
+    assert!((((s2.decay().offset(0_usize as isize).read()) as i32) == (('b' as i8) as i32)));
+    assert!((((s2.decay().offset(1_usize as isize).read()) as i32) == (('c' as i8) as i32)));
     let mut i: u32 = 2_u32;
     'loop_: while ((i as usize) < ((*s2.borrow()).len() - 1)) {
         assert!(
             (((elem!(p2, i).read()) as i32) == (('a' as i8) as i32))
-                && (({ (*s2.borrow())[(i as usize)] } as i32) == (('a' as i8) as i32))
+                && (((s2.decay().offset((i as usize) as isize).read()) as i32)
+                    == (('a' as i8) as i32))
         );
         i.prefix_inc();
     }
@@ -89,21 +91,26 @@ fn main_0() -> i32 {
     let mut i: u32 = 0_u32;
     'loop_: while ((i as usize) < ((*s3.borrow()).len() - 1)) {
         assert!(
-            ({ ((elem!(p3, i).read()) as i32) } == { ({ (*s3.borrow())[(i as usize)] } as i32) })
+            ({ ((elem!(p3, i).read()) as i32) } == {
+                ((s3.decay().offset((i as usize) as isize).read()) as i32)
+            })
         );
         i.prefix_inc();
     }
     let s4: Value<Vec<i8>> = Rc::new(RefCell::new({
         let mut __tmp1 = (*s1.borrow())[(1_usize) as usize
             ..::std::cmp::min(
-                (1_usize
-                    + Ptr::<i8>::from_string_literal(b"l").with_c_str(|__lookup| {
+                (1_usize + {
+                    let __n = (*s1.borrow()).len().saturating_sub(1);
+                    let __end = usize::MAX.saturating_add(1).min(__n);
+                    Ptr::<i8>::from_string_literal(b"l").with_c_str(|__lookup| {
                         (*s1.borrow())
                             .iter()
-                            .take((*s1.borrow()).len().saturating_sub(1))
-                            .rposition(|&x| __lookup.contains(&x))
+                            .take(__end)
+                            .rposition(|&__x| __lookup.contains(&__x))
                             .unwrap_or(usize::MAX)
-                    })) as usize,
+                    })
+                }) as usize,
                 (*s1.borrow()).len().saturating_sub(1),
             )]
             .to_vec();
@@ -116,7 +123,9 @@ fn main_0() -> i32 {
     let mut i: u32 = 0_u32;
     'loop_: while ((i as usize) < ((*s4.borrow()).len() - 1)) {
         assert!(
-            ({ ((elem!(p4, i).read()) as i32) } == { ({ (*s4.borrow())[(i as usize)] } as i32) })
+            ({ ((elem!(p4, i).read()) as i32) } == {
+                ((s4.decay().offset((i as usize) as isize).read()) as i32)
+            })
         );
         i.prefix_inc();
     }
@@ -133,7 +142,9 @@ fn main_0() -> i32 {
     let mut i: u32 = 0_u32;
     'loop_: while ((i as usize) < ((*s5.borrow()).len() - 1)) {
         assert!(
-            ({ ((elem!(p5, i).read()) as i32) } == { ({ (*s5.borrow())[(i as usize)] } as i32) })
+            ({ ((elem!(p5, i).read()) as i32) } == {
+                ((s5.decay().offset((i as usize) as isize).read()) as i32)
+            })
         );
         i.prefix_inc();
     }
@@ -146,154 +157,178 @@ fn main_0() -> i32 {
         ('o' as i8),
         ('o' as i8),
     ])));
-    let mut string: Vec<i8> = {
+    let string: Value<Vec<i8>> = Rc::new(RefCell::new({
         let mut __v = Vec::with_capacity(3_usize as usize + 1);
         (arr.as_pointer() as Ptr<i8>)
             .with_slice(3_usize as usize, |__s| __v.extend_from_slice(__s));
         __v.push(0);
         __v
-    };
-    assert!(((string.len() - 1) == 3_usize));
-    assert!(((string[0_usize] as i32) == (('b' as i8) as i32)));
-    assert!(((string[1_usize] as i32) == (('a' as i8) as i32)));
-    assert!(((string[2_usize] as i32) == (('r' as i8) as i32)));
+    }));
+    assert!((((*string.borrow()).len() - 1) == 3_usize));
+    assert!((((string.decay().offset(0_usize as isize).read()) as i32) == (('b' as i8) as i32)));
+    assert!((((string.decay().offset(1_usize as isize).read()) as i32) == (('a' as i8) as i32)));
+    assert!((((string.decay().offset(2_usize as isize).read()) as i32) == (('r' as i8) as i32)));
     assert!(
-        Ptr::<i8>::from_string_literal(b"bar")
-            .with_c_str(|__s| string[..string.len().saturating_sub(1)] == *__s)
+        Ptr::<i8>::from_string_literal(b"bar").with_c_str(|__s| (*string.borrow())
+            [..(*string.borrow()).len().saturating_sub(1)]
+            == *__s)
     );
     {
-        string.pop();
-        string.resize((3_usize) as usize, 0);
-        string.push(0)
+        (*string.borrow_mut()).pop();
+        (*string.borrow_mut()).resize((3_usize) as usize, 0);
+        (*string.borrow_mut()).push(0)
     };
-    assert!(((string.len() - 1) == 3_usize));
-    assert!(((string[0_usize] as i32) == (('b' as i8) as i32)));
-    assert!(((string[1_usize] as i32) == (('a' as i8) as i32)));
-    assert!(((string[2_usize] as i32) == (('r' as i8) as i32)));
+    assert!((((*string.borrow()).len() - 1) == 3_usize));
+    assert!((((string.decay().offset(0_usize as isize).read()) as i32) == (('b' as i8) as i32)));
+    assert!((((string.decay().offset(1_usize as isize).read()) as i32) == (('a' as i8) as i32)));
+    assert!((((string.decay().offset(2_usize as isize).read()) as i32) == (('r' as i8) as i32)));
     assert!(
-        Ptr::<i8>::from_string_literal(b"bar")
-            .with_c_str(|__s| string[..string.len().saturating_sub(1)] == *__s)
+        Ptr::<i8>::from_string_literal(b"bar").with_c_str(|__s| (*string.borrow())
+            [..(*string.borrow()).len().saturating_sub(1)]
+            == *__s)
     );
     {
-        string.pop();
-        string.resize((5_usize) as usize, 0);
-        string.push(0)
+        (*string.borrow_mut()).pop();
+        (*string.borrow_mut()).resize((5_usize) as usize, 0);
+        (*string.borrow_mut()).push(0)
     };
-    assert!(((string.len() - 1) == 5_usize));
-    assert!(((string[0_usize] as i32) == (('b' as i8) as i32)));
-    assert!(((string[1_usize] as i32) == (('a' as i8) as i32)));
-    assert!(((string[2_usize] as i32) == (('r' as i8) as i32)));
-    assert!(((string[3_usize] as i32) == 0));
-    assert!(((string[4_usize] as i32) == 0));
-    string[3_usize] = ('a' as i8);
-    string[4_usize] = ('b' as i8);
-    assert!(((string[3_usize] as i32) == (('a' as i8) as i32)));
-    assert!(((string[4_usize] as i32) == (('b' as i8) as i32)));
-    string[3_usize] = 0_i8;
-    string[4_usize] = 0_i8;
+    assert!((((*string.borrow()).len() - 1) == 5_usize));
+    assert!((((string.decay().offset(0_usize as isize).read()) as i32) == (('b' as i8) as i32)));
+    assert!((((string.decay().offset(1_usize as isize).read()) as i32) == (('a' as i8) as i32)));
+    assert!((((string.decay().offset(2_usize as isize).read()) as i32) == (('r' as i8) as i32)));
+    assert!((((string.decay().offset(3_usize as isize).read()) as i32) == 0));
+    assert!((((string.decay().offset(4_usize as isize).read()) as i32) == 0));
+    string.decay().offset(3_usize as isize).write(('a' as i8));
+    string.decay().offset(4_usize as isize).write(('b' as i8));
+    assert!((((string.decay().offset(3_usize as isize).read()) as i32) == (('a' as i8) as i32)));
+    assert!((((string.decay().offset(4_usize as isize).read()) as i32) == (('b' as i8) as i32)));
+    string.decay().offset(3_usize as isize).write(0_i8);
+    string.decay().offset(4_usize as isize).write(0_i8);
     {
-        string.pop();
-        string.resize((4_usize) as usize, 0);
-        string.push(0)
+        (*string.borrow_mut()).pop();
+        (*string.borrow_mut()).resize((4_usize) as usize, 0);
+        (*string.borrow_mut()).push(0)
     };
-    assert!(((string.len() - 1) == 4_usize));
-    assert!(((string[0_usize] as i32) == (('b' as i8) as i32)));
-    assert!(((string[1_usize] as i32) == (('a' as i8) as i32)));
-    assert!(((string[2_usize] as i32) == (('r' as i8) as i32)));
-    assert!(((string[3_usize] as i32) == 0));
-    let mut result: Vec<i8> = {
-        let mut r = (string).clone();
+    assert!((((*string.borrow()).len() - 1) == 4_usize));
+    assert!((((string.decay().offset(0_usize as isize).read()) as i32) == (('b' as i8) as i32)));
+    assert!((((string.decay().offset(1_usize as isize).read()) as i32) == (('a' as i8) as i32)));
+    assert!((((string.decay().offset(2_usize as isize).read()) as i32) == (('r' as i8) as i32)));
+    assert!((((string.decay().offset(3_usize as isize).read()) as i32) == 0));
+    let result: Value<Vec<i8>> = Rc::new(RefCell::new({
+        let mut r = (*string.borrow()).clone();
         r.pop();
         Ptr::<i8>::from_string_literal(b" foo").with_c_str(|__s| r.extend_from_slice(__s));
         r.push(0);
         r
-    };
-    assert!(((result.len() - 1) == 8_usize));
-    assert!(((result[0_usize] as i32) == (('b' as i8) as i32)));
-    assert!(((result[1_usize] as i32) == (('a' as i8) as i32)));
-    assert!(((result[2_usize] as i32) == (('r' as i8) as i32)));
-    assert!(((result[3_usize] as i32) == 0));
-    assert!(((result[4_usize] as i32) == ((' ' as i8) as i32)));
-    assert!(((result[5_usize] as i32) == (('f' as i8) as i32)));
-    assert!(((result[6_usize] as i32) == (('o' as i8) as i32)));
-    assert!(((result[7_usize] as i32) == (('o' as i8) as i32)));
-    let mut substr_0: Vec<i8> = {
-        let mut __tmp1 = result[(5_usize) as usize
-            ..::std::cmp::min((5_usize + 3_usize) as usize, result.len().saturating_sub(1))]
-            .to_vec();
-        __tmp1.push(0);
-        __tmp1
-    };
-    assert!(((substr_0.len() - 1) == 3_usize));
-    assert!(((substr_0[0_usize] as i32) == (('f' as i8) as i32)));
-    assert!(((substr_0[1_usize] as i32) == (('o' as i8) as i32)));
-    assert!(((substr_0[2_usize] as i32) == (('o' as i8) as i32)));
-    let mut substr_1: Vec<i8> = {
-        let mut __tmp1 = result[(0_usize) as usize
-            ..::std::cmp::min((0_usize + 5_usize) as usize, result.len().saturating_sub(1))]
-            .to_vec();
-        __tmp1.push(0);
-        __tmp1
-    };
-    assert!(((substr_1.len() - 1) == 5_usize));
-    assert!(((substr_1[0_usize] as i32) == (('b' as i8) as i32)));
-    assert!(((substr_1[1_usize] as i32) == (('a' as i8) as i32)));
-    assert!(((substr_1[2_usize] as i32) == (('r' as i8) as i32)));
-    assert!(((substr_1[3_usize] as i32) == 0));
-    assert!(((substr_1[4_usize] as i32) == ((' ' as i8) as i32)));
-    let mut substr_2: Vec<i8> = {
-        let mut __tmp1 = result[(0_usize) as usize
+    }));
+    assert!((((*result.borrow()).len() - 1) == 8_usize));
+    assert!((((result.decay().offset(0_usize as isize).read()) as i32) == (('b' as i8) as i32)));
+    assert!((((result.decay().offset(1_usize as isize).read()) as i32) == (('a' as i8) as i32)));
+    assert!((((result.decay().offset(2_usize as isize).read()) as i32) == (('r' as i8) as i32)));
+    assert!((((result.decay().offset(3_usize as isize).read()) as i32) == 0));
+    assert!((((result.decay().offset(4_usize as isize).read()) as i32) == ((' ' as i8) as i32)));
+    assert!((((result.decay().offset(5_usize as isize).read()) as i32) == (('f' as i8) as i32)));
+    assert!((((result.decay().offset(6_usize as isize).read()) as i32) == (('o' as i8) as i32)));
+    assert!((((result.decay().offset(7_usize as isize).read()) as i32) == (('o' as i8) as i32)));
+    let substr_0: Value<Vec<i8>> = Rc::new(RefCell::new({
+        let mut __tmp1 = (*result.borrow())[(5_usize) as usize
             ..::std::cmp::min(
-                (0_usize + 15_usize) as usize,
-                result.len().saturating_sub(1),
+                (5_usize + 3_usize) as usize,
+                (*result.borrow()).len().saturating_sub(1),
             )]
             .to_vec();
         __tmp1.push(0);
         __tmp1
+    }));
+    assert!((((*substr_0.borrow()).len() - 1) == 3_usize));
+    assert!((((substr_0.decay().offset(0_usize as isize).read()) as i32) == (('f' as i8) as i32)));
+    assert!((((substr_0.decay().offset(1_usize as isize).read()) as i32) == (('o' as i8) as i32)));
+    assert!((((substr_0.decay().offset(2_usize as isize).read()) as i32) == (('o' as i8) as i32)));
+    let substr_1: Value<Vec<i8>> = Rc::new(RefCell::new({
+        let mut __tmp1 = (*result.borrow())[(0_usize) as usize
+            ..::std::cmp::min(
+                (0_usize + 5_usize) as usize,
+                (*result.borrow()).len().saturating_sub(1),
+            )]
+            .to_vec();
+        __tmp1.push(0);
+        __tmp1
+    }));
+    assert!((((*substr_1.borrow()).len() - 1) == 5_usize));
+    assert!((((substr_1.decay().offset(0_usize as isize).read()) as i32) == (('b' as i8) as i32)));
+    assert!((((substr_1.decay().offset(1_usize as isize).read()) as i32) == (('a' as i8) as i32)));
+    assert!((((substr_1.decay().offset(2_usize as isize).read()) as i32) == (('r' as i8) as i32)));
+    assert!((((substr_1.decay().offset(3_usize as isize).read()) as i32) == 0));
+    assert!((((substr_1.decay().offset(4_usize as isize).read()) as i32) == ((' ' as i8) as i32)));
+    let substr_2: Value<Vec<i8>> = Rc::new(RefCell::new({
+        let mut __tmp1 = (*result.borrow())[(0_usize) as usize
+            ..::std::cmp::min(
+                (0_usize + 15_usize) as usize,
+                (*result.borrow()).len().saturating_sub(1),
+            )]
+            .to_vec();
+        __tmp1.push(0);
+        __tmp1
+    }));
+    assert!((((*substr_2.borrow()).len() - 1) == 8_usize));
+    assert!((((substr_2.decay().offset(0_usize as isize).read()) as i32) == (('b' as i8) as i32)));
+    assert!((((substr_2.decay().offset(1_usize as isize).read()) as i32) == (('a' as i8) as i32)));
+    assert!((((substr_2.decay().offset(2_usize as isize).read()) as i32) == (('r' as i8) as i32)));
+    assert!((((substr_2.decay().offset(3_usize as isize).read()) as i32) == 0));
+    assert!((((substr_2.decay().offset(4_usize as isize).read()) as i32) == ((' ' as i8) as i32)));
+    assert!((((substr_2.decay().offset(5_usize as isize).read()) as i32) == (('f' as i8) as i32)));
+    assert!((((substr_2.decay().offset(6_usize as isize).read()) as i32) == (('o' as i8) as i32)));
+    assert!((((substr_2.decay().offset(7_usize as isize).read()) as i32) == (('o' as i8) as i32)));
+    let mut pos: usize = {
+        let __n = (*result.borrow()).len().saturating_sub(1);
+        let __end = usize::MAX.saturating_add(1).min(__n);
+        Ptr::<i8>::from_string_literal(b"b").with_c_str(|__lookup| {
+            (*result.borrow())
+                .iter()
+                .take(__end)
+                .rposition(|&__x| __lookup.contains(&__x))
+                .unwrap_or(usize::MAX)
+        })
     };
-    assert!(((substr_2.len() - 1) == 8_usize));
-    assert!(((substr_2[0_usize] as i32) == (('b' as i8) as i32)));
-    assert!(((substr_2[1_usize] as i32) == (('a' as i8) as i32)));
-    assert!(((substr_2[2_usize] as i32) == (('r' as i8) as i32)));
-    assert!(((substr_2[3_usize] as i32) == 0));
-    assert!(((substr_2[4_usize] as i32) == ((' ' as i8) as i32)));
-    assert!(((substr_2[5_usize] as i32) == (('f' as i8) as i32)));
-    assert!(((substr_2[6_usize] as i32) == (('o' as i8) as i32)));
-    assert!(((substr_2[7_usize] as i32) == (('o' as i8) as i32)));
-    let mut pos: usize = Ptr::<i8>::from_string_literal(b"b").with_c_str(|__lookup| {
-        result
-            .iter()
-            .take(result.len().saturating_sub(1))
-            .rposition(|&x| __lookup.contains(&x))
-            .unwrap_or(usize::MAX)
-    });
     assert!((pos == 0_usize));
-    pos = Ptr::<i8>::from_string_literal(b"f").with_c_str(|__lookup| {
-        result
-            .iter()
-            .take(result.len().saturating_sub(1))
-            .rposition(|&x| __lookup.contains(&x))
-            .unwrap_or(usize::MAX)
-    });
+    pos = {
+        let __n = (*result.borrow()).len().saturating_sub(1);
+        let __end = usize::MAX.saturating_add(1).min(__n);
+        Ptr::<i8>::from_string_literal(b"f").with_c_str(|__lookup| {
+            (*result.borrow())
+                .iter()
+                .take(__end)
+                .rposition(|&__x| __lookup.contains(&__x))
+                .unwrap_or(usize::MAX)
+        })
+    };
     assert!((pos == 5_usize));
-    pos = Ptr::<i8>::from_string_literal(b"o").with_c_str(|__lookup| {
-        result
-            .iter()
-            .take(result.len().saturating_sub(1))
-            .rposition(|&x| __lookup.contains(&x))
-            .unwrap_or(usize::MAX)
-    });
+    pos = {
+        let __n = (*result.borrow()).len().saturating_sub(1);
+        let __end = usize::MAX.saturating_add(1).min(__n);
+        Ptr::<i8>::from_string_literal(b"o").with_c_str(|__lookup| {
+            (*result.borrow())
+                .iter()
+                .take(__end)
+                .rposition(|&__x| __lookup.contains(&__x))
+                .unwrap_or(usize::MAX)
+        })
+    };
     assert!((pos == 7_usize));
-    pos = Ptr::<i8>::from_string_literal(b"x").with_c_str(|__lookup| {
-        result
-            .iter()
-            .take(result.len().saturating_sub(1))
-            .rposition(|&x| __lookup.contains(&x))
-            .unwrap_or(usize::MAX)
-    });
+    pos = {
+        let __n = (*result.borrow()).len().saturating_sub(1);
+        let __end = usize::MAX.saturating_add(1).min(__n);
+        Ptr::<i8>::from_string_literal(b"x").with_c_str(|__lookup| {
+            (*result.borrow())
+                .iter()
+                .take(__end)
+                .rposition(|&__x| __lookup.contains(&__x))
+                .unwrap_or(usize::MAX)
+        })
+    };
     assert!((pos == ((-1_i64 as u64) as usize)));
     pos = {
-        let __hay = &result[..result.len().saturating_sub(1)];
+        let __hay = &(*result.borrow())[..(*result.borrow()).len().saturating_sub(1)];
         Ptr::<i8>::from_string_literal(b"f").with_c_str(|__needle| {
             (0_usize..=__hay.len().saturating_sub(__needle.len()))
                 .find(|&__i| __hay[__i..].starts_with(__needle))
@@ -302,7 +337,7 @@ fn main_0() -> i32 {
     };
     assert!((pos == 5_usize));
     pos = {
-        let __hay = &result[..result.len().saturating_sub(1)];
+        let __hay = &(*result.borrow())[..(*result.borrow()).len().saturating_sub(1)];
         Ptr::<i8>::from_string_literal(b"oo").with_c_str(|__needle| {
             (0_usize..=__hay.len().saturating_sub(__needle.len()))
                 .find(|&__i| __hay[__i..].starts_with(__needle))
@@ -311,7 +346,7 @@ fn main_0() -> i32 {
     };
     assert!((pos == 6_usize));
     pos = {
-        let __hay = &result[..result.len().saturating_sub(1)];
+        let __hay = &(*result.borrow())[..(*result.borrow()).len().saturating_sub(1)];
         Ptr::<i8>::from_string_literal(b"x").with_c_str(|__needle| {
             (0_usize..=__hay.len().saturating_sub(__needle.len()))
                 .find(|&__i| __hay[__i..].starts_with(__needle))
@@ -325,15 +360,15 @@ fn main_0() -> i32 {
         __bytes
     }));
     let mut output_data: Ptr<u8> =
-        (string_to_cast.decay().offset(0_usize)).reinterpret_cast::<u8>();
+        (string_to_cast.decay().offset(0_usize as isize)).reinterpret_cast::<u8>();
     assert!((((output_data.read()) as i32) == (('c' as i8) as i32)));
     assert!((((elem!(output_data, 1).read()) as i32) == (('a' as i8) as i32)));
     assert!((((elem!(output_data, 2).read()) as i32) == (('s' as i8) as i32)));
     assert!((((elem!(output_data, 3).read()) as i32) == (('t' as i8) as i32)));
-    let mut diff: i64 = (-3_i32 as i64);
-    assert!((diff < 0_i64));
-    diff += 6_i64;
-    assert!((diff == 3_i64));
+    let mut diff: isize = (-3_i32 as isize);
+    assert!((diff < 0_isize));
+    diff += 6_isize;
+    assert!((diff == 3_isize));
     let mut t0: usize = ((*s1.borrow()).len() - 1);
     let mut t1: usize = (t0).wrapping_add(((p1.read()) as usize));
     let mut t2: usize = (t1).wrapping_add(((*s2.borrow()).len() - 1));

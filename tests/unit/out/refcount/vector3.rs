@@ -18,15 +18,31 @@ fn main_0() -> i32 {
     };
     {
         let __a0 = 2_usize as usize;
-        elem!(v.decay(), 0_usize).with_mut(|__v: &mut Vec<i32>| __v.resize_with(__a0, || 0_i32))
+        v.decay()
+            .offset(0_usize as isize)
+            .with_mut(|__v: &mut Vec<i32>| __v.resize_with(__a0, || 0_i32))
     };
     {
         let __a0 = 1_usize as usize;
-        elem!(v.decay(), 1_usize).with_mut(|__v: &mut Vec<i32>| __v.resize_with(__a0, || 0_i32))
+        v.decay()
+            .offset(1_usize as isize)
+            .with_mut(|__v: &mut Vec<i32>| __v.resize_with(__a0, || 0_i32))
     };
-    index!(elem!(v.decay(), 0_usize), 0_usize).write(1);
-    index!(elem!(v.decay(), 0_usize), 1_usize).write(5);
-    index!(elem!(v.decay(), 1_usize), 0_usize).write(6);
+    v.decay()
+        .offset(0_usize as isize)
+        .decay()
+        .offset(0_usize as isize)
+        .write(1);
+    v.decay()
+        .offset(0_usize as isize)
+        .decay()
+        .offset(1_usize as isize)
+        .write(5);
+    v.decay()
+        .offset(1_usize as isize)
+        .decay()
+        .offset(0_usize as isize)
+        .write(6);
     'loop_: for v2 in IterRange::new(v.decay().begin(), v.decay().end()) {
         let v2: Ptr<Vec<i32>> = v2.iter_deref();
         'loop_: for i in IterRange::new(v2.decay().begin(), v2.decay().end()) {

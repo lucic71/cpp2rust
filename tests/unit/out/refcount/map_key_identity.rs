@@ -7,15 +7,15 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
 thread_local!(
-    pub static default_constructions_0: Value<()> = Rc::new(RefCell::new(0_()));
+    pub static default_constructions_0: Value<i32> = Rc::new(RefCell::new(0));
 );
 #[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(8)]
 pub struct Key {
     #[offset(0)]
-    pub order: (),
+    pub order: i32,
     #[offset(4)]
-    pub identity: (),
+    pub identity: i32,
 }
 impl CppLess for Key {
     fn less(__lhs: &Ptr<Self>, __rhs: &Ptr<Self>) -> bool {
@@ -27,21 +27,21 @@ impl CppEq for Key {
         operator_eq_2(__lhs.clone(), __rhs.clone())
     }
 }
-pub fn operator_lt_1(a: Ptr<Key>, b: Ptr<Key>) -> () {
+pub fn operator_lt_1(a: Ptr<Key>, b: Ptr<Key>) -> bool {
     return ({ a.with(|__s| __s.order) } < { b.with(|__s| __s.order) });
 }
-pub fn operator_eq_2(a: Ptr<Key>, b: Ptr<Key>) -> () {
+pub fn operator_eq_2(a: Ptr<Key>, b: Ptr<Key>) -> bool {
     return ({ a.with(|__s| __s.identity) } == { b.with(|__s| __s.identity) });
 }
 #[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg)]
 #[byte_size(4)]
 pub struct Mapped {
     #[offset(0)]
-    pub value: (),
+    pub value: i32,
 }
 impl Mapped {
     pub fn new() -> Self {
-        let __this: Mapped = Self { value: 0_() };
+        let __this: Mapped = Self { value: 0 };
         (*default_constructions_0.with(Value::clone).borrow_mut()).prefix_inc();
         __this
     }
@@ -55,147 +55,427 @@ pub fn main() {
     __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
-fn main_0() -> () {
-    let mut ok: () = true;
+fn main_0() -> i32 {
+    let mut ok: bool = true;
     let distinct_a: Value<Key> = Rc::new(RefCell::new(Key {
-        order: 1_(),
-        identity: 7_(),
+        order: 1,
+        identity: 7,
     }));
     let distinct_b: Value<Key> = Rc::new(RefCell::new(Key {
-        order: 2_(),
-        identity: 7_(),
+        order: 2,
+        identity: 7,
     }));
-    ok &= ({
-        let _a: Ptr<Key> = distinct_a.as_pointer();
-        operator_eq_2(_a, distinct_b.as_pointer())
-    });
-    let distinct: Value<()> = Rc::new(RefCell::new(unimplemented!()));
-    let a: Ptr<Mapped> = unimplemented!();
-    field!(a, value).write(11_());
-    let a_it: Value<()> = Rc::new(RefCell::new(unimplemented!()));
-    let mut a_value: Ptr<Mapped> = (field_ptr!(a_it.as_pointer(), second));
-    ok &= (default_constructions_0.with(|rc| *rc.borrow()) == 1_());
-    let b: Ptr<Mapped> = unimplemented!();
-    field!(b, value).write(22_());
-    let b_it: Value<()> = Rc::new(RefCell::new(unimplemented!()));
-    ok &= (default_constructions_0.with(|rc| *rc.borrow()) == 2_());
-    ok &= (unimplemented!() == 2_());
-    ok &= ({ (a).clone() } != { (b).clone() });
-    ok &= ((a.with(|__s| __s.value) == 11_()) && (b.with(|__s| __s.value) == 22_()));
-    ok &= (unimplemented!());
-    ok &= (unimplemented!());
-    ok &= (!(unimplemented!()));
-    ok &= ({ (field_ptr!(a_it.as_pointer(), second)) } == { (a_value).clone() });
-    ok &= ({ ((*a_it.borrow()).read()).second.value } == 11_());
-    ok &= ({
-        let _a: Ptr<Key> = distinct_a.as_pointer();
-        operator_eq_2(_a, distinct_b.as_pointer())
-    });
-    let mut distinct_count: () = 0_();
-    'loop_: for entry in IterRange::new(unimplemented!(), unimplemented!()) {
-        let entry: Ptr<()> = unimplemented!();
-        if (distinct_count == 0_()) {
-            ok &= ((entry.with(|__s| __s.first.order) == 1_())
-                && (entry.with(|__s| __s.second.value) == 11_()));
-        } else if (distinct_count == 1_()) {
-            ok &= ((entry.with(|__s| __s.first.order) == 2_())
-                && (entry.with(|__s| __s.second.value) == 22_()));
+    {
+        let rhs_0 = ((ok as i32)
+            & (({
+                let _a: Ptr<Key> = distinct_a.as_pointer();
+                operator_eq_2(_a, distinct_b.as_pointer())
+            }) as i32))
+            != 0;
+        ok = rhs_0
+    };
+    let distinct: Value<Map<Key, (Value<Key>, Value<Mapped>)>> = Rc::new(RefCell::new(Map::new()));
+    let a: Ptr<Mapped> = Map::subscript(distinct.as_pointer(), distinct_a.as_pointer());
+    field!(a, value).write(11);
+    let a_it: Value<BidirectionalIterator<(Value<Key>, Value<Mapped>)>> =
+        Rc::new(RefCell::new(distinct.as_pointer().with(
+            |__m: &Map<Key, (Value<Key>, Value<Mapped>)>| __m.find(&distinct_a.as_pointer()),
+        )));
+    let mut a_value: Ptr<Mapped> = ((*(*a_it.borrow()).iter_deref().upgrade().deref())
+        .1
+        .as_pointer());
+    ok = { ((ok as i32) & ((default_constructions_0.with(|rc| *rc.borrow()) == 1) as i32)) != 0 };
+    let b: Ptr<Mapped> = Map::subscript(distinct.as_pointer(), distinct_b.as_pointer());
+    field!(b, value).write(22);
+    let b_it: Value<BidirectionalIterator<(Value<Key>, Value<Mapped>)>> =
+        Rc::new(RefCell::new(distinct.as_pointer().with(
+            |__m: &Map<Key, (Value<Key>, Value<Mapped>)>| __m.find(&distinct_b.as_pointer()),
+        )));
+    ok = { ((ok as i32) & ((default_constructions_0.with(|rc| *rc.borrow()) == 2) as i32)) != 0 };
+    {
+        let rhs_0 = ((ok as i32) & (((*distinct.borrow()).len() == 2_usize) as i32)) != 0;
+        ok = rhs_0
+    };
+    ok = { ((ok as i32) & (({ (a).clone() } != { (b).clone() }) as i32)) != 0 };
+    ok = {
+        ((ok as i32)
+            & (((a.with(|__s| __s.value) == 11) && (b.with(|__s| __s.value) == 22)) as i32))
+            != 0
+    };
+    {
+        let rhs_0 = ((ok as i32)
+            & (((*a_it.borrow())
+                == distinct
+                    .as_pointer()
+                    .with(|__m: &Map<Key, (Value<Key>, Value<Mapped>)>| {
+                        __m.find(&distinct_a.as_pointer())
+                    })) as i32))
+            != 0;
+        ok = rhs_0
+    };
+    {
+        let rhs_0 = ((ok as i32)
+            & (((*b_it.borrow())
+                == distinct
+                    .as_pointer()
+                    .with(|__m: &Map<Key, (Value<Key>, Value<Mapped>)>| {
+                        __m.find(&distinct_b.as_pointer())
+                    })) as i32))
+            != 0;
+        ok = rhs_0
+    };
+    {
+        let rhs_0 = ((ok as i32)
+            & ((!((*b_it.borrow())
+                == distinct
+                    .as_pointer()
+                    .with(|__m: &Map<Key, (Value<Key>, Value<Mapped>)>| __m.end())))
+                as i32))
+            != 0;
+        ok = rhs_0
+    };
+    {
+        let rhs_0 = ((ok as i32)
+            & (({
+                ((*(*a_it.borrow()).iter_deref().upgrade().deref())
+                    .1
+                    .as_pointer())
+            } == { (a_value).clone() }) as i32))
+            != 0;
+        ok = rhs_0
+    };
+    {
+        let rhs_0 = ((ok as i32)
+            & (((*a_it.borrow())
+                .iter_deref()
+                .with(|__s| (*__s.1.borrow()).value)
+                == 11) as i32))
+            != 0;
+        ok = rhs_0
+    };
+    {
+        let rhs_0 = ((ok as i32)
+            & (({
+                let _a: Ptr<Key> = distinct_a.as_pointer();
+                operator_eq_2(_a, distinct_b.as_pointer())
+            }) as i32))
+            != 0;
+        ok = rhs_0
+    };
+    let mut distinct_count: usize = 0_usize;
+    'loop_: for entry in IterRange::new(
+        distinct
+            .as_pointer()
+            .with(|__m: &Map<Key, (Value<Key>, Value<Mapped>)>| __m.begin()),
+        distinct
+            .as_pointer()
+            .with(|__m: &Map<Key, (Value<Key>, Value<Mapped>)>| __m.end()),
+    ) {
+        let entry: Ptr<(Value<Key>, Value<Mapped>)> = entry.iter_deref();
+        if (distinct_count == 0_usize) {
+            ok = {
+                ((ok as i32)
+                    & ((({ (*(*entry.upgrade().deref()).0.borrow()).order } == 1)
+                        && ({ (*(*entry.upgrade().deref()).1.borrow()).value } == 11))
+                        as i32))
+                    != 0
+            };
+        } else if (distinct_count == 1_usize) {
+            ok = {
+                ((ok as i32)
+                    & ((({ (*(*entry.upgrade().deref()).0.borrow()).order } == 2)
+                        && ({ (*(*entry.upgrade().deref()).1.borrow()).value } == 22))
+                        as i32))
+                    != 0
+            };
         }
         distinct_count.prefix_inc();
     }
-    ok &= (distinct_count == 2_());
+    ok = { ((ok as i32) & ((distinct_count == 2_usize) as i32)) != 0 };
     let equivalent_a: Value<Key> = Rc::new(RefCell::new(Key {
-        order: 3_(),
-        identity: 8_(),
+        order: 3,
+        identity: 8,
     }));
     let equivalent_b: Value<Key> = Rc::new(RefCell::new(Key {
-        order: 3_(),
-        identity: 9_(),
+        order: 3,
+        identity: 9,
     }));
-    ok &= !({
-        let _a: Ptr<Key> = equivalent_a.as_pointer();
-        operator_eq_2(_a, equivalent_b.as_pointer())
-    });
-    let equivalent: Value<()> = Rc::new(RefCell::new(unimplemented!()));
-    let mut before_equivalent: () = default_constructions_0.with(|rc| *rc.borrow());
-    let first: Ptr<Mapped> = unimplemented!();
-    field!(first, value).write(31_());
-    let first_it: Value<()> = Rc::new(RefCell::new(unimplemented!()));
-    let mut first_value: Ptr<Mapped> = (field_ptr!(first_it.as_pointer(), second));
-    ok &= (default_constructions_0.with(|rc| *rc.borrow()) == (before_equivalent + 1_()));
-    let second: Ptr<Mapped> = unimplemented!();
-    let mut reused: () =
-        (default_constructions_0.with(|rc| *rc.borrow()) == (before_equivalent + 1_()));
-    ok &= reused;
-    ok &= (unimplemented!() == 1_());
+    {
+        let rhs_0 = ((ok as i32)
+            & (!({
+                let _a: Ptr<Key> = equivalent_a.as_pointer();
+                operator_eq_2(_a, equivalent_b.as_pointer())
+            }) as i32))
+            != 0;
+        ok = rhs_0
+    };
+    let equivalent: Value<Map<Key, (Value<Key>, Value<Mapped>)>> =
+        Rc::new(RefCell::new(Map::new()));
+    let mut before_equivalent: i32 = default_constructions_0.with(|rc| *rc.borrow());
+    let first: Ptr<Mapped> = Map::subscript(equivalent.as_pointer(), equivalent_a.as_pointer());
+    field!(first, value).write(31);
+    let first_it: Value<BidirectionalIterator<(Value<Key>, Value<Mapped>)>> =
+        Rc::new(RefCell::new(equivalent.as_pointer().with(
+            |__m: &Map<Key, (Value<Key>, Value<Mapped>)>| __m.find(&equivalent_a.as_pointer()),
+        )));
+    let mut first_value: Ptr<Mapped> = ((*(*first_it.borrow()).iter_deref().upgrade().deref())
+        .1
+        .as_pointer());
+    ok = {
+        ((ok as i32)
+            & ((default_constructions_0.with(|rc| *rc.borrow()) == (before_equivalent + 1)) as i32))
+            != 0
+    };
+    let second: Ptr<Mapped> = Map::subscript(equivalent.as_pointer(), equivalent_b.as_pointer());
+    let mut reused: bool =
+        (default_constructions_0.with(|rc| *rc.borrow()) == (before_equivalent + 1));
+    ok = { ((ok as i32) & (reused as i32)) != 0 };
+    {
+        let rhs_0 = ((ok as i32) & (((*equivalent.borrow()).len() == 1_usize) as i32)) != 0;
+        ok = rhs_0
+    };
     if reused {
-        ok &= (!(unimplemented!()));
-        ok &= ({ (first).clone() } == { (second).clone() });
-        ok &= (unimplemented!());
-        ok &= (unimplemented!());
-        ok &= ({ (field_ptr!(first_it.as_pointer(), second)) } == { (first_value).clone() });
-        ok &= (({ ((*first_it.borrow()).read()).second.value } == 31_())
-            && (second.with(|__s| __s.value) == 31_()));
-        let mut equivalent_count: () = 0_();
-        'loop_: for entry in IterRange::new(unimplemented!(), unimplemented!()) {
-            let entry: Ptr<()> = unimplemented!();
-            ok &= ((entry.with(|__s| __s.first.order) == 3_())
-                && (entry.with(|__s| __s.second.value) == 31_()));
+        {
+            let rhs_0 = ((ok as i32)
+                & ((!((*first_it.borrow())
+                    == equivalent
+                        .as_pointer()
+                        .with(|__m: &Map<Key, (Value<Key>, Value<Mapped>)>| __m.end())))
+                    as i32))
+                != 0;
+            ok = rhs_0
+        };
+        ok = { ((ok as i32) & (({ (first).clone() } == { (second).clone() }) as i32)) != 0 };
+        {
+            let rhs_0 = ((ok as i32)
+                & (((*first_it.borrow())
+                    == equivalent.as_pointer().with(
+                        |__m: &Map<Key, (Value<Key>, Value<Mapped>)>| {
+                            __m.find(&equivalent_a.as_pointer())
+                        },
+                    )) as i32))
+                != 0;
+            ok = rhs_0
+        };
+        {
+            let rhs_0 = ((ok as i32)
+                & (((*first_it.borrow())
+                    == equivalent.as_pointer().with(
+                        |__m: &Map<Key, (Value<Key>, Value<Mapped>)>| {
+                            __m.find(&equivalent_b.as_pointer())
+                        },
+                    )) as i32))
+                != 0;
+            ok = rhs_0
+        };
+        {
+            let rhs_0 = ((ok as i32)
+                & (({
+                    ((*(*first_it.borrow()).iter_deref().upgrade().deref())
+                        .1
+                        .as_pointer())
+                } == { (first_value).clone() }) as i32))
+                != 0;
+            ok = rhs_0
+        };
+        {
+            let rhs_0 = ((ok as i32)
+                & ((((*first_it.borrow())
+                    .iter_deref()
+                    .with(|__s| (*__s.1.borrow()).value)
+                    == 31)
+                    && (second.with(|__s| __s.value) == 31)) as i32))
+                != 0;
+            ok = rhs_0
+        };
+        let mut equivalent_count: usize = 0_usize;
+        'loop_: for entry in IterRange::new(
+            equivalent
+                .as_pointer()
+                .with(|__m: &Map<Key, (Value<Key>, Value<Mapped>)>| __m.begin()),
+            equivalent
+                .as_pointer()
+                .with(|__m: &Map<Key, (Value<Key>, Value<Mapped>)>| __m.end()),
+        ) {
+            let entry: Ptr<(Value<Key>, Value<Mapped>)> = entry.iter_deref();
+            ok = {
+                ((ok as i32)
+                    & ((({ (*(*entry.upgrade().deref()).0.borrow()).order } == 3)
+                        && ({ (*(*entry.upgrade().deref()).1.borrow()).value } == 31))
+                        as i32))
+                    != 0
+            };
             equivalent_count.prefix_inc();
         }
-        ok &= (equivalent_count == 1_());
+        ok = { ((ok as i32) & ((equivalent_count == 1_usize) as i32)) != 0 };
     }
-    ok &= !({
-        let _a: Ptr<Key> = equivalent_a.as_pointer();
-        operator_eq_2(_a, equivalent_b.as_pointer())
-    });
-    let mut later_key: Key = Key {
-        order: 4_(),
-        identity: 10_(),
+    {
+        let rhs_0 = ((ok as i32)
+            & (!({
+                let _a: Ptr<Key> = equivalent_a.as_pointer();
+                operator_eq_2(_a, equivalent_b.as_pointer())
+            }) as i32))
+            != 0;
+        ok = rhs_0
     };
-    let later: Ptr<Mapped> = unimplemented!();
-    field!(later, value).write(41_());
-    ok &= (default_constructions_0.with(|rc| *rc.borrow()) == (before_equivalent + 2_()));
-    ok &= (unimplemented!() == 2_());
+    let later_key: Value<Key> = Rc::new(RefCell::new(Key {
+        order: 4,
+        identity: 10,
+    }));
+    let later: Ptr<Mapped> = Map::subscript(equivalent.as_pointer(), later_key.as_pointer());
+    field!(later, value).write(41);
+    ok = {
+        ((ok as i32)
+            & ((default_constructions_0.with(|rc| *rc.borrow()) == (before_equivalent + 2)) as i32))
+            != 0
+    };
+    {
+        let rhs_0 = ((ok as i32) & (((*equivalent.borrow()).len() == 2_usize) as i32)) != 0;
+        ok = rhs_0
+    };
     if reused {
-        ok &= (unimplemented!());
-        ok &= ({ (field_ptr!(first_it.as_pointer(), second)) } == { (first_value).clone() });
-        ok &= ({ ((*first_it.borrow()).read()).second.value } == 31_());
+        {
+            let rhs_0 = ((ok as i32)
+                & (((*first_it.borrow())
+                    == equivalent.as_pointer().with(
+                        |__m: &Map<Key, (Value<Key>, Value<Mapped>)>| {
+                            __m.find(&equivalent_a.as_pointer())
+                        },
+                    )) as i32))
+                != 0;
+            ok = rhs_0
+        };
+        {
+            let rhs_0 = ((ok as i32)
+                & (({
+                    ((*(*first_it.borrow()).iter_deref().upgrade().deref())
+                        .1
+                        .as_pointer())
+                } == { (first_value).clone() }) as i32))
+                != 0;
+            ok = rhs_0
+        };
+        {
+            let rhs_0 = ((ok as i32)
+                & (((*first_it.borrow())
+                    .iter_deref()
+                    .with(|__s| (*__s.1.borrow()).value)
+                    == 31) as i32))
+                != 0;
+            ok = rhs_0
+        };
     }
-    let mut matching_a: Key = Key {
-        order: 5_(),
-        identity: 5_(),
+    let matching_a: Value<Key> = Rc::new(RefCell::new(Key {
+        order: 5,
+        identity: 5,
+    }));
+    let matching_b: Value<Key> = Rc::new(RefCell::new(Key {
+        order: 5,
+        identity: 5,
+    }));
+    let matching_c: Value<Key> = Rc::new(RefCell::new(Key {
+        order: 6,
+        identity: 6,
+    }));
+    let mut before_matching: i32 = default_constructions_0.with(|rc| *rc.borrow());
+    let matching: Value<Map<Key, (Value<Key>, Value<Mapped>)>> = Rc::new(RefCell::new(Map::new()));
+    let matched: Ptr<Mapped> = Map::subscript(matching.as_pointer(), matching_a.as_pointer());
+    field!(matched, value).write(51);
+    let matched_it: Value<BidirectionalIterator<(Value<Key>, Value<Mapped>)>> =
+        Rc::new(RefCell::new(matching.as_pointer().with(
+            |__m: &Map<Key, (Value<Key>, Value<Mapped>)>| __m.find(&matching_a.as_pointer()),
+        )));
+    let mut matched_value: Ptr<Mapped> = ((*(*matched_it.borrow()).iter_deref().upgrade().deref())
+        .1
+        .as_pointer());
+    ok = {
+        ((ok as i32)
+            & ((default_constructions_0.with(|rc| *rc.borrow()) == (before_matching + 1)) as i32))
+            != 0
     };
-    let mut matching_b: Key = Key {
-        order: 5_(),
-        identity: 5_(),
+    let matched_again: Ptr<Mapped> = Map::subscript(matching.as_pointer(), matching_b.as_pointer());
+    ok = {
+        ((ok as i32)
+            & ((default_constructions_0.with(|rc| *rc.borrow()) == (before_matching + 1)) as i32))
+            != 0
     };
-    let mut matching_c: Key = Key {
-        order: 6_(),
-        identity: 6_(),
+    {
+        let rhs_0 = ((ok as i32) & (((*matching.borrow()).len() == 1_usize) as i32)) != 0;
+        ok = rhs_0
     };
-    let mut before_matching: () = default_constructions_0.with(|rc| *rc.borrow());
-    let matching: Value<()> = Rc::new(RefCell::new(unimplemented!()));
-    let matched: Ptr<Mapped> = unimplemented!();
-    field!(matched, value).write(51_());
-    let matched_it: Value<()> = Rc::new(RefCell::new(unimplemented!()));
-    let mut matched_value: Ptr<Mapped> = (field_ptr!(matched_it.as_pointer(), second));
-    ok &= (default_constructions_0.with(|rc| *rc.borrow()) == (before_matching + 1_()));
-    let matched_again: Ptr<Mapped> = unimplemented!();
-    ok &= (default_constructions_0.with(|rc| *rc.borrow()) == (before_matching + 1_()));
-    ok &= (unimplemented!() == 1_());
-    ok &= ({ (matched).clone() } == { (matched_again).clone() });
-    ok &= (unimplemented!());
-    ok &= ({ (field_ptr!(matched_it.as_pointer(), second)) } == { (matched_value).clone() });
-    ok &= ({ ((*matched_it.borrow()).read()).second.value } == 51_());
-    let other: Ptr<Mapped> = unimplemented!();
-    field!(other, value).write(61_());
-    ok &= (default_constructions_0.with(|rc| *rc.borrow()) == (before_matching + 2_()));
-    ok &= (unimplemented!() == 2_());
-    ok &= (unimplemented!());
-    ok &= ({ (field_ptr!(matched_it.as_pointer(), second)) } == { (matched_value).clone() });
-    ok &= ({ ((*matched_it.borrow()).read()).second.value } == 51_());
-    return if ok { 0_() } else { 1_() };
+    ok = { ((ok as i32) & (({ (matched).clone() } == { (matched_again).clone() }) as i32)) != 0 };
+    {
+        let rhs_0 = ((ok as i32)
+            & (((*matched_it.borrow())
+                == matching
+                    .as_pointer()
+                    .with(|__m: &Map<Key, (Value<Key>, Value<Mapped>)>| {
+                        __m.find(&matching_b.as_pointer())
+                    })) as i32))
+            != 0;
+        ok = rhs_0
+    };
+    {
+        let rhs_0 = ((ok as i32)
+            & (({
+                ((*(*matched_it.borrow()).iter_deref().upgrade().deref())
+                    .1
+                    .as_pointer())
+            } == { (matched_value).clone() }) as i32))
+            != 0;
+        ok = rhs_0
+    };
+    {
+        let rhs_0 = ((ok as i32)
+            & (((*matched_it.borrow())
+                .iter_deref()
+                .with(|__s| (*__s.1.borrow()).value)
+                == 51) as i32))
+            != 0;
+        ok = rhs_0
+    };
+    let other: Ptr<Mapped> = Map::subscript(matching.as_pointer(), matching_c.as_pointer());
+    field!(other, value).write(61);
+    ok = {
+        ((ok as i32)
+            & ((default_constructions_0.with(|rc| *rc.borrow()) == (before_matching + 2)) as i32))
+            != 0
+    };
+    {
+        let rhs_0 = ((ok as i32) & (((*matching.borrow()).len() == 2_usize) as i32)) != 0;
+        ok = rhs_0
+    };
+    {
+        let rhs_0 = ((ok as i32)
+            & (((*matched_it.borrow())
+                == matching
+                    .as_pointer()
+                    .with(|__m: &Map<Key, (Value<Key>, Value<Mapped>)>| {
+                        __m.find(&matching_a.as_pointer())
+                    })) as i32))
+            != 0;
+        ok = rhs_0
+    };
+    {
+        let rhs_0 = ((ok as i32)
+            & (({
+                ((*(*matched_it.borrow()).iter_deref().upgrade().deref())
+                    .1
+                    .as_pointer())
+            } == { (matched_value).clone() }) as i32))
+            != 0;
+        ok = rhs_0
+    };
+    {
+        let rhs_0 = ((ok as i32)
+            & (((*matched_it.borrow())
+                .iter_deref()
+                .with(|__s| (*__s.1.borrow()).value)
+                == 51) as i32))
+            != 0;
+        ok = rhs_0
+    };
+    return if ok { 0 } else { 1 };
 }
 pub fn __cpp2rust_init_globals() {
     let _ = default_constructions_0.with(|_| ());

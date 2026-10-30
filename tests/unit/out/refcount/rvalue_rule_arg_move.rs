@@ -70,8 +70,8 @@ fn main_0() -> i32 {
     };
     let mut ok: bool = (((copies_0.with(|rc| *rc.borrow()) == 1)
         && (moves_1.with(|rc| *rc.borrow()) == 1))
-        && ({ (*v.borrow())[0_usize].v } == 1))
-        && ({ (*v.borrow())[1_usize].v } == 2);
+        && (v.decay().offset(0_usize as isize).with(|__s| __s.v) == 1))
+        && (v.decay().offset(1_usize as isize).with(|__s| __s.v) == 2);
     let mut pa: Ptr<Elem> = (a.as_pointer());
     println!(
         "{} {} {}",

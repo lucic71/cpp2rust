@@ -9,7 +9,7 @@ use std::rc::Rc;
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct X {
-    pub x: (),
+    pub x: i32,
 }
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
@@ -31,40 +31,40 @@ pub fn main() {
         std::process::exit(main_0() as i32);
     }
 }
-unsafe fn main_0() -> () {
-    let mut x1: () = 5_();
-    let mut x2: () = x1;
-    let mut x3: () = ((x1) + (5_()));
-    let mut x4: () = ((x3) + (x2));
-    x1 = 5_();
+unsafe fn main_0() -> i32 {
+    let mut x1: i32 = 5;
+    let mut x2: i32 = x1;
+    let mut x3: i32 = ((x1) + (5));
+    let mut x4: i32 = ((x3) + (x2));
+    x1 = 5;
     x2 = x1;
-    x3 = ((x1) + (5_()));
+    x3 = ((x1) + (5));
     x4 = ((x3) + (x2));
-    let mut p1: *mut () = (&mut x1 as *mut ());
-    p1 = (&mut x2 as *mut ());
+    let mut p1: *mut i32 = (&mut x1 as *mut i32);
+    p1 = (&mut x2 as *mut i32);
     (*p1) = x1;
-    (*p1) = (((x1) + (x4)) + (1_()));
-    let mut x5: () = (*p1);
-    let mut x6: () = (((*p1) + (x3)) + (5_()));
-    let r: *mut () = &mut x1;
-    (*r) = 5_();
-    (*r) = ((*p1) + (5_()));
-    let mut x7: () = (*r);
-    let mut x8: () = (((*r) + (x1)) + (5_()));
-    let mut p2: *mut () = (r);
-    let mut x: X = X { x: 1_() };
+    (*p1) = (((x1) + (x4)) + (1));
+    let mut x5: i32 = (*p1);
+    let mut x6: i32 = (((*p1) + (x3)) + (5));
+    let r: *mut i32 = &mut x1;
+    (*r) = 5;
+    (*r) = ((*p1) + (5));
+    let mut x7: i32 = (*r);
+    let mut x8: i32 = (((*r) + (x1)) + (5));
+    let mut p2: *mut i32 = (r);
+    let mut x: X = X { x: 1 };
     let mut y: Y = Y {
-        x: X { x: 0_() },
+        x: X { x: 0 },
         p: (&mut x as *mut X),
     };
-    y.x.x = 5_();
-    (*(unsafe { Y::foo(&mut y) })).x = 1_();
-    (*y.p).x = 10_();
+    y.x.x = 5;
+    (*(unsafe { Y::foo(&mut y) })).x = 1;
+    (*y.p).x = 10;
     let mut p3: *mut Y = (&mut y as *mut Y);
-    (*(*p3).p).x = 100_();
-    (*(unsafe { Y::ptr(&mut y) })).x = 1_();
-    (*(unsafe { Y::ptr(&mut y) })).x = 50_();
-    unimplemented!();
-    return 0_();
+    (*(*p3).p).x = 100;
+    (*(unsafe { Y::ptr(&mut y) })).x = 1;
+    (*(unsafe { Y::ptr(&mut y) })).x = 50;
+    assert!(((x.x) == (100)));
+    return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

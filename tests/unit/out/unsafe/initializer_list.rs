@@ -6,9 +6,9 @@ use std::collections::BTreeMap;
 use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
-pub unsafe fn f_0(mut bytes: ()) -> () {
-    let mut buf: *mut () = (Box::leak(Box::new(unimplemented!())) as *mut ());
-    let mut n: () = unimplemented!();
+pub unsafe fn f_0(mut bytes: Vec<i32>) -> usize {
+    let mut buf: *mut Vec<i32> = (Box::leak(Box::new(bytes.clone())) as *mut Vec<i32>);
+    let mut n: usize = bytes.len();
     {
         let __p = buf;
         if !__p.is_null() {
@@ -23,13 +23,27 @@ pub fn main() {
         std::process::exit(main_0() as i32);
     }
 }
-unsafe fn main_0() -> () {
-    unimplemented!();
-    let mut v: () = unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    let mut l: () = unimplemented!();
-    unimplemented!();
-    return 0_();
+unsafe fn main_0() -> i32 {
+    assert!(((unsafe { f_0(Vec::from([1, 2, 3,]),) }) == (3_usize)));
+    let mut v: Vec<i32> = Vec::from([4, 5, 6]);
+    assert!(((v.len()) == (3_usize)));
+    assert!(
+        ((((*{
+            let __idx = 0_usize as usize;
+            let __v: &mut Vec<i32> = &mut v;
+            __v.as_mut_ptr().add(__idx)
+        }) + (*{
+            let __idx = 1_usize as usize;
+            let __v: &mut Vec<i32> = &mut v;
+            __v.as_mut_ptr().add(__idx)
+        })) + (*{
+            let __idx = 2_usize as usize;
+            let __v: &mut Vec<i32> = &mut v;
+            __v.as_mut_ptr().add(__idx)
+        })) == (15))
+    );
+    let mut l: Vec<i32> = Vec::from([7, 8]);
+    assert!(((l.len()) == (2_usize)));
+    return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

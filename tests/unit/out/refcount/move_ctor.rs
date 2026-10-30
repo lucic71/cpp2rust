@@ -170,17 +170,20 @@ fn main_0() -> i32 {
     assert!((({ by_value_0(MoveOnly::new({ 6 },),) }) == 6));
     assert!((({ by_value_0(MoveOnly::move_from({ e.as_pointer() },),) }) == 5));
     assert!(({ (*e.borrow()).v } == 0));
-    let mut vec_: Vec<MoveOnly> = Vec::new();
+    let vec_: Value<Vec<MoveOnly>> = Rc::new(RefCell::new(Vec::new()));
     {
         let __a1 = MoveOnly::new({ 7 });
-        vec_.push(__a1)
+        (*vec_.borrow_mut()).push(__a1)
     };
     let f: Value<MoveOnly> = Rc::new(RefCell::new(MoveOnly::new({ 8 })));
     {
         let __a1 = MoveOnly::move_from({ f.as_pointer() });
-        vec_.push(__a1)
+        (*vec_.borrow_mut()).push(__a1)
     };
-    assert!((vec_[0_usize].v == 7) && (vec_[1_usize].v == 8));
+    assert!(
+        (vec_.decay().offset(0_usize as isize).with(|__s| __s.v) == 7)
+            && (vec_.decay().offset(1_usize as isize).with(|__s| __s.v) == 8)
+    );
     assert!(({ (*f.borrow()).v } == 0));
     let m: Value<ConstMove> = Rc::new(RefCell::new(ConstMove::new()));
     let mut m1: ConstMove = ConstMove::new_1({ m.as_pointer() });

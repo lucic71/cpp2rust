@@ -6,8 +6,8 @@ use std::collections::BTreeMap;
 use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
-pub unsafe fn int_cmp_0(mut v1: (), mut v2: ()) -> () {
-    return ((*(v1 as *const ())) - (*(v2 as *const ())));
+pub unsafe fn int_cmp_0(mut v1: *const ::libc::c_void, mut v2: *const ::libc::c_void) -> i32 {
+    return ((*(v1 as *const i32)) - (*(v2 as *const i32)));
 }
 pub fn main() {
     unsafe {
@@ -15,10 +15,10 @@ pub fn main() {
         std::process::exit(main_0() as i32);
     }
 }
-unsafe fn main_0() -> () {
-    let mut a1: [(); 3] = [1_(), 2_(), 3_()];
-    let mut vptr1: () = unimplemented!();
-    unimplemented!();
-    return 0_();
+unsafe fn main_0() -> i32 {
+    let mut a1: [i32; 3] = [1, 2, 3];
+    let mut vptr1: *mut ::libc::c_void = unimplemented!();
+    assert!(((vptr1) == ((&mut a1[(0) as usize] as *mut i32) as *mut ::libc::c_void)));
+    return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

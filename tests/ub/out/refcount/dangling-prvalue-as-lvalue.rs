@@ -6,17 +6,17 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-pub fn foo_0(a: Ptr<()>) -> Ptr<()> {
+pub fn foo_0(a: Ptr<i32>) -> Ptr<i32> {
     return (a).clone();
 }
 pub fn main() {
     __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
-fn main_0() -> () {
-    let mut v: () = unimplemented!();
-    let b: Ptr<()> = ({ foo_0(unimplemented!()) });
-    unimplemented!();
+fn main_0() -> i32 {
+    let v: Value<Vec<i32>> = Rc::new(RefCell::new(Vec::from([1, 2])));
+    let b: Ptr<i32> = ({ foo_0(v.decay().begin().iter_deref()) });
+    (*v.borrow_mut()).clear();
     return (b.read());
 }
 pub fn __cpp2rust_init_globals() {}

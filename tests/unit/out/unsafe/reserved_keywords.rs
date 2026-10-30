@@ -9,49 +9,49 @@ use std::rc::Rc;
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct S {
-    pub as_: (),
-    pub async_: (),
-    pub await_: (),
-    pub crate_: (),
-    pub dyn_: (),
-    pub fn_: (),
-    pub impl_: (),
-    pub in_: (),
-    pub let_: (),
-    pub loop_: (),
-    pub match_: (),
-    pub mod_: (),
-    pub move_: (),
-    pub mut_: (),
-    pub pub_: (),
-    pub ref_: (),
-    pub self_: (),
-    pub Self_: (),
-    pub super_: (),
-    pub trait_: (),
-    pub type_: (),
-    pub unsafe_: (),
-    pub use_: (),
-    pub where_: (),
-    pub abstract_: (),
-    pub become_: (),
-    pub box_: (),
-    pub final_: (),
-    pub gen_: (),
-    pub macro_: (),
-    pub override_: (),
-    pub priv_: (),
-    pub unsized_: (),
-    pub yield_: (),
-    pub macro_rules_: (),
-    pub raw_: (),
-    pub safe_: (),
-    pub vec_: (),
+    pub as_: i32,
+    pub async_: i32,
+    pub await_: i32,
+    pub crate_: i32,
+    pub dyn_: i32,
+    pub fn_: i32,
+    pub impl_: i32,
+    pub in_: i32,
+    pub let_: i32,
+    pub loop_: i32,
+    pub match_: i32,
+    pub mod_: i32,
+    pub move_: i32,
+    pub mut_: i32,
+    pub pub_: i32,
+    pub ref_: i32,
+    pub self_: i32,
+    pub Self_: i32,
+    pub super_: i32,
+    pub trait_: i32,
+    pub type_: i32,
+    pub unsafe_: i32,
+    pub use_: i32,
+    pub where_: i32,
+    pub abstract_: i32,
+    pub become_: i32,
+    pub box_: i32,
+    pub final_: i32,
+    pub gen_: i32,
+    pub macro_: i32,
+    pub override_: i32,
+    pub priv_: i32,
+    pub unsized_: i32,
+    pub yield_: i32,
+    pub macro_rules_: i32,
+    pub raw_: i32,
+    pub safe_: i32,
+    pub vec_: i32,
 }
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct type_ {
-    pub v: (),
+    pub v: i32,
 }
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
@@ -59,47 +59,47 @@ pub struct loop_ {
     pub t: type_,
 }
 pub unsafe fn foo_0(
-    mut as_: (),
-    mut async_: (),
-    mut await_: (),
-    mut crate_: (),
-    mut dyn_: (),
-    mut fn_: (),
-    mut impl_: (),
-    mut in_: (),
-    mut let_: (),
-    mut loop_: (),
-    mut match_: (),
-    mut mod_: (),
-    mut move_: (),
-    mut mut_: (),
-    mut pub_: (),
-    mut ref_: (),
-    mut self_: (),
-    mut Self_: (),
-    mut super_: (),
-    mut trait_: (),
-    mut type_: (),
-    mut unsafe_: (),
-    mut use_: (),
-    mut where_: (),
-    mut abstract_: (),
-    mut become_: (),
-    mut box_: (),
-    mut final_: (),
-    mut gen_: (),
-    mut macro_: (),
-    mut override_: (),
-    mut priv_: (),
-    mut unsized_: (),
-    mut yield_: (),
-    mut macro_rules_: (),
-    mut raw_: (),
-    mut safe_: (),
-    mut vec_: (),
-    mut dummy: (),
-) -> () {
-    return 0_();
+    mut as_: i32,
+    mut async_: i32,
+    mut await_: i32,
+    mut crate_: i32,
+    mut dyn_: i32,
+    mut fn_: i32,
+    mut impl_: i32,
+    mut in_: i32,
+    mut let_: i32,
+    mut loop_: i32,
+    mut match_: i32,
+    mut mod_: i32,
+    mut move_: i32,
+    mut mut_: i32,
+    mut pub_: i32,
+    mut ref_: i32,
+    mut self_: i32,
+    mut Self_: i32,
+    mut super_: i32,
+    mut trait_: i32,
+    mut type_: i32,
+    mut unsafe_: i32,
+    mut use_: i32,
+    mut where_: i32,
+    mut abstract_: i32,
+    mut become_: i32,
+    mut box_: i32,
+    mut final_: i32,
+    mut gen_: i32,
+    mut macro_: i32,
+    mut override_: i32,
+    mut priv_: i32,
+    mut unsized_: i32,
+    mut yield_: i32,
+    mut macro_rules_: i32,
+    mut raw_: i32,
+    mut safe_: i32,
+    mut vec_: i32,
+    mut dummy: i32,
+) -> i32 {
+    return 0;
 }
 pub fn main() {
     unsafe {
@@ -107,130 +107,128 @@ pub fn main() {
         std::process::exit(main_0() as i32);
     }
 }
-unsafe fn main_0() -> () {
+unsafe fn main_0() -> i32 {
     let mut s: S = S {
-        as_: 0_(),
-        async_: 0_(),
-        await_: 0_(),
-        crate_: 0_(),
-        dyn_: 0_(),
-        fn_: 0_(),
-        impl_: 0_(),
-        in_: 0_(),
-        let_: 0_(),
-        loop_: 0_(),
-        match_: 0_(),
-        mod_: 0_(),
-        move_: 0_(),
-        mut_: 0_(),
-        pub_: 0_(),
-        ref_: 0_(),
-        self_: 0_(),
-        Self_: 0_(),
-        super_: 0_(),
-        trait_: 0_(),
-        type_: 0_(),
-        unsafe_: 0_(),
-        use_: 0_(),
-        where_: 0_(),
-        abstract_: 0_(),
-        become_: 0_(),
-        box_: 0_(),
-        final_: 0_(),
-        gen_: 0_(),
-        macro_: 0_(),
-        override_: 0_(),
-        priv_: 0_(),
-        unsized_: 0_(),
-        yield_: 0_(),
-        macro_rules_: 0_(),
-        raw_: 0_(),
-        safe_: 0_(),
-        vec_: 0_(),
+        as_: 0,
+        async_: 0,
+        await_: 0,
+        crate_: 0,
+        dyn_: 0,
+        fn_: 0,
+        impl_: 0,
+        in_: 0,
+        let_: 0,
+        loop_: 0,
+        match_: 0,
+        mod_: 0,
+        move_: 0,
+        mut_: 0,
+        pub_: 0,
+        ref_: 0,
+        self_: 0,
+        Self_: 0,
+        super_: 0,
+        trait_: 0,
+        type_: 0,
+        unsafe_: 0,
+        use_: 0,
+        where_: 0,
+        abstract_: 0,
+        become_: 0,
+        box_: 0,
+        final_: 0,
+        gen_: 0,
+        macro_: 0,
+        override_: 0,
+        priv_: 0,
+        unsized_: 0,
+        yield_: 0,
+        macro_rules_: 0,
+        raw_: 0,
+        safe_: 0,
+        vec_: 0,
     };
-    let mut as_: () = 0_();
-    let mut async_: () = 0_();
-    let mut await_: () = 0_();
-    let mut crate_: () = 0_();
-    let mut dyn_: () = 0_();
-    let mut fn_: () = 0_();
-    let mut impl_: () = 0_();
-    let mut in_: () = 0_();
-    let mut let_: () = 0_();
-    let mut loop_: () = 0_();
-    let mut match_: () = 0_();
-    let mut mod_: () = 0_();
-    let mut move_: () = 0_();
-    let mut mut_: () = 0_();
-    let mut pub_: () = 0_();
-    let mut ref_: () = 0_();
-    let mut self_: () = 0_();
-    let mut Self_: () = 0_();
-    let mut super_: () = 0_();
-    let mut trait_: () = 0_();
-    let mut type_: () = 0_();
-    let mut unsafe_: () = 0_();
-    let mut use_: () = 0_();
-    let mut where_: () = 0_();
-    let mut abstract_: () = 0_();
-    let mut become_: () = 0_();
-    let mut box_: () = 0_();
-    let mut final_: () = 0_();
-    let mut gen_: () = 0_();
-    let mut macro_: () = 0_();
-    let mut override_: () = 0_();
-    let mut priv_: () = 0_();
-    let mut unsized_: () = 0_();
-    let mut yield_: () = 0_();
-    let mut macro_rules_: () = 0_();
-    let mut raw_: () = 0_();
-    let mut safe_: () = 0_();
-    let mut vec_: () = 0_();
-    let mut l: loop_ = loop_ {
-        t: type_ { v: 3_() },
-    };
+    let mut as_: i32 = 0;
+    let mut async_: i32 = 0;
+    let mut await_: i32 = 0;
+    let mut crate_: i32 = 0;
+    let mut dyn_: i32 = 0;
+    let mut fn_: i32 = 0;
+    let mut impl_: i32 = 0;
+    let mut in_: i32 = 0;
+    let mut let_: i32 = 0;
+    let mut loop_: i32 = 0;
+    let mut match_: i32 = 0;
+    let mut mod_: i32 = 0;
+    let mut move_: i32 = 0;
+    let mut mut_: i32 = 0;
+    let mut pub_: i32 = 0;
+    let mut ref_: i32 = 0;
+    let mut self_: i32 = 0;
+    let mut Self_: i32 = 0;
+    let mut super_: i32 = 0;
+    let mut trait_: i32 = 0;
+    let mut type_: i32 = 0;
+    let mut unsafe_: i32 = 0;
+    let mut use_: i32 = 0;
+    let mut where_: i32 = 0;
+    let mut abstract_: i32 = 0;
+    let mut become_: i32 = 0;
+    let mut box_: i32 = 0;
+    let mut final_: i32 = 0;
+    let mut gen_: i32 = 0;
+    let mut macro_: i32 = 0;
+    let mut override_: i32 = 0;
+    let mut priv_: i32 = 0;
+    let mut unsized_: i32 = 0;
+    let mut yield_: i32 = 0;
+    let mut macro_rules_: i32 = 0;
+    let mut raw_: i32 = 0;
+    let mut safe_: i32 = 0;
+    let mut vec_: i32 = 0;
+    let mut l: loop_ = loop_ { t: type_ { v: 3 } };
     let mut t: type_ = l.t;
     return (unsafe {
         foo_0(
-            0_(),
-            0_(),
-            0_(),
-            0_(),
-            0_(),
-            0_(),
-            0_(),
-            0_(),
-            0_(),
-            0_(),
-            0_(),
-            0_(),
-            0_(),
-            0_(),
-            0_(),
-            0_(),
-            0_(),
-            0_(),
-            0_(),
-            0_(),
-            0_(),
-            0_(),
-            0_(),
-            0_(),
-            0_(),
-            0_(),
-            0_(),
-            0_(),
-            0_(),
-            0_(),
-            0_(),
-            0_(),
-            0_(),
-            0_(),
-            0_(),
-            0_(),
-            0_(),
-            0_(),
-            ((t.v) - (3_())),
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            ((t.v) - (3)),
         )
     });
 }

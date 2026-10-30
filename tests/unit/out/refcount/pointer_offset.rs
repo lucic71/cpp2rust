@@ -10,46 +10,46 @@ pub fn main() {
     __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
-fn main_0() -> () {
-    let mut out: () = 0_();
-    let arr: Value<Box<[()]>> = Rc::new(RefCell::new(Box::new([1_(), 2_(), 3_(), 4_(), 0_()])));
-    let mut ptr: Ptr<()> = ((arr.as_pointer() as Ptr<()>).offset(0_()));
-    'loop_: while ((ptr.read()) != 0_()) {
+fn main_0() -> i32 {
+    let mut out: i32 = 0;
+    let arr: Value<Box<[i32]>> = Rc::new(RefCell::new(Box::new([1, 2, 3, 4, 0])));
+    let mut ptr: Ptr<i32> = ((arr.as_pointer() as Ptr<i32>).offset(0));
+    'loop_: while ((ptr.read()) != 0) {
         out += { (ptr.read()) };
         ptr.prefix_inc();
     }
-    let mut ptr: Ptr<()> = ((arr.as_pointer() as Ptr<()>).offset(1_()));
-    'loop_: while ((ptr.read()) != 4_()) {
+    let mut ptr: Ptr<i32> = ((arr.as_pointer() as Ptr<i32>).offset(1));
+    'loop_: while ((ptr.read()) != 4) {
         out += { (ptr.read()) };
         ptr.postfix_inc();
     }
-    let mut ptr: Ptr<()> = ((arr.as_pointer() as Ptr<()>).offset(4_()));
-    'loop_: while ((ptr.read()) != 1_()) {
+    let mut ptr: Ptr<i32> = ((arr.as_pointer() as Ptr<i32>).offset(4));
+    'loop_: while ((ptr.read()) != 1) {
         out += { (ptr.read()) };
         ptr.postfix_dec();
     }
-    let mut ptr: Ptr<()> = ((arr.as_pointer() as Ptr<()>).offset(3_()));
-    'loop_: while ((ptr.read()) != 2_()) {
+    let mut ptr: Ptr<i32> = ((arr.as_pointer() as Ptr<i32>).offset(3));
+    'loop_: while ((ptr.read()) != 2) {
         out += { (ptr.read()) };
         ptr.prefix_dec();
     }
-    let mut ptr: Ptr<()> = ((arr.as_pointer() as Ptr<()>).offset(0_()));
-    'loop_: while ((ptr.read()) != 0_()) {
+    let mut ptr: Ptr<i32> = ((arr.as_pointer() as Ptr<i32>).offset(0));
+    'loop_: while ((ptr.read()) != 0) {
         out += { (ptr.read()) };
-        ptr = { ptr.offset((1_()) as isize) };
+        ptr = { ptr.offset((1) as isize) };
     }
-    let mut ptr: Ptr<()> = ((arr.as_pointer() as Ptr<()>).offset(0_()));
-    let mut i: () = 0_();
-    'loop_: while (i < 5_()) {
+    let mut ptr: Ptr<i32> = ((arr.as_pointer() as Ptr<i32>).offset(0));
+    let mut i: i32 = 0;
+    'loop_: while (i < 5) {
         out += { (elem!(ptr, i).read()) };
         i.prefix_inc();
     }
-    unimplemented!();
-    let mut step: () = 2_();
-    let mut offset: Ptr<()> = (arr.as_pointer() as Ptr<()>).offset((step) as isize);
-    unimplemented!();
+    assert!((out == 51));
+    let mut step: i64 = 2_i64;
+    let mut offset: Ptr<i32> = (arr.as_pointer() as Ptr<i32>).offset((step) as isize);
+    assert!(({ (offset.read()) } == { (*arr.borrow())[(2) as usize] }));
     offset = { offset.offset(-((step) as isize)) };
-    unimplemented!();
-    return 0_();
+    assert!(({ (offset).clone() } == { ((arr.as_pointer() as Ptr<i32>).offset(0)) }));
+    return 0;
 }
 pub fn __cpp2rust_init_globals() {}

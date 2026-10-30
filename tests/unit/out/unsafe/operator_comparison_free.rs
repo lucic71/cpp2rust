@@ -9,7 +9,7 @@ use std::rc::Rc;
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct S {
-    pub v: (),
+    pub v: i32,
 }
 impl std::cmp::Ord for S {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering {
@@ -35,34 +35,34 @@ impl std::cmp::PartialEq for S {
     }
 }
 impl std::cmp::Eq for S {}
-pub unsafe fn operator_eq_1(a: *const S, b: *const S) -> () {
+pub unsafe fn operator_eq_1(a: *const S, b: *const S) -> bool {
     return (((*a).v) == ((*b).v));
 }
-pub unsafe fn operator_ne_2(a: *const S, b: *const S) -> () {
+pub unsafe fn operator_ne_2(a: *const S, b: *const S) -> bool {
     return (((*a).v) != ((*b).v));
 }
-pub unsafe fn operator_lt_0(a: *const S, b: *const S) -> () {
+pub unsafe fn operator_lt_0(a: *const S, b: *const S) -> bool {
     return (((*a).v) < ((*b).v));
 }
-pub unsafe fn operator_gt_3(a: *const S, b: *const S) -> () {
+pub unsafe fn operator_gt_3(a: *const S, b: *const S) -> bool {
     return (((*a).v) > ((*b).v));
 }
-pub unsafe fn operator_le_4(a: *const S, b: *const S) -> () {
+pub unsafe fn operator_le_4(a: *const S, b: *const S) -> bool {
     return (((*a).v) <= ((*b).v));
 }
-pub unsafe fn operator_ge_5(a: *const S, b: *const S) -> () {
+pub unsafe fn operator_ge_5(a: *const S, b: *const S) -> bool {
     return (((*a).v) >= ((*b).v));
 }
-pub unsafe fn operator_lt_6(a: *const S, mut b: ()) -> () {
+pub unsafe fn operator_lt_6(a: *const S, mut b: i32) -> bool {
     return (((*a).v) < (b));
 }
-pub unsafe fn operator_lt_7(mut a: (), b: *const S) -> () {
+pub unsafe fn operator_lt_7(mut a: i32, b: *const S) -> bool {
     return ((a) < ((*b).v));
 }
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct V {
-    pub v: (),
+    pub v: i32,
 }
 impl std::cmp::Ord for V {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering {
@@ -88,16 +88,16 @@ impl std::cmp::PartialEq for V {
     }
 }
 impl std::cmp::Eq for V {}
-pub unsafe fn operator_eq_9(mut a: V, mut b: V) -> () {
+pub unsafe fn operator_eq_9(mut a: V, mut b: V) -> bool {
     return ((a.v) == (b.v));
 }
-pub unsafe fn operator_ne_10(mut a: V, mut b: V) -> () {
+pub unsafe fn operator_ne_10(mut a: V, mut b: V) -> bool {
     return ((a.v) != (b.v));
 }
-pub unsafe fn operator_lt_8(mut a: V, mut b: V) -> () {
+pub unsafe fn operator_lt_8(mut a: V, mut b: V) -> bool {
     return ((a.v) < (b.v));
 }
-pub unsafe fn operator_gt_11(mut a: V, mut b: V) -> () {
+pub unsafe fn operator_gt_11(mut a: V, mut b: V) -> bool {
     return ((a.v) > (b.v));
 }
 pub fn main() {
@@ -106,27 +106,92 @@ pub fn main() {
         std::process::exit(main_0() as i32);
     }
 }
-unsafe fn main_0() -> () {
-    let mut x: V = V { v: 1_() };
-    let mut y: V = V { v: 2_() };
-    let mut z: V = V { v: 1_() };
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    let mut a: S = S { v: 1_() };
-    let mut b: S = S { v: 2_() };
-    let mut c: S = S { v: 1_() };
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    return 0_();
+unsafe fn main_0() -> i32 {
+    let mut x: V = V { v: 1 };
+    let mut y: V = V { v: 2 };
+    let mut z: V = V { v: 1 };
+    assert!(
+        (unsafe {
+            let _a: V = x;
+            operator_eq_9(_a, z)
+        })
+    );
+    assert!(
+        (unsafe {
+            let _a: V = x;
+            operator_ne_10(_a, y)
+        })
+    );
+    assert!(
+        (unsafe {
+            let _a: V = x;
+            operator_lt_8(_a, y)
+        })
+    );
+    assert!(
+        (unsafe {
+            let _a: V = y;
+            operator_gt_11(_a, x)
+        })
+    );
+    assert!(
+        !(unsafe {
+            let _a: V = y;
+            operator_lt_8(_a, x)
+        })
+    );
+    let mut a: S = S { v: 1 };
+    let mut b: S = S { v: 2 };
+    let mut c: S = S { v: 1 };
+    assert!(
+        (unsafe {
+            let _a: *const S = &a;
+            operator_eq_1(_a, &c)
+        })
+    );
+    assert!(
+        (unsafe {
+            let _a: *const S = &a;
+            operator_ne_2(_a, &b)
+        })
+    );
+    assert!(
+        (unsafe {
+            let _a: *const S = &a;
+            operator_lt_0(_a, &b)
+        })
+    );
+    assert!(
+        (unsafe {
+            let _a: *const S = &b;
+            operator_gt_3(_a, &a)
+        })
+    );
+    assert!(
+        (unsafe {
+            let _a: *const S = &a;
+            operator_le_4(_a, &c)
+        })
+    );
+    assert!(
+        (unsafe {
+            let _a: *const S = &a;
+            operator_ge_5(_a, &c)
+        })
+    );
+    assert!(
+        !(unsafe {
+            let _a: *const S = &b;
+            operator_lt_0(_a, &a)
+        })
+    );
+    assert!(
+        (unsafe {
+            let _a: *const S = &a;
+            operator_lt_6(_a, 5)
+        })
+    );
+    assert!((unsafe { operator_lt_7(0, &a,) }));
+    return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

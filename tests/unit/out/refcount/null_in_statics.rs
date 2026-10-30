@@ -7,59 +7,71 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
 thread_local!(
-    pub static p_mut_0: Value<Ptr<()>> = Rc::new(RefCell::new(Ptr::<()>::null()));
+    pub static p_mut_0: Value<Ptr<i32>> = Rc::new(RefCell::new(Ptr::<i32>::null()));
 );
 thread_local!(
-    pub static p_const_1: Value<Ptr<()>> = Rc::new(RefCell::new(Ptr::<()>::null()));
+    pub static p_const_1: Value<Ptr<i32>> = Rc::new(RefCell::new(Ptr::<i32>::null()));
 );
 thread_local!(
-    pub static cp_2: Value<Ptr<()>> = Rc::new(RefCell::new(Ptr::<()>::null()));
+    pub static cp_2: Value<Ptr<i8>> = Rc::new(RefCell::new(Ptr::<i8>::null()));
 );
 thread_local!(
-    pub static arr_of_ptr_3: Value<Box<[Ptr<()>]>> = Rc::new(RefCell::new(
+    pub static arr_of_ptr_3: Value<Box<[Ptr<i32>]>> = Rc::new(RefCell::new(
         (0..4)
-            .map(|_| Ptr::<()>::null())
-            .collect::<Box<[Ptr<()>]>>(),
+            .map(|_| Ptr::<i32>::null())
+            .collect::<Box<[Ptr<i32>]>>(),
     ));
 );
 thread_local!(
-    pub static pp_4: Value<Ptr<Ptr<()>>> = Rc::new(RefCell::new(Ptr::<Ptr<()>>::null()));
+    pub static pp_4: Value<Ptr<Ptr<i32>>> = Rc::new(RefCell::new(Ptr::<Ptr<i32>>::null()));
 );
 thread_local!(
-    pub static const_arr_of_ptr_5: Value<Box<[Ptr<()>]>> = Rc::new(RefCell::new(
+    pub static const_arr_of_ptr_5: Value<Box<[Ptr<i32>]>> = Rc::new(RefCell::new(
         (0..3)
-            .map(|_| Ptr::<()>::null())
-            .collect::<Box<[Ptr<()>]>>(),
+            .map(|_| Ptr::<i32>::null())
+            .collect::<Box<[Ptr<i32>]>>(),
     ));
 );
 thread_local!(
-    pub static cp_explicit_null_6: Value<Ptr<()>> = Rc::new(RefCell::new(Ptr::<()>::null()));
+    pub static cp_explicit_null_6: Value<Ptr<i8>> = Rc::new(RefCell::new(Ptr::<i8>::null()));
 );
 thread_local!(
-    pub static p_zero_7: Value<Ptr<()>> = Rc::new(RefCell::new(Ptr::<()>::null()));
+    pub static p_zero_7: Value<Ptr<i32>> = Rc::new(RefCell::new(Ptr::<i32>::null()));
 );
 pub fn main() {
     __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
-fn main_0() -> () {
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    let mut i: () = 0_();
-    'loop_: while (i < 4_()) {
-        unimplemented!();
+fn main_0() -> i32 {
+    assert!((*p_mut_0.with(Value::clone).borrow()).is_null());
+    assert!((*p_const_1.with(Value::clone).borrow()).is_null());
+    assert!((*cp_2.with(Value::clone).borrow()).is_null());
+    let mut i: i32 = 0;
+    'loop_: while (i < 4) {
+        assert!(
+            ({
+                let __idx0 = (i) as usize;
+                arr_of_ptr_3.with(|rc| rc.borrow()[__idx0].clone())
+            })
+            .is_null()
+        );
         i.prefix_inc();
     }
-    unimplemented!();
-    let mut i: () = 0_();
-    'loop_: while (i < 3_()) {
-        unimplemented!();
+    assert!((*pp_4.with(Value::clone).borrow()).is_null());
+    let mut i: i32 = 0;
+    'loop_: while (i < 3) {
+        assert!(
+            ({
+                let __idx0 = (i) as usize;
+                const_arr_of_ptr_5.with(|rc| rc.borrow()[__idx0].clone())
+            })
+            .is_null()
+        );
         i.prefix_inc();
     }
-    unimplemented!();
-    unimplemented!();
-    return 0_();
+    assert!((*cp_explicit_null_6.with(Value::clone).borrow()).is_null());
+    assert!((*p_zero_7.with(Value::clone).borrow()).is_null());
+    return 0;
 }
 pub fn __cpp2rust_init_globals() {
     let _ = p_mut_0.with(|_| ());

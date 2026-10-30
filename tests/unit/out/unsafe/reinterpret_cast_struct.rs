@@ -9,8 +9,8 @@ use std::rc::Rc;
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct Point {
-    pub x: (),
-    pub y: (),
+    pub x: i32,
+    pub y: i32,
 }
 pub fn main() {
     unsafe {
@@ -18,15 +18,15 @@ pub fn main() {
         std::process::exit(main_0() as i32);
     }
 }
-unsafe fn main_0() -> () {
+unsafe fn main_0() -> i32 {
     let mut p: Point = <Point>::default();
-    p.x = 67305985_();
-    p.y = 134678021_();
-    let mut bytes: *mut () = ((&mut p as *mut Point) as *mut ());
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    return 0_();
+    p.x = 67305985;
+    p.y = 134678021;
+    let mut bytes: *mut u8 = ((&mut p as *mut Point) as *mut u8);
+    assert!((((*bytes.offset((0) as isize)) as i32) == (1)));
+    assert!((((*bytes.offset((3) as isize)) as i32) == (4)));
+    assert!((((*bytes.offset((4) as isize)) as i32) == (5)));
+    assert!((((*bytes.offset((7) as isize)) as i32) == (8)));
+    return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

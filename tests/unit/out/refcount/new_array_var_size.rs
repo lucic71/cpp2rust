@@ -10,21 +10,21 @@ pub fn main() {
     __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
-fn main_0() -> () {
-    let N: Value<()> = Rc::new(RefCell::new(5_()));
-    let mut A: Ptr<()> = Ptr::alloc_array(
-        (0..(*N.borrow()))
-            .map(|_| unimplemented!())
-            .collect::<Box<[()]>>(),
+fn main_0() -> i32 {
+    let N: Value<i32> = Rc::new(RefCell::new(5));
+    let mut A: Ptr<i32> = Ptr::alloc_array(
+        (0..((*N.borrow()) as usize))
+            .map(|_| 0_i32)
+            .collect::<Box<[i32]>>(),
     );
     A.delete();
-    let N2: Ptr<()> = N.as_pointer();
-    let mut A2: Ptr<()> = Ptr::alloc_array(
-        (0..(N2.read()))
-            .map(|_| unimplemented!())
-            .collect::<Box<[()]>>(),
+    let N2: Ptr<i32> = N.as_pointer();
+    let mut A2: Ptr<i32> = Ptr::alloc_array(
+        (0..((N2.read()) as usize))
+            .map(|_| 0_i32)
+            .collect::<Box<[i32]>>(),
     );
     A2.delete();
-    return 0_();
+    return 0;
 }
 pub fn __cpp2rust_init_globals() {}

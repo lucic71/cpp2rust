@@ -52,15 +52,7 @@ pub unsafe fn push_local_from_field_1(mut jpg: *mut JPEGData, mut cond: bool) {
         dest = (&mut (*jpg).app_data as *mut Vec<Vec<u8>>);
     }
     {
-        let __a1 = {
-            let mut __v = Vec::new();
-            let mut __it = head.as_mut_ptr();
-            while __it != head.as_mut_ptr().offset((3) as isize) {
-                __v.push((*__it.iter_deref()));
-                __it.iter_inc();
-            }
-            __v
-        };
+        let __a1 = unimplemented!();
         (*dest).push(__a1)
     };
 }
@@ -82,15 +74,7 @@ pub unsafe fn emplace_local_from_field_4(mut jpg: *mut JPEGData, mut cond: bool)
         dest = (&mut (*jpg).app_data as *mut Vec<Vec<u8>>);
     }
     {
-        let __init = {
-            let mut __v = Vec::new();
-            let mut __it = head.as_mut_ptr();
-            while __it != head.as_mut_ptr().offset((3) as isize) {
-                __v.push((*__it.iter_deref()));
-                __it.iter_inc();
-            }
-            __v
-        };
+        let __init = unimplemented!();
         (*dest).push(__init)
     };
 }
@@ -185,14 +169,14 @@ unsafe fn main_0() -> i32 {
     let mut vecs: Vec<Vec<u8>> = Vec::new();
     (unsafe { push_param_0((&mut vecs as *mut Vec<Vec<u8>>)) });
     assert!(((vecs.len()) == (1_usize)));
-    assert!(vecs[(0_usize)].is_empty());
+    assert!((*unimplemented!()).is_empty());
     let mut jpg: JPEGData = <JPEGData>::default();
     (unsafe { push_local_from_field_1((&mut jpg as *mut JPEGData), true) });
     assert!(((jpg.com_data.len()) == (1_usize)));
-    assert!(((jpg.com_data[(0_usize)].len()) == (3_usize)));
-    assert!(((jpg.com_data[(0_usize)][(0_usize)] as i32) == (1)));
-    assert!(((jpg.com_data[(0_usize)][(1_usize)] as i32) == (2)));
-    assert!(((jpg.com_data[(0_usize)][(2_usize)] as i32) == (3)));
+    assert!((((*unimplemented!()).len()) == (3_usize)));
+    assert!((((*unimplemented!()) as i32) == (1)));
+    assert!((((*unimplemented!()) as i32) == (2)));
+    assert!((((*unimplemented!()) as i32) == (3)));
     assert!(jpg.app_data.is_empty());
     let mut chunks: Vec<Chunk> = Vec::new();
     (unsafe { shrink_through_ptr_2((&mut chunks as *mut Vec<Chunk>)) });
@@ -202,27 +186,29 @@ unsafe fn main_0() -> i32 {
     w.output = (&mut chunks as *mut Vec<Chunk>);
     (unsafe { nested_push_move_3((&mut w as *mut Writer)) });
     assert!(((chunks.len()) == (1_usize)));
-    assert!(((chunks[(0_usize)].data) == (42)));
+    assert!((((*unimplemented!()).data) == (42)));
     (unsafe { emplace_local_from_field_4((&mut jpg as *mut JPEGData), false) });
     assert!(((jpg.app_data.len()) == (1_usize)));
-    assert!(((jpg.app_data[(0_usize)].len()) == (3_usize)));
-    assert!(((jpg.app_data[(0_usize)][(0_usize)] as i32) == (1)));
-    assert!(((jpg.app_data[(0_usize)][(2_usize)] as i32) == (3)));
+    assert!((((*unimplemented!()).len()) == (3_usize)));
+    assert!((((*unimplemented!()) as i32) == (1)));
+    assert!((((*unimplemented!()) as i32) == (3)));
     assert!(((jpg.com_data.len()) == (1_usize)));
     w.chunk.data = 99;
     w.output = (&mut chunks as *mut Vec<Chunk>);
     (unsafe { nested_emplace_move_5((&mut w as *mut Writer)) });
     assert!(((chunks.len()) == (2_usize)));
-    assert!(((chunks[(1_usize)].data) == (99)));
+    assert!((((*unimplemented!()).data) == (99)));
     (unsafe { self_ref_push_6((&mut chunks as *mut Vec<Chunk>)) });
     assert!(((chunks.len()) == (3_usize)));
-    assert!(((chunks[(2_usize)].data) == (42)));
+    assert!((((*unimplemented!()).data) == (42)));
     let mut pairs: Vec<Pair> = Vec::new();
     (unsafe { emplace_ctor_args_7((&mut pairs as *mut Vec<Pair>)) });
     assert!(((pairs.len()) == (3_usize)));
-    assert!(((pairs[(0_usize)].first) == (-1_i32)) && ((pairs[(0_usize)].second) == (-1_i32)));
-    assert!(((pairs[(1_usize)].first) == (3)) && ((pairs[(1_usize)].second) == (0)));
-    assert!(((pairs[(2_usize)].first) == (4)) && ((pairs[(2_usize)].second) == (10)));
+    assert!(
+        (((*unimplemented!()).first) == (-1_i32)) && (((*unimplemented!()).second) == (-1_i32))
+    );
+    assert!((((*unimplemented!()).first) == (3)) && (((*unimplemented!()).second) == (0)));
+    assert!((((*unimplemented!()).first) == (4)) && (((*unimplemented!()).second) == (10)));
     let mut queue: Vec<Pair> = Vec::new();
     (unsafe { emplace_deque_8((&mut queue as *mut Vec<Pair>)) });
     assert!(
@@ -236,8 +222,8 @@ unsafe fn main_0() -> i32 {
     let mut values: Vec<i64> = Vec::new();
     (unsafe { emplace_scalar_9((&mut values as *mut Vec<i64>), 7) });
     assert!(((values.len()) == (2_usize)));
-    assert!(((values[(0_usize)]) == (0_i64)));
-    assert!(((values[(1_usize)]) == (7_i64)));
+    assert!(((*unimplemented!()) == (0_())));
+    assert!(((*unimplemented!()) == (7_())));
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

@@ -48,7 +48,11 @@ pub unsafe fn sum_ref_1(v: *const Vec<i32>) -> i32 {
     let mut s: i32 = 0;
     let mut i: usize = 0_usize;
     'loop_: while ((i) < ((*v).len())) {
-        s += (&(*v))[(i)];
+        s += (*{
+            let __idx = i as usize;
+            let __v: &Vec<i32> = &(*v);
+            __v.as_ptr().add(__idx)
+        });
         i.prefix_inc();
     }
     return s;
@@ -61,58 +65,206 @@ pub fn main() {
 }
 unsafe fn main_0() -> i32 {
     let mut v: Vec<i32> = Vec::from([1, 2, 3]);
-    v[(0_usize)] = 10;
-    assert!(((v[(0_usize)]) == (10)));
-    v[(1_usize)] += 5;
-    v[(2_usize)].postfix_inc();
-    assert!(((v[(1_usize)]) == (7)) && ((v[(2_usize)]) == (4)));
-    v[(0_usize)] = v[(1_usize)];
-    assert!(((v[(0_usize)]) == (7)));
-    v[(1_usize)] = 0;
+    (*{
+        let __idx = 0_usize as usize;
+        let __v: &mut Vec<i32> = &mut v;
+        __v.as_mut_ptr().add(__idx)
+    }) = 10;
     assert!(
         ((*{
-            let __idx = (v[(1_usize)] as usize);
-            &mut v[__idx]
+            let __idx = 0_usize as usize;
+            let __v: &mut Vec<i32> = &mut v;
+            __v.as_mut_ptr().add(__idx)
+        }) == (10))
+    );
+    (*{
+        let __idx = 1_usize as usize;
+        let __v: &mut Vec<i32> = &mut v;
+        __v.as_mut_ptr().add(__idx)
+    }) += 5;
+    (*{
+        let __idx = 2_usize as usize;
+        let __v: &mut Vec<i32> = &mut v;
+        __v.as_mut_ptr().add(__idx)
+    })
+    .postfix_inc();
+    assert!(
+        ((*{
+            let __idx = 1_usize as usize;
+            let __v: &mut Vec<i32> = &mut v;
+            __v.as_mut_ptr().add(__idx)
+        }) == (7))
+            && ((*{
+                let __idx = 2_usize as usize;
+                let __v: &mut Vec<i32> = &mut v;
+                __v.as_mut_ptr().add(__idx)
+            }) == (4))
+    );
+    (*{
+        let __idx = 0_usize as usize;
+        let __v: &mut Vec<i32> = &mut v;
+        __v.as_mut_ptr().add(__idx)
+    }) = (*{
+        let __idx = 1_usize as usize;
+        let __v: &mut Vec<i32> = &mut v;
+        __v.as_mut_ptr().add(__idx)
+    });
+    assert!(
+        ((*{
+            let __idx = 0_usize as usize;
+            let __v: &mut Vec<i32> = &mut v;
+            __v.as_mut_ptr().add(__idx)
+        }) == (7))
+    );
+    (*{
+        let __idx = 1_usize as usize;
+        let __v: &mut Vec<i32> = &mut v;
+        __v.as_mut_ptr().add(__idx)
+    }) = 0;
+    assert!(
+        ((*{
+            let __idx = ((*{
+                let __idx = 1_usize as usize;
+                let __v: &mut Vec<i32> = &mut v;
+                __v.as_mut_ptr().add(__idx)
+            }) as usize) as usize;
+            let __v: &mut Vec<i32> = &mut v;
+            __v.as_mut_ptr().add(__idx)
         }) == (7))
     );
     let mut i: i32 = 0;
-    v[(i.postfix_inc() as usize)] = 3;
-    assert!(((i) == (1)) && ((v[(0_usize)]) == (3)));
+    (*{
+        let __idx = (i.postfix_inc() as usize) as usize;
+        let __v: &mut Vec<i32> = &mut v;
+        __v.as_mut_ptr().add(__idx)
+    }) = 3;
+    assert!(
+        ((i) == (1))
+            && ((*{
+                let __idx = 0_usize as usize;
+                let __v: &mut Vec<i32> = &mut v;
+                __v.as_mut_ptr().add(__idx)
+            }) == (3))
+    );
     assert!(
         ((*{
-            let __idx = ((unsafe { push_and_index_0(&mut v) }) as usize);
-            &mut v[__idx]
+            let __idx = ((unsafe { push_and_index_0(&mut v) }) as usize) as usize;
+            let __v: &mut Vec<i32> = &mut v;
+            __v.as_mut_ptr().add(__idx)
         }) == (42))
     );
     (*{
-        let __idx = ((unsafe { push_and_index_0(&mut v) }) as usize);
-        &mut v[__idx]
+        let __idx = ((unsafe { push_and_index_0(&mut v) }) as usize) as usize;
+        let __v: &mut Vec<i32> = &mut v;
+        __v.as_mut_ptr().add(__idx)
     }) = 5;
-    assert!(((v.len()) == (5_usize)) && ((v[(4_usize)]) == (5)));
-    let mut p: *mut i32 = (&mut v[(2_usize)] as *mut i32);
+    assert!(
+        ((v.len()) == (5_usize))
+            && ((*{
+                let __idx = 4_usize as usize;
+                let __v: &mut Vec<i32> = &mut v;
+                __v.as_mut_ptr().add(__idx)
+            }) == (5))
+    );
+    let mut p: *mut i32 = (&mut (*{
+        let __idx = 2_usize as usize;
+        let __v: &mut Vec<i32> = &mut v;
+        __v.as_mut_ptr().add(__idx)
+    }) as *mut i32);
     (*p) = 9;
-    assert!(((v[(2_usize)]) == (9)));
+    assert!(
+        ((*{
+            let __idx = 2_usize as usize;
+            let __v: &mut Vec<i32> = &mut v;
+            __v.as_mut_ptr().add(__idx)
+        }) == (9))
+    );
     assert!(((unsafe { sum_ref_1(&v,) }) == (((((3) + (0)) + (9)) + (42)) + (5))));
     let mut h: Holder = <Holder>::default();
     {
         let __a0 = 2_usize as usize;
         h.values.resize_with(__a0, || 0_i32)
     };
-    h.values[(1_usize)] = 6;
+    (*{
+        let __idx = 1_usize as usize;
+        let __v: &mut Vec<i32> = &mut h.values;
+        __v.as_mut_ptr().add(__idx)
+    }) = 6;
     {
         let __a1 = Point { x: 1, y: 2 };
         h.points.push(__a1)
     };
-    h.points[(0_usize)].y = 5;
-    assert!(((h.values[(1_usize)]) == (6)));
-    assert!(((unsafe { Point::sum(&h.points[(0_usize)],) }) == (6)));
+    (*{
+        let __idx = 0_usize as usize;
+        let __v: &mut Vec<Point> = &mut h.points;
+        __v.as_mut_ptr().add(__idx)
+    })
+    .y = 5;
+    assert!(
+        ((*{
+            let __idx = 1_usize as usize;
+            let __v: &mut Vec<i32> = &mut h.values;
+            __v.as_mut_ptr().add(__idx)
+        }) == (6))
+    );
+    assert!(
+        ((unsafe {
+            Point::sum(
+                &(*{
+                    let __idx = 0_usize as usize;
+                    let __v: &mut Vec<Point> = &mut h.points;
+                    __v.as_mut_ptr().add(__idx)
+                }),
+            )
+        }) == (6))
+    );
     let mut hp: *mut Holder = (&mut h as *mut Holder);
-    (&mut (*hp)).values[(0_usize)] = (((&mut (*hp)).values[(1_usize)]) + (1));
-    (&mut (*hp)).points[(0_usize)].x = (&mut (*hp)).values[(0_usize)];
-    assert!(((h.values[(0_usize)]) == (7)) && ((h.points[(0_usize)].x) == (7)));
-    let mut q: Point = h.points[(0_usize)];
+    (*{
+        let __idx = 0_usize as usize;
+        let __v: &mut Vec<i32> = &mut (*hp).values;
+        __v.as_mut_ptr().add(__idx)
+    }) = ((*{
+        let __idx = 1_usize as usize;
+        let __v: &mut Vec<i32> = &mut (*hp).values;
+        __v.as_mut_ptr().add(__idx)
+    }) + (1));
+    (*{
+        let __idx = 0_usize as usize;
+        let __v: &mut Vec<Point> = &mut (*hp).points;
+        __v.as_mut_ptr().add(__idx)
+    })
+    .x = (*{
+        let __idx = 0_usize as usize;
+        let __v: &mut Vec<i32> = &mut (*hp).values;
+        __v.as_mut_ptr().add(__idx)
+    });
+    assert!(
+        ((*{
+            let __idx = 0_usize as usize;
+            let __v: &mut Vec<i32> = &mut h.values;
+            __v.as_mut_ptr().add(__idx)
+        }) == (7))
+            && (((*{
+                let __idx = 0_usize as usize;
+                let __v: &mut Vec<Point> = &mut h.points;
+                __v.as_mut_ptr().add(__idx)
+            })
+            .x) == (7))
+    );
+    let mut q: Point = (*{
+        let __idx = 0_usize as usize;
+        let __v: &mut Vec<Point> = &mut h.points;
+        __v.as_mut_ptr().add(__idx)
+    });
     q.x = 0;
-    assert!(((h.points[(0_usize)].x) == (7)));
+    assert!(
+        (((*{
+            let __idx = 0_usize as usize;
+            let __v: &mut Vec<Point> = &mut h.points;
+            __v.as_mut_ptr().add(__idx)
+        })
+        .x) == (7))
+    );
     let mut grid: Vec<Vec<i32>> = Vec::new();
     {
         let __a1 = vec![0; 3_usize as usize];
@@ -122,14 +274,110 @@ unsafe fn main_0() -> i32 {
         let __a1 = vec![0; 3_usize as usize];
         grid.push(__a1)
     };
-    grid[(1_usize)][(2_usize)] = 8;
-    assert!(((grid[(1_usize)][(2_usize)]) == (8)) && ((grid[(0_usize)][(2_usize)]) == (0)));
-    grid[(0_usize)][(1_usize)] = grid[(1_usize)][(2_usize)];
-    grid[(1_usize)][(0_usize)] += grid[(0_usize)][(1_usize)];
-    assert!(((grid[(0_usize)][(1_usize)]) == (8)) && ((grid[(1_usize)][(0_usize)]) == (8)));
+    (*{
+        let __idx = 2_usize as usize;
+        let __v: &mut Vec<i32> = &mut (*{
+            let __idx = 1_usize as usize;
+            let __v: &mut Vec<Vec<i32>> = &mut grid;
+            __v.as_mut_ptr().add(__idx)
+        });
+        __v.as_mut_ptr().add(__idx)
+    }) = 8;
+    assert!(
+        ((*{
+            let __idx = 2_usize as usize;
+            let __v: &mut Vec<i32> = &mut (*{
+                let __idx = 1_usize as usize;
+                let __v: &mut Vec<Vec<i32>> = &mut grid;
+                __v.as_mut_ptr().add(__idx)
+            });
+            __v.as_mut_ptr().add(__idx)
+        }) == (8))
+            && ((*{
+                let __idx = 2_usize as usize;
+                let __v: &mut Vec<i32> = &mut (*{
+                    let __idx = 0_usize as usize;
+                    let __v: &mut Vec<Vec<i32>> = &mut grid;
+                    __v.as_mut_ptr().add(__idx)
+                });
+                __v.as_mut_ptr().add(__idx)
+            }) == (0))
+    );
+    (*{
+        let __idx = 1_usize as usize;
+        let __v: &mut Vec<i32> = &mut (*{
+            let __idx = 0_usize as usize;
+            let __v: &mut Vec<Vec<i32>> = &mut grid;
+            __v.as_mut_ptr().add(__idx)
+        });
+        __v.as_mut_ptr().add(__idx)
+    }) = (*{
+        let __idx = 2_usize as usize;
+        let __v: &mut Vec<i32> = &mut (*{
+            let __idx = 1_usize as usize;
+            let __v: &mut Vec<Vec<i32>> = &mut grid;
+            __v.as_mut_ptr().add(__idx)
+        });
+        __v.as_mut_ptr().add(__idx)
+    });
+    (*{
+        let __idx = 0_usize as usize;
+        let __v: &mut Vec<i32> = &mut (*{
+            let __idx = 1_usize as usize;
+            let __v: &mut Vec<Vec<i32>> = &mut grid;
+            __v.as_mut_ptr().add(__idx)
+        });
+        __v.as_mut_ptr().add(__idx)
+    }) += (*{
+        let __idx = 1_usize as usize;
+        let __v: &mut Vec<i32> = &mut (*{
+            let __idx = 0_usize as usize;
+            let __v: &mut Vec<Vec<i32>> = &mut grid;
+            __v.as_mut_ptr().add(__idx)
+        });
+        __v.as_mut_ptr().add(__idx)
+    });
+    assert!(
+        ((*{
+            let __idx = 1_usize as usize;
+            let __v: &mut Vec<i32> = &mut (*{
+                let __idx = 0_usize as usize;
+                let __v: &mut Vec<Vec<i32>> = &mut grid;
+                __v.as_mut_ptr().add(__idx)
+            });
+            __v.as_mut_ptr().add(__idx)
+        }) == (8))
+            && ((*{
+                let __idx = 0_usize as usize;
+                let __v: &mut Vec<i32> = &mut (*{
+                    let __idx = 1_usize as usize;
+                    let __v: &mut Vec<Vec<i32>> = &mut grid;
+                    __v.as_mut_ptr().add(__idx)
+                });
+                __v.as_mut_ptr().add(__idx)
+            }) == (8))
+    );
     let mut a: Vec<i32> = Vec::from([4, 5, 6]);
-    a[(1_usize)] = ((a[(0_usize)]) + (a[(2_usize)]));
-    assert!(((a[(1_usize)]) == (10)));
+    (*{
+        let __idx = 1_usize as usize;
+        let __v: &mut Vec<i32> = &mut a;
+        __v.as_mut_ptr().add(__idx)
+    }) = ((*{
+        let __idx = 0_usize as usize;
+        let __v: &mut Vec<i32> = &mut a;
+        __v.as_mut_ptr().add(__idx)
+    }) + (*{
+        let __idx = 2_usize as usize;
+        let __v: &mut Vec<i32> = &mut a;
+        __v.as_mut_ptr().add(__idx)
+    }));
+    assert!(
+        ((*{
+            let __idx = 1_usize as usize;
+            let __v: &mut Vec<i32> = &mut a;
+            __v.as_mut_ptr().add(__idx)
+        }) == (10))
+    );
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

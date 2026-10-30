@@ -6,23 +6,23 @@ use std::collections::BTreeMap;
 use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
-pub unsafe fn a_0() -> () {
+pub unsafe fn a_0() -> i32 {
     return (*std::cell::LazyCell::force_mut(&mut *&raw mut i_1));
 }
-static mut i_1: std::cell::LazyCell<()> = std::cell::LazyCell::new(|| unsafe { 1_() });
-pub unsafe fn b_2() -> () {
+static mut i_1: std::cell::LazyCell<i32> = std::cell::LazyCell::new(|| unsafe { 1 });
+pub unsafe fn b_2() -> i32 {
     return (*std::cell::LazyCell::force_mut(&mut *&raw mut i_3));
 }
-static mut i_3: std::cell::LazyCell<()> = std::cell::LazyCell::new(|| unsafe { 2_() });
+static mut i_3: std::cell::LazyCell<i32> = std::cell::LazyCell::new(|| unsafe { 2 });
 pub fn main() {
     unsafe {
         __cpp2rust_init_globals();
         std::process::exit(main_0() as i32);
     }
 }
-unsafe fn main_0() -> () {
-    unimplemented!();
-    unimplemented!();
-    return 0_();
+unsafe fn main_0() -> i32 {
+    assert!(((unsafe { a_0() }) == (1)));
+    assert!(((unsafe { b_2() }) == (2)));
+    return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

@@ -10,11 +10,11 @@ pub fn main() {
     __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
-fn main_0() -> () {
-    let b: Value<()> = Rc::new(RefCell::new(66_()));
-    let mut p: Ptr<()> = (b.as_pointer()).reinterpret_cast::<()>();
-    let mut val: () = (p.read());
+fn main_0() -> i32 {
+    let b: Value<u8> = Rc::new(RefCell::new(66_u8));
+    let mut p: Ptr<u32> = (b.as_pointer()).reinterpret_cast::<u32>();
+    let mut val: u32 = (p.read());
     &(val);
-    return 0_();
+    return 0;
 }
 pub fn __cpp2rust_init_globals() {}

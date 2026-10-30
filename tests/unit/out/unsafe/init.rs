@@ -9,10 +9,10 @@ use std::rc::Rc;
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct X {
-    pub x: (),
+    pub x: i32,
 }
-pub unsafe fn func_0() -> () {
-    return 42_();
+pub unsafe fn func_0() -> i32 {
+    return 42;
 }
 pub fn main() {
     unsafe {
@@ -20,22 +20,22 @@ pub fn main() {
         std::process::exit(main_0() as i32);
     }
 }
-unsafe fn main_0() -> () {
-    let mut x: () = unimplemented!();
-    let mut p: *mut () = std::ptr::null_mut();
-    let g: *mut () = &mut x;
-    let mut q: *mut () = (&mut x as *mut ());
-    let mut z: *mut () = p;
+unsafe fn main_0() -> i32 {
+    let mut x: i32 = 0_i32;
+    let mut p: *mut i32 = std::ptr::null_mut();
+    let g: *mut i32 = &mut x;
+    let mut q: *mut i32 = (&mut x as *mut i32);
+    let mut z: *mut i32 = p;
     let mut xx: X = <X>::default();
     let mut zz: *mut X = (&mut xx as *mut X);
-    xx.x = 1_();
-    q = (&mut xx.x as *mut ());
-    q = (&mut (*zz).x as *mut ());
-    (*zz).x = 2_();
+    xx.x = 1;
+    q = (&mut xx.x as *mut i32);
+    q = (&mut (*zz).x as *mut i32);
+    (*zz).x = 2;
     let mut ww: X = xx;
     ww = xx;
-    let mut aa: () = (unsafe { func_0() });
+    let mut aa: i32 = (unsafe { func_0() });
     aa = (unsafe { func_0() });
-    return 0_();
+    return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

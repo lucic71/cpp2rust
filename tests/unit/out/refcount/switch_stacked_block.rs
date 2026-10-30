@@ -6,17 +6,17 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-pub fn stacked_block_0(mut x: ()) -> () {
-    let r: Value<()> = Rc::new(RefCell::new(0_()));
+pub fn stacked_block_0(mut x: i32) -> i32 {
+    let r: Value<i32> = Rc::new(RefCell::new(0));
     'switch: {
         match { x } {
-            __v if __v == 1_() || __v == 2_() || __v == 3_() => {
-                let mut y: () = (x * 2_());
-                (*r.borrow_mut()) = (y + 1_());
+            __v if __v == 1 || __v == 2 || __v == 3 => {
+                let mut y: i32 = (x * 2);
+                (*r.borrow_mut()) = (y + 1);
                 break 'switch;
             }
             _ => {
-                (*r.borrow_mut()) = 0_();
+                (*r.borrow_mut()) = 0;
                 break 'switch;
             }
         }
@@ -27,9 +27,9 @@ pub fn main() {
     __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
-fn main_0() -> () {
-    unimplemented!();
-    unimplemented!();
-    return 0_();
+fn main_0() -> i32 {
+    assert!((({ stacked_block_0(2,) }) == 5));
+    assert!((({ stacked_block_0(9,) }) == 0));
+    return 0;
 }
 pub fn __cpp2rust_init_globals() {}

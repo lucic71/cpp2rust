@@ -9,13 +9,13 @@ use std::rc::Rc;
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct Triple {
-    pub a: (),
-    pub b: (),
-    pub c: (),
+    pub a: i32,
+    pub b: bool,
+    pub c: i32,
 }
-pub unsafe fn sum_0(t: *const Triple) -> () {
+pub unsafe fn sum_0(t: *const Triple) -> i32 {
     let __decomp_1: *const Triple = t;
-    return ((((*__decomp_1).a) + (if (*__decomp_1).b { 1_() } else { 0_() })) + ((*__decomp_1).c));
+    return ((((*__decomp_1).a) + (if (*__decomp_1).b { 1 } else { 0 })) + ((*__decomp_1).c));
 }
 pub fn main() {
     unsafe {
@@ -23,27 +23,27 @@ pub fn main() {
         std::process::exit(main_0() as i32);
     }
 }
-unsafe fn main_0() -> () {
+unsafe fn main_0() -> i32 {
     let mut t: Triple = Triple {
-        a: 10_(),
+        a: 10,
         b: false,
-        c: 20_(),
+        c: 20,
     };
     let __decomp_2: *mut Triple = &mut t;
-    (*__decomp_2).a = 11_();
+    (*__decomp_2).a = 11;
     (*__decomp_2).b = true;
-    (*__decomp_2).c += 1_();
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    t.a = 12_();
-    unimplemented!();
+    (*__decomp_2).c += 1;
+    assert!(((t.a) == (11)));
+    assert!(t.b);
+    assert!(((t.c) == (21)));
+    t.a = 12;
+    assert!((((*__decomp_2).a) == (12)));
     let __decomp_3: *const Triple = &t;
-    t.c = 30_();
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    return 0_();
+    t.c = 30;
+    assert!((((*__decomp_3).a) == (12)));
+    assert!((*__decomp_3).b);
+    assert!((((*__decomp_3).c) == (30)));
+    assert!(((unsafe { sum_0(&t,) }) == (43)));
+    return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

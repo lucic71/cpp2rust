@@ -10,16 +10,19 @@ pub fn main() {
     __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
-fn main_0() -> () {
-    let mut a: Ptr<()> = unimplemented!().reinterpret_cast::<()>();
-    a.write(42_());
-    unimplemented!();
-    unimplemented!();
-    let mut arr: Ptr<()> = unimplemented!().reinterpret_cast::<()>();
-    elem!(arr, 0_()).write(0_());
-    elem!(arr, 1_()).write(1_());
-    unimplemented!();
-    unimplemented!();
-    return 0_();
+fn main_0() -> i32 {
+    let mut a: Ptr<i32> =
+        libcc2rs::malloc_refcount(::std::mem::size_of::<i32>()).reinterpret_cast::<i32>();
+    a.write(42);
+    assert!(((a.read()) == 42));
+    libcc2rs::free_refcount((a).to_any());
+    let mut arr: Ptr<i32> =
+        libcc2rs::malloc_refcount((::std::mem::size_of::<i32>() as usize).wrapping_mul(2_usize))
+            .reinterpret_cast::<i32>();
+    elem!(arr, 0).write(0);
+    elem!(arr, 1).write(1);
+    assert!((((elem!(arr, 0).read()) + (elem!(arr, 1).read())) == 1));
+    libcc2rs::free_refcount((arr).to_any());
+    return 0;
 }
 pub fn __cpp2rust_init_globals() {}

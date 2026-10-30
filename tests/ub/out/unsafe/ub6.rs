@@ -53,11 +53,7 @@ pub fn main() {
 }
 unsafe fn main_0() -> i32 {
     let mut n: i32 = 2;
-    let mut arr: Option<Box<[*mut i32]>> = Some(
-        (0..(n as usize))
-            .map(|_| std::ptr::null_mut())
-            .collect::<Box<[_]>>(),
-    );
+    let mut arr: Option<Box<[*mut i32]>> = unimplemented!();
     (unsafe { fill_1(&mut arr, &mut n) });
     return ((unsafe { any_2(&mut arr, &mut n) }) as i32);
 }

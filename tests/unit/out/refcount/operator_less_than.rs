@@ -10,9 +10,9 @@ use std::rc::{Rc, Weak};
 #[byte_size(8)]
 pub struct Pair {
     #[offset(0)]
-    pub x: (),
+    pub x: i32,
     #[offset(4)]
-    pub y: (),
+    pub y: i32,
 }
 impl CppLess for Pair {
     fn less(__lhs: &Ptr<Self>, __rhs: &Ptr<Self>) -> bool {
@@ -29,17 +29,17 @@ pub fn main() {
     __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
-fn main_0() -> () {
-    let pair1: Value<Pair> = Rc::new(RefCell::new(Pair { x: 1_(), y: 2_() }));
-    let pair2: Value<Pair> = Rc::new(RefCell::new(Pair { x: 1_(), y: 3_() }));
-    unimplemented!();
-    return 0_();
+fn main_0() -> i32 {
+    let pair1: Value<Pair> = Rc::new(RefCell::new(Pair { x: 1, y: 2 }));
+    let pair2: Value<Pair> = Rc::new(RefCell::new(Pair { x: 1, y: 3 }));
+    assert!(({ PairImpl::operator_lt(&pair1.as_pointer(), pair2.as_pointer(),) }));
+    return 0;
 }
 pub trait PairImpl {
-    fn operator_lt(&self, other: Ptr<Pair>) -> ();
+    fn operator_lt(&self, other: Ptr<Pair>) -> bool;
 }
 impl PairImpl for Ptr<Pair> {
-    fn operator_lt(&self, other: Ptr<Pair>) -> () {
+    fn operator_lt(&self, other: Ptr<Pair>) -> bool {
         return ({ (*self).with(|__s| __s.x) } < { other.with(|__s| __s.x) })
             || (({ (*self).with(|__s| __s.x) } == { other.with(|__s| __s.x) })
                 && ({ (*self).with(|__s| __s.y) } < { other.with(|__s| __s.y) }));

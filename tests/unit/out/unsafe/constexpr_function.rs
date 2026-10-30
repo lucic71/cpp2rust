@@ -6,51 +6,51 @@ use std::collections::BTreeMap;
 use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
-pub unsafe fn runtime_only_0(mut x: ()) -> () {
-    return ((x) * (2_()));
+pub unsafe fn runtime_only_0(mut x: i32) -> i32 {
+    return ((x) * (2));
 }
-pub unsafe fn first_1(mut p: *const ()) -> () {
+pub unsafe fn first_1(mut p: *const i32) -> i32 {
     return (*p);
 }
-pub unsafe fn scaled_2(mut x: ()) -> () {
-    if ((x) < (0_())) {
+pub unsafe fn scaled_2(mut x: i32) -> i32 {
+    if ((x) < (0)) {
         return (unsafe { runtime_only_0(-x) });
     }
     return x;
 }
-pub unsafe fn half_3(mut x: ()) -> () {
+pub unsafe fn half_3(mut x: f64) -> f64 {
     return ((x) / (2_f64));
 }
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct Flag {
-    pub v: (),
+    pub v: i32,
 }
 impl Flag {
-    pub unsafe fn to_(&self) -> () {
-        return ((self.v) != (0_()));
+    pub unsafe fn to_bool(&self) -> bool {
+        return ((self.v) != (0));
     }
 }
-pub unsafe fn use_4(mut f: Flag) -> () {
-    unimplemented!();
+pub unsafe fn use_4(mut f: Flag) -> i32 {
+    assert!((unsafe { Flag::to_bool(&f,) }));
     return f.v;
 }
-pub unsafe fn checked_5(mut x: ()) -> () {
-    unimplemented!();
-    return ((x) + (1_()));
+pub unsafe fn checked_5(mut x: i32) -> i32 {
+    assert!(((x) > (0)));
+    return ((x) + (1));
 }
-pub unsafe fn in_constant_context_6() -> () {
+pub unsafe fn in_constant_context_6() -> bool {
     {}
-    return ((unsafe { runtime_only_0(1_()) }) == (0_()));
+    return ((unsafe { runtime_only_0(1) }) == (0));
 }
 const _: () = assert!(true, "in_constant_context()");
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct P {
-    pub v: (),
+    pub v: i32,
 }
 impl P {
-    pub unsafe fn get(&self) -> () {
+    pub unsafe fn get(&self) -> i32 {
         return self.v;
     }
 }
@@ -60,27 +60,27 @@ pub fn main() {
         std::process::exit(main_0() as i32);
     }
 }
-unsafe fn main_0() -> () {
-    let mut runtime_context: () = (unsafe { in_constant_context_6() });
-    unimplemented!();
-    let mut arr: [(); 2] = [7_(), 8_()];
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    let c: () = (unsafe { checked_5(4_()) });
-    unimplemented!();
-    unimplemented!();
-    let u: () = (unsafe { use_4(Flag { v: 3_() }) });
-    unimplemented!();
-    let mut ptr: *mut () = arr.as_mut_ptr();
-    unimplemented!();
-    let mut p: P = P { v: 9_() };
-    unimplemented!();
-    let k: () = (unsafe { scaled_2(4_()) });
-    unimplemented!();
-    return 0_();
+unsafe fn main_0() -> i32 {
+    let mut runtime_context: bool = (unsafe { in_constant_context_6() });
+    assert!(!(runtime_context));
+    let mut arr: [i32; 2] = [7, 8];
+    assert!(((unsafe { first_1((arr.as_mut_ptr()).cast_const(),) }) == (7)));
+    assert!(((unsafe { first_1((arr.as_mut_ptr().offset((1) as isize)).cast_const(),) }) == (8)));
+    assert!(((unsafe { scaled_2(3,) }) == (3)));
+    assert!(((unsafe { scaled_2(-3_i32,) }) == (6)));
+    assert!(((unsafe { half_3(5_f64,) }) == (2.5_f64)));
+    assert!(((unsafe { checked_5(1,) }) == (2)));
+    let c: i32 = (unsafe { checked_5(4) });
+    assert!(((c) == (5)));
+    assert!(((unsafe { use_4(Flag { v: 2 },) }) == (2)));
+    let u: i32 = (unsafe { use_4(Flag { v: 3 }) });
+    assert!(((u) == (3)));
+    let mut ptr: *mut i32 = arr.as_mut_ptr();
+    assert!(!(ptr).is_null());
+    let mut p: P = P { v: 9 };
+    assert!(((unsafe { P::get(&p,) }) == (9)));
+    let k: i32 = (unsafe { scaled_2(4) });
+    assert!(((k) == (4)));
+    return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

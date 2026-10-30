@@ -12,24 +12,76 @@ pub fn main() {
         std::process::exit(main_0() as i32);
     }
 }
-unsafe fn main_0() -> () {
-    let mut v: () = unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    let mut i: () = 0_();
-    'loop_: while ((i) < ((unimplemented!()).wrapping_sub(1_()))) {
-        unimplemented!();
+unsafe fn main_0() -> i32 {
+    let mut v: Vec<i32> = Vec::new();
+    {
+        let __a1 = 10;
+        v.push(__a1)
+    };
+    {
+        let __a1 = 1;
+        v.push(__a1)
+    };
+    {
+        let __a1 = 9;
+        v.push(__a1)
+    };
+    {
+        let __a1 = 2;
+        v.push(__a1)
+    };
+    {
+        let __a1 = 8;
+        v.push(__a1)
+    };
+    {
+        let __a1 = 3;
+        v.push(__a1)
+    };
+    {
+        let __a1 = 7;
+        v.push(__a1)
+    };
+    {
+        let __a1 = 4;
+        v.push(__a1)
+    };
+    {
+        let __a1 = 5;
+        v.push(__a1)
+    };
+    {
+        let __a1 = 6;
+        v.push(__a1)
+    };
+    {
+        let __first = v.begin();
+        let __n = v.end().iter_distance(&__first);
+        let mut __order: Vec<isize> = (0..__n).collect();
+        __order.sort_by(|&__x, &__y| (*__first.iter_at(__x)).cmp(&*__first.iter_at(__y)));
+        let __values: Vec<_> = __order
+            .iter()
+            .map(|&__i| std::ptr::read(__first.iter_at(__i)))
+            .collect();
+        for (__i, __v) in (0..__n).zip(__values) {
+            std::ptr::write(__first.iter_at(__i), __v);
+        }
+    };
+    let mut i: u32 = 0_u32;
+    'loop_: while ((i as usize) < ((v.len()).wrapping_sub(1_usize))) {
+        assert!(
+            ((*{
+                let __idx = (i as usize) as usize;
+                let __v: &mut Vec<i32> = &mut v;
+                __v.as_mut_ptr().add(__idx)
+            }) < (*{
+                let __idx = (((i).wrapping_add(1_u32)) as usize) as usize;
+                let __v: &mut Vec<i32> = &mut v;
+                __v.as_mut_ptr().add(__idx)
+            }))
+        );
         i.prefix_inc();
     }
-    return 0_();
+    return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

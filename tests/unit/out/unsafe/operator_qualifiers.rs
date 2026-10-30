@@ -9,35 +9,35 @@ use std::rc::Rc;
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct S {
-    pub v: (),
+    pub v: i32,
 }
 impl S {
-    pub unsafe fn operator_add_1(&mut self, mut a: ()) -> () {
+    pub unsafe fn operator_add_1(&mut self, mut a: i32) -> i32 {
         return ((self.v) + (a));
     }
-    pub unsafe fn operator_add_2(&self, mut a: ()) -> () {
-        return (((self.v) + (a)) + (1_()));
+    pub unsafe fn operator_add_2(&self, mut a: i32) -> i32 {
+        return (((self.v) + (a)) + (1));
     }
-    pub unsafe fn operator_add_3(&mut self, mut a: ()) -> () {
-        return (((self.v) + (a)) + (2_()));
+    pub unsafe fn operator_add_3(&mut self, mut a: i32) -> i32 {
+        return (((self.v) + (a)) + (2));
     }
-    pub unsafe fn operator_sub_4(&mut self, mut a: ()) -> () {
+    pub unsafe fn operator_sub_4(&mut self, mut a: i32) -> i32 {
         return ((self.v) - (a));
     }
-    pub unsafe fn operator_sub_5(&mut self, mut a: ()) -> () {
-        return (((self.v) - (a)) - (1_()));
+    pub unsafe fn operator_sub_5(&mut self, mut a: i32) -> i32 {
+        return (((self.v) - (a)) - (1));
     }
-    pub unsafe fn operator_mul_6(&self, mut a: ()) -> () {
+    pub unsafe fn operator_mul_6(&self, mut a: i32) -> i32 {
         return ((self.v) * (a));
     }
-    pub unsafe fn operator_mul_7(&self, mut a: ()) -> () {
-        return (((self.v) * (a)) * (2_()));
+    pub unsafe fn operator_mul_7(&self, mut a: i32) -> i32 {
+        return (((self.v) * (a)) * (2));
     }
-    pub unsafe fn operator_index_8(&mut self, mut i: ()) -> () {
+    pub unsafe fn operator_index_8(&mut self, mut i: i32) -> i32 {
         return ((self.v) + (i));
     }
-    pub unsafe fn operator_index_9(&self, mut i: ()) -> () {
-        return (((self.v) + (i)) + (100_()));
+    pub unsafe fn operator_index_9(&self, mut i: i32) -> i32 {
+        return (((self.v) + (i)) + (100));
     }
 }
 pub fn main() {
@@ -46,20 +46,20 @@ pub fn main() {
         std::process::exit(main_0() as i32);
     }
 }
-unsafe fn main_0() -> () {
-    let mut s: S = S { v: 10_() };
-    let cs: S = S { v: 10_() };
-    let mut vs: S = S { v: 10_() };
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    return 0_();
+unsafe fn main_0() -> i32 {
+    let mut s: S = S { v: 10 };
+    let cs: S = S { v: 10 };
+    let mut vs: S = S { v: 10 };
+    assert!(((unsafe { S::operator_add_1(&mut s, 1,) }) == (11)));
+    assert!(((unsafe { S::operator_add_2(&cs, 1,) }) == (12)));
+    assert!(((unsafe { S::operator_add_3(&mut vs, 1,) }) == (13)));
+    assert!(((unsafe { S::operator_sub_4(&mut s, 1,) }) == (9)));
+    assert!(((unsafe { S::operator_sub_5(&mut S { v: 10 }, 1,) }) == (8)));
+    assert!(((unsafe { S::operator_mul_6(&s, 3,) }) == (30)));
+    assert!(((unsafe { S::operator_mul_6(&cs, 3,) }) == (30)));
+    assert!(((unsafe { S::operator_mul_7(&S { v: 10 }, 3,) }) == (60)));
+    assert!(((unsafe { S::operator_index_8(&mut s, 2,) }) == (12)));
+    assert!(((unsafe { S::operator_index_9(&cs, 2,) }) == (112)));
+    return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

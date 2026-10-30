@@ -135,7 +135,7 @@ pub struct Buffer {
 impl Buffer {
     pub fn new(mut n: i32) -> Self {
         let __this: Value<Buffer> = Rc::new(RefCell::new(Self {
-            data: vec![n; (n as usize) as usize],
+            data: unimplemented!(),
             rows: Vec::new(),
             n: n,
             arr: Box::new([n, (n + 1)]),
@@ -297,15 +297,15 @@ fn main_0() -> i32 {
         ({ same_0(g.as_pointer(), f.as_pointer(),) })
             && ({ same_0(e.as_pointer(), f.as_pointer(),) })
     );
-    let i: Value<Implicit> = Rc::new(RefCell::new(Implicit {
+    let mut i: Implicit = Implicit {
         v: 5,
         inner: Inner { x: 50 },
         arr: Box::new([5, 6]),
-    }));
-    let mut j: Implicit = (*i.borrow()).clone();
-    let mut k: Implicit = (*i.borrow()).clone();
+    };
+    let mut j: Implicit = (i).clone();
+    let mut k: Implicit = (i).clone();
     assert!(((j.v == 5) && (j.inner.x == 50)) && (j.arr[(1) as usize] == 6));
-    assert!(({ (*i.borrow()).v } == 5) && (k.v == 5));
+    assert!((i.v == 5) && (k.v == 5));
     let mut l: Implicit = Implicit {
         v: 0,
         inner: Inner { x: 0 },
@@ -322,7 +322,7 @@ fn main_0() -> i32 {
         let __a1 = Explicit::new({ 9 });
         vec_.push(__a1)
     };
-    assert!((vec_[0_usize].v == 1) && (vec_[1_usize].v == 9));
+    assert!((__s.v == 1) && (__s.v == 9));
     let m: Value<DefaultCopyUserMove> = Rc::new(RefCell::new(DefaultCopyUserMove::new({ 7 })));
     let m1: Value<DefaultCopyUserMove> = Rc::new(RefCell::new((*m.borrow()).clone()));
     let mut m2: DefaultCopyUserMove = DefaultCopyUserMove::move_from({ m.as_pointer() });
@@ -347,7 +347,7 @@ fn main_0() -> i32 {
     let q: Value<Buffer> = Rc::new(RefCell::new(Buffer::move_from({ p.as_pointer() })));
     assert!(
         ((({ (*q.borrow()).n } == 3) && ((*q.borrow()).data.len() == 3_usize))
-            && ((vec_elem!(q.as_pointer(), data, 2_usize).read()) == 3))
+            && ((unimplemented!().read()) == 3))
             && ((*p.borrow()).data.is_empty())
     );
     let r: Value<Buffer> = Rc::new(RefCell::new(Buffer::new({ 1 })));
@@ -359,28 +359,21 @@ fn main_0() -> i32 {
     );
     assert!(
         (((*r.borrow()).rows.len() == 1_usize)
-            && ((*field_ref!(r.as_pointer(), rows)
-                .decay()
-                .offset(0_usize)
-                .upgrade()
-                .deref())
-            .len()
-                == 3_usize))
+            && ((*unimplemented!().upgrade().deref()).len() == 3_usize))
             && ((*q.borrow()).rows.is_empty())
     );
-    let bufs: Value<Vec<Buffer>> = Rc::new(RefCell::new(Vec::new()));
+    let mut bufs: Vec<Buffer> = Vec::new();
     {
         let __a1 = Buffer::move_from({ r.as_pointer() });
-        (*bufs.borrow_mut()).push(__a1)
+        bufs.push(__a1)
     };
     {
-        let __init = Buffer::move_from({ bufs.decay().offset(0_usize) });
-        (*bufs.borrow_mut()).push(__init)
+        let __init = Buffer::move_from({ unimplemented!() });
+        bufs.push(__init)
     };
     assert!(
-        (({ (*bufs.borrow())[1_usize].n } == 3)
-            && ((*bufs.borrow())[1_usize].data.len() == 3_usize))
-            && ((*bufs.borrow())[0_usize].data.is_empty())
+        ((__s.n == 3) && ((*unimplemented!().upgrade().deref()).data.len() == 3_usize))
+            && ((*unimplemented!().upgrade().deref()).data.is_empty())
     );
     let o1: Value<Owner> = Rc::new(RefCell::new(<Owner>::default()));
     {
@@ -406,8 +399,7 @@ fn main_0() -> i32 {
     let o3: Value<Owner> = Rc::new(RefCell::new(<Owner>::default()));
     ({ OwnerImpl::move_assign(&o3.as_pointer(), o2.as_pointer()) });
     assert!(
-        ((({ (*o3.borrow()).n } == 5)
-            && ((vec_elem!(o3.as_pointer(), data, 0_usize).read()) == 5))
+        ((({ (*o3.borrow()).n } == 5) && ((unimplemented!().read()) == 5))
             && ((array_elem!(o3.as_pointer(), arr, 0).read()) == 5))
             && (({ (*o3.borrow()).p.clone() }.as_pointer().read()) == 7)
     );
@@ -415,7 +407,7 @@ fn main_0() -> i32 {
         ((*o2.borrow()).data.is_empty()) && (({ (*o2.borrow()).p.clone() }.as_pointer()).is_null())
     );
     let c1: Value<Copyable> = Rc::new(RefCell::new(Copyable {
-        data: Vec::from([1, 2]),
+        data: unimplemented!(),
     }));
     let mut c2: Copyable = (*c1.borrow()).clone();
     let c3: Value<Copyable> = Rc::new(RefCell::new(Copyable::move_from({ c1.as_pointer() })));
@@ -423,10 +415,7 @@ fn main_0() -> i32 {
     assert!((*c1.borrow()).data.is_empty());
     let c4: Value<Copyable> = Rc::new(RefCell::new(<Copyable>::default()));
     ({ CopyableImpl::move_assign(&c4.as_pointer(), c3.as_pointer()) });
-    assert!(
-        ((vec_elem!(c4.as_pointer(), data, 1_usize).read()) == 2)
-            && ((*c3.borrow()).data.is_empty())
-    );
+    assert!(((unimplemented!().read()) == 2) && ((*c3.borrow()).data.is_empty()));
     let h1: Value<Holder> = Rc::new(RefCell::new(Holder::new({ 4 })));
     let _dtor_h1 = ScopedDestructor::new(&h1, |__p| __p.destructor());
     {
@@ -468,7 +457,7 @@ impl BufferImpl for Ptr<Buffer> {
                 .to_any()
                 .memcpy(
                     &((array_field_ptr!(_a0, arr)) as Ptr<i32>).to_any(),
-                    8_usize as usize,
+                    8_() as usize,
                 );
             ((array_field_ptr!((*self), arr)) as Ptr<i32>).to_any()
         };
@@ -532,7 +521,7 @@ impl OwnerImpl for Ptr<Owner> {
                 .to_any()
                 .memcpy(
                     &((array_field_ptr!(_a0, arr)) as Ptr<i32>).to_any(),
-                    8_usize as usize,
+                    8_() as usize,
                 );
             ((array_field_ptr!((*self), arr)) as Ptr<i32>).to_any()
         };

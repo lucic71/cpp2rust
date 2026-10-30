@@ -12,15 +12,15 @@ pub fn main() {
         std::process::exit(main_0() as i32);
     }
 }
-unsafe fn main_0() -> () {
-    let mut x: () = -1_();
-    unimplemented!();
-    let mut v1: () = ((x) & (1_()));
-    let mut v2: () = ((x) & (1_()));
-    let mut p: *mut () = (&mut x as *mut ());
-    let mut b: () = (((*p) & (255_())) != 0);
-    let mut a: () = ((*p) & (255_()));
-    unimplemented!();
-    return 0_();
+unsafe fn main_0() -> i32 {
+    let mut x: u32 = (-1_i32 as u32);
+    assert!(((x) == (unimplemented!())));
+    let mut v1: i32 = (((x) & (1_u32)) as i32);
+    let mut v2: u32 = ((x) & (1_u32));
+    let mut p: *mut u32 = (&mut x as *mut u32);
+    let mut b: bool = (((*p) & (255_u32)) != 0);
+    let mut a: i32 = (((*p) & (255_u32)) as i32);
+    assert!(((a) == (255)));
+    return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

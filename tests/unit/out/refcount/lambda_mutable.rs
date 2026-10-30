@@ -10,33 +10,33 @@ pub fn main() {
     __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
-fn main_0() -> () {
-    let start: Value<()> = Rc::new(RefCell::new(5_()));
-    let next: Value<FnPtr<fn() -> ()>> = Rc::new(RefCell::new(lambda!(
+fn main_0() -> i32 {
+    let start: Value<i32> = Rc::new(RefCell::new(5));
+    let next: Value<FnPtr<fn() -> i32>> = Rc::new(RefCell::new(lambda!(
         {
-            let start: Value<()> = Rc::new(RefCell::new((*start.borrow())));
+            let start: Value<i32> = Rc::new(RefCell::new((*start.borrow())));
         },
-        || -> () {
+        || -> i32 {
             return (*start.borrow_mut()).postfix_inc();
         }
     )));
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    let total: Value<()> = Rc::new(RefCell::new(0_()));
-    let accumulate: Value<FnPtr<fn(()) -> ()>> = Rc::new(RefCell::new(lambda!(
+    assert!((({ (*next.borrow()).call() }) == 5));
+    assert!((({ (*next.borrow()).call() }) == 6));
+    assert!((({ (*next.borrow()).call() }) == 7));
+    assert!(((*start.borrow()) == 5));
+    let total: Value<i32> = Rc::new(RefCell::new(0));
+    let accumulate: Value<FnPtr<fn(i32) -> i32>> = Rc::new(RefCell::new(lambda!(
         {
-            let total: Value<()> = Rc::new(RefCell::new((*total.borrow())));
+            let total: Value<i32> = Rc::new(RefCell::new((*total.borrow())));
         },
-        |mut x: ()| -> () {
+        |mut x: i32| -> i32 {
             (*total.borrow_mut()) += x;
             return (*total.borrow());
         }
     )));
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    return 0_();
+    assert!((({ (*accumulate.borrow()).call(1,) }) == 1));
+    assert!((({ (*accumulate.borrow()).call(2,) }) == 3));
+    assert!(((*total.borrow()) == 0));
+    return 0;
 }
 pub fn __cpp2rust_init_globals() {}

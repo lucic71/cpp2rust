@@ -10,12 +10,12 @@ pub fn main() {
     __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
-fn main_0() -> () {
-    let mut x: () = 0_();
-    'loop_: while (x.postfix_inc() < 100_()) && (x != 50_()) {
+fn main_0() -> i32 {
+    let mut x: i32 = 0;
+    'loop_: while (x.postfix_inc() < 100) && (x != 50) {
         x.prefix_inc();
     }
-    unimplemented!();
-    return 0_();
+    assert!((x == 101));
+    return 0;
 }
 pub fn __cpp2rust_init_globals() {}

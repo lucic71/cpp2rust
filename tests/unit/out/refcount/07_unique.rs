@@ -6,24 +6,25 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-pub fn fn_0(mut u: ()) -> () {
-    unimplemented!().write(10_());
-    return unimplemented!();
+pub fn fn_0(mut u: Option<Value<i32>>) -> Option<Value<i32>> {
+    u.as_pointer().write(10);
+    return u.take();
 }
 pub fn main() {
     __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
-fn main_0() -> () {
-    let mut f: () = unimplemented!();
-    unimplemented!().write(9_());
-    let mut f_ptr1: Ptr<()> = unimplemented!();
-    f_ptr1.write(10_());
-    let mut f_ptr2: Ptr<()> = (unimplemented!());
-    f_ptr2.write(11_());
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    return 0_();
+fn main_0() -> i32 {
+    let f: Value<Option<Value<i32>>> = Rc::new(RefCell::new(Some(Rc::new(RefCell::new(8)))));
+    (*f.borrow()).as_pointer().write(9);
+    let mut f_ptr1: Ptr<i32> = (*f.borrow()).as_pointer();
+    f_ptr1.write(10);
+    let mut f_ptr2: Ptr<i32> = ((*f.borrow()).as_pointer());
+    f_ptr2.write(11);
+    f.as_pointer().write(Some(Rc::new(RefCell::new(9))).take());
+    f.as_pointer()
+        .write(({ fn_0((*f.borrow_mut()).take()) }).take());
+    assert!((((*f.borrow()).as_pointer().read()) == 10));
+    return 0;
 }
 pub fn __cpp2rust_init_globals() {}

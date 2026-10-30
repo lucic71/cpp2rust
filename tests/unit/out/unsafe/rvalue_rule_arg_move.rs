@@ -67,8 +67,18 @@ unsafe fn main_0() -> i32 {
     };
     let mut ok: bool = ((((*std::cell::LazyCell::force_mut(&mut *&raw mut copies_0)) == (1))
         && ((*std::cell::LazyCell::force_mut(&mut *&raw mut moves_1)) == (1)))
-        && ((v[(0_usize)].v) == (1)))
-        && ((v[(1_usize)].v) == (2));
+        && (((*{
+            let __idx = 0_usize as usize;
+            let __v: &mut Vec<Elem> = &mut v;
+            __v.as_mut_ptr().add(__idx)
+        })
+        .v) == (1)))
+        && (((*{
+            let __idx = 1_usize as usize;
+            let __v: &mut Vec<Elem> = &mut v;
+            __v.as_mut_ptr().add(__idx)
+        })
+        .v) == (2));
     let mut pa: *mut Elem = (&mut a as *mut Elem);
     (unsafe {
         libc::printf(

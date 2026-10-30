@@ -12,17 +12,17 @@ pub fn main() {
         std::process::exit(main_0() as i32);
     }
 }
-unsafe fn main_0() -> () {
-    let mut __tmp_0: () = 5_();
-    let mut r: *mut () = <*mut ()>::default();
+unsafe fn main_0() -> i32 {
+    let mut __tmp_0: i32 = 5;
+    let mut r: *mut i32 = <*mut i32>::default();
     goto_block!({
         '__entry: {
             r = &mut __tmp_0;
             goto!('body);
         }
         'body: {
-            unimplemented!();
-            return 0_();
+            assert!(((*r) == (5)));
+            return 0;
         }
     });
     panic!("ub: non-void function does not return a value")

@@ -6,14 +6,14 @@ use std::collections::BTreeMap;
 use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
-pub unsafe fn foo_0(mut array: *mut ()) {
+pub unsafe fn foo_0(mut array: *mut i32) {
     {
         let __p = array;
         if !__p.is_null() {
             ::std::mem::drop(Box::from_raw(::std::slice::from_raw_parts_mut(
                 __p,
                 libcc2rs::malloc_usable_size(__p as *mut ::libc::c_void)
-                    / ::std::mem::size_of::<()>(),
+                    / ::std::mem::size_of::<i32>(),
             )))
         }
     };
@@ -24,9 +24,9 @@ pub fn main() {
         std::process::exit(main_0() as i32);
     }
 }
-unsafe fn main_0() -> () {
-    let mut x: *mut () = (Box::leak(Box::new(1_())) as *mut ());
+unsafe fn main_0() -> i32 {
+    let mut x: *mut i32 = (Box::leak(Box::new(1)) as *mut i32);
     (unsafe { foo_0(x) });
-    return 0_();
+    return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

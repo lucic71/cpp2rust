@@ -9,62 +9,83 @@ use std::rc::Rc;
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct Inner {
-    pub a: (),
-    pub name: [(); 8],
+    pub a: i32,
+    pub name: [libc::c_char; 8],
 }
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct Header {
-    pub tag: (),
-    pub size: (),
+    pub tag: i32,
+    pub size: i16,
 }
 #[repr(C)]
 #[derive(Clone, VaArg, FnPtrArg, MoveCtorUnsafe, MoveAssignUnsafe, Default)]
 pub struct Outer {
-    pub x: (),
+    pub x: i32,
     pub inner: Inner,
     pub items: [Inner; 3],
-    pub v: (),
-    pub cursor: *mut (),
-    pub buf: [(); 4],
+    pub v: Vec<i32>,
+    pub cursor: *mut i32,
+    pub buf: [i32; 4],
 }
 impl Outer {
-    pub unsafe fn next(&mut self) -> () {
+    pub unsafe fn next(&mut self) -> i32 {
         return self.buf[(self.x.postfix_inc()) as usize];
     }
-    pub unsafe fn sum(&self) -> () {
+    pub unsafe fn sum(&self) -> i32 {
         return ((self.x) + (self.inner.a));
     }
-    pub unsafe fn push(&mut self, mut k: ()) {
-        unimplemented!();
+    pub unsafe fn push(&mut self, mut k: i32) {
+        {
+            let __a1 = ((k) + (self.x));
+            self.v.push(__a1)
+        };
     }
     pub unsafe fn move_from(_a0: *mut Outer) -> Self {
         let mut this = Self {
             x: (*_a0).x,
             inner: (*_a0).inner,
-            items: std::array::from_fn::<_, 3, _>(|__i: usize| (*_a0).items[(__i) as usize]),
-            v: unimplemented!(),
+            items: std::array::from_fn::<_, 3, _>(|__i: usize| (*_a0).items[(__i)]),
+            v: std::mem::take(&mut (*_a0).v),
             cursor: (*_a0).cursor,
-            buf: std::array::from_fn::<_, 4, _>(|__i: usize| (*_a0).buf[(__i) as usize]),
+            buf: std::array::from_fn::<_, 4, _>(|__i: usize| (*_a0).buf[(__i)]),
         };
         this
     }
     pub unsafe fn move_assign(&mut self, _a0: *mut Outer) -> *mut Outer {
         self.x = (*_a0).x;
         self.inner = (*_a0).inner;
-        unimplemented!();
-        unimplemented!();
+        {
+            if 36_usize != 0 {
+                ::std::ptr::copy_nonoverlapping(
+                    ((&mut (*_a0).items as *mut [Inner; 3]) as *const ::libc::c_void),
+                    ((&mut self.items as *mut [Inner; 3]) as *mut ::libc::c_void),
+                    36_usize as usize,
+                )
+            }
+            ((&mut self.items as *mut [Inner; 3]) as *mut ::libc::c_void)
+        };
+        self.v = std::mem::take(&mut (*_a0).v);
         self.cursor = (*_a0).cursor;
-        unimplemented!();
+        {
+            if 16_usize != 0 {
+                ::std::ptr::copy_nonoverlapping(
+                    ((&mut (*_a0).buf as *mut [i32; 4]) as *const ::libc::c_void),
+                    ((&mut self.buf as *mut [i32; 4]) as *mut ::libc::c_void),
+                    16_usize as usize,
+                )
+            }
+            ((&mut self.buf as *mut [i32; 4]) as *mut ::libc::c_void)
+        };
         return &mut (*(self as *mut Outer));
     }
 }
-pub unsafe fn set_0(mut p: *mut (), mut value: ()) {
+pub unsafe fn set_0(mut p: *mut i32, mut value: i32) {
     (*p) = value;
 }
-pub unsafe fn bump_1(mut o: *mut Outer) -> () {
+pub unsafe fn bump_1(mut o: *mut Outer) -> i32 {
     (*o).x.postfix_inc();
-    return 1_();
+    return 1;
 }
 pub fn main() {
     unsafe {
@@ -72,66 +93,86 @@ pub fn main() {
         std::process::exit(main_0() as i32);
     }
 }
-unsafe fn main_0() -> () {
+unsafe fn main_0() -> i32 {
     let mut o: Outer = <Outer>::default();
-    o.x = 1_();
-    let mut px: *mut () = (&mut o.x as *mut ());
-    (*px) = 2_();
-    unimplemented!();
-    let mut pa: *mut () = (&mut o.inner.a as *mut ());
+    o.x = 1;
+    let mut px: *mut i32 = (&mut o.x as *mut i32);
+    (*px) = 2;
+    assert!(((o.x) == (2)));
+    let mut pa: *mut i32 = (&mut o.inner.a as *mut i32);
     (unsafe {
-        let _p: *mut () = pa;
-        set_0(_p, 3_())
+        let _p: *mut i32 = pa;
+        set_0(_p, 3)
     });
-    unimplemented!();
-    let mut pi: *mut () = (&mut o.items[(1_()) as usize].a as *mut ());
-    (*pi) = 4_();
-    unimplemented!();
-    unimplemented!();
-    let mut name: *mut () = o.inner.name.as_mut_ptr();
-    let mut i: () = 0_();
-    'loop_: while ((i) < (3_())) {
-        (*name.offset((i) as isize)) = (('a' as ()) + (i));
+    assert!(((o.inner.a) == (3)));
+    let mut pi: *mut i32 = (&mut o.items[(1) as usize].a as *mut i32);
+    (*pi) = 4;
+    assert!(((o.items[(1) as usize].a) == (4)));
+    assert!(((&mut o.items[(0) as usize].a as *mut i32) != (pi)));
+    let mut name: *mut libc::c_char = o.inner.name.as_mut_ptr();
+    let mut i: i32 = 0;
+    'loop_: while ((i) < (3)) {
+        (*name.offset((i) as isize)) = (((('a' as libc::c_char) as i32) + (i)) as libc::c_char);
         i.prefix_inc();
     }
-    unimplemented!();
-    unimplemented!();
-    o.cursor = (&mut o.buf[(1_()) as usize] as *mut ());
-    (*o.cursor) = 5_();
-    (*o.cursor.postfix_inc()) += 1_();
-    unimplemented!();
-    o.x = 0_();
-    let mut first: () = (unsafe { Outer::next(&mut o) });
-    unimplemented!();
+    assert!(((libc::strlen((o.inner.name.as_mut_ptr()).cast_const())) == (3_usize)));
+    assert!(
+        ((name.offset((3) as isize)) == (&mut o.inner.name[(3) as usize] as *mut libc::c_char))
+    );
+    o.cursor = (&mut o.buf[(1) as usize] as *mut i32);
+    (*o.cursor) = 5;
+    (*o.cursor.postfix_inc()) += 1;
+    assert!(
+        ((o.buf[(1) as usize]) == (6)) && ((o.cursor) == (&mut o.buf[(2) as usize] as *mut i32))
+    );
+    o.x = 0;
+    let mut first: i32 = (unsafe { Outer::next(&mut o) });
+    assert!(((first) == (0)) && ((o.x) == (1)));
     o.x = ((o.inner.a) + (unsafe { bump_1((&mut o as *mut Outer)) }));
-    unimplemented!();
+    assert!(((o.x) == (4)));
     (unsafe {
-        let _k: () = o.inner.a;
+        let _k: i32 = o.inner.a;
         Outer::push(&mut o, _k)
     });
-    unimplemented!();
-    unimplemented!();
-    let mut y: () = 0_();
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    let mut bytes: [(); 8] = [
-        unimplemented!(),
-        unimplemented!(),
-        unimplemented!(),
-        unimplemented!(),
-        unimplemented!(),
-        unimplemented!(),
-        unimplemented!(),
-        unimplemented!(),
-    ];
+    assert!(
+        ((o.v.len()) == (1_usize))
+            && ((*{
+                let __idx = 0_usize as usize;
+                let __v: &mut Vec<i32> = &mut o.v;
+                __v.as_mut_ptr().add(__idx)
+            }) == (7))
+    );
+    assert!(((unsafe { Outer::sum(&o,) }) == (7)));
+    let mut y: i32 = 0;
+    {
+        if ::std::mem::size_of::<i32>() != 0 {
+            ::std::ptr::copy_nonoverlapping(
+                ((&mut o.items[(1) as usize].a as *mut i32) as *const ::libc::c_void),
+                ((&mut o.items[(2) as usize].a as *mut i32) as *mut ::libc::c_void),
+                ::std::mem::size_of::<i32>() as usize,
+            )
+        }
+        ((&mut o.items[(2) as usize].a as *mut i32) as *mut ::libc::c_void)
+    };
+    {
+        if ::std::mem::size_of::<i32>() != 0 {
+            ::std::ptr::copy_nonoverlapping(
+                ((&mut o.items[(2) as usize].a as *mut i32) as *const ::libc::c_void),
+                ((&mut y as *mut i32) as *mut ::libc::c_void),
+                ::std::mem::size_of::<i32>() as usize,
+            )
+        }
+        ((&mut y as *mut i32) as *mut ::libc::c_void)
+    };
+    assert!(((y) == (4)));
+    let mut bytes: [u8; 8] = [0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8];
     let mut view: *mut Header = (bytes.as_mut_ptr() as *mut Header);
-    (*view).tag = 16909060_();
-    unimplemented!();
-    (unsafe { set_0((&mut (*view).tag as *mut ()), 0_()) });
-    unimplemented!();
-    (*view).size = 1_();
-    unimplemented!();
-    return 0_();
+    (*view).tag = 16909060;
+    assert!(((bytes[(0) as usize] as i32) == (4)) || ((bytes[(3) as usize] as i32) == (4)));
+    (unsafe { set_0((&mut (*view).tag as *mut i32), 0) });
+    assert!(((bytes[(0) as usize] as i32) == (0)) && ((bytes[(3) as usize] as i32) == (0)));
+    (*view).size = 1_i16;
+    assert!((((bytes[(4) as usize] as i32) + (bytes[(5) as usize] as i32)) == (1)));
+    return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

@@ -9,8 +9,8 @@ use std::rc::Rc;
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct Pair {
-    pub first: (),
-    pub second: (),
+    pub first: i32,
+    pub second: i32,
 }
 pub fn main() {
     unsafe {
@@ -18,46 +18,46 @@ pub fn main() {
         std::process::exit(main_0() as i32);
     }
 }
-unsafe fn main_0() -> () {
+unsafe fn main_0() -> i32 {
     let mut arr: [Pair; 3] = [
         Pair {
-            first: 1_(),
-            second: 2_(),
+            first: 1,
+            second: 2,
         },
         Pair {
-            first: 3_(),
-            second: 4_(),
+            first: 3,
+            second: 4,
         },
         Pair {
-            first: 5_(),
-            second: 6_(),
+            first: 5,
+            second: 6,
         },
     ];
     'loop_: for __decomp_0 in
-        IterRange::new(arr.as_mut_ptr(), arr.as_mut_ptr().offset((3_()) as isize))
+        IterRange::new(arr.as_mut_ptr(), arr.as_mut_ptr().offset((3_i64) as isize))
     {
         let __decomp_0: *mut Pair = &mut (*__decomp_0);
         (*__decomp_0).first += (*__decomp_0).second;
     }
-    unimplemented!();
-    unimplemented!();
+    assert!(((arr[(0) as usize].first) == (3)));
+    assert!(((arr[(2) as usize].first) == (11)));
     'loop_: for __decomp_1 in
-        IterRange::new(arr.as_mut_ptr(), arr.as_mut_ptr().offset((3_()) as isize))
+        IterRange::new(arr.as_mut_ptr(), arr.as_mut_ptr().offset((3_i64) as isize))
     {
         let mut __decomp_1: Pair = (*__decomp_1);
-        __decomp_1.first = 0_();
-        __decomp_1.second = 0_();
+        __decomp_1.first = 0;
+        __decomp_1.second = 0;
     }
-    unimplemented!();
-    unimplemented!();
-    let mut sum: () = 0_();
+    assert!(((arr[(1) as usize].first) == (7)));
+    assert!(((arr[(1) as usize].second) == (4)));
+    let mut sum: i32 = 0;
     'loop_: for __decomp_2 in
-        IterRange::new(arr.as_mut_ptr(), arr.as_mut_ptr().offset((3_()) as isize))
+        IterRange::new(arr.as_mut_ptr(), arr.as_mut_ptr().offset((3_i64) as isize))
     {
         let __decomp_2: *const Pair = &(*__decomp_2);
         sum += (((*__decomp_2).first) * ((*__decomp_2).second));
     }
-    unimplemented!();
-    return 0_();
+    assert!(((sum) == ((((3) * (2)) + ((7) * (4))) + ((11) * (6)))));
+    return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

@@ -12,19 +12,31 @@ pub fn main() {
         std::process::exit(main_0() as i32);
     }
 }
-unsafe fn main_0() -> () {
-    let mut vec_: () = unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    let mut bytes: *mut () = (unimplemented!() as *mut ());
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    (*bytes.offset((4_()) as isize)) = 255_();
-    unimplemented!();
-    return 0_();
+unsafe fn main_0() -> i32 {
+    let mut vec_: Vec<u32> = Vec::new();
+    {
+        let __a1 = 67305985_u32;
+        vec_.push(__a1)
+    };
+    {
+        let __a1 = 134678021_u32;
+        vec_.push(__a1)
+    };
+    let mut bytes: *mut u8 = (vec_.as_mut_ptr() as *mut u8);
+    assert!((((*bytes.offset((0) as isize)) as i32) == (1)));
+    assert!((((*bytes.offset((1) as isize)) as i32) == (2)));
+    assert!((((*bytes.offset((2) as isize)) as i32) == (3)));
+    assert!((((*bytes.offset((3) as isize)) as i32) == (4)));
+    assert!((((*bytes.offset((4) as isize)) as i32) == (5)));
+    assert!((((*bytes.offset((7) as isize)) as i32) == (8)));
+    (*bytes.offset((4) as isize)) = 255_u8;
+    assert!(
+        ((*{
+            let __idx = 1_usize as usize;
+            let __v: &mut Vec<u32> = &mut vec_;
+            __v.as_mut_ptr().add(__idx)
+        }) == (134678271_u32))
+    );
+    return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

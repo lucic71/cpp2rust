@@ -10,20 +10,20 @@ pub fn main() {
     __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
-fn main_0() -> () {
-    let mut p: () = unimplemented!();
+fn main_0() -> i32 {
+    let mut p: Option<Value<i32>> = Some(Rc::new(RefCell::new(10)));
     {
-        unimplemented!().with_mut(|__v| *__v = *__v + 5_())
+        p.as_pointer().with_mut(|__v| *__v = *__v + 5)
     };
     {
-        unimplemented!().with_mut(|__v| *__v = *__v - 3_())
+        p.as_pointer().with_mut(|__v| *__v = *__v - 3)
     };
     {
-        unimplemented!().with_mut(|__v| *__v = *__v * 2_())
+        p.as_pointer().with_mut(|__v| *__v = *__v * 2)
     };
-    let mut q: () = unimplemented!();
-    let mut sum: () = ((unimplemented!().read()) + (unimplemented!().read()));
-    unimplemented!();
-    return 0_();
+    let mut q: Option<Value<i32>> = Some(Rc::new(RefCell::new(1)));
+    let mut sum: i32 = ((p.as_pointer().read()) + (q.as_pointer().read()));
+    assert!((sum == 25));
+    return 0;
 }
 pub fn __cpp2rust_init_globals() {}

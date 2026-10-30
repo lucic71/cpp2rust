@@ -9,48 +9,48 @@ use std::rc::Rc;
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct S {
-    pub v: (),
+    pub v: i32,
 }
 impl S {
-    pub unsafe fn operator_eq_1(&self, mut o: ()) -> () {
-        return if ((self.v) == (o)) { 1_() } else { 0_() };
+    pub unsafe fn operator_eq_1(&self, mut o: i32) -> i32 {
+        return if ((self.v) == (o)) { 1 } else { 0 };
     }
-    pub unsafe fn operator_eq_2(&self, mut o: ()) -> () {
-        return if ((self.v) == (o)) { 2_() } else { 0_() };
+    pub unsafe fn operator_eq_2(&self, mut o: i64) -> i32 {
+        return if ((self.v as i64) == (o)) { 2 } else { 0 };
     }
-    pub unsafe fn operator_eq_3(&self, mut o: ()) -> () {
-        return if ((self.v) == (o)) { 3_() } else { 0_() };
+    pub unsafe fn operator_eq_3(&self, mut o: f64) -> i32 {
+        return if ((self.v as f64) == (o)) { 3 } else { 0 };
     }
-    pub unsafe fn operator_add(&self, o: *const S) -> () {
+    pub unsafe fn operator_add(&self, o: *const S) -> i32 {
         return ((self.v) + ((*o).v));
     }
-    pub unsafe fn operator_sub(&self, mut o: S) -> () {
+    pub unsafe fn operator_sub(&self, mut o: S) -> i32 {
         return ((self.v) - (o.v));
     }
-    pub unsafe fn operator_mul_6(&self, o: *const S) -> () {
+    pub unsafe fn operator_mul_6(&self, o: *const S) -> i32 {
         return ((self.v) * ((*o).v));
     }
-    pub unsafe fn operator_mul_7(&self, mut o: ()) -> () {
-        return (((self.v) * (o)) + (1_()));
+    pub unsafe fn operator_mul_7(&self, mut o: i32) -> i32 {
+        return (((self.v) * (o)) + (1));
     }
 }
-pub unsafe fn operator_div_0(a: *const S, b: *const S) -> () {
+pub unsafe fn operator_div_0(a: *const S, b: *const S) -> i32 {
     return (((*a).v) / ((*b).v));
 }
-pub unsafe fn operator_div_1(mut a: S, mut b: ()) -> () {
-    return (((a.v) / (b)) + (1_()));
+pub unsafe fn operator_div_1(mut a: S, mut b: i32) -> i32 {
+    return (((a.v) / (b)) + (1));
 }
-pub unsafe fn operator_rem_2(mut a: S, mut b: S) -> () {
+pub unsafe fn operator_rem_2(mut a: S, mut b: S) -> i32 {
     return ((a.v) % (b.v));
 }
-pub unsafe fn operator_rem_3(a: *const S, mut b: ()) -> () {
-    return ((((*a).v) % (b)) + (1_()));
+pub unsafe fn operator_rem_3(a: *const S, mut b: i32) -> i32 {
+    return ((((*a).v) % (b)) + (1));
 }
-pub unsafe fn operator_eq_4(mut a: (), mut b: S) -> () {
-    return if ((a) == (b.v)) { 4_() } else { 0_() };
+pub unsafe fn operator_eq_4(mut a: i32, mut b: S) -> i32 {
+    return if ((a) == (b.v)) { 4 } else { 0 };
 }
-pub unsafe fn operator_eq_5(mut a: (), b: *const S) -> () {
-    return if ((a) == ((*b).v)) { 5_() } else { 0_() };
+pub unsafe fn operator_eq_5(mut a: i64, b: *const S) -> i32 {
+    return if ((a) == ((*b).v as i64)) { 5 } else { 0 };
 }
 pub fn main() {
     unsafe {
@@ -58,23 +58,43 @@ pub fn main() {
         std::process::exit(main_0() as i32);
     }
 }
-unsafe fn main_0() -> () {
-    let mut s: S = S { v: 6_() };
-    let mut t: S = S { v: 4_() };
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    return 0_();
+unsafe fn main_0() -> i32 {
+    let mut s: S = S { v: 6 };
+    let mut t: S = S { v: 4 };
+    assert!(((unsafe { S::operator_eq_1(&s, 6,) }) == (1)));
+    assert!(((unsafe { S::operator_eq_2(&s, 6_i64,) }) == (2)));
+    assert!(((unsafe { S::operator_eq_3(&s, 6_f64,) }) == (3)));
+    assert!(((unsafe { S::operator_eq_1(&s, 7,) }) == (0)));
+    assert!(((unsafe { S::operator_add(&s, &t,) }) == (10)));
+    assert!(((unsafe { S::operator_sub(&s, t,) }) == (2)));
+    assert!(((unsafe { S::operator_mul_6(&s, &t,) }) == (24)));
+    assert!(((unsafe { S::operator_mul_7(&s, 2,) }) == (13)));
+    assert!(
+        ((unsafe {
+            let _a: *const S = &s;
+            operator_div_0(_a, &t)
+        }) == (1))
+    );
+    assert!(
+        ((unsafe {
+            let _a: S = s;
+            operator_div_1(_a, 4)
+        }) == (2))
+    );
+    assert!(
+        ((unsafe {
+            let _a: S = s;
+            operator_rem_2(_a, t)
+        }) == (2))
+    );
+    assert!(
+        ((unsafe {
+            let _a: *const S = &s;
+            operator_rem_3(_a, 4)
+        }) == (3))
+    );
+    assert!(((unsafe { operator_eq_4(6, s,) }) == (4)));
+    assert!(((unsafe { operator_eq_5(6_i64, &s,) }) == (5)));
+    return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

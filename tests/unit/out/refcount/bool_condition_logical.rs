@@ -6,129 +6,129 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-pub type Code = ();
+pub type Code = u32;
 pub const Code_CODE_OK: Code = 0;
 pub const Code_CODE_ERR: Code = 1;
 pub const Code_CODE_FATAL: Code = 2;
 thread_local!(
-    pub static side_effect_0: Value<()> = Rc::new(RefCell::new(0_()));
+    pub static side_effect_0: Value<i32> = Rc::new(RefCell::new(0));
 );
-pub fn observe_1(v: ()) -> () {
-    let v: Value<()> = Rc::new(RefCell::new(v));
+pub fn observe_1(v: i32) -> i32 {
+    let v: Value<i32> = Rc::new(RefCell::new(v));
     (*side_effect_0.with(Value::clone).borrow_mut()).prefix_inc();
     return (*v.borrow());
 }
-pub fn returns_one_2() -> () {
-    return 1_();
+pub fn returns_one_2() -> i32 {
+    return 1;
 }
-pub fn returns_zero_3() -> () {
-    return 0_();
+pub fn returns_zero_3() -> i32 {
+    return 0;
 }
 pub fn main() {
     __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
-fn main_0() -> () {
-    let mut n: () = 3_();
-    let mut zero: () = 0_();
-    let storage: Value<()> = Rc::new(RefCell::new(7_()));
-    let mut p: Ptr<()> = (storage.as_pointer());
-    let mut np: Ptr<()> = Ptr::<()>::null();
-    let mut u: () = 4_();
+fn main_0() -> i32 {
+    let mut n: i32 = 3;
+    let mut zero: i32 = 0;
+    let storage: Value<i32> = Rc::new(RefCell::new(7));
+    let mut p: Ptr<i32> = (storage.as_pointer());
+    let mut np: Ptr<i32> = Ptr::<i32>::null();
+    let mut u: u32 = 4_u32;
     let mut code: Code = Code_CODE_OK;
     if (n != 0) && (!(p).is_null()) {
-        unimplemented!();
+        assert!(true);
     }
     if (n != 0) && (!(np).is_null()) {
-        unimplemented!();
+        assert!(false);
     }
     if (zero != 0) || (!(p).is_null()) {
-        unimplemented!();
+        assert!(true);
     }
     if (zero != 0) || (!(np).is_null()) {
-        unimplemented!();
+        assert!(false);
     }
-    if (((n != 0) && (u != 0)) && (!(p).is_null())) && ((code as ()) == (Code_CODE_OK as ())) {
-        unimplemented!();
+    if (((n != 0) && (u != 0)) && (!(p).is_null())) && ((code as i32) == (Code_CODE_OK as i32)) {
+        assert!(true);
     }
-    side_effect_0.with(|rc| *rc.borrow_mut() = 0_());
-    if (zero != 0) && (({ observe_1(1_()) }) != 0) {
-        unimplemented!();
+    side_effect_0.with(|rc| *rc.borrow_mut() = 0);
+    if (zero != 0) && (({ observe_1(1) }) != 0) {
+        assert!(false);
     }
-    unimplemented!();
-    if (n != 0) || (({ observe_1(1_()) }) != 0) {
-        unimplemented!();
+    assert!((side_effect_0.with(|rc| *rc.borrow()) == 0));
+    if (n != 0) || (({ observe_1(1) }) != 0) {
+        assert!(true);
     }
-    unimplemented!();
-    let mut x: () = 5_();
-    let mut y: () = 3_();
-    let mut flags: () = 2_();
-    if (x > y) || ((flags & 1_()) != 0) {
-        unimplemented!();
+    assert!((side_effect_0.with(|rc| *rc.borrow()) == 0));
+    let mut x: i32 = 5;
+    let mut y: i32 = 3;
+    let mut flags: u32 = 2_u32;
+    if (x > y) || ((flags & 1_u32) != 0) {
+        assert!(true);
     }
-    if (x < y) || ((flags & 1_()) != 0) {
-        unimplemented!();
+    if (x < y) || ((flags & 1_u32) != 0) {
+        assert!(false);
     }
-    let mut a: () = 1_();
-    let mut b: () = 2_();
-    let mut c: () = 3_();
+    let mut a: u32 = 1_u32;
+    let mut b: u32 = 2_u32;
+    let mut c: u32 = 3_u32;
     if (a != c) && (b != c) {
-        unimplemented!();
+        assert!(true);
     }
-    let mut s: () = -1_();
-    if (!((p).is_null())) && (s < 0_()) {
-        unimplemented!();
+    let mut s: i32 = -1_i32;
+    if (!((p).is_null())) && (s < 0) {
+        assert!(true);
     }
-    let mut k: () = 2_();
-    let mut done: () = false;
-    if (k > 1_()) || (!(done)) {
-        unimplemented!();
+    let mut k: u32 = 2_u32;
+    let mut done: bool = false;
+    if (k > 1_u32) || (!(done)) {
+        assert!(true);
     }
-    if (x > y) || ((flags & 4_()) != 0) {
-        unimplemented!();
+    if (x > y) || ((flags & 4_u32) != 0) {
+        assert!(true);
     }
-    let mut ull: () = 7_();
+    let mut ull: u64 = 7_u64;
     if (!((p).is_null())) && (ull != 0) {
-        unimplemented!();
+        assert!(true);
     }
     if (x > y) && (ull != 0) {
-        unimplemented!();
+        assert!(true);
     }
-    let mut mask: () = ((1_() << 4_()) | (1_() << 5_()));
-    let mut bits: () = (1_() << 4_());
-    if (n != 0_()) && ((bits & mask) != 0) {
-        unimplemented!();
+    let mut mask: i64 = ((1_i64 << 4) | (1_i64 << 5));
+    let mut bits: i64 = (1_i64 << 4);
+    if (n != 0) && ((bits & mask) != 0) {
+        assert!(true);
     }
-    if (n != 0_()) || ((bits & 256_()) != 0) {
-        unimplemented!();
+    if (n != 0) || ((bits & 256_i64) != 0) {
+        assert!(true);
     }
-    let mut cp: Ptr<()> = Ptr::<()>::from_string_literal(b"hi");
-    let mut cnp: Ptr<()> = Ptr::<()>::null();
+    let mut cp: Ptr<i8> = Ptr::<i8>::from_string_literal(b"hi");
+    let mut cnp: Ptr<i8> = Ptr::<i8>::null();
     if (x > y) && (!(cp).is_null()) {
-        unimplemented!();
+        assert!(true);
     }
     if (x < y) || (!(cnp).is_null()) {
-        unimplemented!();
+        assert!(false);
     }
     if (x > y) && ((n != 0) && (!(cp).is_null())) {
-        unimplemented!();
+        assert!(true);
     }
     if (x > y) && (({ returns_one_2() }) != 0) {
-        unimplemented!();
+        assert!(true);
     }
     if (x > y) && (!(({ returns_zero_3() }) != 0)) {
-        unimplemented!();
+        assert!(true);
     }
     if (x < y) || (({ returns_one_2() }) != 0) {
-        unimplemented!();
+        assert!(true);
     }
     if (x < y) || (!(({ returns_one_2() }) != 0)) {
-        unimplemented!();
+        assert!(false);
     }
-    if ((!((p).is_null())) && (({ returns_one_2() }) != 0)) && (n != 0_()) {
-        unimplemented!();
+    if ((!((p).is_null())) && (({ returns_one_2() }) != 0)) && (n != 0) {
+        assert!(true);
     }
-    return 0_();
+    return 0;
 }
 pub fn __cpp2rust_init_globals() {
     let _ = side_effect_0.with(|_| ());

@@ -10,13 +10,13 @@ use std::rc::{Rc, Weak};
 #[byte_size(8)]
 pub struct S {
     #[offset(0)]
-    pub a: (),
+    pub a: i32,
     #[offset(4)]
-    pub b: (),
+    pub b: bool,
 }
 impl S {
     pub fn new() -> Self {
-        Self { a: 11_(), b: true }
+        Self { a: 11, b: true }
     }
 }
 impl Default for S {
@@ -28,7 +28,7 @@ impl Default for S {
 #[byte_size(4)]
 pub struct Declared {
     #[offset(0)]
-    pub v: (),
+    pub v: i32,
 }
 impl Declared {}
 #[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg)]
@@ -48,13 +48,13 @@ impl Default for Holder {
     }
 }
 thread_local!(
-    pub static kInit_0: Value<()> = Rc::new(RefCell::new(3_()));
+    pub static kInit_0: Value<i32> = Rc::new(RefCell::new(3));
 );
 #[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg)]
 #[byte_size(4)]
 pub struct FromStatic {
     #[offset(0)]
-    pub v: (),
+    pub v: i32,
 }
 impl Default for FromStatic {
     fn default() -> Self {
@@ -69,27 +69,27 @@ pub fn main() {
     __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
-fn main_0() -> () {
+fn main_0() -> i32 {
     let mut d: Ptr<Declared> = Ptr::<Declared>::null();
-    unimplemented!();
+    assert!((d).is_null());
     let mut s: S = S::new();
-    unimplemented!();
-    unimplemented!();
+    assert!((s.a == 11));
+    assert!(((s.b as i32) == (true as i32)));
     let mut h: Ptr<Holder> = Ptr::alloc_array(
-        (0..1_())
+        (0..1_usize)
             .map(|_| <Holder>::default())
             .collect::<Box<[Holder]>>(),
     );
-    unimplemented!();
+    assert!((array_elem!(h.offset((0) as isize), items, 1).with(|__s| __s.a) == 11));
     h.delete();
     let mut fs: Ptr<FromStatic> = Ptr::alloc_array(
-        (0..2_())
+        (0..2_usize)
             .map(|_| <FromStatic>::default())
             .collect::<Box<[FromStatic]>>(),
     );
-    unimplemented!();
+    assert!((elem!(fs, 1).with(|__s| __s.v) == 3));
     fs.delete();
-    return 0_();
+    return 0;
 }
 pub fn __cpp2rust_init_globals() {
     let _ = kInit_0.with(|_| ());

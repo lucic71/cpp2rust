@@ -12,14 +12,18 @@ pub fn main() {
         std::process::exit(main_0() as i32);
     }
 }
-unsafe fn main_0() -> () {
-    let mut s: () = unimplemented!();
-    let mut bytes: *const () = (unimplemented!() as *const ());
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    return 0_();
+unsafe fn main_0() -> i32 {
+    let mut s: Vec<libc::c_char> = {
+        let __s = c"ABCD".as_ptr();
+        std::slice::from_raw_parts(__s, (0..).take_while(|&__i| *__s.add(__i) != 0).count() + 1)
+            .to_vec()
+    };
+    let mut bytes: *const u8 = (s.as_ptr() as *const u8);
+    assert!((((*bytes.offset((0) as isize)) as i32) == (('A' as libc::c_char) as i32)));
+    assert!((((*bytes.offset((1) as isize)) as i32) == (('B' as libc::c_char) as i32)));
+    assert!((((*bytes.offset((2) as isize)) as i32) == (('C' as libc::c_char) as i32)));
+    assert!((((*bytes.offset((3) as isize)) as i32) == (('D' as libc::c_char) as i32)));
+    assert!((((*bytes.offset((4) as isize)) as i32) == (0)));
+    return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

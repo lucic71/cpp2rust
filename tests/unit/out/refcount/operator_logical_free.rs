@@ -10,30 +10,62 @@ use std::rc::{Rc, Weak};
 #[byte_size(4)]
 pub struct S {
     #[offset(0)]
-    pub v: (),
+    pub v: i32,
 }
-pub fn operator_not_0(a: Ptr<S>) -> () {
-    return (a.with(|__s| __s.v) == 0_());
+pub fn operator_not_0(a: Ptr<S>) -> bool {
+    return (a.with(|__s| __s.v) == 0);
 }
-pub fn operator_and_1(a: Ptr<S>, b: Ptr<S>) -> () {
-    return (a.with(|__s| __s.v) != 0_()) && (b.with(|__s| __s.v) != 0_());
+pub fn operator_and_1(a: Ptr<S>, b: Ptr<S>) -> bool {
+    return (a.with(|__s| __s.v) != 0) && (b.with(|__s| __s.v) != 0);
 }
-pub fn operator_or_2(a: Ptr<S>, b: Ptr<S>) -> () {
-    return (a.with(|__s| __s.v) != 0_()) || (b.with(|__s| __s.v) != 0_());
+pub fn operator_or_2(a: Ptr<S>, b: Ptr<S>) -> bool {
+    return (a.with(|__s| __s.v) != 0) || (b.with(|__s| __s.v) != 0);
 }
 pub fn main() {
     __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
-fn main_0() -> () {
-    let t: Value<S> = Rc::new(RefCell::new(S { v: 1_() }));
-    let f: Value<S> = Rc::new(RefCell::new(S { v: 0_() }));
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    return 0_();
+fn main_0() -> i32 {
+    let t: Value<S> = Rc::new(RefCell::new(S { v: 1 }));
+    let f: Value<S> = Rc::new(RefCell::new(S { v: 0 }));
+    assert!(
+        ({
+            let _a: Ptr<S> = f.as_pointer();
+            operator_not_0(_a)
+        })
+    );
+    assert!(
+        !({
+            let _a: Ptr<S> = t.as_pointer();
+            operator_not_0(_a)
+        })
+    );
+    assert!(
+        ({
+            let _a: Ptr<S> = t.as_pointer();
+            let _b: Ptr<S> = t.as_pointer();
+            operator_and_1(_a, _b)
+        })
+    );
+    assert!(
+        !({
+            let _a: Ptr<S> = t.as_pointer();
+            operator_and_1(_a, f.as_pointer())
+        })
+    );
+    assert!(
+        ({
+            let _a: Ptr<S> = t.as_pointer();
+            operator_or_2(_a, f.as_pointer())
+        })
+    );
+    assert!(
+        !({
+            let _a: Ptr<S> = f.as_pointer();
+            let _b: Ptr<S> = f.as_pointer();
+            operator_or_2(_a, _b)
+        })
+    );
+    return 0;
 }
 pub fn __cpp2rust_init_globals() {}

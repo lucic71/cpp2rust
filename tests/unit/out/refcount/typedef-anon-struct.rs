@@ -10,21 +10,21 @@ use std::rc::{Rc, Weak};
 #[byte_size(8)]
 pub struct Outer_RunInfo {
     #[offset(0)]
-    pub block_idx: (),
+    pub block_idx: i32,
     #[offset(4)]
-    pub num_extra_zero_runs: (),
+    pub num_extra_zero_runs: i32,
 }
 #[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, MoveCtor, MoveAssign, Default)]
 #[byte_size(24)]
 pub struct Outer {
     #[offset(0)]
     #[byte_size(24)]
-    pub runs: (),
+    pub runs: Vec<Outer_RunInfo>,
 }
 impl Outer {
     pub fn move_from(_a0: Ptr<Outer>) -> Self {
         Self {
-            runs: unimplemented!(),
+            runs: field!(_a0, runs).with_mut(std::mem::take),
         }
     }
 }
@@ -32,23 +32,40 @@ pub fn main() {
     __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
-fn main_0() -> () {
-    let mut o: Outer = <Outer>::default();
+fn main_0() -> i32 {
+    let o: Value<Outer> = Rc::new(RefCell::new(<Outer>::default()));
     let mut info: Outer_RunInfo = <Outer_RunInfo>::default();
-    info.block_idx = 1_();
-    info.num_extra_zero_runs = 2_();
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    return 0_();
+    info.block_idx = 1;
+    info.num_extra_zero_runs = 2;
+    {
+        let a0_clone = info.clone();
+        (*o.borrow_mut()).runs.push(a0_clone)
+    };
+    assert!(((*o.borrow()).runs.len() == 1_usize));
+    assert!(
+        (field_ref!(o.as_pointer(), runs)
+            .decay()
+            .offset(0_usize as isize)
+            .with(|__s| __s.block_idx)
+            == 1)
+    );
+    assert!(
+        (field_ref!(o.as_pointer(), runs)
+            .decay()
+            .offset(0_usize as isize)
+            .with(|__s| __s.num_extra_zero_runs)
+            == 2)
+    );
+    return 0;
 }
 pub trait OuterImpl {
     fn move_assign(&self, _a0: Ptr<Outer>) -> Ptr<Outer>;
 }
 impl OuterImpl for Ptr<Outer> {
     fn move_assign(&self, _a0: Ptr<Outer>) -> Ptr<Outer> {
-        unimplemented!();
+        field_ref!((*self), runs)
+            .as_pointer()
+            .write(field!(_a0, runs).with_mut(std::mem::take));
         return (*self).clone();
     }
 }

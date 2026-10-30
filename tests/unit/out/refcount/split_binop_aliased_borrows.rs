@@ -10,13 +10,13 @@ pub fn main() {
     __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
-fn main_0() -> () {
-    let mut v: () = unimplemented!();
-    let p: Value<()> = Rc::new(RefCell::new(unimplemented!()));
-    let r: Ptr<()> = unimplemented!();
+fn main_0() -> i32 {
+    let v: Value<Vec<i32>> = Rc::new(RefCell::new(Vec::from([1, 2])));
+    let p: Value<RandomAccessIterator<i32>> = Rc::new(RefCell::new(v.decay().begin()));
+    let r: Ptr<i32> = v.decay().offset(1_usize as isize);
     let __rhs = (r.read());
-    unimplemented!().write(__rhs);
-    unimplemented!();
-    return 0_();
+    (*p.borrow()).iter_deref().write(__rhs);
+    assert!(((v.decay().offset(0_usize as isize).read()) == 2));
+    return 0;
 }
 pub fn __cpp2rust_init_globals() {}

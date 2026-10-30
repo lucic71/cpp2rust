@@ -33,7 +33,7 @@ fn main_0() -> i32 {
     assert!(((*(*p3.borrow()).0.borrow()) == 5_f64));
     assert!(((*(*p3.borrow()).1.borrow()) == 6));
     let arr: Value<Box<[i32]>> = Rc::new(RefCell::new(Box::new([1, 2])));
-    let mut n: u32 = 2_u32;
+    let n: Value<u32> = Rc::new(RefCell::new(2_u32));
     let const_ptr_pairs: Value<Vec<(Value<Ptr<i32>>, Value<u64>)>> = Rc::new(RefCell::new(
         (0..(1_usize) as usize)
             .map(|_| {
@@ -49,9 +49,9 @@ fn main_0() -> i32 {
             Rc::new(RefCell::new(
                 (arr.as_pointer() as Ptr<i32>).offset((1) as isize),
             )),
-            Rc::new(RefCell::new(n)),
+            Rc::new(RefCell::new((*n.borrow()))),
         );
-        const_ptr_pairs.decay().offset(0_usize).write((
+        const_ptr_pairs.decay().offset(0_usize as isize).write((
             Rc::new(RefCell::new(
                 <Ptr<i32> as CppFrom<Ptr<i32>>>::cpp_from_move(__a1.0.as_pointer()),
             )),
@@ -59,8 +59,23 @@ fn main_0() -> i32 {
         ))
     };
     assert!(
-        (((*(*const_ptr_pairs.borrow())[0_usize].0.borrow()).read()) == 2)
-            && ((*(*const_ptr_pairs.borrow())[0_usize].1.borrow()) == 2_u64)
+        (((*(*const_ptr_pairs
+            .decay()
+            .offset(0_usize as isize)
+            .upgrade()
+            .deref())
+        .0
+        .borrow())
+        .read())
+            == 2)
+            && ((*(*const_ptr_pairs
+                .decay()
+                .offset(0_usize as isize)
+                .upgrade()
+                .deref())
+            .1
+            .borrow())
+                == 2_u64)
     );
     return 0;
 }

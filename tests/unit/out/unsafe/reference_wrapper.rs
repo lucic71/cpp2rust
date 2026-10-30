@@ -9,14 +9,14 @@ use std::rc::Rc;
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct Point {
-    pub x: (),
-    pub y: (),
+    pub x: i32,
+    pub y: i32,
 }
-pub unsafe fn set_0(mut ref_: (), mut val: ()) {
-    (*unimplemented!()) = val;
+pub unsafe fn set_0(mut ref_: *mut i32, mut val: i32) {
+    (*ref_) = val;
 }
-pub unsafe fn read_1(mut ref_: ()) -> () {
-    let r: *mut () = unimplemented!();
+pub unsafe fn read_1(mut ref_: *mut i32) -> i32 {
+    let r: *mut i32 = ref_;
     return (*r);
 }
 pub fn main() {
@@ -25,26 +25,26 @@ pub fn main() {
         std::process::exit(main_0() as i32);
     }
 }
-unsafe fn main_0() -> () {
-    let mut i1: () = 10_();
-    let mut ref_1: () = unimplemented!();
-    (*unimplemented!()) = 20_();
-    let i2: *mut () = unimplemented!();
-    (*i2) += 5_();
+unsafe fn main_0() -> i32 {
+    let mut i1: i32 = 10;
+    let mut ref_1: *mut i32 = &mut i1;
+    (*ref_1) = 20;
+    let i2: *mut i32 = ref_1;
+    (*i2) += 5;
     unimplemented!();
-    let mut i3: () = 1_();
-    let mut i4: () = 2_();
-    let mut ref_3: () = unimplemented!();
-    let mut ref_4: () = unimplemented!();
-    (*unimplemented!()) = (*unimplemented!());
+    let mut i3: i32 = 1;
+    let mut i4: i32 = 2;
+    let mut ref_3: *mut i32 = &mut i3;
+    let mut ref_4: *mut i32 = &mut i4;
+    (*ref_3) = (*ref_4);
     unimplemented!();
-    (unsafe { set_0(unimplemented!(), 99_()) });
+    (unsafe { set_0(unimplemented!(), 99) });
     unimplemented!();
-    let mut point: Point = Point { x: 3_(), y: 4_() };
-    let mut point_ref: () = unimplemented!();
-    (*unimplemented!()).x = 30_();
-    (*unimplemented!()).y = 40_();
+    let mut point: Point = Point { x: 3, y: 4 };
+    let mut point_ref: *mut Point = &mut point;
+    (*point_ref).x = 30;
+    (*point_ref).y = 40;
     unimplemented!();
-    return 0_();
+    return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

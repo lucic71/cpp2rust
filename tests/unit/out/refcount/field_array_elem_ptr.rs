@@ -10,108 +10,121 @@ use std::rc::{Rc, Weak};
 #[byte_size(8)]
 pub struct Point {
     #[offset(0)]
-    pub x: (),
+    pub x: i32,
     #[offset(4)]
-    pub y: (),
+    pub y: i32,
 }
 #[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg)]
 #[byte_size(48)]
 pub struct Shape {
     #[offset(0)]
-    pub id: (),
+    pub id: i32,
     #[offset(4)]
     #[byte_size(16)]
-    pub coords: Box<[()]>,
+    pub coords: Box<[i32]>,
     #[offset(20)]
     #[byte_size(24)]
     pub points: Box<[Point]>,
     #[offset(44)]
-    pub tail: (),
+    pub tail: i32,
 }
 impl Default for Shape {
     fn default() -> Self {
         {
             Shape {
-                id: unimplemented!(),
-                coords: (0..4).map(|_| unimplemented!()).collect::<Box<[()]>>(),
+                id: 0_i32,
+                coords: (0..4).map(|_| 0_i32).collect::<Box<[i32]>>(),
                 points: (0..3).map(|_| <Point>::default()).collect::<Box<[Point]>>(),
-                tail: unimplemented!(),
+                tail: 0_i32,
             }
         }
     }
 }
-pub fn sum_0(mut p: Ptr<()>, mut n: ()) -> () {
-    let s: Value<()> = Rc::new(RefCell::new(0_()));
-    let mut i: () = 0_();
+pub fn sum_0(mut p: Ptr<i32>, mut n: i32) -> i32 {
+    let s: Value<i32> = Rc::new(RefCell::new(0));
+    let mut i: i32 = 0;
     'loop_: while (i < n) {
         (*s.borrow_mut()) += { (elem!(p, i).read()) };
         i.prefix_inc();
     }
     return (*s.borrow());
 }
-pub fn set_y_1(mut p: Ptr<Point>, mut y: ()) {
+pub fn set_y_1(mut p: Ptr<Point>, mut y: i32) {
     field!(p, y).write(y);
 }
 pub fn main() {
     __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
-fn main_0() -> () {
+fn main_0() -> i32 {
     let s: Value<Shape> = Rc::new(RefCell::new(Shape {
-        id: 1_(),
-        coords: Box::new([10_(), 20_(), 30_(), 40_()]),
+        id: 1,
+        coords: Box::new([10, 20, 30, 40]),
         points: Box::new([
-            Point { x: 1_(), y: 2_() },
-            Point { x: 3_(), y: 4_() },
-            Point { x: 5_(), y: 6_() },
+            Point { x: 1, y: 2 },
+            Point { x: 3, y: 4 },
+            Point { x: 5, y: 6 },
         ]),
-        tail: 99_(),
+        tail: 99,
     }));
-    let mut c: Ptr<()> =
-        ((array_field_ptr!(s.as_pointer(), coords) as Ptr<()>).offset((1_()) as isize));
-    unimplemented!();
-    c.write(21_());
-    unimplemented!();
-    c += 2_();
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
+    let mut c: Ptr<i32> =
+        ((array_field_ptr!(s.as_pointer(), coords) as Ptr<i32>).offset((1) as isize));
+    assert!(((c.read()) == 20));
+    c.write(21);
+    assert!(((array_elem!(s.as_pointer(), coords, 1).read()) == 21));
+    c += 2;
+    assert!(((c.read()) == 40));
+    assert!(
+        (((c).clone()
+            - ((array_field_ptr!(s.as_pointer(), coords) as Ptr::<i32>).offset((0) as isize)))
+            as i64
+            == 3_i64)
+    );
+    assert!(((elem!(c, -1_i32).read()) == 30));
+    assert!((({ sum_0((array_field_ptr!(s.as_pointer(), coords) as Ptr::<i32>), 4,) }) == 101));
+    assert!(
+        (({
+            sum_0(
+                ((array_field_ptr!(s.as_pointer(), coords) as Ptr<i32>).offset((2) as isize)),
+                2,
+            )
+        }) == 70)
+    );
     let mut p: Ptr<Point> =
-        ((array_field_ptr!(s.as_pointer(), points) as Ptr<Point>).offset((1_()) as isize));
-    unimplemented!();
-    ({ set_y_1(p.offset((1_()) as isize), 60_()) });
-    unimplemented!();
-    let mut py: Ptr<()> = (field_ptr!(
-        (array_field_ptr!(s.as_pointer(), points) as Ptr<Point>).offset((0_()) as isize),
+        ((array_field_ptr!(s.as_pointer(), points) as Ptr<Point>).offset((1) as isize));
+    assert!((p.with(|__s| __s.x) == 3));
+    ({ set_y_1(p.offset((1) as isize), 60) });
+    assert!((array_elem!(s.as_pointer(), points, 2).with(|__s| __s.y) == 60));
+    let mut py: Ptr<i32> = (field_ptr!(
+        (array_field_ptr!(s.as_pointer(), points) as Ptr<Point>).offset((0) as isize),
         y
     ));
-    py.write(7_());
-    unimplemented!();
-    let mut px: Ptr<()> = (field_ptr!((p.offset((1_()) as isize)), x));
+    py.write(7);
+    assert!((array_elem!(s.as_pointer(), points, 0).with(|__s| __s.y) == 7));
+    let mut px: Ptr<i32> = (field_ptr!((p.offset((1) as isize)), x));
     {
-        px.with_mut(|__v| *__v = *__v + 50_())
+        px.with_mut(|__v| *__v = *__v + 50)
     };
-    unimplemented!();
+    assert!((array_elem!(s.as_pointer(), points, 2).with(|__s| __s.x) == 55));
     let mut sp: Ptr<Shape> = (s.as_pointer());
-    let mut d: Ptr<()> = (array_field_ptr!(sp, coords) as Ptr<()>).offset((3_()) as isize);
-    d.write(41_());
-    unimplemented!();
-    field!(array_elem!(sp, points, 1_()), y).write({
-        ({ (array_elem!(sp, coords, 0_()).read()) } + {
-            array_elem!(sp, points, 0_()).with(|__s| __s.x)
-        })
+    let mut d: Ptr<i32> = (array_field_ptr!(sp, coords) as Ptr<i32>).offset((3) as isize);
+    d.write(41);
+    assert!(((array_elem!(s.as_pointer(), coords, 3).read()) == 41));
+    field!(array_elem!(sp, points, 1), y).write({
+        ({ (array_elem!(sp, coords, 0).read()) } + { array_elem!(sp, points, 0).with(|__s| __s.x) })
     });
-    unimplemented!();
+    assert!((array_elem!(s.as_pointer(), points, 1).with(|__s| __s.y) == 11));
     let mut q: Ptr<Point> = (array_field_ptr!(sp, points) as Ptr<Point>);
-    field!(elem!(q, 2_()), x).write(8_());
-    unimplemented!();
+    field!(elem!(q, 2), x).write(8);
+    assert!((array_elem!(sp, points, 2).with(|__s| __s.x) == 8));
     let mut t: Shape = (*s.borrow()).clone();
-    t.coords[(0_()) as usize] = 0_();
-    t.points[(0_()) as usize].x = 0_();
-    unimplemented!();
-    unimplemented!();
-    return 0_();
+    t.coords[(0) as usize] = 0;
+    t.points[(0) as usize].x = 0;
+    assert!(
+        ((array_elem!(s.as_pointer(), coords, 0).read()) == 10)
+            && (array_elem!(s.as_pointer(), points, 0).with(|__s| __s.x) == 1)
+    );
+    assert!(((t.coords[(1) as usize] == 21) && (t.points[(2) as usize].y == 60)) && (t.tail == 99));
+    return 0;
 }
 pub fn __cpp2rust_init_globals() {}

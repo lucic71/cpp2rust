@@ -34,11 +34,7 @@ pub unsafe fn Neg_2(mut z1: Complex) -> Complex {
     };
 }
 pub unsafe fn fft_3(a: *mut Option<Box<[Complex]>>, mut N: i32) -> Option<Box<[Complex]>> {
-    let mut y: Option<Box<[Complex]>> = Some(
-        (0..(N as usize))
-            .map(|_| <Complex>::default())
-            .collect::<Box<[_]>>(),
-    );
+    let mut y: Option<Box<[Complex]>> = unimplemented!();
     if ((N) == (1)) {
         (*y.as_deref()
             .map_or(::std::ptr::null_mut(), |s| s.as_ptr() as *mut Complex)
@@ -56,11 +52,7 @@ pub unsafe fn fft_3(a: *mut Option<Box<[Complex]>>, mut N: i32) -> Option<Box<[C
         };
         return y.take();
     }
-    let mut w: Option<Box<[Complex]>> = Some(
-        (0..(N as usize))
-            .map(|_| <Complex>::default())
-            .collect::<Box<[_]>>(),
-    );
+    let mut w: Option<Box<[Complex]>> = unimplemented!();
     let mut i: i32 = 0;
     'loop_: while ((i) < (N)) {
         let mut alpha: f64 =
@@ -73,16 +65,8 @@ pub unsafe fn fft_3(a: *mut Option<Box<[Complex]>>, mut N: i32) -> Option<Box<[C
         };
         i.postfix_inc();
     }
-    let mut A0: Option<Box<[Complex]>> = Some(
-        (0..(((N) / (2)) as usize))
-            .map(|_| <Complex>::default())
-            .collect::<Box<[_]>>(),
-    );
-    let mut A1: Option<Box<[Complex]>> = Some(
-        (0..(((N) / (2)) as usize))
-            .map(|_| <Complex>::default())
-            .collect::<Box<[_]>>(),
-    );
+    let mut A0: Option<Box<[Complex]>> = unimplemented!();
+    let mut A1: Option<Box<[Complex]>> = unimplemented!();
     let mut i: i32 = 0;
     'loop_: while ((i) < ((N) / (2))) {
         (*A0.as_deref()
@@ -183,11 +167,7 @@ pub fn main() {
 }
 unsafe fn main_0() -> i32 {
     let mut N: i32 = 4;
-    let mut a: Option<Box<[Complex]>> = Some(
-        (0..(N as usize))
-            .map(|_| <Complex>::default())
-            .collect::<Box<[_]>>(),
-    );
+    let mut a: Option<Box<[Complex]>> = unimplemented!();
     let mut i: i32 = 0;
     'loop_: while ((i) < (N)) {
         (*a.as_deref()
@@ -199,9 +179,8 @@ unsafe fn main_0() -> i32 {
         i.postfix_inc();
     }
     let mut b: Option<Box<[Complex]>> = (unsafe { fft_3(&mut a, N) });
-    let mut reals: Option<Box<[i32]>> =
-        Some((0..(N as usize)).map(|_| 0_i32).collect::<Box<[_]>>());
-    let mut imgs: Option<Box<[i32]>> = Some((0..(N as usize)).map(|_| 0_i32).collect::<Box<[_]>>());
+    let mut reals: Option<Box<[i32]>> = unimplemented!();
+    let mut imgs: Option<Box<[i32]>> = unimplemented!();
     let mut i: i32 = 0;
     'loop_: while ((i) < (N)) {
         (*reals

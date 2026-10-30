@@ -6,34 +6,34 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-pub fn apply_0(mut x: (), mut fn_: FnPtr<fn(()) -> ()>) -> () {
+pub fn apply_0(mut x: i32, mut fn_: FnPtr<fn(i32) -> i32>) -> i32 {
     return ({ fn_.call(x) });
 }
-pub fn call_nttp_1(mut x: ()) -> () {
+pub fn call_nttp_1(mut x: i32) -> i32 {
     return ({
-        (FnPtr::<fn(()) -> ()>::new(|mut x: ()| -> () {
+        (FnPtr::<fn(i32) -> i32>::new(|mut x: i32| -> i32 {
             {
-                return (x - 1_());
+                return (x - 1);
             }
         }))
         .call(x)
     });
 }
-pub fn call_nttp_2(mut x: ()) -> () {
+pub fn call_nttp_2(mut x: i32) -> i32 {
     return ({
-        (FnPtr::<fn(()) -> ()>::new(|mut x: ()| -> () {
+        (FnPtr::<fn(i32) -> i32>::new(|mut x: i32| -> i32 {
             {
-                return (x * 10_());
+                return (x * 10);
             }
         }))
         .call(x)
     });
 }
-pub fn call_nttp_3(mut x: ()) -> () {
+pub fn call_nttp_3(mut x: i32) -> i32 {
     return ({
-        FnPtr::<fn(()) -> ()>::new(|mut x: ()| -> () {
+        FnPtr::<fn(i32) -> i32>::new(|mut x: i32| -> i32 {
             {
-                return (x + 100_());
+                return (x + 100);
             }
         })
         .call(x)
@@ -43,54 +43,54 @@ pub fn main() {
     __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
-fn main_0() -> () {
-    let mut fresh: FnPtr<fn(()) -> ()> = FnPtr::<fn(()) -> ()>::new(|mut x: ()| -> () {
+fn main_0() -> i32 {
+    let mut fresh: FnPtr<fn(i32) -> i32> = FnPtr::<fn(i32) -> i32>::new(|mut x: i32| -> i32 {
         {
             return -x;
         }
     });
-    unimplemented!();
-    let twice: Value<FnPtr<fn(()) -> ()>> = Rc::new(RefCell::new(FnPtr::<fn(()) -> ()>::new(
-        |mut x: ()| -> () {
+    assert!((({ fresh.call(5,) }) == -5_i32));
+    let twice: Value<FnPtr<fn(i32) -> i32>> = Rc::new(RefCell::new(FnPtr::<fn(i32) -> i32>::new(
+        |mut x: i32| -> i32 {
             {
-                return (x * 2_());
+                return (x * 2);
             }
         },
     )));
-    let mut named: FnPtr<fn(()) -> ()> = (*twice.borrow()).clone();
-    unimplemented!();
-    unimplemented!();
+    let mut named: FnPtr<fn(i32) -> i32> = (*twice.borrow()).clone();
+    assert!((({ named.call(5,) }) == 10));
+    assert!((({ apply_0(5, (*twice.borrow()).clone(),) }) == 10));
     named = (fresh).clone();
-    unimplemented!();
-    let mut p: FnPtr<fn(()) -> ()> = FnPtr::<fn(()) -> ()>::new(|mut x: ()| -> () {
+    assert!((({ named.call(3,) }) == -3_i32));
+    let mut p: FnPtr<fn(i32) -> i32> = FnPtr::<fn(i32) -> i32>::new(|mut x: i32| -> i32 {
         {
-            return (x * 3_());
+            return (x * 3);
         }
     });
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    let sum: Value<FnPtr<fn((), Box<[VaArg]>) -> ()>> =
-        Rc::new(RefCell::new(FnPtr::<fn((), Box<[VaArg]>) -> ()>::new(
-            |n: (), __args: Box<[VaArg]>| -> () {
+    assert!((({ p.call(2,) }) == 6));
+    assert!((({ call_nttp_1(5,) }) == 4));
+    assert!((({ call_nttp_2(5,) }) == 50));
+    assert!((({ call_nttp_3(5,) }) == 105));
+    let sum: Value<FnPtr<fn(i32, Box<[VaArg]>) -> i32>> =
+        Rc::new(RefCell::new(FnPtr::<fn(i32, Box<[VaArg]>) -> i32>::new(
+            |n: i32, __args: Box<[VaArg]>| -> i32 {
                 {
                     let __args: Value<Box<[VaArg]>> = Rc::new(RefCell::new(__args.into()));
-                    let n: Value<()> = Rc::new(RefCell::new(n));
+                    let n: Value<i32> = Rc::new(RefCell::new(n));
                     let ap: Value<Ptr<VaArg>> = Rc::new(RefCell::new(Ptr::<VaArg>::default()));
                     (*ap.borrow_mut()) = __args.as_pointer();
-                    let s: Value<()> = Rc::new(RefCell::new(0_()));
-                    let mut i: () = 0_();
+                    let s: Value<i32> = Rc::new(RefCell::new(0));
+                    let mut i: i32 = 0;
                     'loop_: while (i < (*n.borrow())) {
-                        (*s.borrow_mut()) += (*ap.borrow_mut()).arg::<()>();
+                        (*s.borrow_mut()) += (*ap.borrow_mut()).arg::<i32>();
                         i.postfix_inc();
                     }
                     return (*s.borrow());
                 }
             },
         )));
-    unimplemented!();
-    unimplemented!();
-    return 0_();
+    assert!((({ (*sum.borrow()).call(2, Box::new([(5).into(), (5).into(),])) }) == 10));
+    assert!((({ (*sum.borrow()).call(3, Box::new([(1).into(), (2).into(), (3).into(),])) }) == 6));
+    return 0;
 }
 pub fn __cpp2rust_init_globals() {}

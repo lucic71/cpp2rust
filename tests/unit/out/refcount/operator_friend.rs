@@ -6,7 +6,7 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-pub fn operator_eq_0(_a0: Ptr<Defaulted>, _a1: Ptr<Defaulted>) -> () {
+pub fn operator_eq_0(_a0: Ptr<Defaulted>, _a1: Ptr<Defaulted>) -> bool {
     return ({ _a0.with(|__s| __s.a) } == { _a1.with(|__s| __s.a) })
         && ({ _a0.with(|__s| __s.b) } == { _a1.with(|__s| __s.b) });
 }
@@ -14,18 +14,18 @@ pub fn operator_eq_0(_a0: Ptr<Defaulted>, _a1: Ptr<Defaulted>) -> () {
 #[byte_size(8)]
 pub struct Defaulted {
     #[offset(0)]
-    pub a: (),
+    pub a: i32,
     #[offset(4)]
-    pub b: (),
+    pub b: i32,
 }
 impl CppEq for Defaulted {
     fn equal(__lhs: &Ptr<Self>, __rhs: &Ptr<Self>) -> bool {
         operator_eq_0(__lhs.clone(), __rhs.clone())
     }
 }
-pub fn operator_cmp_1(_a0: Ptr<DefaultedOrd>, _a1: Ptr<DefaultedOrd>) -> () {
+pub fn operator_cmp_1(_a0: Ptr<DefaultedOrd>, _a1: Ptr<DefaultedOrd>) -> std::cmp::Ordering {
     {
-        let cmp: Value<()> = Rc::new(RefCell::new(std::cmp::Ord::cmp(
+        let cmp: Value<std::cmp::Ordering> = Rc::new(RefCell::new(std::cmp::Ord::cmp(
             &(_a0.with(|__s| __s.a)),
             &(_a1.with(|__s| __s.a)),
         )));
@@ -35,14 +35,14 @@ pub fn operator_cmp_1(_a0: Ptr<DefaultedOrd>, _a1: Ptr<DefaultedOrd>) -> () {
     }
     return unimplemented!();
 }
-pub fn operator_eq_2(_a0: Ptr<DefaultedOrd>, _a1: Ptr<DefaultedOrd>) -> () {
+pub fn operator_eq_2(_a0: Ptr<DefaultedOrd>, _a1: Ptr<DefaultedOrd>) -> bool {
     return ({ _a0.with(|__s| __s.a) } == { _a1.with(|__s| __s.a) });
 }
 #[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(4)]
 pub struct DefaultedOrd {
     #[offset(0)]
-    pub a: (),
+    pub a: i32,
 }
 impl CppLess for DefaultedOrd {
     fn less(__lhs: &Ptr<Self>, __rhs: &Ptr<Self>) -> bool {
@@ -54,10 +54,10 @@ impl CppEq for DefaultedOrd {
         operator_eq_2(__lhs.clone(), __rhs.clone())
     }
 }
-pub fn operator_eq_3(x: Ptr<Inline>, y: Ptr<Inline>) -> () {
+pub fn operator_eq_3(x: Ptr<Inline>, y: Ptr<Inline>) -> bool {
     return ({ x.with(|__s| __s.a) } == { y.with(|__s| __s.a) });
 }
-pub fn operator_lt_4(x: Ptr<Inline>, y: Ptr<Inline>) -> () {
+pub fn operator_lt_4(x: Ptr<Inline>, y: Ptr<Inline>) -> bool {
     return ({ x.with(|__s| __s.a) } < { y.with(|__s| __s.a) });
 }
 pub fn operator_add_5(x: Ptr<Inline>, y: Ptr<Inline>) -> Inline {
@@ -69,7 +69,7 @@ pub fn operator_add_5(x: Ptr<Inline>, y: Ptr<Inline>) -> Inline {
 #[byte_size(4)]
 pub struct Inline {
     #[offset(0)]
-    pub a: (),
+    pub a: i32,
 }
 impl CppLess for Inline {
     fn less(__lhs: &Ptr<Self>, __rhs: &Ptr<Self>) -> bool {
@@ -85,37 +85,37 @@ impl CppEq for Inline {
 #[byte_size(4)]
 pub struct OutOfLine {
     #[offset(0)]
-    pub a: (),
+    pub a: i32,
 }
 impl CppEq for OutOfLine {
     fn equal(__lhs: &Ptr<Self>, __rhs: &Ptr<Self>) -> bool {
         operator_eq_6(__lhs.clone(), __rhs.clone())
     }
 }
-pub fn operator_eq_6(x: Ptr<OutOfLine>, y: Ptr<OutOfLine>) -> () {
+pub fn operator_eq_6(x: Ptr<OutOfLine>, y: Ptr<OutOfLine>) -> bool {
     return ({ x.with(|__s| __s.a) } == { y.with(|__s| __s.a) });
 }
-pub fn operator_ne_7(x: Ptr<OutOfLine>, y: Ptr<OutOfLine>) -> () {
+pub fn operator_ne_7(x: Ptr<OutOfLine>, y: Ptr<OutOfLine>) -> bool {
     return !({
         let _x: Ptr<OutOfLine> = (x).clone();
         let _y: Ptr<OutOfLine> = (y).clone();
         operator_eq_6(_x, _y)
     });
 }
-pub fn operator_eq_8(x: Ptr<Tmpl_int_>, y: Ptr<Tmpl_int_>) -> () {
+pub fn operator_eq_8(x: Ptr<Tmpl_int_>, y: Ptr<Tmpl_int_>) -> bool {
     return ({ x.with(|__s| __s.v) } == { y.with(|__s| __s.v) });
 }
-pub fn operator_lt_9(x: Ptr<Tmpl_int_>, y: Ptr<Tmpl_int_>) -> () {
+pub fn operator_lt_9(x: Ptr<Tmpl_int_>, y: Ptr<Tmpl_int_>) -> bool {
     return ({ x.with(|__s| __s.v) } < { y.with(|__s| __s.v) });
 }
-pub fn operator_eq_10(x: Ptr<Tmpl_int_>, y: Ptr<Tmpl_long_>) -> () {
-    return ({ x.with(|__s| __s.v) } == { y.with(|__s| __s.v) });
+pub fn operator_eq_10(x: Ptr<Tmpl_int_>, y: Ptr<Tmpl_long_>) -> bool {
+    return ({ (x.with(|__s| __s.v) as i64) } == { y.with(|__s| __s.v) });
 }
 #[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(4)]
 pub struct Tmpl_int_ {
     #[offset(0)]
-    pub v: (),
+    pub v: i32,
 }
 impl CppLess for Tmpl_int_ {
     fn less(__lhs: &Ptr<Self>, __rhs: &Ptr<Self>) -> bool {
@@ -131,16 +131,16 @@ impl CppEq for Tmpl_int_ {
 #[byte_size(8)]
 pub struct Tmpl_long_ {
     #[offset(0)]
-    pub v: (),
+    pub v: i64,
 }
-pub fn operator_eq_11(_a0: Ptr<TmplDefaulted_int_>, _a1: Ptr<TmplDefaulted_int_>) -> () {
+pub fn operator_eq_11(_a0: Ptr<TmplDefaulted_int_>, _a1: Ptr<TmplDefaulted_int_>) -> bool {
     return ({ _a0.with(|__s| __s.v) } == { _a1.with(|__s| __s.v) });
 }
 #[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(4)]
 pub struct TmplDefaulted_int_ {
     #[offset(0)]
-    pub v: (),
+    pub v: i32,
 }
 impl CppEq for TmplDefaulted_int_ {
     fn equal(__lhs: &Ptr<Self>, __rhs: &Ptr<Self>) -> bool {
@@ -151,49 +151,156 @@ pub fn main() {
     __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
-fn main_0() -> () {
-    let d1: Value<Defaulted> = Rc::new(RefCell::new(Defaulted { a: 1_(), b: 2_() }));
-    let d2: Value<Defaulted> = Rc::new(RefCell::new(Defaulted { a: 1_(), b: 2_() }));
-    let d3: Value<Defaulted> = Rc::new(RefCell::new(Defaulted { a: 1_(), b: 3_() }));
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    let o1: Value<DefaultedOrd> = Rc::new(RefCell::new(DefaultedOrd { a: 1_() }));
-    let o2: Value<DefaultedOrd> = Rc::new(RefCell::new(DefaultedOrd { a: 2_() }));
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    let i1: Value<Inline> = Rc::new(RefCell::new(Inline { a: 1_() }));
-    let i2: Value<Inline> = Rc::new(RefCell::new(Inline { a: 2_() }));
-    let i3: Value<Inline> = Rc::new(RefCell::new(Inline { a: 1_() }));
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    let f1: Value<OutOfLine> = Rc::new(RefCell::new(OutOfLine { a: 4_() }));
-    let f2: Value<OutOfLine> = Rc::new(RefCell::new(OutOfLine { a: 4_() }));
-    let f3: Value<OutOfLine> = Rc::new(RefCell::new(OutOfLine { a: 5_() }));
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    let t1: Value<Tmpl_int_> = Rc::new(RefCell::new(Tmpl_int_ { v: 1_() }));
-    let t2: Value<Tmpl_int_> = Rc::new(RefCell::new(Tmpl_int_ { v: 2_() }));
-    let t3: Value<Tmpl_int_> = Rc::new(RefCell::new(Tmpl_int_ { v: 1_() }));
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    let u1: Value<Tmpl_long_> = Rc::new(RefCell::new(Tmpl_long_ { v: 1_() }));
-    let u2: Value<Tmpl_long_> = Rc::new(RefCell::new(Tmpl_long_ { v: 2_() }));
-    unimplemented!();
-    unimplemented!();
-    let v1: Value<TmplDefaulted_int_> = Rc::new(RefCell::new(TmplDefaulted_int_ { v: 7_() }));
-    let v2: Value<TmplDefaulted_int_> = Rc::new(RefCell::new(TmplDefaulted_int_ { v: 7_() }));
-    let v3: Value<TmplDefaulted_int_> = Rc::new(RefCell::new(TmplDefaulted_int_ { v: 8_() }));
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    return 0_();
+fn main_0() -> i32 {
+    let d1: Value<Defaulted> = Rc::new(RefCell::new(Defaulted { a: 1, b: 2 }));
+    let d2: Value<Defaulted> = Rc::new(RefCell::new(Defaulted { a: 1, b: 2 }));
+    let d3: Value<Defaulted> = Rc::new(RefCell::new(Defaulted { a: 1, b: 3 }));
+    assert!(
+        ({
+            let _arg0: Ptr<Defaulted> = d1.as_pointer();
+            operator_eq_0(_arg0, d2.as_pointer())
+        })
+    );
+    assert!(
+        !({
+            let _arg0: Ptr<Defaulted> = d1.as_pointer();
+            operator_eq_0(_arg0, d3.as_pointer())
+        })
+    );
+    assert!(
+        !({
+            let _arg0: Ptr<Defaulted> = d1.as_pointer();
+            operator_eq_0(_arg0, d3.as_pointer())
+        })
+    );
+    let o1: Value<DefaultedOrd> = Rc::new(RefCell::new(DefaultedOrd { a: 1 }));
+    let o2: Value<DefaultedOrd> = Rc::new(RefCell::new(DefaultedOrd { a: 2 }));
+    assert!(unimplemented!());
+    assert!(unimplemented!());
+    assert!(
+        ({
+            let _arg0: Ptr<DefaultedOrd> = o1.as_pointer();
+            let _arg1: Ptr<DefaultedOrd> = o1.as_pointer();
+            operator_eq_2(_arg0, _arg1)
+        })
+    );
+    assert!(unimplemented!());
+    let i1: Value<Inline> = Rc::new(RefCell::new(Inline { a: 1 }));
+    let i2: Value<Inline> = Rc::new(RefCell::new(Inline { a: 2 }));
+    let i3: Value<Inline> = Rc::new(RefCell::new(Inline { a: 1 }));
+    assert!(
+        ({
+            let _x: Ptr<Inline> = i1.as_pointer();
+            operator_eq_3(_x, i3.as_pointer())
+        })
+    );
+    assert!(
+        !({
+            let _x: Ptr<Inline> = i1.as_pointer();
+            operator_eq_3(_x, i2.as_pointer())
+        })
+    );
+    assert!(
+        ({
+            let _x: Ptr<Inline> = i1.as_pointer();
+            operator_lt_4(_x, i2.as_pointer())
+        })
+    );
+    assert!(
+        !({
+            let _x: Ptr<Inline> = i2.as_pointer();
+            operator_lt_4(_x, i1.as_pointer())
+        })
+    );
+    assert!(
+        ({
+            let _x: Value<Inline> = Rc::new(RefCell::new(
+                ({
+                    let _x: Ptr<Inline> = i1.as_pointer();
+                    operator_add_5(_x, i2.as_pointer())
+                }),
+            ));
+            let _y: Value<Inline> = Rc::new(RefCell::new(Inline { a: 3 }));
+            operator_eq_3(_x.as_pointer(), _y.as_pointer())
+        })
+    );
+    let f1: Value<OutOfLine> = Rc::new(RefCell::new(OutOfLine { a: 4 }));
+    let f2: Value<OutOfLine> = Rc::new(RefCell::new(OutOfLine { a: 4 }));
+    let f3: Value<OutOfLine> = Rc::new(RefCell::new(OutOfLine { a: 5 }));
+    assert!(
+        ({
+            let _x: Ptr<OutOfLine> = f1.as_pointer();
+            operator_eq_6(_x, f2.as_pointer())
+        })
+    );
+    assert!(
+        ({
+            let _x: Ptr<OutOfLine> = f1.as_pointer();
+            operator_ne_7(_x, f3.as_pointer())
+        })
+    );
+    assert!(
+        !({
+            let _x: Ptr<OutOfLine> = f1.as_pointer();
+            operator_eq_6(_x, f3.as_pointer())
+        })
+    );
+    let t1: Value<Tmpl_int_> = Rc::new(RefCell::new(Tmpl_int_ { v: 1 }));
+    let t2: Value<Tmpl_int_> = Rc::new(RefCell::new(Tmpl_int_ { v: 2 }));
+    let t3: Value<Tmpl_int_> = Rc::new(RefCell::new(Tmpl_int_ { v: 1 }));
+    assert!(
+        ({
+            let _x: Ptr<Tmpl_int_> = t1.as_pointer();
+            operator_eq_8(_x, t3.as_pointer())
+        })
+    );
+    assert!(
+        !({
+            let _x: Ptr<Tmpl_int_> = t1.as_pointer();
+            operator_eq_8(_x, t2.as_pointer())
+        })
+    );
+    assert!(
+        ({
+            let _x: Ptr<Tmpl_int_> = t1.as_pointer();
+            operator_lt_9(_x, t2.as_pointer())
+        })
+    );
+    let u1: Value<Tmpl_long_> = Rc::new(RefCell::new(Tmpl_long_ { v: 1_i64 }));
+    let u2: Value<Tmpl_long_> = Rc::new(RefCell::new(Tmpl_long_ { v: 2_i64 }));
+    assert!(
+        ({
+            let _x: Ptr<Tmpl_int_> = t1.as_pointer();
+            operator_eq_10(_x, u1.as_pointer())
+        })
+    );
+    assert!(
+        !({
+            let _x: Ptr<Tmpl_int_> = t1.as_pointer();
+            operator_eq_10(_x, u2.as_pointer())
+        })
+    );
+    let v1: Value<TmplDefaulted_int_> = Rc::new(RefCell::new(TmplDefaulted_int_ { v: 7 }));
+    let v2: Value<TmplDefaulted_int_> = Rc::new(RefCell::new(TmplDefaulted_int_ { v: 7 }));
+    let v3: Value<TmplDefaulted_int_> = Rc::new(RefCell::new(TmplDefaulted_int_ { v: 8 }));
+    assert!(
+        ({
+            let _arg0: Ptr<TmplDefaulted_int_> = v1.as_pointer();
+            operator_eq_11(_arg0, v2.as_pointer())
+        })
+    );
+    assert!(
+        !({
+            let _arg0: Ptr<TmplDefaulted_int_> = v1.as_pointer();
+            operator_eq_11(_arg0, v3.as_pointer())
+        })
+    );
+    assert!(
+        !({
+            let _arg0: Ptr<TmplDefaulted_int_> = v1.as_pointer();
+            operator_eq_11(_arg0, v3.as_pointer())
+        })
+    );
+    return 0;
 }
 pub fn __cpp2rust_init_globals() {}

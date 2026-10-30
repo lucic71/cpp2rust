@@ -9,15 +9,15 @@ use std::rc::Rc;
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct Point {
-    pub x: (),
+    pub x: i32,
 }
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct Box_int_ {
-    pub val: (),
+    pub val: i32,
 }
 impl Box_int_ {
-    pub unsafe fn twice(&mut self) -> () {
+    pub unsafe fn twice(&mut self) -> i32 {
         return ((self.val) + (self.val));
     }
 }
@@ -34,10 +34,10 @@ impl Box_Point_ {
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct Deduced_int_ {
-    pub val: (),
+    pub val: i32,
 }
 impl Deduced_int_ {
-    pub unsafe fn twice(&mut self) -> () {
+    pub unsafe fn twice(&mut self) -> i32 {
         return ((self.val) + (self.val));
     }
 }
@@ -57,19 +57,19 @@ pub fn main() {
         std::process::exit(main_0() as i32);
     }
 }
-unsafe fn main_0() -> () {
-    let mut i: Box_int_ = Box_int_ { val: 3_() };
-    unimplemented!();
+unsafe fn main_0() -> i32 {
+    let mut i: Box_int_ = Box_int_ { val: 3 };
+    assert!(((unsafe { Box_int_::twice(&mut i,) }) == (6)));
     let mut p: Box_Point_ = Box_Point_ {
-        val: Point { x: 4_() },
+        val: Point { x: 4 },
     };
-    unimplemented!();
-    let mut d: Deduced_int_ = Deduced_int_ { val: 5_() };
-    unimplemented!();
+    assert!((((unsafe { Box_Point_::get(&mut p,) }).x) == (4)));
+    let mut d: Deduced_int_ = Deduced_int_ { val: 5 };
+    assert!(((unsafe { Deduced_int_::twice(&mut d,) }) == (10)));
     let mut dp: Deduced_Point_ = Deduced_Point_ {
-        val: Point { x: 6_() },
+        val: Point { x: 6 },
     };
-    unimplemented!();
-    return 0_();
+    assert!((((unsafe { Deduced_Point_::get(&mut dp,) }).x) == (6)));
+    return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

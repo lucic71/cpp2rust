@@ -9,23 +9,23 @@ use std::rc::Rc;
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct Outer_RunInfo {
-    pub block_idx: (),
-    pub num_extra_zero_runs: (),
+    pub block_idx: i32,
+    pub num_extra_zero_runs: i32,
 }
 #[repr(C)]
 #[derive(Clone, VaArg, FnPtrArg, MoveCtorUnsafe, MoveAssignUnsafe, Default)]
 pub struct Outer {
-    pub runs: (),
+    pub runs: Vec<Outer_RunInfo>,
 }
 impl Outer {
     pub unsafe fn move_from(_a0: *mut Outer) -> Self {
         let mut this = Self {
-            runs: unimplemented!(),
+            runs: std::mem::take(&mut (*_a0).runs),
         };
         this
     }
     pub unsafe fn move_assign(&mut self, _a0: *mut Outer) -> *mut Outer {
-        unimplemented!();
+        self.runs = std::mem::take(&mut (*_a0).runs);
         return &mut (*(self as *mut Outer));
     }
 }
@@ -35,15 +35,34 @@ pub fn main() {
         std::process::exit(main_0() as i32);
     }
 }
-unsafe fn main_0() -> () {
+unsafe fn main_0() -> i32 {
     let mut o: Outer = <Outer>::default();
     let mut info: Outer_RunInfo = <Outer_RunInfo>::default();
-    info.block_idx = 1_();
-    info.num_extra_zero_runs = 2_();
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    return 0_();
+    info.block_idx = 1;
+    info.num_extra_zero_runs = 2;
+    {
+        let a0_clone = info.clone();
+        o.runs.push(a0_clone)
+    };
+    assert!(((o.runs.len()) == (1_usize)));
+    assert!(
+        (((*{
+            let __idx = 0_usize as usize;
+            let __v: &mut Vec<Outer_RunInfo> = &mut o.runs;
+            __v.as_mut_ptr().add(__idx)
+        })
+        .block_idx)
+            == (1))
+    );
+    assert!(
+        (((*{
+            let __idx = 0_usize as usize;
+            let __v: &mut Vec<Outer_RunInfo> = &mut o.runs;
+            __v.as_mut_ptr().add(__idx)
+        })
+        .num_extra_zero_runs)
+            == (2))
+    );
+    return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

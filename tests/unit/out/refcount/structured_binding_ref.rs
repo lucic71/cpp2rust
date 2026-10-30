@@ -10,49 +10,44 @@ use std::rc::{Rc, Weak};
 #[byte_size(12)]
 pub struct Triple {
     #[offset(0)]
-    pub a: (),
+    pub a: i32,
     #[offset(4)]
-    pub b: (),
+    pub b: bool,
     #[offset(8)]
-    pub c: (),
+    pub c: i32,
 }
-pub fn sum_0(t: Ptr<Triple>) -> () {
+pub fn sum_0(t: Ptr<Triple>) -> i32 {
     let __decomp_1: Ptr<Triple> = (t).clone();
-    return ((__decomp_1.with(|__s| __s.a)
-        + (if __decomp_1.with(|__s| __s.b) {
-            1_()
-        } else {
-            0_()
-        }))
+    return ((__decomp_1.with(|__s| __s.a) + (if __decomp_1.with(|__s| __s.b) { 1 } else { 0 }))
         + __decomp_1.with(|__s| __s.c));
 }
 pub fn main() {
     __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
-fn main_0() -> () {
+fn main_0() -> i32 {
     let t: Value<Triple> = Rc::new(RefCell::new(Triple {
-        a: 10_(),
+        a: 10,
         b: false,
-        c: 20_(),
+        c: 20,
     }));
     let __decomp_2: Ptr<Triple> = t.as_pointer();
-    field!(__decomp_2, a).write(11_());
+    field!(__decomp_2, a).write(11);
     field!(__decomp_2, b).write(true);
     {
-        field!(__decomp_2, c).with_mut(|__v| *__v = *__v + 1_())
+        field!(__decomp_2, c).with_mut(|__v| *__v = *__v + 1)
     };
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    (*t.borrow_mut()).a = 12_();
-    unimplemented!();
+    assert!(({ (*t.borrow()).a } == 11));
+    assert!({ (*t.borrow()).b });
+    assert!(({ (*t.borrow()).c } == 21));
+    (*t.borrow_mut()).a = 12;
+    assert!((__decomp_2.with(|__s| __s.a) == 12));
     let __decomp_3: Ptr<Triple> = t.as_pointer();
-    (*t.borrow_mut()).c = 30_();
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    return 0_();
+    (*t.borrow_mut()).c = 30;
+    assert!((__decomp_3.with(|__s| __s.a) == 12));
+    assert!(__decomp_3.with(|__s| __s.b));
+    assert!((__decomp_3.with(|__s| __s.c) == 30));
+    assert!((({ sum_0(t.as_pointer(),) }) == 43));
+    return 0;
 }
 pub fn __cpp2rust_init_globals() {}

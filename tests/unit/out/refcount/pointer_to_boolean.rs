@@ -10,9 +10,9 @@ pub fn main() {
     __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
-fn main_0() -> () {
-    let mut x: Ptr<()> = Ptr::<()>::null();
-    unimplemented!();
-    return 0_();
+fn main_0() -> i32 {
+    let mut x: Ptr<i32> = Ptr::<i32>::null();
+    assert!(!(!(x).is_null()));
+    return 0;
 }
 pub fn __cpp2rust_init_globals() {}

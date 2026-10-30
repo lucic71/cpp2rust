@@ -10,15 +10,18 @@ pub fn main() {
     __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
-fn main_0() -> () {
-    let mut n: () = 17_();
-    let d: Value<()> = Rc::new(RefCell::new(unimplemented!()));
-    unimplemented!();
-    let mut name: Ptr<()> = Ptr::<()>::from_string_literal(b"dir/file.txt");
-    let p: Value<()> = Rc::new(RefCell::new(unimplemented!()));
-    let mut s: () = unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    return 0_();
+fn main_0() -> i32 {
+    let mut n: u32 = 17_u32;
+    let d: Value<u32> = Rc::new(RefCell::new(n));
+    assert!(((*d.borrow()) == 17_u32));
+    let mut name: Ptr<i8> = Ptr::<i8>::from_string_literal(b"dir/file.txt");
+    let p: Value<Vec<i8>> = Rc::new(RefCell::new(unimplemented!()));
+    let mut s: Vec<i8> = (*p.borrow()).clone();
+    assert!(((s.len() - 1) == 12_usize));
+    assert!(
+        Ptr::<i8>::from_string_literal(b"dir/file.txt")
+            .with_c_str(|__s| s[..s.len().saturating_sub(1)] == *__s)
+    );
+    return 0;
 }
 pub fn __cpp2rust_init_globals() {}

@@ -10,22 +10,22 @@ pub fn main() {
     __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
-fn main_0() -> () {
-    let N: Value<()> = Rc::new(RefCell::new(5_()));
-    let mut arr1: [(); 5] = [0_(), 0_(), 0_(), 0_(), 0_()];
-    let mut arr2: [(); 5] = [1_(), 1_(), 1_(), 1_(), 1_()];
-    let mut i: () = 0_();
+fn main_0() -> i32 {
+    let N: Value<i32> = Rc::new(RefCell::new(5));
+    let mut arr1: [i32; 5] = [0, 0, 0, 0, 0];
+    let mut arr2: [i32; 5] = [1, 1, 1, 1, 1];
+    let mut i: i32 = 0;
     'loop_: while (i < (*N.borrow())) {
         arr1[(i) as usize] = { (i + arr2[(i) as usize]) };
         i.prefix_inc();
     }
-    let mut fatorial: () = 1_();
-    let mut i: () = 0_();
+    let mut fatorial: i32 = 1;
+    let mut i: i32 = 0;
     'loop_: while (i < (*N.borrow())) {
         fatorial *= arr1[(i) as usize];
         i.prefix_inc();
     }
-    unimplemented!();
-    return 0_();
+    assert!((fatorial == 120));
+    return 0;
 }
 pub fn __cpp2rust_init_globals() {}

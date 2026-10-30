@@ -9,7 +9,7 @@ use std::rc::Rc;
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct Inner {
-    pub value: (),
+    pub value: i32,
 }
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
@@ -17,11 +17,11 @@ pub struct Outer {
     pub p: *mut Inner,
 }
 pub static mut alpha_0: std::cell::LazyCell<Inner> =
-    std::cell::LazyCell::new(|| unsafe { Inner { value: 1_() } });
+    std::cell::LazyCell::new(|| unsafe { Inner { value: 1 } });
 pub static mut beta_1: std::cell::LazyCell<Inner> =
-    std::cell::LazyCell::new(|| unsafe { Inner { value: 2_() } });
+    std::cell::LazyCell::new(|| unsafe { Inner { value: 2 } });
 pub static mut shared_2: std::cell::LazyCell<Inner> =
-    std::cell::LazyCell::new(|| unsafe { Inner { value: 42_() } });
+    std::cell::LazyCell::new(|| unsafe { Inner { value: 42 } });
 pub static mut items_3: std::cell::LazyCell<[*mut Inner; 2]> =
     std::cell::LazyCell::new(|| unsafe {
         [
@@ -40,13 +40,21 @@ pub fn main() {
         std::process::exit(main_0() as i32);
     }
 }
-unsafe fn main_0() -> () {
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    return 0_();
+unsafe fn main_0() -> i32 {
+    assert!(
+        (((*(*std::cell::LazyCell::force_mut(&mut *&raw mut items_3))[(0) as usize]).value) == (1))
+    );
+    assert!(
+        (((*(*std::cell::LazyCell::force_mut(&mut *&raw mut items_3))[(1) as usize]).value) == (2))
+    );
+    assert!((((*(*std::cell::LazyCell::force_mut(&mut *&raw mut obj_4)).p).value) == (42)));
+    assert!(
+        (((*(*std::cell::LazyCell::force_mut(&mut *&raw mut cache_5))[(0) as usize]).value) == (1))
+    );
+    assert!(
+        (((*(*std::cell::LazyCell::force_mut(&mut *&raw mut cache_5))[(1) as usize]).value) == (2))
+    );
+    return 0;
 }
 static mut cache_5: std::cell::LazyCell<[*mut Inner; 2]> = std::cell::LazyCell::new(|| unsafe {
     [

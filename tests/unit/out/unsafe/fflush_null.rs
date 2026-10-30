@@ -12,8 +12,8 @@ pub fn main() {
         std::process::exit(main_0() as i32);
     }
 }
-unsafe fn main_0() -> () {
-    let mut file_ptr: () = unimplemented!();
-    return unimplemented!();
+unsafe fn main_0() -> i32 {
+    let mut file_ptr: *mut ::libc::FILE = std::ptr::null_mut();
+    return libc::fflush(file_ptr);
 }
 pub unsafe fn __cpp2rust_init_globals() {}

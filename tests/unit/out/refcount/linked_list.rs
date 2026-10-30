@@ -10,14 +10,14 @@ use std::rc::{Rc, Weak};
 #[byte_size(16)]
 pub struct Node {
     #[offset(0)]
-    pub val: (),
+    pub val: i32,
     #[offset(8)]
     #[byte_size(8)]
     pub next: Ptr<Node>,
 }
-pub fn Find_0(mut head: Ptr<Node>, mut idx: ()) -> Ptr<Node> {
+pub fn Find_0(mut head: Ptr<Node>, mut idx: i32) -> Ptr<Node> {
     let curr: Value<Ptr<Node>> = Rc::new(RefCell::new((head).clone()));
-    let mut i: () = 0_();
+    let mut i: i32 = 0;
     'loop_: while (i < idx) {
         (*curr.borrow_mut()) = { (*curr.borrow()).with(|__s| __s.next.clone()) };
         i.postfix_inc();
@@ -31,7 +31,7 @@ pub fn Append_1(head: Ptr<Node>, new_node: Ptr<Node>) {
     }
     ({ NodeImpl::SetNext(&curr, (new_node).clone()) });
 }
-pub fn Delete_2(head: Ptr<Node>, mut val: ()) -> Ptr<Node> {
+pub fn Delete_2(head: Ptr<Node>, mut val: i32) -> Ptr<Node> {
     let head: Value<Ptr<Node>> = Rc::new(RefCell::new(head));
     let mut curr: Ptr<Node> = (*head.borrow()).clone();
     let mut prev: Ptr<Node> = Ptr::<Node>::null();
@@ -53,38 +53,38 @@ pub fn main() {
     __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
-fn main_0() -> () {
+fn main_0() -> i32 {
     let n0: Value<Node> = Rc::new(RefCell::new(Node {
-        val: 5_(),
+        val: 5,
         next: Ptr::<Node>::null(),
     }));
     let mut head: Ptr<Node> = (n0.as_pointer());
     let n1: Value<Node> = Rc::new(RefCell::new(Node {
-        val: 4_(),
+        val: 4,
         next: Ptr::<Node>::null(),
     }));
     let n2: Value<Node> = Rc::new(RefCell::new(Node {
-        val: 3_(),
+        val: 3,
         next: Ptr::<Node>::null(),
     }));
     let n3: Value<Node> = Rc::new(RefCell::new(Node {
-        val: 2_(),
+        val: 2,
         next: Ptr::<Node>::null(),
     }));
     let n4: Value<Node> = Rc::new(RefCell::new(Node {
-        val: 1_(),
+        val: 1,
         next: Ptr::<Node>::null(),
     }));
     let n5: Value<Node> = Rc::new(RefCell::new(Node {
-        val: 0_(),
+        val: 0,
         next: Ptr::<Node>::null(),
     }));
     let n6: Value<Node> = Rc::new(RefCell::new(Node {
-        val: -1_(),
+        val: -1_i32,
         next: Ptr::<Node>::null(),
     }));
     let n7: Value<Node> = Rc::new(RefCell::new(Node {
-        val: -2_(),
+        val: -2_i32,
         next: Ptr::<Node>::null(),
     }));
     ({
@@ -122,14 +122,21 @@ fn main_0() -> () {
         let _new_node: Ptr<Node> = n7.as_pointer();
         Append_1(_head, _new_node)
     });
-    let __rhs = ({ Delete_2((head).clone(), 5_()) });
+    let __rhs = ({ Delete_2((head).clone(), 5) });
     head = __rhs;
-    let __rhs = ({ Delete_2((head).clone(), 0_()) });
+    let __rhs = ({ Delete_2((head).clone(), 0) });
     head = __rhs;
-    let __rhs = ({ Delete_2((head).clone(), -2_()) });
+    let __rhs = ({ Delete_2((head).clone(), -2_i32) });
     head = __rhs;
-    unimplemented!();
-    return 0_();
+    assert!(
+        (((((({ Find_0((head).clone(), 0,) }).with(|__s| __s.val) == 4)
+            && (({ Find_0((head).clone(), 1,) }).with(|__s| __s.val) == 3))
+            && (({ Find_0((head).clone(), 2,) }).with(|__s| __s.val) == 2))
+            && (({ Find_0((head).clone(), 3,) }).with(|__s| __s.val) == 1))
+            && (({ Find_0((head).clone(), 4,) }).with(|__s| __s.val) == -1_i32))
+            && (({ Find_0((head).clone(), 5,) }).is_null())
+    );
+    return 0;
 }
 pub trait NodeImpl {
     fn SetNext(&self, next: Ptr<Node>);

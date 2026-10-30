@@ -6,13 +6,13 @@ use std::collections::BTreeMap;
 use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
-pub unsafe fn inc_0(mut x: ()) -> () {
-    return ((x) + (1_()));
+pub unsafe fn inc_0(mut x: i32) -> i32 {
+    return ((x) + (1));
 }
-pub unsafe fn dec_1(mut x: ()) -> () {
-    return ((x) - (1_()));
+pub unsafe fn dec_1(mut x: i32) -> i32 {
+    return ((x) - (1));
 }
-pub unsafe fn pick_2(mut choose_inc: ()) -> Option<unsafe fn(()) -> ()> {
+pub unsafe fn pick_2(mut choose_inc: i32) -> Option<unsafe fn(i32) -> i32> {
     if (choose_inc != 0) {
         return Some(inc_0);
     }
@@ -24,15 +24,15 @@ pub fn main() {
         std::process::exit(main_0() as i32);
     }
 }
-unsafe fn main_0() -> () {
-    let mut f: Option<unsafe fn(()) -> ()> = (unsafe { pick_2(1_()) });
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    let mut g: Option<unsafe fn(()) -> ()> = (unsafe { pick_2(0_()) });
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    return 0_();
+unsafe fn main_0() -> i32 {
+    let mut f: Option<unsafe fn(i32) -> i32> = (unsafe { pick_2(1) });
+    assert!(!((f).is_none()));
+    assert!(((f) == (Some(inc_0))));
+    assert!(((unsafe { (f).unwrap()(10,) }) == (11)));
+    let mut g: Option<unsafe fn(i32) -> i32> = (unsafe { pick_2(0) });
+    assert!(((g) == (Some(dec_1))));
+    assert!(((unsafe { (g).unwrap()(10,) }) == (9)));
+    assert!(((f) != (g)));
+    return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

@@ -33,7 +33,7 @@ unsafe fn main_0() -> i32 {
     } else {
         1
     };
-    r += (unsafe { sink_0((it0).clone()) });
+    r += (unsafe { sink_0(it0.clone()) });
     r += if end == end { 0 } else { 1 };
     assert!(((r) == (2)));
     let mut values: Vec<u32> = Vec::from([7_u32, 8_u32, 9_u32]);

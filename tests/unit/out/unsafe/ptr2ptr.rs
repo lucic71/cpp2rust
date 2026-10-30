@@ -12,17 +12,17 @@ pub fn main() {
         std::process::exit(main_0() as i32);
     }
 }
-unsafe fn main_0() -> () {
-    let mut out: () = 0_();
-    let mut x: () = 0_();
-    let mut p1: *mut () = (&mut x as *mut ());
-    (*p1) = 1_();
+unsafe fn main_0() -> i32 {
+    let mut out: i32 = 0;
+    let mut x: i32 = 0;
+    let mut p1: *mut i32 = (&mut x as *mut i32);
+    (*p1) = 1;
     out *= x;
-    let mut p2: *mut *mut () = (&mut p1 as *mut *mut ());
-    (*(*p2)) = 2_();
+    let mut p2: *mut *mut i32 = (&mut p1 as *mut *mut i32);
+    (*(*p2)) = 2;
     out *= x;
-    let mut p3: *mut *mut *mut () = (&mut p2 as *mut *mut *mut ());
-    (*(*(*p3))) = 3_();
+    let mut p3: *mut *mut *mut i32 = (&mut p2 as *mut *mut *mut i32);
+    (*(*(*p3))) = 3;
     out *= x;
     return out;
 }

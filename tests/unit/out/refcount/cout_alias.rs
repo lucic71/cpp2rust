@@ -10,20 +10,20 @@ pub fn main() {
     __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
-fn main_0() -> () {
-    let mut cond: () = true;
-    let mut os1: Ptr<()> = if cond {
-        (unimplemented!())
+fn main_0() -> i32 {
+    let mut cond: bool = true;
+    let mut os1: Ptr<Ptr<std::fs::File>> = if cond {
+        (libcc2rs::cout())
     } else {
-        (unimplemented!())
+        (libcc2rs::cerr())
     };
     unimplemented!();
-    let os2: Ptr<()> = if cond {
-        (unimplemented!())
+    let os2: Ptr<Ptr<std::fs::File>> = if cond {
+        (libcc2rs::cout())
     } else {
-        (unimplemented!())
+        (libcc2rs::cerr())
     };
     unimplemented!();
-    return 0_();
+    return 0;
 }
 pub fn __cpp2rust_init_globals() {}

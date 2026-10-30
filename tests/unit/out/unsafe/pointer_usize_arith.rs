@@ -12,77 +12,77 @@ pub fn main() {
         std::process::exit(main_0() as i32);
     }
 }
-unsafe fn main_0() -> () {
-    let mut arr: [(); 8] = [10_(), 11_(), 12_(), 13_(), 14_(), 15_(), 16_(), 17_()];
-    let mut p: *mut () = arr.as_mut_ptr();
-    let mut q: *mut () = p.offset((1_()) as isize);
-    unimplemented!();
-    let mut r: *mut () = p.offset((3_()) as isize);
-    unimplemented!();
-    let mut s: *mut () = r.offset(-((2_()) as isize));
-    unimplemented!();
-    let mut diff: () = (((r as usize - p as usize) / ::std::mem::size_of::<()>()) as () as ());
-    unimplemented!();
-    let mut idx: () = (((r as usize - p as usize) / ::std::mem::size_of::<()>()) as ());
-    unimplemented!();
-    let mut q2: *mut () = p;
+unsafe fn main_0() -> i32 {
+    let mut arr: [i32; 8] = [10, 11, 12, 13, 14, 15, 16, 17];
+    let mut p: *mut i32 = arr.as_mut_ptr();
+    let mut q: *mut i32 = p.offset((1) as isize);
+    assert!(((*q) == (11)));
+    let mut r: *mut i32 = p.offset((3) as isize);
+    assert!(((*r) == (13)));
+    let mut s: *mut i32 = r.offset(-((2) as isize));
+    assert!(((*s) == (11)));
+    let mut diff: isize =
+        (((r as usize - p as usize) / ::std::mem::size_of::<i32>()) as i64 as isize);
+    assert!(((diff) == (3_isize)));
+    let mut idx: usize =
+        ((((r as usize - p as usize) / ::std::mem::size_of::<i32>()) as i64) as usize);
+    assert!(((idx) == (3_usize)));
+    let mut q2: *mut i32 = p;
     q2.prefix_inc();
-    unimplemented!();
+    assert!(((*q2) == (11)));
     q2.postfix_inc();
-    unimplemented!();
+    assert!(((*q2) == (12)));
     q2.prefix_dec();
-    unimplemented!();
+    assert!(((*q2) == (11)));
     q2.postfix_dec();
-    unimplemented!();
-    unimplemented!();
-    let mut q3: *mut () = p;
-    q3 = (q3).wrapping_add((4_() as ()) as usize);
-    unimplemented!();
-    q3 = (q3).wrapping_sub((2_() as ()) as usize);
-    unimplemented!();
-    let mut step: () = 2_();
-    let mut q4: *mut () = p.offset((step) as isize);
-    unimplemented!();
-    let mut v: () = (*p.offset((3_()) as isize));
-    unimplemented!();
-    let mut v2: () = (*(p.offset((4_()) as isize)));
-    unimplemented!();
-    (*(p.offset((5_()) as isize))) = 99_();
-    unimplemented!();
-    unimplemented!();
-    let mut end: *mut () = p.offset((8_()) as isize);
-    let mut sum: () = 0_();
-    let mut it: *mut () = p;
+    assert!(((*q2) == (10)));
+    assert!(((q2) == (p)));
+    let mut q3: *mut i32 = p;
+    q3 = (q3).wrapping_add((4 as i32) as usize);
+    assert!(((*q3) == (14)));
+    q3 = (q3).wrapping_sub((2 as i32) as usize);
+    assert!(((*q3) == (12)));
+    let mut step: usize = 2_usize;
+    let mut q4: *mut i32 = p.offset((step) as isize);
+    assert!(((*q4) == (12)));
+    let mut v: i32 = (*p.offset((3) as isize));
+    assert!(((v) == (13)));
+    let mut v2: i32 = (*(p.offset((4) as isize)));
+    assert!(((v2) == (14)));
+    (*(p.offset((5) as isize))) = 99;
+    assert!(((*p.offset((5) as isize)) == (99)));
+    assert!(((arr[(5) as usize]) == (99)));
+    let mut end: *mut i32 = p.offset((8) as isize);
+    let mut sum: i32 = 0;
+    let mut it: *mut i32 = p;
     'loop_: while ((it) != (end)) {
         sum += (*it);
         it.prefix_inc();
     }
-    unimplemented!();
-    let mut bytes: [(); 8] = [0_(), 1_(), 2_(), 3_(), 4_(), 5_(), 6_(), 7_()];
-    let mut bp: *mut () = bytes.as_mut_ptr();
-    let mut bq: *mut () = bp.offset((4_()) as isize);
-    unimplemented!();
-    let mut bdiff: () = (((bq as usize - bp as usize) / ::std::mem::size_of::<()>()) as () as ());
-    unimplemented!();
-    let mut cp: *const () = (arr.as_mut_ptr()).cast_const();
-    let mut cq: *const () = cp.offset((2_()) as isize);
-    unimplemented!();
-    let mut cdiff: () = (((cq as usize - cp as usize) / ::std::mem::size_of::<()>()) as () as ());
-    unimplemented!();
-    let mut n: () = 3_();
-    let mut q5: *mut () = arr.as_mut_ptr().offset((n) as isize);
-    unimplemented!();
-    let mut q6: *mut () = (&mut arr[(n) as usize] as *mut ());
-    unimplemented!();
-    let mut matrix: [[(); 4]; 3] = [
-        [0_(), 1_(), 2_(), 3_()],
-        [4_(), 5_(), 6_(), 7_()],
-        [8_(), 9_(), 10_(), 11_()],
-    ];
-    let mut row1: *mut () = (&mut matrix[(1_()) as usize][(0_()) as usize] as *mut ());
-    unimplemented!();
-    let mut back: *mut () = end.offset(-((1_()) as isize));
-    unimplemented!();
-    return 0_();
+    assert!(((sum) == ((((((((10) + (11)) + (12)) + (13)) + (14)) + (99)) + (16)) + (17))));
+    let mut bytes: [u8; 8] = [0_u8, 1_u8, 2_u8, 3_u8, 4_u8, 5_u8, 6_u8, 7_u8];
+    let mut bp: *mut u8 = bytes.as_mut_ptr();
+    let mut bq: *mut u8 = bp.offset((4) as isize);
+    assert!((((*bq) as i32) == (4)));
+    let mut bdiff: isize =
+        (((bq as usize - bp as usize) / ::std::mem::size_of::<u8>()) as i64 as isize);
+    assert!(((bdiff) == (4_isize)));
+    let mut cp: *const i32 = (arr.as_mut_ptr()).cast_const();
+    let mut cq: *const i32 = cp.offset((2) as isize);
+    assert!(((*cq) == (12)));
+    let mut cdiff: isize =
+        (((cq as usize - cp as usize) / ::std::mem::size_of::<i32>()) as i64 as isize);
+    assert!(((cdiff) == (2_isize)));
+    let mut n: usize = 3_usize;
+    let mut q5: *mut i32 = arr.as_mut_ptr().offset((n) as isize);
+    assert!(((*q5) == (13)));
+    let mut q6: *mut i32 = (&mut arr[(n)] as *mut i32);
+    assert!(((q6) == (q5)));
+    let mut matrix: [[i32; 4]; 3] = [[0, 1, 2, 3], [4, 5, 6, 7], [8, 9, 10, 11]];
+    let mut row1: *mut i32 = (&mut matrix[(1) as usize][(0) as usize] as *mut i32);
+    assert!(((*row1.offset((2) as isize)) == (6)));
+    let mut back: *mut i32 = end.offset(-((1) as isize));
+    assert!(((*back) == (17)));
+    return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

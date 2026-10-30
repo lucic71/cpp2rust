@@ -50,7 +50,18 @@ unsafe fn main_0() -> i32 {
         }
         __out
     };
-    assert!(((widened[(0_usize)]) == (1_i64)) && ((widened[(2_usize)]) == (3_i64)));
+    assert!(
+        ((*{
+            let __idx = 0_usize as usize;
+            let __v: &mut Vec<i64> = &mut widened;
+            __v.as_mut_ptr().add(__idx)
+        }) == (1_i64))
+            && ((*{
+                let __idx = 2_usize as usize;
+                let __v: &mut Vec<i64> = &mut widened;
+                __v.as_mut_ptr().add(__idx)
+            }) == (3_i64))
+    );
     let mut constructed: Vec<Degrees> = vec![Degrees::new({ 0 },); 3_usize as usize];
     {
         let mut __first = input.as_mut_ptr();
@@ -63,7 +74,22 @@ unsafe fn main_0() -> i32 {
         }
         __out
     };
-    assert!(((constructed[(0_usize)].value) == (1)) && ((constructed[(2_usize)].value) == (3)));
+    assert!(
+        (((*{
+            let __idx = 0_usize as usize;
+            let __v: &mut Vec<Degrees> = &mut constructed;
+            __v.as_mut_ptr().add(__idx)
+        })
+        .value)
+            == (1))
+            && (((*{
+                let __idx = 2_usize as usize;
+                let __v: &mut Vec<Degrees> = &mut constructed;
+                __v.as_mut_ptr().add(__idx)
+            })
+            .value)
+                == (3))
+    );
     let mut wide: [i64; 2] = [7_i64, 8_i64];
     let mut floating: Vec<f64> = vec![0_f64; 2_usize as usize];
     {
@@ -77,7 +103,13 @@ unsafe fn main_0() -> i32 {
         }
         __out
     };
-    assert!(((floating[(1_usize)]) == (8_f64)));
+    assert!(
+        ((*{
+            let __idx = 1_usize as usize;
+            let __v: &mut Vec<f64> = &mut floating;
+            __v.as_mut_ptr().add(__idx)
+        }) == (8_f64))
+    );
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

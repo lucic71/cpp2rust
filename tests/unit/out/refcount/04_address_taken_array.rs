@@ -10,16 +10,16 @@ pub fn main() {
     __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
-fn main_0() -> () {
-    let arr2: Value<Box<[()]>> = Rc::new(RefCell::new(Box::new([2_(), 2_()])));
-    (*arr2.borrow_mut())[(0_()) as usize] = 3_();
-    (*arr2.borrow_mut())[(1_()) as usize] = 4_();
-    let mut arr2_ptr: Ptr<()> = (arr2.as_pointer() as Ptr<()>);
-    elem!(arr2_ptr, 0_()).write(5_());
-    elem!(arr2_ptr, 1_()).write(6_());
-    let arr2_ref1: Ptr<()> = (arr2.as_pointer() as Ptr<()>).offset(1_());
-    arr2_ref1.write(7_());
-    unimplemented!();
-    return 0_();
+fn main_0() -> i32 {
+    let arr2: Value<Box<[i32]>> = Rc::new(RefCell::new(Box::new([2, 2])));
+    (*arr2.borrow_mut())[(0) as usize] = 3;
+    (*arr2.borrow_mut())[(1) as usize] = 4;
+    let mut arr2_ptr: Ptr<i32> = (arr2.as_pointer() as Ptr<i32>);
+    elem!(arr2_ptr, 0).write(5);
+    elem!(arr2_ptr, 1).write(6);
+    let arr2_ref1: Ptr<i32> = (arr2.as_pointer() as Ptr<i32>).offset(1);
+    arr2_ref1.write(7);
+    assert!((((*arr2.borrow())[(0) as usize] + (*arr2.borrow())[(1) as usize]) == 12));
+    return 0;
 }
 pub fn __cpp2rust_init_globals() {}

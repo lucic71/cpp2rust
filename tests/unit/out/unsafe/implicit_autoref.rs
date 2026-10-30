@@ -9,22 +9,22 @@ use std::rc::Rc;
 #[repr(C)]
 #[derive(Clone, VaArg, FnPtrArg, MoveCtorUnsafe, MoveAssignUnsafe, Default)]
 pub struct Holder {
-    pub v: (),
+    pub v: Vec<i32>,
 }
 impl Holder {
     pub unsafe fn move_from(_a0: *mut Holder) -> Self {
         let mut this = Self {
-            v: unimplemented!(),
+            v: std::mem::take(&mut (*_a0).v),
         };
         this
     }
     pub unsafe fn move_assign(&mut self, _a0: *mut Holder) -> *mut Holder {
-        unimplemented!();
+        self.v = std::mem::take(&mut (*_a0).v);
         return &mut (*(self as *mut Holder));
     }
 }
-pub unsafe fn write_through_0(mut p: *mut ()) {
-    (*p) = 42_();
+pub unsafe fn write_through_0(mut p: *mut i32) {
+    (*p) = 42;
 }
 pub fn main() {
     unsafe {
@@ -32,25 +32,71 @@ pub fn main() {
         std::process::exit(main_0() as i32);
     }
 }
-unsafe fn main_0() -> () {
-    let mut v: () = unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    let mut p: *mut () = (&mut v as *mut ());
-    let mut a: () = (*unimplemented!());
-    (*unimplemented!()) = 30_();
+unsafe fn main_0() -> i32 {
+    let mut v: Vec<i32> = Vec::new();
+    {
+        let __a1 = 10;
+        v.push(__a1)
+    };
+    {
+        let __a1 = 20;
+        v.push(__a1)
+    };
+    let mut p: *mut Vec<i32> = (&mut v as *mut Vec<i32>);
+    let mut a: i32 = (*{
+        let __idx = 0_usize as usize;
+        let __v: &mut Vec<i32> = &mut (*p);
+        __v.as_mut_ptr().add(__idx)
+    });
+    (*{
+        let __idx = 1_usize as usize;
+        let __v: &mut Vec<i32> = &mut (*p);
+        __v.as_mut_ptr().add(__idx)
+    }) = 30;
     let mut h: Holder = <Holder>::default();
-    unimplemented!();
-    unimplemented!();
+    {
+        let __a1 = 40;
+        h.v.push(__a1)
+    };
+    {
+        let __a1 = 50;
+        h.v.push(__a1)
+    };
     let mut hp: *mut Holder = (&mut h as *mut Holder);
-    let mut b: () = (*unimplemented!());
-    (*unimplemented!()) = 60_();
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    (unsafe { write_through_0((unimplemented!())) });
-    unimplemented!();
-    return 0_();
+    let mut b: i32 = (*{
+        let __idx = 0_usize as usize;
+        let __v: &mut Vec<i32> = &mut (*hp).v;
+        __v.as_mut_ptr().add(__idx)
+    });
+    (*{
+        let __idx = 1_usize as usize;
+        let __v: &mut Vec<i32> = &mut (*hp).v;
+        __v.as_mut_ptr().add(__idx)
+    }) = 60;
+    assert!(((a) == (10)));
+    assert!(
+        ((*{
+            let __idx = 1_usize as usize;
+            let __v: &mut Vec<i32> = &mut (*p);
+            __v.as_mut_ptr().add(__idx)
+        }) == (30))
+    );
+    assert!(((b) == (40)));
+    assert!(
+        ((*{
+            let __idx = 1_usize as usize;
+            let __v: &mut Vec<i32> = &mut (*hp).v;
+            __v.as_mut_ptr().add(__idx)
+        }) == (60))
+    );
+    (unsafe { write_through_0((&mut (&mut (*p))[0_usize as usize] as *mut i32)) });
+    assert!(
+        ((*{
+            let __idx = 0_usize as usize;
+            let __v: &mut Vec<i32> = &mut (*p);
+            __v.as_mut_ptr().add(__idx)
+        }) == (42))
+    );
+    return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

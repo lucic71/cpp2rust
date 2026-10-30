@@ -10,17 +10,17 @@ pub fn main() {
     __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
-fn main_0() -> () {
-    let __tmp_0: Value<()> = Rc::new(RefCell::new(5_()));
-    let mut r: Ptr<()> = <Ptr<()>>::default();
+fn main_0() -> i32 {
+    let __tmp_0: Value<i32> = Rc::new(RefCell::new(5));
+    let mut r: Ptr<i32> = <Ptr<i32>>::default();
     goto_block!({
         '__entry: {
             r = __tmp_0.as_pointer();
             goto!('body);
         }
         'body: {
-            unimplemented!();
-            return 0_();
+            assert!(((r.read()) == 5));
+            return 0;
         }
     });
     panic!("ub: non-void function does not return a value")

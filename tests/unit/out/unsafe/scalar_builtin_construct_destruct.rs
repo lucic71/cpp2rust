@@ -9,15 +9,15 @@ use std::rc::Rc;
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct Pod {
-    pub v: (),
+    pub v: i32,
 }
-pub unsafe fn zero_0() -> *mut () {
+pub unsafe fn zero_0() -> *mut i32 {
     return std::ptr::null_mut();
 }
-pub unsafe fn zero_1() -> () {
-    return unimplemented!();
+pub unsafe fn zero_1() -> i64 {
+    return 0_i64;
 }
-pub unsafe fn destroy_2(mut p: *mut ()) {}
+pub unsafe fn destroy_2(mut p: *mut i32) {}
 pub unsafe fn destroy_3(mut p: *mut Pod) {}
 pub fn main() {
     unsafe {
@@ -25,20 +25,20 @@ pub fn main() {
         std::process::exit(main_0() as i32);
     }
 }
-unsafe fn main_0() -> () {
-    let mut i: () = unimplemented!();
-    let mut d: () = unimplemented!();
-    let mut p: *mut () = (unsafe { zero_0() });
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    let mut x: () = 5_();
-    (unsafe { destroy_2((&mut x as *mut ())) });
-    unimplemented!();
-    let mut pod: Pod = Pod { v: 7_() };
+unsafe fn main_0() -> i32 {
+    let mut i: i32 = 0_i32;
+    let mut d: f64 = 0_f64;
+    let mut p: *mut i32 = (unsafe { zero_0() });
+    assert!(((i) == (0)));
+    assert!(((d) == (0_f64)));
+    assert!((p).is_null());
+    assert!(((unsafe { zero_1() }) == (0_i64)));
+    let mut x: i32 = 5;
+    (unsafe { destroy_2((&mut x as *mut i32)) });
+    assert!(((x) == (5)));
+    let mut pod: Pod = Pod { v: 7 };
     (unsafe { destroy_3((&mut pod as *mut Pod)) });
-    unimplemented!();
-    return 0_();
+    assert!(((pod.v) == (7)));
+    return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

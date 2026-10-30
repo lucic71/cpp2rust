@@ -12,33 +12,33 @@ pub fn main() {
         std::process::exit(main_0() as i32);
     }
 }
-unsafe fn main_0() -> () {
-    let mut i1: () = 3_();
-    let mut i2: () = i1;
-    unimplemented!();
-    unimplemented!();
-    let mut __tmp_0: () = 40_();
-    let i3: *mut () = &mut __tmp_0;
-    (*i3) += 2_();
-    unimplemented!();
-    let mut __tmp_1: () = ((2_()) + (3_()));
-    let i4: *mut () = &mut __tmp_1;
-    unimplemented!();
-    let mut __tmp_2: () = 40_();
-    let i5: *const () = &mut __tmp_2;
-    let i6: *mut () = i3;
-    let i7: *mut () = i4;
-    unimplemented!();
-    unimplemented!();
-    let mut i8: () = 3_();
-    let i9: *mut () = &mut i8;
-    unimplemented!();
-    let mut p1: *mut () = (&mut i1 as *mut ());
-    let mut p2: *mut () = (i3);
-    let mut p3: *mut () = (i6);
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    return 0_();
+unsafe fn main_0() -> i32 {
+    let mut i1: i32 = 3;
+    let mut i2: i32 = (i1 as i32);
+    assert!(((i1) == (3)));
+    assert!(((i2) == (3)));
+    let mut __tmp_0: i32 = 40;
+    let i3: *mut i32 = &mut __tmp_0;
+    (*i3) += 2;
+    assert!(((*i3) == (42)));
+    let mut __tmp_1: i32 = ((2) + (3));
+    let i4: *mut i32 = &mut __tmp_1;
+    assert!(((*i4) == (5)));
+    let mut __tmp_2: i32 = 40;
+    let i5: *const i32 = &mut __tmp_2;
+    let i6: *mut i32 = i3;
+    let i7: *mut i32 = i4;
+    assert!(((*i6) == (*i3)));
+    assert!(((*i7) == (*i4)));
+    let mut i8: i32 = 3;
+    let i9: *mut i32 = &mut *(&raw mut i8).cast::<i32>();
+    assert!(((*i9) == (3)));
+    let mut p1: *mut i32 = (&mut i1 as *mut i32);
+    let mut p2: *mut i32 = (i3);
+    let mut p3: *mut i32 = (i6);
+    assert!(((*p1) == (i1)));
+    assert!(((*p2) == (*i3)));
+    assert!(((*p3) == (*i6)));
+    return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

@@ -10,98 +10,82 @@ pub fn main() {
     __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
-fn main_0() -> () {
-    let arr: Value<Box<[()]>> = Rc::new(RefCell::new(Box::new([
-        10_(),
-        11_(),
-        12_(),
-        13_(),
-        14_(),
-        15_(),
-        16_(),
-        17_(),
-    ])));
-    let mut p: Ptr<()> = (arr.as_pointer() as Ptr<()>);
-    let mut q: Ptr<()> = p.offset((1_()) as isize);
-    unimplemented!();
-    let mut r: Ptr<()> = p.offset((3_()) as isize);
-    unimplemented!();
-    let mut s: Ptr<()> = r.offset(-((2_()) as isize));
-    unimplemented!();
-    let mut diff: () = (((r).clone() - (p).clone()) as () as ());
-    unimplemented!();
-    let mut idx: () = (((r).clone() - (p).clone()) as ());
-    unimplemented!();
-    let mut q2: Ptr<()> = (p).clone();
+fn main_0() -> i32 {
+    let arr: Value<Box<[i32]>> = Rc::new(RefCell::new(Box::new([10, 11, 12, 13, 14, 15, 16, 17])));
+    let mut p: Ptr<i32> = (arr.as_pointer() as Ptr<i32>);
+    let mut q: Ptr<i32> = p.offset((1) as isize);
+    assert!(((q.read()) == 11));
+    let mut r: Ptr<i32> = p.offset((3) as isize);
+    assert!(((r.read()) == 13));
+    let mut s: Ptr<i32> = r.offset(-((2) as isize));
+    assert!(((s.read()) == 11));
+    let mut diff: isize = (((r).clone() - (p).clone()) as i64 as isize);
+    assert!((diff == 3_isize));
+    let mut idx: usize = ((((r).clone() - (p).clone()) as i64) as usize);
+    assert!((idx == 3_usize));
+    let mut q2: Ptr<i32> = (p).clone();
     q2.prefix_inc();
-    unimplemented!();
+    assert!(((q2.read()) == 11));
     q2.postfix_inc();
-    unimplemented!();
+    assert!(((q2.read()) == 12));
     q2.prefix_dec();
-    unimplemented!();
+    assert!(((q2.read()) == 11));
     q2.postfix_dec();
-    unimplemented!();
-    unimplemented!();
-    let mut q3: Ptr<()> = (p).clone();
-    q3 += 4_();
-    unimplemented!();
-    q3 -= 2_();
-    unimplemented!();
-    let mut step: () = 2_();
-    let mut q4: Ptr<()> = p.offset((step) as isize);
-    unimplemented!();
-    let mut v: () = (elem!(p, 3_()).read());
-    unimplemented!();
-    let mut v2: () = ((p.offset((4_()) as isize)).read());
-    unimplemented!();
-    (p.offset((5_()) as isize)).write(99_());
-    unimplemented!();
-    unimplemented!();
-    let mut end: Ptr<()> = p.offset((8_()) as isize);
-    let mut sum: () = 0_();
-    let mut it: Ptr<()> = (p).clone();
+    assert!(((q2.read()) == 10));
+    assert!(({ (q2).clone() } == { (p).clone() }));
+    let mut q3: Ptr<i32> = (p).clone();
+    q3 += 4;
+    assert!(((q3.read()) == 14));
+    q3 -= 2;
+    assert!(((q3.read()) == 12));
+    let mut step: usize = 2_usize;
+    let mut q4: Ptr<i32> = p.offset((step) as isize);
+    assert!(((q4.read()) == 12));
+    let mut v: i32 = (elem!(p, 3).read());
+    assert!((v == 13));
+    let mut v2: i32 = ((p.offset((4) as isize)).read());
+    assert!((v2 == 14));
+    (p.offset((5) as isize)).write(99);
+    assert!(((elem!(p, 5).read()) == 99));
+    assert!(((*arr.borrow())[(5) as usize] == 99));
+    let mut end: Ptr<i32> = p.offset((8) as isize);
+    let mut sum: i32 = 0;
+    let mut it: Ptr<i32> = (p).clone();
     'loop_: while ({ (it).clone() } != { (end).clone() }) {
         sum += { (it.read()) };
         it.prefix_inc();
     }
-    unimplemented!();
-    let bytes: Value<Box<[()]>> = Rc::new(RefCell::new(Box::new([
-        0_(),
-        1_(),
-        2_(),
-        3_(),
-        4_(),
-        5_(),
-        6_(),
-        7_(),
+    assert!((sum == (((((((10 + 11) + 12) + 13) + 14) + 99) + 16) + 17)));
+    let bytes: Value<Box<[u8]>> = Rc::new(RefCell::new(Box::new([
+        0_u8, 1_u8, 2_u8, 3_u8, 4_u8, 5_u8, 6_u8, 7_u8,
     ])));
-    let mut bp: Ptr<()> = (bytes.as_pointer() as Ptr<()>);
-    let mut bq: Ptr<()> = bp.offset((4_()) as isize);
-    unimplemented!();
-    let mut bdiff: () = (((bq).clone() - (bp).clone()) as () as ());
-    unimplemented!();
-    let mut cp: Ptr<()> = (arr.as_pointer() as Ptr<()>);
-    let mut cq: Ptr<()> = cp.offset((2_()) as isize);
-    unimplemented!();
-    let mut cdiff: () = (((cq).clone() - (cp).clone()) as () as ());
-    unimplemented!();
-    let mut n: () = 3_();
-    let mut q5: Ptr<()> = (arr.as_pointer() as Ptr<()>).offset((n) as isize);
-    unimplemented!();
-    let mut q6: Ptr<()> = ((arr.as_pointer() as Ptr<()>).offset(n));
-    unimplemented!();
-    let matrix: Value<Box<[Box<[()]>]>> = Rc::new(RefCell::new(Box::new([
-        Box::new([0_(), 1_(), 2_(), 3_()]),
-        Box::new([4_(), 5_(), 6_(), 7_()]),
-        Box::new([8_(), 9_(), 10_(), 11_()]),
+    let mut bp: Ptr<u8> = (bytes.as_pointer() as Ptr<u8>);
+    let mut bq: Ptr<u8> = bp.offset((4) as isize);
+    assert!((((bq.read()) as i32) == 4));
+    let mut bdiff: isize = (((bq).clone() - (bp).clone()) as i64 as isize);
+    assert!((bdiff == 4_isize));
+    let mut cp: Ptr<i32> = (arr.as_pointer() as Ptr<i32>);
+    let mut cq: Ptr<i32> = cp.offset((2) as isize);
+    assert!(((cq.read()) == 12));
+    let mut cdiff: isize = (((cq).clone() - (cp).clone()) as i64 as isize);
+    assert!((cdiff == 2_isize));
+    let mut n: usize = 3_usize;
+    let mut q5: Ptr<i32> = (arr.as_pointer() as Ptr<i32>).offset((n) as isize);
+    assert!(((q5.read()) == 13));
+    let mut q6: Ptr<i32> = ((arr.as_pointer() as Ptr<i32>).offset(n));
+    assert!(({ (q6).clone() } == { (q5).clone() }));
+    let matrix: Value<Box<[Box<[i32]>]>> = Rc::new(RefCell::new(Box::new([
+        Box::new([0, 1, 2, 3]),
+        Box::new([4, 5, 6, 7]),
+        Box::new([8, 9, 10, 11]),
     ])));
-    let mut row1: Ptr<()> = ((((matrix.as_pointer() as Ptr<Box<[()]>>)
-        .offset(1_())
-        .as_pointer()) as Ptr<()>)
-        .offset(0_()));
-    unimplemented!();
-    let mut back: Ptr<()> = end.offset(-((1_()) as isize));
-    unimplemented!();
-    return 0_();
+    let mut row1: Ptr<i32> = ((((matrix.as_pointer() as Ptr<Box<[i32]>>)
+        .offset(1)
+        .as_pointer()) as Ptr<i32>)
+        .offset(0));
+    assert!(((elem!(row1, 2).read()) == 6));
+    let mut back: Ptr<i32> = end.offset(-((1) as isize));
+    assert!(((back.read()) == 17));
+    return 0;
 }
 pub fn __cpp2rust_init_globals() {}

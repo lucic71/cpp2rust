@@ -13,7 +13,7 @@ pub struct Probe {}
 #[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct Wrapper_Probe_ {
     pub base_: Probe,
-    pub tag: (),
+    pub tag: i32,
 }
 pub fn main() {
     unsafe {
@@ -21,11 +21,11 @@ pub fn main() {
         std::process::exit(main_0() as i32);
     }
 }
-unsafe fn main_0() -> () {
+unsafe fn main_0() -> i32 {
     let mut a: Wrapper_Probe_ = <Wrapper_Probe_>::default();
-    a.tag = 3_();
+    a.tag = 3;
     let mut b: Wrapper_Probe_ = a;
-    unimplemented!();
-    return 0_();
+    assert!(((b.tag) == (3)));
+    return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

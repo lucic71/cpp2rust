@@ -10,14 +10,14 @@ use std::rc::{Rc, Weak};
 #[byte_size(4)]
 pub struct Inner {
     #[offset(0)]
-    pub x: (),
+    pub x: i32,
 }
 #[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg)]
 #[byte_size(16)]
 pub struct S {
     #[offset(0)]
     #[byte_size(12)]
-    pub data: Box<[()]>,
+    pub data: Box<[i32]>,
     #[offset(12)]
     #[byte_size(4)]
     pub inner: Inner,
@@ -26,7 +26,7 @@ impl Default for S {
     fn default() -> Self {
         {
             S {
-                data: (0..3).map(|_| unimplemented!()).collect::<Box<[()]>>(),
+                data: (0..3).map(|_| 0_i32).collect::<Box<[i32]>>(),
                 inner: <Inner>::default(),
             }
         }
@@ -35,19 +35,26 @@ impl Default for S {
 pub fn operator_deref_0(s: Ptr<S>) -> Ptr<Inner> {
     return field_ptr!(s, inner);
 }
-pub fn operator_addr_1(s: Ptr<S>) -> Ptr<()> {
-    return ((array_field_ptr!(s, data) as Ptr<()>).offset((0_()) as isize));
+pub fn operator_addr_1(s: Ptr<S>) -> Ptr<i32> {
+    return ((array_field_ptr!(s, data) as Ptr<i32>).offset((0) as isize));
 }
 pub fn main() {
     __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
-fn main_0() -> () {
+fn main_0() -> i32 {
     let s: Value<S> = Rc::new(RefCell::new(S {
-        data: Box::new([1_(), 2_(), 3_()]),
-        inner: Inner { x: 9_() },
+        data: Box::new([1, 2, 3]),
+        inner: Inner { x: 9 },
     }));
-    unimplemented!();
+    assert!(
+        (({
+            let _s: Ptr<S> = s.as_pointer();
+            operator_deref_0(_s)
+        })
+        .with(|__s| (__s).x)
+            == 9)
+    );
     field!(
         ({
             let _s: Ptr<S> = s.as_pointer();
@@ -55,15 +62,15 @@ fn main_0() -> () {
         }),
         x
     )
-    .write(10_());
-    unimplemented!();
-    let mut p: Ptr<()> = ({
+    .write(10);
+    assert!(({ (*s.borrow()).inner.x } == 10));
+    let mut p: Ptr<i32> = ({
         let _s: Ptr<S> = s.as_pointer();
         operator_addr_1(_s)
     });
-    unimplemented!();
-    p.write(5_());
-    unimplemented!();
-    return 0_();
+    assert!(((p.read()) == 1));
+    p.write(5);
+    assert!(((array_elem!(s.as_pointer(), data, 0).read()) == 5));
+    return 0;
 }
 pub fn __cpp2rust_init_globals() {}

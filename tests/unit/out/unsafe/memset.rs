@@ -12,13 +12,19 @@ pub fn main() {
         std::process::exit(main_0() as i32);
     }
 }
-unsafe fn main_0() -> () {
-    let N: () = 3_();
-    let mut arr: *mut () =
-        Box::leak((0..N).map(|_| unimplemented!()).collect::<Box<[()]>>()).as_mut_ptr();
-    unimplemented!();
-    let mut sum: () = 0_();
-    let mut i: () = 0_();
+unsafe fn main_0() -> i32 {
+    let N: i32 = 3;
+    let mut arr: *mut i32 =
+        Box::leak((0..(N as usize)).map(|_| 0_i32).collect::<Box<[i32]>>()).as_mut_ptr();
+    {
+        let byte_0 = (arr as *mut ::libc::c_void) as *mut u8;
+        for offset in 0..(::std::mem::size_of::<i32>() as usize).wrapping_mul((N as usize)) {
+            *byte_0.offset(offset as isize) = 1 as u8;
+        }
+        (arr as *mut ::libc::c_void)
+    };
+    let mut sum: i32 = 0;
+    let mut i: i32 = 0;
     'loop_: while ((i) < (N)) {
         sum += (*arr.offset((i) as isize));
         i.prefix_inc();
@@ -29,11 +35,11 @@ unsafe fn main_0() -> () {
             ::std::mem::drop(Box::from_raw(::std::slice::from_raw_parts_mut(
                 __p,
                 libcc2rs::malloc_usable_size(__p as *mut ::libc::c_void)
-                    / ::std::mem::size_of::<()>(),
+                    / ::std::mem::size_of::<i32>(),
             )))
         }
     };
-    unimplemented!();
-    return 0_();
+    assert!(((sum) == (50529027)));
+    return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

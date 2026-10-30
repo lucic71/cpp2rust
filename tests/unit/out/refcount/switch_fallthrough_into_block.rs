@@ -6,21 +6,21 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-pub fn fallthrough_into_block_0(mut x: ()) -> () {
-    let r: Value<()> = Rc::new(RefCell::new(0_()));
+pub fn fallthrough_into_block_0(mut x: i32) -> i32 {
+    let r: Value<i32> = Rc::new(RefCell::new(0));
     switch!(match x {
-        __v if __v == 1_() => {
-            (*r.borrow_mut()) += 1_();
+        __v if __v == 1 => {
+            (*r.borrow_mut()) += 1;
         }
-        __v if __v == 2_() => {
+        __v if __v == 2 => {
             {
-                let mut tmp: () = ((*r.borrow()) * 10_());
-                (*r.borrow_mut()) = (tmp + 5_());
+                let mut tmp: i32 = ((*r.borrow()) * 10);
+                (*r.borrow_mut()) = (tmp + 5);
                 break;
             }
         }
         _ => {
-            (*r.borrow_mut()) = -1_();
+            (*r.borrow_mut()) = -1_i32;
             break;
         }
     });
@@ -30,10 +30,10 @@ pub fn main() {
     __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
-fn main_0() -> () {
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    return 0_();
+fn main_0() -> i32 {
+    assert!((({ fallthrough_into_block_0(1,) }) == 15));
+    assert!((({ fallthrough_into_block_0(2,) }) == 5));
+    assert!((({ fallthrough_into_block_0(99,) }) == -1_i32));
+    return 0;
 }
 pub fn __cpp2rust_init_globals() {}

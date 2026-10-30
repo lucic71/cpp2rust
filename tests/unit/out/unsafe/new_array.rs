@@ -6,9 +6,9 @@ use std::collections::BTreeMap;
 use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
-pub unsafe fn sum_0(mut p: *mut (), mut n: ()) -> () {
-    let mut total: () = 0_();
-    let mut i: () = 0_();
+pub unsafe fn sum_0(mut p: *mut i32, mut n: i32) -> i32 {
+    let mut total: i32 = 0;
+    let mut i: i32 = 0;
     'loop_: while ((i) < (n)) {
         total += (*p.offset((i) as isize));
         i.prefix_inc();
@@ -21,32 +21,32 @@ pub fn main() {
         std::process::exit(main_0() as i32);
     }
 }
-unsafe fn main_0() -> () {
-    let mut array: *mut () =
-        Box::leak((0..100_()).map(|_| unimplemented!()).collect::<Box<[()]>>()).as_mut_ptr();
+unsafe fn main_0() -> i32 {
+    let mut array: *mut i32 =
+        Box::leak((0..100_usize).map(|_| 0_i32).collect::<Box<[i32]>>()).as_mut_ptr();
     {
         let __p = array;
         if !__p.is_null() {
             ::std::mem::drop(Box::from_raw(::std::slice::from_raw_parts_mut(
                 __p,
                 libcc2rs::malloc_usable_size(__p as *mut ::libc::c_void)
-                    / ::std::mem::size_of::<()>(),
+                    / ::std::mem::size_of::<i32>(),
             )))
         }
     };
-    let mut filled: *mut () =
-        Box::leak((0..4_()).map(|_| unimplemented!()).collect::<Box<[()]>>()).as_mut_ptr();
-    let mut i: () = 0_();
-    'loop_: while ((i) < (4_())) {
-        (*filled.offset((i) as isize)) = ((i) + (1_()));
+    let mut filled: *mut i32 =
+        Box::leak((0..4_usize).map(|_| 0_i32).collect::<Box<[i32]>>()).as_mut_ptr();
+    let mut i: i32 = 0;
+    'loop_: while ((i) < (4)) {
+        (*filled.offset((i) as isize)) = ((i) + (1));
         i.prefix_inc();
     }
     if ((unsafe {
-        let _p: *mut () = filled;
-        sum_0(_p, 4_())
-    }) != (10_()))
+        let _p: *mut i32 = filled;
+        sum_0(_p, 4)
+    }) != (10))
     {
-        return 1_();
+        return 1;
     }
     {
         let __p = filled;
@@ -54,10 +54,10 @@ unsafe fn main_0() -> () {
             ::std::mem::drop(Box::from_raw(::std::slice::from_raw_parts_mut(
                 __p,
                 libcc2rs::malloc_usable_size(__p as *mut ::libc::c_void)
-                    / ::std::mem::size_of::<()>(),
+                    / ::std::mem::size_of::<i32>(),
             )))
         }
     };
-    return 0_();
+    return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

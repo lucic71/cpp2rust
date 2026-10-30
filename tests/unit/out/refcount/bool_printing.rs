@@ -6,25 +6,25 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-pub fn foo_0() -> () {
+pub fn foo_0() -> bool {
     return true;
 }
-pub fn bar_1() -> () {
+pub fn bar_1() -> bool {
     return true;
 }
 pub fn main() {
     __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
-fn main_0() -> () {
-    let mut i1: () = 0_();
-    let mut i2: () = 1_();
+fn main_0() -> i32 {
+    let mut i1: i32 = 0;
+    let mut i2: i32 = 1;
     unimplemented!();
     unimplemented!();
     unimplemented!();
     unimplemented!();
     unimplemented!();
     unimplemented!();
-    return 0_();
+    return 0;
 }
 pub fn __cpp2rust_init_globals() {}

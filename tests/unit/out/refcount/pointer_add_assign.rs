@@ -10,48 +10,48 @@ pub fn main() {
     __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
-fn main_0() -> () {
-    let arr: Value<Box<[()]>> = Rc::new(RefCell::new(Box::new([1_(), 2_(), 3_()])));
+fn main_0() -> i32 {
+    let arr: Value<Box<[i8]>> = Rc::new(RefCell::new(Box::new([1_i8, 2_i8, 3_i8])));
     {
-        let mut p: Ptr<()> = ((arr.as_pointer() as Ptr<()>).offset(0_()));
-        p += 1_();
-        unimplemented!();
+        let mut p: Ptr<i8> = ((arr.as_pointer() as Ptr<i8>).offset(0));
+        p += (1_u8 as i32);
+        assert!((((p.read()) as i32) == 2));
     }
     {
-        let mut p: Ptr<()> = ((arr.as_pointer() as Ptr<()>).offset(0_()));
-        p += 1_();
-        unimplemented!();
+        let mut p: Ptr<i8> = ((arr.as_pointer() as Ptr<i8>).offset(0));
+        p += (1_i8 as i32);
+        assert!((((p.read()) as i32) == 2));
     }
     {
-        let mut p: Ptr<()> = ((arr.as_pointer() as Ptr<()>).offset(0_()));
-        p += 1_();
-        unimplemented!();
+        let mut p: Ptr<i8> = ((arr.as_pointer() as Ptr<i8>).offset(0));
+        p += (1_u16 as i32);
+        assert!((((p.read()) as i32) == 2));
     }
     {
-        let mut p: Ptr<()> = ((arr.as_pointer() as Ptr<()>).offset(0_()));
-        p += 1_();
-        unimplemented!();
+        let mut p: Ptr<i8> = ((arr.as_pointer() as Ptr<i8>).offset(0));
+        p += (1_i16 as i32);
+        assert!((((p.read()) as i32) == 2));
     }
     {
-        let mut p: Ptr<()> = ((arr.as_pointer() as Ptr<()>).offset(0_()));
-        p += 1_();
-        unimplemented!();
+        let mut p: Ptr<i8> = ((arr.as_pointer() as Ptr<i8>).offset(0));
+        p += 1_u32;
+        assert!((((p.read()) as i32) == 2));
     }
     {
-        let mut p: Ptr<()> = ((arr.as_pointer() as Ptr<()>).offset(0_()));
-        p += (1_() as ());
-        unimplemented!();
+        let mut p: Ptr<i8> = ((arr.as_pointer() as Ptr<i8>).offset(0));
+        p += (1 as i32);
+        assert!((((p.read()) as i32) == 2));
     }
     {
-        let mut p: Ptr<()> = ((arr.as_pointer() as Ptr<()>).offset(0_()));
-        p += 1_();
-        unimplemented!();
+        let mut p: Ptr<i8> = ((arr.as_pointer() as Ptr<i8>).offset(0));
+        p += 1_u64;
+        assert!((((p.read()) as i32) == 2));
     }
     {
-        let mut p: Ptr<()> = ((arr.as_pointer() as Ptr<()>).offset(0_()));
-        p += 1_();
-        unimplemented!();
+        let mut p: Ptr<i8> = ((arr.as_pointer() as Ptr<i8>).offset(0));
+        p += 1_i64;
+        assert!((((p.read()) as i32) == 2));
     }
-    return 0_();
+    return 0;
 }
 pub fn __cpp2rust_init_globals() {}

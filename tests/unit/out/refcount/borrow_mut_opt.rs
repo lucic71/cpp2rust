@@ -7,47 +7,47 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
 pub fn convert_without_rhs_0() {
-    let x: Value<()> = Rc::new(RefCell::new(0_()));
-    let mut y: () = 1_();
-    (*x.borrow_mut()) = 0_();
-    (*x.borrow_mut()) = (y + 1_());
-    y = 0_();
-    y = ((*x.borrow()) + 1_());
-    (*x.borrow_mut()) += 1_();
-    y += 1_();
-    y = 0_();
-    (*x.borrow_mut()) = 0_();
-    let mut z: () = ((*x.borrow()) + y);
-    z = (((*x.borrow()) + y) + 1_());
-    let mut arr: [(); 2] = [1_(), 2_()];
-    let mut w: () = (arr[(y) as usize] + arr[(*x.borrow()) as usize]);
+    let x: Value<i32> = Rc::new(RefCell::new(0));
+    let mut y: i32 = 1;
+    (*x.borrow_mut()) = 0;
+    (*x.borrow_mut()) = (y + 1);
+    y = 0;
+    y = ((*x.borrow()) + 1);
+    (*x.borrow_mut()) += 1;
+    y += 1;
+    y = 0;
+    (*x.borrow_mut()) = 0;
+    let mut z: i32 = ((*x.borrow()) + y);
+    z = (((*x.borrow()) + y) + 1);
+    let mut arr: [i32; 2] = [1, 2];
+    let mut w: i32 = (arr[(y) as usize] + arr[(*x.borrow()) as usize]);
     w += ((z + y) + (*x.borrow()));
-    let mut arr2: [(); 3] = [('a' as ()), ('b' as ()), ('c' as ())];
-    let mut p1: Ptr<()> = (x.as_pointer());
-    let mut c: () = arr2[(p1.read()) as usize];
+    let mut arr2: [i8; 3] = [('a' as i8), ('b' as i8), ('c' as i8)];
+    let mut p1: Ptr<i32> = (x.as_pointer());
+    let mut c: i8 = arr2[(p1.read()) as usize];
     c = arr2[(p1.read()) as usize];
-    let mut p2: Ptr<()> = (x.as_pointer());
-    p2.write(1_());
-    let r: Ptr<()> = x.as_pointer();
-    r.write(1_());
+    let mut p2: Ptr<i32> = (x.as_pointer());
+    p2.write(1);
+    let r: Ptr<i32> = x.as_pointer();
+    r.write(1);
 }
 pub fn convert_with_rhs_1() {
-    let x: Value<()> = Rc::new(RefCell::new(0_()));
-    (*x.borrow_mut()) = { ((*x.borrow()) + 1_()) };
-    let mut y: () = 0_();
-    y = { (y + 1_()) };
-    let arr: Value<Box<[()]>> = Rc::new(RefCell::new(Box::new([1_(), 2_()])));
-    (*arr.borrow_mut())[(y) as usize] = { (y + 1_()) };
-    (*arr.borrow_mut())[(*x.borrow()) as usize] = { ((*x.borrow()) + 1_()) };
-    (*arr.borrow_mut())[(*x.borrow()) as usize] = { ((*arr.borrow())[(y) as usize] + 1_()) };
-    let z: Ptr<()> = x.as_pointer();
+    let x: Value<i32> = Rc::new(RefCell::new(0));
+    (*x.borrow_mut()) = { ((*x.borrow()) + 1) };
+    let mut y: i32 = 0;
+    y = { (y + 1) };
+    let arr: Value<Box<[i32]>> = Rc::new(RefCell::new(Box::new([1, 2])));
+    (*arr.borrow_mut())[(y) as usize] = { (y + 1) };
+    (*arr.borrow_mut())[(*x.borrow()) as usize] = { ((*x.borrow()) + 1) };
+    (*arr.borrow_mut())[(*x.borrow()) as usize] = { ((*arr.borrow())[(y) as usize] + 1) };
+    let z: Ptr<i32> = x.as_pointer();
     (*x.borrow_mut()) += { (z.read()) };
     y += { (z.read()) };
-    let mut p: Ptr<()> = (x.as_pointer());
+    let mut p: Ptr<i32> = (x.as_pointer());
     (*x.borrow_mut()) += { (p.read()) };
     y += { (p.read()) };
-    p = ((arr.as_pointer() as Ptr<()>).offset(0_()));
-    (*arr.borrow_mut())[(0_()) as usize] = { (p.read()) };
+    p = ((arr.as_pointer() as Ptr<i32>).offset(0));
+    (*arr.borrow_mut())[(0) as usize] = { (p.read()) };
     {
         let __rhs = { (*x.borrow()) };
         z.with_mut(|__v| *__v = *__v + __rhs)
@@ -77,9 +77,9 @@ pub fn main() {
     __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
-fn main_0() -> () {
+fn main_0() -> i32 {
     ({ convert_without_rhs_0() });
     ({ convert_with_rhs_1() });
-    return 0_();
+    return 0;
 }
 pub fn __cpp2rust_init_globals() {}

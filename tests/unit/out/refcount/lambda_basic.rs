@@ -10,82 +10,84 @@ pub fn main() {
     __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
-fn main_0() -> () {
-    let zero: Value<FnPtr<fn() -> ()>> =
-        Rc::new(RefCell::new(FnPtr::<fn() -> ()>::new(|| -> () {
+fn main_0() -> i32 {
+    let zero: Value<FnPtr<fn() -> i32>> =
+        Rc::new(RefCell::new(FnPtr::<fn() -> i32>::new(|| -> i32 {
             {
-                return 42_();
+                return 42;
             }
         })));
-    unimplemented!();
-    let one: Value<FnPtr<fn(()) -> ()>> = Rc::new(RefCell::new(FnPtr::<fn(()) -> ()>::new(
-        |mut x: ()| -> () {
+    assert!((({ (*zero.borrow()).call() }) == 42));
+    let one: Value<FnPtr<fn(i32) -> i32>> = Rc::new(RefCell::new(FnPtr::<fn(i32) -> i32>::new(
+        |mut x: i32| -> i32 {
             {
-                return (x + 1_());
+                return (x + 1);
             }
         },
     )));
-    unimplemented!();
-    let three: Value<FnPtr<fn((), (), ()) -> ()>> =
-        Rc::new(RefCell::new(FnPtr::<fn((), (), ()) -> ()>::new(
-            |mut x: (), mut y: (), mut z: ()| -> () {
+    assert!((({ (*one.borrow()).call(1,) }) == 2));
+    let three: Value<FnPtr<fn(i32, i32, i32) -> i32>> =
+        Rc::new(RefCell::new(FnPtr::<fn(i32, i32, i32) -> i32>::new(
+            |mut x: i32, mut y: i32, mut z: i32| -> i32 {
                 {
-                    return (((x * 100_()) + (y * 10_())) + z);
+                    return (((x * 100) + (y * 10)) + z);
                 }
             },
         )));
-    unimplemented!();
-    let mut k: () = 3_();
-    let mut m: () = 4_();
-    let constants: Value<FnPtr<fn(()) -> ()>> = Rc::new(RefCell::new(FnPtr::<fn(()) -> ()>::new(
-        |mut x: ()| -> () {
+    assert!((({ (*three.borrow()).call(1, 2, 3,) }) == 123));
+    let mut k: i32 = 3;
+    let mut m: i32 = 4;
+    let constants: Value<FnPtr<fn(i32) -> i32>> = Rc::new(RefCell::new(
+        FnPtr::<fn(i32) -> i32>::new(|mut x: i32| -> i32 {
             {
-                return ((x + 3_()) + 4_());
+                return ((x + 3) + 4);
             }
-        },
-    )));
-    unimplemented!();
-    let mut n: () = (k + m);
-    let derived: Value<FnPtr<fn(()) -> ()>> = Rc::new(RefCell::new(FnPtr::<fn(()) -> ()>::new(
-        |mut x: ()| -> () {
+        }),
+    ));
+    assert!((({ (*constants.borrow()).call(1,) }) == 8));
+    let mut n: i32 = (k + m);
+    let derived: Value<FnPtr<fn(i32) -> i32>> = Rc::new(RefCell::new(
+        FnPtr::<fn(i32) -> i32>::new(|mut x: i32| -> i32 {
             {
-                return (x + (3_() + 4_()));
+                return (x + (3 + 4));
             }
-        },
-    )));
-    unimplemented!();
-    let implicit: Value<FnPtr<fn(()) -> ()>> = Rc::new(RefCell::new(FnPtr::<fn(()) -> ()>::new(
-        |mut x: ()| -> () {
+        }),
+    ));
+    assert!((({ (*derived.borrow()).call(1,) }) == 8));
+    let implicit: Value<FnPtr<fn(i32) -> i32>> = Rc::new(RefCell::new(
+        FnPtr::<fn(i32) -> i32>::new(|mut x: i32| -> i32 {
             {
-                return (x + 3_());
+                return (x + 3);
             }
-        },
-    )));
-    unimplemented!();
-    let bump: Value<FnPtr<fn(()) -> ()>> =
-        Rc::new(RefCell::new(FnPtr::<fn(()) -> ()>::new(|x: ()| -> () {
+        }),
+    ));
+    assert!((({ (*implicit.borrow()).call(1,) }) == 4));
+    let bump: Value<FnPtr<fn(i32) -> i32>> = Rc::new(RefCell::new(FnPtr::<fn(i32) -> i32>::new(
+        |x: i32| -> i32 {
             {
-                let x: Value<()> = Rc::new(RefCell::new(x));
-                (*x.borrow_mut()) += 1_();
+                let x: Value<i32> = Rc::new(RefCell::new(x));
+                (*x.borrow_mut()) += 1;
                 return (*x.borrow());
             }
-        })));
-    unimplemented!();
-    let through_ptr: Value<FnPtr<fn(()) -> ()>> =
-        Rc::new(RefCell::new(FnPtr::<fn(()) -> ()>::new(|x: ()| -> () {
+        },
+    )));
+    assert!((({ (*bump.borrow()).call(1,) }) == 2));
+    let through_ptr: Value<FnPtr<fn(i32) -> i32>> = Rc::new(RefCell::new(
+        FnPtr::<fn(i32) -> i32>::new(|x: i32| -> i32 {
             {
-                let x: Value<()> = Rc::new(RefCell::new(x));
-                let mut p: Ptr<()> = (x.as_pointer());
-                p.write({ ((p.read()) * 2_()) });
+                let x: Value<i32> = Rc::new(RefCell::new(x));
+                let mut p: Ptr<i32> = (x.as_pointer());
+                p.write({ ((p.read()) * 2) });
                 return (*x.borrow());
             }
-        })));
-    unimplemented!();
-    let mut seed: () = 5_();
-    let boxed: Value<()> = Rc::new(RefCell::new(({ (*through_ptr.borrow()).call(seed) })));
-    let mut boxed_ptr: Ptr<()> = (boxed.as_pointer());
-    unimplemented!();
-    unimplemented!();
-    return 0_();
+        }),
+    ));
+    assert!((({ (*through_ptr.borrow()).call(4,) }) == 8));
+    let mut seed: i32 = 5;
+    let boxed: Value<i32> = Rc::new(RefCell::new(({ (*through_ptr.borrow()).call(seed) })));
+    let mut boxed_ptr: Ptr<i32> = (boxed.as_pointer());
+    assert!(((boxed_ptr.read()) == 10));
+    assert!((seed == 5));
+    return 0;
 }
 pub fn __cpp2rust_init_globals() {}

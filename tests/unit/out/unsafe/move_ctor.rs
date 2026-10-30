@@ -170,7 +170,20 @@ unsafe fn main_0() -> i32 {
         let __a1 = MoveOnly::move_from({ &mut f });
         vec_.push(__a1)
     };
-    assert!(((vec_[(0_usize)].v) == (7)) && ((vec_[(1_usize)].v) == (8)));
+    assert!(
+        (((*{
+            let __idx = 0_usize as usize;
+            let __v: &mut Vec<MoveOnly> = &mut vec_;
+            __v.as_mut_ptr().add(__idx)
+        })
+        .v) == (7))
+            && (((*{
+                let __idx = 1_usize as usize;
+                let __v: &mut Vec<MoveOnly> = &mut vec_;
+                __v.as_mut_ptr().add(__idx)
+            })
+            .v) == (8))
+    );
     assert!(((f.v) == (0)));
     let mut m: ConstMove = ConstMove::new();
     let mut m1: ConstMove = ConstMove::new_1({ &mut m });

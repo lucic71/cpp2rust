@@ -216,9 +216,10 @@ impl MovedPair {
     }
 }
 pub fn swapped_once_6() -> bool {
-    let mut ok: bool = ((moves_3.with(|rc| *rc.borrow()) == 1)
-        && (move_assigns_4.with(|rc| *rc.borrow()) == 2))
-        && (moved_dtors_5.with(|rc| *rc.borrow()) == 1);
+    let ok: Value<bool> = Rc::new(RefCell::new(
+        ((moves_3.with(|rc| *rc.borrow()) == 1) && (move_assigns_4.with(|rc| *rc.borrow()) == 2))
+            && (moved_dtors_5.with(|rc| *rc.borrow()) == 1),
+    ));
     moves_3.with(|rc| {
         *rc.borrow_mut() = {
             move_assigns_4.with(|rc| {
@@ -230,7 +231,7 @@ pub fn swapped_once_6() -> bool {
             move_assigns_4.with(|rc| *rc.borrow())
         }
     });
-    return ok;
+    return (*ok.borrow());
 }
 #[derive(Record, ByteRepr, FnPtrArg, MoveCtor, MoveAssign, Default)]
 #[byte_size(8)]
@@ -321,7 +322,7 @@ fn main_0() -> i32 {
                 == 10)
     );
     assert!((copies_0.with(|rc| *rc.borrow()) == 0));
-    cpp_swap!(m1.as_pointer(), m2.as_pointer());
+    unimplemented!();
     assert!(
         ((*m1.borrow()).len() == 1_usize)
             && (Map::subscript_move(
@@ -368,17 +369,17 @@ fn main_0() -> i32 {
     );
     assert!(({ (*arr.borrow())[(1) as usize].v } == 2));
     assert!((copies_0.with(|rc| *rc.borrow()) == 0));
-    let vec_: Value<Vec<Tracked>> = Rc::new(RefCell::new(Vec::new()));
+    let mut vec_: Vec<Tracked> = Vec::new();
     {
         let __init = Tracked::new_1({ 4 });
-        (*vec_.borrow_mut()).push(__init)
+        vec_.push(__init)
     };
     {
         let __init = Tracked::new_1({ 5 });
-        (*vec_.borrow_mut()).push(__init)
+        vec_.push(__init)
     };
-    cpp_swap!(vec_.decay().offset(0_usize), vec_.decay().offset(1_usize));
-    assert!(({ (*vec_.borrow())[0_usize].v } == 5) && ({ (*vec_.borrow())[1_usize].v } == 4));
+    cpp_swap!(unimplemented!(), unimplemented!());
+    assert!((__s.v == 5) && (__s.v == 4));
     assert!((copies_0.with(|rc| *rc.borrow()) == 0));
     let pairs: Value<Box<[Pair]>> = Rc::new(RefCell::new(Box::new([
         Pair {
@@ -439,35 +440,25 @@ fn main_0() -> i32 {
             && (array_elem!(arrays.as_pointer(), a, 1).with(|__s| __s.v) == 2)
     );
     assert!((copies_0.with(|rc| *rc.borrow()) == 0));
-    let grid: Value<Vec<Vec<Tracked>>> = Rc::new(RefCell::new(
-        (0..(2_usize) as usize)
-            .map(|_| Default::default())
-            .collect::<Vec<_>>(),
-    ));
+    let grid: Value<Vec<Vec<Tracked>>> = Rc::new(RefCell::new(unimplemented!()));
     {
         let __init = Tracked::new_1({ 1 });
-        elem!(grid.decay(), 0_usize).with_mut(|__v: &mut Vec<Tracked>| __v.push(__init))
+        unimplemented!().with_mut(|__v: &mut Vec<Tracked>| __v.push(__init))
     };
     {
         let __init = Tracked::new_1({ 2 });
-        elem!(grid.decay(), 0_usize).with_mut(|__v: &mut Vec<Tracked>| __v.push(__init))
+        unimplemented!().with_mut(|__v: &mut Vec<Tracked>| __v.push(__init))
     };
     {
         let __init = Tracked::new_1({ 3 });
-        elem!(grid.decay(), 1_usize).with_mut(|__v: &mut Vec<Tracked>| __v.push(__init))
+        unimplemented!().with_mut(|__v: &mut Vec<Tracked>| __v.push(__init))
     };
-    cpp_swap!(
-        grid.decay().offset(0_usize).decay().offset(1_usize),
-        grid.decay().offset(1_usize).decay().offset(0_usize)
-    );
+    cpp_swap!(unimplemented!(), unimplemented!());
+    assert!((unimplemented!().with(|__s| __s.v) == 3) && (unimplemented!().with(|__s| __s.v) == 2));
+    unimplemented!();
     assert!(
-        (index!(elem!(grid.decay(), 0_usize), 1_usize).with(|__s| __s.v) == 3)
-            && (index!(elem!(grid.decay(), 1_usize), 0_usize).with(|__s| __s.v) == 2)
-    );
-    cpp_swap!(grid.decay().offset(0_usize), grid.decay().offset(1_usize));
-    assert!(
-        ((*grid.decay().offset(0_usize).upgrade().deref()).len() == 1_usize)
-            && (index!(elem!(grid.decay(), 0_usize), 0_usize).with(|__s| __s.v) == 2)
+        ((*unimplemented!().upgrade().deref()).len() == 1_usize)
+            && (unimplemented!().with(|__s| __s.v) == 2)
     );
     assert!((copies_0.with(|rc| *rc.borrow()) == 0));
     let maps: Value<Box<[Map<i32, (Value<i32>, Value<Tracked>)>]>> = Rc::new(RefCell::new(
@@ -497,10 +488,7 @@ fn main_0() -> i32 {
             _o.as_pointer(),
         )
     });
-    cpp_swap!(
-        (maps.as_pointer() as Ptr<Map<i32, (Value<i32>, Value<Tracked>)>>).offset(0),
-        (maps.as_pointer() as Ptr<Map<i32, (Value<i32>, Value<Tracked>)>>).offset(1)
-    );
+    unimplemented!();
     assert!(
         ((*maps.borrow())[(0) as usize].len() == 1_usize)
             && (Map::subscript_move(
@@ -614,8 +602,8 @@ pub trait ArraysImpl {
 }
 impl ArraysImpl for Ptr<Arrays> {
     fn copy_assign(&self, _a0: Ptr<Arrays>) -> Ptr<Arrays> {
-        let mut __i0: usize = 0_usize;
-        'loop_: while (__i0 != 2_usize) {
+        let mut __i0: () = 0_();
+        'loop_: while (__i0 != 2_()) {
             ({
                 let _o: Ptr<Tracked> =
                     (array_field_ptr!(_a0, a) as Ptr<Tracked>).offset((__i0) as isize);
@@ -626,8 +614,8 @@ impl ArraysImpl for Ptr<Arrays> {
             });
             __i0.prefix_inc();
         }
-        let mut __i0: usize = 0_usize;
-        'loop_: while (__i0 != 2_usize) {
+        let mut __i0: () = 0_();
+        'loop_: while (__i0 != 2_()) {
             ({
                 let _o: Ptr<Tracked> =
                     (array_field_ptr!(_a0, b) as Ptr<Tracked>).offset((__i0) as isize);
@@ -641,8 +629,8 @@ impl ArraysImpl for Ptr<Arrays> {
         return (*self).clone();
     }
     fn move_assign(&self, _a0: Ptr<Arrays>) -> Ptr<Arrays> {
-        let mut __i0: usize = 0_usize;
-        'loop_: while (__i0 != 2_usize) {
+        let mut __i0: () = 0_();
+        'loop_: while (__i0 != 2_()) {
             ({
                 let _o: Ptr<Tracked> =
                     (array_field_ptr!(_a0, a) as Ptr<Tracked>).offset((__i0) as isize);
@@ -653,8 +641,8 @@ impl ArraysImpl for Ptr<Arrays> {
             });
             __i0.prefix_inc();
         }
-        let mut __i0: usize = 0_usize;
-        'loop_: while (__i0 != 2_usize) {
+        let mut __i0: () = 0_();
+        'loop_: while (__i0 != 2_()) {
             ({
                 let _o: Ptr<Tracked> =
                     (array_field_ptr!(_a0, b) as Ptr<Tracked>).offset((__i0) as isize);

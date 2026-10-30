@@ -10,19 +10,25 @@ pub fn main() {
     __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
-fn main_0() -> () {
-    let mut x1: () = 1_();
-    let mut x2: () = 2_();
-    let mut x3: () = 4_();
-    let v: Value<()> = Rc::new(RefCell::new(unimplemented!()));
-    unimplemented!();
-    unimplemented!();
-    let mut sum: () = 0_();
-    'loop_: for elem in IterRange::new(unimplemented!(), unimplemented!()) {
-        let mut elem: () = (unimplemented!().read());
+fn main_0() -> i32 {
+    let mut x1: i32 = 1;
+    let mut x2: i16 = 2_i16;
+    let mut x3: u32 = 4_u32;
+    let v: Value<Vec<i32>> = Rc::new(RefCell::new(Vec::new()));
+    {
+        let __a1 = 1;
+        (*v.borrow_mut()).push(__a1)
+    };
+    {
+        let __a1 = 2;
+        (*v.borrow_mut()).push(__a1)
+    };
+    let mut sum: i32 = 0;
+    'loop_: for elem in IterRange::new(v.decay().begin(), v.decay().end()) {
+        let mut elem: i32 = (elem.iter_deref().read());
         sum += elem;
     }
-    unimplemented!();
-    return 0_();
+    assert!((sum == 3));
+    return 0;
 }
 pub fn __cpp2rust_init_globals() {}

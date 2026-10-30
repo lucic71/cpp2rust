@@ -10,30 +10,30 @@ use std::rc::{Rc, Weak};
 #[byte_size(8)]
 pub struct Pair {
     #[offset(0)]
-    pub x: (),
+    pub x: i32,
     #[offset(4)]
-    pub y: (),
+    pub y: i32,
 }
 pub fn main() {
     __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
-fn main_0() -> () {
-    let mut x: Ptr<()> = Ptr::alloc(5_());
-    let mut out: () = (x.read());
+fn main_0() -> i32 {
+    let mut x: Ptr<i32> = Ptr::alloc(5);
+    let mut out: i32 = (x.read());
     x.delete();
-    unimplemented!();
-    let mut y: Ptr<()> = Ptr::alloc(Default::default());
-    y.write(9_());
-    unimplemented!();
+    assert!((out == 5));
+    let mut y: Ptr<i32> = Ptr::alloc(Default::default());
+    y.write(9);
+    assert!(((y.read()) == 9));
     y.delete();
     let mut p: Ptr<Pair> = Ptr::alloc(<Pair>::default());
-    field!(p, x).write(1_());
-    field!(p, y).write(2_());
-    unimplemented!();
+    field!(p, x).write(1);
+    field!(p, y).write(2);
+    assert!((({ p.with(|__s| __s.x) } + { p.with(|__s| __s.y) }) == 3));
     p.delete();
-    let mut nullpointer: Ptr<()> = Ptr::<()>::null();
+    let mut nullpointer: Ptr<i32> = Ptr::<i32>::null();
     nullpointer.delete();
-    return 0_();
+    return 0;
 }
 pub fn __cpp2rust_init_globals() {}

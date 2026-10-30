@@ -9,12 +9,12 @@ use std::rc::Rc;
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct S {
-    pub a: (),
-    pub b: (),
-    pub c: (),
+    pub a: i32,
+    pub b: i32,
+    pub c: i32,
 }
-pub unsafe fn bump_0(mut s: *mut S) -> () {
-    (*s).b += 10_();
+pub unsafe fn bump_0(mut s: *mut S) -> i32 {
+    (*s).b += 10;
     return (*s).b;
 }
 pub fn main() {
@@ -23,39 +23,39 @@ pub fn main() {
         std::process::exit(main_0() as i32);
     }
 }
-unsafe fn main_0() -> () {
+unsafe fn main_0() -> i32 {
     let mut s: *mut S = (unimplemented!() as *mut S);
-    unimplemented!();
-    (*s).b = 1_();
+    assert!(!((s).is_null()));
+    (*s).b = 1;
     (*s).a = (unsafe { bump_0(s) });
-    unimplemented!();
-    unimplemented!();
-    (*s).a = 1_();
-    (*s).b = 2_();
-    (*s).c = 0_();
-    if (((*s).a) < ((*s).b)) && (((*s).c.postfix_inc()) == (0_())) {
-        (*s).a = 5_();
+    assert!((((*s).a) == (11)));
+    assert!((((*s).b) == (11)));
+    (*s).a = 1;
+    (*s).b = 2;
+    (*s).c = 0;
+    if (((*s).a) < ((*s).b)) && (((*s).c.postfix_inc()) == (0)) {
+        (*s).a = 5;
     }
-    unimplemented!();
-    if (((*s).a) < ((*s).b)) && (((*s).c.postfix_inc()) == (0_())) {
-        (*s).a = 6_();
+    assert!((((*s).a) == (5)) && (((*s).c) == (1)));
+    if (((*s).a) < ((*s).b)) && (((*s).c.postfix_inc()) == (0)) {
+        (*s).a = 6;
     }
-    unimplemented!();
-    let mut x: () = (((*s).a)
+    assert!((((*s).a) == (5)) && (((*s).c) == (1)));
+    let mut x: i32 = (((*s).a)
         + ({
-            (*s).b = 3_();
+            (*s).b = 3;
             (*s).b
         }));
-    unimplemented!();
-    let mut y: () = 0_();
+    assert!(((x) == (8)) && (((*s).b) == (3)));
+    let mut y: i32 = 0;
     (*s).c = ({
-        y = 99_();
+        y = 99;
         y
     });
-    unimplemented!();
+    assert!((((*s).c) == (99)) && ((y) == (99)));
     (*s).a += (unsafe { bump_0(s) });
+    assert!(((((*s).a) == (18)) && (((*s).b) == (13))) && (((*s).c) == (99)));
     unimplemented!();
-    unimplemented!();
-    return 0_();
+    return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

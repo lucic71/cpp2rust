@@ -12,20 +12,20 @@ pub fn main() {
         std::process::exit(main_0() as i32);
     }
 }
-unsafe fn main_0() -> () {
-    let mut cond: () = true;
-    let mut os1: *mut () = if cond {
-        (&raw mut (*unimplemented!()) as *mut ())
+unsafe fn main_0() -> i32 {
+    let mut cond: bool = true;
+    let mut os1: *mut ::std::fs::File = if cond {
+        (&raw mut (*libcc2rs::cout_unsafe()) as *mut ::std::fs::File)
     } else {
-        (&raw mut (*unimplemented!()) as *mut ())
+        (&raw mut (*libcc2rs::cerr_unsafe()) as *mut ::std::fs::File)
     };
     unimplemented!();
-    let os2: *mut () = if cond {
-        (&raw mut (*unimplemented!()) as *mut ())
+    let os2: *mut ::std::fs::File = if cond {
+        (&raw mut (*libcc2rs::cout_unsafe()) as *mut ::std::fs::File)
     } else {
-        (&raw mut (*unimplemented!()) as *mut ())
+        (&raw mut (*libcc2rs::cerr_unsafe()) as *mut ::std::fs::File)
     };
     unimplemented!();
-    return 0_();
+    return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

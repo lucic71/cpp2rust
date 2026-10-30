@@ -12,29 +12,29 @@ pub fn main() {
         std::process::exit(main_0() as i32);
     }
 }
-unsafe fn main_0() -> () {
-    let N: () = 10000_();
-    let mut arr: *mut () =
-        Box::leak((0..N).map(|_| unimplemented!()).collect::<Box<[()]>>()).as_mut_ptr();
-    let mut i: () = 0_();
+unsafe fn main_0() -> i32 {
+    let N: i32 = 10000;
+    let mut arr: *mut u32 =
+        Box::leak((0..(N as usize)).map(|_| 0_u32).collect::<Box<[u32]>>()).as_mut_ptr();
+    let mut i: i32 = 0;
     'loop_: while ((i) < (N)) {
-        (*arr.offset((i) as isize)) = 0_();
+        (*arr.offset((i) as isize)) = 0_u32;
         i.postfix_inc();
     }
-    (*arr.offset(((N) - (1_())) as isize)) = 3148519816_();
-    let mut words: *mut () = (arr as *mut ());
-    unimplemented!();
-    unimplemented!();
+    (*arr.offset(((N) - (1)) as isize)) = 3148519816_u32;
+    let mut words: *mut u16 = (arr as *mut u16);
+    assert!((((*words.offset((((N) * (2)) - (1)) as isize)) as i32) == (48042)));
+    assert!((((*words.offset((((N) * (2)) - (2)) as isize)) as i32) == (39304)));
     {
         let __p = arr;
         if !__p.is_null() {
             ::std::mem::drop(Box::from_raw(::std::slice::from_raw_parts_mut(
                 __p,
                 libcc2rs::malloc_usable_size(__p as *mut ::libc::c_void)
-                    / ::std::mem::size_of::<()>(),
+                    / ::std::mem::size_of::<u32>(),
             )))
         }
     };
-    return 0_();
+    return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

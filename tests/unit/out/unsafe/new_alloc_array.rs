@@ -12,34 +12,40 @@ pub fn main() {
         std::process::exit(main_0() as i32);
     }
 }
-unsafe fn main_0() -> () {
-    let mut array: *mut () =
-        Box::leak((0..100_()).map(|_| unimplemented!()).collect::<Box<[()]>>()).as_mut_ptr();
-    unimplemented!();
-    (*array.offset((99_()) as isize)) = -1_();
-    let mut p1: *mut () = array;
-    'loop_: while ((*p1) >= (0_())) {
-        (*p1) = 1_();
+unsafe fn main_0() -> i32 {
+    let mut array: *mut i32 =
+        Box::leak((0..100_usize).map(|_| 0_i32).collect::<Box<[i32]>>()).as_mut_ptr();
+    {
+        let byte_0 = (array as *mut ::libc::c_void) as *mut u8;
+        for offset in 0..(::std::mem::size_of::<i32>() as usize).wrapping_mul(100_usize) {
+            *byte_0.offset(offset as isize) = 0 as u8;
+        }
+        (array as *mut ::libc::c_void)
+    };
+    (*array.offset((99) as isize)) = -1_i32;
+    let mut p1: *mut i32 = array;
+    'loop_: while ((*p1) >= (0)) {
+        (*p1) = 1;
         p1.prefix_inc();
     }
-    let mut out: () = 0_();
-    let mut p1: *mut () = array;
-    'loop_: while ((*p1) >= (0_())) {
+    let mut out: i32 = 0;
+    let mut p1: *mut i32 = array;
+    'loop_: while ((*p1) >= (0)) {
         out += (*p1);
         p1.prefix_inc();
     }
-    let mut p2: *mut () = array;
+    let mut p2: *mut i32 = array;
     {
         let __p = p2;
         if !__p.is_null() {
             ::std::mem::drop(Box::from_raw(::std::slice::from_raw_parts_mut(
                 __p,
                 libcc2rs::malloc_usable_size(__p as *mut ::libc::c_void)
-                    / ::std::mem::size_of::<()>(),
+                    / ::std::mem::size_of::<i32>(),
             )))
         }
     };
-    unimplemented!();
-    return 0_();
+    assert!(((out) == (99)));
+    return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

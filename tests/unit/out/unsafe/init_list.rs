@@ -6,12 +6,12 @@ use std::collections::BTreeMap;
 use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
-pub unsafe fn f_0(mut list: ()) {}
+pub unsafe fn f_0(mut list: Vec<i32>) {}
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct Pair {
-    pub a: (),
-    pub b: (),
+    pub a: i32,
+    pub b: i32,
 }
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg)]
@@ -28,12 +28,12 @@ impl Default for Holder {
     fn default() -> Self {
         unsafe {
             Holder {
-                p: Pair { a: 0_(), b: 0_() },
+                p: Pair { a: 0, b: 0 },
             }
         }
     }
 }
-pub unsafe fn sum_1(p: *const Pair) -> () {
+pub unsafe fn sum_1(p: *const Pair) -> i32 {
     return (((*p).a) + ((*p).b));
 }
 pub fn main() {
@@ -42,19 +42,19 @@ pub fn main() {
         std::process::exit(main_0() as i32);
     }
 }
-unsafe fn main_0() -> () {
-    let mut i1: () = 3_();
-    let mut i2: () = unimplemented!();
-    let mut carr1: [(); 2] = [1_(), 2_()];
-    let mut carr2: [(); 3] = [1_(), unimplemented!(), unimplemented!()];
-    let mut arr: () = unimplemented!();
-    let mut vec_: () = unimplemented!();
-    (unsafe { f_0(unimplemented!()) });
-    let mut p: Pair = Pair { a: 1_(), b: 2_() };
+unsafe fn main_0() -> i32 {
+    let mut i1: i32 = 3;
+    let mut i2: i32 = 0_i32;
+    let mut carr1: [i32; 2] = [1, 2];
+    let mut carr2: [i32; 3] = [1, 0_i32, 0_i32];
+    let mut arr: Vec<i32> = Vec::from([1, 2, 3]);
+    let mut vec_: Vec<i32> = Vec::from([1, 2, 3]);
+    (unsafe { f_0(Vec::from([1, 2, 3, 4])) });
+    let mut p: Pair = Pair { a: 1, b: 2 };
     let mut h: Holder = <Holder>::default();
     (unsafe { Holder::operator_assign_1(&mut h, &mut p) });
-    unimplemented!();
-    unimplemented!();
-    return 0_();
+    assert!(((h.p.a) == (1)) && ((h.p.b) == (2)));
+    assert!(((unsafe { sum_1(&p,) }) == (3)));
+    return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

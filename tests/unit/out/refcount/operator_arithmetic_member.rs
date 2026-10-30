@@ -10,31 +10,46 @@ use std::rc::{Rc, Weak};
 #[byte_size(4)]
 pub struct S {
     #[offset(0)]
-    pub v: (),
+    pub v: i32,
 }
 pub fn main() {
     __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
-fn main_0() -> () {
-    let a: Value<S> = Rc::new(RefCell::new(S { v: 7_() }));
-    let b: Value<S> = Rc::new(RefCell::new(S { v: 2_() }));
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    return 0_();
+fn main_0() -> i32 {
+    let a: Value<S> = Rc::new(RefCell::new(S { v: 7 }));
+    let b: Value<S> = Rc::new(RefCell::new(S { v: 2 }));
+    assert!(({ ({ SImpl::operator_add_1(&a.as_pointer(), b.as_pointer(),) }).v } == 9));
+    assert!(({ ({ SImpl::operator_sub_2(&a.as_pointer(), b.as_pointer(),) }).v } == 5));
+    assert!(({ ({ SImpl::operator_mul(&a.as_pointer(), b.as_pointer(),) }).v } == 14));
+    assert!(({ ({ SImpl::operator_div(&a.as_pointer(), b.as_pointer(),) }).v } == 3));
+    assert!(({ ({ SImpl::operator_rem(&a.as_pointer(), b.as_pointer(),) }).v } == 1));
+    assert!(({ ({ SImpl::operator_pos_6(&a.as_pointer(),) }).v } == 7));
+    assert!(({ ({ SImpl::operator_neg_7(&a.as_pointer(),) }).v } == -7_i32));
+    assert!((({ SImpl::operator_inc_8(&a.as_pointer(),) }).with(|__s| (__s).v) == 8));
+    assert!(({ ({ SImpl::operator_post_inc_9(&a.as_pointer(), 0,) }).v } == 8));
+    assert!(({ (*a.borrow()).v } == 9));
+    assert!((({ SImpl::operator_dec_10(&a.as_pointer(),) }).with(|__s| (__s).v) == 8));
+    assert!(({ ({ SImpl::operator_post_dec_11(&a.as_pointer(), 0,) }).v } == 8));
+    assert!(({ (*a.borrow()).v } == 7));
+    assert!(
+        (({ SImpl::operator_inc_8(&({ SImpl::operator_inc_8(&a.as_pointer(),) }),) })
+            .with(|__s| (__s).v)
+            == 9)
+    );
+    assert!(
+        ({
+            ({
+                let _o: Value<S> = Rc::new(RefCell::new(S { v: 4 }));
+                SImpl::operator_add_1(
+                    &Rc::new(RefCell::new(S { v: 3 })).as_pointer(),
+                    _o.as_pointer(),
+                )
+            })
+            .v
+        } == 7)
+    );
+    return 0;
 }
 pub trait SImpl {
     fn operator_add_1(&self, o: Ptr<S>) -> S;
@@ -45,9 +60,9 @@ pub trait SImpl {
     fn operator_pos_6(&self) -> S;
     fn operator_neg_7(&self) -> S;
     fn operator_inc_8(&self) -> Ptr<S>;
-    fn operator_post_inc_9(&self, _a0: ()) -> S;
+    fn operator_post_inc_9(&self, _a0: i32) -> S;
     fn operator_dec_10(&self) -> Ptr<S>;
-    fn operator_post_dec_11(&self, _a0: ()) -> S;
+    fn operator_post_dec_11(&self, _a0: i32) -> S;
 }
 impl SImpl for Ptr<S> {
     fn operator_add_1(&self, o: Ptr<S>) -> S {
@@ -89,7 +104,7 @@ impl SImpl for Ptr<S> {
         field!((*self), v).with_mut(|__v| __v.prefix_inc());
         return (*self).clone();
     }
-    fn operator_post_inc_9(&self, mut _a0: ()) -> S {
+    fn operator_post_inc_9(&self, mut _a0: i32) -> S {
         let mut old: S = (*(*self).upgrade().deref()).clone();
         field!((*self), v).with_mut(|__v| __v.prefix_inc());
         return old;
@@ -98,7 +113,7 @@ impl SImpl for Ptr<S> {
         field!((*self), v).with_mut(|__v| __v.prefix_dec());
         return (*self).clone();
     }
-    fn operator_post_dec_11(&self, mut _a0: ()) -> S {
+    fn operator_post_dec_11(&self, mut _a0: i32) -> S {
         let mut old: S = (*(*self).upgrade().deref()).clone();
         field!((*self), v).with_mut(|__v| __v.prefix_dec());
         return old;

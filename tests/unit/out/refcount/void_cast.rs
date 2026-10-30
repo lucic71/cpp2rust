@@ -6,7 +6,7 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-pub fn unused_param_0(mut x: ()) {
+pub fn unused_param_0(mut x: i32) {
     &(x);
 }
 #[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, MoveCtor, MoveAssign, Default)]
@@ -14,12 +14,12 @@ pub fn unused_param_0(mut x: ()) {
 pub struct NonTrivial {
     #[offset(0)]
     #[byte_size(24)]
-    pub data: (),
+    pub data: Vec<i32>,
 }
 impl NonTrivial {
     pub fn move_from(_a0: Ptr<NonTrivial>) -> Self {
         Self {
-            data: unimplemented!(),
+            data: field!(_a0, data).with_mut(std::mem::take),
         }
     }
 }
@@ -30,9 +30,9 @@ pub fn unused_ptr_param_2(mut p: Ptr<NonTrivial>) {
     &(*p.upgrade().deref());
 }
 thread_local!(
-    pub static side_effect_counter_3: Value<()> = Rc::new(RefCell::new(0_()));
+    pub static side_effect_counter_3: Value<i32> = Rc::new(RefCell::new(0));
 );
-pub fn bump_and_return_4() -> () {
+pub fn bump_and_return_4() -> i32 {
     (*side_effect_counter_3.with(Value::clone).borrow_mut()).prefix_inc();
     return side_effect_counter_3.with(|rc| *rc.borrow());
 }
@@ -40,19 +40,19 @@ pub fn bump_and_return_4() -> () {
 #[byte_size(4)]
 pub struct Holder {
     #[offset(0)]
-    pub field: (),
+    pub field: i32,
 }
 #[derive(Record, ByteRepr, FnPtrArg, MoveCtor, MoveAssign, Default)]
 #[byte_size(8)]
 pub struct NonCopyable {
     #[offset(0)]
     #[byte_size(8)]
-    pub value: (),
+    pub value: Option<Value<i32>>,
 }
 impl NonCopyable {
     pub fn move_from(_a0: Ptr<NonCopyable>) -> Self {
         Self {
-            value: unimplemented!(),
+            value: field!(_a0, value).with_mut(|__v: &mut Option<Value<i32>>| __v.take()),
         }
     }
 }
@@ -63,60 +63,60 @@ pub fn main() {
     __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
-fn main_0() -> () {
-    ({ unused_param_0(42_()) });
-    let mut y: () = 5_();
+fn main_0() -> i32 {
+    ({ unused_param_0(42) });
+    let mut y: i32 = 5;
     &(y);
-    let mut z: () = {
+    let mut z: i32 = {
         &(y);
-        7_()
+        7
     };
-    unimplemented!();
-    let counter: Value<()> = Rc::new(RefCell::new(0_()));
-    let mut w: () = {
+    assert!((z == 7));
+    let counter: Value<i32> = Rc::new(RefCell::new(0));
+    let mut w: i32 = {
         {
             &(*counter.borrow_mut());
-            (*counter.borrow_mut()) = 3_()
+            (*counter.borrow_mut()) = 3
         };
         (*counter.borrow())
     };
-    unimplemented!();
-    unimplemented!();
+    assert!((w == 3));
+    assert!(((*counter.borrow()) == 3));
     &({ bump_and_return_4() });
-    unimplemented!();
-    let mut v: () = {
+    assert!((side_effect_counter_3.with(|rc| *rc.borrow()) == 1));
+    let mut v: i32 = {
         &({ bump_and_return_4() });
-        99_()
+        99
     };
-    unimplemented!();
-    unimplemented!();
-    &(0_());
-    &(0_());
+    assert!((side_effect_counter_3.with(|rc| *rc.borrow()) == 2));
+    assert!((v == 99));
+    &(0);
+    &(0);
     &(y);
-    (&(0_()));
+    (&(0));
     (&(y));
-    let mut err: () = 0_();
-    (&(err = 42_()));
-    unimplemented!();
-    let mut chosen: () = {
-        &(err = 7_());
-        123_()
+    let mut err: i32 = 0;
+    (&(err = 42));
+    assert!((err == 42));
+    let mut chosen: i32 = {
+        &(err = 7);
+        123
     };
-    unimplemented!();
-    unimplemented!();
+    assert!((err == 7));
+    assert!((chosen == 123));
     &(bump_and_return_4);
-    unimplemented!();
-    &(FnPtr::<fn() -> ()>::new(bump_and_return_4));
-    unimplemented!();
-    &((FnPtr::<fn() -> ()>::new(bump_and_return_4)).cast::<fn() -> ()>());
-    unimplemented!();
-    let storage: Value<()> = Rc::new(RefCell::new(11_()));
-    let mut p: Ptr<()> = (storage.as_pointer());
+    assert!((side_effect_counter_3.with(|rc| *rc.borrow()) == 2));
+    &(FnPtr::<fn() -> i32>::new(bump_and_return_4));
+    assert!((side_effect_counter_3.with(|rc| *rc.borrow()) == 2));
+    &((FnPtr::<fn() -> i32>::new(bump_and_return_4)).cast::<fn() -> i32>());
+    assert!((side_effect_counter_3.with(|rc| *rc.borrow()) == 2));
+    let storage: Value<i32> = Rc::new(RefCell::new(11));
+    let mut p: Ptr<i32> = (storage.as_pointer());
     &(p.read());
     &(p);
-    let mut arr: [(); 3] = [1_(), 2_(), 3_()];
-    &(arr[(1_()) as usize]);
-    let h: Value<Holder> = Rc::new(RefCell::new(Holder { field: 17_() }));
+    let mut arr: [i32; 3] = [1, 2, 3];
+    &(arr[(1) as usize]);
+    let h: Value<Holder> = Rc::new(RefCell::new(Holder { field: 17 }));
     &((*h.borrow()).field);
     let mut hp: Ptr<Holder> = (h.as_pointer());
     &((*hp.upgrade().deref()).field);
@@ -124,20 +124,21 @@ fn main_0() -> () {
     ({ unused_ref_param_1(nt.as_pointer()) });
     ({ unused_ptr_param_2((nt.as_pointer())) });
     let g: Value<NonCopyable> = Rc::new(RefCell::new(NonCopyable {
-        value: unimplemented!(),
+        value: Some(Rc::new(RefCell::new(9))),
     }));
     (&(*g.borrow_mut()));
     &(*g.borrow_mut());
     ({ unused_noncopyable_param_5(g.as_pointer()) });
-    unimplemented!();
-    return 0_();
+    assert!((({ (*g.borrow()).value.clone() }.as_pointer().read()) == 9));
+    return 0;
 }
 pub trait NonCopyableImpl {
     fn move_assign(&self, _a0: Ptr<NonCopyable>) -> Ptr<NonCopyable>;
 }
 impl NonCopyableImpl for Ptr<NonCopyable> {
     fn move_assign(&self, _a0: Ptr<NonCopyable>) -> Ptr<NonCopyable> {
-        unimplemented!();
+        field_ptr!((*self), value)
+            .write(field!(_a0, value).with_mut(|__v: &mut Option<Value<i32>>| __v.take()));
         return (*self).clone();
     }
 }
@@ -146,7 +147,9 @@ pub trait NonTrivialImpl {
 }
 impl NonTrivialImpl for Ptr<NonTrivial> {
     fn move_assign(&self, _a0: Ptr<NonTrivial>) -> Ptr<NonTrivial> {
-        unimplemented!();
+        field_ref!((*self), data)
+            .as_pointer()
+            .write(field!(_a0, data).with_mut(std::mem::take));
         return (*self).clone();
     }
 }

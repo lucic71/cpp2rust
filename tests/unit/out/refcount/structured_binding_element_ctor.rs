@@ -106,12 +106,19 @@ fn main_0() -> i32 {
         Rc::new(RefCell::new(Elem::new({ 8 }))),
     )));
     before_copies = copies_0.with(|rc| *rc.borrow());
-    let __decomp_7: Value<(Value<Elem>, Value<Elem>)> = Rc::new(RefCell::new((
-        Rc::new(RefCell::new((*p.borrow()).0.borrow().clone())),
-        Rc::new(RefCell::new((*p.borrow()).1.borrow().clone())),
-    )));
-    let x: Ptr<Elem> = (*__decomp_7.borrow()).0.as_pointer();
-    let y: Ptr<Elem> = (*__decomp_7.borrow()).1.as_pointer();
+    let __decomp_7: Value<(Value<Elem>, Value<Elem>)> = Rc::new(RefCell::new({
+        let __a0 = (*p.borrow()).clone();
+        (
+            Rc::new(RefCell::new(<Elem as CppFrom<Elem>>::cpp_from(
+                __a0.0.as_pointer(),
+            ))),
+            Rc::new(RefCell::new(<Elem as CppFrom<Elem>>::cpp_from(
+                __a0.1.as_pointer(),
+            ))),
+        )
+    }));
+    let x: Ptr<Elem> = unimplemented!();
+    let y: Ptr<Elem> = unimplemented!();
     assert!((copies_0.with(|rc| *rc.borrow()) == (before_copies + 2)));
     assert!(({ (*x.upgrade().deref()).v } == ({ (*(*p.borrow()).0.borrow()).v } + 100)));
     assert!(({ (*y.upgrade().deref()).v } == ({ (*(*p.borrow()).1.borrow()).v } + 100)));

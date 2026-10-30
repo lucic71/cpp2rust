@@ -12,7 +12,9 @@ thread_local!(
 pub fn bump_1(mut v: Ptr<Vec<i32>>, mut x: i32) -> i32 {
     {
         let __rhs = x;
-        index!(v, 0_usize).with_mut(|__v| *__v = *__v + __rhs)
+        (v).decay()
+            .offset(0_usize as isize)
+            .with_mut(|__v| *__v = *__v + __rhs)
     };
     return (*next_0.with(Value::clone).borrow_mut()).postfix_inc();
 }
@@ -22,35 +24,53 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     let v: Value<Vec<i32>> = Rc::new(RefCell::new(vec![1; 4_usize as usize]));
-    let mut items: Vec<u32> = (0..(3_usize) as usize).map(|_| 0_u32).collect::<Vec<_>>();
+    let items: Value<Vec<u32>> = Rc::new(RefCell::new(
+        (0..(3_usize) as usize).map(|_| 0_u32).collect::<Vec<_>>(),
+    ));
     let mut i: u32 = 0_u32;
-    'loop_: while ((i as usize) < items.len()) {
+    'loop_: while ((i as usize) < (*items.borrow()).len()) {
         let __rhs = (i).wrapping_mul(2_u32);
-        items[(i as usize)] = __rhs;
+        items.decay().offset((i as usize) as isize).write(__rhs);
         i.prefix_inc();
     }
     {
-        let rhs_0 = (items[1_usize]).wrapping_add(5_u32);
-        items[1_usize] = rhs_0
+        let rhs_0 = (items.decay().offset(1_usize as isize).read()).wrapping_add(5_u32);
+        items.decay().offset(1_usize as isize).write(rhs_0)
     };
-    items[2_usize].postfix_inc();
-    assert!(((items[0_usize] == 0_u32) && (items[1_usize] == 7_u32)) && (items[2_usize] == 5_u32));
-    elem!(v.decay(), ({ (*v.borrow())[0_usize] } as usize)).write(3);
-    let __rhs = ({ (*v.borrow())[1_usize] } + 4);
-    elem!(v.decay(), ({ (*v.borrow())[1_usize] } as usize)).write(__rhs);
-    assert!(({ (*v.borrow())[1_usize] } == 3) && ({ (*v.borrow())[3_usize] } == 7));
-    let mut p: Ptr<i32> = (v.decay().offset(0_usize));
-    elem!(v.decay(), ((p.read()) as usize)).write(9);
-    assert!(({ (*v.borrow())[1_usize] } == 9));
-    elem!(v.decay(), (({ bump_1((v.as_pointer()), 10,) }) as usize)).write(2);
-    assert!(({ (*v.borrow())[0_usize] } == 2));
+    items
+        .decay()
+        .offset(2_usize as isize)
+        .with_mut(|__v| __v.postfix_inc());
+    assert!(
+        (((items.decay().offset(0_usize as isize).read()) == 0_u32)
+            && ((items.decay().offset(1_usize as isize).read()) == 7_u32))
+            && ((items.decay().offset(2_usize as isize).read()) == 5_u32)
+    );
+    v.decay()
+        .offset(((v.decay().offset(0_usize as isize).read()) as usize) as isize)
+        .write(3);
+    let __rhs = ((v.decay().offset(1_usize as isize).read()) + 4);
+    v.decay()
+        .offset(((v.decay().offset(1_usize as isize).read()) as usize) as isize)
+        .write(__rhs);
+    assert!(
+        ((v.decay().offset(1_usize as isize).read()) == 3)
+            && ((v.decay().offset(3_usize as isize).read()) == 7)
+    );
+    let mut p: Ptr<i32> = (v.decay().offset(0_usize as isize));
+    v.decay().offset(((p.read()) as usize) as isize).write(9);
+    assert!(((v.decay().offset(1_usize as isize).read()) == 9));
+    v.decay()
+        .offset((({ bump_1((v.as_pointer()), 10) }) as usize) as isize)
+        .write(2);
+    assert!(((v.decay().offset(0_usize as isize).read()) == 2));
     assert!(
         (({
             let _v: Ptr<Vec<i32>> = (v.as_pointer());
-            let _x: i32 = { (*v.borrow())[2_usize] };
+            let _x: i32 = (v.decay().offset(2_usize as isize).read());
             bump_1(_v, _x)
         }) == 1)
-            && ({ (*v.borrow())[0_usize] } == 3)
+            && ((v.decay().offset(0_usize as isize).read()) == 3)
     );
     return 0;
 }

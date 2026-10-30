@@ -6,8 +6,8 @@ use std::collections::BTreeMap;
 use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
-pub unsafe fn strlen_0(mut s: *const ()) -> () {
-    let mut count: () = 0_();
+pub unsafe fn strlen_0(mut s: *const libc::c_char) -> usize {
+    let mut count: usize = 0_usize;
     'loop_: while ((*s.postfix_inc()) != 0) {
         count.prefix_inc();
     }
@@ -19,8 +19,12 @@ pub fn main() {
         std::process::exit(main_0() as i32);
     }
 }
-unsafe fn main_0() -> () {
-    let s: [(); 3] = [('s' as ()), ('t' as ()), ('r' as ())];
-    return (unsafe { strlen_0(s.as_ptr()) });
+unsafe fn main_0() -> i32 {
+    let s: [libc::c_char; 3] = [
+        ('s' as libc::c_char),
+        ('t' as libc::c_char),
+        ('r' as libc::c_char),
+    ];
+    return ((unsafe { strlen_0(s.as_ptr()) }) as i32);
 }
 pub unsafe fn __cpp2rust_init_globals() {}

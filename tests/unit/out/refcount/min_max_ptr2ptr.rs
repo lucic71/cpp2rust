@@ -10,16 +10,26 @@ pub fn main() {
     __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
-fn main_0() -> () {
-    let a: Value<()> = Rc::new(RefCell::new(10_()));
-    let b: Value<()> = Rc::new(RefCell::new(20_()));
-    let pa: Value<Ptr<()>> = Rc::new(RefCell::new((a.as_pointer())));
-    let pb: Value<Ptr<()>> = Rc::new(RefCell::new((b.as_pointer())));
-    let mut ppa: Ptr<Ptr<()>> = (pa.as_pointer());
-    let mut ppb: Ptr<Ptr<()>> = (pb.as_pointer());
-    let mut r1: () = (unimplemented!().read());
-    let mut r2: () = (unimplemented!().read());
-    unimplemented!();
-    return 0_();
+fn main_0() -> i32 {
+    let a: Value<i32> = Rc::new(RefCell::new(10));
+    let b: Value<i32> = Rc::new(RefCell::new(20));
+    let pa: Value<Ptr<i32>> = Rc::new(RefCell::new((a.as_pointer())));
+    let pb: Value<Ptr<i32>> = Rc::new(RefCell::new((b.as_pointer())));
+    let mut ppa: Ptr<Ptr<i32>> = (pa.as_pointer());
+    let mut ppb: Ptr<Ptr<i32>> = (pb.as_pointer());
+    let mut r1: i32 = ({
+        let __a = (ppa.read());
+        let __b = (ppb.read());
+        if CppLess::less(&__a, &__b) { __b } else { __a }
+    }
+    .read());
+    let mut r2: i32 = ({
+        let __a = (ppa.read());
+        let __b = (ppb.read());
+        if CppLess::less(&__b, &__a) { __b } else { __a }
+    }
+    .read());
+    assert!(((r1 + r2) == 30));
+    return 0;
 }
 pub fn __cpp2rust_init_globals() {}

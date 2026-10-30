@@ -9,8 +9,9 @@ use std::rc::{Rc, Weak};
 pub fn add_sizes_0(mut a: usize, mut b: usize) -> usize {
     return (a).wrapping_add(b);
 }
-pub fn take_ulong_1(mut x: u64) -> u64 {
-    return x;
+pub fn take_ulong_1(x: u64) -> u64 {
+    let x: Value<u64> = Rc::new(RefCell::new(x));
+    return (*x.borrow());
 }
 pub fn sub_signed_2(mut a: isize, mut b: isize) -> isize {
     return (a - b);
@@ -200,8 +201,7 @@ fn main_0() -> i32 {
     assert!(((*(*pr.borrow()).0.borrow()) == 21_u64));
     let sizes: Value<Box<[usize]>> =
         Rc::new(RefCell::new(Box::new([1_usize, 2_usize, 3_usize, 4_usize])));
-    let mut sizes_end: Ptr<usize> =
-        ((sizes.as_pointer() as Ptr<usize>).to_end()).reinterpret_cast::<usize>();
+    let mut sizes_end: Ptr<usize> = (unimplemented!()).reinterpret_cast::<usize>();
     assert!((((sizes_end).clone() - (sizes.as_pointer() as Ptr::<usize>)) as i64 == 4_i64));
     assert!((((sizes_end.offset(-((1) as isize))).read()) == 4_usize));
     let set: Value<CFdSet> = Rc::new(RefCell::new(Default::default()));

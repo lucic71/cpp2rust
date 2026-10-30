@@ -12,9 +12,9 @@ pub fn main() {
         std::process::exit(main_0() as i32);
     }
 }
-unsafe fn main_0() -> () {
-    let mut rows: [[(); 3]; 2] = [[1_(), 2_(), 3_()], [4_(), 5_(), 6_()]];
-    let mut p: *mut () = rows[(0_()) as usize].as_mut_ptr();
-    return (*p.offset((3_()) as isize));
+unsafe fn main_0() -> i32 {
+    let mut rows: [[i32; 3]; 2] = [[1, 2, 3], [4, 5, 6]];
+    let mut p: *mut i32 = rows[(0) as usize].as_mut_ptr();
+    return (*p.offset((3) as isize));
 }
 pub unsafe fn __cpp2rust_init_globals() {}

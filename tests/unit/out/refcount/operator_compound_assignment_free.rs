@@ -10,7 +10,7 @@ use std::rc::{Rc, Weak};
 #[byte_size(4)]
 pub struct S {
     #[offset(0)]
-    pub v: (),
+    pub v: u32,
 }
 pub fn operator_add_assign_0(a: Ptr<S>, b: Ptr<S>) -> Ptr<S> {
     field!(a, v).write({ (a.with(|__s| __s.v)).wrapping_add(b.with(|__s| __s.v)) });
@@ -53,14 +53,14 @@ pub fn operator_bitxor_assign_7(a: Ptr<S>, b: Ptr<S>) -> Ptr<S> {
     };
     return (a).clone();
 }
-pub fn operator_shl_assign_8(a: Ptr<S>, mut n: ()) -> Ptr<S> {
+pub fn operator_shl_assign_8(a: Ptr<S>, mut n: i32) -> Ptr<S> {
     {
         let __rhs = n;
         field!(a, v).with_mut(|__v| *__v = *__v << __rhs)
     };
     return (a).clone();
 }
-pub fn operator_shr_assign_9(a: Ptr<S>, mut n: ()) -> Ptr<S> {
+pub fn operator_shr_assign_9(a: Ptr<S>, mut n: i32) -> Ptr<S> {
     {
         let __rhs = n;
         field!(a, v).with_mut(|__v| *__v = *__v >> __rhs)
@@ -71,60 +71,60 @@ pub fn main() {
     __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
-fn main_0() -> () {
-    let a: Value<S> = Rc::new(RefCell::new(S { v: 6_() }));
-    let b: Value<S> = Rc::new(RefCell::new(S { v: 4_() }));
+fn main_0() -> i32 {
+    let a: Value<S> = Rc::new(RefCell::new(S { v: 6_u32 }));
+    let b: Value<S> = Rc::new(RefCell::new(S { v: 4_u32 }));
     ({
         let _a: Ptr<S> = a.as_pointer();
         operator_add_assign_0(_a, b.as_pointer())
     });
-    unimplemented!();
+    assert!(({ (*a.borrow()).v } == 10_u32));
     ({
         let _a: Ptr<S> = a.as_pointer();
         operator_sub_assign_1(_a, b.as_pointer())
     });
-    unimplemented!();
+    assert!(({ (*a.borrow()).v } == 6_u32));
     ({
         let _a: Ptr<S> = a.as_pointer();
         operator_mul_assign_2(_a, b.as_pointer())
     });
-    unimplemented!();
+    assert!(({ (*a.borrow()).v } == 24_u32));
     ({
         let _a: Ptr<S> = a.as_pointer();
         operator_div_assign_3(_a, b.as_pointer())
     });
-    unimplemented!();
+    assert!(({ (*a.borrow()).v } == 6_u32));
     ({
         let _a: Ptr<S> = a.as_pointer();
         operator_rem_assign_4(_a, b.as_pointer())
     });
-    unimplemented!();
+    assert!(({ (*a.borrow()).v } == 2_u32));
     ({
         let _a: Ptr<S> = a.as_pointer();
         operator_bitor_assign_6(_a, b.as_pointer())
     });
-    unimplemented!();
+    assert!(({ (*a.borrow()).v } == 6_u32));
     ({
         let _a: Ptr<S> = a.as_pointer();
         operator_bitand_assign_5(_a, b.as_pointer())
     });
-    unimplemented!();
+    assert!(({ (*a.borrow()).v } == 4_u32));
     ({
         let _a: Ptr<S> = a.as_pointer();
         operator_bitxor_assign_7(_a, b.as_pointer())
     });
-    unimplemented!();
-    (*a.borrow_mut()).v = 3_();
+    assert!(({ (*a.borrow()).v } == 0_u32));
+    (*a.borrow_mut()).v = 3_u32;
     ({
         let _a: Ptr<S> = a.as_pointer();
-        operator_shl_assign_8(_a, 2_())
+        operator_shl_assign_8(_a, 2)
     });
-    unimplemented!();
+    assert!(({ (*a.borrow()).v } == 12_u32));
     ({
         let _a: Ptr<S> = a.as_pointer();
-        operator_shr_assign_9(_a, 1_())
+        operator_shr_assign_9(_a, 1)
     });
-    unimplemented!();
+    assert!(({ (*a.borrow()).v } == 6_u32));
     ({
         let _a: Ptr<S> = ({
             let _a: Ptr<S> = a.as_pointer();
@@ -133,7 +133,7 @@ fn main_0() -> () {
         let _b: Ptr<S> = b.as_pointer();
         operator_add_assign_0(_a, _b)
     });
-    unimplemented!();
-    return 0_();
+    assert!(({ (*a.borrow()).v } == 14_u32));
+    return 0;
 }
 pub fn __cpp2rust_init_globals() {}

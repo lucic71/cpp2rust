@@ -9,10 +9,10 @@ use std::rc::Rc;
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct Point {
-    pub x: (),
-    pub y: (),
+    pub x: i32,
+    pub y: i32,
 }
-pub unsafe fn sum_0(mut p: Point) -> () {
+pub unsafe fn sum_0(mut p: Point) -> i32 {
     return ((p.x) + (p.y));
 }
 pub fn main() {
@@ -21,12 +21,27 @@ pub fn main() {
         std::process::exit(main_0() as i32);
     }
 }
-unsafe fn main_0() -> () {
-    let mut p: () = unimplemented!();
-    (*unimplemented!()).x += 10_();
-    (*unimplemented!()).y = (((*unimplemented!()).x) + ((*unimplemented!()).y));
-    let mut s: () = (unsafe { sum_0((*unimplemented!())) });
-    unimplemented!();
-    return 0_();
+unsafe fn main_0() -> i32 {
+    let mut p: Option<Box<Point>> = Some(Box::new(Point { x: 3, y: 4 }));
+    (*p.as_deref()
+        .map_or(::std::ptr::null_mut(), |v| v as *const Point as *mut Point))
+    .x += 10;
+    (*p.as_deref()
+        .map_or(::std::ptr::null_mut(), |v| v as *const Point as *mut Point))
+    .y = (((*p
+        .as_deref()
+        .map_or(::std::ptr::null_mut(), |v| v as *const Point as *mut Point))
+    .x) + ((*p
+        .as_deref()
+        .map_or(::std::ptr::null_mut(), |v| v as *const Point as *mut Point))
+    .y));
+    let mut s: i32 = (unsafe {
+        sum_0(
+            (*p.as_deref()
+                .map_or(::std::ptr::null_mut(), |v| v as *const Point as *mut Point)),
+        )
+    });
+    assert!(((s) == (30)));
+    return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

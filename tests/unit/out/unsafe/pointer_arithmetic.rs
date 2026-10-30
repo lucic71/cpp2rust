@@ -12,24 +12,24 @@ pub fn main() {
         std::process::exit(main_0() as i32);
     }
 }
-unsafe fn main_0() -> () {
-    let mut x: () = 1_();
-    let mut p: *mut () = (&mut x as *mut ());
-    (*p) += 1_();
-    unimplemented!();
-    let mut a: [(); 2] = [1_(), 2_()];
-    p = (&mut a[(1_()) as usize] as *mut ());
-    (*p) += 1_();
-    unimplemented!();
+unsafe fn main_0() -> i32 {
+    let mut x: i32 = 1;
+    let mut p: *mut i32 = (&mut x as *mut i32);
+    (*p) += 1;
+    assert!(((x) == (2)));
+    let mut a: [i32; 2] = [1, 2];
+    p = (&mut a[(1) as usize] as *mut i32);
+    (*p) += 1;
+    assert!(((a[(0) as usize]) == (1)) && ((a[(1) as usize]) == (3)));
     p.prefix_dec();
-    (*p) += 1_();
-    unimplemented!();
-    p = (&mut x as *mut ());
-    (*p) += 1_();
-    unimplemented!();
-    let mut p2: *mut () = p;
-    (*p2) += 1_();
-    unimplemented!();
-    return 0_();
+    (*p) += 1;
+    assert!(((a[(0) as usize]) == (2)) && ((a[(1) as usize]) == (3)));
+    p = (&mut x as *mut i32);
+    (*p) += 1;
+    assert!(((x) == (3)));
+    let mut p2: *mut i32 = p;
+    (*p2) += 1;
+    assert!(((x) == (4)));
+    return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

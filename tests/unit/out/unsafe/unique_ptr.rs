@@ -120,7 +120,7 @@ pub unsafe fn DoStuffWithSafePointer_0(safe_ptr: *mut Option<Box<SafePointer>>) 
             .y));
 }
 pub unsafe fn Consume_1(mut safe_ptr: Option<Box<SafePointer>>) -> i32 {
-    let mut x: Option<Box<SafePointer>> = safe_ptr.take();
+    let mut x: () = safe_ptr.take();
     let mut p: Option<Box<Pair>> = Some(Box::from_raw(
         (Box::leak(Box::new(<Pair>::default())) as *mut Pair),
     ));
@@ -138,7 +138,7 @@ pub unsafe fn Consume_1(mut safe_ptr: Option<Box<SafePointer>>) -> i32 {
 pub unsafe fn RndStuff_2() {
     let mut x1: Option<Box<[i32]>> = None;
     let mut x2: Option<Box<[i32]>> = Some(Box::from_raw(Box::leak(
-        (0..100_usize).map(|_| 0_i32).collect::<Box<[i32]>>(),
+        (0..100_()).map(|_| 0_i32).collect::<Box<[i32]>>(),
     )));
     let mut i: i32 = 0;
     'loop_: while ((i) < (100)) {
@@ -148,7 +148,7 @@ pub unsafe fn RndStuff_2() {
         i.prefix_inc();
     }
     x2 = Some(Box::from_raw(Box::leak(
-        (0..200_usize).map(|_| 0_i32).collect::<Box<[i32]>>(),
+        (0..200_()).map(|_| 0_i32).collect::<Box<[i32]>>(),
     )));
     let mut i: i32 = 0;
     'loop_: while ((i) < (200)) {
@@ -165,11 +165,7 @@ pub unsafe fn RndStuff_2() {
         assert!(((*p2.offset((i) as isize)) == (2)));
         i.prefix_inc();
     }
-    let mut x3: Option<Box<[Pair]>> = Some(
-        (0..10_usize)
-            .map(|_| <Pair>::default())
-            .collect::<Box<[_]>>(),
-    );
+    let mut x3: Option<Box<[Pair]>> = unimplemented!();
     let mut i: i32 = 0;
     'loop_: while ((i) < (10)) {
         (*x3.as_deref()
@@ -198,7 +194,7 @@ pub unsafe fn RndStuff_2() {
         i.prefix_inc();
     }
     x3 = Some(Box::from_raw(Box::leak(
-        (0..50_usize)
+        (0..50_())
             .map(|_| <Pair>::default())
             .collect::<Box<[Pair]>>(),
     )));
@@ -235,8 +231,7 @@ pub unsafe fn RndStuff_2() {
     }
 }
 pub unsafe fn unique_ptr_that_wraps_container_3() {
-    let mut v: Option<Box<[Vec<libc::c_char>]>> =
-        Some((0..2_usize).map(|_| vec![0]).collect::<Box<[_]>>());
+    let mut v: Option<Box<[Vec<libc::c_char>]>> = unimplemented!();
     assert!(
         (((*v
             .as_deref()
@@ -283,8 +278,15 @@ unsafe fn main_0() -> i32 {
             .map_or(::std::ptr::null_mut(), |v| v as *const i32 as *mut i32))
             == (2))
     );
-    p = None;
-    assert!(p.is_none());
+    {
+        let _a0: *mut i32 = ::std::ptr::null_mut();
+        p = if _a0.is_null() {
+            None
+        } else {
+            Some(Box::from_raw(_a0))
+        }
+    };
+    assert!(unimplemented!());
     (unsafe { unique_ptr_that_wraps_container_3() });
     return 0;
 }

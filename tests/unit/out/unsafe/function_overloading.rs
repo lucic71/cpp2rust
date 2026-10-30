@@ -6,19 +6,19 @@ use std::collections::BTreeMap;
 use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
-pub unsafe fn foo_0(mut x: ()) -> () {
+pub unsafe fn foo_0(mut x: i32) -> i32 {
     return x;
 }
-pub unsafe fn foo_1(mut x: *mut ()) -> () {
+pub unsafe fn foo_1(mut x: *mut i32) -> i32 {
     return (*x);
 }
-pub unsafe fn foo_2(mut x: *mut (), mut y: *mut ()) -> () {
+pub unsafe fn foo_2(mut x: *mut i32, mut y: *mut i32) -> i32 {
     return ((*x) + (*y));
 }
-pub unsafe fn foo_3(mut x: *mut (), mut y: *mut (), z: *mut ()) -> () {
+pub unsafe fn foo_3(mut x: *mut i32, mut y: *mut i32, z: *mut i32) -> i32 {
     return (((*x) + (*y)) + (*z));
 }
-pub unsafe fn bar_4(x: *mut ()) -> () {
+pub unsafe fn bar_4(x: *mut i32) -> i32 {
     return (*x);
 }
 #[repr(C)]
@@ -27,16 +27,16 @@ pub struct Foo {}
 impl Foo {
     pub unsafe fn foo_1(&self) {}
     pub unsafe fn foo_2(&mut self) {}
-    pub unsafe fn method_3(&mut self, mut x: ()) {}
-    pub unsafe fn method_4(&self, mut x: ()) {}
-    pub unsafe fn method2_5(&self, mut x: (), mut y: ()) {}
-    pub unsafe fn method2_6(&self, mut x: (), mut y: ()) {}
+    pub unsafe fn method_3(&mut self, mut x: i32) {}
+    pub unsafe fn method_4(&self, mut x: i32) {}
+    pub unsafe fn method2_5(&self, mut x: i32, mut y: i32) {}
+    pub unsafe fn method2_6(&self, mut x: f64, mut y: f64) {}
 }
-pub unsafe fn func_5(mut x: ()) -> () {
-    return 1_();
+pub unsafe fn func_5(mut x: i32) -> i32 {
+    return 1;
 }
-pub unsafe fn func_6(mut x: *mut ()) -> () {
-    return 1_();
+pub unsafe fn func_6(mut x: *mut i32) -> i32 {
+    return 1;
 }
 pub fn main() {
     unsafe {
@@ -44,32 +44,32 @@ pub fn main() {
         std::process::exit(main_0() as i32);
     }
 }
-unsafe fn main_0() -> () {
-    let mut x: () = 1_();
-    let mut out: () = 0_();
-    out += (unsafe { foo_0(0_()) });
-    out += (unsafe { foo_1((&mut x as *mut ())) });
+unsafe fn main_0() -> i32 {
+    let mut x: i32 = 1;
+    let mut out: i32 = 0;
+    out += (unsafe { foo_0(0) });
+    out += (unsafe { foo_1((&mut x as *mut i32)) });
     out += (unsafe { bar_4(&mut x) });
     out += (unsafe {
-        let _x: *mut () = (&mut x as *mut ());
-        let _y: *mut () = (&mut x as *mut ());
-        let _z: *mut () = &mut x;
+        let _x: *mut i32 = (&mut x as *mut i32);
+        let _y: *mut i32 = (&mut x as *mut i32);
+        let _z: *mut i32 = &mut x;
         foo_3(_x, _y, _z)
     });
     out += (unsafe {
-        let _x: *mut () = (&mut x as *mut ());
-        let _y: *mut () = (&mut x as *mut ());
+        let _x: *mut i32 = (&mut x as *mut i32);
+        let _y: *mut i32 = (&mut x as *mut i32);
         foo_2(_x, _y)
     });
-    let mut bar: () = 5_();
-    out += (((bar) + (unsafe { foo_0(0_()) })) + (unsafe { foo_1((&mut x as *mut ())) }));
+    let mut bar: i32 = 5;
+    out += (((bar) + (unsafe { foo_0(0) })) + (unsafe { foo_1((&mut x as *mut i32)) }));
     let mut foo1: Foo = <Foo>::default();
     let foo2: Foo = <Foo>::default();
     (unsafe { Foo::foo_2(&mut foo1) });
-    (unsafe { Foo::method_3(&mut foo1, 1_()) });
+    (unsafe { Foo::method_3(&mut foo1, 1) });
     (unsafe { Foo::foo_1(&foo2) });
-    (unsafe { Foo::method_4(&foo2, 2_()) });
-    unimplemented!();
-    return 0_();
+    (unsafe { Foo::method_4(&foo2, 2) });
+    assert!(((out) == (13)));
+    return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

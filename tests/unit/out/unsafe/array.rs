@@ -12,22 +12,22 @@ pub fn main() {
         std::process::exit(main_0() as i32);
     }
 }
-unsafe fn main_0() -> () {
-    let N: () = 5_();
-    let mut arr1: [(); 5] = [0_(), 0_(), 0_(), 0_(), 0_()];
-    let arr2: [(); 5] = [1_(), 1_(), 1_(), 1_(), 1_()];
-    let mut i: () = 0_();
+unsafe fn main_0() -> i32 {
+    let N: i32 = 5;
+    let mut arr1: [i32; 5] = [0, 0, 0, 0, 0];
+    let arr2: [i32; 5] = [1, 1, 1, 1, 1];
+    let mut i: i32 = 0;
     'loop_: while ((i) < (N)) {
         arr1[(i) as usize] = ((i) + (arr2[(i) as usize]));
         i.prefix_inc();
     }
-    let mut fatorial: () = 1_();
-    let mut i: () = 0_();
+    let mut fatorial: i32 = 1;
+    let mut i: i32 = 0;
     'loop_: while ((i) < (N)) {
         fatorial *= arr1[(i) as usize];
         i.prefix_inc();
     }
-    unimplemented!();
-    return 0_();
+    assert!(((fatorial) == (120)));
+    return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

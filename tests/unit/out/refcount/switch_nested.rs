@@ -6,36 +6,36 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-pub fn nested_0(mut a: (), mut b: ()) -> () {
-    let r: Value<()> = Rc::new(RefCell::new(0_()));
+pub fn nested_0(mut a: i32, mut b: i32) -> i32 {
+    let r: Value<i32> = Rc::new(RefCell::new(0));
     'switch: {
         match { a } {
-            __v if __v == 1_() => {
+            __v if __v == 1 => {
                 'switch: {
                     match { b } {
-                        __v if __v == 10_() => {
-                            (*r.borrow_mut()) = 11_();
+                        __v if __v == 10 => {
+                            (*r.borrow_mut()) = 11;
                             break 'switch;
                         }
-                        __v if __v == 20_() => {
-                            (*r.borrow_mut()) = 12_();
+                        __v if __v == 20 => {
+                            (*r.borrow_mut()) = 12;
                             break 'switch;
                         }
                         _ => {
-                            (*r.borrow_mut()) = 13_();
+                            (*r.borrow_mut()) = 13;
                             break 'switch;
                         }
                     }
                 };
-                (*r.borrow_mut()) += 1_();
+                (*r.borrow_mut()) += 1;
                 break 'switch;
             }
-            __v if __v == 2_() => {
-                (*r.borrow_mut()) = 2_();
+            __v if __v == 2 => {
+                (*r.borrow_mut()) = 2;
                 break 'switch;
             }
             _ => {
-                (*r.borrow_mut()) = -1_();
+                (*r.borrow_mut()) = -1_i32;
                 break 'switch;
             }
         }
@@ -46,11 +46,11 @@ pub fn main() {
     __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
-fn main_0() -> () {
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    return 0_();
+fn main_0() -> i32 {
+    assert!((({ nested_0(1, 10,) }) == 12));
+    assert!((({ nested_0(1, 99,) }) == 14));
+    assert!((({ nested_0(2, 0,) }) == 2));
+    assert!((({ nested_0(3, 3,) }) == -1_i32));
+    return 0;
 }
 pub fn __cpp2rust_init_globals() {}

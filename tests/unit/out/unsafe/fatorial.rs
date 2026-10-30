@@ -6,28 +6,28 @@ use std::collections::BTreeMap;
 use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
-pub unsafe fn fatorial_0(mut n: ()) -> () {
-    if ((n) == (0_())) {
-        return 1_();
+pub unsafe fn fatorial_0(mut n: i32) -> i32 {
+    if ((n) == (0)) {
+        return 1;
     }
-    return ((n) * (unsafe { fatorial_0(((n) - (1_()))) }));
+    return ((n) * (unsafe { fatorial_0(((n) - (1))) }));
 }
-pub unsafe fn fatorial_by_ref_1(n: *mut ()) {
-    if ((*n) == (1_())) {
-        (*n) *= 1_();
+pub unsafe fn fatorial_by_ref_1(n: *mut i32) {
+    if ((*n) == (1)) {
+        (*n) *= 1;
         return;
     }
-    let mut n_1: () = ((*n) - (1_()));
+    let mut n_1: i32 = ((*n) - (1));
     (unsafe { fatorial_by_ref_1(&mut n_1) });
     (*n) *= n_1;
 }
-pub unsafe fn fatorial_by_ptr_2(mut n: *mut ()) {
-    if ((*n) == (1_())) {
-        (*n) *= 1_();
+pub unsafe fn fatorial_by_ptr_2(mut n: *mut i32) {
+    if ((*n) == (1)) {
+        (*n) *= 1;
         return;
     }
-    let mut n_1: () = ((*n) - (1_()));
-    (unsafe { fatorial_by_ptr_2((&mut n_1 as *mut ())) });
+    let mut n_1: i32 = ((*n) - (1));
+    (unsafe { fatorial_by_ptr_2((&mut n_1 as *mut i32)) });
     (*n) *= n_1;
 }
 pub fn main() {
@@ -36,12 +36,12 @@ pub fn main() {
         std::process::exit(main_0() as i32);
     }
 }
-unsafe fn main_0() -> () {
-    let mut n1: () = 2_();
-    (unsafe { fatorial_by_ptr_2((&mut n1 as *mut ())) });
-    let mut n: () = ((n1) + (1_()));
+unsafe fn main_0() -> i32 {
+    let mut n1: i32 = 2;
+    (unsafe { fatorial_by_ptr_2((&mut n1 as *mut i32)) });
+    let mut n: i32 = ((n1) + (1));
     (unsafe { fatorial_by_ref_1(&mut n) });
-    unimplemented!();
-    return 0_();
+    assert!(((unsafe { fatorial_0(n,) }) == (720)));
+    return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

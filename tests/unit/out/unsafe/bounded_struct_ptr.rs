@@ -9,8 +9,8 @@ use std::rc::Rc;
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct Foo {
-    pub x1: (),
-    pub x2: (),
+    pub x1: i32,
+    pub x2: i32,
 }
 pub fn main() {
     unsafe {
@@ -18,12 +18,12 @@ pub fn main() {
         std::process::exit(main_0() as i32);
     }
 }
-unsafe fn main_0() -> () {
-    let mut arr: [Foo; 2] = [Foo { x1: 1_(), x2: 2_() }, Foo { x1: 3_(), x2: 4_() }];
-    let mut p1: *mut () = (&mut arr[(1_()) as usize].x1 as *mut ());
-    let mut a: () = (*p1);
-    let mut p2: *mut Foo = (&mut arr[(0_()) as usize] as *mut Foo);
-    unimplemented!();
-    return 0_();
+unsafe fn main_0() -> i32 {
+    let mut arr: [Foo; 2] = [Foo { x1: 1, x2: 2 }, Foo { x1: 3, x2: 4 }];
+    let mut p1: *mut i32 = (&mut arr[(1) as usize].x1 as *mut i32);
+    let mut a: i32 = (*p1);
+    let mut p2: *mut Foo = (&mut arr[(0) as usize] as *mut Foo);
+    assert!((((a) + ((*p2).x2)) == (5)));
+    return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

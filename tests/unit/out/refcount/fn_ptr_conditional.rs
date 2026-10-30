@@ -6,32 +6,32 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-pub fn inc_0(mut x: ()) -> () {
-    return (x + 1_());
+pub fn inc_0(mut x: i32) -> i32 {
+    return (x + 1);
 }
-pub fn dec_1(mut x: ()) -> () {
-    return (x - 1_());
+pub fn dec_1(mut x: i32) -> i32 {
+    return (x - 1);
 }
-pub fn identity_2(x: ()) -> () {
-    let x: Value<()> = Rc::new(RefCell::new(x));
+pub fn identity_2(x: i32) -> i32 {
+    let x: Value<i32> = Rc::new(RefCell::new(x));
     return (*x.borrow());
 }
-pub fn pick_3(mut mode: ()) -> FnPtr<fn(()) -> ()> {
-    return if (mode > 0_()) {
-        FnPtr::<fn(()) -> ()>::new(inc_0)
+pub fn pick_3(mut mode: i32) -> FnPtr<fn(i32) -> i32> {
+    return if (mode > 0) {
+        FnPtr::<fn(i32) -> i32>::new(inc_0)
     } else {
-        if (mode < 0_()) {
-            FnPtr::<fn(()) -> ()>::new(dec_1)
+        if (mode < 0) {
+            FnPtr::<fn(i32) -> i32>::new(dec_1)
         } else {
-            FnPtr::<fn(()) -> ()>::new(identity_2)
+            FnPtr::<fn(i32) -> i32>::new(identity_2)
         }
     };
 }
-pub fn apply_4(mut fn_: FnPtr<fn(()) -> ()>, mut x: ()) -> () {
-    let mut actual: FnPtr<fn(()) -> ()> = if !(fn_).is_null() {
+pub fn apply_4(mut fn_: FnPtr<fn(i32) -> i32>, mut x: i32) -> i32 {
+    let mut actual: FnPtr<fn(i32) -> i32> = if !(fn_).is_null() {
         (fn_).clone()
     } else {
-        FnPtr::<fn(()) -> ()>::new(identity_2)
+        FnPtr::<fn(i32) -> i32>::new(identity_2)
     };
     return ({ actual.call(x) });
 }
@@ -39,12 +39,12 @@ pub fn main() {
     __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
-fn main_0() -> () {
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    return 0_();
+fn main_0() -> i32 {
+    assert!((({ ({ pick_3(1,) }).call(10,) }) == 11));
+    assert!((({ ({ pick_3(-1_i32,) }).call(10,) }) == 9));
+    assert!((({ ({ pick_3(0,) }).call(10,) }) == 10));
+    assert!((({ apply_4(FnPtr::<fn(i32) -> i32>::new(inc_0), 5,) }) == 6));
+    assert!((({ apply_4(FnPtr::<fn(i32) -> i32>::null(), 5,) }) == 5));
+    return 0;
 }
 pub fn __cpp2rust_init_globals() {}

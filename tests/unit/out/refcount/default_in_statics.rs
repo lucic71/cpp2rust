@@ -10,52 +10,52 @@ use std::rc::{Rc, Weak};
 #[byte_size(16)]
 pub struct Inner {
     #[offset(0)]
-    pub v: (),
+    pub v: i32,
     #[offset(8)]
     #[byte_size(8)]
-    pub name: Ptr<()>,
+    pub name: Ptr<i8>,
 }
 #[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg)]
 #[byte_size(88)]
 pub struct Outer {
     #[offset(0)]
     #[byte_size(8)]
-    pub p1: Ptr<()>,
+    pub p1: Ptr<i32>,
     #[offset(8)]
     #[byte_size(8)]
-    pub p2: Ptr<()>,
+    pub p2: Ptr<i32>,
     #[offset(16)]
     #[byte_size(24)]
-    pub arr: Box<[Ptr<()>]>,
+    pub arr: Box<[Ptr<i32>]>,
     #[offset(40)]
     #[byte_size(8)]
-    pub cp: Ptr<()>,
+    pub cp: Ptr<i8>,
     #[offset(48)]
     #[byte_size(8)]
-    pub pp: Ptr<Ptr<()>>,
+    pub pp: Ptr<Ptr<i32>>,
     #[offset(56)]
     #[byte_size(16)]
     pub inner: Inner,
     #[offset(72)]
-    pub x: (),
+    pub x: i32,
     #[offset(80)]
     #[byte_size(8)]
-    pub fn_: FnPtr<fn(()) -> ()>,
+    pub fn_: FnPtr<fn(i32) -> i32>,
 }
 impl Default for Outer {
     fn default() -> Self {
         {
             Outer {
-                p1: Ptr::<()>::null(),
-                p2: Ptr::<()>::null(),
+                p1: Ptr::<i32>::null(),
+                p2: Ptr::<i32>::null(),
                 arr: (0..3)
-                    .map(|_| Ptr::<()>::null())
-                    .collect::<Box<[Ptr<()>]>>(),
-                cp: Ptr::<()>::null(),
-                pp: Ptr::<Ptr<()>>::null(),
+                    .map(|_| Ptr::<i32>::null())
+                    .collect::<Box<[Ptr<i32>]>>(),
+                cp: Ptr::<i8>::null(),
+                pp: Ptr::<Ptr<i32>>::null(),
                 inner: <Inner>::default(),
-                x: unimplemented!(),
-                fn_: FnPtr::<fn(()) -> ()>::null(),
+                x: 0_i32,
+                fn_: FnPtr::<fn(i32) -> i32>::null(),
             }
         }
     }
@@ -65,22 +65,22 @@ impl Default for Outer {
 pub struct Foo {
     #[offset(0)]
     #[byte_size(8)]
-    pub s1: Ptr<()>,
+    pub s1: Ptr<i8>,
     #[offset(8)]
     #[byte_size(8)]
-    pub s2: Ptr<()>,
+    pub s2: Ptr<i8>,
     #[offset(16)]
     #[byte_size(8)]
-    pub fn1: FnPtr<fn(()) -> ()>,
+    pub fn1: FnPtr<fn(i32) -> i32>,
     #[offset(24)]
     #[byte_size(8)]
-    pub fn2: FnPtr<fn(()) -> ()>,
+    pub fn2: FnPtr<fn(i32) -> i32>,
     #[offset(32)]
-    pub n: (),
+    pub n: i32,
 }
 thread_local!(
-    pub static static_fn_0: Value<FnPtr<fn(()) -> ()>> =
-        Rc::new(RefCell::new(FnPtr::<fn(()) -> ()>::null()));
+    pub static static_fn_0: Value<FnPtr<fn(i32) -> i32>> =
+        Rc::new(RefCell::new(FnPtr::<fn(i32) -> i32>::null()));
 );
 thread_local!(
     pub static static_outer_1: Value<Outer> = Rc::new(RefCell::new(<Outer>::default()));
@@ -92,82 +92,118 @@ thread_local!(
 );
 thread_local!(
     pub static static_foo_3: Value<Foo> = Rc::new(RefCell::new(Foo {
-        s1: Ptr::<()>::from_string_literal(b"hello"),
-        s2: Ptr::<()>::null(),
-        fn1: FnPtr::<fn(()) -> ()>::null(),
-        fn2: FnPtr::<fn(()) -> ()>::null(),
-        n: 42_(),
+        s1: Ptr::<i8>::from_string_literal(b"hello"),
+        s2: Ptr::<i8>::null(),
+        fn1: FnPtr::<fn(i32) -> i32>::null(),
+        fn2: FnPtr::<fn(i32) -> i32>::null(),
+        n: 42,
     }));
 );
 thread_local!(
     pub static static_foo_array_4: Value<Box<[Foo]>> = Rc::new(RefCell::new(Box::new([
         Foo {
-            s1: Ptr::<()>::from_string_literal(b"first"),
-            s2: Ptr::<()>::null(),
-            fn1: FnPtr::<fn(()) -> ()>::null(),
-            fn2: FnPtr::<fn(()) -> ()>::null(),
-            n: 1_(),
+            s1: Ptr::<i8>::from_string_literal(b"first"),
+            s2: Ptr::<i8>::null(),
+            fn1: FnPtr::<fn(i32) -> i32>::null(),
+            fn2: FnPtr::<fn(i32) -> i32>::null(),
+            n: 1,
         },
         Foo {
-            s1: Ptr::<()>::from_string_literal(b"second"),
-            s2: Ptr::<()>::null(),
-            fn1: FnPtr::<fn(()) -> ()>::null(),
-            fn2: FnPtr::<fn(()) -> ()>::null(),
-            n: 2_(),
+            s1: Ptr::<i8>::from_string_literal(b"second"),
+            s2: Ptr::<i8>::null(),
+            fn1: FnPtr::<fn(i32) -> i32>::null(),
+            fn2: FnPtr::<fn(i32) -> i32>::null(),
+            n: 2,
         },
     ])));
 );
 pub fn check_local_static_5() {
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
+    assert!(({ (*local_outer_6.with(Value::clone).borrow()).p1.clone() }).is_null());
+    assert!(({ (*local_outer_6.with(Value::clone).borrow()).fn_.clone() }).is_null());
+    assert!((*local_fn_7.with(Value::clone).borrow()).is_null());
+    assert!((*local_p_8.with(Value::clone).borrow()).is_null());
 }
 thread_local!(
     static local_outer_6: Value<Outer> = Rc::new(RefCell::new(<Outer>::default()));
 );
 thread_local!(
-    static local_fn_7: Value<FnPtr<fn(()) -> ()>> =
-        Rc::new(RefCell::new(FnPtr::<fn(()) -> ()>::null()));
+    static local_fn_7: Value<FnPtr<fn(i32) -> i32>> =
+        Rc::new(RefCell::new(FnPtr::<fn(i32) -> i32>::null()));
 );
 thread_local!(
-    static local_p_8: Value<Ptr<()>> = Rc::new(RefCell::new(Ptr::<()>::null()));
+    static local_p_8: Value<Ptr<i32>> = Rc::new(RefCell::new(Ptr::<i32>::null()));
 );
 pub fn main() {
     __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
-fn main_0() -> () {
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    let mut i: () = 0_();
-    'loop_: while (i < 3_()) {
-        unimplemented!();
+fn main_0() -> i32 {
+    assert!((*static_fn_0.with(Value::clone).borrow()).is_null());
+    assert!(({ (*static_outer_1.with(Value::clone).borrow()).p1.clone() }).is_null());
+    assert!(({ (*static_outer_1.with(Value::clone).borrow()).p2.clone() }).is_null());
+    assert!(({ (*static_outer_1.with(Value::clone).borrow()).cp.clone() }).is_null());
+    assert!(({ (*static_outer_1.with(Value::clone).borrow()).pp.clone() }).is_null());
+    assert!(({ (*static_outer_1.with(Value::clone).borrow()).fn_.clone() }).is_null());
+    let mut i: i32 = 0;
+    'loop_: while (i < 3) {
+        assert!((array_elem!(static_outer_1.with(|v| v.as_pointer()), arr, i).read()).is_null());
         i.prefix_inc();
     }
-    unimplemented!();
-    let mut i: () = 0_();
-    'loop_: while (i < 2_()) {
-        unimplemented!();
+    assert!(
+        ({
+            (*static_outer_1.with(Value::clone).borrow())
+                .inner
+                .name
+                .clone()
+        })
+        .is_null()
+    );
+    let mut i: i32 = 0;
+    'loop_: while (i < 2) {
+        assert!(
+            ({
+                (*static_inner_array_2.with(Value::clone).borrow())[(i) as usize]
+                    .name
+                    .clone()
+            })
+            .is_null()
+        );
         i.prefix_inc();
     }
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    let mut i: () = 0_();
-    'loop_: while (i < 2_()) {
-        unimplemented!();
-        unimplemented!();
-        unimplemented!();
+    assert!(({ (*static_foo_3.with(Value::clone).borrow()).s2.clone() }).is_null());
+    assert!(({ (*static_foo_3.with(Value::clone).borrow()).fn1.clone() }).is_null());
+    assert!(({ (*static_foo_3.with(Value::clone).borrow()).fn2.clone() }).is_null());
+    assert!(({ (*static_foo_3.with(Value::clone).borrow()).n } == 42));
+    let mut i: i32 = 0;
+    'loop_: while (i < 2) {
+        assert!(
+            ({
+                (*static_foo_array_4.with(Value::clone).borrow())[(i) as usize]
+                    .s2
+                    .clone()
+            })
+            .is_null()
+        );
+        assert!(
+            ({
+                (*static_foo_array_4.with(Value::clone).borrow())[(i) as usize]
+                    .fn1
+                    .clone()
+            })
+            .is_null()
+        );
+        assert!(
+            ({
+                (*static_foo_array_4.with(Value::clone).borrow())[(i) as usize]
+                    .fn2
+                    .clone()
+            })
+            .is_null()
+        );
         i.prefix_inc();
     }
     ({ check_local_static_5() });
-    return 0_();
+    return 0;
 }
 pub fn __cpp2rust_init_globals() {
     let _ = static_fn_0.with(|_| ());
