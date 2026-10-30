@@ -9,33 +9,34 @@ use std::rc::Rc;
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct StructWithCtor {
-    x1_: (),
-    x2_: (),
+    x1_: i32,
+    x2_: i32,
 }
 impl StructWithCtor {
-    pub unsafe fn new(mut x1: (), mut x2: ()) -> Self {
+    pub unsafe fn new(mut x1: i32, mut x2: i32) -> Self {
         let mut this = Self { x1_: x1, x2_: x2 };
         this.x1_.prefix_inc();
         this.x2_.prefix_dec();
         this
     }
-    pub unsafe fn x1(&self) -> *const () {
+    pub unsafe fn x1(&self) -> *const i32 {
         return &self.x1_;
     }
-    pub unsafe fn x2(&self) -> *const () {
+    pub unsafe fn x2(&self) -> *const i32 {
         return &self.x2_;
     }
 }
-pub unsafe fn foo_0(x: *mut ()) -> *mut () {
+pub unsafe fn foo_0(x: *mut i32) -> *mut i32 {
     return x;
 }
 #[repr(C)]
-#[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, VaArg, FnPtrArg, CppFromUnsafe, Default)]
+#[cpp_from(i32, new, value)]
 pub struct Value_ {
-    pub v: (),
+    pub v: i32,
 }
 impl Value_ {
-    pub unsafe fn new(mut u: ()) -> Self {
+    pub unsafe fn new(mut u: i32) -> Self {
         let mut this = Self { v: u };
         this
     }
@@ -49,8 +50,8 @@ pub struct Ptr_ {
 impl Ptr_ {
     pub unsafe fn new() -> Self {
         let mut this = Self {
-            v1: Value_::new({ 11_() }),
-            v2: Value_::new({ 22_() }),
+            v1: Value_::new({ 11 }),
+            v2: Value_::new({ 22 }),
         };
         this
     }
@@ -66,13 +67,17 @@ pub fn main() {
         std::process::exit(main_0() as i32);
     }
 }
-unsafe fn main_0() -> () {
-    let mut struct_with_ctor: StructWithCtor = StructWithCtor::new({ 1_() }, { 2_() });
-    let mut x: () = 3_();
-    unimplemented!();
+unsafe fn main_0() -> i32 {
+    let mut struct_with_ctor: StructWithCtor = StructWithCtor::new({ 1 }, { 2 });
+    let mut x: i32 = 3;
+    assert!(
+        (((*(unsafe { foo_0(&mut x,) })) == (3))
+            && ((*(unsafe { StructWithCtor::x1(&struct_with_ctor,) })) == (2)))
+            && ((*(unsafe { StructWithCtor::x2(&struct_with_ctor,) })) == (1))
+    );
     let mut p: Ptr_ = Ptr_::new();
-    unimplemented!();
-    unimplemented!();
-    return 0_();
+    assert!(((p.v1.v) == (11)));
+    assert!(((p.v2.v) == (22)));
+    return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

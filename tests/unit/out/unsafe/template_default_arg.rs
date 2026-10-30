@@ -7,33 +7,34 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 #[repr(C)]
-#[derive(Copy, Clone, VaArg, FnPtrArg)]
+#[derive(Copy, Clone, VaArg, FnPtrArg, CppFromUnsafe)]
+#[cpp_from(i32, new_1, value)]
 pub struct A {
-    pub v: (),
+    pub v: i32,
 }
 impl A {
-    pub unsafe fn new_1() -> Self {
-        let mut this = Self { v: 1_() };
+    pub unsafe fn new_2() -> Self {
+        let mut this = Self { v: 1 };
         this
     }
-    pub unsafe fn new_2(mut v: ()) -> Self {
+    pub unsafe fn new_1(mut v: i32) -> Self {
         let mut this = Self { v: v };
         this
     }
 }
 impl Default for A {
     fn default() -> Self {
-        unsafe { A::new_1() }
+        unsafe { A::new_2() }
     }
 }
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg)]
 pub struct B {
-    pub v: (),
+    pub v: i32,
 }
 impl B {
     pub unsafe fn new() -> Self {
-        let mut this = Self { v: 2_() };
+        let mut this = Self { v: 2 };
         this
     }
 }
@@ -43,42 +44,44 @@ impl Default for B {
     }
 }
 #[repr(C)]
-#[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, VaArg, FnPtrArg, CppFromUnsafe, Default)]
+#[cpp_from(i32, new, value)]
 pub struct NoDefault {
-    pub v: (),
+    pub v: i32,
 }
 impl NoDefault {
-    pub unsafe fn new(mut v: ()) -> Self {
+    pub unsafe fn new(mut v: i32) -> Self {
         let mut this = Self { v: v };
         this
     }
 }
-pub unsafe fn used_0(mut x: Option<A>) -> () {
-    let mut x: A = x.unwrap_or_else(|| unsafe { A::new_1() });
+pub unsafe fn used_0(mut x: Option<A>) -> i32 {
+    let mut x: A = x.unwrap_or_else(|| unsafe { A::new_2() });
     return x.v;
 }
-pub unsafe fn used_1(mut x: Option<B>) -> () {
+pub unsafe fn used_1(mut x: Option<B>) -> i32 {
     let mut x: B = x.unwrap_or_else(|| unsafe { B::new() });
     return x.v;
 }
-pub unsafe fn scaled_2(mut x: A, mut n: Option<()>) -> () {
-    let mut n: () = n.unwrap_or_else(|| unsafe { ::std::mem::size_of::<A>() });
+pub unsafe fn scaled_2(mut x: A, mut n: Option<i32>) -> i32 {
+    let mut n: i32 = n.unwrap_or_else(|| unsafe { (::std::mem::size_of::<A>() as i32) });
     return ((x.v) * (n));
 }
-pub unsafe fn always_given_3(mut x: NoDefault) -> () {
+pub unsafe fn always_given_3(mut x: NoDefault) -> i32 {
     return x.v;
 }
 #[repr(C)]
-#[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, VaArg, FnPtrArg, CppFromUnsafe, Default)]
+#[cpp_from(i32, new, value)]
 pub struct S_NoDefault_ {
-    pub v: (),
+    pub v: i32,
 }
 impl S_NoDefault_ {
-    pub unsafe fn new(mut v: ()) -> Self {
+    pub unsafe fn new(mut v: i32) -> Self {
         let mut this = Self { v: v };
         this
     }
-    pub unsafe fn get(&self, mut t: NoDefault) -> () {
+    pub unsafe fn get(&self, mut t: NoDefault) -> i32 {
         return ((self.v) + (t.v));
     }
 }
@@ -88,15 +91,18 @@ pub fn main() {
         std::process::exit(main_0() as i32);
     }
 }
-unsafe fn main_0() -> () {
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    let mut s: S_NoDefault_ = S_NoDefault_::new({ 1_() });
-    unimplemented!();
-    return 0_();
+unsafe fn main_0() -> i32 {
+    assert!(((unsafe { used_0(None,) }) == (1)));
+    assert!(((unsafe { used_0(Some(A::new_1({ 5 },)),) }) == (5)));
+    assert!(((unsafe { used_1(None,) }) == (2)));
+    assert!(
+        ((unsafe { scaled_2(A::new_1({ 3 },), None,) })
+            == ((3) * (::std::mem::size_of::<A>() as i32)))
+    );
+    assert!(((unsafe { scaled_2(A::new_1({ 3 },), Some(2),) }) == (6)));
+    assert!(((unsafe { always_given_3(NoDefault::new({ 3 },),) }) == (3)));
+    let mut s: S_NoDefault_ = S_NoDefault_::new({ 1 });
+    assert!(((unsafe { S_NoDefault_::get(&s, NoDefault::new({ 4 },),) }) == (5)));
+    return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

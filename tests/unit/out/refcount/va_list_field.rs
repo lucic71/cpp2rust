@@ -6,29 +6,30 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-pub fn sum_0(n: (), __args: Box<[VaArg]>) -> () {
+pub fn sum_0(n: i32, __args: Box<[VaArg]>) -> i32 {
     let __args: Value<Box<[VaArg]>> = Rc::new(RefCell::new(__args.into()));
-    let n: Value<()> = Rc::new(RefCell::new(n));
+    let n: Value<i32> = Rc::new(RefCell::new(n));
     let ap: Value<Ptr<VaArg>> = Rc::new(RefCell::new(Ptr::<VaArg>::default()));
     (*ap.borrow_mut()) = __args.as_pointer();
     let guard: Value<Guard_1> = Rc::new(RefCell::new(Guard_1::new({ ap.as_pointer() })));
     let _dtor_guard = ScopedDestructor::new(&guard, |__p| __p.destructor());
-    let total: Value<()> = Rc::new(RefCell::new(0_()));
-    let mut i: () = 0_();
+    let mut total: i32 = 0;
+    let mut i: i32 = 0;
     'loop_: while (i < (*n.borrow())) {
-        (*total.borrow_mut()) += { (*guard.borrow()).ap.clone() }.with_mut(|__v| __v.arg::<()>());
+        total += { (*guard.borrow()).ap.clone() }.with_mut(|__v| __v.arg::<i32>());
         i.prefix_inc();
     }
-    return (*total.borrow());
+    return total;
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Destructor, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, CppFrom, Destructor, Default)]
+#[cpp_from(Ptr<VaArg> , new, mut_ptr)]
 #[byte_size(16)]
 pub struct Guard_1 {
     #[offset(0)]
     #[byte_size(8)]
     pub ap: Ptr<Ptr<VaArg>>,
     #[offset(8)]
-    pub active: (),
+    pub active: bool,
 }
 impl Guard_1 {
     pub fn new(val: Ptr<Ptr<VaArg>>) -> Self {
@@ -38,21 +39,21 @@ impl Guard_1 {
         }
     }
 }
-pub fn sum_ptr_2(n: (), __args: Box<[VaArg]>) -> () {
+pub fn sum_ptr_2(n: i32, __args: Box<[VaArg]>) -> i32 {
     let __args: Value<Box<[VaArg]>> = Rc::new(RefCell::new(__args.into()));
-    let n: Value<()> = Rc::new(RefCell::new(n));
+    let n: Value<i32> = Rc::new(RefCell::new(n));
     let ap: Value<Ptr<VaArg>> = Rc::new(RefCell::new(Ptr::<VaArg>::default()));
     (*ap.borrow_mut()) = __args.as_pointer();
     let mut cursor: Cursor_3 = Cursor_3 {
         ap: (ap.as_pointer()),
     };
-    let total: Value<()> = Rc::new(RefCell::new(0_()));
-    let mut i: () = 0_();
+    let mut total: i32 = 0;
+    let mut i: i32 = 0;
     'loop_: while (i < (*n.borrow())) {
-        (*total.borrow_mut()) += cursor.ap.with_mut(|__v| __v.arg::<()>());
+        total += cursor.ap.with_mut(|__v| __v.arg::<i32>());
         i.prefix_inc();
     }
-    return (*total.borrow());
+    return total;
 }
 #[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(8)]
@@ -65,10 +66,10 @@ pub fn main() {
     __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
-fn main_0() -> () {
-    unimplemented!();
-    unimplemented!();
-    return 0_();
+fn main_0() -> i32 {
+    assert!((({ sum_0(3, Box::new([(1).into(), (2).into(), (3).into(),])) }) == 6));
+    assert!((({ sum_ptr_2(2, Box::new([(4).into(), (5).into(),])) }) == 9));
+    return 0;
 }
 pub trait Guard_1Impl {
     fn destructor(&self);

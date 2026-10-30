@@ -10,35 +10,45 @@ pub fn main() {
     __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
-fn main_0() -> () {
-    let v: Value<()> = Rc::new(RefCell::new(unimplemented!()));
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    unimplemented!().write(1_());
-    unimplemented!().write(5_());
-    unimplemented!().write(6_());
-    'loop_: for v2 in IterRange::new(unimplemented!(), unimplemented!()) {
-        let v2: Ptr<()> = unimplemented!();
-        'loop_: for i in IterRange::new(unimplemented!(), unimplemented!()) {
-            let i: Ptr<()> = unimplemented!();
+fn main_0() -> i32 {
+    let v: Value<Vec<Vec<i32>>> = Rc::new(RefCell::new(Vec::new()));
+    {
+        let __a0 = 2_usize as usize;
+        (*v.borrow_mut()).resize_with(__a0, || Default::default())
+    };
+    {
+        let __a0 = 2_usize as usize;
+        elem!(v.decay(), 0_usize).with_mut(|__v: &mut Vec<i32>| __v.resize_with(__a0, || 0_i32))
+    };
+    {
+        let __a0 = 1_usize as usize;
+        elem!(v.decay(), 1_usize).with_mut(|__v: &mut Vec<i32>| __v.resize_with(__a0, || 0_i32))
+    };
+    index!(elem!(v.decay(), 0_usize), 0_usize).write(1);
+    index!(elem!(v.decay(), 0_usize), 1_usize).write(5);
+    index!(elem!(v.decay(), 1_usize), 0_usize).write(6);
+    'loop_: for v2 in IterRange::new(v.decay().begin(), v.decay().end()) {
+        let v2: Ptr<Vec<i32>> = v2.iter_deref();
+        'loop_: for i in IterRange::new(v2.decay().begin(), v2.decay().end()) {
+            let i: Ptr<i32> = i.iter_deref();
             i.with_mut(|__v| __v.prefix_inc());
         }
     }
-    'loop_: for v2 in IterRange::new(unimplemented!(), unimplemented!()) {
-        let v2: Ptr<()> = unimplemented!();
-        'loop_: for i in IterRange::new(unimplemented!(), unimplemented!()) {
-            let mut i: () = (unimplemented!().read());
-            println!("{}", (i + 3_()));
+    'loop_: for v2 in IterRange::new(v.decay().begin(), v.decay().end()) {
+        let v2: Ptr<Vec<i32>> = v2.iter_deref();
+        'loop_: for i in IterRange::new(v2.decay().begin(), v2.decay().end()) {
+            let mut i: i32 = (i.iter_deref().read());
+            println!("{}", (i + 3));
         }
     }
-    'loop_: for v2 in IterRange::new(unimplemented!(), unimplemented!()) {
-        let v2: Value<()> = Rc::new(RefCell::new(unimplemented!()));
-        'loop_: for i in IterRange::new(unimplemented!(), unimplemented!()) {
-            let mut i: () = (unimplemented!().read());
+    'loop_: for v2 in IterRange::new(v.decay().begin(), v.decay().end()) {
+        let v2: Value<Vec<i32>> =
+            Rc::new(RefCell::new((*v2.iter_deref().upgrade().deref()).clone()));
+        'loop_: for i in IterRange::new(v2.decay().begin(), v2.decay().end()) {
+            let mut i: i32 = (i.iter_deref().read());
             println!("{}", i);
         }
     }
-    return 0_();
+    return 0;
 }
 pub fn __cpp2rust_init_globals() {}

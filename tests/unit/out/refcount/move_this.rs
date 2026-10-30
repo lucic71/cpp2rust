@@ -6,26 +6,27 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Record, ByteRepr, VaArg, FnPtrArg, MoveCtor, Default)]
+#[derive(Record, ByteRepr, VaArg, FnPtrArg, MoveCtor, CppFrom, Default)]
+#[cpp_from(i32, new, value)]
 #[byte_size(4)]
 pub struct Chain {
     #[offset(0)]
-    pub v: (),
+    pub v: i32,
 }
 impl Chain {
-    pub fn new(mut v: ()) -> Self {
+    pub fn new(mut v: i32) -> Self {
         Self { v: v }
     }
     pub fn copy_from(o: Ptr<Chain>) -> Self {
         Self {
-            v: (o.with(|__s| __s.v) + 100_()),
+            v: (o.with(|__s| __s.v) + 100),
         }
     }
     pub fn move_from(o: Ptr<Chain>) -> Self {
         let __this: Chain = Self {
-            v: (o.with(|__s| __s.v) + 1_()),
+            v: (o.with(|__s| __s.v) + 1),
         };
-        field!(o, v).write(0_());
+        field!(o, v).write(0);
         __this
     }
 }
@@ -35,51 +36,57 @@ impl Clone for Chain {
         Chain::copy_from(__src.as_pointer())
     }
 }
-pub fn consume_0(mut c: Chain) -> () {
+pub fn consume_0(mut c: Chain) -> i32 {
     return c.v;
 }
 pub fn main() {
     __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
-fn main_0() -> () {
-    let a: Value<Chain> = Rc::new(RefCell::new(Chain::new({ 1_() })));
-    ({ ChainImpl::add_4(&({ ChainImpl::add_4(&a.as_pointer(), 1_()) }), 1_()) });
-    unimplemented!();
-    let b0: Value<Chain> = Rc::new(RefCell::new(Chain::new({ 5_() })));
+fn main_0() -> i32 {
+    let a: Value<Chain> = Rc::new(RefCell::new(Chain::new({ 1 })));
+    ({ ChainImpl::add_4(&({ ChainImpl::add_4(&a.as_pointer(), 1) }), 1) });
+    assert!(({ (*a.borrow()).v } == 3));
+    let b0: Value<Chain> = Rc::new(RefCell::new(Chain::new({ 5 })));
     let mut b: Chain = Chain::move_from({
-        ({ ChainImpl::add_5(&({ ChainImpl::add_5(&b0.as_pointer(), 1_()) }), 1_()) })
+        ({ ChainImpl::add_5(&({ ChainImpl::add_5(&b0.as_pointer(), 1) }), 1) })
     });
-    unimplemented!();
+    assert!((b.v == 8) && ({ (*b0.borrow()).v } == 0));
     let c: Value<Chain> = Rc::new(RefCell::new(
-        ({ ChainImpl::take(&Rc::new(RefCell::new(Chain::new({ 10_() }))).as_pointer()) }),
+        ({ ChainImpl::take(&Rc::new(RefCell::new(Chain::new({ 10 }))).as_pointer()) }),
     ));
-    unimplemented!();
+    assert!(({ (*c.borrow()).v } == 11));
     let mut d: Chain = ({ ChainImpl::copy(&c.as_pointer()) });
-    unimplemented!();
-    let g: Value<Chain> = Rc::new(RefCell::new(Chain::new({ 20_() })));
-    unimplemented!();
-    let e: Value<Chain> = Rc::new(RefCell::new(Chain::new({ 30_() })));
+    assert!((d.v == 111) && ({ (*c.borrow()).v } == 11));
+    let g: Value<Chain> = Rc::new(RefCell::new(Chain::new({ 20 })));
+    assert!(
+        (({
+            consume_0(Chain::move_from({
+                ({ ChainImpl::self_(&g.as_pointer()) })
+            }))
+        }) == 21)
+    );
+    let e: Value<Chain> = Rc::new(RefCell::new(Chain::new({ 30 })));
     let mut f: Chain = ({ ChainImpl::take(&e.as_pointer()) });
-    unimplemented!();
-    return 0_();
+    assert!((f.v == 31) && ({ (*e.borrow()).v } == 0));
+    return 0;
 }
 pub trait ChainImpl {
-    fn add_4(&self, n: ()) -> Ptr<Chain>;
-    fn add_5(&self, n: ()) -> Ptr<Chain>;
+    fn add_4(&self, n: i32) -> Ptr<Chain>;
+    fn add_5(&self, n: i32) -> Ptr<Chain>;
     fn take(&self) -> Chain;
     fn copy(&self) -> Chain;
     fn self_(&self) -> Ptr<Chain>;
 }
 impl ChainImpl for Ptr<Chain> {
-    fn add_4(&self, mut n: ()) -> Ptr<Chain> {
+    fn add_4(&self, mut n: i32) -> Ptr<Chain> {
         {
             let __rhs = n;
             field!((*self), v).with_mut(|__v| *__v = *__v + __rhs)
         };
         return (*self).clone();
     }
-    fn add_5(&self, mut n: ()) -> Ptr<Chain> {
+    fn add_5(&self, mut n: i32) -> Ptr<Chain> {
         {
             let __rhs = n;
             field!((*self), v).with_mut(|__v| *__v = *__v + __rhs)

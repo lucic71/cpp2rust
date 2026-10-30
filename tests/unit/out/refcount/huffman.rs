@@ -10,9 +10,9 @@ use std::rc::{Rc, Weak};
 #[byte_size(24)]
 pub struct MinHeapNode {
     #[offset(0)]
-    pub data: (),
+    pub data: i8,
     #[offset(4)]
-    pub freq: (),
+    pub freq: i32,
     #[offset(8)]
     #[byte_size(8)]
     pub left: Ptr<MinHeapNode>,
@@ -48,120 +48,174 @@ pub fn Swap_0(a: Ptr<MinHeapNode>, b: Ptr<MinHeapNode>) {
 #[byte_size(32)]
 pub struct MinHeap {
     #[offset(0)]
-    pub size: (),
+    pub size: i32,
     #[offset(4)]
-    pub capacity: (),
+    pub capacity: i32,
     #[offset(8)]
     #[byte_size(8)]
-    pub arr: (),
+    pub arr: Option<Value<Box<[Ptr<MinHeapNode>]>>>,
     #[offset(16)]
-    pub next: (),
+    pub next: i32,
     #[offset(24)]
     #[byte_size(8)]
-    pub alloc: (),
+    pub alloc: Option<Value<Box<[MinHeapNode]>>>,
 }
 impl MinHeap {
     pub fn move_from(_a0: Ptr<MinHeap>) -> Self {
         Self {
             size: { (*_a0.upgrade().deref()).size },
             capacity: { (*_a0.upgrade().deref()).capacity },
-            arr: unimplemented!(),
+            arr: field!(_a0, arr)
+                .with_mut(|__v: &mut Option<Value<Box<[Ptr<MinHeapNode>]>>>| __v.take()),
             next: { (*_a0.upgrade().deref()).next },
-            alloc: unimplemented!(),
+            alloc: field!(_a0, alloc)
+                .with_mut(|__v: &mut Option<Value<Box<[MinHeapNode]>>>| __v.take()),
         }
     }
 }
-pub fn AllocMinHeap_1(mut capacity: ()) -> () {
-    let mut minHeap: () = unimplemented!();
-    return unimplemented!();
+pub fn AllocMinHeap_1(mut capacity: i32) -> Option<Value<MinHeap>> {
+    let mut minHeap: Option<Value<MinHeap>> = Some(Rc::new(RefCell::new(MinHeap {
+        size: 0,
+        capacity: capacity,
+        arr: Some(Rc::new(RefCell::new(
+            (0..(capacity as usize))
+                .map(|_| Ptr::<MinHeapNode>::null())
+                .collect::<Box<[_]>>(),
+        ))),
+        next: 0,
+        alloc: Some(Rc::new(RefCell::new(
+            (0..10000_usize)
+                .map(|_| <MinHeapNode>::default())
+                .collect::<Box<[_]>>(),
+        ))),
+    })));
+    return minHeap.take();
 }
-pub fn Huffman_2(data: Ptr<()>, freq: Ptr<()>, mut size: ()) -> () {
-    let mut minHeap: () = ({ AllocMinHeap_1(size) });
+pub fn Huffman_2(
+    data: Ptr<Option<Value<Box<[i8]>>>>,
+    freq: Ptr<Option<Value<Box<[i32]>>>>,
+    mut size: i32,
+) -> Option<Value<MinHeap>> {
+    let mut minHeap: Option<Value<MinHeap>> = ({ AllocMinHeap_1(size) });
     ({
-        let _data: Ptr<()> = (data).clone();
-        let _freq: Ptr<()> = (freq).clone();
-        let _n: () = size;
-        MinHeapImpl::Build(&(unimplemented!()), _data, _freq, _n)
+        let _data: Ptr<Option<Value<Box<[i8]>>>> = (data).clone();
+        let _freq: Ptr<Option<Value<Box<[i32]>>>> = (freq).clone();
+        let _n: i32 = size;
+        MinHeapImpl::Build(&(minHeap.as_pointer()), _data, _freq, _n)
     });
-    'loop_: while (unimplemented!().with(|__s| (__s).size) != 1_()) {
-        let mut left: Ptr<MinHeapNode> = ({ MinHeapImpl::ExtractMin(&(unimplemented!())) });
-        let mut right: Ptr<MinHeapNode> = ({ MinHeapImpl::ExtractMin(&(unimplemented!())) });
+    'loop_: while (minHeap.as_pointer().with(|__s| (__s).size) != 1) {
+        let mut left: Ptr<MinHeapNode> = ({ MinHeapImpl::ExtractMin(&(minHeap.as_pointer())) });
+        let mut right: Ptr<MinHeapNode> = ({ MinHeapImpl::ExtractMin(&(minHeap.as_pointer())) });
         let mut top: Ptr<MinHeapNode> = ({
             MinHeapImpl::Alloc(
-                &(unimplemented!()),
-                ('$' as ()),
+                &(minHeap.as_pointer()),
+                ('$' as i8),
                 ({ left.with(|__s| __s.freq) } + { right.with(|__s| __s.freq) }),
             )
         });
         field!(top, left).write((left).clone());
         field!(top, right).write((right).clone());
-        ({ MinHeapImpl::Insert(&(unimplemented!()), (top).clone()) });
+        ({ MinHeapImpl::Insert(&(minHeap.as_pointer()), (top).clone()) });
     }
-    return unimplemented!();
+    return minHeap.take();
 }
-pub fn CollectCode_3(arr: Ptr<()>, mut top: (), out: Ptr<()>, next: Ptr<()>) {
-    unimplemented!().write(0_());
-    let mut i: () = 0_();
+pub fn CollectCode_3(
+    arr: Ptr<Option<Value<Box<[i32]>>>>,
+    mut top: i32,
+    out: Ptr<Option<Value<Box<[i32]>>>>,
+    next: Ptr<i32>,
+) {
+    ((*out.upgrade().deref()).as_pointer() as Ptr<i32>)
+        .offset(((next.read()) as usize) as isize)
+        .write(0);
+    let mut i: i32 = 0;
     'loop_: while (i < top) {
-        let __rhs = ((unimplemented!().read()) * 10_());
-        unimplemented!().write(__rhs);
-        let __rhs = ({ (unimplemented!().read()) } + { (unimplemented!().read()) });
-        unimplemented!().write(__rhs);
+        let __rhs = ((((*out.upgrade().deref()).as_pointer() as Ptr<i32>)
+            .offset(((next.read()) as usize) as isize)
+            .read())
+            * 10);
+        ((*out.upgrade().deref()).as_pointer() as Ptr<i32>)
+            .offset(((next.read()) as usize) as isize)
+            .write(__rhs);
+        let __rhs = ({
+            (((*out.upgrade().deref()).as_pointer() as Ptr<i32>)
+                .offset(((next.read()) as usize) as isize)
+                .read())
+        } + {
+            (((*arr.upgrade().deref()).as_pointer() as Ptr<i32>)
+                .offset((i as usize) as isize)
+                .read())
+        });
+        ((*out.upgrade().deref()).as_pointer() as Ptr<i32>)
+            .offset(((next.read()) as usize) as isize)
+            .write(__rhs);
         i.prefix_inc();
     }
     next.with_mut(|__v| __v.prefix_inc());
 }
 pub fn CollectCodes_4(
     mut root: Ptr<MinHeapNode>,
-    arr: Ptr<()>,
-    mut top: (),
-    out: Ptr<()>,
-    next: Ptr<()>,
+    arr: Ptr<Option<Value<Box<[i32]>>>>,
+    mut top: i32,
+    out: Ptr<Option<Value<Box<[i32]>>>>,
+    next: Ptr<i32>,
 ) {
     if !((root.with(|__s| __s.left.clone())).is_null()) {
-        unimplemented!().write(0_());
+        ((*arr.upgrade().deref()).as_pointer() as Ptr<i32>)
+            .offset((top as usize) as isize)
+            .write(0);
         ({
             let _root: Ptr<MinHeapNode> = root.with(|__s| __s.left.clone());
-            let _arr: Ptr<()> = (arr).clone();
-            let _top: () = (top + 1_());
-            let _out: Ptr<()> = (out).clone();
-            let _next: Ptr<()> = (next).clone();
+            let _arr: Ptr<Option<Value<Box<[i32]>>>> = (arr).clone();
+            let _top: i32 = (top + 1);
+            let _out: Ptr<Option<Value<Box<[i32]>>>> = (out).clone();
+            let _next: Ptr<i32> = (next).clone();
             CollectCodes_4(_root, _arr, _top, _out, _next)
         });
     }
     if !((root.with(|__s| __s.right.clone())).is_null()) {
-        unimplemented!().write(1_());
+        ((*arr.upgrade().deref()).as_pointer() as Ptr<i32>)
+            .offset((top as usize) as isize)
+            .write(1);
         ({
             let _root: Ptr<MinHeapNode> = root.with(|__s| __s.right.clone());
-            let _arr: Ptr<()> = (arr).clone();
-            let _top: () = (top + 1_());
-            let _out: Ptr<()> = (out).clone();
-            let _next: Ptr<()> = (next).clone();
+            let _arr: Ptr<Option<Value<Box<[i32]>>>> = (arr).clone();
+            let _top: i32 = (top + 1);
+            let _out: Ptr<Option<Value<Box<[i32]>>>> = (out).clone();
+            let _next: Ptr<i32> = (next).clone();
             CollectCodes_4(_root, _arr, _top, _out, _next)
         });
     }
     if ({ MinHeapNodeImpl::IsLeaf(&root) }) {
         ({
-            let _arr: Ptr<()> = (arr).clone();
-            let _top: () = top;
-            let _out: Ptr<()> = (out).clone();
-            let _next: Ptr<()> = (next).clone();
+            let _arr: Ptr<Option<Value<Box<[i32]>>>> = (arr).clone();
+            let _top: i32 = top;
+            let _out: Ptr<Option<Value<Box<[i32]>>>> = (out).clone();
+            let _next: Ptr<i32> = (next).clone();
             CollectCode_3(_arr, _top, _out, _next)
         });
     }
 }
-pub fn HuffmanCodes_5(data: Ptr<()>, freq: Ptr<()>, mut size: ()) -> () {
-    let mut minHeap: () = ({
-        let _data: Ptr<()> = (data).clone();
-        let _freq: Ptr<()> = (freq).clone();
-        let _size: () = size;
+pub fn HuffmanCodes_5(
+    data: Ptr<Option<Value<Box<[i8]>>>>,
+    freq: Ptr<Option<Value<Box<[i32]>>>>,
+    mut size: i32,
+) -> Option<Value<Box<[i32]>>> {
+    let mut minHeap: Option<Value<MinHeap>> = ({
+        let _data: Ptr<Option<Value<Box<[i8]>>>> = (data).clone();
+        let _freq: Ptr<Option<Value<Box<[i32]>>>> = (freq).clone();
+        let _size: i32 = size;
         Huffman_2(_data, _freq, _size)
     });
-    let mut root: Ptr<MinHeapNode> = ({ MinHeapImpl::ExtractMin(&(unimplemented!())) });
-    let arr: Value<()> = Rc::new(RefCell::new(unimplemented!()));
-    let out: Value<()> = Rc::new(RefCell::new(unimplemented!()));
-    let mut top: () = 0_();
-    let next: Value<()> = Rc::new(RefCell::new(0_()));
+    let mut root: Ptr<MinHeapNode> = ({ MinHeapImpl::ExtractMin(&(minHeap.as_pointer())) });
+    let arr: Value<Option<Value<Box<[i32]>>>> = Rc::new(RefCell::new(Some(Rc::new(RefCell::new(
+        (0..100_usize).map(|_| 0_i32).collect::<Box<[_]>>(),
+    )))));
+    let out: Value<Option<Value<Box<[i32]>>>> = Rc::new(RefCell::new(Some(Rc::new(RefCell::new(
+        (0..100_usize).map(|_| 0_i32).collect::<Box<[_]>>(),
+    )))));
+    let mut top: i32 = 0;
+    let next: Value<i32> = Rc::new(RefCell::new(0));
     ({
         CollectCodes_4(
             (root).clone(),
@@ -171,114 +225,204 @@ pub fn HuffmanCodes_5(data: Ptr<()>, freq: Ptr<()>, mut size: ()) -> () {
             next.as_pointer(),
         )
     });
-    return unimplemented!();
+    return (*out.borrow_mut()).take();
 }
 pub fn main() {
     __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
-fn main_0() -> () {
-    let mut size: () = 6_();
-    let mut arr1: [(); 6] = [
-        ('a' as ()),
-        ('b' as ()),
-        ('c' as ()),
-        ('d' as ()),
-        ('e' as ()),
-        ('f' as ()),
+fn main_0() -> i32 {
+    let mut size: i32 = 6;
+    let mut arr1: [i8; 6] = [
+        ('a' as i8),
+        ('b' as i8),
+        ('c' as i8),
+        ('d' as i8),
+        ('e' as i8),
+        ('f' as i8),
     ];
-    let mut arr2: [(); 6] = [5_(), 9_(), 12_(), 13_(), 16_(), 45_()];
-    let data: Value<()> = Rc::new(RefCell::new(unimplemented!()));
-    let freq: Value<()> = Rc::new(RefCell::new(unimplemented!()));
-    let mut i: () = 0_();
+    let mut arr2: [i32; 6] = [5, 9, 12, 13, 16, 45];
+    let data: Value<Option<Value<Box<[i8]>>>> = Rc::new(RefCell::new(Some(Rc::new(RefCell::new(
+        (0..(size as usize)).map(|_| 0_i8).collect::<Box<[_]>>(),
+    )))));
+    let freq: Value<Option<Value<Box<[i32]>>>> = Rc::new(RefCell::new(Some(Rc::new(
+        RefCell::new((0..(size as usize)).map(|_| 0_i32).collect::<Box<[_]>>()),
+    ))));
+    let mut i: i32 = 0;
     'loop_: while (i < size) {
         let __rhs = arr1[(i) as usize];
-        unimplemented!().write(__rhs);
+        ((*data.borrow()).as_pointer() as Ptr<i8>)
+            .offset((i as usize) as isize)
+            .write(__rhs);
         let __rhs = arr2[(i) as usize];
-        unimplemented!().write(__rhs);
+        ((*freq.borrow()).as_pointer() as Ptr<i32>)
+            .offset((i as usize) as isize)
+            .write(__rhs);
         i.prefix_inc();
     }
-    let mut out: () = ({ HuffmanCodes_5(data.as_pointer(), freq.as_pointer(), size) });
-    unimplemented!();
-    return 0_();
+    let mut out: Option<Value<Box<[i32]>>> =
+        ({ HuffmanCodes_5(data.as_pointer(), freq.as_pointer(), size) });
+    assert!(
+        (((((((out.as_pointer() as Ptr<i32>)
+            .offset(0_usize as isize)
+            .read())
+            == 0)
+            && (((out.as_pointer() as Ptr<i32>)
+                .offset(1_usize as isize)
+                .read())
+                == 100))
+            && (((out.as_pointer() as Ptr<i32>)
+                .offset(2_usize as isize)
+                .read())
+                == 101))
+            && (((out.as_pointer() as Ptr<i32>)
+                .offset(3_usize as isize)
+                .read())
+                == 1100))
+            && (((out.as_pointer() as Ptr<i32>)
+                .offset(4_usize as isize)
+                .read())
+                == 1101))
+            && (((out.as_pointer() as Ptr<i32>)
+                .offset(5_usize as isize)
+                .read())
+                == 111)
+    );
+    return 0;
 }
 pub trait MinHeapImpl {
-    fn Alloc(&self, data: (), freq: ()) -> Ptr<MinHeapNode>;
-    fn Heapify(&self, idx: ());
+    fn Alloc(&self, data: i8, freq: i32) -> Ptr<MinHeapNode>;
+    fn Heapify(&self, idx: i32);
     fn ExtractMin(&self) -> Ptr<MinHeapNode>;
     fn Insert(&self, node: Ptr<MinHeapNode>);
-    fn Build(&self, data: Ptr<()>, freq: Ptr<()>, n: ());
+    fn Build(
+        &self,
+        data: Ptr<Option<Value<Box<[i8]>>>>,
+        freq: Ptr<Option<Value<Box<[i32]>>>>,
+        n: i32,
+    );
     fn move_assign(&self, _a0: Ptr<MinHeap>) -> Ptr<MinHeap>;
 }
 impl MinHeapImpl for Ptr<MinHeap> {
-    fn Alloc(&self, mut data: (), mut freq: ()) -> Ptr<MinHeapNode> {
-        unimplemented!().write(MinHeapNode {
-            data: data,
-            freq: freq,
-            left: Ptr::<MinHeapNode>::null(),
-            right: Ptr::<MinHeapNode>::null(),
-        });
-        return (unimplemented!());
+    fn Alloc(&self, mut data: i8, mut freq: i32) -> Ptr<MinHeapNode> {
+        ((*self).with(|__s| __s.alloc.clone()).as_pointer() as Ptr<MinHeapNode>)
+            .offset(((*self).with(|__s| __s.next) as usize) as isize)
+            .write(MinHeapNode {
+                data: data,
+                freq: freq,
+                left: Ptr::<MinHeapNode>::null(),
+                right: Ptr::<MinHeapNode>::null(),
+            });
+        return (((*self).with(|__s| __s.alloc.clone()).as_pointer() as Ptr<MinHeapNode>)
+            .offset((field!((*self), next).with_mut(|__v| __v.postfix_inc()) as usize) as isize));
     }
-    fn Heapify(&self, mut idx: ()) {
-        let mut smallest: () = idx;
-        let mut left: () = ((2_() * idx) + 1_());
-        let mut right: () = ((2_() * idx) + 2_());
+    fn Heapify(&self, mut idx: i32) {
+        let mut smallest: i32 = idx;
+        let mut left: i32 = ((2 * idx) + 1);
+        let mut right: i32 = ((2 * idx) + 2);
         if (left < (*self).with(|__s| __s.size))
-            && ((unimplemented!().read()).with(|__s| __s.freq)
-                < (unimplemented!().read()).with(|__s| __s.freq))
+            && ((((*self).with(|__s| __s.arr.clone()).as_pointer() as Ptr<Ptr<MinHeapNode>>)
+                .offset((left as usize) as isize)
+                .read())
+            .with(|__s| __s.freq)
+                < (((*self).with(|__s| __s.arr.clone()).as_pointer() as Ptr<Ptr<MinHeapNode>>)
+                    .offset((smallest as usize) as isize)
+                    .read())
+                .with(|__s| __s.freq))
         {
             smallest = left;
         }
         if (right < (*self).with(|__s| __s.size))
-            && ((unimplemented!().read()).with(|__s| __s.freq)
-                < (unimplemented!().read()).with(|__s| __s.freq))
+            && ((((*self).with(|__s| __s.arr.clone()).as_pointer() as Ptr<Ptr<MinHeapNode>>)
+                .offset((right as usize) as isize)
+                .read())
+            .with(|__s| __s.freq)
+                < (((*self).with(|__s| __s.arr.clone()).as_pointer() as Ptr<Ptr<MinHeapNode>>)
+                    .offset((smallest as usize) as isize)
+                    .read())
+                .with(|__s| __s.freq))
         {
             smallest = right;
         }
         if (smallest != idx) {
             ({
-                let _a: Ptr<MinHeapNode> = (unimplemented!().read());
-                let _b: Ptr<MinHeapNode> = (unimplemented!().read());
+                let _a: Ptr<MinHeapNode> = (((*self).with(|__s| __s.arr.clone()).as_pointer()
+                    as Ptr<Ptr<MinHeapNode>>)
+                    .offset((smallest as usize) as isize)
+                    .read());
+                let _b: Ptr<MinHeapNode> = (((*self).with(|__s| __s.arr.clone()).as_pointer()
+                    as Ptr<Ptr<MinHeapNode>>)
+                    .offset((idx as usize) as isize)
+                    .read());
                 Swap_0(_a, _b)
             });
             ({ MinHeapImpl::Heapify(self, smallest) });
         }
     }
     fn ExtractMin(&self) -> Ptr<MinHeapNode> {
-        let out: Value<Ptr<MinHeapNode>> = Rc::new(RefCell::new((unimplemented!().read())));
+        let mut out: Ptr<MinHeapNode> = (((*self).with(|__s| __s.arr.clone()).as_pointer()
+            as Ptr<Ptr<MinHeapNode>>)
+            .offset(0_usize as isize)
+            .read());
         field!((*self), size).with_mut(|__v| __v.prefix_dec());
-        let __rhs = (unimplemented!().read());
-        unimplemented!().write(__rhs);
-        ({ MinHeapImpl::Heapify(self, 0_()) });
-        return (*out.borrow()).clone();
+        let __rhs = (((*self).with(|__s| __s.arr.clone()).as_pointer() as Ptr<Ptr<MinHeapNode>>)
+            .offset(((*self).with(|__s| __s.size) as usize) as isize)
+            .read());
+        ((*self).with(|__s| __s.arr.clone()).as_pointer() as Ptr<Ptr<MinHeapNode>>)
+            .offset(0_usize as isize)
+            .write(__rhs);
+        ({ MinHeapImpl::Heapify(self, 0) });
+        return out;
     }
     fn Insert(&self, mut node: Ptr<MinHeapNode>) {
         field!((*self), size).with_mut(|__v| __v.prefix_inc());
-        let mut i: () = ((*self).with(|__s| __s.size) - 1_());
-        'loop_: while (i != 0_())
-            && ({ node.with(|__s| __s.freq) } < { (unimplemented!().read()).with(|__s| __s.freq) })
+        let mut i: i32 = ((*self).with(|__s| __s.size) - 1);
+        'loop_: while (i != 0)
+            && ({ node.with(|__s| __s.freq) } < {
+                (((*self).with(|__s| __s.arr.clone()).as_pointer() as Ptr<Ptr<MinHeapNode>>)
+                    .offset((((i - 1) / 2) as usize) as isize)
+                    .read())
+                .with(|__s| __s.freq)
+            })
         {
-            let __rhs = (unimplemented!().read());
-            unimplemented!().write(__rhs);
-            i = { ((i - 1_()) / 2_()) };
+            let __rhs = (((*self).with(|__s| __s.arr.clone()).as_pointer()
+                as Ptr<Ptr<MinHeapNode>>)
+                .offset((((i - 1) / 2) as usize) as isize)
+                .read());
+            ((*self).with(|__s| __s.arr.clone()).as_pointer() as Ptr<Ptr<MinHeapNode>>)
+                .offset((i as usize) as isize)
+                .write(__rhs);
+            i = { ((i - 1) / 2) };
         }
-        unimplemented!().write((node).clone());
+        ((*self).with(|__s| __s.arr.clone()).as_pointer() as Ptr<Ptr<MinHeapNode>>)
+            .offset((i as usize) as isize)
+            .write((node).clone());
     }
-    fn Build(&self, data: Ptr<()>, freq: Ptr<()>, mut n: ()) {
-        let mut i: () = 0_();
+    fn Build(
+        &self,
+        data: Ptr<Option<Value<Box<[i8]>>>>,
+        freq: Ptr<Option<Value<Box<[i32]>>>>,
+        mut n: i32,
+    ) {
+        let mut i: i32 = 0;
         'loop_: while (i < n) {
-            unimplemented!().write(
-                ({
-                    let _data: () = (unimplemented!().read());
-                    let _freq: () = (unimplemented!().read());
-                    MinHeapImpl::Alloc(self, _data, _freq)
-                }),
-            );
+            ((*self).with(|__s| __s.arr.clone()).as_pointer() as Ptr<Ptr<MinHeapNode>>)
+                .offset((field!((*self), size).with_mut(|__v| __v.postfix_inc()) as usize) as isize)
+                .write(
+                    ({
+                        let _data: i8 = (((*data.upgrade().deref()).as_pointer() as Ptr<i8>)
+                            .offset((i as usize) as isize)
+                            .read());
+                        let _freq: i32 = (((*freq.upgrade().deref()).as_pointer() as Ptr<i32>)
+                            .offset((i as usize) as isize)
+                            .read());
+                        MinHeapImpl::Alloc(self, _data, _freq)
+                    }),
+                );
             i.prefix_inc();
         }
-        let mut i: () = (((*self).with(|__s| __s.size) - 2_()) / 2_());
-        'loop_: while (i >= 0_()) {
+        let mut i: i32 = (((*self).with(|__s| __s.size) - 2) / 2);
+        'loop_: while (i >= 0) {
             ({ MinHeapImpl::Heapify(self, i) });
             i.prefix_dec();
         }
@@ -286,17 +430,22 @@ impl MinHeapImpl for Ptr<MinHeap> {
     fn move_assign(&self, _a0: Ptr<MinHeap>) -> Ptr<MinHeap> {
         field!((*self), size).write({ { (*_a0.upgrade().deref()).size } });
         field!((*self), capacity).write({ { (*_a0.upgrade().deref()).capacity } });
-        unimplemented!();
+        field_ptr!((*self), arr).write(
+            field!(_a0, arr)
+                .with_mut(|__v: &mut Option<Value<Box<[Ptr<MinHeapNode>]>>>| __v.take()),
+        );
         field!((*self), next).write({ { (*_a0.upgrade().deref()).next } });
-        unimplemented!();
+        field_ptr!((*self), alloc).write(
+            field!(_a0, alloc).with_mut(|__v: &mut Option<Value<Box<[MinHeapNode]>>>| __v.take()),
+        );
         return (*self).clone();
     }
 }
 pub trait MinHeapNodeImpl {
-    fn IsLeaf(&self) -> ();
+    fn IsLeaf(&self) -> bool;
 }
 impl MinHeapNodeImpl for Ptr<MinHeapNode> {
-    fn IsLeaf(&self) -> () {
+    fn IsLeaf(&self) -> bool {
         return (((*self).with(|__s| __s.left.clone())).is_null())
             && (((*self).with(|__s| __s.right.clone())).is_null());
     }

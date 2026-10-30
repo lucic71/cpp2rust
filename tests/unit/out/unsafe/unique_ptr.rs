@@ -9,119 +9,254 @@ use std::rc::Rc;
 #[repr(C)]
 #[derive(FnPtrArg, MoveCtorUnsafe, MoveAssignUnsafe, Default)]
 pub struct SafePointer {
-    pub ptr: (),
+    pub ptr: Option<Box<i32>>,
 }
 impl SafePointer {
     pub unsafe fn inc(&mut self) {
-        (*unimplemented!()).prefix_inc();
+        (*self
+            .ptr
+            .as_deref()
+            .map_or(::std::ptr::null_mut(), |v| v as *const i32 as *mut i32))
+        .prefix_inc();
     }
     pub unsafe fn move_from(_a0: *mut SafePointer) -> Self {
         let mut this = Self {
-            ptr: unimplemented!(),
+            ptr: (*_a0).ptr.take(),
         };
         this
     }
     pub unsafe fn move_assign(&mut self, _a0: *mut SafePointer) -> *mut SafePointer {
-        unimplemented!();
+        self.ptr = (*_a0).ptr.take();
         return &mut (*(self as *mut SafePointer));
     }
 }
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct Pair {
-    pub x: (),
-    pub y: (),
+    pub x: i32,
+    pub y: i32,
 }
 impl Pair {
-    pub unsafe fn inc(&mut self, mut k: ()) {
+    pub unsafe fn inc(&mut self, mut k: i32) {
         self.x += k;
         self.y += k;
     }
 }
-pub unsafe fn DoStuffWithSafePointer_0(safe_ptr: *mut ()) {
-    let mut x1: () = unimplemented!();
-    let mut x2: () = unimplemented!();
-    (*unimplemented!()) = 1_();
-    unimplemented!();
-    let mut raw_ptr1: *mut () = (&mut (*unimplemented!()) as *mut ());
+pub unsafe fn DoStuffWithSafePointer_0(safe_ptr: *mut Option<Box<SafePointer>>) {
+    let mut x1: Option<Box<i32>> = Some(Box::new(0));
+    let mut x2: Option<Box<i32>> = Some(Box::new(0));
+    (*x2.as_deref()
+        .map_or(::std::ptr::null_mut(), |v| v as *const i32 as *mut i32)) = 1;
+    x1 = x2.take();
+    let mut raw_ptr1: *mut i32 = (&mut (*x1
+        .as_deref()
+        .map_or(::std::ptr::null_mut(), |v| v as *const i32 as *mut i32))
+        as *mut i32);
     (*raw_ptr1).prefix_inc();
-    unimplemented!();
-    (unsafe { SafePointer::inc(&mut (*unimplemented!())) });
-    (unsafe { SafePointer::inc(&mut (*unimplemented!())) });
-    let mut x3: () = unimplemented!();
-    let mut x4: () = unimplemented!();
-    (*unimplemented!()) = ((*unimplemented!()) + (*unimplemented!()));
-    unimplemented!();
-    let mut raw_ptr2: *mut () = (&mut (*unimplemented!()) as *mut ());
-    (*raw_ptr2) += 1_();
-    let mut pair: () = unimplemented!();
-    (unsafe { Pair::inc(&mut (*unimplemented!()), 10_()) });
-    (*unimplemented!()) =
-        (((*unimplemented!()) + ((*unimplemented!()).x)) + ((*unimplemented!()).y));
+    (*(*safe_ptr).as_deref().map_or(::std::ptr::null_mut(), |v| {
+        v as *const SafePointer as *mut SafePointer
+    }))
+    .ptr = x1.take();
+    (unsafe {
+        SafePointer::inc(
+            &mut (*(*safe_ptr).as_deref().map_or(::std::ptr::null_mut(), |v| {
+                v as *const SafePointer as *mut SafePointer
+            })),
+        )
+    });
+    (unsafe {
+        SafePointer::inc(
+            &mut (*(*safe_ptr).as_deref().map_or(::std::ptr::null_mut(), |v| {
+                v as *const SafePointer as *mut SafePointer
+            })),
+        )
+    });
+    let mut x3: Option<Box<i32>> = Some(Box::new(10));
+    let mut x4: Option<Box<i32>> = Some(Box::new(20));
+    (*x3.as_deref()
+        .map_or(::std::ptr::null_mut(), |v| v as *const i32 as *mut i32)) = ((*x3
+        .as_deref()
+        .map_or(::std::ptr::null_mut(), |v| v as *const i32 as *mut i32))
+        + (*x4
+            .as_deref()
+            .map_or(::std::ptr::null_mut(), |v| v as *const i32 as *mut i32)));
+    x4 = x3.take();
+    let mut raw_ptr2: *mut i32 = (&mut (*x4
+        .as_deref()
+        .map_or(::std::ptr::null_mut(), |v| v as *const i32 as *mut i32))
+        as *mut i32);
+    (*raw_ptr2) += 1;
+    let mut pair: Option<Box<Pair>> = Some(Box::new(Pair {
+        x: (*raw_ptr2),
+        y: 5,
+    }));
+    (unsafe {
+        Pair::inc(
+            &mut (*pair
+                .as_deref()
+                .map_or(::std::ptr::null_mut(), |v| v as *const Pair as *mut Pair)),
+            10,
+        )
+    });
+    (*(*(*safe_ptr).as_deref().map_or(::std::ptr::null_mut(), |v| {
+        v as *const SafePointer as *mut SafePointer
+    }))
+    .ptr
+    .as_deref()
+    .map_or(::std::ptr::null_mut(), |v| v as *const i32 as *mut i32)) =
+        (((*(*(*safe_ptr).as_deref().map_or(::std::ptr::null_mut(), |v| {
+            v as *const SafePointer as *mut SafePointer
+        }))
+        .ptr
+        .as_deref()
+        .map_or(::std::ptr::null_mut(), |v| v as *const i32 as *mut i32))
+            + ((*pair
+                .as_deref()
+                .map_or(::std::ptr::null_mut(), |v| v as *const Pair as *mut Pair))
+            .x))
+            + ((*pair
+                .as_deref()
+                .map_or(::std::ptr::null_mut(), |v| v as *const Pair as *mut Pair))
+            .y));
 }
-pub unsafe fn Consume_1(mut safe_ptr: ()) -> () {
-    let mut x: () = unimplemented!();
-    let mut p: () = unimplemented!();
-    return ((*unimplemented!()) + ((*unimplemented!()).x));
+pub unsafe fn Consume_1(mut safe_ptr: Option<Box<SafePointer>>) -> i32 {
+    let mut x: Option<Box<SafePointer>> = safe_ptr.take();
+    let mut p: Option<Box<Pair>> = Some(Box::from_raw(
+        (Box::leak(Box::new(<Pair>::default())) as *mut Pair),
+    ));
+    return ((*(*x.as_deref().map_or(::std::ptr::null_mut(), |v| {
+        v as *const SafePointer as *mut SafePointer
+    }))
+    .ptr
+    .as_deref()
+    .map_or(::std::ptr::null_mut(), |v| v as *const i32 as *mut i32))
+        + ((*p
+            .as_deref()
+            .map_or(::std::ptr::null_mut(), |v| v as *const Pair as *mut Pair))
+        .x));
 }
 pub unsafe fn RndStuff_2() {
-    let mut x1: () = unimplemented!();
-    let mut x2: () = unimplemented!();
-    let mut i: () = 0_();
-    'loop_: while ((i) < (100_())) {
-        (*unimplemented!()) = 1_();
+    let mut x1: Option<Box<[i32]>> = None;
+    let mut x2: Option<Box<[i32]>> = Some(Box::from_raw(Box::leak(
+        (0..100_usize).map(|_| 0_i32).collect::<Box<[i32]>>(),
+    )));
+    let mut i: i32 = 0;
+    'loop_: while ((i) < (100)) {
+        (*x2.as_deref()
+            .map_or(::std::ptr::null_mut(), |s| s.as_ptr() as *mut i32)
+            .add((i as usize))) = 1;
         i.prefix_inc();
     }
-    unimplemented!();
-    let mut i: () = 0_();
-    'loop_: while ((i) < (200_())) {
-        (*unimplemented!()) = 2_();
+    x2 = Some(Box::from_raw(Box::leak(
+        (0..200_usize).map(|_| 0_i32).collect::<Box<[i32]>>(),
+    )));
+    let mut i: i32 = 0;
+    'loop_: while ((i) < (200)) {
+        (*x2.as_deref()
+            .map_or(::std::ptr::null_mut(), |s| s.as_ptr() as *mut i32)
+            .add((i as usize))) = 2;
         i.prefix_inc();
     }
-    let mut p2: *mut () = unimplemented!();
-    let mut i: () = 0_();
-    'loop_: while ((i) < (200_())) {
-        unimplemented!();
+    let mut p2: *mut i32 = x2
+        .as_deref_mut()
+        .map_or(::std::ptr::null_mut(), |s| s.as_mut_ptr());
+    let mut i: i32 = 0;
+    'loop_: while ((i) < (200)) {
+        assert!(((*p2.offset((i) as isize)) == (2)));
         i.prefix_inc();
     }
-    let mut x3: () = unimplemented!();
-    let mut i: () = 0_();
-    'loop_: while ((i) < (10_())) {
-        (*unimplemented!()) = Pair { x: 1_(), y: 2_() };
+    let mut x3: Option<Box<[Pair]>> = Some(
+        (0..10_usize)
+            .map(|_| <Pair>::default())
+            .collect::<Box<[_]>>(),
+    );
+    let mut i: i32 = 0;
+    'loop_: while ((i) < (10)) {
+        (*x3.as_deref()
+            .map_or(::std::ptr::null_mut(), |s| s.as_ptr() as *mut Pair)
+            .add((i as usize))) = Pair { x: 1, y: 2 };
         i.prefix_inc();
     }
-    let mut p3_0: *mut Pair = unimplemented!();
-    let mut i: () = 0_();
-    'loop_: while ((i) < (10_())) {
-        unimplemented!();
-        unimplemented!();
-        (unsafe { Pair::inc(&mut (*unimplemented!()), 10_()) });
-        unimplemented!();
-        unimplemented!();
+    let mut p3_0: *mut Pair = x3
+        .as_deref_mut()
+        .map_or(::std::ptr::null_mut(), |s| s.as_mut_ptr());
+    let mut i: i32 = 0;
+    'loop_: while ((i) < (10)) {
+        assert!((((*p3_0.offset((i) as isize)).x) == (1)));
+        assert!((((*p3_0.offset((i) as isize)).y) == (2)));
+        (unsafe {
+            Pair::inc(
+                &mut (*x3
+                    .as_deref()
+                    .map_or(::std::ptr::null_mut(), |s| s.as_ptr() as *mut Pair)
+                    .add((i as usize))),
+                10,
+            )
+        });
+        assert!((((*p3_0.offset((i) as isize)).x) == (11)));
+        assert!((((*p3_0.offset((i) as isize)).y) == (12)));
         i.prefix_inc();
     }
-    unimplemented!();
-    let mut i: () = 0_();
-    'loop_: while ((i) < (50_())) {
-        (*unimplemented!()) = Pair { x: -1_(), y: -2_() };
+    x3 = Some(Box::from_raw(Box::leak(
+        (0..50_usize)
+            .map(|_| <Pair>::default())
+            .collect::<Box<[Pair]>>(),
+    )));
+    let mut i: i32 = 0;
+    'loop_: while ((i) < (50)) {
+        (*x3.as_deref()
+            .map_or(::std::ptr::null_mut(), |s| s.as_ptr() as *mut Pair)
+            .add((i as usize))) = Pair {
+            x: -1_i32,
+            y: -2_i32,
+        };
         i.prefix_inc();
     }
-    let mut p3_1: *mut Pair = unimplemented!();
-    unimplemented!();
-    let mut i: () = 0_();
-    'loop_: while ((i) < (50_())) {
-        unimplemented!();
-        unimplemented!();
-        (unsafe { Pair::inc(&mut (*unimplemented!()), -10_()) });
-        unimplemented!();
-        unimplemented!();
+    let mut p3_1: *mut Pair = x3
+        .as_deref_mut()
+        .map_or(::std::ptr::null_mut(), |s| s.as_mut_ptr());
+    assert!(((p3_0) != (p3_1)));
+    let mut i: i32 = 0;
+    'loop_: while ((i) < (50)) {
+        assert!((((*p3_1.offset((i) as isize)).x) == (-1_i32)));
+        assert!((((*p3_1.offset((i) as isize)).y) == (-2_i32)));
+        (unsafe {
+            Pair::inc(
+                &mut (*x3
+                    .as_deref()
+                    .map_or(::std::ptr::null_mut(), |s| s.as_ptr() as *mut Pair)
+                    .add((i as usize))),
+                -10_i32,
+            )
+        });
+        assert!((((*p3_1.offset((i) as isize)).x) == (-11_i32)));
+        assert!((((*p3_1.offset((i) as isize)).y) == (-12_i32)));
         i.prefix_inc();
     }
 }
 pub unsafe fn unique_ptr_that_wraps_container_3() {
-    let mut v: () = unimplemented!();
-    unimplemented!();
-    unimplemented!();
+    let mut v: Option<Box<[Vec<libc::c_char>]>> =
+        Some((0..2_usize).map(|_| vec![0]).collect::<Box<[_]>>());
+    assert!(
+        (((*v
+            .as_deref()
+            .map_or(::std::ptr::null_mut(), |s| s.as_ptr()
+                as *mut Vec<libc::c_char>)
+            .add(0_usize))
+        .len()
+            - 1)
+            == (0_usize))
+    );
+    assert!(
+        (((*v
+            .as_deref()
+            .map_or(::std::ptr::null_mut(), |s| s.as_ptr()
+                as *mut Vec<libc::c_char>)
+            .add(1_usize))
+        .len()
+            - 1)
+            == (0_usize))
+    );
 }
 pub fn main() {
     unsafe {
@@ -129,17 +264,28 @@ pub fn main() {
         std::process::exit(main_0() as i32);
     }
 }
-unsafe fn main_0() -> () {
-    let mut x: () = unimplemented!();
-    let mut safe_ptr: () = unimplemented!();
+unsafe fn main_0() -> i32 {
+    let mut x: Option<Box<i32>> = Some(Box::new(0));
+    let mut safe_ptr: Option<Box<SafePointer>> = Some(Box::new(SafePointer { ptr: x.take() }));
     (unsafe { DoStuffWithSafePointer_0(&mut safe_ptr) });
-    unimplemented!();
-    let mut p: () = unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
+    assert!(((unsafe { Consume_1(safe_ptr.take(),) }) == (60)));
+    let mut p: Option<Box<i32>> = Some(Box::from_raw((Box::leak(Box::new(1)) as *mut i32)));
+    {
+        let _a0: *mut i32 = (Box::leak(Box::new(2)) as *mut i32);
+        p = if _a0.is_null() {
+            None
+        } else {
+            Some(Box::from_raw(_a0))
+        }
+    };
+    assert!(
+        ((*p.as_deref()
+            .map_or(::std::ptr::null_mut(), |v| v as *const i32 as *mut i32))
+            == (2))
+    );
+    p = None;
+    assert!(p.is_none());
     (unsafe { unique_ptr_that_wraps_container_3() });
-    return 0_();
+    return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

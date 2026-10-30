@@ -7,19 +7,20 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
 thread_local!(
-    pub static copies_0: Value<()> = Rc::new(RefCell::new(0_()));
+    pub static copies_0: Value<i32> = Rc::new(RefCell::new(0));
 );
 thread_local!(
-    pub static moves_1: Value<()> = Rc::new(RefCell::new(0_()));
+    pub static moves_1: Value<i32> = Rc::new(RefCell::new(0));
 );
-#[derive(Record, ByteRepr, VaArg, FnPtrArg, MoveCtor, CopyAssign, Default)]
+#[derive(Record, ByteRepr, VaArg, FnPtrArg, MoveCtor, CppFrom, CopyAssign, Default)]
+#[cpp_from(i32, new, value)]
 #[byte_size(4)]
 pub struct Elem {
     #[offset(0)]
-    pub v: (),
+    pub v: i32,
 }
 impl Elem {
-    pub fn new(mut v: ()) -> Self {
+    pub fn new(mut v: i32) -> Self {
         Self { v: v }
     }
     pub fn copy_from(o: Ptr<Elem>) -> Self {
@@ -47,17 +48,30 @@ pub fn main() {
     __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
-fn main_0() -> () {
-    let mut v: () = unimplemented!();
-    unimplemented!();
-    let a: Value<Elem> = Rc::new(RefCell::new(Elem::new({ 1_() })));
-    let mut b: Elem = Elem::new({ 2_() });
-    unimplemented!();
-    unimplemented!();
-    let mut ok: () = (((copies_0.with(|rc| *rc.borrow()) == 1_())
-        && (moves_1.with(|rc| *rc.borrow()) == 1_()))
-        && (__s.v == 1_()))
-        && (__s.v == 2_());
+fn main_0() -> i32 {
+    let v: Value<Vec<Elem>> = Rc::new(RefCell::new(Vec::new()));
+    if 4_usize as usize > (*v.borrow()).capacity() as usize {
+        let len_0 = (*v.borrow()).len();
+        (*v.borrow_mut()).reserve_exact(4_usize as usize - len_0 as usize);
+    };
+    let a: Value<Elem> = Rc::new(RefCell::new(Elem::new({ 1 })));
+    let mut b: Elem = Elem::new({ 2 });
+    {
+        let __it = <RandomAccessIterator<Elem>>::from(v.decay().end());
+        let __off = __it.index();
+        (*v.borrow_mut()).insert(__off, Elem::move_from({ a.as_pointer() }));
+        __it
+    };
+    {
+        let __it = <RandomAccessIterator<Elem>>::from(v.decay().end());
+        let __off = __it.index();
+        (*v.borrow_mut()).insert(__off, (b).clone());
+        __it
+    };
+    let mut ok: bool = (((copies_0.with(|rc| *rc.borrow()) == 1)
+        && (moves_1.with(|rc| *rc.borrow()) == 1))
+        && ({ (*v.borrow())[0_usize].v } == 1))
+        && ({ (*v.borrow())[1_usize].v } == 2);
     let mut pa: Ptr<Elem> = (a.as_pointer());
     println!(
         "{} {} {}",
@@ -65,7 +79,7 @@ fn main_0() -> () {
         moves_1.with(|rc| *rc.borrow()),
         pa.with(|__s| __s.v)
     );
-    return if ok { 0_() } else { 1_() };
+    return if ok { 0 } else { 1 };
 }
 pub trait ElemImpl {
     fn copy_assign(&self, _a0: Ptr<Elem>) -> Ptr<Elem>;

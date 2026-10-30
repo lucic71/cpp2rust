@@ -10,9 +10,12 @@ pub fn main() {
     __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
-fn main_0() -> () {
-    let v: Value<()> = Rc::new(RefCell::new(unimplemented!()));
-    unimplemented!();
-    return 0_();
+fn main_0() -> i32 {
+    let v: Value<Vec<Vec<i32>>> = Rc::new(RefCell::new(Vec::new()));
+    {
+        let __a1 = (0..(10_usize) as usize).map(|_| 0_i32).collect::<Vec<_>>();
+        (*v.borrow_mut()).push(__a1)
+    };
+    return 0;
 }
 pub fn __cpp2rust_init_globals() {}

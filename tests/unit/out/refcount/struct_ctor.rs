@@ -10,12 +10,12 @@ use std::rc::{Rc, Weak};
 #[byte_size(8)]
 pub struct StructWithCtor {
     #[offset(0)]
-    x1_: (),
+    x1_: i32,
     #[offset(4)]
-    x2_: (),
+    x2_: i32,
 }
 impl StructWithCtor {
-    pub fn new(mut x1: (), mut x2: ()) -> Self {
+    pub fn new(mut x1: i32, mut x2: i32) -> Self {
         let __this: Value<StructWithCtor> = Rc::new(RefCell::new(Self { x1_: x1, x2_: x2 }));
         let this: Ptr<StructWithCtor> = __this.as_pointer();
         field!(this, x1_).with_mut(|__v| __v.prefix_inc());
@@ -23,17 +23,18 @@ impl StructWithCtor {
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
 }
-pub fn foo_0(x: Ptr<()>) -> Ptr<()> {
+pub fn foo_0(x: Ptr<i32>) -> Ptr<i32> {
     return (x).clone();
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, CppFrom, Default)]
+#[cpp_from(i32, new, value)]
 #[byte_size(4)]
 pub struct Value_ {
     #[offset(0)]
-    pub v: (),
+    pub v: i32,
 }
 impl Value_ {
-    pub fn new(mut u: ()) -> Self {
+    pub fn new(mut u: i32) -> Self {
         Self { v: u }
     }
 }
@@ -50,8 +51,8 @@ pub struct Ptr_ {
 impl Ptr_ {
     pub fn new() -> Self {
         Self {
-            v1: Value_::new({ 11_() }),
-            v2: Value_::new({ 22_() }),
+            v1: Value_::new({ 11 }),
+            v2: Value_::new({ 22 }),
         }
     }
 }
@@ -64,25 +65,29 @@ pub fn main() {
     __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
-fn main_0() -> () {
+fn main_0() -> i32 {
     let struct_with_ctor: Value<StructWithCtor> =
-        Rc::new(RefCell::new(StructWithCtor::new({ 1_() }, { 2_() })));
-    let x: Value<()> = Rc::new(RefCell::new(3_()));
-    unimplemented!();
+        Rc::new(RefCell::new(StructWithCtor::new({ 1 }, { 2 })));
+    let x: Value<i32> = Rc::new(RefCell::new(3));
+    assert!(
+        (((({ foo_0(x.as_pointer(),) }).read()) == 3)
+            && ((({ StructWithCtorImpl::x1(&struct_with_ctor.as_pointer(),) }).read()) == 2))
+            && ((({ StructWithCtorImpl::x2(&struct_with_ctor.as_pointer(),) }).read()) == 1)
+    );
     let mut p: Ptr_ = Ptr_::new();
-    unimplemented!();
-    unimplemented!();
-    return 0_();
+    assert!((p.v1.v == 11));
+    assert!((p.v2.v == 22));
+    return 0;
 }
 pub trait StructWithCtorImpl {
-    fn x1(&self) -> Ptr<()>;
-    fn x2(&self) -> Ptr<()>;
+    fn x1(&self) -> Ptr<i32>;
+    fn x2(&self) -> Ptr<i32>;
 }
 impl StructWithCtorImpl for Ptr<StructWithCtor> {
-    fn x1(&self) -> Ptr<()> {
+    fn x1(&self) -> Ptr<i32> {
         return field_ptr!((*self), x1_);
     }
-    fn x2(&self) -> Ptr<()> {
+    fn x2(&self) -> Ptr<i32> {
         return field_ptr!((*self), x2_);
     }
 }

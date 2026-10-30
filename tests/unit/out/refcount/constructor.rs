@@ -7,16 +7,17 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
 thread_local!(
-    pub static total_0: Value<()> = Rc::new(RefCell::new(0_()));
+    pub static total_0: Value<i32> = Rc::new(RefCell::new(0));
 );
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Destructor, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, CppFrom, Destructor, Default)]
+#[cpp_from(i32, new, value)]
 #[byte_size(4)]
 pub struct S {
     #[offset(0)]
-    pub v: (),
+    pub v: i32,
 }
 impl S {
-    pub fn new(mut init: ()) -> Self {
+    pub fn new(mut init: i32) -> Self {
         let __this: Value<S> = Rc::new(RefCell::new(Self { v: init }));
         let this: Ptr<S> = __this.as_pointer();
         ({ SImpl::mut_method(&this) });
@@ -24,31 +25,32 @@ impl S {
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, CppFrom)]
+#[cpp_from(i32, new_1, value)]
 #[byte_size(8)]
 pub struct Point {
     #[offset(0)]
-    pub x: (),
+    pub x: i32,
     #[offset(4)]
-    pub y: (),
+    pub y: i32,
 }
 impl Point {
-    pub fn new_1(mut x: (), mut y: ()) -> Self {
+    pub fn new_2(mut x: i32, mut y: i32) -> Self {
         Self { x: x, y: y }
     }
-    pub fn new_2(mut v: ()) -> Self {
-        let __this: Value<Point> = Rc::new(RefCell::new(Point::new_1({ v }, { (v + 1_()) })));
+    pub fn new_1(mut v: i32) -> Self {
+        let __this: Value<Point> = Rc::new(RefCell::new(Point::new_2({ v }, { (v + 1) })));
         let this: Ptr<Point> = __this.as_pointer();
         {
-            field!(this, y).with_mut(|__v| *__v = *__v * 10_())
+            field!(this, y).with_mut(|__v| *__v = *__v * 10)
         };
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
     pub fn new_3() -> Self {
-        let __this: Value<Point> = Rc::new(RefCell::new(Point::new_2({ 4_() })));
+        let __this: Value<Point> = Rc::new(RefCell::new(Point::new_1({ 4 })));
         let this: Ptr<Point> = __this.as_pointer();
         {
-            field!(this, x).with_mut(|__v| *__v = *__v + 100_())
+            field!(this, x).with_mut(|__v| *__v = *__v + 100)
         };
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
@@ -62,34 +64,34 @@ pub fn main() {
     __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
-fn main_0() -> () {
+fn main_0() -> i32 {
     {
-        let s: Value<S> = Rc::new(RefCell::new(S::new({ 3_() })));
+        let s: Value<S> = Rc::new(RefCell::new(S::new({ 3 })));
         let _dtor_s = ScopedDestructor::new(&s, |__p| __p.destructor());
-        unimplemented!();
-        unimplemented!();
+        assert!(({ (*s.borrow()).v } == 4));
+        assert!((total_0.with(|rc| *rc.borrow()) == 8));
     }
-    unimplemented!();
+    assert!((total_0.with(|rc| *rc.borrow()) == 18));
     let mut p: Point = Point::new_3();
-    unimplemented!();
-    unimplemented!();
-    let mut q: Point = Point::new_2({ 7_() });
-    unimplemented!();
-    unimplemented!();
-    return 0_();
+    assert!((p.x == 104));
+    assert!((p.y == 50));
+    let mut q: Point = Point::new_1({ 7 });
+    assert!((q.x == 7));
+    assert!((q.y == 80));
+    return 0;
 }
 pub trait SImpl {
-    fn const_method(&self) -> ();
+    fn const_method(&self) -> i32;
     fn mut_method(&self);
     fn destructor(&self);
 }
 impl SImpl for Ptr<S> {
-    fn const_method(&self) -> () {
-        return ((*self).with(|__s| __s.v) * 2_());
+    fn const_method(&self) -> i32 {
+        return ((*self).with(|__s| __s.v) * 2);
     }
     fn mut_method(&self) {
         {
-            field!((*self), v).with_mut(|__v| *__v = *__v + 1_())
+            field!((*self), v).with_mut(|__v| *__v = *__v + 1)
         };
     }
     fn destructor(&self) {

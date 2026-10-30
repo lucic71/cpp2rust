@@ -12,14 +12,30 @@ pub fn main() {
         std::process::exit(main_0() as i32);
     }
 }
-unsafe fn main_0() -> () {
-    let mut g: () = unimplemented!();
-    (*unimplemented!()) = 11_();
-    (*unimplemented!()) = 12_();
-    let mut g_ptr: *mut () = unimplemented!();
-    (*g_ptr.offset((0_()) as isize)) = 13_();
-    (*g_ptr.offset((1_()) as isize)) = 14_();
-    unimplemented!();
-    return 0_();
+unsafe fn main_0() -> i32 {
+    let mut g: Option<Box<[i32]>> = Some((0..2_usize).map(|_| 0_i32).collect::<Box<[_]>>());
+    (*g.as_deref()
+        .map_or(::std::ptr::null_mut(), |s| s.as_ptr() as *mut i32)
+        .add(0_usize)) = 11;
+    (*g.as_deref()
+        .map_or(::std::ptr::null_mut(), |s| s.as_ptr() as *mut i32)
+        .add(1_usize)) = 12;
+    let mut g_ptr: *mut i32 = g
+        .as_deref_mut()
+        .map_or(::std::ptr::null_mut(), |s| s.as_mut_ptr());
+    (*g_ptr.offset((0) as isize)) = 13;
+    (*g_ptr.offset((1) as isize)) = 14;
+    assert!(
+        (((*g
+            .as_deref()
+            .map_or(::std::ptr::null_mut(), |s| s.as_ptr() as *mut i32)
+            .add(0_usize))
+            + (*g
+                .as_deref()
+                .map_or(::std::ptr::null_mut(), |s| s.as_ptr() as *mut i32)
+                .add(1_usize)))
+            == (27))
+    );
+    return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

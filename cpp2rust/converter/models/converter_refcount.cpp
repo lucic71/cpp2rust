@@ -2264,6 +2264,10 @@ ConverterRefCount::GetStructAttributes(const clang::RecordDecl *decl) {
     attrs.emplace_back("MoveCtor");
   }
 
+  if (HasImplicitConversions(decl)) {
+    attrs.emplace_back("CppFrom");
+  }
+
   if (HasCopyAssignOperator(decl)) {
     attrs.emplace_back("CopyAssign");
   }
@@ -2281,6 +2285,10 @@ ConverterRefCount::GetStructAttributes(const clang::RecordDecl *decl) {
     attrs.emplace_back("Default");
   }
   return attrs;
+}
+
+const char *ConverterRefCount::GetConversionTraitName() const {
+  return "CppFrom";
 }
 
 bool ConverterRefCount::TypeDerivesDefault(clang::QualType qual_type) {

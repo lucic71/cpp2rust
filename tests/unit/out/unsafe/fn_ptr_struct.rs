@@ -9,53 +9,54 @@ use std::rc::Rc;
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct Handler {
-    pub tag: (),
-    pub cb: Option<unsafe fn(()) -> ()>,
+    pub tag: i32,
+    pub cb: Option<unsafe fn(i32) -> i32>,
 }
-pub unsafe fn double_it_0(mut x: ()) -> () {
-    return ((x) * (2_()));
+pub unsafe fn double_it_0(mut x: i32) -> i32 {
+    return ((x) * (2));
 }
-pub unsafe fn negate_1(mut x: ()) -> () {
+pub unsafe fn negate_1(mut x: i32) -> i32 {
     return -x;
 }
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct S {}
 impl S {
-    pub unsafe fn pick_1(mut x: ()) -> () {
-        return ((x) + (1_()));
+    pub unsafe fn pick_1(mut x: i32) -> i32 {
+        return ((x) + (1));
     }
-    pub unsafe fn pick_2(mut x: ()) -> () {
-        return ((x) + (2_()));
+    pub unsafe fn pick_2(mut x: i64) -> i32 {
+        return ((x as i32) + (2));
     }
-    pub unsafe fn solo(mut x: ()) -> () {
-        return ((x) + (3_()));
+    pub unsafe fn solo(mut x: i32) -> i32 {
+        return ((x) + (3));
     }
 }
 #[repr(C)]
-#[derive(FnPtrArg, MoveCtorUnsafe, Default)]
+#[derive(FnPtrArg, MoveCtorUnsafe, CppFromUnsafe, Default)]
+#[cpp_from(i32, new, value)]
 pub struct MoveOnly {
-    pub data_: (),
+    pub data_: i32,
 }
 impl MoveOnly {
-    pub unsafe fn new(mut data: ()) -> Self {
+    pub unsafe fn new(mut data: i32) -> Self {
         let mut this = Self { data_: data };
         this
     }
     pub unsafe fn move_from(x: *mut MoveOnly) -> Self {
         let mut this = Self { data_: (*x).data_ };
-        (*x).data_ = 0_();
+        (*x).data_ = 0;
         this
     }
-    pub unsafe fn get(&self) -> () {
+    pub unsafe fn get(&self) -> i32 {
         return self.data_;
     }
 }
 pub unsafe fn make_move_only_2() -> MoveOnly {
-    return MoveOnly::new({ 4_() });
+    return MoveOnly::new({ 4 });
 }
 pub unsafe fn scale_move_only_3(mut x: MoveOnly) -> MoveOnly {
-    return MoveOnly::new({ ((unsafe { MoveOnly::get(&x) }) * (10_())) });
+    return MoveOnly::new({ ((unsafe { MoveOnly::get(&x) }) * (10)) });
 }
 pub fn main() {
     unsafe {
@@ -63,38 +64,38 @@ pub fn main() {
         std::process::exit(main_0() as i32);
     }
 }
-unsafe fn main_0() -> () {
-    let mut p1: Option<unsafe fn(()) -> ()> = (Some(S::pick_1));
-    let mut p2: Option<unsafe fn(()) -> ()> = Some(S::solo);
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
+unsafe fn main_0() -> i32 {
+    let mut p1: Option<unsafe fn(i32) -> i32> = (Some(S::pick_1));
+    let mut p2: Option<unsafe fn(i32) -> i32> = Some(S::solo);
+    assert!(((unsafe { (p1).unwrap()(5,) }) == (6)));
+    assert!(((unsafe { (p2).unwrap()(5,) }) == (8)));
+    assert!(((unsafe { S::pick_2(5_i64,) }) == (7)));
     let mut h3: Handler = Handler {
-        tag: 3_(),
+        tag: 3,
         cb: (Some(S::pick_1)),
     };
-    unimplemented!();
+    assert!(((unsafe { (h3.cb).unwrap()(1,) }) == (2)));
     let mut h1: Handler = Handler {
-        tag: 1_(),
+        tag: 1,
         cb: Some(double_it_0),
     };
     let mut h2: Handler = Handler {
-        tag: 2_(),
+        tag: 2,
         cb: Some(negate_1),
     };
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
+    assert!(!((h1.cb).is_none()));
+    assert!(((unsafe { (h1.cb).unwrap()(5,) }) == (10)));
+    assert!(((unsafe { (h2.cb).unwrap()(7,) }) == (-7_i32)));
     (h1.cb) = Some(negate_1);
-    unimplemented!();
-    unimplemented!();
+    assert!(((unsafe { (h1.cb).unwrap()(3,) }) == (-3_i32)));
+    assert!(((h1.cb) == (h2.cb)));
     let mut mk: Option<unsafe fn() -> MoveOnly> = Some(make_move_only_2);
     let mut m: MoveOnly = (unsafe { (mk).unwrap()() });
-    unimplemented!();
+    assert!(((unsafe { MoveOnly::get(&m,) }) == (4)));
     let mut sc: Option<unsafe fn(MoveOnly) -> MoveOnly> = Some(scale_move_only_3);
     let mut n: MoveOnly = (unsafe { (sc).unwrap()(MoveOnly::move_from({ &mut m })) });
-    unimplemented!();
-    unimplemented!();
-    return 0_();
+    assert!(((unsafe { MoveOnly::get(&n,) }) == (40)));
+    assert!(((unsafe { MoveOnly::get(&m,) }) == (0)));
+    return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

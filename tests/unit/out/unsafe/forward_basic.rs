@@ -6,29 +6,30 @@ use std::collections::BTreeMap;
 use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
-pub type Overload = ();
+pub type Overload = u32;
 pub const Overload_kLvalueOverload: Overload = 1;
 pub const Overload_kRvalueOverload: Overload = 2;
 #[repr(C)]
-#[derive(VaArg, FnPtrArg, MoveCtorUnsafe, Default)]
+#[derive(VaArg, FnPtrArg, MoveCtorUnsafe, CppFromUnsafe, Default)]
+#[cpp_from(i32, new, value)]
 pub struct Tracked {
-    pub v: (),
-    pub copies: (),
-    pub moves: (),
+    pub v: i32,
+    pub copies: i32,
+    pub moves: i32,
 }
 impl Tracked {
-    pub unsafe fn new(mut v: ()) -> Self {
+    pub unsafe fn new(mut v: i32) -> Self {
         let mut this = Self {
             v: v,
-            copies: 0_(),
-            moves: 0_(),
+            copies: 0,
+            moves: 0,
         };
         this
     }
     pub unsafe fn copy_from(o: *const Tracked) -> Self {
         let mut this = Self {
             v: (*o).v,
-            copies: (((*o).copies) + (1_())),
+            copies: (((*o).copies) + (1)),
             moves: (*o).moves,
         };
         this
@@ -37,9 +38,9 @@ impl Tracked {
         let mut this = Self {
             v: (*o).v,
             copies: (*o).copies,
-            moves: (((*o).moves) + (1_())),
+            moves: (((*o).moves) + (1)),
         };
-        (*o).v = 0_();
+        (*o).v = 0;
         this
     }
 }
@@ -71,7 +72,9 @@ impl Holder {
     }
 }
 #[repr(C)]
-#[derive(Clone, VaArg, FnPtrArg, MoveCtorUnsafe, Default)]
+#[derive(Clone, VaArg, FnPtrArg, MoveCtorUnsafe, CppFromUnsafe, Default)]
+#[cpp_from(Tracked, new_1, mut_ptr)]
+#[cpp_from_move(Tracked, new_2, ptr)]
 pub struct Holder {
     pub t: Tracked,
 }
@@ -107,28 +110,44 @@ pub fn main() {
         std::process::exit(main_0() as i32);
     }
 }
-unsafe fn main_0() -> () {
-    let mut lvalue: Tracked = Tracked::new({ 7_() });
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    let mut relayed: Tracked = Tracked::new({ 9_() });
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    let mut kept: Tracked = Tracked::new({ 11_() });
+unsafe fn main_0() -> i32 {
+    let mut lvalue: Tracked = Tracked::new({ 7 });
+    assert!(
+        (((unsafe { forward_once_2(&mut lvalue,) }) as i32) == (Overload_kLvalueOverload as i32))
+    );
+    assert!(((lvalue.v) == (7)));
+    assert!(
+        (((unsafe {
+            let mut _x: Tracked = Tracked::new({ 8 });
+            forward_once_3(&mut _x)
+        }) as i32)
+            == (Overload_kRvalueOverload as i32))
+    );
+    let mut relayed: Tracked = Tracked::new({ 9 });
+    assert!(
+        (((unsafe { forward_twice_4(&mut relayed,) }) as i32) == (Overload_kLvalueOverload as i32))
+    );
+    assert!(((relayed.v) == (9)));
+    assert!(
+        (((unsafe {
+            let mut _x: Tracked = Tracked::new({ 10 });
+            forward_twice_5(&mut _x)
+        }) as i32)
+            == (Overload_kRvalueOverload as i32))
+    );
+    let mut kept: Tracked = Tracked::new({ 11 });
     let mut from_lvalue: Holder = (unsafe { forward_into_ctor_6(&mut kept) });
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
+    assert!(((from_lvalue.t.v) == (11)));
+    assert!(((from_lvalue.t.copies) == (1)));
+    assert!(((from_lvalue.t.moves) == (0)));
+    assert!(((kept.v) == (11)));
     let mut from_rvalue: Holder = (unsafe {
-        let mut _x: Tracked = Tracked::new({ 12_() });
+        let mut _x: Tracked = Tracked::new({ 12 });
         forward_into_ctor_7(&mut _x)
     });
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    return 0_();
+    assert!(((from_rvalue.t.v) == (12)));
+    assert!(((from_rvalue.t.copies) == (0)));
+    assert!(((from_rvalue.t.moves) == (1)));
+    return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

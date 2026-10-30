@@ -6,31 +6,32 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-pub type Overload = ();
+pub type Overload = u32;
 pub const Overload_kLvalueOverload: Overload = 1;
 pub const Overload_kRvalueOverload: Overload = 2;
-#[derive(Record, ByteRepr, VaArg, FnPtrArg, MoveCtor, Default)]
+#[derive(Record, ByteRepr, VaArg, FnPtrArg, MoveCtor, CppFrom, Default)]
+#[cpp_from(i32, new, value)]
 #[byte_size(12)]
 pub struct Tracked {
     #[offset(0)]
-    pub v: (),
+    pub v: i32,
     #[offset(4)]
-    pub copies: (),
+    pub copies: i32,
     #[offset(8)]
-    pub moves: (),
+    pub moves: i32,
 }
 impl Tracked {
-    pub fn new(mut v: ()) -> Self {
+    pub fn new(mut v: i32) -> Self {
         Self {
             v: v,
-            copies: 0_(),
-            moves: 0_(),
+            copies: 0,
+            moves: 0,
         }
     }
     pub fn copy_from(o: Ptr<Tracked>) -> Self {
         Self {
             v: o.with(|__s| __s.v),
-            copies: (o.with(|__s| __s.copies) + 1_()),
+            copies: (o.with(|__s| __s.copies) + 1),
             moves: o.with(|__s| __s.moves),
         }
     }
@@ -38,9 +39,9 @@ impl Tracked {
         let __this: Tracked = Self {
             v: o.with(|__s| __s.v),
             copies: o.with(|__s| __s.copies),
-            moves: (o.with(|__s| __s.moves) + 1_()),
+            moves: (o.with(|__s| __s.moves) + 1),
         };
-        field!(o, v).write(0_());
+        field!(o, v).write(0);
         __this
     }
 }
@@ -74,7 +75,9 @@ impl Holder {
         }
     }
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, MoveCtor, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, MoveCtor, CppFrom, Default)]
+#[cpp_from(Tracked, new_1, mut_ptr)]
+#[cpp_from_move(Tracked, new_2, ptr)]
 #[byte_size(12)]
 pub struct Holder {
     #[offset(0)]
@@ -110,28 +113,45 @@ pub fn main() {
     __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
-fn main_0() -> () {
-    let lvalue: Value<Tracked> = Rc::new(RefCell::new(Tracked::new({ 7_() })));
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    let relayed: Value<Tracked> = Rc::new(RefCell::new(Tracked::new({ 9_() })));
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    let kept: Value<Tracked> = Rc::new(RefCell::new(Tracked::new({ 11_() })));
+fn main_0() -> i32 {
+    let lvalue: Value<Tracked> = Rc::new(RefCell::new(Tracked::new({ 7 })));
+    assert!(
+        ((({ forward_once_2(lvalue.as_pointer(),) }) as i32) == (Overload_kLvalueOverload as i32))
+    );
+    assert!(({ (*lvalue.borrow()).v } == 7));
+    assert!(
+        ((({
+            let _x: Value<Tracked> = Rc::new(RefCell::new(Tracked::new({ 8 })));
+            forward_once_3(_x.as_pointer())
+        }) as i32)
+            == (Overload_kRvalueOverload as i32))
+    );
+    let relayed: Value<Tracked> = Rc::new(RefCell::new(Tracked::new({ 9 })));
+    assert!(
+        ((({ forward_twice_4(relayed.as_pointer(),) }) as i32)
+            == (Overload_kLvalueOverload as i32))
+    );
+    assert!(({ (*relayed.borrow()).v } == 9));
+    assert!(
+        ((({
+            let _x: Value<Tracked> = Rc::new(RefCell::new(Tracked::new({ 10 })));
+            forward_twice_5(_x.as_pointer())
+        }) as i32)
+            == (Overload_kRvalueOverload as i32))
+    );
+    let kept: Value<Tracked> = Rc::new(RefCell::new(Tracked::new({ 11 })));
     let mut from_lvalue: Holder = ({ forward_into_ctor_6(kept.as_pointer()) });
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
+    assert!((from_lvalue.t.v == 11));
+    assert!((from_lvalue.t.copies == 1));
+    assert!((from_lvalue.t.moves == 0));
+    assert!(({ (*kept.borrow()).v } == 11));
     let mut from_rvalue: Holder = ({
-        let _x: Value<Tracked> = Rc::new(RefCell::new(Tracked::new({ 12_() })));
+        let _x: Value<Tracked> = Rc::new(RefCell::new(Tracked::new({ 12 })));
         forward_into_ctor_7(_x.as_pointer())
     });
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    return 0_();
+    assert!((from_rvalue.t.v == 12));
+    assert!((from_rvalue.t.copies == 0));
+    assert!((from_rvalue.t.moves == 1));
+    return 0;
 }
 pub fn __cpp2rust_init_globals() {}

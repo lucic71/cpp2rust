@@ -6,20 +6,21 @@ use std::collections::BTreeMap;
 use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
-pub static mut total_0: std::cell::LazyCell<()> = std::cell::LazyCell::new(|| unsafe { 0_() });
+pub static mut total_0: std::cell::LazyCell<i32> = std::cell::LazyCell::new(|| unsafe { 0 });
 #[repr(C)]
-#[derive(Clone, VaArg, FnPtrArg, DestructorUnsafe, Default)]
+#[derive(Clone, VaArg, FnPtrArg, CppFromUnsafe, DestructorUnsafe, Default)]
+#[cpp_from(i32, new, value)]
 pub struct S {
-    pub v: (),
+    pub v: i32,
 }
 impl S {
-    pub unsafe fn const_method(&self) -> () {
-        return ((self.v) * (2_()));
+    pub unsafe fn const_method(&self) -> i32 {
+        return ((self.v) * (2));
     }
     pub unsafe fn mut_method(&mut self) {
-        self.v += 1_();
+        self.v += 1;
     }
-    pub unsafe fn new(mut init: ()) -> Self {
+    pub unsafe fn new(mut init: i32) -> Self {
         let mut this = Self { v: init };
         (unsafe { S::mut_method(&mut this) });
         (*std::cell::LazyCell::force_mut(&mut *&raw mut total_0)) +=
@@ -33,24 +34,25 @@ impl S {
     }
 }
 #[repr(C)]
-#[derive(Copy, Clone, VaArg, FnPtrArg)]
+#[derive(Copy, Clone, VaArg, FnPtrArg, CppFromUnsafe)]
+#[cpp_from(i32, new_1, value)]
 pub struct Point {
-    pub x: (),
-    pub y: (),
+    pub x: i32,
+    pub y: i32,
 }
 impl Point {
-    pub unsafe fn new_1(mut x: (), mut y: ()) -> Self {
+    pub unsafe fn new_2(mut x: i32, mut y: i32) -> Self {
         let mut this = Self { x: x, y: y };
         this
     }
-    pub unsafe fn new_2(mut v: ()) -> Self {
-        let mut this = Point::new_1({ v }, { ((v) + (1_())) });
-        this.y *= 10_();
+    pub unsafe fn new_1(mut v: i32) -> Self {
+        let mut this = Point::new_2({ v }, { ((v) + (1)) });
+        this.y *= 10;
         this
     }
     pub unsafe fn new_3() -> Self {
-        let mut this = Point::new_2({ 4_() });
-        this.x += 100_();
+        let mut this = Point::new_1({ 4 });
+        this.x += 100;
         this
     }
 }
@@ -65,21 +67,21 @@ pub fn main() {
         std::process::exit(main_0() as i32);
     }
 }
-unsafe fn main_0() -> () {
+unsafe fn main_0() -> i32 {
     {
-        let mut s: S = S::new({ 3_() });
+        let mut s: S = S::new({ 3 });
         let _dtor_s = ScopedDestructorUnsafe::new(&raw mut s, S::destructor);
-        unimplemented!();
-        unimplemented!();
+        assert!(((s.v) == (4)));
+        assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut total_0)) == (8)));
     }
-    unimplemented!();
+    assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut total_0)) == (18)));
     let mut p: Point = Point::new_3();
-    unimplemented!();
-    unimplemented!();
-    let mut q: Point = Point::new_2({ 7_() });
-    unimplemented!();
-    unimplemented!();
-    return 0_();
+    assert!(((p.x) == (104)));
+    assert!(((p.y) == (50)));
+    let mut q: Point = Point::new_1({ 7 });
+    assert!(((q.x) == (7)));
+    assert!(((q.y) == (80)));
+    return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {
     std::cell::LazyCell::force(&*&raw const total_0);

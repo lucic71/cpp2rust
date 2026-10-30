@@ -7,12 +7,13 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 #[repr(C)]
-#[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, VaArg, FnPtrArg, CppFromUnsafe, Default)]
+#[cpp_from(i32, new, ptr)]
 pub struct S {
-    pub r: *const (),
+    pub r: *const i32,
 }
 impl S {
-    pub unsafe fn new(x: *const ()) -> Self {
+    pub unsafe fn new(x: *const i32) -> Self {
         let mut this = Self { r: x };
         this
     }
@@ -23,12 +24,12 @@ pub fn main() {
         std::process::exit(main_0() as i32);
     }
 }
-unsafe fn main_0() -> () {
+unsafe fn main_0() -> i32 {
     let mut s: S = {
-        let mut __tmp_0: () = 5_();
+        let mut __tmp_0: i32 = 5;
         S::new({ &mut __tmp_0 })
     };
-    unimplemented!();
-    return 0_();
+    assert!(((*s.r) == (5)));
+    return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

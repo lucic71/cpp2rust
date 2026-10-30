@@ -6,19 +6,20 @@ use std::collections::BTreeMap;
 use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
-pub unsafe fn operator_eq_0(x: *const S, y: *const S) -> () {
+pub unsafe fn operator_eq_0(x: *const S, y: *const S) -> bool {
     return (((*x).data_) == ((*y).data_));
 }
-pub unsafe fn operator_lt_1(x: *const S, y: *const S) -> () {
+pub unsafe fn operator_lt_1(x: *const S, y: *const S) -> bool {
     return (((*x).data_) < ((*y).data_));
 }
 #[repr(C)]
-#[derive(FnPtrArg, MoveCtorUnsafe, Default)]
+#[derive(FnPtrArg, MoveCtorUnsafe, CppFromUnsafe, Default)]
+#[cpp_from(i32, new, value)]
 pub struct S {
-    data_: (),
+    data_: i32,
 }
 impl S {
-    pub unsafe fn new(mut data: ()) -> Self {
+    pub unsafe fn new(mut data: i32) -> Self {
         let mut this = Self { data_: data };
         this
     }
@@ -59,13 +60,28 @@ pub fn main() {
         std::process::exit(main_0() as i32);
     }
 }
-unsafe fn main_0() -> () {
-    let mut a: S = S::new({ 1_() });
-    let mut b: S = S::new({ 2_() });
-    let mut c: S = S::new({ 1_() });
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    return 0_();
+unsafe fn main_0() -> i32 {
+    let mut a: S = S::new({ 1 });
+    let mut b: S = S::new({ 2 });
+    let mut c: S = S::new({ 1 });
+    assert!(
+        (unsafe {
+            let _x: *const S = &a;
+            operator_eq_0(_x, &c)
+        })
+    );
+    assert!(
+        (unsafe {
+            let _x: *const S = &a;
+            operator_lt_1(_x, &b)
+        })
+    );
+    assert!(
+        !(unsafe {
+            let _x: *const S = &b;
+            operator_lt_1(_x, &a)
+        })
+    );
+    return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

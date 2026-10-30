@@ -11,16 +11,16 @@ use std::rc::{Rc, Weak};
 pub struct UserDefined {
     #[offset(0)]
     #[byte_size(4)]
-    pub a: (),
+    pub a: Vec<i32>,
     #[offset(8)]
     #[byte_size(24)]
-    pub v: (),
+    pub v: Vec<i32>,
 }
 impl UserDefined {
     pub fn move_from(_a0: Ptr<UserDefined>) -> Self {
         Self {
             a: field!(_a0, a).with_mut(std::mem::take),
-            v: unimplemented!(),
+            v: field!(_a0, v).with_mut(std::mem::take),
         }
     }
 }
@@ -28,8 +28,8 @@ impl Default for UserDefined {
     fn default() -> Self {
         {
             UserDefined {
-                a: unimplemented!(),
-                v: unimplemented!(),
+                a: std::array::from_fn::<_, 1_usize, _>(|_| 0_i32).to_vec(),
+                v: Default::default(),
             }
         }
     }
@@ -39,13 +39,13 @@ impl Default for UserDefined {
 pub struct FieldIsLibcType {
     #[offset(0)]
     #[byte_size(16)]
-    pub addr: (),
+    pub addr: libcc2rs::Sockaddr,
 }
 impl Default for FieldIsLibcType {
     fn default() -> Self {
         {
             FieldIsLibcType {
-                addr: unimplemented!(),
+                addr: Default::default(),
             }
         }
     }
@@ -54,41 +54,45 @@ pub fn main() {
     __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
-fn main_0() -> () {
-    let p: Value<()> = Rc::new(RefCell::new(unimplemented!()));
-    (*p.borrow_mut()).fd = -1_();
-    (*p.borrow_mut()).events = 0_();
-    (*p.borrow_mut()).revents = 2_();
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    let ia: Value<()> = Rc::new(RefCell::new(unimplemented!()));
-    (*ia.borrow_mut()).s_addr = 1_();
-    unimplemented!();
-    let t: Value<()> = Rc::new(RefCell::new(unimplemented!()));
-    (*t.borrow_mut()).tm_year = 124_();
-    (*t.borrow_mut()).tm_mon = 5_();
-    (*t.borrow_mut()).tm_mday = 15_();
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    let st: Value<()> = Rc::new(RefCell::new(unimplemented!()));
-    (*st.borrow_mut()).st_size = 1024_();
-    unimplemented!();
-    let mut ud: UserDefined = <UserDefined>::default();
-    unimplemented!();
-    unimplemented!();
+fn main_0() -> i32 {
+    let p: Value<libcc2rs::Pollfd> = Rc::new(RefCell::new(Default::default()));
+    (*p.borrow_mut()).fd = -1_i32;
+    (*p.borrow_mut()).events = 0_i16;
+    (*p.borrow_mut()).revents = 2_i16;
+    assert!(({ (*p.borrow()).fd } == -1_i32));
+    assert!((({ (*p.borrow()).events } as i32) == 0));
+    assert!((({ (*p.borrow()).revents } as i32) == 2));
+    let ia: Value<libcc2rs::InAddr> = Rc::new(RefCell::new(Default::default()));
+    (*ia.borrow_mut()).s_addr = (1 as ::libc::in_addr_t);
+    assert!(({ (*ia.borrow()).s_addr } == (1 as ::libc::in_addr_t)));
+    let t: Value<libcc2rs::Tm> = Rc::new(RefCell::new(Default::default()));
+    (*t.borrow_mut()).tm_year = 124;
+    (*t.borrow_mut()).tm_mon = 5;
+    (*t.borrow_mut()).tm_mday = 15;
+    assert!(({ (*t.borrow()).tm_year } == 124));
+    assert!(({ (*t.borrow()).tm_mon } == 5));
+    assert!(({ (*t.borrow()).tm_mday } == 15));
+    let st: Value<libcc2rs::Stat> = Rc::new(RefCell::new(Default::default()));
+    (*st.borrow_mut()).st_size = (1024 as ::libc::off_t);
+    assert!(({ (*st.borrow()).st_size } == (1024 as ::libc::off_t)));
+    let ud: Value<UserDefined> = Rc::new(RefCell::new(<UserDefined>::default()));
+    assert!(((vec_elem!(ud.as_pointer(), a, 0_usize).read()) == 0));
+    assert!(((*ud.borrow()).v.len() == 0_usize));
     let mut filt: FieldIsLibcType = <FieldIsLibcType>::default();
-    unimplemented!();
-    return 0_();
+    assert!(((filt.addr.sa_family as i32) == 0));
+    return 0;
 }
 pub trait UserDefinedImpl {
     fn move_assign(&self, _a0: Ptr<UserDefined>) -> Ptr<UserDefined>;
 }
 impl UserDefinedImpl for Ptr<UserDefined> {
     fn move_assign(&self, _a0: Ptr<UserDefined>) -> Ptr<UserDefined> {
-        field!((*self), a).write({ { (*_a0.upgrade().deref()).a.clone() } });
-        unimplemented!();
+        field_ref!((*self), a)
+            .as_pointer()
+            .write(field!(_a0, a).with_mut(std::mem::take));
+        field_ref!((*self), v)
+            .as_pointer()
+            .write(field!(_a0, v).with_mut(std::mem::take));
         return (*self).clone();
     }
 }

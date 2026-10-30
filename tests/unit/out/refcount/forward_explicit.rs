@@ -6,33 +6,34 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-pub type Overload = ();
+pub type Overload = u32;
 pub const Overload_kLvalueOverload: Overload = 1;
 pub const Overload_kRvalueOverload: Overload = 2;
 pub const Overload_kIntLvalueOverload: Overload = 3;
 pub const Overload_kIntRvalueOverload: Overload = 4;
-#[derive(Record, ByteRepr, VaArg, FnPtrArg, MoveCtor, Default)]
+#[derive(Record, ByteRepr, VaArg, FnPtrArg, MoveCtor, CppFrom, Default)]
+#[cpp_from(i32, new, value)]
 #[byte_size(12)]
 pub struct Tracked {
     #[offset(0)]
-    pub v: (),
+    pub v: i32,
     #[offset(4)]
-    pub copies: (),
+    pub copies: i32,
     #[offset(8)]
-    pub moves: (),
+    pub moves: i32,
 }
 impl Tracked {
-    pub fn new(mut v: ()) -> Self {
+    pub fn new(mut v: i32) -> Self {
         Self {
             v: v,
-            copies: 0_(),
-            moves: 0_(),
+            copies: 0,
+            moves: 0,
         }
     }
     pub fn copy_from(o: Ptr<Tracked>) -> Self {
         Self {
             v: o.with(|__s| __s.v),
-            copies: (o.with(|__s| __s.copies) + 1_()),
+            copies: (o.with(|__s| __s.copies) + 1),
             moves: o.with(|__s| __s.moves),
         }
     }
@@ -40,9 +41,9 @@ impl Tracked {
         let __this: Tracked = Self {
             v: o.with(|__s| __s.v),
             copies: o.with(|__s| __s.copies),
-            moves: (o.with(|__s| __s.moves) + 1_()),
+            moves: (o.with(|__s| __s.moves) + 1),
         };
-        field!(o, v).write(0_());
+        field!(o, v).write(0);
         __this
     }
 }
@@ -62,10 +63,10 @@ pub fn chosen_overload_0(_a0: Ptr<Tracked>) -> Overload {
 pub fn chosen_overload_1(_a0: Ptr<Tracked>) -> Overload {
     return Overload_kRvalueOverload;
 }
-pub fn chosen_overload_2(_a0: Ptr<()>) -> Overload {
+pub fn chosen_overload_2(_a0: Ptr<i32>) -> Overload {
     return Overload_kIntLvalueOverload;
 }
-pub fn chosen_overload_3(_a0: Ptr<()>) -> Overload {
+pub fn chosen_overload_3(_a0: Ptr<i32>) -> Overload {
     return Overload_kIntRvalueOverload;
 }
 pub fn copy_or_move_into_param_4(t: Tracked) -> Tracked {
@@ -76,31 +77,41 @@ pub fn main() {
     __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
-fn main_0() -> () {
-    let a: Value<Tracked> = Rc::new(RefCell::new(Tracked::new({ 5_() })));
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    let b: Value<Tracked> = Rc::new(RefCell::new(Tracked::new({ 6_() })));
+fn main_0() -> i32 {
+    let a: Value<Tracked> = Rc::new(RefCell::new(Tracked::new({ 5 })));
+    assert!(
+        ((({ chosen_overload_0(a.as_pointer(),) }) as i32) == (Overload_kLvalueOverload as i32))
+    );
+    assert!(({ (*a.borrow()).v } == 5));
+    assert!(
+        ((({ chosen_overload_1(a.as_pointer(),) }) as i32) == (Overload_kRvalueOverload as i32))
+    );
+    assert!(({ (*a.borrow()).v } == 5));
+    let b: Value<Tracked> = Rc::new(RefCell::new(Tracked::new({ 6 })));
     let mut moved: Tracked =
         ({ copy_or_move_into_param_4(Tracked::move_from({ b.as_pointer() })) });
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    let c: Value<Tracked> = Rc::new(RefCell::new(Tracked::new({ 7_() })));
+    assert!((moved.v == 6));
+    assert!((moved.copies == 0));
+    assert!((moved.moves == 2));
+    assert!(({ (*b.borrow()).v } == 0));
+    let c: Value<Tracked> = Rc::new(RefCell::new(Tracked::new({ 7 })));
     let mut copied: Tracked =
         ({ copy_or_move_into_param_4(Tracked::copy_from({ c.as_pointer() })) });
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    let i: Value<()> = Rc::new(RefCell::new(8_()));
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    unimplemented!();
-    return 0_();
+    assert!((copied.v == 7));
+    assert!((copied.copies == 1));
+    assert!((copied.moves == 1));
+    assert!(({ (*c.borrow()).v } == 7));
+    let i: Value<i32> = Rc::new(RefCell::new(8));
+    assert!(
+        ((({ chosen_overload_2(i.as_pointer(),) }) as i32) == (Overload_kIntLvalueOverload as i32))
+    );
+    assert!(
+        ((({ chosen_overload_3(i.as_pointer(),) }) as i32) == (Overload_kIntRvalueOverload as i32))
+    );
+    assert!(
+        ((({ chosen_overload_3(i.as_pointer(),) }) as i32) == (Overload_kIntRvalueOverload as i32))
+    );
+    assert!(((*i.borrow()) == 8));
+    return 0;
 }
 pub fn __cpp2rust_init_globals() {}

@@ -6,32 +6,40 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-pub fn All_0(arr: Ptr<()>, mut N: (), mut element: ()) {
-    let mut all: () = unimplemented!();
-    let mut i: () = 0_();
+pub fn All_0(arr: Ptr<Option<Value<Box<[i32]>>>>, mut N: i32, mut element: i32) {
+    let all: Value<Option<Value<Box<[i32]>>>> = Rc::new(RefCell::new(Some(Rc::new(RefCell::new(
+        (0..(N as usize)).map(|_| 0_i32).collect::<Box<[_]>>(),
+    )))));
+    let mut i: i32 = 0;
     'loop_: while (i < N) {
-        unimplemented!().write(element);
+        ((*all.borrow()).as_pointer() as Ptr<i32>)
+            .offset((i as usize) as isize)
+            .write(element);
         i.prefix_inc();
     }
-    unimplemented!();
+    arr.write((*all.borrow_mut()).take());
 }
-pub fn Consume_1(mut arr: (), mut N: ()) -> () {
-    let sum: Value<()> = Rc::new(RefCell::new(0_()));
-    let mut i: () = -1_();
+pub fn Consume_1(mut arr: Option<Value<Box<[i32]>>>, mut N: i32) -> i32 {
+    let mut sum: i32 = 0;
+    let mut i: i32 = -1_i32;
     'loop_: while (i.prefix_inc() < N) {
-        (*sum.borrow_mut()) += (unimplemented!().read());
+        sum += ((arr.as_pointer() as Ptr<i32>)
+            .offset((i as usize) as isize)
+            .read());
     }
-    return (*sum.borrow());
+    return sum;
 }
 pub fn main() {
     __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
-fn main_0() -> () {
-    let mut N: () = 10_();
-    let arr: Value<()> = Rc::new(RefCell::new(unimplemented!()));
-    ({ All_0(arr.as_pointer(), N, 1_()) });
-    unimplemented!();
-    return 0_();
+fn main_0() -> i32 {
+    let mut N: i32 = 10;
+    let arr: Value<Option<Value<Box<[i32]>>>> = Rc::new(RefCell::new(Some(Rc::new(RefCell::new(
+        (0..(N as usize)).map(|_| 0_i32).collect::<Box<[_]>>(),
+    )))));
+    ({ All_0(arr.as_pointer(), N, 1) });
+    assert!((({ Consume_1((*arr.borrow_mut()).take(), N,) }) == 10));
+    return 0;
 }
 pub fn __cpp2rust_init_globals() {}

@@ -6,24 +6,25 @@ use std::collections::BTreeMap;
 use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
-pub unsafe fn sum_0(mut n: (), __args: Box<[VaArg]>) -> () {
+pub unsafe fn sum_0(mut n: i32, __args: Box<[VaArg]>) -> i32 {
     let mut ap: *const VaArg = ::std::ptr::null();
     ap = __args.as_ptr();
     let mut guard: Guard_1 = Guard_1::new({ &mut ap });
     let _dtor_guard = ScopedDestructorUnsafe::new(&raw mut guard, Guard_1::destructor);
-    let mut total: () = 0_();
-    let mut i: () = 0_();
+    let mut total: i32 = 0;
+    let mut i: i32 = 0;
     'loop_: while ((i) < (n)) {
-        total += (*guard.ap).arg::<()>();
+        total += (*guard.ap).arg::<i32>();
         i.prefix_inc();
     }
     return total;
 }
 #[repr(C)]
-#[derive(Clone, VaArg, FnPtrArg, DestructorUnsafe, Default)]
+#[derive(Clone, VaArg, FnPtrArg, CppFromUnsafe, DestructorUnsafe, Default)]
+#[cpp_from(*const VaArg , new, mut_ptr)]
 pub struct Guard_1 {
     pub ap: *mut *const VaArg,
-    pub active: (),
+    pub active: bool,
 }
 impl Guard_1 {
     pub unsafe fn new(val: *mut *const VaArg) -> Self {
@@ -37,16 +38,16 @@ impl Guard_1 {
         if self.active {}
     }
 }
-pub unsafe fn sum_ptr_2(mut n: (), __args: Box<[VaArg]>) -> () {
+pub unsafe fn sum_ptr_2(mut n: i32, __args: Box<[VaArg]>) -> i32 {
     let mut ap: *const VaArg = ::std::ptr::null();
     ap = __args.as_ptr();
     let mut cursor: Cursor_3 = Cursor_3 {
         ap: (&mut ap as *mut *const VaArg),
     };
-    let mut total: () = 0_();
-    let mut i: () = 0_();
+    let mut total: i32 = 0;
+    let mut i: i32 = 0;
     'loop_: while ((i) < (n)) {
-        total += (*cursor.ap).arg::<()>();
+        total += (*cursor.ap).arg::<i32>();
         i.prefix_inc();
     }
     return total;
@@ -62,9 +63,9 @@ pub fn main() {
         std::process::exit(main_0() as i32);
     }
 }
-unsafe fn main_0() -> () {
-    unimplemented!();
-    unimplemented!();
-    return 0_();
+unsafe fn main_0() -> i32 {
+    assert!(((unsafe { sum_0(3, Box::new([(1).into(), (2).into(), (3).into(),])) }) == (6)));
+    assert!(((unsafe { sum_ptr_2(2, Box::new([(4).into(), (5).into(),])) }) == (9)));
+    return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}
