@@ -20,6 +20,7 @@ fn main() {
     rule_dirs.sort();
 
     // Rebuild when a rule directory changes, so newly added shim.rs files are picked up
+    println!("cargo:rerun-if-changed={}", rules_dir.display());
     for d in &rule_dirs {
         println!("cargo:rerun-if-changed={}", d.display());
     }
