@@ -64,3 +64,41 @@ unsafe fn f104<T1: UnsafeCppInputIterator<T2>, T2: PartialEq + Clone>(a0: T1, a1
         __write
     }
 }
+
+unsafe fn f16<T1: UnsafeCppInputIterator<T3>, T2, T3: PartialEq<T2>>(a0: T1, a1: T1, a2: T2) -> T1 {
+    let mut __it = a0;
+    let __last = a1;
+    let __value = &a2;
+    while __it != __last && *__it.iter_deref() != *__value {
+        __it.iter_inc();
+    }
+    __it
+}
+
+unsafe fn f101<T1: UnsafeCppRandomAccessIterator<T3>, T2, T3>(a0: T1, a1: T1, a2: T2)
+where
+    T2: Callable2<*const T3, *const T3, bool>,
+{
+    let __first = a0;
+    let __n = a1.iter_distance(&__first);
+    let __cmp = a2;
+    let mut __order: Vec<isize> = (0..__n).collect();
+    __order.sort_by(|&__x, &__y| {
+        let __a = __first.iter_at(__x) as *const _;
+        let __b = __first.iter_at(__y) as *const _;
+        if __cmp.call(__a, __b) {
+            std::cmp::Ordering::Less
+        } else if __cmp.call(__b, __a) {
+            std::cmp::Ordering::Greater
+        } else {
+            std::cmp::Ordering::Equal
+        }
+    });
+    let __values: Vec<_> = __order
+        .iter()
+        .map(|&__i| std::ptr::read(__first.iter_at(__i)))
+        .collect();
+    for (__i, __v) in (0..__n).zip(__values) {
+        std::ptr::write(__first.iter_at(__i), __v);
+    }
+}

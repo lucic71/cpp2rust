@@ -139,11 +139,8 @@ unsafe fn f193(a0: Vec<libc::c_char>, a1: *const libc::c_char) -> Vec<libc::c_ch
     __tmp2
 }
 
-unsafe fn f203(a0: Vec<libc::c_char>, a1: *const libc::c_char) -> bool {
-    a0 == {
-        let s = a1;
-        std::slice::from_raw_parts(s, (0..).take_while(|&i| *s.add(i) != 0).count() + 1).to_vec()
-    }
+fn t1() -> Vec<libc::c_char> {
+    vec![0]
 }
 
 fn t3() -> libc::c_char {
@@ -152,4 +149,81 @@ fn t3() -> libc::c_char {
 
 fn t5() -> usize {
     0_usize
+}
+
+fn t6() -> isize {
+    0_isize
+}
+
+fn t7<T1>() -> *mut T1 {
+    ::std::ptr::null_mut()
+}
+
+fn t8<T1>() -> *const T1 {
+    ::std::ptr::null()
+}
+
+fn t9<T1>() -> *mut T1 {
+    ::std::ptr::null_mut()
+}
+
+fn t11<T1>() -> UnsafeRandomAccessIterator<T1> {
+    UnsafeRandomAccessIterator::default()
+}
+
+fn t12<T1>() -> UnsafeRandomAccessIterator<T1> {
+    UnsafeRandomAccessIterator::default()
+}
+
+unsafe fn f148<T1, T2, T3>(a0: *const libc::c_char, a1: T3) -> Vec<libc::c_char> {
+    let __s = a0;
+    std::slice::from_raw_parts(__s, (0..).take_while(|&__i| *__s.add(__i) != 0).count() + 1).to_vec()
+}
+
+unsafe fn f16<T1, T2, T3>(a0: *const libc::c_char, a1: usize, a2: T3) -> Vec<libc::c_char> {
+    std::slice::from_raw_parts(a0, a1 as usize)
+        .to_vec()
+        .iter()
+        .copied()
+        .chain(std::iter::once(0))
+        .collect()
+}
+
+unsafe fn f149<T1, T2, T3>(a0: usize, a1: libc::c_char, a2: T3) -> Vec<libc::c_char> {
+    vec![a1; (a0) as usize]
+        .iter()
+        .cloned()
+        .chain(std::iter::once(0))
+        .collect()
+}
+
+unsafe fn f122<T1, T2, T3>(a0: Vec<libc::c_char>, a1: *const libc::c_char, a2: usize) -> usize {
+    let __n = a0.len().saturating_sub(1);
+    let __end = a2.saturating_add(1).min(__n);
+    match a0.iter().take(__end).rposition(|&__c| {
+        ::std::ffi::CStr::from_ptr(a1)
+            .to_str()
+            .unwrap()
+            .contains(__c as u8 as char)
+    }) {
+        Some(__idx) => __idx,
+        None => usize::MAX,
+    }
+}
+
+unsafe fn f203<T1, T2, T3>(a0: Vec<libc::c_char>, a1: *const libc::c_char) -> bool {
+    a0 == {
+        let __s = a1;
+        std::slice::from_raw_parts(__s, (0..).take_while(|&__i| *__s.add(__i) != 0).count() + 1).to_vec()
+    }
+}
+
+unsafe fn f51<T1, T2, T3>(mut a0: &mut Vec<libc::c_char>, a1: usize) -> *mut libc::c_char {
+    let __idx = a1 as usize;
+    let __v: &mut Vec<libc::c_char> = &mut a0;
+    __v.as_mut_ptr().add(__idx)
+}
+
+unsafe fn f183<T1, T2, T3>() -> usize {
+    usize::MAX
 }

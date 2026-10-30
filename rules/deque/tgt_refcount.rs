@@ -20,3 +20,11 @@ fn f38<T1>(a0: Ptr<T1>) -> Ptr<T1> {
 fn f40<T1>(a0: Ptr<T1>) -> Ptr<T1> {
     a0.to_last()
 }
+
+fn t5<T1>() -> Ptr<T1> {
+    Ptr::null()
+}
+
+fn t6<T1>() -> Ptr<T1> {
+    Ptr::null()
+}

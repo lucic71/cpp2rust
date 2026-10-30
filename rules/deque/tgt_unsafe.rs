@@ -47,7 +47,27 @@ unsafe fn f46<T1>(a0: &mut Vec<T1>) -> T1 {
     a0.remove(0)
 }
 
-unsafe fn f61<T1>(a0: &mut Vec<T1>, a1: T1) {
-    let __init = a1;
+unsafe fn f61<T1>(a0: &mut Vec<T1>, init: T1) {
+    let __init = init;
     a0.push(__init)
+}
+
+fn t1<T1>() -> Vec<T1> {
+    Default::default()
+}
+
+fn t2<T1>() -> T1 {
+    unimplemented!()
+}
+
+fn t11() -> usize {
+    0_usize
+}
+
+fn t5<T1>() -> *mut T1 {
+    ::std::ptr::null_mut()
+}
+
+fn t6<T1>() -> *const T1 {
+    ::std::ptr::null()
 }

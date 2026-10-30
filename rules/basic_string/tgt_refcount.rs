@@ -142,10 +142,70 @@ fn f193(a0: Vec<i8>, a1: Ptr<i8>) -> Vec<i8> {
     r
 }
 
-fn f203(a0: Vec<i8>, a1: Ptr<i8>) -> bool {
-    a1.with_c_str(|__s| a0[..a0.len().saturating_sub(1)] == *__s)
+fn t1() -> Vec<i8> {
+    vec![0]
 }
 
 fn t3() -> i8 {
     0_i8
+}
+
+fn t7<T1>() -> Ptr<T1> {
+    Ptr::null()
+}
+
+fn t8<T1>() -> Ptr<T1> {
+    Ptr::null()
+}
+
+fn t9<T1>() -> Ptr<T1> {
+    Ptr::null()
+}
+
+fn t11<T1>() -> RandomAccessIterator<T1> {
+    RandomAccessIterator::default()
+}
+
+fn t12<T1>() -> RandomAccessIterator<T1> {
+    RandomAccessIterator::default()
+}
+
+fn f148<T1, T2, T3>(a0: Ptr<i8>, a1: T3) -> Vec<i8> {
+    let mut __bytes = a0.to_c_bytes();
+    __bytes.push(0);
+    __bytes
+}
+
+fn f16<T1, T2, T3>(a0: Ptr<i8>, a1: usize, a2: T3) -> Vec<i8> {
+    let mut __v = Vec::with_capacity(a1 as usize + 1);
+    a0.with_slice(a1 as usize, |__s| __v.extend_from_slice(__s));
+    __v.push(0);
+    __v
+}
+
+fn f149<T1, T2, T3>(a0: usize, a1: i8, a2: T3) -> Vec<i8> {
+    vec![a1; (a0) as usize]
+        .iter()
+        .cloned()
+        .chain(std::iter::once(0))
+        .collect()
+}
+
+fn f122<T1, T2, T3>(a0: Vec<i8>, a1: Ptr<i8>, a2: usize) -> usize {
+    let __n = a0.len().saturating_sub(1);
+    let __end = a2.saturating_add(1).min(__n);
+    a1.with_c_str(|__lookup| {
+        a0.iter()
+            .take(__end)
+            .rposition(|&__x| __lookup.contains(&__x))
+            .unwrap_or(usize::MAX)
+    })
+}
+
+fn f203<T1, T2, T3>(a0: Vec<i8>, a1: Ptr<i8>) -> bool {
+    a1.with_c_str(|__s| a0[..a0.len().saturating_sub(1)] == *__s)
+}
+
+fn f51<T1, T2, T3>(a0: Ptr<i8>, a1: usize) -> Ptr<i8> {
+    a0.offset(a1 as isize)
 }

@@ -81,3 +81,15 @@ fn f52<T1: CppLess + 'static, T2: 'static>(a0: Ptr<Map<T1, (Value<T1>, Value<T2>
 fn f53<T1: CppLess + 'static, T2: 'static>(a0: Ptr<Map<T1, (Value<T1>, Value<T2>)>>, a1: Ptr<T1>) -> BidirectionalIterator<(Value<T1>, Value<T2>)> {
     a0.with(|__m: &Map<T1, (Value<T1>, Value<T2>)>| __m.find(&a1))
 }
+
+fn t1<T1, T2>() -> Map<T1, (Value<T1>, Value<T2>)> {
+    Map::new()
+}
+
+fn t12<T1, T2>() -> BidirectionalIterator<(Value<T1>, Value<T2>)> {
+    BidirectionalIterator::default()
+}
+
+fn t13<T1, T2>() -> BidirectionalIterator<(Value<T1>, Value<T2>)> {
+    BidirectionalIterator::default()
+}

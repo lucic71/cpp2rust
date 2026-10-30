@@ -5,6 +5,10 @@ unsafe fn f35(a0: Vec<libc::c_char>) -> Vec<libc::c_char> {
     a0
 }
 
+fn t2() -> Vec<libc::c_char> {
+    vec![0]
+}
+
 fn t4() -> Vec<libc::c_char> {
     vec![0]
 }

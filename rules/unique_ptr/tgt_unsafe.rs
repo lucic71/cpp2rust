@@ -1,8 +1,8 @@
 // Copyright (c) 2022-present INESC-ID.
 // Distributed under the MIT license that can be found in the LICENSE file.
 
-unsafe fn f2<T1>(a0: T1) -> Option<Box<T1>> {
-    Some(Box::new(a0))
+unsafe fn f2<T1>(init: T1) -> Option<Box<T1>> {
+    Some(Box::new(init))
 }
 
 unsafe fn f23<T1>(a0: &mut Option<Box<[T1]>>) -> Option<Box<[T1]>> {
@@ -74,4 +74,24 @@ unsafe fn f54<T1: Default>() -> Option<Box<T1>> {
 
 unsafe fn f55<T1>(a0: *mut T1) -> Option<Box<T1>> {
     Some(Box::from_raw(a0))
+}
+
+fn t1<T1>() -> Option<Box<[T1]>> {
+    None
+}
+
+fn t2<T1>() -> *mut T1 {
+    ::std::ptr::null_mut()
+}
+
+fn t5<T1>() -> Option<Box<T1>> {
+    None
+}
+
+fn t6<T1>() -> *mut T1 {
+    ::std::ptr::null_mut()
+}
+
+unsafe fn f14<T1, T2>(a0: &mut Option<Box<T1>>, a1: *mut ::libc::c_void) -> bool {
+    a0.is_none()
 }

@@ -8,3 +8,7 @@ unsafe fn f34(a0: u32) -> u32 {
 unsafe fn f41(a0: u32) -> u32 {
     a0
 }
+
+fn t3() -> u32 {
+    0_u32
+}

@@ -8,3 +8,11 @@ unsafe fn f1(a0: &mut ::std::fs::File) -> &mut ::std::fs::File {
 unsafe fn f3(a0: ::std::fs::File) -> ::std::fs::File {
     a0.try_clone().unwrap()
 }
+
+fn t1<T1>() -> ::std::fs::File {
+    ::std::fs::File::open("").unwrap()
+}
+
+fn t5() -> ::std::fs::File {
+    ::std::fs::File::open("").unwrap()
+}

@@ -168,7 +168,130 @@ unsafe fn f148<T1>(a0: &mut Vec<T1>) {
     a0.clear()
 }
 
-unsafe fn f153<T1>(a0: &mut Vec<T1>, a1: T1) {
-    let __init = a1;
+unsafe fn f153<T1>(a0: &mut Vec<T1>, init: T1) {
+    let __init = init;
     a0.push(__init)
+}
+
+fn t4() -> usize {
+    0_usize
+}
+
+fn t8() -> *mut bool {
+    ::std::ptr::null_mut()
+}
+
+fn t22<T1>() -> Vec<T1> {
+    Default::default()
+}
+
+fn t23<T1>() -> T1 {
+    unimplemented!()
+}
+
+fn t2() -> Vec<bool> {
+    Vec::new()
+}
+
+fn t6() -> bool {
+    false
+}
+
+fn t24<T1>() -> *mut T1 {
+    ::std::ptr::null_mut()
+}
+
+fn t25<T1>() -> *const T1 {
+    ::std::ptr::null()
+}
+
+fn t26<T1>() -> *mut T1 {
+    ::std::ptr::null_mut()
+}
+
+fn t27<T1>() -> *const T1 {
+    ::std::ptr::null()
+}
+
+fn t28<T1>() -> UnsafeRandomAccessIterator<T1> {
+    UnsafeRandomAccessIterator::default()
+}
+
+fn t29<T1>() -> UnsafeRandomAccessIterator<T1> {
+    UnsafeRandomAccessIterator::default()
+}
+
+fn t32() -> usize {
+    0_usize
+}
+
+fn t33() -> isize {
+    0_isize
+}
+
+unsafe fn f128<T1, T2>(mut a0: &mut Vec<T1>, a1: usize) -> *mut T1 {
+    let __idx = a1 as usize;
+    let __v: &mut Vec<T1> = &mut a0;
+    __v.as_mut_ptr().add(__idx)
+}
+
+unsafe fn f129<T1, T2>(a0: &Vec<T1>, a1: usize) -> *const T1 {
+    let __idx = a1 as usize;
+    let __v: &Vec<T1> = &a0;
+    __v.as_ptr().add(__idx)
+}
+
+unsafe fn f96<T1: Default, T2>(a0: usize, a1: T2) -> Vec<T1> {
+    (0..(a0) as usize)
+        .map(|_| <T1>::default())
+        .collect::<Vec<_>>()
+}
+
+unsafe fn f97<T1: Default + Clone, T2>(a0: usize, a1: T1, a2: T2) -> Vec<T1> {
+    vec![a1; a0 as usize]
+}
+
+unsafe fn f102<T1, T2>(a0: Vec<T1>, a1: T2) -> Vec<T1> {
+    a0
+}
+
+unsafe fn f149<T1: Clone, T2, T3: UnsafeCppInputIterator<T1>>(a0: T3, a1: T3, a2: T2) -> Vec<T1> {
+    let mut __v = Vec::new();
+    let mut __it = a0;
+    while __it != a1 {
+        __v.push((*__it.iter_deref()).clone());
+        __it.iter_inc();
+    }
+    __v
+}
+
+unsafe fn f155<T1: Clone, T2, T3: UnsafeCppInputIterator<T1>>(
+    a0: &mut Vec<T1>,
+    a1: UnsafeRandomAccessIterator<T1>,
+    a2: T3,
+    a3: T3,
+) -> UnsafeRandomAccessIterator<T1> {
+    let __off = a1.iter_distance(&UnsafeRandomAccessIterator::Vec(a0.as_mut_ptr())) as usize;
+    let mut __tmp = Vec::new();
+    let mut __it = a2;
+    while __it != a3 {
+        __tmp.push((*__it.iter_deref()).clone());
+        __it.iter_inc();
+    }
+    a0.splice(__off..__off, __tmp);
+    UnsafeRandomAccessIterator::Vec(a0.as_mut_ptr().add(__off))
+}
+
+unsafe fn f12<T1>(a0: Vec<bool>, a1: T1) -> Vec<bool> {
+    a0
+}
+
+unsafe fn f34<T1>(a0: &mut Vec<bool>, a1: usize) -> bool {
+    let __idx = a1 as usize;
+    let __v: &Vec<bool> = &a0;
+    __v[__idx]
+}
+
+unsafe fn f66<T1>(a0: bool) -> bool {
+    a0
 }

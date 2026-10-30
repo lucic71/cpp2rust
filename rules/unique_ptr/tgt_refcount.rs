@@ -5,8 +5,8 @@ use libcc2rs::*;
 use std::cell::RefCell;
 use std::rc::Rc;
 
-fn f2<T1>(a0: T1) -> Option<Value<T1>> {
-    Some(Rc::new(RefCell::new(a0)))
+fn f2<T1>(init: T1) -> Option<Value<T1>> {
+    Some(Rc::new(RefCell::new(init)))
 }
 
 fn f23<T1>(a0: &mut Option<Value<Box<[T1]>>>) -> Option<Value<Box<[T1]>>> {
@@ -68,4 +68,24 @@ fn f54<T1>() -> Option<Value<T1>> {
 
 fn f55<T1>(a0: Ptr<T1>) -> Option<Value<T1>> {
     a0.to_owned_opt()
+}
+
+fn t1<T1>() -> Option<Value<Box<[T1]>>> {
+    None
+}
+
+fn t2<T1>() -> Ptr<T1> {
+    Ptr::null()
+}
+
+fn t5<T1>() -> Option<Value<T1>> {
+    None
+}
+
+fn t6<T1>() -> Ptr<T1> {
+    Ptr::null()
+}
+
+fn f14<T1, T2>(a0: Option<Value<T1>>, a1: AnyPtr) -> bool {
+    a0.is_none()
 }

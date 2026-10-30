@@ -61,3 +61,35 @@ fn f104<T1: CppInputIterator<T2>, T2: CppEq + Clone + ByteRepr>(a0: T1, a1: T1) 
         __write
     }
 }
+
+fn f16<T1: CppInputIterator<T3>, T2, T3: CppEq<T2>>(a0: T1, a1: T1, a2: Ptr<T2>) -> T1 {
+    let mut __it = a0;
+    let __last = a1;
+    let __value = a2;
+    while __it != __last && !CppEq::equal(&__it.iter_deref(), &__value) {
+        __it.iter_inc();
+    }
+    __it
+}
+
+fn f101<T1: CppRandomAccessIterator<T3>, T2, T3: Clone + ByteRepr>(a0: T1, a1: T1, a2: T2)
+where
+    T2: Callable2<Ptr<T3>, Ptr<T3>, bool>,
+{
+    let __first = a0;
+    let __n = a1.iter_distance(&__first);
+    let __cmp = a2;
+    let mut __order: Vec<isize> = (0..__n).collect();
+    __order.sort_by(|&__x, &__y| {
+        let __a = __first.iter_at(__x);
+        let __b = __first.iter_at(__y);
+        if __cmp.call(__a.clone(), __b.clone()) {
+            std::cmp::Ordering::Less
+        } else if __cmp.call(__b, __a) {
+            std::cmp::Ordering::Greater
+        } else {
+            std::cmp::Ordering::Equal
+        }
+    });
+    reorder(__order, |__i| __first.iter_at(__i));
+}

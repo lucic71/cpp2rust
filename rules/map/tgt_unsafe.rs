@@ -78,3 +78,27 @@ unsafe fn f52<T1: Ord, T2>(a0: &mut UnsafeMap<T1, (T1, T2)>, a1: T1) -> UnsafeBi
 unsafe fn f53<T1: Ord, T2>(a0: UnsafeMap<T1, (T1, T2)>, a1: T1) -> UnsafeBidirectionalIterator<(T1, T2)> {
     a0.find(&a1)
 }
+
+fn t1<T1, T2>() -> UnsafeMap<T1, (T1, T2)> {
+    UnsafeMap::new()
+}
+
+fn t2<T1>() -> T1 {
+    unimplemented!()
+}
+
+fn t3<T1, T2>() -> T2 {
+    unimplemented!()
+}
+
+fn t14() -> usize {
+    0_usize
+}
+
+fn t12<T1, T2>() -> UnsafeBidirectionalIterator<(T1, T2)> {
+    UnsafeBidirectionalIterator::default()
+}
+
+fn t13<T1, T2>() -> UnsafeBidirectionalIterator<(T1, T2)> {
+    UnsafeBidirectionalIterator::default()
+}
