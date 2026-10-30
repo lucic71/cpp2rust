@@ -24,6 +24,7 @@
 
 #include "converter/converter_lib.h"
 #include "converter/rules/decls.h"
+#include "logging.h"
 #include "converter/rules/expr_matcher.h"
 #include "converter/rules/rule_keys.h"
 #include "converter/rules/rules_loader.h"
@@ -408,11 +409,24 @@ TypeRuleMatch findType(clang::QualType use) {
 Matcher::Bindings getBindings(const clang::NamedDecl *rule,
                               llvm::ArrayRef<clang::TemplateArgument> args) {
   Matcher::Bindings bindings;
+  log() << "rule match: " << rule->getQualifiedNameAsString();
   auto tmpl = llvm::dyn_cast<clang::TemplateDecl>(rule);
   if (!tmpl) {
+    log() << '\n';
     return bindings;
   }
   auto params = tmpl->getTemplateParameters();
+  for (unsigned i = 0; i < params->size() && i < args.size(); ++i) {
+    log() << ' ' << params->getParam(i)->getName() << '=';
+    if (args[i].getKind() == clang::TemplateArgument::Type) {
+      log() << args[i].getAsType().getAsString();
+    } else if (args[i].getKind() == clang::TemplateArgument::Integral) {
+      log() << args[i].getAsIntegral();
+    } else {
+      log() << "<non-type>";
+    }
+  }
+  log() << '\n';
   for (unsigned i = 0; i < params->size() && i < args.size(); ++i) {
     auto name = params->getParam(i)->getName();
     unsigned n = 0;
