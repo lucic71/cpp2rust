@@ -730,6 +730,7 @@ impl<'a> TypeIrBuilder<'a> {
         TypeIr {
             init: init_ctx.finish(),
             generic,
+            generics: builder.generics(),
             type_info: TypeInfo {
                 ty: ty.syntax().text().to_string(),
                 is_refcount_pointer,

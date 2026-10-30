@@ -148,6 +148,8 @@ pub struct TypeIr {
     pub init: Vec<BodyFragment>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub generic: Option<i32>,
+    #[serde(skip_serializing_if = "BTreeMap::is_empty", default)]
+    pub generics: BTreeMap<String, Vec<Bound>>,
     #[serde(flatten)]
     pub type_info: TypeInfo,
 }

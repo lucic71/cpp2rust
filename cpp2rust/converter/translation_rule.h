@@ -116,6 +116,7 @@ struct ExprRule {
 struct TypeRule {
   std::vector<BodyFragment> initializer; // Rust initializer expression
   unsigned generic = 0;
+  std::vector<std::vector<Bound>> generics;
   TypeInfo type_info;
 
   void dump() const;

@@ -130,10 +130,11 @@ bool isBoundArgument(const TranslationRule::ExprRule &rule, unsigned n) {
   });
 }
 
-unsigned iteratorOverGeneric(const TranslationRule::ExprRule &rule,
-                             unsigned n) {
-  for (unsigned i = 0; i < rule.generics.size(); ++i) {
-    for (const auto &bound : rule.generics[i]) {
+unsigned iteratorOverGeneric(
+    const std::vector<std::vector<TranslationRule::Bound>> &generics,
+    unsigned n) {
+  for (unsigned i = 0; i < generics.size(); ++i) {
+    for (const auto &bound : generics[i]) {
       if (llvm::StringRef(bound.trait_name).ends_with("Iterator") &&
           llvm::is_contained(bound.args, n)) {
         return i + 1;
@@ -498,6 +499,25 @@ Matcher::Match<TranslationRule::ExprRule> Search(clang::ASTContext &ctx,
           getBindings(match.rule_decl->decl, match.args)};
 }
 
+// Element type of an iterator class, read from its value_type member.
+clang::QualType iteratorValueType(clang::QualType iterator) {
+  iterator = iterator.getNonReferenceType().getUnqualifiedType();
+  if (iterator->isPointerType()) {
+    return iterator->getPointeeType().getUnqualifiedType();
+  }
+  auto *record = iterator->getAsCXXRecordDecl();
+  assert(record && record->hasDefinition() && "iterator is not a class");
+  auto &ctx = record->getASTContext();
+  for (auto *decl :
+       record->getDefinition()->lookup(&ctx.Idents.get("value_type"))) {
+    if (auto *alias = llvm::dyn_cast<clang::TypedefNameDecl>(decl)) {
+      return alias->getUnderlyingType();
+    }
+  }
+  assert(0 && "iterator class has no value_type");
+  return {};
+}
+
 clang::QualType iteratorElementType(clang::ASTContext &ctx,
                                     clang::QualType iterator) {
   iterator = iterator.getNonReferenceType().getUnqualifiedType();
@@ -505,10 +525,17 @@ clang::QualType iteratorElementType(clang::ASTContext &ctx,
     return iterator->getPointeeType().getUnqualifiedType();
   }
   auto [rule, bindings] = Search(ctx, iterator);
-  assert(rule && !bindings.empty() &&
-         bindings[0].getKind() == clang::TemplateArgument::Type &&
-         "iterator type rule declares no element generic T1");
-  return bindings[0].getAsType();
+  assert(rule && "iterator has no type rule");
+  unsigned element = 1;
+  for (unsigned n = 1; n <= rule->generics.size(); ++n) {
+    if (iteratorOverGeneric(rule->generics, n)) {
+      element = n;
+    }
+  }
+  assert(element <= bindings.size() &&
+         bindings[element - 1].getKind() == clang::TemplateArgument::Type &&
+         "iterator type rule declares no element generic");
+  return bindings[element - 1].getAsType();
 }
 
 clang::QualType GetGenericType(clang::ASTContext &ctx, const clang::Expr *expr,
@@ -519,7 +546,7 @@ clang::QualType GetGenericType(clang::ASTContext &ctx, const clang::Expr *expr,
       bindings[n - 1].getKind() == clang::TemplateArgument::Type) {
     return bindings[n - 1].getAsType();
   }
-  auto iterator = iteratorOverGeneric(*rule, n);
+  auto iterator = iteratorOverGeneric(rule->generics, n);
   assert(iterator &&
          "generic is neither bound by the src nor the element of an iterator");
   return iteratorElementType(ctx, GetGenericType(ctx, expr, iterator));
@@ -571,6 +598,14 @@ Matcher::Match<TranslationRule::TypeRule> Search(clang::ASTContext &ctx,
   auto bindings = getBindings(match.rule_decl->decl, match.match.args);
   if (auto generic = match.rule_decl->rule.generic) {
     return Search(ctx, bindings.at(generic - 1).getAsType());
+  }
+  const auto &generics = match.rule_decl->rule.generics;
+  for (unsigned n = bindings.size() + 1; n <= generics.size(); ++n) {
+    auto iterator = iteratorOverGeneric(generics, n);
+    assert(iterator && iterator < n &&
+           "unbound type rule generic is not the element of an iterator");
+    bindings.emplace_back(
+        iteratorValueType(bindings[iterator - 1].getAsType()));
   }
   return {&match.rule_decl->rule, std::move(bindings)};
 }

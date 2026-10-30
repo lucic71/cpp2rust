@@ -290,31 +290,8 @@ void TypeRule::dump() const {
   }
 }
 
-ExprRule ParseExprRuleJSON(const llvm::json::Object &obj) {
-  ExprRule ir;
-
-  if (auto *params = obj.getObject("params")) {
-    for (auto &[key, val] : *params) {
-      if (auto *param_obj = val.getAsObject()) {
-        size_t id = atoi(llvm::StringRef(key).data() + 1);
-        ir.params.resize(std::max(ir.params.size(), id + 1));
-        ir.params[id] = ParseTypeInfoJSON(*param_obj);
-      }
-    }
-  }
-
-  if (auto *rt = obj.getObject("return_type")) {
-    ir.return_type = ParseTypeInfoJSON(*rt);
-  }
-
-  if (auto ms = obj.getBoolean("multi_statement")) {
-    ir.multi_statement = *ms;
-  }
-
-  if (auto v = obj.getBoolean("is_extern")) {
-    ir.is_extern = *v;
-  }
-
+std::vector<std::vector<Bound>> ParseGenericsJSON(const llvm::json::Object &obj) {
+  std::vector<std::vector<Bound>> result;
   if (auto *generics = obj.getObject("generics")) {
     for (auto &[key, val] : *generics) {
       auto *arr = val.getAsArray();
@@ -342,10 +319,39 @@ ExprRule ParseExprRuleJSON(const llvm::json::Object &obj) {
         bounds.push_back(std::move(parsed));
       }
       size_t id = atoi(llvm::StringRef(key).data() + 1) - 1; // starts in T1
-      ir.generics.resize(std::max(ir.generics.size(), id + 1));
-      ir.generics[id] = std::move(bounds);
+      result.resize(std::max(result.size(), id + 1));
+      result[id] = std::move(bounds);
     }
   }
+  return result;
+}
+
+ExprRule ParseExprRuleJSON(const llvm::json::Object &obj) {
+  ExprRule ir;
+
+  if (auto *params = obj.getObject("params")) {
+    for (auto &[key, val] : *params) {
+      if (auto *param_obj = val.getAsObject()) {
+        size_t id = atoi(llvm::StringRef(key).data() + 1);
+        ir.params.resize(std::max(ir.params.size(), id + 1));
+        ir.params[id] = ParseTypeInfoJSON(*param_obj);
+      }
+    }
+  }
+
+  if (auto *rt = obj.getObject("return_type")) {
+    ir.return_type = ParseTypeInfoJSON(*rt);
+  }
+
+  if (auto ms = obj.getBoolean("multi_statement")) {
+    ir.multi_statement = *ms;
+  }
+
+  if (auto v = obj.getBoolean("is_extern")) {
+    ir.is_extern = *v;
+  }
+
+  ir.generics = ParseGenericsJSON(obj);
 
   if (auto *body = obj.getArray("body")) {
     ir.body = ParseBodyFragmentsJSON(*body);
@@ -360,6 +366,7 @@ TypeRule ParseTypeRuleJSON(const llvm::json::Object &obj) {
     rule.initializer = ParseBodyFragmentsJSON(*init);
   if (auto generic = obj.getInteger("generic"))
     rule.generic = *generic;
+  rule.generics = ParseGenericsJSON(obj);
   rule.type_info = ParseTypeInfoJSON(obj);
   return rule;
 }
