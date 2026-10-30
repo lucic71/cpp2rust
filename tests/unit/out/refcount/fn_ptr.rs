@@ -25,8 +25,9 @@ pub fn ret_size_4(mut v: ()) -> () {
 pub fn call_fn_5(mut f: FnPtr<fn(()) -> ()>, mut v: ()) -> () {
     return ({ f.call(v) }).wrapping_mul(2_());
 }
-pub fn identity_hash_6(mut v: ()) -> () {
-    return v;
+pub fn identity_hash_6(v: ()) -> () {
+    let v: Value<()> = Rc::new(RefCell::new(v));
+    return (*v.borrow());
 }
 #[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(8)]

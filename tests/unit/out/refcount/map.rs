@@ -44,30 +44,30 @@ fn main_0() -> () {
     let mut x1: () = if unimplemented!() {
         0_()
     } else {
-        (*unimplemented!().borrow())
+        { ((*it.borrow()).read()).second }
     };
     unimplemented!();
     let mut x2: () = if unimplemented!() {
         0_()
     } else {
-        (*unimplemented!().borrow())
+        { ((*const_it.borrow()).read()).second }
     };
     unimplemented!();
     let mut x3: () = if unimplemented!() {
         0_()
     } else {
-        (*unimplemented!().borrow())
+        { ((*it.borrow()).read()).second }
     };
     unimplemented!();
     let mut x4: () = if unimplemented!() {
         0_()
     } else {
-        (*unimplemented!().borrow())
+        { ((*const_it.borrow()).read()).second }
     };
     unimplemented!();
     unimplemented!().write(5_());
     let it4: Value<()> = Rc::new(RefCell::new(unimplemented!()));
-    let mut p: Ptr<()> = (unimplemented!().as_pointer());
+    let mut p: Ptr<()> = (field_ptr!(it4.as_pointer(), second));
     let mut x5: () = (p.read());
     unimplemented!();
     unimplemented!();
@@ -146,7 +146,7 @@ fn main_0() -> () {
         let pair: Ptr<()> = unimplemented!();
         unimplemented!();
         unimplemented!();
-        last = (*unimplemented!().borrow());
+        last = pair.with(|__s| __s.first);
     }
     k = 0_();
     let value_0: Ptr<()> = unimplemented!();

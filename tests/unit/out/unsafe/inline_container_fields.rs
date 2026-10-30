@@ -47,7 +47,7 @@ impl State {
                     (*_a0).grid[(__i) as usize][(__i2) as usize]
                 })
             }),
-            arr: unimplemented!(),
+            arr: (*_a0).arr,
             elems: unimplemented!(),
             rows: unimplemented!(),
         };
@@ -56,7 +56,7 @@ impl State {
     pub unsafe fn move_assign(&mut self, _a0: *mut State) -> *mut State {
         self.count = (*_a0).count;
         unimplemented!();
-        unimplemented!();
+        self.arr = ((*_a0).arr).clone();
         unimplemented!();
         unimplemented!();
         return &mut (*(self as *mut State));
@@ -94,12 +94,12 @@ pub unsafe fn fill_1(mut s: *mut State) {
         }
         i.prefix_inc();
     }
-    (&mut (*s)).arr[(1_()) as usize] = 7_();
+    (*unimplemented!()) = 7_();
     unimplemented!();
     let mut i: () = 0_();
     'loop_: while ((i) < (3_())) {
-        (&mut (*s)).elems[(i) as usize].id = i;
-        (&mut (*s)).elems[(i) as usize].hist[(i) as usize] = ((10_()) * (i));
+        (*unimplemented!()).id = i;
+        (*unimplemented!()).hist[(i) as usize] = ((10_()) * (i));
         unimplemented!();
         i.prefix_inc();
     }
@@ -116,10 +116,10 @@ unsafe fn main_0() -> () {
     (unsafe { fill_1((&mut s as *mut State)) });
     unimplemented!();
     unimplemented!();
-    let mut e: *mut Elem = (&mut s.elems[(2_()) as usize] as *mut Elem);
+    let mut e: *mut Elem = (&mut (*unimplemented!()) as *mut Elem);
     let mut h: *mut () = (*e).hist.as_mut_ptr();
-    let mut c: *mut () = (&mut (&mut (*e)).coeffs[(1_()) as usize] as *mut ());
-    let mut id: *mut () = (&mut s.elems[(1_()) as usize].id as *mut ());
+    let mut c: *mut () = (&mut (*unimplemented!()) as *mut ());
+    let mut id: *mut () = (&mut (*unimplemented!()).id as *mut ());
     let mut k: () = 0_();
     'loop_: while ((k) < (4_())) {
         (*h.offset((k) as isize)) += k;
@@ -130,27 +130,26 @@ unsafe fn main_0() -> () {
     s.count = 3_();
     unimplemented!();
     unimplemented!();
-    let mut row: *mut () = (&mut s.rows[(0_()) as usize][(0_()) as usize] as *mut ());
+    let mut row: *mut () = (&mut (*unimplemented!()) as *mut ());
     (*row.offset((2_()) as isize)) = 9_();
     unimplemented!();
     let mut t: State = s.clone();
-    t.elems[(2_()) as usize].hist[(0_()) as usize] = 100_();
+    (*unimplemented!()).hist[(0_()) as usize] = 100_();
     t.grid[(0_()) as usize][(0_()) as usize] = 100_();
-    t.rows[(0_()) as usize][(0_()) as usize] = 100_();
+    (*unimplemented!()) = 100_();
     unimplemented!();
     unimplemented!();
     let mut p: *mut State = (&mut t as *mut State);
-    (&mut (*p)).elems[(0_()) as usize].hist[(3_()) as usize] =
-        (((*p).grid[(1_()) as usize][(1_()) as usize]) + ((&mut (*p)).arr[(1_()) as usize]));
+    (*unimplemented!()).hist[(3_()) as usize] =
+        (((*p).grid[(1_()) as usize][(1_()) as usize]) + (*unimplemented!()));
     unimplemented!();
     unimplemented!();
     unimplemented!();
     let mut elems: () = unimplemented!();
-    let mut first: *mut Elem = (&mut elems[(0_()) as usize] as *mut Elem);
+    let mut first: *mut Elem = (&mut (*unimplemented!()) as *mut Elem);
     unimplemented!();
-    elems[(1_()) as usize].coeffs[(1_()) as usize] = 4_();
-    elems[(1_()) as usize].hist[(2_()) as usize] =
-        ((elems[(1_()) as usize].coeffs[(1_()) as usize]) + (1_()));
+    (*unimplemented!()) = 4_();
+    (*unimplemented!()).hist[(2_()) as usize] = ((*unimplemented!()) + (1_()));
     unimplemented!();
     let mut moved: State = State::move_from({ &mut t });
     unimplemented!();

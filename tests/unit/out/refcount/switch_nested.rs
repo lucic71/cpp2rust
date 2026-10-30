@@ -7,40 +7,40 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
 pub fn nested_0(mut a: (), mut b: ()) -> () {
-    let mut r: () = 0_();
+    let r: Value<()> = Rc::new(RefCell::new(0_()));
     'switch: {
         match { a } {
             __v if __v == 1_() => {
                 'switch: {
                     match { b } {
                         __v if __v == 10_() => {
-                            r = 11_();
+                            (*r.borrow_mut()) = 11_();
                             break 'switch;
                         }
                         __v if __v == 20_() => {
-                            r = 12_();
+                            (*r.borrow_mut()) = 12_();
                             break 'switch;
                         }
                         _ => {
-                            r = 13_();
+                            (*r.borrow_mut()) = 13_();
                             break 'switch;
                         }
                     }
                 };
-                r += 1_();
+                (*r.borrow_mut()) += 1_();
                 break 'switch;
             }
             __v if __v == 2_() => {
-                r = 2_();
+                (*r.borrow_mut()) = 2_();
                 break 'switch;
             }
             _ => {
-                r = -1_();
+                (*r.borrow_mut()) = -1_();
                 break 'switch;
             }
         }
     };
-    return r;
+    return (*r.borrow());
 }
 pub fn main() {
     __cpp2rust_init_globals();

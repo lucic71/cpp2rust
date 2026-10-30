@@ -7,16 +7,16 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
 pub fn only_default_0(mut x: ()) -> () {
-    let mut r: () = 0_();
+    let r: Value<()> = Rc::new(RefCell::new(0_()));
     'switch: {
         match { x } {
             _ => {
-                r = 42_();
+                (*r.borrow_mut()) = 42_();
                 break 'switch;
             }
         }
     };
-    return r;
+    return (*r.borrow());
 }
 pub fn main() {
     __cpp2rust_init_globals();

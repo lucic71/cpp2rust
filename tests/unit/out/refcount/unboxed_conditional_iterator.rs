@@ -7,12 +7,12 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
 pub fn median_0(mut w: (), mut n: (), mut nw: ()) -> () {
-    let mut mx: () = if (w > n) { w } else { n };
-    let mut mn: () = ((w + n) - mx);
-    if (nw > mx) {
-        return mn;
-    } else if (nw < mn) {
-        return mx;
+    let mx: Value<()> = Rc::new(RefCell::new(if (w > n) { w } else { n }));
+    let mn: Value<()> = Rc::new(RefCell::new(((w + n) - (*mx.borrow()))));
+    if (nw > (*mx.borrow())) {
+        return (*mn.borrow());
+    } else if (nw < (*mn.borrow())) {
+        return (*mx.borrow());
     }
     return ((n + w) - nw);
 }
@@ -38,7 +38,7 @@ pub fn lehmer_2(mut sigma: Ptr<()>, mut len: (), mut code: Ptr<()>) {
     let mut i: () = 0_();
     'loop_: while (i < len) {
         let __rhs = i;
-        items[i] = __rhs;
+        unimplemented!().write(__rhs);
         i.prefix_inc();
     }
     let mut i: () = 0_();
@@ -52,13 +52,13 @@ pub fn lehmer_2(mut sigma: Ptr<()>, mut len: (), mut code: Ptr<()>) {
     }
 }
 pub fn sum_3(v: Ptr<()>) -> () {
-    let mut s: () = 0_();
+    let s: Value<()> = Rc::new(RefCell::new(0_()));
     let it: Value<()> = Rc::new(RefCell::new(unimplemented!()));
-    'loop_: while unimplemented!() {
-        s += (unimplemented!().read());
+    'loop_: while !(unimplemented!()) {
+        (*s.borrow_mut()) += (unimplemented!().read());
         unimplemented!();
     }
-    return s;
+    return (*s.borrow());
 }
 pub fn main() {
     __cpp2rust_init_globals();

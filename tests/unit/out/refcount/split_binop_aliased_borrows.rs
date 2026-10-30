@@ -11,9 +11,9 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> () {
-    let v: Value<()> = Rc::new(RefCell::new(unimplemented!()));
+    let mut v: () = unimplemented!();
     let p: Value<()> = Rc::new(RefCell::new(unimplemented!()));
-    let r: Ptr<()> = v.as_pointer().offset(1_());
+    let r: Ptr<()> = unimplemented!();
     let __rhs = (r.read());
     unimplemented!().write(__rhs);
     unimplemented!();

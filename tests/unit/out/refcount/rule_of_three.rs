@@ -72,13 +72,13 @@ impl Default for Buffer {
     }
 }
 pub fn sum_2(b: Ptr<Buffer>) -> () {
-    let mut s: () = 0_();
+    let s: Value<()> = Rc::new(RefCell::new(0_()));
     let mut i: () = 0_();
     'loop_: while ({ i } < { b.with(|__s| __s.size) }) {
-        s += (array_elem!(b, data, i).read());
+        (*s.borrow_mut()) += (array_elem!(b, data, i).read());
         i.prefix_inc();
     }
-    return s;
+    return (*s.borrow());
 }
 pub fn main() {
     __cpp2rust_init_globals();

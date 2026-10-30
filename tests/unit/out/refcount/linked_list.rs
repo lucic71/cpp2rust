@@ -16,13 +16,13 @@ pub struct Node {
     pub next: Ptr<Node>,
 }
 pub fn Find_0(mut head: Ptr<Node>, mut idx: ()) -> Ptr<Node> {
-    let mut curr: Ptr<Node> = (head).clone();
+    let curr: Value<Ptr<Node>> = Rc::new(RefCell::new((head).clone()));
     let mut i: () = 0_();
     'loop_: while (i < idx) {
-        curr = { curr.with(|__s| __s.next.clone()) };
+        (*curr.borrow_mut()) = { (*curr.borrow()).with(|__s| __s.next.clone()) };
         i.postfix_inc();
     }
-    return curr;
+    return (*curr.borrow()).clone();
 }
 pub fn Append_1(head: Ptr<Node>, new_node: Ptr<Node>) {
     let mut curr: Ptr<Node> = (head).clone();
@@ -31,14 +31,15 @@ pub fn Append_1(head: Ptr<Node>, new_node: Ptr<Node>) {
     }
     ({ NodeImpl::SetNext(&curr, (new_node).clone()) });
 }
-pub fn Delete_2(mut head: Ptr<Node>, mut val: ()) -> Ptr<Node> {
-    let mut curr: Ptr<Node> = (head).clone();
+pub fn Delete_2(head: Ptr<Node>, mut val: ()) -> Ptr<Node> {
+    let head: Value<Ptr<Node>> = Rc::new(RefCell::new(head));
+    let mut curr: Ptr<Node> = (*head.borrow()).clone();
     let mut prev: Ptr<Node> = Ptr::<Node>::null();
     'loop_: while !((curr).is_null()) {
         if ({ curr.with(|__s| __s.val) } == { val }) {
             if !((prev).is_null()) {
                 field!(prev, next).write({ curr.with(|__s| __s.next.clone()) });
-                return head;
+                return (*head.borrow()).clone();
             } else {
                 return curr.with(|__s| __s.next.clone());
             }
@@ -46,7 +47,7 @@ pub fn Delete_2(mut head: Ptr<Node>, mut val: ()) -> Ptr<Node> {
         prev = (curr).clone();
         curr = { curr.with(|__s| __s.next.clone()) };
     }
-    return head;
+    return (*head.borrow()).clone();
 }
 pub fn main() {
     __cpp2rust_init_globals();

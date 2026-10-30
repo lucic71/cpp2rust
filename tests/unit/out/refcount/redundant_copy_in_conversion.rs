@@ -10,7 +10,7 @@ pub fn sink_0(it: ()) -> () {
     let it: Value<()> = Rc::new(RefCell::new(it));
     let cit: Value<()> = Rc::new(RefCell::new(unimplemented!()));
     return if unimplemented!() {
-        (*unimplemented!().borrow())
+        { ((*it.borrow()).read()).second }
     } else {
         0_()
     };
@@ -26,7 +26,7 @@ fn main_0() -> () {
     let it0: Value<()> = Rc::new(RefCell::new(unimplemented!()));
     let const_it: Value<()> = Rc::new(RefCell::new(unimplemented!()));
     let mut r: () = if unimplemented!() { 0_() } else { 1_() };
-    r += ({ sink_0(unimplemented!()) });
+    r += ({ sink_0((*it0.borrow()).clone()) });
     r += if unimplemented!() { 0_() } else { 1_() };
     unimplemented!();
     return 0_();

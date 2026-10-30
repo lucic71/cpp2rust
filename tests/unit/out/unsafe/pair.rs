@@ -25,7 +25,7 @@ unsafe fn main_0() -> () {
     let arr: [(); 2] = [1_(), 2_()];
     let mut n: () = 2_();
     let mut const_ptr_pairs: () = unimplemented!();
-    const_ptr_pairs[(0_()) as usize] = unimplemented!();
+    unimplemented!();
     unimplemented!();
     return 0_();
 }

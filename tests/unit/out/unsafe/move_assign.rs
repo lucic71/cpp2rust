@@ -100,7 +100,7 @@ unsafe fn main_0() -> () {
     let mut vec_: () = unimplemented!();
     unimplemented!();
     let mut d: MoveOnly = MoveOnly::new({ 8_() });
-    (unsafe { MoveOnly::move_assign(&mut vec_[(0_()) as usize], &mut d) });
+    (unsafe { MoveOnly::move_assign(&mut (*unimplemented!()), &mut d) });
     unimplemented!();
     unimplemented!();
     let mut m: ConstMoveAssign = ConstMoveAssign::new();

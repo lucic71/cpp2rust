@@ -15,13 +15,13 @@ pub struct UserDefined {
 impl UserDefined {
     pub unsafe fn move_from(_a0: *mut UserDefined) -> Self {
         let mut this = Self {
-            a: unimplemented!(),
+            a: (*_a0).a,
             v: unimplemented!(),
         };
         this
     }
     pub unsafe fn move_assign(&mut self, _a0: *mut UserDefined) -> *mut UserDefined {
-        unimplemented!();
+        self.a = ((*_a0).a).clone();
         unimplemented!();
         return &mut (*(self as *mut UserDefined));
     }

@@ -35,26 +35,21 @@ fn main_0() -> () {
     {
         i2.with_mut(|__v| *__v = *__v + 5_())
     };
-    write!(unimplemented!(), "{:}\n", i1,);
+    unimplemented!();
     let mut i3: () = 1_();
     let mut i4: () = 2_();
     let ref_3: Value<()> = Rc::new(RefCell::new(unimplemented!()));
     let ref_4: Value<()> = Rc::new(RefCell::new(unimplemented!()));
     let __rhs = (unimplemented!().read());
     unimplemented!().write(__rhs);
-    write!(unimplemented!(), "{:} {:}\n", i3, i4,);
-    ({ set_0((*ref_1.borrow()).clone(), 99_()) });
-    write!(
-        unimplemented!(),
-        "{:} {:}\n",
-        i1,
-        ({ read_1((*ref_1.borrow()).clone(),) }),
-    );
+    unimplemented!();
+    ({ set_0(unimplemented!(), 99_()) });
+    unimplemented!();
     let mut point: Point = Point { x: 3_(), y: 4_() };
     let point_ref: Value<()> = Rc::new(RefCell::new(unimplemented!()));
     field!(unimplemented!(), x).write(30_());
     field!(unimplemented!(), y).write(40_());
-    write!(unimplemented!(), "{:} {:}\n", point.x, point.y,);
+    unimplemented!();
     return 0_();
 }
 pub fn __cpp2rust_init_globals() {}

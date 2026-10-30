@@ -53,8 +53,8 @@ unsafe fn main_0() -> () {
     unimplemented!();
     let mut ok: () = ((((*std::cell::LazyCell::force_mut(&mut *&raw mut copies_0)) == (1_()))
         && ((*std::cell::LazyCell::force_mut(&mut *&raw mut moves_1)) == (1_())))
-        && ((v[(0_()) as usize].v) == (1_())))
-        && ((v[(1_()) as usize].v) == (2_()));
+        && (((*unimplemented!()).v) == (1_())))
+        && (((*unimplemented!()).v) == (2_()));
     let mut pa: *mut Elem = (&mut a as *mut Elem);
     unimplemented!();
     return if ok { 0_() } else { 1_() };

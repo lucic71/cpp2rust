@@ -214,7 +214,7 @@ impl BothImpl for Ptr<Both> {
                 &(_a0.with(|__s| __s.a)),
             )));
             if !(unimplemented!()) {
-                return (*cmp.borrow_mut()).clone();
+                return unimplemented!();
             }
         }
         return unimplemented!();
@@ -232,7 +232,7 @@ impl CmpImpl for Ptr<Cmp> {
                 &(_a0.with(|__s| __s.a)),
             )));
             if !(unimplemented!()) {
-                return (*cmp.borrow_mut()).clone();
+                return unimplemented!();
             }
         }
         {
@@ -241,7 +241,7 @@ impl CmpImpl for Ptr<Cmp> {
                 &(_a0.with(|__s| __s.b)),
             )));
             if !(unimplemented!()) {
-                return (*cmp.borrow_mut()).clone();
+                return unimplemented!();
             }
         }
         return unimplemented!();
@@ -272,7 +272,7 @@ impl InnerImpl for Ptr<Inner> {
                 &(_a0.with(|__s| __s.x)),
             )));
             if !(unimplemented!()) {
-                return (*cmp.borrow_mut()).clone();
+                return unimplemented!();
             }
         }
         return unimplemented!();
@@ -292,7 +292,7 @@ impl OrdOnlyImpl for Ptr<OrdOnly> {
                 &(_a0.with(|__s| __s.a)),
             )));
             if !(unimplemented!()) {
-                return (*cmp.borrow_mut()).clone();
+                return unimplemented!();
             }
         }
         return unimplemented!();
@@ -312,7 +312,7 @@ impl OuterImpl for Ptr<Outer> {
                 }),
             ));
             if !(unimplemented!()) {
-                return (*cmp.borrow_mut()).clone();
+                return unimplemented!();
             }
         }
         {
@@ -321,7 +321,7 @@ impl OuterImpl for Ptr<Outer> {
                 &(_a0.with(|__s| __s.y)),
             )));
             if !(unimplemented!()) {
-                return (*cmp.borrow_mut()).clone();
+                return unimplemented!();
             }
         }
         return unimplemented!();
@@ -345,7 +345,7 @@ impl PtrMemberImpl for Ptr<PtrMember> {
                 &(_a0.with(|__s| __s.p.clone())),
             )));
             if !(unimplemented!()) {
-                return (*cmp.borrow_mut()).clone();
+                return unimplemented!();
             }
         }
         return unimplemented!();
@@ -378,7 +378,7 @@ impl SecondaryImpl for Ptr<Secondary> {
                 &(_a0.with(|__s| __s.a)),
             )));
             if !(unimplemented!()) {
-                return (*cmp.borrow_mut()).clone();
+                return unimplemented!();
             }
         }
         return unimplemented!();

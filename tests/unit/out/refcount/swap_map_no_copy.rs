@@ -204,9 +204,11 @@ impl MovedPair {
     }
 }
 pub fn swapped_once_6() -> () {
-    let mut ok: () = ((moves_3.with(|rc| *rc.borrow()) == 1_())
-        && (move_assigns_4.with(|rc| *rc.borrow()) == 2_()))
-        && (moved_dtors_5.with(|rc| *rc.borrow()) == 1_());
+    let ok: Value<()> = Rc::new(RefCell::new(
+        ((moves_3.with(|rc| *rc.borrow()) == 1_())
+            && (move_assigns_4.with(|rc| *rc.borrow()) == 2_()))
+            && (moved_dtors_5.with(|rc| *rc.borrow()) == 1_()),
+    ));
     moves_3.with(|rc| {
         *rc.borrow_mut() = {
             move_assigns_4.with(|rc| {
@@ -218,7 +220,7 @@ pub fn swapped_once_6() -> () {
             move_assigns_4.with(|rc| *rc.borrow())
         }
     });
-    return ok;
+    return (*ok.borrow());
 }
 #[derive(Record, ByteRepr, FnPtrArg, MoveCtor, MoveAssign, Default)]
 #[byte_size(8)]

@@ -81,10 +81,10 @@ fn main_0() -> () {
         MoveOnlyImpl::move_assign(&a.as_pointer(), _o)
     });
     unimplemented!();
-    let vec_: Value<()> = Rc::new(RefCell::new(unimplemented!()));
+    let mut vec_: () = unimplemented!();
     unimplemented!();
     let d: Value<MoveOnly> = Rc::new(RefCell::new(MoveOnly::new({ 8_() })));
-    ({ MoveOnlyImpl::move_assign(&vec_.as_pointer().offset(0_()), d.as_pointer()) });
+    ({ MoveOnlyImpl::move_assign(&unimplemented!(), d.as_pointer()) });
     unimplemented!();
     unimplemented!();
     let m: Value<ConstMoveAssign> = Rc::new(RefCell::new(ConstMoveAssign::new()));

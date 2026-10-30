@@ -12,7 +12,7 @@ thread_local!(
 pub fn bump_1(mut v: Ptr<()>, mut x: ()) -> () {
     {
         let __rhs = x;
-        elem!((v), 0_()).with_mut(|__v| *__v = *__v + __rhs)
+        unimplemented!().with_mut(|__v| *__v = *__v + __rhs)
     };
     return (*next_0.with(Value::clone).borrow_mut()).postfix_inc();
 }
@@ -26,23 +26,23 @@ fn main_0() -> () {
     let mut i: () = 0_();
     'loop_: while (i < unimplemented!()) {
         let __rhs = (i).wrapping_mul(2_());
-        items[i] = __rhs;
+        unimplemented!().write(__rhs);
         i.prefix_inc();
     }
     {
-        let rhs_0 = (items[1_()]).wrapping_add(5_());
-        items[1_()] = rhs_0
+        let rhs_0 = (unimplemented!().read()).wrapping_add(5_());
+        unimplemented!().write(rhs_0)
     };
-    items[2_()].postfix_inc();
+    unimplemented!().with_mut(|__v| __v.postfix_inc());
     unimplemented!();
-    elem!(v.as_pointer(), { (*v.borrow())[0_()] }).write(3_());
-    let __rhs = ({ (*v.borrow())[1_()] } + 4_());
-    elem!(v.as_pointer(), { (*v.borrow())[1_()] }).write(__rhs);
+    unimplemented!().write(3_());
+    let __rhs = ((unimplemented!().read()) + 4_());
+    unimplemented!().write(__rhs);
     unimplemented!();
-    let mut p: Ptr<()> = (v.as_pointer().offset(0_()));
-    elem!(v.as_pointer(), (p.read())).write(9_());
+    let mut p: Ptr<()> = (unimplemented!());
+    unimplemented!().write(9_());
     unimplemented!();
-    elem!(v.as_pointer(), ({ bump_1((v.as_pointer()), 10_(),) })).write(2_());
+    unimplemented!().write(2_());
     unimplemented!();
     unimplemented!();
     return 0_();

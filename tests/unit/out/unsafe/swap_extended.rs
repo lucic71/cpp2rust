@@ -27,13 +27,13 @@ pub fn main() {
 }
 unsafe fn main_0() -> () {
     let mut x: () = 0_();
-    write!((*unimplemented!()), "{:}\n", x,);
+    unimplemented!();
     let mut a: () = 1_();
     let mut b: () = (unsafe { identity_0(a) });
-    write!((*unimplemented!()), "{:}\n", b,);
+    unimplemented!();
     let mut c: () = 2_();
     let mut p: *mut () = (&mut c as *mut ());
-    write!((*unimplemented!()), "{:}\n", (*p),);
+    unimplemented!();
     let mut d: () = 3_();
     let mut e: () = 4_();
     (unsafe { swap_by_ptr_1((&mut d as *mut ()), (&mut e as *mut ())) });
@@ -41,7 +41,7 @@ unsafe fn main_0() -> () {
     let mut g: () = 5_();
     (unsafe { swap_by_ref_2(&mut f, &mut g) });
     let mut h: *mut () = (Box::leak(Box::new(6_())) as *mut ());
-    write!((*unimplemented!()), "{:}\n", (*h),);
+    unimplemented!();
     {
         let __p = h;
         if !__p.is_null() {
@@ -49,12 +49,7 @@ unsafe fn main_0() -> () {
         }
     };
     let mut i: *mut () = Box::leak(Box::new([7_(), 8_(), unimplemented!()])).as_mut_ptr();
-    write!(
-        (*unimplemented!()),
-        "{:} {:}\n",
-        (*i.offset((0_()) as isize)),
-        (*i.offset((1_()) as isize)),
-    );
+    unimplemented!();
     {
         let __p = i;
         if !__p.is_null() {
@@ -91,10 +86,10 @@ unsafe fn main_0() -> () {
     });
     let mut j: () = unimplemented!();
     let mut k: *mut () = unimplemented!();
-    write!((*unimplemented!()), "{:}\n", (*k),);
+    unimplemented!();
     let mut l: () = unimplemented!();
     let mut m: *mut () = unimplemented!();
-    write!((*unimplemented!()), "{:}\n", (*m),);
+    unimplemented!();
     unimplemented!();
     return 0_();
 }

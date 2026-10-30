@@ -14,7 +14,7 @@ pub fn main() {
 }
 unsafe fn main_0() -> () {
     let mut arr: () = unimplemented!();
-    arr[(1_()) as usize] = ('b' as ());
+    (*unimplemented!()) = ('b' as ());
     let mut p: *const () = unimplemented!().offset((1_()) as isize);
     unimplemented!();
     unimplemented!();

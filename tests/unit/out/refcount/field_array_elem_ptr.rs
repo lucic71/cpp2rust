@@ -41,13 +41,13 @@ impl Default for Shape {
     }
 }
 pub fn sum_0(mut p: Ptr<()>, mut n: ()) -> () {
-    let mut s: () = 0_();
+    let s: Value<()> = Rc::new(RefCell::new(0_()));
     let mut i: () = 0_();
     'loop_: while (i < n) {
-        s += { (elem!(p, i).read()) };
+        (*s.borrow_mut()) += { (elem!(p, i).read()) };
         i.prefix_inc();
     }
-    return s;
+    return (*s.borrow());
 }
 pub fn set_y_1(mut p: Ptr<Point>, mut y: ()) {
     field!(p, y).write(y);

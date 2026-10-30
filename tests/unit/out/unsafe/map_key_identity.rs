@@ -85,7 +85,7 @@ unsafe fn main_0() -> () {
     let a: *mut Mapped = &mut (*unimplemented!());
     (*a).value = 11_();
     let mut a_it: () = unimplemented!();
-    let mut a_value: *mut Mapped = (&mut unimplemented!() as *mut Mapped);
+    let mut a_value: *mut Mapped = (&mut (*a_it).second as *mut Mapped);
     ok &= ((*std::cell::LazyCell::force_mut(&mut *&raw mut default_constructions_0)) == (1_()));
     let b: *mut Mapped = &mut (*unimplemented!());
     (*b).value = 22_();
@@ -96,9 +96,9 @@ unsafe fn main_0() -> () {
     ok &= ((((*a).value) == (11_())) && (((*b).value) == (22_())));
     ok &= (unimplemented!());
     ok &= (unimplemented!());
-    ok &= (unimplemented!());
-    ok &= ((&mut unimplemented!() as *mut Mapped) == (a_value));
-    ok &= ((unimplemented!().value) == (11_()));
+    ok &= (!(unimplemented!()));
+    ok &= ((&mut (*a_it).second as *mut Mapped) == (a_value));
+    ok &= (((*a_it).second.value) == (11_()));
     ok &= (unsafe {
         let _a: *const Key = &distinct_a;
         operator_eq_2(_a, &distinct_b)
@@ -107,9 +107,9 @@ unsafe fn main_0() -> () {
     'loop_: for entry in IterRange::new(unimplemented!(), unimplemented!()) {
         let entry: *const () = &(*unimplemented!());
         if ((distinct_count) == (0_())) {
-            ok &= (((unimplemented!().order) == (1_())) && ((unimplemented!().value) == (11_())));
+            ok &= ((((*entry).first.order) == (1_())) && (((*entry).second.value) == (11_())));
         } else if ((distinct_count) == (1_())) {
-            ok &= (((unimplemented!().order) == (2_())) && ((unimplemented!().value) == (22_())));
+            ok &= ((((*entry).first.order) == (2_())) && (((*entry).second.value) == (22_())));
         }
         distinct_count.prefix_inc();
     }
@@ -132,7 +132,7 @@ unsafe fn main_0() -> () {
     let first: *mut Mapped = &mut (*unimplemented!());
     (*first).value = 31_();
     let mut first_it: () = unimplemented!();
-    let mut first_value: *mut Mapped = (&mut unimplemented!() as *mut Mapped);
+    let mut first_value: *mut Mapped = (&mut (*first_it).second as *mut Mapped);
     ok &= ((*std::cell::LazyCell::force_mut(&mut *&raw mut default_constructions_0))
         == ((before_equivalent) + (1_())));
     let second: *mut Mapped = &mut (*unimplemented!());
@@ -141,16 +141,16 @@ unsafe fn main_0() -> () {
     ok &= reused;
     ok &= ((unimplemented!()) == (1_()));
     if reused {
-        ok &= (unimplemented!());
+        ok &= (!(unimplemented!()));
         ok &= ((first) == (second));
         ok &= (unimplemented!());
         ok &= (unimplemented!());
-        ok &= ((&mut unimplemented!() as *mut Mapped) == (first_value));
-        ok &= (((unimplemented!().value) == (31_())) && (((*second).value) == (31_())));
+        ok &= ((&mut (*first_it).second as *mut Mapped) == (first_value));
+        ok &= ((((*first_it).second.value) == (31_())) && (((*second).value) == (31_())));
         let mut equivalent_count: () = 0_();
         'loop_: for entry in IterRange::new(unimplemented!(), unimplemented!()) {
             let entry: *const () = &(*unimplemented!());
-            ok &= (((unimplemented!().order) == (3_())) && ((unimplemented!().value) == (31_())));
+            ok &= ((((*entry).first.order) == (3_())) && (((*entry).second.value) == (31_())));
             equivalent_count.prefix_inc();
         }
         ok &= ((equivalent_count) == (1_()));
@@ -170,8 +170,8 @@ unsafe fn main_0() -> () {
     ok &= ((unimplemented!()) == (2_()));
     if reused {
         ok &= (unimplemented!());
-        ok &= ((&mut unimplemented!() as *mut Mapped) == (first_value));
-        ok &= ((unimplemented!().value) == (31_()));
+        ok &= ((&mut (*first_it).second as *mut Mapped) == (first_value));
+        ok &= (((*first_it).second.value) == (31_()));
     }
     let matching_a: Key = Key {
         order: 5_(),
@@ -191,7 +191,7 @@ unsafe fn main_0() -> () {
     let matched: *mut Mapped = &mut (*unimplemented!());
     (*matched).value = 51_();
     let mut matched_it: () = unimplemented!();
-    let mut matched_value: *mut Mapped = (&mut unimplemented!() as *mut Mapped);
+    let mut matched_value: *mut Mapped = (&mut (*matched_it).second as *mut Mapped);
     ok &= ((*std::cell::LazyCell::force_mut(&mut *&raw mut default_constructions_0))
         == ((before_matching) + (1_())));
     let matched_again: *mut Mapped = &mut (*unimplemented!());
@@ -200,16 +200,16 @@ unsafe fn main_0() -> () {
     ok &= ((unimplemented!()) == (1_()));
     ok &= ((matched) == (matched_again));
     ok &= (unimplemented!());
-    ok &= ((&mut unimplemented!() as *mut Mapped) == (matched_value));
-    ok &= ((unimplemented!().value) == (51_()));
+    ok &= ((&mut (*matched_it).second as *mut Mapped) == (matched_value));
+    ok &= (((*matched_it).second.value) == (51_()));
     let other: *mut Mapped = &mut (*unimplemented!());
     (*other).value = 61_();
     ok &= ((*std::cell::LazyCell::force_mut(&mut *&raw mut default_constructions_0))
         == ((before_matching) + (2_())));
     ok &= ((unimplemented!()) == (2_()));
     ok &= (unimplemented!());
-    ok &= ((&mut unimplemented!() as *mut Mapped) == (matched_value));
-    ok &= ((unimplemented!().value) == (51_()));
+    ok &= ((&mut (*matched_it).second as *mut Mapped) == (matched_value));
+    ok &= (((*matched_it).second.value) == (51_()));
     return if ok { 0_() } else { 1_() };
 }
 pub unsafe fn __cpp2rust_init_globals() {

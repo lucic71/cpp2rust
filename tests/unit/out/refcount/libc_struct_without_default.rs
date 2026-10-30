@@ -19,7 +19,7 @@ pub struct UserDefined {
 impl UserDefined {
     pub fn move_from(_a0: Ptr<UserDefined>) -> Self {
         Self {
-            a: unimplemented!(),
+            a: field!(_a0, a).with_mut(std::mem::take),
             v: unimplemented!(),
         }
     }
@@ -75,7 +75,7 @@ fn main_0() -> () {
     let st: Value<()> = Rc::new(RefCell::new(unimplemented!()));
     (*st.borrow_mut()).st_size = 1024_();
     unimplemented!();
-    let ud: Value<UserDefined> = Rc::new(RefCell::new(<UserDefined>::default()));
+    let mut ud: UserDefined = <UserDefined>::default();
     unimplemented!();
     unimplemented!();
     let mut filt: FieldIsLibcType = <FieldIsLibcType>::default();
@@ -87,7 +87,7 @@ pub trait UserDefinedImpl {
 }
 impl UserDefinedImpl for Ptr<UserDefined> {
     fn move_assign(&self, _a0: Ptr<UserDefined>) -> Ptr<UserDefined> {
-        unimplemented!();
+        field!((*self), a).write({ { (*_a0.upgrade().deref()).a.clone() } });
         unimplemented!();
         return (*self).clone();
     }

@@ -32,14 +32,14 @@ fn main_0() -> () {
     unimplemented!();
     unimplemented!();
     let mut p: Ptr<()> = (v.as_pointer());
-    let mut a: () = (elem!((p), 0_()).read());
-    elem!((p), 1_()).write(30_());
+    let mut a: () = (unimplemented!().read());
+    unimplemented!().write(30_());
     let h: Value<Holder> = Rc::new(RefCell::new(<Holder>::default()));
     unimplemented!();
     unimplemented!();
     let mut hp: Ptr<Holder> = (h.as_pointer());
-    let mut b: () = (elem!(field_ptr!((hp), v), 0_()).read());
-    elem!(field_ptr!((hp), v), 1_()).write(60_());
+    let mut b: () = (unimplemented!().read());
+    unimplemented!().write(60_());
     unimplemented!();
     unimplemented!();
     unimplemented!();

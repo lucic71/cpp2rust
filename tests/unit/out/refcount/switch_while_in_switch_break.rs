@@ -7,7 +7,7 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
 pub fn while_in_switch_break_0(mut n: ()) -> () {
-    let mut r: () = 0_();
+    let r: Value<()> = Rc::new(RefCell::new(0_()));
     'switch: {
         match { n } {
             __v if __v == 0_() => {
@@ -16,19 +16,19 @@ pub fn while_in_switch_break_0(mut n: ()) -> () {
                     if (i == 4_()) {
                         break;
                     }
-                    r += i;
+                    (*r.borrow_mut()) += i;
                     i.prefix_inc();
                 }
-                r += 1000_();
+                (*r.borrow_mut()) += 1000_();
                 break 'switch;
             }
             _ => {
-                r = -1_();
+                (*r.borrow_mut()) = -1_();
                 break 'switch;
             }
         }
     };
-    return r;
+    return (*r.borrow());
 }
 pub fn main() {
     __cpp2rust_init_globals();

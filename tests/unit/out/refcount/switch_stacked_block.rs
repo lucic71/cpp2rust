@@ -7,21 +7,21 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
 pub fn stacked_block_0(mut x: ()) -> () {
-    let mut r: () = 0_();
+    let r: Value<()> = Rc::new(RefCell::new(0_()));
     'switch: {
         match { x } {
             __v if __v == 1_() || __v == 2_() || __v == 3_() => {
                 let mut y: () = (x * 2_());
-                r = (y + 1_());
+                (*r.borrow_mut()) = (y + 1_());
                 break 'switch;
             }
             _ => {
-                r = 0_();
+                (*r.borrow_mut()) = 0_();
                 break 'switch;
             }
         }
     };
-    return r;
+    return (*r.borrow());
 }
 pub fn main() {
     __cpp2rust_init_globals();

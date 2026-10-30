@@ -45,7 +45,7 @@ pub unsafe fn sum_ref_1(v: *const ()) -> () {
     let mut s: () = 0_();
     let mut i: () = 0_();
     'loop_: while ((i) < (unimplemented!())) {
-        s += (&(*v))[(i) as usize];
+        s += (*unimplemented!());
         i.prefix_inc();
     }
     return s;
@@ -58,52 +58,49 @@ pub fn main() {
 }
 unsafe fn main_0() -> () {
     let mut v: () = unimplemented!();
-    v[(0_()) as usize] = 10_();
+    (*unimplemented!()) = 10_();
     unimplemented!();
-    v[(1_()) as usize] += 5_();
-    v[(2_()) as usize].postfix_inc();
+    (*unimplemented!()) += 5_();
+    (*unimplemented!()).postfix_inc();
     unimplemented!();
-    v[(0_()) as usize] = v[(1_()) as usize];
+    (*unimplemented!()) = (*unimplemented!());
     unimplemented!();
-    v[(1_()) as usize] = 0_();
+    (*unimplemented!()) = 0_();
     unimplemented!();
     let mut i: () = 0_();
-    v[(i.postfix_inc()) as usize] = 3_();
+    (*unimplemented!()) = 3_();
     unimplemented!();
     unimplemented!();
-    (*{
-        let __idx = (unsafe { push_and_index_0(&mut v) }) as usize;
-        &mut v[__idx]
-    }) = 5_();
+    (*unimplemented!()) = 5_();
     unimplemented!();
-    let mut p: *mut () = (&mut v[(2_()) as usize] as *mut ());
+    let mut p: *mut () = (&mut (*unimplemented!()) as *mut ());
     (*p) = 9_();
     unimplemented!();
     unimplemented!();
     let mut h: Holder = <Holder>::default();
     unimplemented!();
-    h.values[(1_()) as usize] = 6_();
+    (*unimplemented!()) = 6_();
     unimplemented!();
-    h.points[(0_()) as usize].y = 5_();
+    (*unimplemented!()).y = 5_();
     unimplemented!();
     unimplemented!();
     let mut hp: *mut Holder = (&mut h as *mut Holder);
-    (&mut (*hp)).values[(0_()) as usize] = (((&mut (*hp)).values[(1_()) as usize]) + (1_()));
-    (&mut (*hp)).points[(0_()) as usize].x = (&mut (*hp)).values[(0_()) as usize];
+    (*unimplemented!()) = ((*unimplemented!()) + (1_()));
+    (*unimplemented!()).x = (*unimplemented!());
     unimplemented!();
-    let mut q: Point = h.points[(0_()) as usize];
+    let mut q: Point = (*unimplemented!());
     q.x = 0_();
     unimplemented!();
     let mut grid: () = unimplemented!();
     unimplemented!();
     unimplemented!();
-    grid[(1_()) as usize][(2_()) as usize] = 8_();
+    (*unimplemented!()) = 8_();
     unimplemented!();
-    grid[(0_()) as usize][(1_()) as usize] = grid[(1_()) as usize][(2_()) as usize];
-    grid[(1_()) as usize][(0_()) as usize] += grid[(0_()) as usize][(1_()) as usize];
+    (*unimplemented!()) = (*unimplemented!());
+    (*unimplemented!()) += (*unimplemented!());
     unimplemented!();
     let mut a: () = unimplemented!();
-    a[(1_()) as usize] = ((a[(0_()) as usize]) + (a[(2_()) as usize]));
+    (*unimplemented!()) = ((*unimplemented!()) + (*unimplemented!()));
     unimplemented!();
     return 0_();
 }

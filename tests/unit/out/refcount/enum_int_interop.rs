@@ -58,8 +58,9 @@ thread_local!(
         },
     ])));
 );
-pub fn as_int_4(mut c: Color) -> () {
-    return (c as ());
+pub fn as_int_4(c: Color) -> () {
+    let c: Value<Color> = Rc::new(RefCell::new(c));
+    return ((*c.borrow()) as ());
 }
 pub fn classify_option_5(mut option: ()) -> () {
     'switch: {

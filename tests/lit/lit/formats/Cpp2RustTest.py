@@ -117,6 +117,7 @@ class TestContext:
     rs_file: Path
     expectations: TestExpectations
     extra_cxxflags: list = None
+    force_std: Optional[str] = None
     support_sources: list = None
     replace_expected: bool = False
     skip_run: bool = False
@@ -149,7 +150,8 @@ class TestContext:
         test_cxxflags = parse_additional_compile_flags(
             source_text, test.config.available_features
         )
-        if force_std := getattr(test.config, "force_std", None):
+        force_std = getattr(test.config, "force_std", None)
+        if force_std and cc_input.suffix != ".c":
             test_cxxflags = [f for f in test_cxxflags if not f.startswith("-std=")]
             test_cxxflags.append(f"-std=gnu++{force_std}")
         extra_cxxflags += test_cxxflags
@@ -166,6 +168,7 @@ class TestContext:
                 source_text, model, test.config.available_features
             ),
             extra_cxxflags=extra_cxxflags,
+            force_std=force_std,
             support_sources=collect_support_sources(cc_input, test.config),
             replace_expected=bool(os.environ.get("REPLACE_EXPECTED", False)),
             stdin_text=read_stdin_file(cc_input, is_multi),
@@ -175,12 +178,14 @@ class TestContext:
     def translate(self):
         exp = self.expectations
         if self.is_multi:
-            build_dir, err = setup_build_dir(self.tmp_dir, self.cc_input)
+            build_dir, err = setup_build_dir(self.tmp_dir, self.cc_input, self.force_std)
             if err is not None:
                 return (exp.fail_code, err)
             self.build_dir = build_dir
         elif self.support_sources:
-            build_dir, err = setup_build_dir(self.tmp_dir, self.write_support_project())
+            build_dir, err = setup_build_dir(
+                self.tmp_dir, self.write_support_project(), self.force_std
+            )
             if err is not None:
                 return (exp.fail_code, err)
             self.build_dir = build_dir
@@ -572,7 +577,7 @@ def read_stdin_file(cc_input, is_multi):
     return stdin_file.read_text()
 
 
-def setup_build_dir(tmp_dir, cc_input):
+def setup_build_dir(tmp_dir, cc_input, force_std=None):
     build_dir = (tmp_dir / "cmake-build").resolve()
     build_dir.mkdir(parents=True, exist_ok=True)
     cmd = [
@@ -583,6 +588,12 @@ def setup_build_dir(tmp_dir, cc_input):
         str(build_dir),
         "-DCMAKE_EXPORT_COMPILE_COMMANDS=ON",
     ]
+    if force_std:
+        cmd += [
+            f"-DCMAKE_CXX_STANDARD={force_std}",
+            "-DCMAKE_CXX_STANDARD_REQUIRED=ON",
+            "-DCMAKE_CXX_EXTENSIONS=ON",
+        ]
     _, err, rc = lit.util.executeCommand(cmd)
     if rc != 0:
         return None, "cmake configure failed\n" + err

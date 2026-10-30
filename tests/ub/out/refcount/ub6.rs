@@ -35,14 +35,14 @@ pub fn fill_1(arr: Ptr<()>, n1: Ptr<()>) {
     unimplemented!().write(({ (*pair.borrow()).x2.clone() }).clone());
 }
 pub fn any_2(arr: Ptr<()>, n1: Ptr<()>) -> () {
-    let mut out: () = false;
+    let out: Value<()> = Rc::new(RefCell::new(false));
     let mut i: () = 0_();
     'loop_: while ({ i } < { (n1.read()) }) {
-        let __rhs = (out) || (((unimplemented!().read()).read()) == 0_());
-        out = __rhs;
+        let __rhs = (*out.borrow()) || (((unimplemented!().read()).read()) == 0_());
+        (*out.borrow_mut()) = __rhs;
         i.prefix_inc();
     }
-    return out;
+    return (*out.borrow());
 }
 pub fn main() {
     __cpp2rust_init_globals();

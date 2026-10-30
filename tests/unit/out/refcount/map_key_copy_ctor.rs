@@ -77,7 +77,7 @@ fn main_0() -> () {
     ok &= (copies_0.with(|rc| *rc.borrow()) == 2_());
     unimplemented!().write(11_());
     ok &= (copies_0.with(|rc| *rc.borrow()) == 2_());
-    ok &= ((*unimplemented!().borrow()) == 11_());
+    ok &= ({ (unimplemented!().read()).second } == 11_());
     ok &= ((unimplemented!().read()) == 20_());
     ok &= (copies_0.with(|rc| *rc.borrow()) == 2_());
     unimplemented!().write(40_());
@@ -94,10 +94,13 @@ fn main_0() -> () {
         unimplemented!().with_mut(|__v| *__v = *__v + 1_())
     };
     ok &= ((copies_0.with(|rc| *rc.borrow()) == 2_()) && ((unimplemented!().read()) == 12_()));
-    let mut first: Ptr<Key> = (unimplemented!().as_pointer());
+    let mut first: Ptr<Key> =
+        (field_ptr!(Rc::new(RefCell::new(unimplemented!())).as_pointer(), first));
     unimplemented!().write(0_());
     ok &= (moves_1.with(|rc| *rc.borrow()) == 3_());
-    ok &= ({ (unimplemented!().as_pointer()) } == { (first).clone() });
+    ok &= ({ (field_ptr!(Rc::new(RefCell::new(unimplemented!())).as_pointer(), first)) } == {
+        (first).clone()
+    });
     let n: Value<()> = Rc::new(RefCell::new(unimplemented!()));
     ok &= (copies_0.with(|rc| *rc.borrow()) == (2_() + 5_()));
     ok &= ((unimplemented!() == 5_()) && ((unimplemented!().read()) == 12_()));
@@ -110,7 +113,7 @@ fn main_0() -> () {
     let mut sum: () = 0_();
     'loop_: for entry in IterRange::new(unimplemented!(), unimplemented!()) {
         let entry: Ptr<()> = unimplemented!();
-        sum += ({ { (*unimplemented!().borrow()).k } } * { (*unimplemented!().borrow()) });
+        sum += ({ entry.with(|__s| __s.first.k) } * { entry.with(|__s| __s.second) });
     }
     ok &= (sum == ((3_() * 31_()) + (4_() * 41_())));
     ok &= ((copies_0.with(|rc| *rc.borrow()) == 7_()) && (moves_1.with(|rc| *rc.borrow()) == 3_()));

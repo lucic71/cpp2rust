@@ -37,14 +37,14 @@ unsafe fn main_0() -> () {
     unimplemented!();
     unimplemented!();
     let mut p: *mut () = (&mut v as *mut ());
-    let mut a: () = (&mut (*p))[(0_()) as usize];
-    (&mut (*p))[(1_()) as usize] = 30_();
+    let mut a: () = (*unimplemented!());
+    (*unimplemented!()) = 30_();
     let mut h: Holder = <Holder>::default();
     unimplemented!();
     unimplemented!();
     let mut hp: *mut Holder = (&mut h as *mut Holder);
-    let mut b: () = (&mut (*hp)).v[(0_()) as usize];
-    (&mut (*hp)).v[(1_()) as usize] = 60_();
+    let mut b: () = (*unimplemented!());
+    (*unimplemented!()) = 60_();
     unimplemented!();
     unimplemented!();
     unimplemented!();

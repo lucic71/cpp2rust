@@ -19,22 +19,22 @@ pub struct Node {
     pub prev: Ptr<Node>,
 }
 pub fn Find_0(mut head: Ptr<Node>, mut idx: ()) -> Ptr<Node> {
-    let mut curr: Ptr<Node> = (head).clone();
+    let curr: Value<Ptr<Node>> = Rc::new(RefCell::new((head).clone()));
     let mut i: () = 0_();
     'loop_: while (i < idx) {
-        curr = { curr.with(|__s| __s.next.clone()) };
+        (*curr.borrow_mut()) = { (*curr.borrow()).with(|__s| __s.next.clone()) };
         i.postfix_inc();
     }
-    return curr;
+    return (*curr.borrow()).clone();
 }
 pub fn FindBack_1(mut tail: Ptr<Node>, mut idx: ()) -> Ptr<Node> {
-    let mut curr: Ptr<Node> = (tail).clone();
+    let curr: Value<Ptr<Node>> = Rc::new(RefCell::new((tail).clone()));
     let mut i: () = 0_();
     'loop_: while (i < idx) {
-        curr = { curr.with(|__s| __s.prev.clone()) };
+        (*curr.borrow_mut()) = { (*curr.borrow()).with(|__s| __s.prev.clone()) };
         i.postfix_inc();
     }
-    return curr;
+    return (*curr.borrow()).clone();
 }
 pub fn Append_2(head: Ptr<Node>, new_node: Ptr<Node>) {
     let mut curr: Ptr<Node> = (head).clone();
@@ -47,34 +47,35 @@ pub fn Append_2(head: Ptr<Node>, new_node: Ptr<Node>) {
         NodeImpl::SetPrev(&new_node, _p)
     });
 }
-pub fn Delete_3(mut head: Ptr<Node>, mut val: ()) -> Ptr<Node> {
-    let mut curr: Ptr<Node> = (head).clone();
+pub fn Delete_3(head: Ptr<Node>, mut val: ()) -> Ptr<Node> {
+    let head: Value<Ptr<Node>> = Rc::new(RefCell::new(head));
+    let mut curr: Ptr<Node> = (*head.borrow()).clone();
     'loop_: while !((curr).is_null()) {
         if ({ curr.with(|__s| __s.val) } == { val }) {
             let mut prev: Ptr<Node> = curr.with(|__s| __s.prev.clone());
-            let mut next: Ptr<Node> = curr.with(|__s| __s.next.clone());
+            let next: Value<Ptr<Node>> = Rc::new(RefCell::new(curr.with(|__s| __s.next.clone())));
             if !((prev).is_null()) {
-                field!(prev, next).write((next).clone());
+                field!(prev, next).write((*next.borrow()).clone());
             }
-            if !((next).is_null()) {
-                field!(next, prev).write((prev).clone());
+            if !((*next.borrow()).is_null()) {
+                field!((*next.borrow()), prev).write((prev).clone());
             }
             if !((prev).is_null()) {
-                return head;
+                return (*head.borrow()).clone();
             } else {
-                return next;
+                return (*next.borrow()).clone();
             }
         }
         curr = { curr.with(|__s| __s.next.clone()) };
     }
-    return head;
+    return (*head.borrow()).clone();
 }
 pub fn Tail_4(mut head: Ptr<Node>) -> Ptr<Node> {
-    let mut curr: Ptr<Node> = (head).clone();
-    'loop_: while !((curr.with(|__s| __s.next.clone())).is_null()) {
-        curr = { curr.with(|__s| __s.next.clone()) };
+    let curr: Value<Ptr<Node>> = Rc::new(RefCell::new((head).clone()));
+    'loop_: while !(((*curr.borrow()).with(|__s| __s.next.clone())).is_null()) {
+        (*curr.borrow_mut()) = { (*curr.borrow()).with(|__s| __s.next.clone()) };
     }
-    return curr;
+    return (*curr.borrow()).clone();
 }
 pub fn main() {
     __cpp2rust_init_globals();

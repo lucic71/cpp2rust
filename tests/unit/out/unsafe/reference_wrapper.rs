@@ -31,25 +31,20 @@ unsafe fn main_0() -> () {
     (*unimplemented!()) = 20_();
     let i2: *mut () = unimplemented!();
     (*i2) += 5_();
-    write!((*unimplemented!()), "{:}\n", i1,);
+    unimplemented!();
     let mut i3: () = 1_();
     let mut i4: () = 2_();
     let mut ref_3: () = unimplemented!();
     let mut ref_4: () = unimplemented!();
     (*unimplemented!()) = (*unimplemented!());
-    write!((*unimplemented!()), "{:} {:}\n", i3, i4,);
-    (unsafe { set_0(ref_1.clone(), 99_()) });
-    write!(
-        (*unimplemented!()),
-        "{:} {:}\n",
-        i1,
-        (unsafe { read_1(ref_1.clone(),) }),
-    );
+    unimplemented!();
+    (unsafe { set_0(unimplemented!(), 99_()) });
+    unimplemented!();
     let mut point: Point = Point { x: 3_(), y: 4_() };
     let mut point_ref: () = unimplemented!();
     (*unimplemented!()).x = 30_();
     (*unimplemented!()).y = 40_();
-    write!((*unimplemented!()), "{:} {:}\n", point.x, point.y,);
+    unimplemented!();
     return 0_();
 }
 pub unsafe fn __cpp2rust_init_globals() {}

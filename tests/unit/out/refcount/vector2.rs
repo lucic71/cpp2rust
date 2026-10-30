@@ -15,11 +15,11 @@ pub fn fn_0(v: Ptr<()>, v3: ()) {
     unimplemented!();
     unimplemented!();
     unimplemented!();
-    x = (elem!(v, 2_()).read());
-    v2[0_()] = 1_();
-    elem!((if true { (v3.as_pointer()) } else { (v).clone() }), 0_()).write(7_());
+    x = (unimplemented!().read());
+    unimplemented!().write(1_());
+    unimplemented!().write(7_());
     unimplemented!();
-    elem!((v4), 1_()).write(13_());
+    unimplemented!().write(13_());
     unimplemented!();
     unimplemented!();
     unimplemented!();

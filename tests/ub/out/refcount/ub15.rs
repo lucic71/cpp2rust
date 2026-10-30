@@ -14,8 +14,8 @@ fn main_0() -> () {
     let mut arr: Ptr<()> =
         Ptr::alloc_array((0..15_()).map(|_| unimplemented!()).collect::<Box<[()]>>());
     let mut ptr: Ptr<()> = arr.offset((15_()) as isize);
-    let mut out: () = (ptr.read());
+    let out: Value<()> = Rc::new(RefCell::new((ptr.read())));
     arr.delete();
-    return out;
+    return (*out.borrow());
 }
 pub fn __cpp2rust_init_globals() {}

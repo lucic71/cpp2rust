@@ -16,7 +16,7 @@ pub fn main() {
 fn main_0() -> () {
     let mut vec_: () = unimplemented!();
     let it: Value<()> = Rc::new(RefCell::new(unimplemented!()));
-    ({ foo_0(unimplemented!()) });
+    ({ foo_0((*it.borrow()).clone()) });
     return 0_();
 }
 pub fn __cpp2rust_init_globals() {}

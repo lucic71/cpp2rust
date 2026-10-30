@@ -18,32 +18,48 @@ pub struct node_t {
     #[offset(16)]
     pub value: (),
 }
-pub fn find_0(mut node: Ptr<node_t>, mut value: ()) -> Ptr<node_t> {
-    if ({ value } < { node.with(|__s| __s.value) })
-        && (!((node.with(|__s| __s.left.clone())).is_null()))
+pub fn find_0(node: Ptr<node_t>, mut value: ()) -> Ptr<node_t> {
+    let node: Value<Ptr<node_t>> = Rc::new(RefCell::new(node));
+    if ({ value } < { (*node.borrow()).with(|__s| __s.value) })
+        && (!(((*node.borrow()).with(|__s| __s.left.clone())).is_null()))
     {
-        return ({ find_0(node.with(|__s| __s.left.clone()), value) });
-    } else if ({ value } > { node.with(|__s| __s.value) })
-        && (!((node.with(|__s| __s.right.clone())).is_null()))
+        return ({ find_0((*node.borrow()).with(|__s| __s.left.clone()), value) });
+    } else if ({ value } > { (*node.borrow()).with(|__s| __s.value) })
+        && (!(((*node.borrow()).with(|__s| __s.right.clone())).is_null()))
     {
-        return ({ find_0(node.with(|__s| __s.right.clone()), value) });
-    } else if ({ value } == { node.with(|__s| __s.value) }) {
-        return node;
+        return ({ find_0((*node.borrow()).with(|__s| __s.right.clone()), value) });
+    } else if ({ value } == { (*node.borrow()).with(|__s| __s.value) }) {
+        return (*node.borrow()).clone();
     }
     return Ptr::<node_t>::null();
 }
-pub fn insert_1(mut node: Ptr<node_t>, mut new_node: Ptr<node_t>) -> Ptr<node_t> {
-    if (node).is_null() {
-        return new_node;
+pub fn insert_1(node: Ptr<node_t>, new_node: Ptr<node_t>) -> Ptr<node_t> {
+    let node: Value<Ptr<node_t>> = Rc::new(RefCell::new(node));
+    let new_node: Value<Ptr<node_t>> = Rc::new(RefCell::new(new_node));
+    if (*node.borrow()).is_null() {
+        return (*new_node.borrow()).clone();
     }
-    if ({ new_node.with(|__s| __s.value) } < { node.with(|__s| __s.value) }) {
-        let __rhs = ({ insert_1(node.with(|__s| __s.left.clone()), (new_node).clone()) });
-        field!(node, left).write(__rhs);
-    } else if ({ new_node.with(|__s| __s.value) } > { node.with(|__s| __s.value) }) {
-        let __rhs = ({ insert_1(node.with(|__s| __s.right.clone()), (new_node).clone()) });
-        field!(node, right).write(__rhs);
+    if ({ (*new_node.borrow()).with(|__s| __s.value) } < { (*node.borrow()).with(|__s| __s.value) })
+    {
+        let __rhs = ({
+            insert_1(
+                (*node.borrow()).with(|__s| __s.left.clone()),
+                (*new_node.borrow()).clone(),
+            )
+        });
+        field!((*node.borrow()), left).write(__rhs);
+    } else if ({ (*new_node.borrow()).with(|__s| __s.value) } > {
+        (*node.borrow()).with(|__s| __s.value)
+    }) {
+        let __rhs = ({
+            insert_1(
+                (*node.borrow()).with(|__s| __s.right.clone()),
+                (*new_node.borrow()).clone(),
+            )
+        });
+        field!((*node.borrow()), right).write(__rhs);
     }
-    return node;
+    return (*node.borrow()).clone();
 }
 pub fn main() {
     __cpp2rust_init_globals();

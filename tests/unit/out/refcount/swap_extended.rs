@@ -6,8 +6,9 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-pub fn identity_0(mut x: ()) -> () {
-    return x;
+pub fn identity_0(x: ()) -> () {
+    let x: Value<()> = Rc::new(RefCell::new(x));
+    return (*x.borrow());
 }
 pub fn swap_by_ptr_1(mut a: Ptr<()>, mut b: Ptr<()>) {
     let mut tmp: () = (a.read());
@@ -25,13 +26,13 @@ pub fn main() {
 }
 fn main_0() -> () {
     let mut x: () = 0_();
-    write!(unimplemented!(), "{:}\n", x,);
+    unimplemented!();
     let mut a: () = 1_();
     let mut b: () = ({ identity_0(a) });
-    write!(unimplemented!(), "{:}\n", b,);
+    unimplemented!();
     let c: Value<()> = Rc::new(RefCell::new(2_()));
     let mut p: Ptr<()> = (c.as_pointer());
-    write!(unimplemented!(), "{:}\n", (p.read()),);
+    unimplemented!();
     let d: Value<()> = Rc::new(RefCell::new(3_()));
     let e: Value<()> = Rc::new(RefCell::new(4_()));
     ({ swap_by_ptr_1((d.as_pointer()), (e.as_pointer())) });
@@ -39,15 +40,10 @@ fn main_0() -> () {
     let g: Value<()> = Rc::new(RefCell::new(5_()));
     ({ swap_by_ref_2(f.as_pointer(), g.as_pointer()) });
     let mut h: Ptr<()> = Ptr::alloc(6_());
-    write!(unimplemented!(), "{:}\n", (h.read()),);
+    unimplemented!();
     h.delete();
     let mut i: Ptr<()> = Ptr::alloc_array(Box::new([7_(), 8_(), unimplemented!()]));
-    write!(
-        unimplemented!(),
-        "{:} {:}\n",
-        (elem!(i, 0_()).read()),
-        (elem!(i, 1_()).read()),
-    );
+    unimplemented!();
     i.delete();
     ({ swap_by_ptr_1(Ptr::alloc(7_()), Ptr::alloc(8_())) });
     ({
@@ -65,10 +61,10 @@ fn main_0() -> () {
     });
     let mut j: () = unimplemented!();
     let mut k: Ptr<()> = unimplemented!();
-    write!(unimplemented!(), "{:}\n", (k.read()),);
+    unimplemented!();
     let mut l: () = unimplemented!();
     let mut m: Ptr<()> = unimplemented!();
-    write!(unimplemented!(), "{:}\n", (m.read()),);
+    unimplemented!();
     unimplemented!();
     return 0_();
 }

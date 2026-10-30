@@ -15,9 +15,9 @@ fn main_0() -> () {
     unimplemented!();
     unimplemented!();
     unimplemented!();
-    elem!(v.as_pointer().offset(0_()), 0_()).write(1_());
-    elem!(v.as_pointer().offset(0_()), 1_()).write(5_());
-    elem!(v.as_pointer().offset(1_()), 0_()).write(6_());
+    unimplemented!().write(1_());
+    unimplemented!().write(5_());
+    unimplemented!().write(6_());
     'loop_: for v2 in IterRange::new(unimplemented!(), unimplemented!()) {
         let v2: Ptr<()> = unimplemented!();
         'loop_: for i in IterRange::new(unimplemented!(), unimplemented!()) {

@@ -19,11 +19,12 @@ thread_local!(
 pub fn set_op_3(mut fn_: FnPtr<fn(()) -> ()>) {
     g_op_2.with(|rc| *rc.borrow_mut() = (fn_).clone());
 }
-pub fn call_op_4(mut x: ()) -> () {
+pub fn call_op_4(x: ()) -> () {
+    let x: Value<()> = Rc::new(RefCell::new(x));
     if !(*g_op_2.with(Value::clone).borrow()).is_null() {
-        return ({ (*g_op_2.with(Value::clone).borrow()).call(x) });
+        return ({ (*g_op_2.with(Value::clone).borrow()).call((*x.borrow())) });
     }
-    return x;
+    return (*x.borrow());
 }
 pub fn main() {
     __cpp2rust_init_globals();

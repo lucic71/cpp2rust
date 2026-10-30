@@ -12,8 +12,9 @@ pub fn inc_0(mut x: ()) -> () {
 pub fn dec_1(mut x: ()) -> () {
     return (x - 1_());
 }
-pub fn identity_2(mut x: ()) -> () {
-    return x;
+pub fn identity_2(x: ()) -> () {
+    let x: Value<()> = Rc::new(RefCell::new(x));
+    return (*x.borrow());
 }
 pub fn pick_3(mut mode: ()) -> FnPtr<fn(()) -> ()> {
     return if (mode > 0_()) {

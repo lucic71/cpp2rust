@@ -11,9 +11,9 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> () {
-    let v: Value<()> = Rc::new(RefCell::new(unimplemented!()));
+    let mut v: () = unimplemented!();
     unimplemented!();
-    let r: Value<()> = Rc::new(RefCell::new(((*v.borrow())[0_()]).clone()));
+    let r: Value<()> = Rc::new(RefCell::new(unimplemented!()));
     let copy: Value<()> = Rc::new(RefCell::new(unimplemented!()));
     unimplemented!();
     return 0_();

@@ -13,13 +13,13 @@ pub fn sum_0(n: (), __args: Box<[VaArg]>) -> () {
     (*ap.borrow_mut()) = __args.as_pointer();
     let guard: Value<Guard_1> = Rc::new(RefCell::new(Guard_1::new({ ap.as_pointer() })));
     let _dtor_guard = ScopedDestructor::new(&guard, |__p| __p.destructor());
-    let mut total: () = 0_();
+    let total: Value<()> = Rc::new(RefCell::new(0_()));
     let mut i: () = 0_();
     'loop_: while (i < (*n.borrow())) {
-        total += { (*guard.borrow()).ap.clone() }.with_mut(|__v| __v.arg::<()>());
+        (*total.borrow_mut()) += { (*guard.borrow()).ap.clone() }.with_mut(|__v| __v.arg::<()>());
         i.prefix_inc();
     }
-    return total;
+    return (*total.borrow());
 }
 #[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Destructor, Default)]
 #[byte_size(16)]
@@ -46,13 +46,13 @@ pub fn sum_ptr_2(n: (), __args: Box<[VaArg]>) -> () {
     let mut cursor: Cursor_3 = Cursor_3 {
         ap: (ap.as_pointer()),
     };
-    let mut total: () = 0_();
+    let total: Value<()> = Rc::new(RefCell::new(0_()));
     let mut i: () = 0_();
     'loop_: while (i < (*n.borrow())) {
-        total += cursor.ap.with_mut(|__v| __v.arg::<()>());
+        (*total.borrow_mut()) += cursor.ap.with_mut(|__v| __v.arg::<()>());
         i.prefix_inc();
     }
-    return total;
+    return (*total.borrow());
 }
 #[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(8)]

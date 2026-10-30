@@ -29,8 +29,8 @@ fn main_0() -> () {
     unimplemented!();
     unimplemented!();
     unimplemented!();
-    v1[0_()] = 40_();
-    v1[99_()] = 50_();
+    unimplemented!().write(40_());
+    unimplemented!().write(50_());
     unimplemented!();
     unimplemented!();
     let mut v2: () = unimplemented!();
@@ -183,7 +183,7 @@ fn main_0() -> () {
     let ppa: Value<Ptr<Ptr<S>>> = Rc::new(RefCell::new((pa.as_pointer())));
     let mut v9: () = unimplemented!();
     unimplemented!();
-    field!(((v9[0_()].read()).read()), x).write(2_());
+    field!((((unimplemented!().read()).read()).read()), x).write(2_());
     unimplemented!();
     return 0_();
 }

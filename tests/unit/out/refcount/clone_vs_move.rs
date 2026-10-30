@@ -134,7 +134,7 @@ fn main_0() -> () {
     }
     let mut i: () = 0_();
     'loop_: while (i < N) {
-        v2[i].prefix_inc();
+        unimplemented!().with_mut(|__v| __v.prefix_inc());
         i.prefix_inc();
     }
     let mut i: () = 0_();
@@ -166,7 +166,7 @@ fn main_0() -> () {
     'loop_: while (i < N) {
         let mut j: () = 0_();
         'loop_: while (j < 10_()) {
-            elem!(m2.as_pointer().offset(i), j).with_mut(|__v| __v.postfix_inc());
+            unimplemented!().with_mut(|__v| __v.postfix_inc());
             j.prefix_inc();
         }
         i.prefix_inc();
@@ -205,8 +205,8 @@ fn main_0() -> () {
     }
     let pair1: Value<()> = Rc::new(RefCell::new(unimplemented!()));
     let pair2: Value<()> = Rc::new(RefCell::new(unimplemented!()));
-    (*unimplemented!().borrow_mut()) = { ((*unimplemented!().borrow()) * 10_()) };
-    (*unimplemented!().borrow_mut()) = { ((*unimplemented!().borrow()) * 10_()) };
+    (*pair2.borrow_mut()).first = { ({ (*pair2.borrow()).first } * 10_()) };
+    (*pair2.borrow_mut()).second = { ({ (*pair2.borrow()).second } * 10_()) };
     unimplemented!();
     unimplemented!();
     unimplemented!();
@@ -214,16 +214,16 @@ fn main_0() -> () {
     let pair3: Value<()> = Rc::new(RefCell::new(unimplemented!()));
     let pair4: Value<()> = Rc::new(RefCell::new(unimplemented!()));
     unimplemented!();
-    (*unimplemented!().borrow_mut()) = 1_();
+    (*pair4.borrow_mut()).second = 1_();
     unimplemented!();
     unimplemented!();
     unimplemented!();
     unimplemented!();
     let mut s1: () = unimplemented!();
     let mut s2: () = unimplemented!();
-    s2[0_()] = ('b' as ());
-    s2[1_()] = ('b' as ());
-    s2[2_()] = ('b' as ());
+    unimplemented!().write(('b' as ()));
+    unimplemented!().write(('b' as ()));
+    unimplemented!().write(('b' as ()));
     unimplemented!();
     unimplemented!();
     unimplemented!();
@@ -241,7 +241,7 @@ fn main_0() -> () {
     let mut i: () = 0_();
     'loop_: while (i < N) {
         unimplemented!();
-        v4[i].prefix_inc();
+        unimplemented!().with_mut(|__v| __v.prefix_inc());
         i.prefix_inc();
     }
     let mut i: () = 0_();

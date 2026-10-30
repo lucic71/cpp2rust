@@ -25,10 +25,10 @@ pub unsafe fn operator_cmp_1(_a0: *const DefaultedOrd, _a1: *const DefaultedOrd)
     {
         let mut cmp: () = std::cmp::Ord::cmp(&((*_a0).a), &((*_a1).a));
         if !(unimplemented!()) {
-            return cmp;
+            return unimplemented!();
         }
     }
-    return unimplemented!().clone();
+    return unimplemented!();
 }
 pub unsafe fn operator_eq_2(_a0: *const DefaultedOrd, _a1: *const DefaultedOrd) -> () {
     return (((*_a0).a) == ((*_a1).a));

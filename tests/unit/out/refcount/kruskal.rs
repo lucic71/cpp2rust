@@ -26,7 +26,7 @@ pub fn partition_0(arr: Ptr<()>, mut start: (), mut end: ()) -> () {
         }
         i.prefix_inc();
     }
-    let mut pidx: () = (start + count);
+    let pidx: Value<()> = Rc::new(RefCell::new((start + count)));
     let mut tmp: Edge = Edge {
         u: unimplemented!().with(|__s| __s.u),
         v: unimplemented!().with(|__s| __s.v),
@@ -45,7 +45,7 @@ pub fn partition_0(arr: Ptr<()>, mut start: (), mut end: ()) -> () {
     });
     let mut i: () = start;
     let mut j: () = end;
-    'loop_: while (i < pidx) && (j > pidx) {
+    'loop_: while (i < (*pidx.borrow())) && (j > (*pidx.borrow())) {
         'loop_: while ({ unimplemented!().with(|__s| __s.weight) } <= {
             pivot.with(|__s| __s.weight)
         }) {
@@ -56,7 +56,7 @@ pub fn partition_0(arr: Ptr<()>, mut start: (), mut end: ()) -> () {
         }) {
             j.prefix_dec();
         }
-        if (i < pidx) && (j > pidx) {
+        if (i < (*pidx.borrow())) && (j > (*pidx.borrow())) {
             tmp = Edge {
                 u: unimplemented!().with(|__s| __s.u),
                 v: unimplemented!().with(|__s| __s.v),
@@ -77,7 +77,7 @@ pub fn partition_0(arr: Ptr<()>, mut start: (), mut end: ()) -> () {
             j.postfix_dec();
         }
     }
-    return pidx;
+    return (*pidx.borrow());
 }
 pub fn quicksort_1(arr: Ptr<()>, mut start: (), mut end: ()) {
     if (start >= end) {
@@ -155,7 +155,7 @@ pub fn MSTKruskal_2(graph: Ptr<Graph>) -> () {
         n: graph.with(|__s| __s.V),
     }));
     ({ DisjointSetImpl::makeSet(&set.as_pointer()) });
-    let mut total_weight: () = 0_();
+    let total_weight: Value<()> = Rc::new(RefCell::new(0_()));
     let mut i: () = 0_();
     'loop_: while ({ i } < { graph.with(|__s| __s.E) }) {
         let mut x: () = unimplemented!().with(|__s| __s.u);
@@ -165,11 +165,11 @@ pub fn MSTKruskal_2(graph: Ptr<Graph>) -> () {
             != ({ DisjointSetImpl::find(&set.as_pointer(), y) }))
         {
             ({ DisjointSetImpl::merge(&set.as_pointer(), x, y) });
-            total_weight += w;
+            (*total_weight.borrow_mut()) += w;
         }
         i.prefix_inc();
     }
-    return total_weight;
+    return (*total_weight.borrow());
 }
 pub fn main() {
     __cpp2rust_init_globals();

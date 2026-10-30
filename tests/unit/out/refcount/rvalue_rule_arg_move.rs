@@ -56,8 +56,8 @@ fn main_0() -> () {
     unimplemented!();
     let mut ok: () = (((copies_0.with(|rc| *rc.borrow()) == 1_())
         && (moves_1.with(|rc| *rc.borrow()) == 1_()))
-        && (v[0_()].v == 1_()))
-        && (v[1_()].v == 2_());
+        && (__s.v == 1_()))
+        && (__s.v == 2_());
     let mut pa: Ptr<Elem> = (a.as_pointer());
     println!(
         "{} {} {}",

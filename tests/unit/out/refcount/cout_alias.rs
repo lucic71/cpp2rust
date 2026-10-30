@@ -12,18 +12,18 @@ pub fn main() {
 }
 fn main_0() -> () {
     let mut cond: () = true;
-    let mut os1: () = if cond {
+    let mut os1: Ptr<()> = if cond {
         (unimplemented!())
     } else {
         (unimplemented!())
     };
-    write!(os1, "hello\n",);
-    let os2: () = if cond {
+    unimplemented!();
+    let os2: Ptr<()> = if cond {
         (unimplemented!())
     } else {
         (unimplemented!())
     };
-    write!(os2, "hello\n",);
+    unimplemented!();
     return 0_();
 }
 pub fn __cpp2rust_init_globals() {}

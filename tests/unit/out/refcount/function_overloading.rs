@@ -6,8 +6,9 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-pub fn foo_0(mut x: ()) -> () {
-    return x;
+pub fn foo_0(x: ()) -> () {
+    let x: Value<()> = Rc::new(RefCell::new(x));
+    return (*x.borrow());
 }
 pub fn foo_1(mut x: Ptr<()>) -> () {
     return (x.read());

@@ -18,9 +18,9 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> () {
-    (&mut (*(unsafe { get_1() })))[(1_()) as usize] = 4_();
+    (*unimplemented!()) = 4_();
     let mut v: () = unimplemented!();
-    (&mut (*unimplemented!()))[(2_()) as usize] = 5_();
+    (*unimplemented!()) = 5_();
     unimplemented!();
     unimplemented!();
     return 0_();

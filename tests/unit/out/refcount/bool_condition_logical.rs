@@ -13,9 +13,10 @@ pub const Code_CODE_FATAL: Code = 2;
 thread_local!(
     pub static side_effect_0: Value<()> = Rc::new(RefCell::new(0_()));
 );
-pub fn observe_1(mut v: ()) -> () {
+pub fn observe_1(v: ()) -> () {
+    let v: Value<()> = Rc::new(RefCell::new(v));
     (*side_effect_0.with(Value::clone).borrow_mut()).prefix_inc();
-    return v;
+    return (*v.borrow());
 }
 pub fn returns_one_2() -> () {
     return 1_();

@@ -24,16 +24,16 @@ fn main_0() -> () {
     let mut sum: () = 0_();
     'loop_: for i in IterRange::new(unimplemented!(), unimplemented!()) {
         let i: Ptr<()> = unimplemented!();
-        sum += (*unimplemented!().borrow());
+        sum += i.with(|__s| __s.second);
     }
     'loop_: for i in IterRange::new(unimplemented!(), unimplemented!()) {
         let i: Value<()> = Rc::new(RefCell::new(unimplemented!()));
-        sum += (*unimplemented!().borrow());
+        sum += { (*i.borrow()).first };
     }
     unimplemented!();
     'loop_: for i in IterRange::new(unimplemented!(), unimplemented!()) {
         let i: Value<()> = Rc::new(RefCell::new(unimplemented!()));
-        (*unimplemented!().borrow_mut()) = -1_();
+        (*i.borrow_mut()).second = -1_();
         unimplemented!();
     }
     'loop_: for i in IterRange::new(unimplemented!(), unimplemented!()) {

@@ -16,7 +16,7 @@ pub fn main() {
 unsafe fn main_0() -> () {
     let mut vec_: () = unimplemented!();
     let mut it: () = unimplemented!();
-    (unsafe { foo_0(unimplemented!()) });
+    (unsafe { foo_0(it.clone()) });
     return 0_();
 }
 pub unsafe fn __cpp2rust_init_globals() {}

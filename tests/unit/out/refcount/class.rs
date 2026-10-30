@@ -140,9 +140,9 @@ impl PairImpl for Ptr<Pair> {
     }
     fn Set(&self, field: Ptr<()>, mut new_val: ()) -> () {
         ({ PairImpl::NOP(self) });
-        let mut old_val: () = (field.read());
+        let old_val: Value<()> = Rc::new(RefCell::new((field.read())));
         field.write({ new_val });
-        return old_val;
+        return (*old_val.borrow());
     }
     fn SetFirst(&self, mut new_first: ()) -> () {
         return (({ PairImpl::GetFirst(self) })
@@ -164,9 +164,9 @@ pub trait RouteImpl {
 }
 impl RouteImpl for Ptr<Route> {
     fn SetCost(&self, mut new_cost: ()) -> () {
-        let mut old_cost: () = (*self).with(|__s| __s.cost);
+        let old_cost: Value<()> = Rc::new(RefCell::new((*self).with(|__s| __s.cost)));
         field!((*self), cost).write(new_cost);
-        return old_cost;
+        return (*old_cost.borrow());
     }
 }
 pub trait TallyImpl {

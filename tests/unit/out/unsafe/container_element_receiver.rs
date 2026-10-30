@@ -27,7 +27,7 @@ pub unsafe fn pick_0(a: *mut (), b: *mut (), mut first: ()) -> *mut () {
 pub unsafe fn sum_1(v: *const ()) -> () {
     let mut total: () = 0_();
     let mut it: () = unimplemented!();
-    'loop_: while unimplemented!() {
+    'loop_: while !(unimplemented!()) {
         total += (*unimplemented!());
         unimplemented!();
     }

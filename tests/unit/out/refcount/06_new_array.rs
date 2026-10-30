@@ -8,9 +8,9 @@ use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
 pub fn take_0(p: Ptr<Ptr<()>>) -> () {
     elem!((p.read()), 0_()).write(9_());
-    let mut c: () = (elem!((p.read()), 0_()).read());
+    let c: Value<()> = Rc::new(RefCell::new((elem!((p.read()), 0_()).read())));
     (p.read()).delete();
-    return c;
+    return (*c.borrow());
 }
 pub fn main() {
     __cpp2rust_init_globals();

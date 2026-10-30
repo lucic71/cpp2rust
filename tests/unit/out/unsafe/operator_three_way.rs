@@ -14,12 +14,12 @@ pub struct S {
 impl S {
     pub unsafe fn operator_cmp(&self, o: *const S) -> () {
         if ((self.v) < ((*o).v)) {
-            return unimplemented!().clone();
+            return unimplemented!();
         }
         if ((self.v) > ((*o).v)) {
-            return unimplemented!().clone();
+            return unimplemented!();
         }
-        return unimplemented!().clone();
+        return unimplemented!();
     }
     pub unsafe fn operator_eq(&self, o: *const S) -> () {
         return ((self.v) == ((*o).v));

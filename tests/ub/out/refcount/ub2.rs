@@ -7,8 +7,8 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
 pub fn null_0() -> Ptr<()> {
-    let mut p: Ptr<()> = Ptr::<()>::null();
-    return p;
+    let p: Value<Ptr<()>> = Rc::new(RefCell::new(Ptr::<()>::null()));
+    return (*p.borrow()).clone();
 }
 pub fn main() {
     __cpp2rust_init_globals();

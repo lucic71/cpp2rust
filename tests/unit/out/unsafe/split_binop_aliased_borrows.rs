@@ -15,7 +15,7 @@ pub fn main() {
 unsafe fn main_0() -> () {
     let mut v: () = unimplemented!();
     let mut p: () = unimplemented!();
-    let r: *const () = &v[(1_()) as usize];
+    let r: *const () = &(*unimplemented!());
     (*unimplemented!()) = (*r);
     unimplemented!();
     return 0_();

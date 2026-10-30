@@ -62,14 +62,14 @@ fn main_0() -> () {
         },
     )));
     unimplemented!();
-    let bump: Value<FnPtr<fn(()) -> ()>> = Rc::new(RefCell::new(FnPtr::<fn(()) -> ()>::new(
-        |mut x: ()| -> () {
+    let bump: Value<FnPtr<fn(()) -> ()>> =
+        Rc::new(RefCell::new(FnPtr::<fn(()) -> ()>::new(|x: ()| -> () {
             {
-                x += 1_();
-                return x;
+                let x: Value<()> = Rc::new(RefCell::new(x));
+                (*x.borrow_mut()) += 1_();
+                return (*x.borrow());
             }
-        },
-    )));
+        })));
     unimplemented!();
     let through_ptr: Value<FnPtr<fn(()) -> ()>> =
         Rc::new(RefCell::new(FnPtr::<fn(()) -> ()>::new(|x: ()| -> () {

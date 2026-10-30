@@ -23,7 +23,7 @@ fn main_0() -> () {
     let arr: Value<Box<[()]>> = Rc::new(RefCell::new(Box::new([1_(), 2_()])));
     let mut n: () = 2_();
     let const_ptr_pairs: Value<()> = Rc::new(RefCell::new(unimplemented!()));
-    (*const_ptr_pairs.borrow_mut())[0_()] = unimplemented!();
+    unimplemented!();
     unimplemented!();
     return 0_();
 }

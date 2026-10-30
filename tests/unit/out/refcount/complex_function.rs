@@ -6,11 +6,13 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-pub fn foo_0(mut x: ()) -> () {
-    return x;
+pub fn foo_0(x: ()) -> () {
+    let x: Value<()> = Rc::new(RefCell::new(x));
+    return (*x.borrow());
 }
-pub fn ptr_1(mut x: Ptr<()>) -> Ptr<()> {
-    return x;
+pub fn ptr_1(x: Ptr<()>) -> Ptr<()> {
+    let x: Value<Ptr<()>> = Rc::new(RefCell::new(x));
+    return (*x.borrow()).clone();
 }
 pub fn bar_2(x: Ptr<()>) -> Ptr<()> {
     return (x).clone();

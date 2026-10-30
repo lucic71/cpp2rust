@@ -18,7 +18,7 @@ unsafe fn main_0() -> () {
     let mut m: () = unimplemented!();
     (*unimplemented!()) = sentinel;
     let mut it: () = unimplemented!();
-    let mut p: *mut () = (&mut unimplemented!() as *mut ());
+    let mut p: *mut () = (&mut (*it).second as *mut ());
     unimplemented!();
     unimplemented!();
     let mut i: () = 0_();
@@ -34,7 +34,7 @@ unsafe fn main_0() -> () {
     unimplemented!();
     unimplemented!();
     unimplemented!();
-    unimplemented!() = 57005_();
+    (*it).second = 57005_();
     unimplemented!();
     unimplemented!();
     unimplemented!();
@@ -42,7 +42,7 @@ unsafe fn main_0() -> () {
     'loop_: for pair in IterRange::new(unimplemented!(), unimplemented!()) {
         let pair: *mut () = &mut (*unimplemented!());
         unimplemented!();
-        prev = unimplemented!();
+        prev = (*pair).first;
     }
     return 0_();
 }

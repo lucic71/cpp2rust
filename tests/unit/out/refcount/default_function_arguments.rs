@@ -38,8 +38,8 @@ pub fn next_3() -> () {
     return (*counter_2.with(Value::clone).borrow_mut()).prefix_inc();
 }
 pub fn lazy_4(x: Option<()>) -> () {
-    let mut x: () = x.unwrap_or_else(|| ({ next_3() }));
-    return x;
+    let x: Value<()> = Rc::new(RefCell::new(x.unwrap_or_else(|| ({ next_3() }))));
+    return (*x.borrow());
 }
 pub fn by_ref_5(b: Option<Ptr<Bar>>) -> () {
     let mut __b_default: Option<Value<Bar>> = None;

@@ -17,9 +17,9 @@ unsafe fn main_0() -> () {
     unimplemented!();
     unimplemented!();
     unimplemented!();
-    v[(0_()) as usize][(0_()) as usize] = 1_();
-    v[(0_()) as usize][(1_()) as usize] = 5_();
-    v[(1_()) as usize][(0_()) as usize] = 6_();
+    (*unimplemented!()) = 1_();
+    (*unimplemented!()) = 5_();
+    (*unimplemented!()) = 6_();
     'loop_: for v2 in IterRange::new(unimplemented!(), unimplemented!()) {
         let v2: *mut () = &mut (*unimplemented!());
         'loop_: for i in IterRange::new(unimplemented!(), unimplemented!()) {

@@ -27,8 +27,9 @@ pub struct pair_t {
 thread_local!(
     pub static global_node_0: Value<Ptr<node>> = Rc::new(RefCell::new(Ptr::<node>::null()));
 );
-pub fn id_1(mut n: Ptr<node>) -> Ptr<node> {
-    return n;
+pub fn id_1(n: Ptr<node>) -> Ptr<node> {
+    let n: Value<Ptr<node>> = Rc::new(RefCell::new(n));
+    return (*n.borrow()).clone();
 }
 pub fn pick_2(mut a: Ptr<node>, mut b: Ptr<node>) -> Ptr<node> {
     return if !(a).is_null() {
@@ -38,8 +39,8 @@ pub fn pick_2(mut a: Ptr<node>, mut b: Ptr<node>) -> Ptr<node> {
     };
 }
 pub fn local_ptr_3(mut n: Ptr<node>) -> Ptr<node> {
-    let mut p: Ptr<node> = n.with(|__s| __s.next.clone());
-    return p;
+    let p: Value<Ptr<node>> = Rc::new(RefCell::new(n.with(|__s| __s.next.clone())));
+    return (*p.borrow()).clone();
 }
 pub fn call_once_4(mut n: Ptr<node>, mut m: Ptr<node>) -> Ptr<node> {
     return ({ pick_2(n, m) });
@@ -86,14 +87,15 @@ pub fn ret_vec_local_13() -> () {
     unimplemented!();
     return unimplemented!();
 }
-pub fn ret_loop_14(mut n: Ptr<node>) -> Ptr<node> {
-    'loop_: while !(n.with(|__s| __s.next.clone())).is_null() {
-        if (n.with(|__s| __s.value) == 2_()) {
-            return n;
+pub fn ret_loop_14(n: Ptr<node>) -> Ptr<node> {
+    let n: Value<Ptr<node>> = Rc::new(RefCell::new(n));
+    'loop_: while !((*n.borrow()).with(|__s| __s.next.clone())).is_null() {
+        if ((*n.borrow()).with(|__s| __s.value) == 2_()) {
+            return (*n.borrow()).clone();
         }
-        n = { n.with(|__s| __s.next.clone()) };
+        (*n.borrow_mut()) = { (*n.borrow()).with(|__s| __s.next.clone()) };
     }
-    return n;
+    return (*n.borrow()).clone();
 }
 pub fn main() {
     __cpp2rust_init_globals();

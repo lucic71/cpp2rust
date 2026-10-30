@@ -12,6 +12,9 @@ pub struct TestAllocator_int_ {}
 #[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(1)]
 pub struct TestAllocator_double_ {}
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(1)]
+pub struct TestAllocator_unsigned_long_ {}
 pub fn copy_0(mut copy_vector: ()) {}
 pub fn fn_1(v: Ptr<()>, v3: ()) {
     let v3: Value<()> = Rc::new(RefCell::new(v3));
@@ -22,10 +25,10 @@ pub fn fn_1(v: Ptr<()>, v3: ()) {
     unimplemented!();
     unimplemented!();
     unimplemented!();
-    x = (elem!(v, 2_()).read());
-    v2[0_()] = 1_();
-    elem!((if true { (v3.as_pointer()) } else { (v).clone() }), 0_()).write(7_());
-    elem!((v4), 1_()).write(13_());
+    x = (unimplemented!().read());
+    unimplemented!().write(1_());
+    unimplemented!().write(7_());
+    unimplemented!().write(13_());
     unimplemented!();
     unimplemented!();
     unimplemented!();
@@ -51,8 +54,8 @@ fn main_0() -> () {
     unimplemented!();
     unimplemented!();
     unimplemented!();
-    v1[0_()] = 40_();
-    v1[99_()] = 50_();
+    unimplemented!().write(40_());
+    unimplemented!().write(50_());
     unimplemented!();
     unimplemented!();
     let mut v2: () = unimplemented!();
@@ -192,4 +195,13 @@ impl TestAllocator_int_Impl for Ptr<TestAllocator_int_> {
         p.delete();
     }
 }
+pub trait TestAllocator_unsigned_long_Impl {
+    fn allocate(&self, mut n: ()) -> Ptr<()> {
+        unimplemented!()
+    }
+    fn deallocate(&self, mut p: Ptr<()>, mut _a1: ()) {
+        unimplemented!()
+    }
+}
+impl TestAllocator_unsigned_long_Impl for Ptr<TestAllocator_unsigned_long_> {}
 pub fn __cpp2rust_init_globals() {}

@@ -41,8 +41,8 @@ unsafe fn main_0() -> () {
     }
     unimplemented!();
     unimplemented!();
-    s2[(0_()) as usize] = ('b' as ());
-    s2[(1_()) as usize] = ('c' as ());
+    (*unimplemented!()) = ('b' as ());
+    (*unimplemented!()) = ('c' as ());
     unimplemented!();
     unimplemented!();
     let mut i: () = 2_();
@@ -105,12 +105,12 @@ unsafe fn main_0() -> () {
     unimplemented!();
     unimplemented!();
     unimplemented!();
-    string[(3_()) as usize] = ('a' as ());
-    string[(4_()) as usize] = ('b' as ());
+    (*unimplemented!()) = ('a' as ());
+    (*unimplemented!()) = ('b' as ());
     unimplemented!();
     unimplemented!();
-    string[(3_()) as usize] = 0_();
-    string[(4_()) as usize] = 0_();
+    (*unimplemented!()) = 0_();
+    (*unimplemented!()) = 0_();
     unimplemented!();
     unimplemented!();
     unimplemented!();
@@ -164,8 +164,7 @@ unsafe fn main_0() -> () {
     pos = unimplemented!();
     unimplemented!();
     let mut string_to_cast: () = unimplemented!();
-    let mut output_data: *mut () =
-        ((&mut string_to_cast[(0_()) as usize] as *mut ()) as *mut () as *mut ());
+    let mut output_data: *mut () = ((&mut (*unimplemented!()) as *mut ()) as *mut () as *mut ());
     unimplemented!();
     unimplemented!();
     unimplemented!();

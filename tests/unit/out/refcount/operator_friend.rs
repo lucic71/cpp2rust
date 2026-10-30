@@ -30,7 +30,7 @@ pub fn operator_cmp_1(_a0: Ptr<DefaultedOrd>, _a1: Ptr<DefaultedOrd>) -> () {
             &(_a1.with(|__s| __s.a)),
         )));
         if !(unimplemented!()) {
-            return (*cmp.borrow_mut()).clone();
+            return unimplemented!();
         }
     }
     return unimplemented!();

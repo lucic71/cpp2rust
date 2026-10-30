@@ -26,16 +26,16 @@ unsafe fn main_0() -> () {
     let mut sum: () = 0_();
     'loop_: for i in IterRange::new(unimplemented!(), unimplemented!()) {
         let i: *const () = &(*unimplemented!());
-        sum += unimplemented!();
+        sum += (*i).second;
     }
     'loop_: for i in IterRange::new(unimplemented!(), unimplemented!()) {
         let mut i: () = unimplemented!();
-        sum += unimplemented!();
+        sum += i.first;
     }
     unimplemented!();
     'loop_: for i in IterRange::new(unimplemented!(), unimplemented!()) {
         let mut i: () = unimplemented!();
-        unimplemented!() = -1_();
+        i.second = -1_();
         unimplemented!();
     }
     'loop_: for i in IterRange::new(unimplemented!(), unimplemented!()) {

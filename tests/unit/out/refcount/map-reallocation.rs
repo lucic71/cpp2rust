@@ -17,7 +17,7 @@ fn main_0() -> () {
     let __rhs = sentinel;
     unimplemented!().write(__rhs);
     let it: Value<()> = Rc::new(RefCell::new(unimplemented!()));
-    let mut p: Ptr<()> = (unimplemented!().as_pointer());
+    let mut p: Ptr<()> = (field_ptr!(it.as_pointer(), second));
     unimplemented!();
     unimplemented!();
     let mut i: () = 0_();
@@ -35,7 +35,7 @@ fn main_0() -> () {
     unimplemented!();
     unimplemented!();
     unimplemented!();
-    (*unimplemented!().borrow_mut()) = 57005_();
+    field!((*it.borrow_mut()), second).write(57005_());
     unimplemented!();
     unimplemented!();
     unimplemented!();
@@ -43,7 +43,7 @@ fn main_0() -> () {
     'loop_: for pair in IterRange::new(unimplemented!(), unimplemented!()) {
         let pair: Ptr<()> = unimplemented!();
         unimplemented!();
-        prev = (*unimplemented!().borrow());
+        prev = pair.with(|__s| __s.first);
     }
     return 0_();
 }

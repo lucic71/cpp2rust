@@ -67,7 +67,7 @@ impl State {
                     (*_a0.upgrade().deref()).grid[(__i) as usize][(__i2) as usize]
                 }))
             })),
-            arr: unimplemented!(),
+            arr: field!(_a0, arr).with_mut(std::mem::take),
             elems: unimplemented!(),
             rows: unimplemented!(),
         }
@@ -89,13 +89,13 @@ impl Default for State {
     }
 }
 pub fn sum_0(mut p: Ptr<()>, mut n: ()) -> () {
-    let mut s: () = 0_();
+    let s: Value<()> = Rc::new(RefCell::new(0_()));
     let mut i: () = 0_();
     'loop_: while (i < n) {
-        s += { (elem!(p, i).read()) };
+        (*s.borrow_mut()) += { (elem!(p, i).read()) };
         i.prefix_inc();
     }
-    return s;
+    return (*s.borrow());
 }
 pub fn fill_1(mut s: Ptr<State>) {
     let mut i: () = 0_();
@@ -107,14 +107,14 @@ pub fn fill_1(mut s: Ptr<State>) {
         }
         i.prefix_inc();
     }
-    elem!(field_ptr!(s, arr), 1_()).write(7_());
+    unimplemented!().write(7_());
     unimplemented!();
     let mut i: () = 0_();
     'loop_: while (i < 3_()) {
         let __rhs = i;
-        field!(elem!(field_ptr!(s, elems), i), id).write(__rhs);
+        field!(unimplemented!(), id).write(__rhs);
         let __rhs = (10_() * i);
-        index!(field!(elem!(field_ptr!(s, elems), i), hist), i).write(__rhs);
+        array_elem!(unimplemented!(), hist, i).write(__rhs);
         unimplemented!();
         i.prefix_inc();
     }
@@ -129,10 +129,10 @@ fn main_0() -> () {
     ({ fill_1((s.as_pointer())) });
     unimplemented!();
     unimplemented!();
-    let mut e: Ptr<Elem> = (field_ptr!(s.as_pointer(), elems).offset(2_()));
+    let mut e: Ptr<Elem> = (unimplemented!());
     let mut h: Ptr<()> = (array_field_ptr!(e, hist) as Ptr<()>);
-    let mut c: Ptr<()> = (field_ptr!(e, coeffs).offset(1_()));
-    let mut id: Ptr<()> = (field_ptr!(field_ptr!(s.as_pointer(), elems).offset(1_()), id));
+    let mut c: Ptr<()> = (unimplemented!());
+    let mut id: Ptr<()> = (field_ptr!(unimplemented!(), id));
     let mut k: () = 0_();
     'loop_: while (k < 4_()) {
         {
@@ -148,33 +148,29 @@ fn main_0() -> () {
     (*s.borrow_mut()).count = 3_();
     unimplemented!();
     unimplemented!();
-    let mut row: Ptr<()> = (field_ptr!(s.as_pointer(), rows).offset(0_()).offset(0_()));
+    let mut row: Ptr<()> = (unimplemented!());
     elem!(row, 2_()).write(9_());
     unimplemented!();
     let t: Value<State> = Rc::new(RefCell::new((*s.borrow()).clone()));
-    index!(
-        field!(elem!(field_ptr!(t.as_pointer(), elems), 2_()), hist),
-        0_()
-    )
-    .write(100_());
+    array_elem!(unimplemented!(), hist, 0_()).write(100_());
     (*t.borrow_mut()).grid[(0_()) as usize][(0_()) as usize] = 100_();
-    elem!(field_ptr!(t.as_pointer(), rows).offset(0_()), 0_()).write(100_());
+    unimplemented!().write(100_());
     unimplemented!();
     unimplemented!();
     let mut p: Ptr<State> = (t.as_pointer());
     let __rhs = ({ (*p.upgrade().deref()).grid[(1_()) as usize][(1_()) as usize] } + {
-        (elem!(field_ptr!(p, arr), 1_()).read())
+        (unimplemented!().read())
     });
-    index!(field!(elem!(field_ptr!(p, elems), 0_()), hist), 3_()).write(__rhs);
+    array_elem!(unimplemented!(), hist, 3_()).write(__rhs);
     unimplemented!();
     unimplemented!();
     unimplemented!();
-    let elems: Value<()> = Rc::new(RefCell::new(unimplemented!()));
-    let mut first: Ptr<Elem> = (elems.as_pointer().offset(0_()));
+    let mut elems: () = unimplemented!();
+    let mut first: Ptr<Elem> = (unimplemented!());
     unimplemented!();
-    elem!(field_ptr!(elems.as_pointer().offset(1_()), coeffs), 1_()).write(4_());
-    let __rhs = ((elem!(field_ptr!(elems.as_pointer().offset(1_()), coeffs), 1_()).read()) + 1_());
-    array_elem!(elems.as_pointer().offset(1_()), hist, 2_()).write(__rhs);
+    unimplemented!().write(4_());
+    let __rhs = ((unimplemented!().read()) + 1_());
+    index!(field!(unimplemented!(), hist), 2_()).write(__rhs);
     unimplemented!();
     let moved: Value<State> = Rc::new(RefCell::new(State::move_from({ t.as_pointer() })));
     unimplemented!();
@@ -203,7 +199,7 @@ impl StateImpl for Ptr<State> {
     fn move_assign(&self, _a0: Ptr<State>) -> Ptr<State> {
         field!((*self), count).write({ { (*_a0.upgrade().deref()).count } });
         unimplemented!();
-        unimplemented!();
+        field!((*self), arr).write({ { (*_a0.upgrade().deref()).arr.clone() } });
         unimplemented!();
         unimplemented!();
         return (*self).clone();

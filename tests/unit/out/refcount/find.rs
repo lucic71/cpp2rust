@@ -18,14 +18,14 @@ fn main_0() -> () {
     let v_begin: Value<()> = Rc::new(RefCell::new(unimplemented!()));
     let v_end: Value<()> = Rc::new(RefCell::new(unimplemented!()));
     let it: Value<()> = Rc::new(RefCell::new(unimplemented!()));
-    let mut v_result_true: () = unimplemented!();
+    let mut v_result_true: () = !(unimplemented!());
     let m: Value<()> = Rc::new(RefCell::new(unimplemented!()));
     unimplemented!().write(1_());
     unimplemented!().write(2_());
     unimplemented!().write(3_());
     let m_begin: Value<()> = Rc::new(RefCell::new(unimplemented!()));
     let m_end: Value<()> = Rc::new(RefCell::new(unimplemented!()));
-    let mut m_result_true: () = unimplemented!();
+    let mut m_result_true: () = !(unimplemented!());
     unimplemented!();
     let mut w: () = unimplemented!();
     unimplemented!();

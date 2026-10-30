@@ -55,10 +55,10 @@ pub unsafe fn fn_1(v: *mut (), mut v3: ()) {
     unimplemented!();
     unimplemented!();
     unimplemented!();
-    x = (&mut (*v))[(2_()) as usize];
-    v2[(0_()) as usize] = 1_();
-    (&mut (*if true { (&mut v3 as *mut ()) } else { (v) }))[(0_()) as usize] = 7_();
-    (&mut (*v4))[(1_()) as usize] = 13_();
+    x = (*unimplemented!());
+    (*unimplemented!()) = 1_();
+    (*unimplemented!()) = 7_();
+    (*unimplemented!()) = 13_();
     unimplemented!();
     unimplemented!();
     unimplemented!();
@@ -86,8 +86,8 @@ unsafe fn main_0() -> () {
     unimplemented!();
     unimplemented!();
     unimplemented!();
-    v1[(0_()) as usize] = 40_();
-    v1[(99_()) as usize] = 50_();
+    (*unimplemented!()) = 40_();
+    (*unimplemented!()) = 50_();
     unimplemented!();
     unimplemented!();
     let mut v2: () = unimplemented!();

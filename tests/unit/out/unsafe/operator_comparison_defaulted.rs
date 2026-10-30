@@ -35,16 +35,16 @@ impl Cmp {
         {
             let mut cmp: () = std::cmp::Ord::cmp(&((*(self as *const Cmp)).a), &((*_a0).a));
             if !(unimplemented!()) {
-                return cmp;
+                return unimplemented!();
             }
         }
         {
             let mut cmp: () = std::cmp::Ord::cmp(&((*(self as *const Cmp)).b), &((*_a0).b));
             if !(unimplemented!()) {
-                return cmp;
+                return unimplemented!();
             }
         }
-        return unimplemented!().clone();
+        return unimplemented!();
     }
     pub unsafe fn operator_eq(&self, _a0: *const Cmp) -> () {
         return (((*(self as *const Cmp)).a) == ((*_a0).a))
@@ -80,10 +80,10 @@ impl Both {
         {
             let mut cmp: () = std::cmp::Ord::cmp(&((*(self as *const Both)).a), &((*_a0).a));
             if !(unimplemented!()) {
-                return cmp;
+                return unimplemented!();
             }
         }
-        return unimplemented!().clone();
+        return unimplemented!();
     }
 }
 impl std::cmp::Ord for Both {
@@ -112,10 +112,10 @@ impl OrdOnly {
         {
             let mut cmp: () = std::cmp::Ord::cmp(&((*(self as *const OrdOnly)).a), &((*_a0).a));
             if !(unimplemented!()) {
-                return cmp;
+                return unimplemented!();
             }
         }
-        return unimplemented!().clone();
+        return unimplemented!();
     }
 }
 impl std::cmp::Ord for OrdOnly {
@@ -144,10 +144,10 @@ impl Inner {
         {
             let mut cmp: () = std::cmp::Ord::cmp(&((*(self as *const Inner)).x), &((*_a0).x));
             if !(unimplemented!()) {
-                return cmp;
+                return unimplemented!();
             }
         }
-        return unimplemented!().clone();
+        return unimplemented!();
     }
     pub unsafe fn operator_eq(&self, _a0: *const Inner) -> () {
         return (((*(self as *const Inner)).x) == ((*_a0).x));
@@ -183,16 +183,16 @@ impl Outer {
                 Inner::operator_cmp(&(*(self as *const Outer)).i, _arg0)
             });
             if !(unimplemented!()) {
-                return cmp;
+                return unimplemented!();
             }
         }
         {
             let mut cmp: () = std::cmp::Ord::cmp(&((*(self as *const Outer)).y), &((*_a0).y));
             if !(unimplemented!()) {
-                return cmp;
+                return unimplemented!();
             }
         }
-        return unimplemented!().clone();
+        return unimplemented!();
     }
     pub unsafe fn operator_eq(&self, _a0: *const Outer) -> () {
         return (unsafe {
@@ -236,10 +236,10 @@ impl Secondary {
         {
             let mut cmp: () = std::cmp::Ord::cmp(&((*(self as *const Secondary)).a), &((*_a0).a));
             if !(unimplemented!()) {
-                return cmp;
+                return unimplemented!();
             }
         }
-        return unimplemented!().clone();
+        return unimplemented!();
     }
     pub unsafe fn operator_lt(&self, _a0: *const Secondary) -> () {
         return unimplemented!();
@@ -274,10 +274,10 @@ impl PtrMember {
         {
             let mut cmp: () = std::cmp::Ord::cmp(&((*(self as *const PtrMember)).p), &((*_a0).p));
             if !(unimplemented!()) {
-                return cmp;
+                return unimplemented!();
             }
         }
-        return unimplemented!().clone();
+        return unimplemented!();
     }
     pub unsafe fn operator_eq(&self, _a0: *const PtrMember) -> () {
         return (((*(self as *const PtrMember)).p) == ((*_a0).p));

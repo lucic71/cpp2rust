@@ -16,12 +16,12 @@ pub fn All_0(arr: Ptr<()>, mut N: (), mut element: ()) {
     unimplemented!();
 }
 pub fn Consume_1(mut arr: (), mut N: ()) -> () {
-    let mut sum: () = 0_();
+    let sum: Value<()> = Rc::new(RefCell::new(0_()));
     let mut i: () = -1_();
     'loop_: while (i.prefix_inc() < N) {
-        sum += (unimplemented!().read());
+        (*sum.borrow_mut()) += (unimplemented!().read());
     }
-    return sum;
+    return (*sum.borrow());
 }
 pub fn main() {
     __cpp2rust_init_globals();

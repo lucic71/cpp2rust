@@ -13,8 +13,8 @@ pub fn main() {
 fn main_0() -> () {
     let mut arr: Ptr<()> =
         Ptr::alloc_array((0..10_()).map(|_| unimplemented!()).collect::<Box<[()]>>());
-    let mut out: () = (elem!(arr, 10_()).read());
+    let out: Value<()> = Rc::new(RefCell::new((elem!(arr, 10_()).read())));
     arr.delete();
-    return out;
+    return (*out.borrow());
 }
 pub fn __cpp2rust_init_globals() {}

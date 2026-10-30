@@ -9,9 +9,9 @@ use std::rc::{Rc, Weak};
 pub fn f_0(bytes: ()) -> () {
     let bytes: Value<()> = Rc::new(RefCell::new(bytes));
     let mut buf: Ptr<()> = Ptr::alloc(unimplemented!());
-    let mut n: () = unimplemented!();
+    let n: Value<()> = Rc::new(RefCell::new(unimplemented!()));
     buf.delete();
-    return n;
+    return (*n.borrow());
 }
 pub fn main() {
     __cpp2rust_init_globals();

@@ -30,7 +30,7 @@ pub fn pick_0(a: Ptr<()>, b: Ptr<()>, mut first: ()) -> Ptr<()> {
 pub fn sum_1(v: Ptr<()>) -> () {
     let mut total: () = 0_();
     let it: Value<()> = Rc::new(RefCell::new(unimplemented!()));
-    'loop_: while unimplemented!() {
+    'loop_: while !(unimplemented!()) {
         total += (unimplemented!().read());
         unimplemented!();
     }

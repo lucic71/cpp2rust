@@ -87,7 +87,7 @@ unsafe fn main_0() -> () {
     ok &= ((*std::cell::LazyCell::force_mut(&mut *&raw mut copies_0)) == (2_()));
     (*unimplemented!()) = 11_();
     ok &= ((*std::cell::LazyCell::force_mut(&mut *&raw mut copies_0)) == (2_()));
-    ok &= ((unimplemented!()) == (11_()));
+    ok &= (((*unimplemented!()).second) == (11_()));
     ok &= ((*unimplemented!()) == (20_()));
     ok &= ((*std::cell::LazyCell::force_mut(&mut *&raw mut copies_0)) == (2_()));
     (*unimplemented!()) = 40_();
@@ -104,10 +104,10 @@ unsafe fn main_0() -> () {
     (*unimplemented!()) += 1_();
     ok &= (((*std::cell::LazyCell::force_mut(&mut *&raw mut copies_0)) == (2_()))
         && ((*unimplemented!()) == (12_())));
-    let mut first: *const Key = (&unimplemented!() as *const Key);
+    let mut first: *const Key = (&(*unimplemented!()).first as *const Key);
     (*unimplemented!()) = 0_();
     ok &= ((*std::cell::LazyCell::force_mut(&mut *&raw mut moves_1)) == (3_()));
-    ok &= ((&unimplemented!() as *const Key) == (first));
+    ok &= ((&(*unimplemented!()).first as *const Key) == (first));
     let mut n: () = unimplemented!();
     ok &= ((*std::cell::LazyCell::force_mut(&mut *&raw mut copies_0)) == ((2_()) + (5_())));
     ok &= (((unimplemented!()) == (5_())) && ((*unimplemented!()) == (12_())));
@@ -121,7 +121,7 @@ unsafe fn main_0() -> () {
     let mut sum: () = 0_();
     'loop_: for entry in IterRange::new(unimplemented!(), unimplemented!()) {
         let entry: *const () = &(*unimplemented!());
-        sum += ((unimplemented!().k) * (unimplemented!()));
+        sum += (((*entry).first.k) * ((*entry).second));
     }
     ok &= ((sum) == (((3_()) * (31_())) + ((4_()) * (41_()))));
     ok &= (((*std::cell::LazyCell::force_mut(&mut *&raw mut copies_0)) == (7_()))

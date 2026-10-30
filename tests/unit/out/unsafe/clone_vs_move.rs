@@ -109,7 +109,7 @@ unsafe fn main_0() -> () {
     }
     let mut i: () = 0_();
     'loop_: while ((i) < (N)) {
-        v2[(i) as usize].prefix_inc();
+        (*unimplemented!()).prefix_inc();
         i.prefix_inc();
     }
     let mut i: () = 0_();
@@ -141,7 +141,7 @@ unsafe fn main_0() -> () {
     'loop_: while ((i) < (N)) {
         let mut j: () = 0_();
         'loop_: while ((j) < (10_())) {
-            m2[(i) as usize][(j) as usize].postfix_inc();
+            (*unimplemented!()).postfix_inc();
             j.prefix_inc();
         }
         i.prefix_inc();
@@ -179,8 +179,8 @@ unsafe fn main_0() -> () {
     }
     let mut pair1: () = unimplemented!();
     let mut pair2: () = unimplemented!();
-    unimplemented!() = ((unimplemented!()) * (10_()));
-    unimplemented!() = ((unimplemented!()) * (10_()));
+    pair2.first = ((pair2.first) * (10_()));
+    pair2.second = ((pair2.second) * (10_()));
     unimplemented!();
     unimplemented!();
     unimplemented!();
@@ -188,16 +188,16 @@ unsafe fn main_0() -> () {
     let mut pair3: () = unimplemented!();
     let mut pair4: () = unimplemented!();
     unimplemented!();
-    unimplemented!() = 1_();
+    pair4.second = 1_();
     unimplemented!();
     unimplemented!();
     unimplemented!();
     unimplemented!();
     let mut s1: () = unimplemented!();
     let mut s2: () = unimplemented!();
-    s2[(0_()) as usize] = ('b' as ());
-    s2[(1_()) as usize] = ('b' as ());
-    s2[(2_()) as usize] = ('b' as ());
+    (*unimplemented!()) = ('b' as ());
+    (*unimplemented!()) = ('b' as ());
+    (*unimplemented!()) = ('b' as ());
     unimplemented!();
     unimplemented!();
     unimplemented!();
@@ -215,7 +215,7 @@ unsafe fn main_0() -> () {
     let mut i: () = 0_();
     'loop_: while ((i) < (N)) {
         unimplemented!();
-        v4[(i) as usize].prefix_inc();
+        (*unimplemented!()).prefix_inc();
         i.prefix_inc();
     }
     let mut i: () = 0_();

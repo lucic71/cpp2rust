@@ -8,8 +8,8 @@ use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
 pub fn dangling_0() -> Ptr<()> {
     let x: Value<()> = Rc::new(RefCell::new(1_()));
-    let mut p: Ptr<()> = (x.as_pointer());
-    return p;
+    let p: Value<Ptr<()>> = Rc::new(RefCell::new((x.as_pointer())));
+    return (*p.borrow()).clone();
 }
 pub fn main() {
     __cpp2rust_init_globals();

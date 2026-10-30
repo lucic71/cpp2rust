@@ -6,20 +6,21 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-pub fn dowhile_0(mut x: ()) -> () {
+pub fn dowhile_0(x: ()) -> () {
+    let x: Value<()> = Rc::new(RefCell::new(x));
     let mut __do_while = true;
-    'loop_: while __do_while || (x <= 200_()) {
+    'loop_: while __do_while || ((*x.borrow()) <= 200_()) {
         __do_while = false;
-        x += 1_();
+        (*x.borrow_mut()) += 1_();
         let mut __do_while = true;
-        'loop_: while __do_while || (x <= 100_()) {
+        'loop_: while __do_while || ((*x.borrow()) <= 100_()) {
             __do_while = false;
-            x += 1_();
-            x += 1_();
+            (*x.borrow_mut()) += 1_();
+            (*x.borrow_mut()) += 1_();
         }
-        x += 1_();
+        (*x.borrow_mut()) += 1_();
     }
-    return x;
+    return (*x.borrow());
 }
 pub fn main() {
     __cpp2rust_init_globals();

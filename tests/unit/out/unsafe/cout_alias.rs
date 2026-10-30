@@ -14,18 +14,18 @@ pub fn main() {
 }
 unsafe fn main_0() -> () {
     let mut cond: () = true;
-    let mut os1: () = if cond {
-        (&raw mut (*unimplemented!()) as ())
+    let mut os1: *mut () = if cond {
+        (&raw mut (*unimplemented!()) as *mut ())
     } else {
-        (&raw mut (*unimplemented!()) as ())
+        (&raw mut (*unimplemented!()) as *mut ())
     };
-    write!((*os1), "hello\n",);
-    let os2: () = if cond {
-        (&raw mut (*unimplemented!()) as ())
+    unimplemented!();
+    let os2: *mut () = if cond {
+        (&raw mut (*unimplemented!()) as *mut ())
     } else {
-        (&raw mut (*unimplemented!()) as ())
+        (&raw mut (*unimplemented!()) as *mut ())
     };
-    write!((*os2), "hello\n",);
+    unimplemented!();
     return 0_();
 }
 pub unsafe fn __cpp2rust_init_globals() {}

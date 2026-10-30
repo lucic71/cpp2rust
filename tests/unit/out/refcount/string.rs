@@ -13,7 +13,7 @@ pub fn main() {
 fn main_0() -> () {
     let mut empty: () = unimplemented!();
     unimplemented!();
-    let mut s1: () = unimplemented!();
+    let s1: Value<()> = Rc::new(RefCell::new(unimplemented!()));
     unimplemented!();
     unimplemented!();
     unimplemented!();
@@ -39,8 +39,8 @@ fn main_0() -> () {
     }
     unimplemented!();
     unimplemented!();
-    s2[0_()] = ('b' as ());
-    s2[1_()] = ('c' as ());
+    unimplemented!().write(('b' as ()));
+    unimplemented!().write(('c' as ()));
     unimplemented!();
     unimplemented!();
     let mut i: () = 2_();
@@ -103,12 +103,12 @@ fn main_0() -> () {
     unimplemented!();
     unimplemented!();
     unimplemented!();
-    string[3_()] = ('a' as ());
-    string[4_()] = ('b' as ());
+    unimplemented!().write(('a' as ()));
+    unimplemented!().write(('b' as ()));
     unimplemented!();
     unimplemented!();
-    string[3_()] = 0_();
-    string[4_()] = 0_();
+    unimplemented!().write(0_());
+    unimplemented!().write(0_());
     unimplemented!();
     unimplemented!();
     unimplemented!();
@@ -161,9 +161,8 @@ fn main_0() -> () {
     unimplemented!();
     pos = unimplemented!();
     unimplemented!();
-    let string_to_cast: Value<()> = Rc::new(RefCell::new(unimplemented!()));
-    let mut output_data: Ptr<()> =
-        (string_to_cast.as_pointer().offset(0_())).reinterpret_cast::<()>();
+    let mut string_to_cast: () = unimplemented!();
+    let mut output_data: Ptr<()> = (unimplemented!()).reinterpret_cast::<()>();
     unimplemented!();
     unimplemented!();
     unimplemented!();

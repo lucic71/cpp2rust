@@ -12,7 +12,7 @@ pub fn main() {
 }
 fn main_0() -> () {
     let mut arr: () = unimplemented!();
-    arr[1_()] = ('b' as ());
+    unimplemented!().write(('b' as ()));
     let mut p: Ptr<()> = unimplemented!().offset((1_()) as isize);
     unimplemented!();
     unimplemented!();

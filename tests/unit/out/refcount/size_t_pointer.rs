@@ -12,12 +12,13 @@ pub fn out_param_0(out: Option<Ptr<()>>) {
         out.write(4_());
     }
 }
-pub fn parse_1(mut v: (), idx: Option<Ptr<()>>) -> () {
+pub fn parse_1(v: (), idx: Option<Ptr<()>>) -> () {
+    let v: Value<()> = Rc::new(RefCell::new(v));
     let mut idx: Ptr<()> = idx.unwrap_or_else(|| Ptr::<()>::null());
     if !(idx).is_null() {
         idx.write(3_());
     }
-    return v;
+    return (*v.borrow());
 }
 pub fn main() {
     __cpp2rust_init_globals();

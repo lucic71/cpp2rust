@@ -20,14 +20,14 @@ unsafe fn main_0() -> () {
     let mut v_begin: () = unimplemented!();
     let mut v_end: () = unimplemented!();
     let mut it: () = unimplemented!();
-    let mut v_result_true: () = unimplemented!();
+    let mut v_result_true: () = !(unimplemented!());
     let mut m: () = unimplemented!();
     (*unimplemented!()) = 1_();
     (*unimplemented!()) = 2_();
     (*unimplemented!()) = 3_();
     let mut m_begin: () = unimplemented!();
     let mut m_end: () = unimplemented!();
-    let mut m_result_true: () = unimplemented!();
+    let mut m_result_true: () = !(unimplemented!());
     unimplemented!();
     let mut w: () = unimplemented!();
     unimplemented!();

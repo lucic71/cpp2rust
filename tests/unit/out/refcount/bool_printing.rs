@@ -19,12 +19,12 @@ pub fn main() {
 fn main_0() -> () {
     let mut i1: () = 0_();
     let mut i2: () = 1_();
-    write!(unimplemented!(), "{:}\n", (true as u8),);
-    write!(unimplemented!(), "{:}\n", (false as u8),);
-    write!(unimplemented!(), "{:}\n", ((i1 != i2) as u8),);
-    write!(unimplemented!(), "{:}\n", ((i1 == i2) as u8),);
-    write!(unimplemented!(), "{:}\n", (({ foo_0() }) as u8),);
-    write!(unimplemented!(), "{:}\n", (({ bar_1() }) as u8),);
+    unimplemented!();
+    unimplemented!();
+    unimplemented!();
+    unimplemented!();
+    unimplemented!();
+    unimplemented!();
     return 0_();
 }
 pub fn __cpp2rust_init_globals() {}

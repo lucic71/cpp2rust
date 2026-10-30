@@ -7,21 +7,21 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
 pub fn no_default_0(mut x: ()) -> () {
-    let mut r: () = -1_();
+    let r: Value<()> = Rc::new(RefCell::new(-1_()));
     'switch: {
         match { x } {
             __v if __v == 7_() => {
-                r = 1_();
+                (*r.borrow_mut()) = 1_();
                 break 'switch;
             }
             __v if __v == 8_() => {
-                r = 2_();
+                (*r.borrow_mut()) = 2_();
                 break 'switch;
             }
             _ => {}
         }
     };
-    return r;
+    return (*r.borrow());
 }
 pub fn main() {
     __cpp2rust_init_globals();

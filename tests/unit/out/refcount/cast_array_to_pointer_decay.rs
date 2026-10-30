@@ -10,11 +10,11 @@ pub fn deref_0(mut p: Ptr<()>) -> () {
     return (p.read());
 }
 pub fn strlen_1(mut s: Ptr<()>) -> () {
-    let mut c: () = 0_();
+    let c: Value<()> = Rc::new(RefCell::new(0_()));
     'loop_: while ((s.postfix_inc().read()) != 0) {
-        c.prefix_inc();
+        (*c.borrow_mut()).prefix_inc();
     }
-    return c;
+    return (*c.borrow());
 }
 pub fn main() {
     __cpp2rust_init_globals();

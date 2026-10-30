@@ -17,9 +17,9 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> () {
-    elem!(({ get_1() }), 1_()).write(4_());
+    unimplemented!().write(4_());
     let mut v: () = unimplemented!();
-    elem!((unimplemented!()), 2_()).write(5_());
+    unimplemented!().write(5_());
     unimplemented!();
     unimplemented!();
     return 0_();

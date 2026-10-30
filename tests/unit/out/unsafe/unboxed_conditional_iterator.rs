@@ -36,7 +36,7 @@ pub unsafe fn lehmer_2(mut sigma: *const (), mut len: (), mut code: *mut ()) {
     let mut items: () = unimplemented!();
     let mut i: () = 0_();
     'loop_: while ((i) < (len)) {
-        items[(i) as usize] = i;
+        (*unimplemented!()) = i;
         i.prefix_inc();
     }
     let mut i: () = 0_();
@@ -51,7 +51,7 @@ pub unsafe fn lehmer_2(mut sigma: *const (), mut len: (), mut code: *mut ()) {
 pub unsafe fn sum_3(v: *mut ()) -> () {
     let mut s: () = 0_();
     let mut it: () = unimplemented!();
-    'loop_: while unimplemented!() {
+    'loop_: while !(unimplemented!()) {
         s += (*unimplemented!());
         unimplemented!();
     }

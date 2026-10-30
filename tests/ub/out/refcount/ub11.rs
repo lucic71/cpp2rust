@@ -13,8 +13,8 @@ pub fn main() {
 fn main_0() -> () {
     let mut element: Ptr<()> = Ptr::alloc(10_());
     let mut ptr: Ptr<()> = element.offset((1_()) as isize);
-    let mut out: () = (ptr.read());
+    let out: Value<()> = Rc::new(RefCell::new((ptr.read())));
     element.delete();
-    return out;
+    return (*out.borrow());
 }
 pub fn __cpp2rust_init_globals() {}

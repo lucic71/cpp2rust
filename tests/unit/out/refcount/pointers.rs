@@ -12,19 +12,20 @@ pub struct Test {
     #[offset(0)]
     pub x: (),
 }
-pub fn Update_0(mut t: Ptr<Test>) -> Ptr<Test> {
+pub fn Update_0(t: Ptr<Test>) -> Ptr<Test> {
+    let t: Value<Ptr<Test>> = Rc::new(RefCell::new(t));
     let mut x: () = 1_();
     let mut y: () = 2_();
     x.prefix_inc();
-    ({ TestImpl::update(&t, x, y) });
-    x = t.with(|__s| (__s).x);
-    y = t.with(|__s| __s.x);
+    ({ TestImpl::update(&(*t.borrow()), x, y) });
+    x = (*t.borrow()).with(|__s| (__s).x);
+    y = (*t.borrow()).with(|__s| __s.x);
     ({
         let _x: () = x;
         let _y: () = y;
-        TestImpl::update(&(t), _x, _y)
+        TestImpl::update(&(*t.borrow()), _x, _y)
     });
-    return t;
+    return (*t.borrow()).clone();
 }
 pub fn main() {
     __cpp2rust_init_globals();

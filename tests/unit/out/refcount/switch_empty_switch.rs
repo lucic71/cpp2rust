@@ -6,13 +6,14 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-pub fn empty_switch_0(mut x: ()) -> () {
+pub fn empty_switch_0(x: ()) -> () {
+    let x: Value<()> = Rc::new(RefCell::new(x));
     'switch: {
-        match { x } {
+        match { (*x.borrow()) } {
             _ => {}
         }
     };
-    return x;
+    return (*x.borrow());
 }
 pub fn main() {
     __cpp2rust_init_globals();

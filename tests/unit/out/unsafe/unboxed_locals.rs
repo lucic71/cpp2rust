@@ -148,8 +148,8 @@ unsafe fn main_0() -> () {
     let mut vec_: () = unimplemented!();
     let mut four: () = 4_();
     unimplemented!();
-    vec_[(0_()) as usize] = ((vec_[(3_()) as usize]) + (1_()));
-    vec_[(1_()) as usize].postfix_inc();
+    (*unimplemented!()) = ((*unimplemented!()) + (1_()));
+    (*unimplemented!()).postfix_inc();
     unimplemented!();
     let mut high: () = 3_();
     let mut low: () = (*unimplemented!());
@@ -157,7 +157,7 @@ unsafe fn main_0() -> () {
     let mut by_ref: () = unimplemented!();
     unimplemented!();
     let mut elem_ptr: () = unimplemented!();
-    (unsafe { set_0((&mut elem_ptr[(1_()) as usize] as *mut ()), 7_()) });
+    (unsafe { set_0((&mut (*unimplemented!()) as *mut ()), 7_()) });
     unimplemented!();
     let mut data: () = unimplemented!();
     (unsafe { set_0(unimplemented!(), 8_()) });

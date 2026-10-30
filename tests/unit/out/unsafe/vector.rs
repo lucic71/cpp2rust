@@ -30,8 +30,8 @@ unsafe fn main_0() -> () {
     unimplemented!();
     unimplemented!();
     unimplemented!();
-    v1[(0_()) as usize] = 40_();
-    v1[(99_()) as usize] = 50_();
+    (*unimplemented!()) = 40_();
+    (*unimplemented!()) = 50_();
     unimplemented!();
     unimplemented!();
     let mut v2: () = unimplemented!();
@@ -182,7 +182,7 @@ unsafe fn main_0() -> () {
     let mut ppa: *mut *mut S = (&mut pa as *mut *mut S);
     let mut v9: () = unimplemented!();
     unimplemented!();
-    (*(*(*v9[(0_()) as usize]))).x = 2_();
+    (*(*(*(*unimplemented!())))).x = 2_();
     unimplemented!();
     return 0_();
 }
