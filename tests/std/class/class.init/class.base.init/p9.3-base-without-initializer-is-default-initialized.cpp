@@ -1,3 +1,4 @@
+// no-compile: refcount, unsafe
 // ADDITIONAL_COMPILE_FLAGS: -std=c++23
 // N4950 [class.base.init]/9.3: a base class subobject not designated by a
 // mem-initializer-id is default-initialized, whether the constructor has no

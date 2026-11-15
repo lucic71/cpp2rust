@@ -1,3 +1,5 @@
+// translation-fail: refcount
+// no-compile: unsafe
 // ADDITIONAL_COMPILE_FLAGS: -std=c++23
 // N4950 [class.virtual]/9: when the overriding function is called as the final
 // overrider of the overridden function, its result is converted to the type

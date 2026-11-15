@@ -1,3 +1,5 @@
+// translation-fail: refcount
+// no-compile: unsafe
 // ADDITIONAL_COMPILE_FLAGS: -std=c++23
 // N4950 [class.cdtor]/4 and [class.base.init]/16: the rule for virtual calls
 // from a constructor covers the construction of the class's non-static data

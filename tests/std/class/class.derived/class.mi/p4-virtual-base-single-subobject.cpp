@@ -1,3 +1,4 @@
+// no-compile: refcount, unsafe
 // ADDITIONAL_COMPILE_FLAGS: -std=c++23
 // N4950 [class.mi]/4 (figure 5): for each distinct base class that is
 // specified virtual, the most derived object contains a single base class

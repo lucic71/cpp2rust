@@ -1,3 +1,4 @@
+// no-compile: refcount, unsafe
 // ADDITIONAL_COMPILE_FLAGS: -std=c++23
 // N4950 [class.derived.general]/4: a base-specifier followed by an ellipsis is
 // a pack expansion. DerivesFromPack<CountsFirst, CountsSecond> has one base

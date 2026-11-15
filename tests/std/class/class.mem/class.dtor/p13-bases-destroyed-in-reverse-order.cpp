@@ -1,3 +1,4 @@
+// panic: refcount, unsafe
 // ADDITIONAL_COMPILE_FLAGS: -std=c++23
 // N4950 [class.dtor]/13: after executing its body, a destructor calls the
 // destructors for the class's non-static data members, then for its

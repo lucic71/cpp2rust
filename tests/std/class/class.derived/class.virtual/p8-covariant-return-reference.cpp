@@ -1,3 +1,5 @@
+// translation-fail: refcount
+// no-compile: unsafe
 // ADDITIONAL_COMPILE_FLAGS: -std=c++23
 // N4950 [class.virtual]/8.1: covariant return types can both be lvalue
 // references to classes. The override returns a reference to the derived

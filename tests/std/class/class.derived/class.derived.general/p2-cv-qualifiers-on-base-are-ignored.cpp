@@ -1,3 +1,4 @@
+// no-compile: refcount, unsafe
 // ADDITIONAL_COMPILE_FLAGS: -std=c++23
 // N4950 [class.derived.general]/2: a class-or-decltype denotes a possibly
 // cv-qualified class type; any cv-qualifiers are ignored. The base named

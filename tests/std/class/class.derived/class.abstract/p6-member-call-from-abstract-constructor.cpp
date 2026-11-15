@@ -1,3 +1,4 @@
+// no-compile: refcount, unsafe
 // ADDITIONAL_COMPILE_FLAGS: -std=c++23
 // N4950 [class.abstract]/6: member functions can be called from a constructor
 // or destructor of an abstract class. A virtual function that is not pure

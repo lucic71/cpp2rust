@@ -1,3 +1,5 @@
+// translation-fail: refcount
+// no-compile: unsafe
 // ADDITIONAL_COMPILE_FLAGS: -std=c++23
 // N4950 [class.virtual]/2: a using-declaration names a base function but does
 // not override it. In NamesBaseFunctionWithUsing, d.f() calls

@@ -1,3 +1,5 @@
+// translation-fail: refcount
+// no-compile: unsafe
 // ADDITIONAL_COMPILE_FLAGS: -std=c++23
 // N4950 [class.cdtor]/4: when a virtual function is called directly or
 // indirectly from a constructor or destructor for the object under

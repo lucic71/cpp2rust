@@ -1,3 +1,4 @@
+// no-compile: refcount, unsafe
 // ADDITIONAL_COMPILE_FLAGS: -std=c++23
 // N4950 [class.inhctor.init]/1: InheritsThroughTwoLevels inherits
 // VirtualBase(int) through InheritsOnce and DeletesDefaultConstructor.

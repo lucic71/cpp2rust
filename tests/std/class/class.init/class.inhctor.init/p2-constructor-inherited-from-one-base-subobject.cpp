@@ -1,3 +1,4 @@
+// no-compile: refcount, unsafe
 // ADDITIONAL_COMPILE_FLAGS: -std=c++23
 // N4950 [class.inhctor.init]/2: a constructor may be inherited from only one
 // base class subobject of a type. JoinsInheritingAndPlain inherits

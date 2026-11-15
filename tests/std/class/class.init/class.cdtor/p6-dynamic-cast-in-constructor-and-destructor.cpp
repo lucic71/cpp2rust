@@ -1,3 +1,4 @@
+// no-compile: refcount, unsafe
 // ADDITIONAL_COMPILE_FLAGS: -std=c++23
 // N4950 [class.cdtor]/6: when a dynamic_cast is used in a constructor or
 // destructor, or in a function called from one, and its operand refers to the

@@ -1,3 +1,5 @@
+// translation-fail: refcount
+// no-compile: unsafe
 // ADDITIONAL_COMPILE_FLAGS: -std=c++23
 // N4950 [class.virtual]/8: the return type of an overriding function is
 // identical to or covariant with that of the overridden function (8.1: both

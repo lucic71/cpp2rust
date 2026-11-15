@@ -1,3 +1,5 @@
+// translation-fail: refcount
+// no-compile: unsafe
 // ADDITIONAL_COMPILE_FLAGS: -std=c++23
 // N4950 [class.virtual]/16: explicit qualification with the scope operator
 // suppresses the virtual call mechanism. The call DeclaresVirtual::f() inside

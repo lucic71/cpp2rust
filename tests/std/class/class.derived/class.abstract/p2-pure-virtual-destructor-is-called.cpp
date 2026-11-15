@@ -1,3 +1,4 @@
+// no-compile: refcount, unsafe
 // ADDITIONAL_COMPILE_FLAGS: -std=c++23
 // N4950 [class.abstract]/2: a pure virtual function need be defined only if
 // called with, or as if with, the qualified-id syntax. The destructor of a

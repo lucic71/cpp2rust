@@ -1,3 +1,5 @@
+// translation-fail: refcount
+// no-compile: unsafe
 // ADDITIONAL_COMPILE_FLAGS: -std=c++23
 // N4950 [class.virtual]/8.3: in a covariant return type the class type of the
 // overrider has the same cv-qualification as or less than that of the

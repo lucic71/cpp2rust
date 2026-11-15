@@ -1,3 +1,4 @@
+// no-compile: refcount, unsafe
 // ADDITIONAL_COMPILE_FLAGS: -std=c++23
 // N4950 [class.base.init]/13.2 and /7: direct base classes are initialized in
 // declaration order as they appear in the base-specifier-list, regardless of

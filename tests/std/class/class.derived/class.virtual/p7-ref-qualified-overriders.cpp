@@ -1,3 +1,5 @@
+// translation-fail: refcount
+// no-compile: unsafe
 // ADDITIONAL_COMPILE_FLAGS: -std=c++23
 // N4950 [class.virtual]/7: the ref-qualifier of an overriding function is the
 // same as that of the overridden function. The & and && overloads of f are

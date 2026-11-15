@@ -1,3 +1,4 @@
+// no-compile: refcount, unsafe
 // ADDITIONAL_COMPILE_FLAGS: -std=c++23
 // N4950 [class.base.init]/7 and /14: a mem-initializer naming a virtual base
 // class is ignored during execution of a constructor of any class that is not

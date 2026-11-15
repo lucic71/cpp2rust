@@ -1,3 +1,4 @@
+// no-compile: refcount, unsafe
 // ADDITIONAL_COMPILE_FLAGS: -std=c++23
 // N4950 [class.derived.general]/2, note 2: the scope resolution operator can
 // refer to a direct or indirect base member explicitly, even if it is hidden

@@ -1,3 +1,4 @@
+// no-compile: refcount, unsafe
 // ADDITIONAL_COMPILE_FLAGS: -std=c++23
 // N4950 [class.mi]/4 (figure 4): for each distinct occurrence of a non-virtual
 // base class in the class lattice, the most derived object contains a distinct

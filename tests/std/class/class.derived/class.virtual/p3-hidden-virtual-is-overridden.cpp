@@ -1,3 +1,5 @@
+// translation-fail: refcount
+// no-compile: unsafe
 // ADDITIONAL_COMPILE_FLAGS: -std=c++23
 // N4950 [class.virtual]/3: a virtual member function does not have to be
 // visible to be overridden. HidesWithOverload::f(int) hides DeclaresVirtual::f()

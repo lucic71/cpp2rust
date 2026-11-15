@@ -1,3 +1,5 @@
+// translation-fail: refcount
+// no-compile: unsafe
 // ADDITIONAL_COMPILE_FLAGS: -std=c++23
 // N4950 [class.virtual]/1: a member function is virtual if it is first declared
 // with the keyword virtual or if it overrides a virtual member function of a

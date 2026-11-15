@@ -1,4 +1,5 @@
 // panic-ub
+// no-compile: refcount, unsafe
 // ADDITIONAL_COMPILE_FLAGS: -std=c++23
 // N4950 [class.abstract]/6: the effect of making a virtual call to a pure
 // virtual function, directly or indirectly, for the object being created from

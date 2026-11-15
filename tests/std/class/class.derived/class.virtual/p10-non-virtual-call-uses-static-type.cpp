@@ -1,3 +1,5 @@
+// translation-fail: refcount
+// no-compile: unsafe
 // ADDITIONAL_COMPILE_FLAGS: -std=c++23
 // N4950 [class.virtual]/10: a virtual call depends on the dynamic type of the
 // object, a non-virtual call only on the static type of the pointer.

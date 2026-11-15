@@ -1,3 +1,5 @@
+// translation-fail: refcount
+// no-compile: unsafe
 // ADDITIONAL_COMPILE_FLAGS: -std=c++23
 // N4950 [class.virtual]/4: a virtual function marked final cannot be
 // overridden further, but it is still a virtual function: a call through a

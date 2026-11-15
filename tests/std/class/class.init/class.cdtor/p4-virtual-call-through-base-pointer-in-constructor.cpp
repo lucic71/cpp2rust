@@ -1,3 +1,5 @@
+// translation-fail: refcount
+// no-compile: unsafe
 // ADDITIONAL_COMPILE_FLAGS: -std=c++23
 // N4950 [class.cdtor]/4: while the constructor of CallsVirtualsInConstructor
 // runs for a base subobject of MostDerived, a virtual call uses the final

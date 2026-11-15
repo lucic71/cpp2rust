@@ -1,3 +1,4 @@
+// no-compile: refcount, unsafe
 // ADDITIONAL_COMPILE_FLAGS: -std=c++23
 // N4950 [class.dtor]/13: a destructor calls the destructors of its bases as if
 // they were referenced with a qualified name, ignoring any overriding

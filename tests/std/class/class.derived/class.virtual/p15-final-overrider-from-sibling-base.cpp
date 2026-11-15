@@ -1,3 +1,5 @@
+// translation-fail: refcount
+// no-compile: unsafe
 // ADDITIONAL_COMPILE_FLAGS: -std=c++23
 // N4950 [class.virtual]/15: InheritsVirtually does not declare f, so in
 // JoinsSiblings the final overrider of the shared DeclaresVirtual::f is

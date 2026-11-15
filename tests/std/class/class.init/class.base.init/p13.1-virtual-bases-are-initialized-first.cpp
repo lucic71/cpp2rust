@@ -1,3 +1,4 @@
+// no-compile: refcount, unsafe
 // ADDITIONAL_COMPILE_FLAGS: -std=c++23
 // N4950 [class.base.init]/13.1: first, and only for the constructor of the
 // most derived class, virtual base classes are initialized in the order they

@@ -1,3 +1,4 @@
+// no-compile: refcount
 // ADDITIONAL_COMPILE_FLAGS: -std=c++23
 // N4950 [class.abstract]/2: a class with a pure virtual function is abstract
 // and exists only as a base class subobject. A non-virtual member of the

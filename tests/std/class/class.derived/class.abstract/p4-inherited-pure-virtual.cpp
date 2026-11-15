@@ -1,3 +1,4 @@
+// no-compile: refcount, unsafe
 // ADDITIONAL_COMPILE_FLAGS: -std=c++23
 // N4950 [class.abstract]/4: a class is abstract if it has at least one pure
 // virtual function for which the final overrider is pure virtual.

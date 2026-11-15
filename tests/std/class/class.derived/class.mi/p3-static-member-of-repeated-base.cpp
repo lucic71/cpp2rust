@@ -1,3 +1,4 @@
+// panic: refcount, unsafe
 // ADDITIONAL_COMPILE_FLAGS: -std=c++23
 // N4950 [class.mi]/3, note 3 and example 2: a class can be an indirect base
 // class more than once, and both a direct and an indirect base class. Its

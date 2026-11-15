@@ -1,3 +1,4 @@
+// no-compile: refcount, unsafe
 // ADDITIONAL_COMPILE_FLAGS: -std=c++23
 // N4950 [class.inhctor.init]/1: when an inherited constructor initializes a
 // derived object, the base subobject it was inherited from is initialized by

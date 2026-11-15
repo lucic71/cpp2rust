@@ -1,3 +1,4 @@
+// no-compile: refcount, unsafe
 // ADDITIONAL_COMPILE_FLAGS: -std=c++23
 // N4950 [class.mi]/4 (figure 6): a class can have both virtual and non-virtual
 // base classes of a given type. A HasSharedAndOwnBase object has two

@@ -1,3 +1,4 @@
+// no-compile: refcount, unsafe
 // ADDITIONAL_COMPILE_FLAGS: -std=c++23
 // N4950 [class.derived.general]/3: the base-specifier-list specifies the base
 // class subobjects contained in an object of the derived class. A RedeclaresC

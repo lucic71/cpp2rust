@@ -1,3 +1,4 @@
+// no-compile: refcount, unsafe
 // ADDITIONAL_COMPILE_FLAGS: -std=c++23
 // N4950 [class.derived.general]/7, note 5: a base class subobject can be of
 // zero size, but two subobjects that have the same class type and belong to

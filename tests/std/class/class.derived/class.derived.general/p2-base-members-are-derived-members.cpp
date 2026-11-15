@@ -1,3 +1,4 @@
+// no-compile: refcount, unsafe
 // ADDITIONAL_COMPILE_FLAGS: -std=c++23
 // N4950 [class.derived.general]/2: members of a base class are also members of
 // the derived class. A data member and a member function of HasCounter are

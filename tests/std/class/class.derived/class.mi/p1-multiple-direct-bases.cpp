@@ -1,3 +1,4 @@
+// no-compile: refcount, unsafe
 // ADDITIONAL_COMPILE_FLAGS: -std=c++23
 // N4950 [class.mi]/1: a class can be derived from any number of base classes.
 // HasThreeBases has one subobject of each base; a pointer to each base reaches

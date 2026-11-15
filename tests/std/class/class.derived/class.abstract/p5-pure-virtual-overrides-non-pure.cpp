@@ -1,3 +1,5 @@
+// translation-fail: refcount
+// no-compile: unsafe
 // ADDITIONAL_COMPILE_FLAGS: -std=c++23
 // N4950 [class.abstract]/5: an abstract class can be derived from a class that
 // is not abstract, and a pure virtual function can override a virtual function

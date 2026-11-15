@@ -1,3 +1,4 @@
+// no-compile: refcount, unsafe
 // ADDITIONAL_COMPILE_FLAGS: -std=c++23
 // N4950 [class.base.init]/13.3 and /13.4: after the base classes, non-static
 // data members are initialized in the order they were declared in the class

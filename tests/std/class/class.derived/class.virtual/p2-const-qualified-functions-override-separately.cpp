@@ -1,3 +1,5 @@
+// translation-fail: refcount
+// no-compile: unsafe
 // ADDITIONAL_COMPILE_FLAGS: -std=c++23
 // N4950 [class.virtual]/2: a function overrides a virtual function only if
 // their declarations correspond ([basic.scope.scope]/4), which requires the

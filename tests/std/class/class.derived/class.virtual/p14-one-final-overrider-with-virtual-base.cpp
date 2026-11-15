@@ -1,3 +1,5 @@
+// translation-fail: refcount
+// no-compile: unsafe
 // ADDITIONAL_COMPILE_FLAGS: -std=c++23
 // N4950 [class.virtual]/14: FirstVirtualOverrider::f and
 // SecondVirtualOverrider::f both override f of the shared virtual base

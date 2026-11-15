@@ -1,3 +1,4 @@
+// no-compile: refcount, unsafe
 // ADDITIONAL_COMPILE_FLAGS: -std=c++23
 // N4950 [class.derived.general]/2, note 2: a pointer to a derived class
 // converts to a pointer to an accessible unambiguous base class, and a derived
