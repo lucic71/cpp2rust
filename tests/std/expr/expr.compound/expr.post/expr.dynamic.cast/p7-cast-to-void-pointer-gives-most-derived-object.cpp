@@ -1,3 +1,4 @@
+// no-compile: refcount, unsafe
 // ADDITIONAL_COMPILE_FLAGS: -std=c++23
 // N4950 [expr.dynamic.cast]/7: if T is pointer to cv void, the result is a
 // pointer to the most derived object pointed to by v.

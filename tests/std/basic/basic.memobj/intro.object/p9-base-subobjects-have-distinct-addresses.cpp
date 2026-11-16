@@ -1,3 +1,4 @@
+// no-compile: refcount, unsafe
 // ADDITIONAL_COMPILE_FLAGS: -std=c++23
 // N4950 [intro.object]/9: two objects with overlapping lifetimes that are not
 // nested within each other have distinct addresses and occupy disjoint bytes

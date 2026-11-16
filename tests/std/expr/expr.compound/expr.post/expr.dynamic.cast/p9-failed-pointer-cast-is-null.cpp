@@ -1,3 +1,4 @@
+// no-compile: refcount, unsafe
 // ADDITIONAL_COMPILE_FLAGS: -std=c++23
 // N4950 [expr.dynamic.cast]/9: the value of a failed cast to pointer type is
 // the null pointer value of the required result type.

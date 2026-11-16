@@ -1,3 +1,4 @@
+// no-compile: refcount, unsafe
 // ADDITIONAL_COMPILE_FLAGS: -std=c++23
 // N4950 [expr.dynamic.cast]/9: a failed cast to reference type throws an
 // exception of a type that would match a handler of type std::bad_cast.

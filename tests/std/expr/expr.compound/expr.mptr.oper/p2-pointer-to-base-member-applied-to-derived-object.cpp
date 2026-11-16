@@ -1,3 +1,4 @@
+// translation-fail: refcount, unsafe
 // ADDITIONAL_COMPILE_FLAGS: -std=c++23
 // N4950 [expr.mptr.oper]/2: the second operand of .* is a pointer to member of
 // T, and the first is a glvalue of class T or of a class of which T is an

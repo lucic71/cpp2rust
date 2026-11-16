@@ -1,3 +1,4 @@
+// no-compile: refcount, unsafe
 // ADDITIONAL_COMPILE_FLAGS: -std=c++23
 // N4950 [expr.eq]/3.3: pointers that are not both null and do not represent
 // the same address compare unequal.

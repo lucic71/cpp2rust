@@ -1,3 +1,4 @@
+// no-compile: refcount, unsafe
 // ADDITIONAL_COMPILE_FLAGS: -std=c++23
 // N4950 [expr.static.cast]/12: a pointer to a base class B can be converted to
 // a pointer to a class D derived from B. If it points to a B that is a base

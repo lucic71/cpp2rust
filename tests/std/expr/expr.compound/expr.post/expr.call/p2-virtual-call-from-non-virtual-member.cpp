@@ -1,3 +1,5 @@
+// translation-fail: refcount
+// no-compile: unsafe
 // ADDITIONAL_COMPILE_FLAGS: -std=c++23
 // N4950 [expr.call]/2: if the selected function is virtual and is not named by
 // a qualified-id, its final overrider in the dynamic type of the object

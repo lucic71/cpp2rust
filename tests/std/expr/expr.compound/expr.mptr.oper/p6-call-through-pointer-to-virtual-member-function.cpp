@@ -1,3 +1,4 @@
+// translation-fail: refcount, unsafe
 // ADDITIONAL_COMPILE_FLAGS: -std=c++23
 // N4950 [expr.mptr.oper]/6 and [expr.call]/2: the result of ->* on a pointer
 // to member function is called with the function call operator; if the

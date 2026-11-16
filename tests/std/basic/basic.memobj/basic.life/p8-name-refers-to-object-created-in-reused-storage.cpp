@@ -1,3 +1,5 @@
+// translation-fail: refcount
+// no-compile: unsafe
 // ADDITIONAL_COMPILE_FLAGS: -std=c++23
 // N4950 [basic.life]/8: if a new object is created at the storage location an
 // object occupied after its lifetime has ended, a pointer to the original

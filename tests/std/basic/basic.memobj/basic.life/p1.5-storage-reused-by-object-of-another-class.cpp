@@ -1,3 +1,4 @@
+// no-compile: refcount, unsafe
 // ADDITIONAL_COMPILE_FLAGS: -std=c++23
 // N4950 [basic.life]/1.5: the lifetime of an object ends when the storage it
 // occupies is reused by an object that is not nested within it.

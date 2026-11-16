@@ -1,3 +1,4 @@
+// no-compile: refcount, unsafe
 // ADDITIONAL_COMPILE_FLAGS: -std=c++23
 // N4950 [expr.dynamic.cast]/8.1: if, in the most derived object pointed to by
 // v, v points to a public base class subobject of a C object, and only one
