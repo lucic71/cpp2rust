@@ -20,13 +20,13 @@
 #![allow(private_bounds, clippy::missing_safety_doc)]
 
 use std::cell::RefCell;
-use std::collections::BTreeMap;
+use std::collections::{BTreeMap, VecDeque};
 use std::rc::Rc;
 
 use crate::fn_ptr::{FnPtr, FnSig};
 use crate::rc::{AsPointer, Decay, Ptr, Value};
 use crate::reinterpret::ByteRepr;
-use crate::{Map, UnsafeMap};
+use crate::{Deque, Map, UnsafeMap};
 
 // The C++ move constructor of a type, in the refcount model, for the types
 // whose move isn't a copy. Records implement it with #[derive(MoveCtor)].
@@ -106,6 +106,8 @@ macro_rules! impl_move_ctor_by_take {
 
 impl_move_ctor_by_take!(
     <T> Vec<T>,
+    <T> VecDeque<T>,
+    <T> Deque<T>,
     <K, V> BTreeMap<K, V>,
     <K, T> Map<K, T>,
     <K, T> UnsafeMap<K, T>,

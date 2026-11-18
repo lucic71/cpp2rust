@@ -7,7 +7,10 @@ use std::marker::PhantomData;
 
 use std::rc::Rc;
 
-use crate::{ByteRepr, MapNode, PostfixDec, PostfixInc, PrefixDec, PrefixInc, Ptr, UnsafeMapNode, Value};
+use crate::{
+    ByteRepr, DequeElems, DequeRef, MapNode, PostfixDec, PostfixInc, PrefixDec, PrefixInc, Ptr,
+    UnsafeMapNode, Value,
+};
 
 pub trait CppIterator<T>: Clone {
     fn iter_deref(&self) -> Ptr<T>;
@@ -337,9 +340,10 @@ impl<T> UnsafeCppBidirectionalIterator<T> for UnsafeBidirectionalIterator<T> {
 }
 
 macro_rules! random_access_iterator {
-    ($name:ident, $ptr:ty, $iter:ident, $input:ident, $bidi:ident, $random:ident, $null:expr) => {
+    ($name:ident, $ptr:ty, $deque:ty, $iter:ident, $input:ident, $bidi:ident, $random:ident, $null:expr) => {
         pub enum $name<T> {
             Vec($ptr),
+            Deque($deque, isize),
         }
 
         impl<T> Default for $name<T> {
@@ -352,6 +356,7 @@ macro_rules! random_access_iterator {
             fn clone(&self) -> Self {
                 match self {
                     Self::Vec(p) => Self::Vec(p.clone()),
+                    Self::Deque(d, i) => Self::Deque(d.clone(), *i),
                 }
             }
         }
@@ -365,6 +370,8 @@ macro_rules! random_access_iterator {
             fn eq(&self, other: &Self) -> bool {
                 match (self, other) {
                     (Self::Vec(a), Self::Vec(b)) => a == b,
+                    (Self::Deque(a, i), Self::Deque(b, j)) => a.same_deque(b) && i == j,
+                    _ => false,
                 }
             }
         }
@@ -376,6 +383,8 @@ macro_rules! random_access_iterator {
             fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
                 match (self, other) {
                     (Self::Vec(a), Self::Vec(b)) => a.partial_cmp(b),
+                    (Self::Deque(a, i), Self::Deque(b, j)) if a.same_deque(b) => i.partial_cmp(j),
+                    _ => None,
                 }
             }
         }
@@ -384,6 +393,7 @@ macro_rules! random_access_iterator {
             fn iter_deref(&self) -> $ptr {
                 match self {
                     Self::Vec(p) => $iter::<T>::iter_deref(p),
+                    Self::Deque(d, i) => d.elem_at(*i),
                 }
             }
             fn iter_inc(&mut self) -> &mut Self {
@@ -391,12 +401,17 @@ macro_rules! random_access_iterator {
                     Self::Vec(p) => {
                         $iter::<T>::iter_inc(p);
                     }
+                    Self::Deque(_, i) => *i += 1,
                 }
                 self
             }
             fn iter_post_inc(&mut self) -> Self {
                 match self {
                     Self::Vec(p) => Self::Vec($iter::<T>::iter_post_inc(p)),
+                    Self::Deque(d, i) => {
+                        *i += 1;
+                        Self::Deque(d.clone(), *i - 1)
+                    }
                 }
             }
         }
@@ -412,12 +427,17 @@ macro_rules! random_access_iterator {
                     Self::Vec(p) => {
                         $bidi::<T>::iter_dec(p);
                     }
+                    Self::Deque(_, i) => *i -= 1,
                 }
                 self
             }
             fn iter_post_dec(&mut self) -> Self {
                 match self {
                     Self::Vec(p) => Self::Vec($bidi::<T>::iter_post_dec(p)),
+                    Self::Deque(d, i) => {
+                        *i -= 1;
+                        Self::Deque(d.clone(), *i + 1)
+                    }
                 }
             }
         }
@@ -429,21 +449,29 @@ macro_rules! random_access_iterator {
             fn iter_add(&self, n: isize) -> Self {
                 match self {
                     Self::Vec(p) => Self::Vec($random::<T>::iter_add(p, n)),
+                    Self::Deque(d, i) => Self::Deque(d.clone(), *i + n),
                 }
             }
             fn iter_add_assign(&mut self, n: isize) -> Self {
                 match self {
                     Self::Vec(p) => Self::Vec($random::<T>::iter_add_assign(p, n)),
+                    Self::Deque(d, i) => {
+                        *i += n;
+                        Self::Deque(d.clone(), *i)
+                    }
                 }
             }
             fn iter_distance(&self, from: &Self) -> isize {
                 match (self, from) {
                     (Self::Vec(a), Self::Vec(b)) => $random::<T>::iter_distance(a, b),
+                    (Self::Deque(_, i), Self::Deque(_, j)) => i - j,
+                    _ => panic!("ub: distance between iterators into different containers"),
                 }
             }
             fn iter_at(&self, n: isize) -> $ptr {
                 match self {
                     Self::Vec(p) => $random::<T>::iter_at(p, n),
+                    Self::Deque(d, i) => d.elem_at(*i + n),
                 }
             }
         }
@@ -453,6 +481,7 @@ macro_rules! random_access_iterator {
 random_access_iterator!(
     RandomAccessIterator,
     Ptr<T>,
+    DequeRef<T>,
     CppIterator,
     CppInputIterator,
     CppBidirectionalIterator,
@@ -464,6 +493,7 @@ impl<T> RandomAccessIterator<T> {
     pub fn index(&self) -> usize {
         match self {
             Self::Vec(p) => p.get_offset(),
+            Self::Deque(_, i) => *i as usize,
         }
     }
 }
@@ -471,6 +501,7 @@ impl<T> RandomAccessIterator<T> {
 random_access_iterator!(
     UnsafeRandomAccessIterator,
     *mut T,
+    *mut std::collections::VecDeque<T>,
     UnsafeCppIterator,
     UnsafeCppInputIterator,
     UnsafeCppBidirectionalIterator,

@@ -41,5 +41,20 @@ int main() {
   r = 5;
   std::deque<int>::const_reference c = d.back();
   assert(d.front() == 5 && c == 2);
+  d.push_front(first);
+  assert(r == 5 && c == 2 && d.front() == 1);
+  int &b = d.back();
+  d.pop_front();
+  assert(b == 2 && d.size() == 2 && d[0] == 5 && d.at(1) == 2);
+  d.push_back(3);
+  d.pop_back();
+  int sum = 0;
+  for (int x : d) {
+    sum += x;
+  }
+  for (auto it = d.begin(); it != d.end(); ++it) {
+    sum += *it;
+  }
+  assert(sum == 14);
   return 0;
 }

@@ -55,3 +55,99 @@ auto f12(std::deque<T1> &o, T2 &&...a1)
 }
 
 template <typename T1> std::deque<T1> f14() { return std::deque<T1>(); }
+
+template <typename T1> void f15(std::deque<T1> &o, const T1 &value) {
+  return o.push_front(value);
+}
+
+template <typename T1> void f16(std::deque<T1> &o, T1 &&value) {
+  return o.push_front(std::move(value));
+}
+
+template <typename T1, typename... T2>
+auto f17(std::deque<T1> &o, T2 &&...a1)
+    -> decltype(o.emplace_front(std::forward<T2>(a1)...)) {
+  return o.emplace_front(std::forward<T2>(a1)...);
+}
+
+template <typename T1> void f18(std::deque<T1> &o) { return o.pop_back(); }
+
+template <typename T1> std::size_t f19(const std::deque<T1> &o) {
+  return o.size();
+}
+
+template <typename T1> T1 &f20(std::deque<T1> &o, std::size_t idx) {
+  return o.operator[](idx);
+}
+
+template <typename T1>
+const T1 &f21(const std::deque<T1> &o, std::size_t idx) {
+  return o.operator[](idx);
+}
+
+template <typename T1> T1 &f22(std::deque<T1> &o, std::size_t idx) {
+  return o.at(idx);
+}
+
+template <typename T1>
+const T1 &f23(const std::deque<T1> &o, std::size_t idx) {
+  return o.at(idx);
+}
+
+template <typename T1> const T1 &f24(const std::deque<T1> &o) {
+  return o.front();
+}
+
+template <typename T1> const T1 &f25(const std::deque<T1> &o) {
+  return o.back();
+}
+
+template <typename T1>
+typename std::deque<T1>::iterator f26(std::deque<T1> &o) {
+  return o.begin();
+}
+
+template <typename T1>
+typename std::deque<T1>::iterator f27(std::deque<T1> &o) {
+  return o.end();
+}
+
+template <typename T1>
+typename std::deque<T1>::const_iterator f28(const std::deque<T1> &o) {
+  return o.begin();
+}
+
+template <typename T1>
+typename std::deque<T1>::const_iterator f29(const std::deque<T1> &o) {
+  return o.end();
+}
+
+template <typename T1> void f30(std::deque<T1> &o) { return o.clear(); }
+
+template <typename T1>
+typename std::deque<T1>::iterator
+f31(std::deque<T1> &o, typename std::deque<T1>::const_iterator it,
+    const T1 &value) {
+  return o.insert(it, value);
+}
+
+template <typename T1>
+typename std::deque<T1>::iterator
+f32(std::deque<T1> &o, typename std::deque<T1>::const_iterator it,
+    T1 &&value) {
+  return o.insert(it, std::move(value));
+}
+
+template <typename T1>
+typename std::deque<T1>::iterator
+f33(std::deque<T1> &o, typename std::deque<T1>::const_iterator it) {
+  return o.erase(it);
+}
+
+template <typename T1> std::deque<T1> f34(std::size_t n) {
+  return std::deque<T1>(n);
+}
+
+template <typename T1> std::deque<T1> f35(std::size_t n, const T1 &value) {
+  return std::deque<T1>(n, value);
+}
