@@ -696,6 +696,22 @@ bool ConverterRefCount::RecordDerivesClone(const clang::RecordDecl *decl) {
           !GetUserDefinedCopyConstructor(cxx) && HasDefaultedBaseCopies(cxx));
 }
 
+// A struct is Copy when its copy is a field-wise copy of fields that are all
+// Copy in Rust. Pointers (Ptr) and arrays (Box<[T]>) are not.
+bool ConverterRefCount::RecordDerivesCopyTrait(const clang::RecordDecl *decl) {
+  if (decl->isUnion() || !RecordDerivesClone(decl) ||
+      !HasDefaultedCopyConstructor(decl)) {
+    return false;
+  }
+  if (auto *cxx = clang::dyn_cast<clang::CXXRecordDecl>(decl);
+      cxx && RecordNeedsDestruction(cxx)) {
+    return false;
+  }
+  return llvm::all_of(decl->fields(), [&](const clang::FieldDecl *field) {
+    return TypeIsCopyable(field->getType());
+  });
+}
+
 void ConverterRefCount::AddCloneTrait(const clang::RecordDecl *decl) {
   if (RecordDerivesClone(decl) || !RecordImplementsClone(decl)) {
     return;
@@ -1868,6 +1884,9 @@ bool ConverterRefCount::VisitMemberExpr(clang::MemberExpr *expr) {
   std::string str;
   if (known) {
     str = GetMappedAsString(expr);
+    if (member->getType()->isReferenceType()) {
+      str = std::format("{}.borrow().clone()", str);
+    }
   } else if (clang::isa<clang::FieldDecl>(member)) {
     // The pointer that the reference field holds, which is used in place in
     // an unboxed struct.
@@ -2341,6 +2360,10 @@ ConverterRefCount::GetStructAttributes(const clang::RecordDecl *decl) {
 
   if (decl->isUnion()) {
     return {"VaArg", "FnPtrArg"};
+  }
+
+  if (RecordDerivesCopyTrait(decl)) {
+    attrs.emplace_back("Copy");
   }
 
   if (RecordDerivesClone(decl)) {
