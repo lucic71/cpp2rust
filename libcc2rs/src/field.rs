@@ -284,7 +284,7 @@ impl<S: Record> Ptr<S> {
             // A struct in an array or vector field, or in a nested container,
             // has no offset in its allocation; its field is reached through
             // it.
-            PtrKind::Field(..) | PtrKind::Nested(_) => {
+            PtrKind::Field(..) | PtrKind::Deque(_) | PtrKind::Nested(_) => {
                 return Ptr {
                     offset: 0,
                     kind: PtrKind::Nested(Rc::new(FieldOf::<S, [T], _, _>::new(
@@ -614,6 +614,7 @@ impl<S, C: ?Sized, G, M> FieldOf<S, C, G, M> {
 fn struct_root<S: Record>(base: &Ptr<S>) -> SliceRoot {
     match &base.kind {
         PtrKind::Field(root, ..) => SliceRoot::Field(upgrade(root)),
+        PtrKind::Deque(_) => base.slice_root(),
         PtrKind::Nested(parent) => parent.root(),
         _ => unreachable!(),
     }
@@ -625,7 +626,8 @@ fn borrow_struct<'a, S: Record>(base: &Ptr<S>, root: &'a SliceRoot) -> Ref<'a, S
         PtrKind::Field(_, field, shape) => {
             Ptr::borrow_field_elem(root.field(), *field, *shape, idx)
         }
-        PtrKind::Nested(parent) => parent.borrow_elem(root, idx),
+        PtrKind::Deque(_) => base.borrow_in(root),
+        PtrKind::Nested(parent) => Ref::map(parent.borrow_slice(root), |s| &s[idx]),
         _ => unreachable!(),
     }
 }
@@ -662,7 +664,8 @@ where
             PtrKind::Field(_, field, shape) => {
                 Ptr::borrow_field_elem_mut(root.field(), *field, *shape, idx)
             }
-            PtrKind::Nested(parent) => parent.borrow_elem_mut(root, idx),
+            PtrKind::Deque(_) => self.base.borrow_in_mut(root),
+            PtrKind::Nested(parent) => RefMut::map(parent.borrow_slice_mut(root), |s| &mut s[idx]),
             _ => unreachable!(),
         };
         RefMut::map(s, |s| (self.get_mut)(s).as_mut())
@@ -675,6 +678,7 @@ where
                 let s = Ptr::borrow_field_elem(&*root, *field, *shape, self.base.offset);
                 f(&(self.get)(&s).as_ref()[idx])
             }
+            PtrKind::Deque(_) => self.base.with(|s| f(&(self.get)(s).as_ref()[idx])),
             PtrKind::Nested(parent) => {
                 parent.with_elem(self.base.offset, &mut |s| f(&(self.get)(s).as_ref()[idx]))
             }
@@ -689,6 +693,9 @@ where
                 let mut s = Ptr::borrow_field_elem_mut(&*root, *field, *shape, self.base.offset);
                 f(&mut (self.get_mut)(&mut s).as_mut()[idx])
             }
+            PtrKind::Deque(_) => self
+                .base
+                .with_mut(|s| f(&mut (self.get_mut)(s).as_mut()[idx])),
             PtrKind::Nested(parent) => parent.with_elem_mut(self.base.offset, &mut |s| {
                 f(&mut (self.get_mut)(s).as_mut()[idx])
             }),

@@ -2,6 +2,7 @@
 // Distributed under the MIT license that can be found in the LICENSE file.
 
 use std::cmp::Ordering;
+use std::collections::VecDeque;
 use std::convert::Infallible;
 use std::marker::PhantomData;
 
@@ -501,7 +502,7 @@ impl<T> RandomAccessIterator<T> {
 random_access_iterator!(
     UnsafeRandomAccessIterator,
     *mut T,
-    *mut std::collections::VecDeque<T>,
+    *mut VecDeque<T>,
     UnsafeCppIterator,
     UnsafeCppInputIterator,
     UnsafeCppBidirectionalIterator,

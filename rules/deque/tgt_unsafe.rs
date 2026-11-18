@@ -3,7 +3,7 @@
 
 use libcc2rs::*;
 
-fn t1<T1>() -> std::collections::VecDeque<T1> {
+fn t1<T1>() -> VecDeque<T1> {
     Default::default()
 }
 
@@ -23,128 +23,128 @@ fn t5<T1>() -> *const T1 {
     ::std::ptr::null()
 }
 
-unsafe fn f1<T1>(a0: &mut std::collections::VecDeque<T1>) -> *const T1 {
+unsafe fn f1<T1>(a0: &mut VecDeque<T1>) -> *const T1 {
     (a0.back_mut().unwrap())
 }
 
-unsafe fn f2<T1>(a0: &mut std::collections::VecDeque<T1>) -> *const T1 {
+unsafe fn f2<T1>(a0: &mut VecDeque<T1>) -> *const T1 {
     ((a0).front_mut().unwrap())
 }
 
-unsafe fn f3<T1>(a0: std::collections::VecDeque<T1>) -> bool {
+unsafe fn f3<T1>(a0: VecDeque<T1>) -> bool {
     a0.is_empty()
 }
 
-unsafe fn f4<T1: Default>(a0: &mut std::collections::VecDeque<T1>, a1: &mut T1) {
+unsafe fn f4<T1: Default>(a0: &mut VecDeque<T1>, a1: &mut T1) {
     a0.push_back(std::mem::take(&mut *a1))
 }
 
-unsafe fn f5<T1>(a0: &mut std::collections::VecDeque<T1>) {
+unsafe fn f5<T1>(a0: &mut VecDeque<T1>) {
     a0.pop_front();
 }
 
-unsafe fn f7<T1>(a0: &mut std::collections::VecDeque<T1>, a1: T1) {
+unsafe fn f7<T1>(a0: &mut VecDeque<T1>, a1: T1) {
     a0.push_back(a1)
 }
 
-unsafe fn f8<T1: Clone>(a0: std::collections::VecDeque<T1>) -> std::collections::VecDeque<T1> {
+unsafe fn f8<T1: Clone>(a0: VecDeque<T1>) -> VecDeque<T1> {
     a0.clone()
 }
 
-unsafe fn f9<T1>(a0: &mut std::collections::VecDeque<T1>) -> std::collections::VecDeque<T1> {
+unsafe fn f9<T1>(a0: &mut VecDeque<T1>) -> VecDeque<T1> {
     std::mem::take(&mut *a0)
 }
 
 unsafe fn f10<T1: Clone>(
-    a0: &mut std::collections::VecDeque<T1>,
-    a1: std::collections::VecDeque<T1>,
+    a0: &mut VecDeque<T1>,
+    a1: VecDeque<T1>,
 ) {
     *a0 = a1.clone()
 }
 
 unsafe fn f11<T1>(
-    a0: &mut std::collections::VecDeque<T1>,
-    a1: &mut std::collections::VecDeque<T1>,
+    a0: &mut VecDeque<T1>,
+    a1: &mut VecDeque<T1>,
 ) {
     *a0 = std::mem::take(&mut *a1)
 }
 
-unsafe fn f12<T1>(a0: &mut std::collections::VecDeque<T1>, init: T1) {
+unsafe fn f12<T1>(a0: &mut VecDeque<T1>, init: T1) {
     let __init = init;
     a0.push_back(__init)
 }
 
-unsafe fn f14<T1>() -> std::collections::VecDeque<T1> {
-    std::collections::VecDeque::new()
+unsafe fn f14<T1>() -> VecDeque<T1> {
+    VecDeque::new()
 }
 
-unsafe fn f15<T1>(a0: &mut std::collections::VecDeque<T1>, a1: T1) {
+unsafe fn f15<T1>(a0: &mut VecDeque<T1>, a1: T1) {
     a0.push_front(a1)
 }
 
-unsafe fn f16<T1: Default>(a0: &mut std::collections::VecDeque<T1>, a1: &mut T1) {
+unsafe fn f16<T1: Default>(a0: &mut VecDeque<T1>, a1: &mut T1) {
     a0.push_front(std::mem::take(&mut *a1))
 }
 
-unsafe fn f17<T1>(a0: &mut std::collections::VecDeque<T1>, init: T1) {
+unsafe fn f17<T1>(a0: &mut VecDeque<T1>, init: T1) {
     let __init = init;
     a0.push_front(__init)
 }
 
-unsafe fn f18<T1>(a0: &mut std::collections::VecDeque<T1>) {
+unsafe fn f18<T1>(a0: &mut VecDeque<T1>) {
     a0.pop_back();
 }
 
-unsafe fn f19<T1>(a0: std::collections::VecDeque<T1>) -> usize {
+unsafe fn f19<T1>(a0: VecDeque<T1>) -> usize {
     a0.len()
 }
 
-unsafe fn f20<T1>(a0: &mut std::collections::VecDeque<T1>, a1: usize) -> *mut T1 {
+unsafe fn f20<T1>(a0: &mut VecDeque<T1>, a1: usize) -> *mut T1 {
     (&mut (a0)[a1] as *mut T1)
 }
 
-unsafe fn f21<T1>(a0: &std::collections::VecDeque<T1>, a1: usize) -> *const T1 {
+unsafe fn f21<T1>(a0: &VecDeque<T1>, a1: usize) -> *const T1 {
     (&(a0)[a1] as *const T1)
 }
 
-unsafe fn f22<T1>(a0: &mut std::collections::VecDeque<T1>, a1: usize) -> *mut T1 {
+unsafe fn f22<T1>(a0: &mut VecDeque<T1>, a1: usize) -> *mut T1 {
     (a0.get_mut(a1).expect("out of bounds access") as *mut T1)
 }
 
-unsafe fn f23<T1>(a0: &std::collections::VecDeque<T1>, a1: usize) -> *const T1 {
+unsafe fn f23<T1>(a0: &VecDeque<T1>, a1: usize) -> *const T1 {
     (a0.get(a1).expect("out of bounds access") as *const T1)
 }
 
-unsafe fn f24<T1>(a0: &std::collections::VecDeque<T1>) -> *const T1 {
+unsafe fn f24<T1>(a0: &VecDeque<T1>) -> *const T1 {
     (a0.front().unwrap())
 }
 
-unsafe fn f25<T1>(a0: &std::collections::VecDeque<T1>) -> *const T1 {
+unsafe fn f25<T1>(a0: &VecDeque<T1>) -> *const T1 {
     (a0.back().unwrap())
 }
 
-unsafe fn f26<T1>(a0: &mut std::collections::VecDeque<T1>) -> UnsafeRandomAccessIterator<T1> {
+unsafe fn f26<T1>(a0: &mut VecDeque<T1>) -> UnsafeRandomAccessIterator<T1> {
     a0.begin()
 }
 
-unsafe fn f27<T1>(a0: &mut std::collections::VecDeque<T1>) -> UnsafeRandomAccessIterator<T1> {
+unsafe fn f27<T1>(a0: &mut VecDeque<T1>) -> UnsafeRandomAccessIterator<T1> {
     a0.end()
 }
 
-unsafe fn f28<T1>(a0: std::collections::VecDeque<T1>) -> UnsafeRandomAccessIterator<T1> {
+unsafe fn f28<T1>(a0: VecDeque<T1>) -> UnsafeRandomAccessIterator<T1> {
     a0.begin()
 }
 
-unsafe fn f29<T1>(a0: std::collections::VecDeque<T1>) -> UnsafeRandomAccessIterator<T1> {
+unsafe fn f29<T1>(a0: VecDeque<T1>) -> UnsafeRandomAccessIterator<T1> {
     a0.end()
 }
 
-unsafe fn f30<T1>(a0: &mut std::collections::VecDeque<T1>) {
+unsafe fn f30<T1>(a0: &mut VecDeque<T1>) {
     a0.clear()
 }
 
 unsafe fn f31<T1>(
-    a0: &mut std::collections::VecDeque<T1>,
+    a0: &mut VecDeque<T1>,
     a1: UnsafeRandomAccessIterator<T1>,
     a2: T1,
 ) -> UnsafeRandomAccessIterator<T1> {
@@ -155,7 +155,7 @@ unsafe fn f31<T1>(
 }
 
 unsafe fn f32<T1: Default>(
-    a0: &mut std::collections::VecDeque<T1>,
+    a0: &mut VecDeque<T1>,
     a1: UnsafeRandomAccessIterator<T1>,
     a2: &mut T1,
 ) -> UnsafeRandomAccessIterator<T1> {
@@ -166,7 +166,7 @@ unsafe fn f32<T1: Default>(
 }
 
 unsafe fn f33<T1>(
-    a0: &mut std::collections::VecDeque<T1>,
+    a0: &mut VecDeque<T1>,
     a1: UnsafeRandomAccessIterator<T1>,
 ) -> UnsafeRandomAccessIterator<T1> {
     let __d = &mut *a0;
@@ -175,12 +175,12 @@ unsafe fn f33<T1>(
     a1
 }
 
-unsafe fn f34<T1: Default>(a0: usize) -> std::collections::VecDeque<T1> {
+unsafe fn f34<T1: Default>(a0: usize) -> VecDeque<T1> {
     (0..a0)
         .map(|_| <T1>::default())
-        .collect::<std::collections::VecDeque<_>>()
+        .collect::<VecDeque<_>>()
 }
 
-unsafe fn f35<T1: Clone>(a0: usize, a1: T1) -> std::collections::VecDeque<T1> {
-    std::iter::repeat_n(a1, a0).collect::<std::collections::VecDeque<_>>()
+unsafe fn f35<T1: Clone>(a0: usize, a1: T1) -> VecDeque<T1> {
+    std::iter::repeat_n(a1, a0).collect::<VecDeque<_>>()
 }

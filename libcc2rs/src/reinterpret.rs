@@ -8,6 +8,7 @@ use std::{
     rc::{Rc, Weak},
 };
 
+use crate::deque::DequeBuf;
 use crate::escape;
 use crate::field::{Root, upgrade as upgrade_root};
 use crate::rc::{ElemStorage, Ptr, SliceParent, SliceRoot, reclaim};
@@ -241,6 +242,9 @@ pub(crate) trait AllocOps {
     fn root(&self, _storage: &dyn Any) -> Option<Weak<dyn Any>> {
         None
     }
+    fn can_delete(&self) -> bool {
+        true
+    }
 }
 
 // Type-erased handle to the original allocation of a reinterpreted pointer.
@@ -361,6 +365,13 @@ impl OriginalAlloc {
         }
     }
 
+    pub(crate) fn deque<T: ByteRepr>(weak: &Weak<RefCell<DequeBuf<T>>>) -> Self {
+        Self {
+            storage: Storage::Alloc(weak.clone()),
+            ops: &DequeOps::<T>(PhantomData),
+        }
+    }
+
     pub(crate) fn nested<T: ByteRepr>(parent: &Rc<dyn SliceParent<T>>) -> Self {
         Self {
             storage: Storage::Nested(Rc::new(Rc::clone(parent)), parent.address()),
@@ -452,6 +463,9 @@ impl OriginalAlloc {
         let Storage::Alloc(weak) = &self.storage else {
             panic!("ub: invalid delete");
         };
+        if !self.ops.can_delete() {
+            panic!("ub: invalid delete");
+        }
         drop(reclaim(weak, "ub: invalid delete"));
     }
 }
@@ -737,6 +751,46 @@ impl<T: ByteRepr> AllocOps for FieldOps<T> {
 
     fn byte_align(&self) -> usize {
         T::byte_align()
+    }
+}
+
+struct DequeOps<T>(PhantomData<fn() -> T>);
+
+impl<T: ByteRepr> AllocOps for DequeOps<T> {
+    fn read_bytes(&self, cell: &dyn Any, byte_offset: usize, buf: &mut [u8]) {
+        let cell = cell.downcast_ref::<RefCell<DequeBuf<T>>>().unwrap();
+        slice_read_bytes(&DequeBuf::contiguous(cell), byte_offset, buf);
+    }
+
+    fn write_bytes(&self, cell: &dyn Any, byte_offset: usize, data: &[u8]) {
+        let cell = cell.downcast_ref::<RefCell<DequeBuf<T>>>().unwrap();
+        slice_write_bytes(cell.borrow_mut().as_slice_mut(), byte_offset, data);
+    }
+
+    fn total_byte_len(&self, cell: &dyn Any) -> usize {
+        let cell = cell.downcast_ref::<RefCell<DequeBuf<T>>>().unwrap();
+        elems_byte_len(&DequeBuf::contiguous(cell))
+    }
+
+    fn byte_align(&self) -> usize {
+        T::byte_align()
+    }
+
+    fn value_type(&self) -> Option<TypeId> {
+        Some(TypeId::of::<DequeBuf<T>>())
+    }
+
+    fn byte_capacity(&self, cell: &dyn Any) -> Option<usize> {
+        let cell = cell.downcast_ref::<RefCell<DequeBuf<T>>>().unwrap();
+        let deque = cell.try_borrow().ok()?;
+        Some(capacity_bytes(
+            deque.elems.as_slices().0,
+            deque.elems.capacity(),
+        ))
+    }
+
+    fn can_delete(&self) -> bool {
+        false
     }
 }
 

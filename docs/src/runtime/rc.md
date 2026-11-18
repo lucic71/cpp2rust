@@ -60,6 +60,9 @@ A `Ptr<T>` knows what it points into:
 - `StackArray` and `HeapArray`: a fixed-size array.
 - `StackVec` and `HeapVec`: a growable buffer; `std::vector` contents and string
   literals live in one.
+- `Deque`: an element of a `std::deque`, whose elements are in a buffer of their
+  own that the deque holds. The offset is the position of the element, which
+  pushing and popping at the front don't change.
 - `Nested`: an inner vector or array of a nested container, such as a row of
   `std::vector<std::vector<int>>` or of `int[2][3]`, or a field of a struct that
   is itself an element of one. The inner container is stored inline in the outer

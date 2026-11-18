@@ -11,6 +11,9 @@ pub use rc::*;
 
 mod escape;
 
+mod deque;
+pub use deque::Deque;
+
 mod field;
 pub use field::{ArrayElem, ElemPlace, FieldPlace, FieldPtr, IndexPlace, Place, Record, VecElem};
 // Used by #[derive(Record)] and size_of_field!.
