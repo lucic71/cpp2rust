@@ -163,14 +163,14 @@ pub fn emplace_ctor_args_7(mut pairs: Ptr<Vec<Pair>>) {
         pairs.with_mut(|__v: &mut Vec<Pair>| __v.push(__init))
     };
 }
-pub fn emplace_deque_8(mut queue: Ptr<Vec<Pair>>) {
+pub fn emplace_deque_8(mut queue: Ptr<Deque<Pair>>) {
     {
         let __init = Pair::new_3({ 6 }, { 7 });
-        queue.with_mut(|__v: &mut Vec<Pair>| __v.push(__init))
+        queue.with_mut(|__v: &mut Deque<Pair>| __v.push_back(__init))
     };
     {
         let __init = Pair::new_2();
-        queue.with_mut(|__v: &mut Vec<Pair>| __v.push(__init))
+        queue.with_mut(|__v: &mut Deque<Pair>| __v.push_back(__init))
     };
 }
 pub fn emplace_scalar_9(mut values: Ptr<Vec<i64>>, x: i32) {
@@ -275,14 +275,15 @@ fn main_0() -> i32 {
                 && ({ { (*pairs.borrow())[2_usize] }.second } == 10)
         })
     );
-    let queue: Value<Vec<Pair>> = Rc::new(RefCell::new(Vec::new()));
+    let queue: Value<Deque<Pair>> = Rc::new(RefCell::new(Deque::new()));
     ({ emplace_deque_8((queue.as_pointer())) });
     assert!(
-        (queue.decay().with(|__s| __s.first) == 6) && (queue.decay().with(|__s| __s.second) == 14)
+        (queue.as_pointer().front().with(|__s| __s.first) == 6)
+            && (queue.as_pointer().front().with(|__s| __s.second) == 14)
     );
     assert!(
-        (queue.decay().to_last().with(|__s| __s.first) == -1_i32)
-            && (queue.decay().to_last().with(|__s| __s.second) == -1_i32)
+        (queue.as_pointer().back().with(|__s| __s.first) == -1_i32)
+            && (queue.as_pointer().back().with(|__s| __s.second) == -1_i32)
     );
     let values: Value<Vec<i64>> = Rc::new(RefCell::new(Vec::new()));
     ({ emplace_scalar_9((values.as_pointer()), 7) });

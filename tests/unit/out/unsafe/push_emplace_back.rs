@@ -159,14 +159,14 @@ pub unsafe fn emplace_ctor_args_7(mut pairs: *mut Vec<Pair>) {
         (*pairs).push(__init)
     };
 }
-pub unsafe fn emplace_deque_8(mut queue: *mut Vec<Pair>) {
+pub unsafe fn emplace_deque_8(mut queue: *mut std::collections::VecDeque<Pair>) {
     {
         let __init = Pair::new_3({ 6 }, { 7 });
-        (*queue).push(__init)
+        (*queue).push_back(__init)
     };
     {
         let __init = Pair::new_2();
-        (*queue).push(__init)
+        (*queue).push_back(__init)
     };
 }
 pub unsafe fn emplace_scalar_9(mut values: *mut Vec<i64>, mut x: i32) {
@@ -227,15 +227,15 @@ unsafe fn main_0() -> i32 {
     assert!(((pairs[(0_usize)].first) == (-1_i32)) && ((pairs[(0_usize)].second) == (-1_i32)));
     assert!(((pairs[(1_usize)].first) == (3)) && ((pairs[(1_usize)].second) == (0)));
     assert!(((pairs[(2_usize)].first) == (4)) && ((pairs[(2_usize)].second) == (10)));
-    let mut queue: Vec<Pair> = Vec::new();
-    (unsafe { emplace_deque_8((&mut queue as *mut Vec<Pair>)) });
+    let mut queue: std::collections::VecDeque<Pair> = std::collections::VecDeque::new();
+    (unsafe { emplace_deque_8((&mut queue as *mut std::collections::VecDeque<Pair>)) });
     assert!(
-        (((*((queue).first_mut().unwrap())).first) == (6))
-            && (((*((queue).first_mut().unwrap())).second) == (14))
+        (((*((queue).front_mut().unwrap())).first) == (6))
+            && (((*((queue).front_mut().unwrap())).second) == (14))
     );
     assert!(
-        (((*(queue.last_mut().unwrap())).first) == (-1_i32))
-            && (((*(queue.last_mut().unwrap())).second) == (-1_i32))
+        (((*(queue.back_mut().unwrap())).first) == (-1_i32))
+            && (((*(queue.back_mut().unwrap())).second) == (-1_i32))
     );
     let mut values: Vec<i64> = Vec::new();
     (unsafe { emplace_scalar_9((&mut values as *mut Vec<i64>), 7) });
