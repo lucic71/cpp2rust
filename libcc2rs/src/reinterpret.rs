@@ -8,7 +8,7 @@ use std::{
     rc::{Rc, Weak},
 };
 
-use crate::deque::DequeBuf;
+use crate::DequeBuf;
 use crate::escape;
 use crate::field::{Root, upgrade as upgrade_root};
 use crate::rc::{ElemStorage, Ptr, SliceParent, SliceRoot, reclaim};
