@@ -17,11 +17,11 @@ fn t5<T1>() -> Ptr<T1> {
     Ptr::null()
 }
 
-fn f1<T1>(a0: &mut Deque<T1>) -> Ptr<T1> {
+fn f1<T1: 'static>(a0: Ptr<Deque<T1>>) -> Ptr<T1> {
     a0.back()
 }
 
-fn f2<T1>(a0: &mut Deque<T1>) -> Ptr<T1> {
+fn f2<T1: 'static>(a0: Ptr<Deque<T1>>) -> Ptr<T1> {
     a0.front()
 }
 
@@ -87,43 +87,43 @@ fn f19<T1>(a0: Deque<T1>) -> usize {
     a0.len()
 }
 
-fn f20<T1>(a0: &mut Deque<T1>, a1: usize) -> Ptr<T1> {
+fn f20<T1: 'static>(a0: Ptr<Deque<T1>>, a1: usize) -> Ptr<T1> {
     a0.get(a1)
 }
 
-fn f21<T1>(a0: Deque<T1>, a1: usize) -> Ptr<T1> {
+fn f21<T1: 'static>(a0: Ptr<Deque<T1>>, a1: usize) -> Ptr<T1> {
     a0.get(a1)
 }
 
-fn f22<T1>(a0: &mut Deque<T1>, a1: usize) -> Ptr<T1> {
+fn f22<T1: 'static>(a0: Ptr<Deque<T1>>, a1: usize) -> Ptr<T1> {
     a0.at(a1)
 }
 
-fn f23<T1>(a0: Deque<T1>, a1: usize) -> Ptr<T1> {
+fn f23<T1: 'static>(a0: Ptr<Deque<T1>>, a1: usize) -> Ptr<T1> {
     a0.at(a1)
 }
 
-fn f24<T1>(a0: Deque<T1>) -> Ptr<T1> {
+fn f24<T1: 'static>(a0: Ptr<Deque<T1>>) -> Ptr<T1> {
     a0.front()
 }
 
-fn f25<T1>(a0: Deque<T1>) -> Ptr<T1> {
+fn f25<T1: 'static>(a0: Ptr<Deque<T1>>) -> Ptr<T1> {
     a0.back()
 }
 
-fn f26<T1>(a0: &mut Deque<T1>) -> RandomAccessIterator<T1> {
+fn f26<T1: 'static>(a0: Ptr<Deque<T1>>) -> RandomAccessIterator<T1> {
     a0.begin()
 }
 
-fn f27<T1>(a0: &mut Deque<T1>) -> RandomAccessIterator<T1> {
+fn f27<T1: 'static>(a0: Ptr<Deque<T1>>) -> RandomAccessIterator<T1> {
     a0.end()
 }
 
-fn f28<T1>(a0: Deque<T1>) -> RandomAccessIterator<T1> {
+fn f28<T1: 'static>(a0: Ptr<Deque<T1>>) -> RandomAccessIterator<T1> {
     a0.begin()
 }
 
-fn f29<T1>(a0: Deque<T1>) -> RandomAccessIterator<T1> {
+fn f29<T1: 'static>(a0: Ptr<Deque<T1>>) -> RandomAccessIterator<T1> {
     a0.end()
 }
 

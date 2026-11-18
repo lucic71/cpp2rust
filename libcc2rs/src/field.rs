@@ -625,7 +625,7 @@ fn borrow_struct<'a, S: Record>(base: &Ptr<S>, root: &'a SliceRoot) -> Ref<'a, S
         PtrKind::Field(_, field, shape) => {
             Ptr::borrow_field_elem(root.field(), *field, *shape, idx)
         }
-        PtrKind::Nested(parent) => Ref::map(parent.borrow_slice(root), |s| &s[idx]),
+        PtrKind::Nested(parent) => parent.borrow_elem(root, idx),
         _ => unreachable!(),
     }
 }
@@ -662,7 +662,7 @@ where
             PtrKind::Field(_, field, shape) => {
                 Ptr::borrow_field_elem_mut(root.field(), *field, *shape, idx)
             }
-            PtrKind::Nested(parent) => RefMut::map(parent.borrow_slice_mut(root), |s| &mut s[idx]),
+            PtrKind::Nested(parent) => parent.borrow_elem_mut(root, idx),
             _ => unreachable!(),
         };
         RefMut::map(s, |s| (self.get_mut)(s).as_mut())

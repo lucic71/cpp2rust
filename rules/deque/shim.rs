@@ -1,12 +1,14 @@
 // Copyright (c) 2022-present INESC-ID.
 // Distributed under the MIT license that can be found in the LICENSE file.
 
-use std::cell::RefCell;
+use std::cell::{Ref, RefMut};
 use std::collections::VecDeque;
-use std::rc::{Rc, Weak};
+use std::rc::Rc;
 
+use crate::rc::PtrKind;
 use crate::{
-    AsPointer, ByteRepr, CppRange, Ptr, RandomAccessIterator, UnsafeRandomAccessIterator, Value,
+    ByteRepr, CppRange, ElemStorage, Ptr, RandomAccessIterator, SliceParent, SliceRoot,
+    UnsafeRandomAccessIterator,
 };
 
 pub trait DequeElems<P>: Clone {
@@ -34,59 +36,49 @@ impl<T> CppRange for VecDeque<T> {
     }
 }
 
+#[derive(Clone)]
 pub struct Deque<T> {
-    elems: Value<VecDeque<Value<T>>>,
+    elems: VecDeque<T>,
+    base: isize,
 }
 
-pub struct DequeRef<T>(Weak<RefCell<VecDeque<Value<T>>>>);
+pub struct DequeRef<T>(Rc<dyn SliceParent<T>>);
 
 impl<T> Clone for DequeRef<T> {
     fn clone(&self) -> Self {
-        Self(self.0.clone())
+        Self(Rc::clone(&self.0))
     }
 }
 
 impl<T> DequeElems<Ptr<T>> for DequeRef<T> {
     fn elem_at(&self, idx: isize) -> Ptr<T> {
-        let elems = self
-            .0
-            .upgrade()
-            .expect("ub: iterator into a destroyed deque");
-        let elems = elems.borrow();
-        usize::try_from(idx)
-            .ok()
-            .and_then(|idx| elems.get(idx))
-            .expect("ub: dereference of an invalid deque iterator")
-            .as_pointer()
+        Ptr {
+            offset: idx as usize,
+            kind: PtrKind::Nested(Rc::clone(&self.0)),
+        }
     }
 
     fn same_deque(&self, other: &Self) -> bool {
-        Weak::ptr_eq(&self.0, &other.0)
+        self.0.address() == other.0.address()
     }
 }
 
 impl<T> Default for Deque<T> {
     fn default() -> Self {
         Self {
-            elems: Rc::new(RefCell::new(VecDeque::new())),
+            elems: VecDeque::new(),
+            base: 0,
         }
     }
 }
 
 impl<T: 'static> ByteRepr for Deque<T> {}
 
-impl<T: Clone> Clone for Deque<T> {
-    fn clone(&self) -> Self {
-        let elems = self
-            .elems
-            .borrow()
-            .iter()
-            .map(|elem| Rc::new(RefCell::new(elem.borrow().clone())))
-            .collect();
-        Self {
-            elems: Rc::new(RefCell::new(elems)),
-        }
-    }
+#[cold]
+#[inline(never)]
+#[track_caller]
+fn out_of_bounds() -> ! {
+    panic!("ub: out of bounds deque access")
 }
 
 impl<T> Deque<T> {
@@ -95,30 +87,154 @@ impl<T> Deque<T> {
     }
 
     pub fn from_fn(n: usize, mut f: impl FnMut() -> T) -> Self {
-        let elems = (0..n).map(|_| Rc::new(RefCell::new(f()))).collect();
         Self {
-            elems: Rc::new(RefCell::new(elems)),
+            elems: (0..n).map(|_| f()).collect(),
+            base: 0,
         }
     }
 
     pub fn len(&self) -> usize {
-        self.elems.borrow().len()
+        self.elems.len()
     }
 
     pub fn is_empty(&self) -> bool {
-        self.elems.borrow().is_empty()
+        self.elems.is_empty()
+    }
+
+    fn index(&self, pos: usize) -> usize {
+        (pos as isize).wrapping_sub(self.base) as usize
+    }
+
+    fn at_pos(&self, pos: usize) -> &T {
+        self.elems
+            .get(self.index(pos))
+            .unwrap_or_else(|| out_of_bounds())
+    }
+
+    fn at_pos_mut(&mut self, pos: usize) -> &mut T {
+        let idx = self.index(pos);
+        self.elems.get_mut(idx).unwrap_or_else(|| out_of_bounds())
+    }
+
+    pub fn push_back(&mut self, value: T) {
+        self.elems.push_back(value)
+    }
+
+    pub fn push_front(&mut self, value: T) {
+        self.elems.push_front(value);
+        self.base -= 1;
+    }
+
+    pub fn pop_back(&mut self) {
+        drop(
+            self.elems
+                .pop_back()
+                .expect("ub: pop_back of an empty deque"),
+        );
+    }
+
+    pub fn pop_front(&mut self) {
+        drop(
+            self.elems
+                .pop_front()
+                .expect("ub: pop_front of an empty deque"),
+        );
+        self.base += 1;
+    }
+
+    pub fn insert(&mut self, pos: usize, value: T) {
+        let idx = self.index(pos);
+        self.elems.insert(idx, value)
+    }
+
+    pub fn erase(&mut self, pos: usize) {
+        let idx = self.index(pos);
+        drop(
+            self.elems
+                .remove(idx)
+                .expect("ub: erase of an invalid deque iterator"),
+        );
+    }
+
+    pub fn clear(&mut self) {
+        self.base += self.elems.len() as isize;
+        self.elems.clear()
+    }
+}
+
+struct InDeque<T>(Ptr<Deque<T>>);
+
+impl<T: 'static> SliceParent<T> for InDeque<T> {
+    fn root(&self) -> SliceRoot {
+        self.0.slice_root()
+    }
+
+    fn elem_storage(&self) -> ElemStorage {
+        let root = self.root();
+        let address = self.borrow_slice(&root).as_ptr() as usize;
+        ElemStorage::Own(address, self.0.borrow_in(&root).elems.capacity())
+    }
+
+    fn borrow_slice<'a>(&self, root: &'a SliceRoot) -> Ref<'a, [T]> {
+        if !self.0.borrow_in(root).elems.as_slices().1.is_empty() {
+            self.0.borrow_in_mut(root).elems.make_contiguous();
+        }
+        Ref::map(self.0.borrow_in(root), |d| d.elems.as_slices().0)
+    }
+
+    fn borrow_slice_mut<'a>(&self, root: &'a SliceRoot) -> RefMut<'a, [T]> {
+        RefMut::map(self.0.borrow_in_mut(root), |d| d.elems.make_contiguous())
+    }
+
+    fn address(&self) -> usize {
+        self.0.address()
+    }
+
+    fn start(&self, root: &SliceRoot) -> usize {
+        self.0.borrow_in(root).base as usize
+    }
+
+    fn borrow_elem<'a>(&self, root: &'a SliceRoot, idx: usize) -> Ref<'a, T> {
+        Ref::map(self.0.borrow_in(root), |d| d.at_pos(idx))
+    }
+
+    fn borrow_elem_mut<'a>(&self, root: &'a SliceRoot, idx: usize) -> RefMut<'a, T> {
+        RefMut::map(self.0.borrow_in_mut(root), |d| d.at_pos_mut(idx))
+    }
+
+    fn with_elem(&self, idx: usize, f: &mut dyn FnMut(&T)) {
+        self.0.with(|d| f(d.at_pos(idx)))
+    }
+
+    fn with_elem_mut(&self, idx: usize, f: &mut dyn FnMut(&mut T)) {
+        self.0.with_mut(|d| f(d.at_pos_mut(idx)))
+    }
+}
+
+impl<T: 'static> Ptr<Deque<T>> {
+    fn elems_parent(&self) -> Rc<dyn SliceParent<T>> {
+        Rc::new(InDeque(self.clone()))
+    }
+
+    fn elem_ptr(&self, pos: isize) -> Ptr<T> {
+        Ptr {
+            offset: pos as usize,
+            kind: PtrKind::Nested(self.elems_parent()),
+        }
     }
 
     pub fn get(&self, idx: usize) -> Ptr<T> {
-        self.elems
-            .borrow()
-            .get(idx)
-            .expect("ub: out of bounds deque access")
-            .as_pointer()
+        let base = self.with(|d| {
+            if idx >= d.len() {
+                out_of_bounds()
+            }
+            d.base
+        });
+        self.elem_ptr(base.wrapping_add(idx as isize))
     }
 
     pub fn at(&self, idx: usize) -> Ptr<T> {
-        if idx >= self.len() {
+        if idx >= self.with(|d| d.len()) {
             panic!("out of bounds access")
         }
         self.get(idx)
@@ -129,52 +245,16 @@ impl<T> Deque<T> {
     }
 
     pub fn back(&self) -> Ptr<T> {
-        self.get(self.len().wrapping_sub(1))
-    }
-
-    pub fn push_back(&self, value: T) {
-        self.elems
-            .borrow_mut()
-            .push_back(Rc::new(RefCell::new(value)))
-    }
-
-    pub fn push_front(&self, value: T) {
-        self.elems
-            .borrow_mut()
-            .push_front(Rc::new(RefCell::new(value)))
-    }
-
-    pub fn pop_back(&self) {
-        let elem = self.elems.borrow_mut().pop_back();
-        drop(elem.expect("ub: pop_back of an empty deque"));
-    }
-
-    pub fn pop_front(&self) {
-        let elem = self.elems.borrow_mut().pop_front();
-        drop(elem.expect("ub: pop_front of an empty deque"));
-    }
-
-    pub fn insert(&self, idx: usize, value: T) {
-        self.elems
-            .borrow_mut()
-            .insert(idx, Rc::new(RefCell::new(value)))
-    }
-
-    pub fn erase(&self, idx: usize) {
-        let elem = self.elems.borrow_mut().remove(idx);
-        drop(elem.expect("ub: erase of an invalid deque iterator"));
-    }
-
-    pub fn clear(&self) {
-        let elems = std::mem::take(&mut *self.elems.borrow_mut());
-        drop(elems);
+        self.get(self.with(|d| d.len()).wrapping_sub(1))
     }
 
     pub fn begin(&self) -> RandomAccessIterator<T> {
-        RandomAccessIterator::Deque(DequeRef(Rc::downgrade(&self.elems)), 0)
+        let base = self.with(|d| d.base);
+        RandomAccessIterator::Deque(DequeRef(self.elems_parent()), base)
     }
 
     pub fn end(&self) -> RandomAccessIterator<T> {
-        RandomAccessIterator::Deque(DequeRef(Rc::downgrade(&self.elems)), self.len() as isize)
+        let end = self.with(|d| d.base.wrapping_add(d.len() as isize));
+        RandomAccessIterator::Deque(DequeRef(self.elems_parent()), end)
     }
 }

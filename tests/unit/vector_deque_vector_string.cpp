@@ -56,5 +56,16 @@ int main() {
     sum += *it;
   }
   assert(sum == 14);
+  int &m = d[1];
+  d.push_front(5);
+  d.push_front(1);
+  d.pop_front();
+  d.push_back(30);
+  assert(m == 2 && d.size() == 4);
+  int &s = d[2];
+  d.pop_back();
+  d.push_front(9);
+  s = 4;
+  assert(m == 4 && d[3] == 4 && d.front() == 9 && d.back() == 4);
   return 0;
 }

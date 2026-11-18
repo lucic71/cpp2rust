@@ -6,7 +6,8 @@
 
 template <typename T1> using t1 = std::deque<T1>;
 
-template <typename T1> using t2 = typename std::deque<T1>::size_type;
+template <typename T1, typename T2 = std::allocator<T1>>
+using t2 = typename std::deque<T1, T2>::size_type;
 
 template <typename T1> using t3 = typename std::deque<T1>::value_type;
 
@@ -80,8 +81,7 @@ template <typename T1> T1 &f20(std::deque<T1> &o, std::size_t idx) {
   return o.operator[](idx);
 }
 
-template <typename T1>
-const T1 &f21(const std::deque<T1> &o, std::size_t idx) {
+template <typename T1> const T1 &f21(const std::deque<T1> &o, std::size_t idx) {
   return o.operator[](idx);
 }
 
@@ -89,8 +89,7 @@ template <typename T1> T1 &f22(std::deque<T1> &o, std::size_t idx) {
   return o.at(idx);
 }
 
-template <typename T1>
-const T1 &f23(const std::deque<T1> &o, std::size_t idx) {
+template <typename T1> const T1 &f23(const std::deque<T1> &o, std::size_t idx) {
   return o.at(idx);
 }
 
@@ -133,8 +132,7 @@ f31(std::deque<T1> &o, typename std::deque<T1>::const_iterator it,
 
 template <typename T1>
 typename std::deque<T1>::iterator
-f32(std::deque<T1> &o, typename std::deque<T1>::const_iterator it,
-    T1 &&value) {
+f32(std::deque<T1> &o, typename std::deque<T1>::const_iterator it, T1 &&value) {
   return o.insert(it, std::move(value));
 }
 

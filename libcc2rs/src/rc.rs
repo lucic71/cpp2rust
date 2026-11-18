@@ -116,6 +116,18 @@ pub trait SliceParent<T> {
     fn borrow_slice_mut<'a>(&self, root: &'a SliceRoot) -> RefMut<'a, [T]>;
     fn address(&self) -> usize;
 
+    fn start(&self, _root: &SliceRoot) -> usize {
+        0
+    }
+
+    fn borrow_elem<'a>(&self, root: &'a SliceRoot, idx: usize) -> Ref<'a, T> {
+        Ref::map(self.borrow_slice(root), |s| &s[idx])
+    }
+
+    fn borrow_elem_mut<'a>(&self, root: &'a SliceRoot, idx: usize) -> RefMut<'a, T> {
+        RefMut::map(self.borrow_slice_mut(root), |s| &mut s[idx])
+    }
+
     // The address of the allocation of the struct that the elements are in,
     // if they are in its memory, as the elements of an array field are.
     fn struct_root(&self) -> Option<usize> {
@@ -208,7 +220,7 @@ impl<T: 'static> Ptr<T> {
             PtrKind::Field(_, field, shape) => {
                 Self::borrow_field_elem(root.field(), *field, *shape, offset)
             }
-            PtrKind::Nested(parent) => Ref::map(parent.borrow_slice(root), |s| &s[offset]),
+            PtrKind::Nested(parent) => parent.borrow_elem(root, offset),
             PtrKind::Null | PtrKind::Reinterpreted(_) | PtrKind::Address(_) => unreachable!(),
         }
     }
@@ -233,9 +245,7 @@ impl<T: 'static> Ptr<T> {
             PtrKind::Field(_, field, shape) => {
                 Self::borrow_field_elem_mut(root.field(), *field, *shape, offset)
             }
-            PtrKind::Nested(parent) => {
-                RefMut::map(parent.borrow_slice_mut(root), |s| &mut s[offset])
-            }
+            PtrKind::Nested(parent) => parent.borrow_elem_mut(root, offset),
             PtrKind::Null | PtrKind::Reinterpreted(_) | PtrKind::Address(_) => unreachable!(),
         }
     }
@@ -354,7 +364,7 @@ impl<T: ByteRepr> StrongPtr<T> {
                 root,
                 parent,
                 offset,
-            } => Ref::map(parent.borrow_slice(root), |v| &v[*offset]),
+            } => parent.borrow_elem(root, *offset),
             StrongPtr::Field {
                 root,
                 offset,
@@ -628,7 +638,12 @@ impl<T> Ptr<T> {
             PtrKind::StackVec(weak) | PtrKind::HeapVec(weak) => {
                 weak.upgrade().expect("ub: dangling pointer").borrow().len()
             }
-            PtrKind::Nested(parent) => parent.borrow_slice(&parent.root()).len(),
+            PtrKind::Nested(parent) => {
+                let root = parent.root();
+                parent
+                    .start(&root)
+                    .wrapping_add(parent.borrow_slice(&root).len())
+            }
             PtrKind::StackArray(weak) | PtrKind::HeapArray(weak) => {
                 weak.upgrade().expect("ub: dangling pointer").borrow().len()
             }
@@ -803,7 +818,9 @@ impl<T> Ptr<T> {
             ),
             PtrKind::Nested(parent) => (
                 OriginalAlloc::nested(parent),
-                self.offset.wrapping_mul(T::byte_size()),
+                self.offset
+                    .wrapping_sub(parent.start(&parent.root()))
+                    .wrapping_mul(T::byte_size()),
             ),
             PtrKind::StackArray(weak) | PtrKind::HeapArray(weak) => (
                 OriginalAlloc::slice(weak),
@@ -1147,6 +1164,7 @@ impl<T: CChar> Ptr<T> {
             }
             PtrKind::Nested(parent) => {
                 let root = parent.root();
+                let off = off.wrapping_sub(parent.start(&root));
                 f(&mut parent.borrow_slice_mut(&root)[off..off + len])
             }
             PtrKind::Field(root, field, shape) => {
@@ -1199,6 +1217,7 @@ impl<T: CChar> Ptr<T> {
             }
             PtrKind::Nested(parent) => {
                 let root = parent.root();
+                let off = off.wrapping_sub(parent.start(&root));
                 f(&parent.borrow_slice(&root)[off..off + len])
             }
             PtrKind::Field(root, field, shape) => {
@@ -1293,7 +1312,11 @@ impl<T: ByteRepr> Ptr<T> {
             _ => match (self.elem_parent(), other.elem_parent()) {
                 (Some(a), Some(b)) if a.address() == b.address() => {
                     let root = a.root();
-                    a.borrow_slice_mut(&root).swap(self.offset, other.offset);
+                    let start = a.start(&root);
+                    a.borrow_slice_mut(&root).swap(
+                        self.offset.wrapping_sub(start),
+                        other.offset.wrapping_sub(start),
+                    );
                 }
                 _ => {
                     let mut tmp = take(self);
@@ -1761,9 +1784,9 @@ impl<T: ByteRepr> Ptr<T> {
 
     // The bytes of the elements of the parent before the pointer.
     fn nested_bytes(&self, parent: &Rc<dyn SliceParent<T>>) -> usize {
-        bytes_before::<T>(self.offset, || {
-            sum_bytes(&parent.borrow_slice(&parent.root()), self.offset)
-        })
+        let root = parent.root();
+        let idx = self.offset.wrapping_sub(parent.start(&root));
+        bytes_before::<T>(idx, || sum_bytes(&parent.borrow_slice(&root), idx))
     }
 
     // The pointer that a cast of an integer to it gives, as a cast from
@@ -1793,7 +1816,7 @@ impl<T: ByteRepr> Ptr<T> {
     fn native(alloc: &OriginalAlloc, idx: usize) -> Option<Self> {
         if let Some(parent) = alloc.nested_parent::<T>() {
             return Some(Ptr {
-                offset: idx,
+                offset: idx.wrapping_add(parent.start(&parent.root())),
                 kind: PtrKind::Nested(parent),
             });
         }
