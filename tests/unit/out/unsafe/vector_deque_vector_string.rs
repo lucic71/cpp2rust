@@ -13,13 +13,13 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    let mut v: Vec<std::collections::VecDeque<Vec<Vec<libc::c_char>>>> = Vec::new();
+    let mut v: Vec<VecDeque<Vec<Vec<libc::c_char>>>> = Vec::new();
     {
-        let __init = std::collections::VecDeque::new();
+        let __init = VecDeque::new();
         v.push(__init)
     };
     {
-        let __init = std::collections::VecDeque::new();
+        let __init = VecDeque::new();
         v.push(__init)
     };
     let mut row: Vec<Vec<libc::c_char>> = Vec::new();
@@ -88,7 +88,7 @@ unsafe fn main_0() -> i32 {
             .to_vec()
         }
     );
-    let mut copy: Vec<std::collections::VecDeque<Vec<Vec<libc::c_char>>>> = v.clone();
+    let mut copy: Vec<VecDeque<Vec<Vec<libc::c_char>>>> = v.clone();
     match ((&mut std::slice::from_raw_parts(
         c"z".as_ptr(),
         (0..).take_while(|&i| *c"z".as_ptr().add(i) != 0).count() + 1,
@@ -153,7 +153,7 @@ unsafe fn main_0() -> i32 {
     );
     assert!((((*((copy[(1_usize)]).front_mut().unwrap())).len()) == (3_usize)));
     assert!(((row.len()) == (3_usize)));
-    let mut d: std::collections::VecDeque<i32> = std::collections::VecDeque::new();
+    let mut d: VecDeque<i32> = VecDeque::new();
     let mut first: i32 = 1;
     let mut last: i32 = 2;
     d.push_back(first);

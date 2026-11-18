@@ -159,7 +159,7 @@ pub unsafe fn emplace_ctor_args_7(mut pairs: *mut Vec<Pair>) {
         (*pairs).push(__init)
     };
 }
-pub unsafe fn emplace_deque_8(mut queue: *mut std::collections::VecDeque<Pair>) {
+pub unsafe fn emplace_deque_8(mut queue: *mut VecDeque<Pair>) {
     {
         let __init = Pair::new_3({ 6 }, { 7 });
         (*queue).push_back(__init)
@@ -227,8 +227,8 @@ unsafe fn main_0() -> i32 {
     assert!(((pairs[(0_usize)].first) == (-1_i32)) && ((pairs[(0_usize)].second) == (-1_i32)));
     assert!(((pairs[(1_usize)].first) == (3)) && ((pairs[(1_usize)].second) == (0)));
     assert!(((pairs[(2_usize)].first) == (4)) && ((pairs[(2_usize)].second) == (10)));
-    let mut queue: std::collections::VecDeque<Pair> = std::collections::VecDeque::new();
-    (unsafe { emplace_deque_8((&mut queue as *mut std::collections::VecDeque<Pair>)) });
+    let mut queue: VecDeque<Pair> = VecDeque::new();
+    (unsafe { emplace_deque_8((&mut queue as *mut VecDeque<Pair>)) });
     assert!(
         (((*((queue).front_mut().unwrap())).first) == (6))
             && (((*((queue).front_mut().unwrap())).second) == (14))
