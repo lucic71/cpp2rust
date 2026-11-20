@@ -422,7 +422,7 @@ public:
 
   CallInfo CollectCallInfo(clang::CallExpr *expr);
 
-  void ConvertParamTy(clang::QualType param_type, clang::Expr *expr);
+  virtual void ConvertParamTy(clang::QualType param_type, clang::Expr *expr);
 
   virtual void ConvertParamTyConstCast(clang::QualType param_type,
                                        clang::Expr *expr);
@@ -488,7 +488,7 @@ public:
 
   virtual void ConvertVariadicArg(clang::Expr *arg);
 
-  bool VisitCallExpr(clang::CallExpr *expr);
+  virtual bool VisitCallExpr(clang::CallExpr *expr);
 
   virtual bool VisitIntegerLiteral(clang::IntegerLiteral *expr);
 
@@ -720,8 +720,8 @@ protected:
       PushDelim<token::kOpenCurlyBracket, token::kCloseCurlyBracket>;
   using PushParen = PushDelim<token::kOpenParen, token::kCloseParen>;
   using PushBracket = PushDelim<token::kOpenBracket, token::kCloseBracket>;
-  using PushLazyType = PushDelim<token::kLazyCellType, token::kGt>;
-  using PushLazyInit = PushDelim<token::kLazyCellNew, token::kCloseParen>;
+  using PushLazyType = PushDelim<token::kLazyStorageType, token::kGt>;
+  using PushLazyInit = PushDelim<token::kLazyStorageNew, token::kCloseParen>;
 
   template <typename T>
   inline std::string
@@ -837,9 +837,77 @@ protected:
                                 const clang::CXXRecordDecl *decl,
                                 std::string_view lhs, std::string_view rhs);
 
-  std::string GetComparisonBool(const clang::FunctionDecl *op,
-                                const clang::CXXRecordDecl *decl,
-                                std::string_view lhs, std::string_view rhs);
+  virtual std::string
+  ConvertComparisonArgStorage(const clang::ParmVarDecl *param,
+                              std::string value);
+
+  virtual std::string GetComparisonBool(const clang::FunctionDecl *op,
+                                        const clang::CXXRecordDecl *decl,
+                                        std::string_view lhs,
+                                        std::string_view rhs);
+
+  virtual std::string CreateUninitStorage(clang::QualType type);
+
+  void ConvertPlacementInit(clang::Expr *init, const std::string &dest);
+
+  virtual std::string ConvertPlacementValue(clang::Expr *init);
+
+  void ConvertPlacementPRValue(clang::Expr *init);
+
+  std::string ConvertPlacementTemporary(clang::Expr *init);
+
+  void ConvertPlacementConstruct(clang::CXXConstructExpr *expr,
+                                 const std::string &dest);
+
+  void ConvertPlacementInitList(clang::InitListExpr *expr,
+                                const std::string &dest);
+
+  void ConvertPlacementFieldInit(const std::string &base,
+                                 const clang::FieldDecl *field,
+                                 clang::Expr *init);
+
+  void ConvertPlacementMemberInits(clang::CXXConstructorDecl *decl);
+
+  virtual void ConvertPlacementArg(clang::QualType param_type,
+                                   clang::Expr *arg);
+
+  void ConvertPlacementZeroInit(const std::string &dest, clang::QualType type);
+
+  virtual void ConvertPlacementZeroBytes(const std::string &dest);
+
+  virtual void ConvertHoistedPlacementArg(const std::string &name,
+                                          clang::QualType param_type,
+                                          clang::Expr *arg);
+
+  virtual std::string ConvertPlacementFallback(clang::Expr *init);
+
+  virtual std::string GetPlacementFieldPtr(const std::string &base,
+                                           const clang::FieldDecl *field);
+
+  virtual void ConvertPlacementFieldWrite(const std::string &base,
+                                          const clang::FieldDecl *field,
+                                          clang::Expr *init);
+
+  bool IsPlacementInitialized(const clang::VarDecl *decl) const;
+
+  virtual std::string GetPlacementVarPtr(const clang::VarDecl *decl);
+
+  virtual bool IsPlacementParam(const clang::ValueDecl *decl) const;
+
+  bool HasPlacementResult(const clang::FunctionDecl *fn) const;
+
+  bool InPlacementConstructor() const;
+
+  const clang::VarDecl *initialized_var_ = nullptr;
+
+  virtual void ConvertPlacementResultParam(const clang::FunctionDecl *decl);
+
+  virtual std::string ConvertMoveFromCall(clang::QualType type,
+                                          const std::string &src);
+
+  const char *GetConversionValueKind(clang::QualType type) const {
+    return IsPlacementConstructed(type) ? "storage" : "value";
+  }
 
   // The argument for param of a comparison operator of decl, from an operand
   // of the comparison.
@@ -1062,6 +1130,7 @@ protected:
   MethodTarget method_target_ = MethodTarget::ValueImpl;
 
   std::string ufcs_receiver_;
+  std::pair<const clang::CallExpr *, std::string> placement_call_;
   bool in_const_initializer_ = false;
   bool constant_evaluated_ = false;
   std::optional<bool> autoref_mut_;

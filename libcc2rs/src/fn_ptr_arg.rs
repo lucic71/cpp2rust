@@ -104,6 +104,16 @@ impl<T: ByteRepr> FnPtrArg for Ptr<T> {
     }
 }
 
+impl<T: 'static> FnPtrArg for Rc<std::cell::RefCell<T>> {
+    #[inline]
+    fn to_repr(self) -> ArgRepr {
+        ArgRepr::Record(Box::new(self))
+    }
+    fn from_repr(r: ArgRepr) -> Self {
+        record_from_repr(r)
+    }
+}
+
 impl FnPtrArg for AnyPtr {
     #[inline]
     fn to_repr(self) -> ArgRepr {

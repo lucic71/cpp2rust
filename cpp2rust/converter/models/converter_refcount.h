@@ -100,6 +100,52 @@ public:
 
   bool VisitCXXConstructorDecl(clang::CXXConstructorDecl *decl) override;
 
+  bool VisitCallExpr(clang::CallExpr *expr) override;
+
+  std::string GetPlacementVarPtr(const clang::VarDecl *decl) override;
+
+  bool IsPlacementParam(const clang::ValueDecl *decl) const override {
+    return false;
+  }
+
+  void ConvertPlacementResultParam(const clang::FunctionDecl *decl) override;
+
+  std::string ConvertComparisonArgStorage(const clang::ParmVarDecl *param,
+                                          std::string value) override;
+
+  std::string GetComparisonBool(const clang::FunctionDecl *op,
+                                const clang::CXXRecordDecl *decl,
+                                std::string_view lhs,
+                                std::string_view rhs) override;
+
+  std::string CreateUninitStorage(clang::QualType type) override;
+
+  std::string ConvertPlacementValue(clang::Expr *init) override;
+
+  std::string
+  ConvertTemporaryStorage(clang::Expr *expr,
+                          std::optional<clang::QualType> implicit_convert_to);
+
+  std::string ConvertPlacementTakenValue(clang::Expr *init);
+
+  void ConvertPlacementArg(clang::QualType param_type,
+                           clang::Expr *arg) override;
+
+  void ConvertPlacementZeroBytes(const std::string &dest) override;
+
+  void ConvertHoistedPlacementArg(const std::string &name,
+                                  clang::QualType param_type,
+                                  clang::Expr *arg) override;
+
+  std::string ConvertPlacementFallback(clang::Expr *init) override;
+
+  std::string GetPlacementFieldPtr(const std::string &base,
+                                   const clang::FieldDecl *field) override;
+
+  void ConvertPlacementFieldWrite(const std::string &base,
+                                  const clang::FieldDecl *field,
+                                  clang::Expr *init) override;
+
   bool VisitFieldDecl(clang::FieldDecl *decl) override;
 
   void EmitFunctionPreamble(clang::FunctionDecl *decl) override;
@@ -535,6 +581,7 @@ private:
   std::string ConvertPointeeType(clang::QualType ptr_type) override;
 
   void ConvertParamTyConstCast(clang::QualType, clang::Expr *) override {}
+  void ConvertParamTy(clang::QualType param_type, clang::Expr *expr) override;
 
   std::string ConvertPointeeCast(std::string str, const clang::Expr *from,
                                  clang::QualType to) override;

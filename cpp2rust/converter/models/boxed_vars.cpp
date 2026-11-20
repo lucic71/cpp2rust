@@ -39,6 +39,9 @@ bool IsFlatVec(clang::QualType type) {
 // is called with a pointer to them.
 bool CanUnbox(clang::ASTContext &ctx, const clang::VarDecl *decl) {
   auto type = decl->getType();
+  if (IsPlacementConstructed(type)) {
+    return false;
+  }
   if (IsFlatVec(type)) {
     // Vectors are flat Vecs.
   } else if (type->isConstantArrayType()) {

@@ -62,8 +62,7 @@ void Converter::EmitVirtualMethods(std::string &out) {
 }
 
 std::string Converter::ForceGlobalInit(const clang::VarDecl *decl) {
-  return std::format("std::cell::LazyCell::force(&*&raw const {});",
-                     GetNamedDeclAsString(decl));
+  return std::format("(*&raw const {}).get();", GetNamedDeclAsString(decl));
 }
 
 void Converter::EmitGlobalInits(Model model, std::string &out) {
@@ -248,6 +247,10 @@ std::string Converter::ConvertTemporaryPointer(
                         expr, full_expression_temporaries_);
     return std::format("{{ {} {} }}", binding, ref);
   }
+  if (auto *init = IgnorePlacementWrappers(expr);
+      init->isPRValue() && IsPlacementConstructed(init->getType())) {
+    return std::format("&mut *{}", ConvertPlacementTemporary(init));
+  }
   return std::format("&mut {}", ConvertFreshRValue(expr, implicit_convert_to));
 }
 
@@ -287,17 +290,35 @@ Converter::MaterializeTemp(const std::string &binding_name,
     declarations = full_expression_temporaries_;
   }
   auto pointee = param_type.getNonReferenceType();
+  auto type_str = ToStringBase(pointee);
+  bool is_static = in_const_initializer_ && !declarations;
+  const auto *decl = is_static ? keyword::kStatic : keyword::kLet;
+
+  std::string binding;
+  if (auto *init = IgnorePlacementWrappers(expr);
+      !is_static && init->isPRValue() &&
+      IsPlacementConstructed(init->getType())) {
+    auto dest = NewTempName();
+    Buffer buf(*this);
+    ConvertPlacementInit(init, dest);
+    auto construct = std::format("let {} = &raw mut {}; {};", dest,
+                                 binding_name, std::move(buf).str());
+    if (declarations) {
+      *declarations += std::format("let mut {} : {};", binding_name, type_str);
+      binding = std::format("{} = {}; {}", binding_name,
+                            CreateUninitStorage(pointee), construct);
+    } else {
+      binding = std::format("let mut {} : {} = {}; {}", binding_name, type_str,
+                            CreateUninitStorage(pointee), construct);
+    }
+    return {binding, std::format("& mut {}", binding_name)};
+  }
   std::string value;
   {
     ScopedPush init_type(curr_init_type_, pointee);
     value = retain_bound_temporaries_ ? ConvertFreshRValue(expr, pointee)
                                       : ConvertRValue(expr, pointee);
   }
-  auto type_str = ToStringBase(pointee);
-  bool is_static = in_const_initializer_ && !declarations;
-  const auto *decl = is_static ? keyword::kStatic : keyword::kLet;
-
-  std::string binding;
   if (declarations) {
     *declarations += std::format("let mut {} : {};", binding_name, type_str);
     binding = std::format("{} = {};", binding_name, value);
@@ -346,7 +367,14 @@ bool Converter::VisitReferenceType(clang::ReferenceType *type) {
 std::string
 Converter::ConvertFunctionPointerType(const clang::FunctionProtoType *proto) {
   std::string result = "fn(";
+  bool placement_result = IsPlacementConstructed(proto->getReturnType());
+  if (placement_result) {
+    result += std::format("*mut {},", ToString(proto->getReturnType()));
+  }
   for (auto p_ty : proto->param_types()) {
+    if (!p_ty->isReferenceType() && IsPlacementConstructed(p_ty)) {
+      result += "*mut ";
+    }
     result += ToString(p_ty);
     result += ',';
   }
@@ -354,7 +382,7 @@ Converter::ConvertFunctionPointerType(const clang::FunctionProtoType *proto) {
     result += "Box<[VaArg]>,";
   }
   result += ')';
-  if (!proto->getReturnType()->isVoidType()) {
+  if (!proto->getReturnType()->isVoidType() && !placement_result) {
     result += std::format(" -> {}", ToString(proto->getReturnType()));
   }
   return result;
@@ -552,6 +580,7 @@ bool Converter::NeedsMut(const clang::VarDecl *decl, clang::QualType type,
       curr_function_ ? clang::dyn_cast<clang::CXXMethodDecl>(curr_function_)
                      : nullptr;
   return ((hoisted_decls_.contains(decl) || NeedsScopedDestructor(decl) ||
+           IsPlacementInitialized(decl) ||
            (!type.isConstQualified() && !type->isReferenceType())) &&
           ((method_or_null == nullptr) || !method_or_null->isVirtual()) &&
           !IsGlobalVar(decl));
@@ -648,7 +677,7 @@ void Converter::ConvertVarDecl(clang::VarDecl *decl) {
 
   HoistMaterializedTempBindings hoist_temps(*this);
   if (decl->isLocalVarDecl() && !IsGlobalVar(decl) && decl->hasInit() &&
-      ReferencesVar(decl->getInit(), decl)) {
+      !IsPlacementInitialized(decl) && ReferencesVar(decl->getInit(), decl)) {
     if (decl->getType()->isReferenceType()) {
       llvm::report_fatal_error(
           "self-referential initializer of a reference is not supported");
@@ -687,7 +716,14 @@ void Converter::ConvertGlobalVarDecl(clang::VarDecl *decl) {
     PushLazyInit lazy(*this, LazyStaticInit());
     StrCat(keyword_unsafe_);
     PushBrace push(*this);
+    bool writes_value = LazyStaticInit() && !IsPlacementInitialized(decl);
+    if (writes_value) {
+      StrCat("__p.write(");
+    }
     ConvertVarDeclInitializer(decl);
+    if (writes_value) {
+      StrCat(")");
+    }
   }
   StrCat(token::kSemiColon);
 }
@@ -697,6 +733,7 @@ bool Converter::VisitVarDecl(clang::VarDecl *decl) {
       decl->getDeclContext()->isDependentContext()) {
     return false;
   }
+  ScopedValue initialized_var(initialized_var_, decl);
 
   if (IsGlobalVar(decl)) {
     if (decl->hasInit() && ReferencesVar(decl->getInit(), decl)) {
@@ -743,9 +780,8 @@ bool Converter::VarTypeNeedsDestructor(clang::QualType type) const {
 
 std::string Converter::StaticDestructorCall(const clang::VarDecl *decl) {
   auto destroy = AsLambdaClass(decl->getType()) ? "destroy" : kDestructorName;
-  return std::format(
-      "(*std::cell::LazyCell::force_mut(&mut *&raw mut {})).{}()",
-      GetNamedDeclAsString(decl), destroy);
+  return std::format("(*(*&raw const {}).get()).{}()",
+                     GetNamedDeclAsString(decl), destroy);
 }
 
 void Converter::EmitScopedDestructor(const clang::VarDecl *decl) {
@@ -987,6 +1023,303 @@ void Converter::EmitRustStructOrUnion(clang::RecordDecl *decl) {
   AddDefaultTrait(decl);
 }
 
+void Converter::ConvertPlacementConstruct(clang::CXXConstructExpr *expr,
+                                          const std::string &dest) {
+  auto *ctor = expr->getConstructor();
+  auto call = [&](const std::string &target) {
+    HoistMaterializedTempBindings hoist_temps(*this, /*as_block=*/true);
+    StrCat(GetRecordName(ctor->getParent()), token::kDoubleColon,
+           GetCtorName(ctor));
+    PushParen paren(*this);
+    StrCat(target, token::kComma);
+    for (unsigned i = 0; i < ctor->getNumParams(); ++i) {
+      assert(i < expr->getNumArgs());
+      clang::Expr *arg = expr->getArg(i);
+      if (auto *default_arg = clang::dyn_cast<clang::CXXDefaultArgExpr>(arg)) {
+        arg = default_arg->getExpr();
+      }
+      {
+        PushBrace brace(*this);
+        ConvertPlacementArg(ctor->getParamDecl(i)->getType(), arg);
+      }
+      StrCat(token::kComma);
+    }
+  };
+  if (!expr->getType()->isArrayType()) {
+    if (expr->requiresZeroInitialization()) {
+      PushBrace brace(*this);
+      StrCat(keyword::kLet, "__d", token::kAssign, dest, token::kSemiColon);
+      ConvertPlacementZeroInit("__d", expr->getType());
+      StrCat(token::kSemiColon);
+      call("__d");
+      return;
+    }
+    call(dest);
+    return;
+  }
+  PushBrace brace(*this);
+  StrCat(keyword::kLet, "__d", token::kAssign, dest, token::kSemiColon);
+  StrCat(std::format(
+      "for __i in 0..{}_isize",
+      ctx_.getTypeSizeInChars(expr->getType()).getQuantity() /
+          ctx_.getTypeSizeInChars(ctx_.getBaseElementType(expr->getType()))
+              .getQuantity()));
+  PushBrace body(*this);
+  call("__d.offset(__i)");
+  StrCat(token::kSemiColon);
+}
+
+void Converter::ConvertPlacementInitList(clang::InitListExpr *expr,
+                                         const std::string &dest) {
+  PushBrace brace(*this);
+  StrCat(keyword::kLet, "__d", token::kAssign, dest, token::kSemiColon);
+  if (auto *array = ctx_.getAsConstantArrayType(expr->getType())) {
+    auto size = array->getSize().getZExtValue();
+    for (uint64_t i = 0; i < size; ++i) {
+      clang::Expr *init =
+          i < expr->getNumInits() ? expr->getInit(i) : expr->getArrayFiller();
+      if (!init) {
+        continue;
+      }
+      ConvertPlacementInit(init, std::format("__d.offset({})", i));
+      StrCat(token::kSemiColon);
+    }
+    return;
+  }
+  auto *record = expr->getType()->getAsCXXRecordDecl();
+  assert(record);
+  unsigned i = 0;
+  for (auto *field : record->fields()) {
+    ConvertPlacementFieldInit(
+        "__d", field, i < expr->getNumInits() ? expr->getInit(i) : nullptr);
+    ++i;
+  }
+}
+
+void Converter::ConvertPlacementInit(clang::Expr *init,
+                                     const std::string &dest) {
+  init = IgnorePlacementWrappers(init);
+  if (auto *default_init = clang::dyn_cast<clang::CXXDefaultInitExpr>(init)) {
+    ConvertPlacementInit(default_init->getExpr(), dest);
+    return;
+  }
+  if (auto *construct = clang::dyn_cast<clang::CXXConstructExpr>(init);
+      construct && IsPlacementConstructor(construct->getConstructor())) {
+    ConvertPlacementConstruct(construct, dest);
+    return;
+  }
+  if (auto *list = clang::dyn_cast<clang::InitListExpr>(init)) {
+    ConvertPlacementInitList(list, dest);
+    return;
+  }
+  if (auto *loop = clang::dyn_cast<clang::ArrayInitLoopExpr>(init)) {
+    PushBrace brace(*this);
+    StrCat(keyword::kLet, "__d", token::kAssign, dest, token::kSemiColon);
+    array_init_outer_depth_[loop->getCommonExpr()] = array_init_depth_++;
+    StrCat(std::format("for {} in 0..{}_usize", ArrayInitIndexName(),
+                       GetArraySize(loop->getType())));
+    {
+      PushBrace body(*this);
+      ConvertPlacementInit(
+          loop->getSubExpr(),
+          std::format("__d.offset({} as isize)", ArrayInitIndexName()));
+      StrCat(token::kSemiColon);
+    }
+    --array_init_depth_;
+    return;
+  }
+  if (auto *cond = clang::dyn_cast<clang::ConditionalOperator>(init)) {
+    PushBrace brace(*this);
+    StrCat(keyword::kLet, "__d", token::kAssign, dest, token::kSemiColon);
+    StrCat("if", ConvertRValue(cond->getCond()));
+    {
+      PushBrace then_brace(*this);
+      ConvertPlacementInit(cond->getTrueExpr(), "__d.clone()");
+    }
+    StrCat("else");
+    PushBrace else_brace(*this);
+    ConvertPlacementInit(cond->getFalseExpr(), "__d.clone()");
+    return;
+  }
+  if (clang::isa<clang::ImplicitValueInitExpr>(init) ||
+      clang::isa<clang::CXXScalarValueInitExpr>(init)) {
+    ConvertPlacementZeroInit(dest, init->getType());
+    return;
+  }
+  if (auto *call = clang::dyn_cast<clang::CallExpr>(init);
+      call && call->isPRValue() && IsPlacementConstructed(call->getType()) &&
+      !Mapper::Contains(ctx_, call)) {
+    ScopedValue placement_call(placement_call_, std::pair(call, dest));
+    PushExprKind push(*this, ExprKind::Void);
+    Convert(call);
+    return;
+  }
+  StrCat(std::format("{}.write({})", dest, ConvertPlacementFallback(init)));
+}
+
+void Converter::ConvertPlacementFieldInit(const std::string &base,
+                                          const clang::FieldDecl *field,
+                                          clang::Expr *init) {
+  auto type = field->getType();
+  if (IsPlacementConstructed(type)) {
+    if (init) {
+      ConvertPlacementInit(init, GetPlacementFieldPtr(base, field));
+      StrCat(token::kSemiColon);
+    }
+    return;
+  }
+  if (!init &&
+      (type->isScalarType() || ctx_.getBaseElementType(type)->isScalarType())) {
+    return;
+  }
+  ConvertPlacementFieldWrite(base, field, init);
+  StrCat(token::kSemiColon);
+}
+
+void Converter::ConvertPlacementMemberInits(clang::CXXConstructorDecl *decl) {
+  auto *definition =
+      clang::cast<clang::CXXConstructorDecl>(decl->getDefinition());
+  if (definition->isDelegatingConstructor()) {
+    ConvertPlacementInit((*definition->init_begin())->getInit(),
+                         "this.clone()");
+    StrCat(token::kSemiColon);
+    return;
+  }
+  for (const auto *field : decl->getParent()->fields()) {
+    const clang::CXXCtorInitializer *ctor_initializer = nullptr;
+    for (const auto *init : definition->inits()) {
+      if (init->isMemberInitializer() && init->getMember() == field) {
+        ctor_initializer = init;
+        break;
+      }
+    }
+    ConvertPlacementFieldInit("this", field,
+                              ctor_initializer
+                                  ? ctor_initializer->getInit()
+                                  : field->getInClassInitializer());
+  }
+}
+
+bool Converter::IsPlacementInitialized(const clang::VarDecl *decl) const {
+  bool is_global = IsGlobalVar(decl);
+  return (is_global ? LazyStaticInit() : decl->isLocalVarDecl()) &&
+         decl->hasInit() && !hoisted_decls_.contains(decl) &&
+         !clang::isa<clang::DecompositionDecl>(decl) &&
+         !decl->getType()->isReferenceType() &&
+         IsPlacementConstructed(decl->getType());
+}
+
+std::string Converter::GetPlacementVarPtr(const clang::VarDecl *decl) {
+  if (IsGlobalVar(decl)) {
+    return decl->getType()->isArrayType()
+               ? std::format("__p.cast::<{}>()",
+                             ToString(ctx_.getBaseElementType(decl->getType())))
+               : "__p";
+  }
+  auto name = GetNamedDeclAsString(decl);
+  return decl->getType()->isArrayType()
+             ? std::format("(&raw mut {}).cast::<{}>()", name,
+                           ToString(ctx_.getBaseElementType(decl->getType())))
+             : std::format("&raw mut {}", name);
+}
+
+bool Converter::IsPlacementParam(const clang::ValueDecl *decl) const {
+  return clang::isa<clang::ParmVarDecl>(decl) &&
+         !decl->getType()->isReferenceType() &&
+         IsPlacementConstructed(decl->getType());
+}
+
+bool Converter::HasPlacementResult(const clang::FunctionDecl *fn) const {
+  return !clang::isa<clang::CXXConstructorDecl>(fn) &&
+         IsPlacementConstructed(fn->getReturnType());
+}
+
+bool Converter::InPlacementConstructor() const {
+  auto *ctor =
+      clang::dyn_cast_or_null<clang::CXXConstructorDecl>(curr_function_);
+  return ctor && IsPlacementConstructor(ctor);
+}
+
+void Converter::ConvertPlacementResultParam(const clang::FunctionDecl *decl) {
+  if (HasPlacementResult(decl)) {
+    StrCat(std::format("__ret: *mut {},", ToString(decl->getReturnType())));
+  }
+}
+
+std::string Converter::CreateUninitStorage(clang::QualType) {
+  return "::std::mem::MaybeUninit::uninit().assume_init()";
+}
+
+std::string Converter::ConvertPlacementValue(clang::Expr *init) {
+  Buffer buf(*this);
+  {
+    PushBrace brace(*this);
+    StrCat(keyword::kLet, keyword::kMut, "__v", token::kColon,
+           ToString(init->getType()), token::kAssign,
+           CreateUninitStorage(init->getType()), token::kSemiColon);
+    ConvertPlacementInit(
+        init,
+        init->getType()->isArrayType()
+            ? std::format("(&raw mut __v).cast::<{}>()",
+                          ToString(ctx_.getBaseElementType(init->getType())))
+            : "&raw mut __v");
+    StrCat(token::kSemiColon, "__v");
+  }
+  return std::move(buf).str();
+}
+
+void Converter::ConvertPlacementPRValue(clang::Expr *init) {
+  if (isAddrOf()) {
+    StrCat(std::format("&mut *{}", ConvertPlacementTemporary(init)));
+  } else {
+    StrCat(ConvertPlacementValue(init));
+  }
+  MarkFresh();
+}
+
+std::string Converter::ConvertPlacementTemporary(clang::Expr *init) {
+  auto type = ToString(init->getType().getUnqualifiedType());
+  Buffer buf(*this);
+  StrCat(std::format("(|__p: *mut {}|", type));
+  {
+    PushBrace brace(*this);
+    ConvertPlacementInit(init, "__p");
+    StrCat(token::kSemiColon, "__p");
+  }
+  StrCat(std::format(
+      ")((&mut ::std::mem::MaybeUninit::<{}>::uninit()).as_mut_ptr())", type));
+  return std::move(buf).str();
+}
+
+void Converter::ConvertPlacementArg(clang::QualType param_type,
+                                    clang::Expr *arg) {
+  ConvertParamTy(param_type, arg);
+}
+
+std::string Converter::ConvertPlacementFallback(clang::Expr *init) {
+  return ConvertFreshRValue(init);
+}
+
+std::string Converter::GetPlacementFieldPtr(const std::string &base,
+                                            const clang::FieldDecl *field) {
+  auto ptr =
+      std::format("(&raw mut (*{}).{})", base, GetNamedDeclAsString(field));
+  if (field->getType()->isArrayType()) {
+    ptr += std::format(".cast::<{}>()",
+                       ToString(ctx_.getBaseElementType(field->getType())));
+  }
+  return ptr;
+}
+
+void Converter::ConvertPlacementFieldWrite(const std::string &base,
+                                           const clang::FieldDecl *field,
+                                           clang::Expr *init) {
+  StrCat(std::format("(&raw mut (*{}).{}).write(", base,
+                     GetNamedDeclAsString(field)));
+  ConvertFieldInit(field, init);
+  StrCat(")");
+}
+
 void Converter::ConvertLateInstantiatedMethods(clang::CXXRecordDecl *decl) {
   ConvertCXXMethodDecls(
       decl, std::format("{} {}", keyword::kImpl, GetRecordName(decl)),
@@ -999,7 +1332,10 @@ void Converter::ConvertLateInstantiatedMethods(clang::CXXRecordDecl *decl) {
 void Converter::ConvertCXXRecordMethods(clang::CXXRecordDecl *decl) {
   ConvertCXXMethodDecls(
       decl, std::format("{} {}", keyword::kImpl, GetRecordName(decl)),
-      IsEmittableMethod);
+      [](auto *method) {
+        return IsEmittableMethod(method) ||
+               IsImplicitPlacementConstructor(method);
+      });
 
   if (GetUserDefinedDestructor(decl) || !HasFieldsNeedingDestruction(decl)) {
     return;
@@ -1057,7 +1393,7 @@ void Converter::EmitConversionAttrs(clang::CXXRecordDecl *decl) {
       return;
     }
     const char *kind =
-        !type->isReferenceType()                                   ? "value"
+        !type->isReferenceType() ? GetConversionValueKind(type)
         : is_move || type.getNonReferenceType().isConstQualified() ? "ptr"
                                                                    : "mut_ptr";
     StrCat(std::format("#[{}({}, {}, {})]",
@@ -1146,6 +1482,7 @@ bool Converter::VisitCXXRecordDecl(clang::CXXRecordDecl *decl) {
 
   if (!decl->isUnion()) {
     DefineImplicitMembers(*sema_, decl);
+    DefinePlacementConstructors(*sema_, decl);
   }
   EmitRustStructOrUnion(decl);
   return false;
@@ -1175,7 +1512,8 @@ bool Converter::VisitCXXMethodDecl(clang::CXXMethodDecl *decl) {
 }
 
 bool Converter::ShouldConvertMethod(const clang::CXXMethodDecl *decl) {
-  return IsConvertibleCXXMethodDecl(decl);
+  return IsConvertibleCXXMethodDecl(decl) ||
+         IsImplicitPlacementConstructor(decl);
 }
 
 bool Converter::ConvertOutOfLineMethod(clang::CXXMethodDecl *decl) {
@@ -1271,12 +1609,28 @@ std::string Converter::GetCtorName(clang::CXXConstructorDecl *decl) {
 
 bool Converter::VisitCXXConstructorDecl(clang::CXXConstructorDecl *decl) {
   if (decl->isOutOfLine() ||
-      (decl->isImplicit() && !IsConvertibleImplicitMember(decl))) {
+      (decl->isImplicit() && !IsConvertibleImplicitMember(decl) &&
+       !IsImplicitPlacementConstructor(decl))) {
     return false;
   }
   ScopedValue push_fn(curr_function_, decl);
 
   if (decl->isCopyOrMoveConstructor() && !decl->hasBody()) {
+    return false;
+  }
+
+  if (IsPlacementConstructor(decl)) {
+    StrCat(AccessSpecifierAsString(decl->getAccess()), keyword_unsafe_,
+           keyword::kFn, GetCtorName(decl));
+    {
+      PushParen paren(*this);
+      StrCat(std::format("this: *mut {},", GetRecordName(decl->getParent())));
+      ConvertFunctionParameters(decl);
+    }
+    PushBrace brace(*this);
+    EmitFunctionPreamble(decl);
+    ConvertPlacementMemberInits(decl);
+    ConvertBodyStmts(decl->getBody());
     return false;
   }
 
@@ -1479,6 +1833,14 @@ bool Converter::VisitDeclStmt(clang::DeclStmt *stmt) {
 bool Converter::VisitReturnStmt(clang::ReturnStmt *stmt) {
   ScopedValue return_value(return_value_, stmt->getRetValue());
   auto return_type = curr_function_->getReturnType();
+  if (stmt->getRetValue() && HasPlacementResult(curr_function_)) {
+    {
+      HoistMaterializedTempBindings hoist_temps(*this, /*as_block=*/true);
+      ConvertPlacementInit(stmt->getRetValue(), "__ret.clone()");
+    }
+    StrCat(token::kSemiColon, keyword::kReturn);
+    return false;
+  }
   if (!return_type->isVoidType()) {
     HoistMaterializedTempBindings hoist_temps(*this);
     StrCat(keyword::kReturn);
@@ -1974,6 +2336,11 @@ void Converter::ConvertVAArgCall(clang::CallExpr *expr) {
 }
 
 bool Converter::VisitCallExpr(clang::CallExpr *expr) {
+  if (expr->isPRValue() && IsPlacementConstructed(expr->getType()) &&
+      placement_call_.first != expr && !Mapper::Contains(ctx_, expr)) {
+    ConvertPlacementPRValue(expr);
+    return false;
+  }
   if (ConvertSpecialCall(expr)) {
     return false;
   }
@@ -2248,6 +2615,10 @@ Converter::CallInfo Converter::CollectCallInfo(clang::CallExpr *expr) {
 }
 
 void Converter::ConvertParamTy(clang::QualType param_type, clang::Expr *expr) {
+  if (!param_type->isReferenceType() && IsPlacementConstructed(param_type)) {
+    StrCat(ConvertPlacementTemporary(expr));
+    return;
+  }
   {
     PushExprKind push(*this, ExprKind::AddrOf, param_type->isReferenceType());
     ConvertVarInit(param_type, expr);
@@ -2278,11 +2649,56 @@ void Converter::ConvertParamTyConstCast(clang::QualType param_type,
   }
 }
 
+void Converter::ConvertPlacementZeroBytes(const std::string &dest) {
+  StrCat(std::format("{}.write_bytes(0, 1)", dest));
+}
+
+void Converter::ConvertPlacementZeroInit(const std::string &dest,
+                                         clang::QualType type) {
+  std::vector<const clang::FieldDecl *> member_pointers;
+  if (auto *record = type->getAsCXXRecordDecl()) {
+    for (const auto *field : record->fields()) {
+      if (field->getType()->isMemberPointerType()) {
+        member_pointers.push_back(field);
+      }
+    }
+  }
+  if (member_pointers.empty()) {
+    ConvertPlacementZeroBytes(dest);
+    return;
+  }
+  PushBrace brace(*this);
+  StrCat(keyword::kLet, "__z", token::kAssign, dest, ".clone()",
+         token::kSemiColon);
+  ConvertPlacementZeroBytes("__z");
+  StrCat(token::kSemiColon);
+  for (const auto *field : member_pointers) {
+    ConvertPlacementFieldWrite("__z", field, nullptr);
+    StrCat(token::kSemiColon);
+  }
+}
+
+void Converter::ConvertHoistedPlacementArg(const std::string &name,
+                                           clang::QualType param_type,
+                                           clang::Expr *arg) {
+  auto storage = NewTempName();
+  StrCat(std::format("let mut {}: {} = {};", storage,
+                     ToString(param_type.getUnqualifiedType()),
+                     CreateUninitStorage(param_type)));
+  ConvertPlacementInit(arg, std::format("&raw mut {}", storage));
+  StrCat(std::format("; let {} = &raw mut {};", name, storage));
+}
+
 void Converter::EmitHoistedArgs(CallInfo &info) {
   using Kind = CallArg::Kind;
   for (auto &ca : info.args) {
     switch (ca.kind) {
     case Kind::Hoisted:
+      if (!ca.param_type->isReferenceType() &&
+          IsPlacementConstructed(ca.param_type)) {
+        ConvertHoistedPlacementArg(ca.param_name, ca.param_type, ca.expr);
+        break;
+      }
       StrCat(
           std::format("let {}: {} =", ca.param_name, ToString(ca.param_type)));
       ConvertParamTy(ca.param_type, ca.expr);
@@ -2313,6 +2729,9 @@ void Converter::EmitArgList(const CallInfo &info) {
 
   if (!ufcs_receiver_.empty()) {
     StrCat(std::exchange(ufcs_receiver_, std::string()), token::kComma);
+  }
+  if (placement_call_.first == info.expr) {
+    StrCat(placement_call_.second, token::kComma);
   }
 
   for (unsigned i = 0; i < info.args.size(); i++) {
@@ -3459,8 +3878,7 @@ std::string Converter::ConvertDeclRef(clang::Expr *expr,
 
   if (auto *var = clang::dyn_cast<clang::VarDecl>(decl);
       var && IsGlobalVar(var) && LazyStaticInit()) {
-    return std::format("(*std::cell::LazyCell::force_mut(&mut *&raw mut {}))",
-                       GetNamedDeclAsString(decl));
+    return std::format("(*(*&raw const {}).get())", GetNamedDeclAsString(decl));
   }
 
   if (auto it = range_iterator_names_.find(decl);
@@ -3504,6 +3922,9 @@ bool Converter::VisitDeclRefExpr(clang::DeclRefExpr *expr) {
 void Converter::ConvertDeclRefValue(clang::Expr *expr, clang::ValueDecl *decl) {
   auto str = ConvertDeclRef(expr, decl);
   auto type = GetDeclRefType(curr_function_, expr, decl);
+  if (IsPlacementParam(decl)) {
+    type = ctx_.getLValueReferenceType(type);
+  }
 
   if (type->getAs<clang::ReferenceType>() && !isAddrOf()) {
     EmitDeref(std::move(str), type.getNonReferenceType());
@@ -3736,7 +4157,15 @@ void Converter::SetUFCSReceiver(clang::Expr *base, bool is_arrow,
                                 const clang::CXXMethodDecl *method) {
   if (clang::isa<clang::CXXThisExpr>(base->IgnoreParenImpCasts()) &&
       !AsLambdaOperatorCall(curr_function_)) {
-    ufcs_receiver_ = InConstructor() ? "&mut this" : keyword::kSelfValue;
+    ufcs_receiver_ = InPlacementConstructor() ? "&mut *this"
+                     : InConstructor()        ? "&mut this"
+                                              : keyword::kSelfValue;
+    return;
+  }
+  if (auto *init = IgnorePlacementWrappers(base);
+      !is_arrow && init->isPRValue() &&
+      IsPlacementConstructed(init->getType())) {
+    ufcs_receiver_ = std::format("&mut *{}", ConvertPlacementTemporary(init));
     return;
   }
   Buffer buf(*this);
@@ -3789,7 +4218,9 @@ void Converter::ConvertMemberExpr(clang::MemberExpr *expr) {
   bool bound_object = retain_bound_temporaries_ && isAddrOf();
   PushExprKind push(*this, isLValue() ? ExprKind::LValue : ExprKind::RValue);
   if (base_is_this) {
-    StrCat(InConstructor() ? "this" : keyword::kSelfValue);
+    StrCat(InPlacementConstructor() ? "(*this)"
+           : InConstructor()        ? "this"
+                                    : keyword::kSelfValue);
   } else if (expr->isArrow()) {
     ConvertArrow(base);
   } else if (bound_object) {
@@ -3837,7 +4268,9 @@ bool Converter::VisitCXXThisExpr(clang::CXXThisExpr *expr) {
                   : std::format("(&raw mut {})", name));
     return false;
   }
-  if (InConstructor()) {
+  if (InPlacementConstructor()) {
+    StrCat("this");
+  } else if (InConstructor()) {
     StrCat("&raw mut this");
   } else {
     PushParen paren(*this);
@@ -4104,6 +4537,16 @@ bool Converter::VisitCXXNewExpr(clang::CXXNewExpr *expr) {
     if (!curr_init_type_.empty() && curr_init_type_.back()->isPointerType()) {
       StrCat(".as_mut_ptr()");
     }
+  } else if (IsPlacementConstructed(expr->getAllocatedType())) {
+    PushBrace brace(*this);
+    StrCat(std::format("let __p = Box::into_raw(Box::<{0}>::new_uninit()) as "
+                       "*mut {0};",
+                       ToString(expr->getAllocatedType())));
+    if (expr->getInitializer()) {
+      ConvertPlacementInit(expr->getInitializer(), "__p");
+      StrCat(token::kSemiColon);
+    }
+    StrCat("__p");
   } else {
     auto initializer_as_string =
         expr->getInitializer() ? ToString(expr->getInitializer())
@@ -4200,6 +4643,10 @@ bool Converter::VisitCXXConstructExpr(clang::CXXConstructExpr *expr) {
   }
 
   auto *ctor = expr->getConstructor();
+  if (IsPlacementConstructor(ctor)) {
+    ConvertPlacementPRValue(expr);
+    return false;
+  }
   bool trivial_move = ctor->isMoveConstructor() && ctor->isTrivial();
   if (auto str = trivial_move ? std::string()
                               : GetMappedAsString(expr, expr->getArgs(),
@@ -4400,6 +4847,7 @@ void Converter::ConvertLambdaCapture(const clang::FieldDecl *field,
 void Converter::ConvertLambdaClosure(const clang::CXXRecordDecl *decl,
                                      clang::CXXMethodDecl *call_operator) {
   StrCat('|');
+  ConvertPlacementResultParam(call_operator);
   ConvertParamList(call_operator->parameters(), call_operator->isVariadic());
   StrCat('|');
   ConvertFunctionReturnType(call_operator);
@@ -4757,6 +5205,16 @@ std::string Converter::GetUnsafeTypeAsString(clang::QualType qual_type) const {
 }
 
 void Converter::ConvertVarInit(clang::QualType qual_type, clang::Expr *expr) {
+  if (initialized_var_ && initialized_var_->getInit() == expr &&
+      IsPlacementInitialized(initialized_var_)) {
+    auto *var = std::exchange(initialized_var_, nullptr);
+    if (!IsGlobalVar(var)) {
+      StrCat(CreateUninitStorage(qual_type), token::kSemiColon);
+    }
+    ConvertPlacementInit(expr, GetPlacementVarPtr(var));
+    initialized_var_ = var;
+    return;
+  }
   if (qual_type->isFunctionReferenceType()) {
     PushExprKind push(*this, ExprKind::AddrOf);
     ScopedPush init_type(curr_init_type_, qual_type);
@@ -4920,6 +5378,7 @@ void Converter::ConvertAssignment(clang::Expr *lhs, clang::Expr *rhs,
 }
 
 void Converter::ConvertFunctionParameters(clang::FunctionDecl *decl) {
+  ConvertPlacementResultParam(decl);
   ConvertParamList(DefinitionParameters(decl), decl->isVariadic());
 }
 
@@ -4927,7 +5386,12 @@ void Converter::ConvertParamList(llvm::ArrayRef<clang::ParmVarDecl *> params,
                                  bool is_variadic) {
   ScopedValue in_formals(in_function_formals_, true);
   for (auto *param : params) {
-    ConvertVarDeclSkipInit(param);
+    if (IsPlacementParam(param)) {
+      StrCat(std::format("{}: *mut {}", GetNamedDeclAsString(param),
+                         ToString(param->getType())));
+    } else {
+      ConvertVarDeclSkipInit(param);
+    }
     StrCat(token::kComma);
   }
   if (is_variadic) {
@@ -4937,7 +5401,7 @@ void Converter::ConvertParamList(llvm::ArrayRef<clang::ParmVarDecl *> params,
 
 void Converter::ConvertFunctionReturnType(clang::FunctionDecl *decl) {
   auto return_type = decl->getReturnType();
-  if (!return_type->isVoidType()) {
+  if (!return_type->isVoidType() && !HasPlacementResult(decl)) {
     StrCat(token::kArrow);
     Convert(return_type);
   }
@@ -5066,15 +5530,30 @@ std::string Converter::GetComparisonCall(const clang::FunctionDecl *op,
                                          const clang::CXXRecordDecl *decl,
                                          std::string_view lhs,
                                          std::string_view rhs) {
+  auto arg = [&](unsigned i, std::string_view value) {
+    auto *param = op->getParamDecl(i);
+    return ConvertComparisonArgStorage(param,
+                                       GetComparisonArg(param, decl, value));
+  };
+  std::string result = HasPlacementResult(op) ? "&raw mut __cmp," : "";
   if (const auto *method = clang::dyn_cast<clang::CXXMethodDecl>(op)) {
-    return std::format("{}::{}({}, {})", GetUFCSName(method),
+    return std::format("{}::{}({}, {}{})", GetUFCSName(method),
                        GetMethodName(method),
-                       GetComparisonReceiver(method, lhs),
-                       GetComparisonArg(op->getParamDecl(0), decl, rhs));
+                       GetComparisonReceiver(method, lhs), result, arg(0, rhs));
   }
-  return std::format("{}({}, {})", GetNamedDeclAsString(op->getCanonicalDecl()),
-                     GetComparisonArg(op->getParamDecl(0), decl, lhs),
-                     GetComparisonArg(op->getParamDecl(1), decl, rhs));
+  return std::format("{}({}{}, {})",
+                     GetNamedDeclAsString(op->getCanonicalDecl()), result,
+                     arg(0, lhs), arg(1, rhs));
+}
+
+std::string
+Converter::ConvertComparisonArgStorage(const clang::ParmVarDecl *param,
+                                       std::string value) {
+  if (!IsPlacementParam(param)) {
+    return value;
+  }
+  return std::format("(&mut {}) as *mut {}", value,
+                     ToString(param->getType().getUnqualifiedType()));
 }
 
 std::string Converter::GetComparisonBool(const clang::FunctionDecl *op,
@@ -5095,10 +5574,17 @@ std::string Converter::GetComparisonBool(const clang::FunctionDecl *op,
   for (const auto *found : record->getVisibleConversionFunctions()) {
     const auto *conversion = clang::dyn_cast<clang::CXXConversionDecl>(found);
     if (conversion && conversion->getConversionType()->isBooleanType()) {
-      return std::format(
-          "{{ let __cmp = {}; {}::{}({}) }}", call, GetUFCSName(conversion),
-          GetMethodName(conversion),
-          GetComparisonResultReceiver(conversion, returns_ref, "__cmp"));
+      auto receiver =
+          GetComparisonResultReceiver(conversion, returns_ref, "__cmp");
+      if (HasPlacementResult(op)) {
+        return std::format("{{ let mut __cmp: {} = {}; {}; {}::{}({}) }}",
+                           ToString(ret), CreateUninitStorage(ret), call,
+                           GetUFCSName(conversion), GetMethodName(conversion),
+                           receiver);
+      }
+      return std::format("{{ let __cmp = {}; {}::{}({}) }}", call,
+                         GetUFCSName(conversion), GetMethodName(conversion),
+                         receiver);
     }
   }
   assert(0 && "comparison operator result has no conversion to bool");
@@ -5235,11 +5721,19 @@ void Converter::AddCloneTrait(const clang::RecordDecl *decl) {
   StrCat("fn clone(&self) -> Self");
   PushBrace fn_brace(*this);
   auto source = ctor->getParamDecl(0)->getType().getNonReferenceType();
-  StrCat(std::format("unsafe {{ {}::{}(self as *const {}{}) }}", record_name,
-                     GetCtorName(ctor), record_name,
-                     source.isConstQualified()
-                         ? ""
-                         : std::format(" as *mut {}", record_name)));
+  auto src = std::format(
+      "self as *const {}{}", record_name,
+      source.isConstQualified() ? "" : std::format(" as *mut {}", record_name));
+  if (IsPlacementConstructor(ctor)) {
+    StrCat(std::format("unsafe {{ let mut __v: {0} = {1}; {0}::{2}(&raw mut "
+                       "__v, {3}); __v }}",
+                       record_name,
+                       CreateUninitStorage(ctx_.getCanonicalTagType(decl)),
+                       GetCtorName(ctor), src));
+    return;
+  }
+  StrCat(std::format("unsafe {{ {}::{}({}) }}", record_name, GetCtorName(ctor),
+                     src));
 }
 
 bool Converter::RecordImplementsClone(const clang::RecordDecl *decl) {
@@ -6170,8 +6664,7 @@ std::string Converter::ConvertGenericCall(
     assert(call_args.size() == 1 && "move_ctor takes one argument");
     auto *record = type->getAsCXXRecordDecl();
     if (record && HasMoveFromConstructor(record)) {
-      return std::format("{}::move_from({})", GetUnboxedTypeAsString(type),
-                         call_args[0]);
+      return ConvertMoveFromCall(type, call_args[0]);
     }
     if (record && !IsUserDefinedDecl(record) &&
         !record->hasTrivialMoveConstructor()) {
@@ -6235,6 +6728,16 @@ std::string Converter::ConvertConversion(clang::QualType to,
   return std::format("<{} as {}<{}>>::{}({})", GetUnboxedTypeAsString(to),
                      GetConversionTraitName(), GetUnboxedTypeAsString(from),
                      is_move ? "cpp_from_move" : "cpp_from", ptr);
+}
+
+std::string Converter::ConvertMoveFromCall(clang::QualType type,
+                                           const std::string &src) {
+  if (IsPlacementConstructed(type)) {
+    return std::format("<{} as {}>::move_ctor({})",
+                       GetUnboxedTypeAsString(type), GetMoveCtorTraitName(),
+                       src);
+  }
+  return std::format("{}::move_from({})", GetUnboxedTypeAsString(type), src);
 }
 
 const char *Converter::GetConversionTraitName() const {

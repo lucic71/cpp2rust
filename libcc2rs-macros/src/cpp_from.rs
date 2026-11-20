@@ -26,6 +26,7 @@ use syn::{DeriveInput, Ident, Token, Type, parse_macro_input};
 #[derive(Clone, Copy)]
 enum Kind {
     Value,
+    Storage,
     Ptr,
     MutPtr,
 }
@@ -47,6 +48,7 @@ impl Parse for Conversion {
             let spelled: Ident = input.parse()?;
             kind = match spelled.to_string().as_str() {
                 "value" => Kind::Value,
+                "storage" => Kind::Storage,
                 "ptr" => Kind::Ptr,
                 "mut_ptr" => Kind::MutPtr,
                 _ => {
@@ -77,10 +79,36 @@ fn ctor_call(
     let arg = match (conversion.kind, is_unsafe) {
         (Kind::Value, true) => quote!((*src).clone()),
         (Kind::Value, false) => quote!(src.read()),
+        (Kind::Storage, true) => quote!((*src).clone()),
+        (Kind::Storage, false) => {
+            quote!(::std::rc::Rc::new(::std::cell::RefCell::new(src.read())))
+        }
         (Kind::MutPtr, true) if !is_move => quote!(src.cast_mut()),
         (Kind::Ptr | Kind::MutPtr, _) => quote!(src),
     };
-    quote!(#name::#method(#arg))
+    if is_unsafe {
+        if matches!(conversion.kind, Kind::Storage) {
+            return quote! {{
+                let mut __v: #name = ::std::mem::MaybeUninit::uninit().assume_init();
+                let mut __a = #arg;
+                #name::#method(&raw mut __v, &raw mut __a);
+                __v
+            }};
+        }
+        return quote! {{
+            let mut __v: #name = ::std::mem::MaybeUninit::uninit().assume_init();
+            #name::#method(&raw mut __v, #arg);
+            __v
+        }};
+    }
+    quote! {{
+        use ::libcc2rs::AsPointer as _;
+        let __v = ::std::rc::Rc::new(::std::cell::RefCell::new(
+            <#name as ::libcc2rs::Uninit>::uninit(),
+        ));
+        #name::#method(__v.as_pointer(), #arg);
+        ::std::rc::Rc::try_unwrap(__v).ok().unwrap().into_inner()
+    }}
 }
 
 fn method(is_unsafe: bool, signature: TokenStream2, body: TokenStream2) -> TokenStream2 {

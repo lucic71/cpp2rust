@@ -158,6 +158,16 @@ bool IsRValueConvertingConstructor(const clang::CXXConstructorDecl *ctor);
 
 bool IsPassThroughConstructor(const clang::CXXConstructorDecl *ctor);
 
+bool IsPlacementConstructed(clang::QualType type);
+
+clang::Expr *IgnorePlacementWrappers(clang::Expr *expr);
+
+bool IsPlacementConstructor(const clang::CXXConstructorDecl *ctor);
+
+bool IsImplicitPlacementConstructor(const clang::CXXMethodDecl *method);
+
+void DefinePlacementConstructors(clang::Sema &sema, clang::CXXRecordDecl *decl);
+
 bool MethodNeedsMutableReceiver(const clang::CXXMethodDecl *method);
 
 bool IsConvertibleCXXRecordDecl(const clang::CXXRecordDecl *decl);

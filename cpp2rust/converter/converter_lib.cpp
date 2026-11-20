@@ -902,6 +902,94 @@ bool IsPassThroughConstructor(const clang::CXXConstructorDecl *ctor) {
           IsRValueConvertingConstructor(ctor));
 }
 
+static bool IsPlacementRecord(const clang::CXXRecordDecl *decl) {
+  if (!decl || !decl->hasDefinition()) {
+    return false;
+  }
+  decl = decl->getDefinition();
+  return !decl->isLambda() && !decl->isUnion() && !decl->isDependentContext() &&
+         IsUserDefinedDecl(decl);
+}
+
+clang::Expr *IgnorePlacementWrappers(clang::Expr *expr) {
+  while (true) {
+    expr = expr->IgnoreParens();
+    if (auto *cleanups = clang::dyn_cast<clang::ExprWithCleanups>(expr)) {
+      expr = cleanups->getSubExpr();
+    } else if (auto *bind =
+                   clang::dyn_cast<clang::CXXBindTemporaryExpr>(expr)) {
+      expr = bind->getSubExpr();
+    } else if (auto *temp =
+                   clang::dyn_cast<clang::MaterializeTemporaryExpr>(expr)) {
+      expr = temp->getSubExpr();
+    } else if (auto *cast = clang::dyn_cast<clang::CastExpr>(expr);
+               cast &&
+               (cast->getCastKind() == clang::CK_NoOp ||
+                cast->getCastKind() == clang::CK_ConstructorConversion)) {
+      expr = cast->getSubExpr();
+    } else if (auto *construct = clang::dyn_cast<clang::CXXConstructExpr>(expr);
+               construct && construct->isElidable()) {
+      expr = construct->getArg(0);
+    } else {
+      return expr;
+    }
+  }
+}
+
+bool IsPlacementConstructed(clang::QualType type) {
+  if (type.isNull() || type->isReferenceType()) {
+    return false;
+  }
+  return IsPlacementRecord(
+      type->getBaseElementTypeUnsafe()->getAsCXXRecordDecl());
+}
+
+bool IsPlacementConstructor(const clang::CXXConstructorDecl *ctor) {
+  return !ctor->isDeleted() && IsPlacementRecord(ctor->getParent());
+}
+
+bool IsImplicitPlacementConstructor(const clang::CXXMethodDecl *method) {
+  auto *ctor = clang::dyn_cast<clang::CXXConstructorDecl>(method);
+  return ctor && !ctor->isUserProvided() && ctor->hasBody() &&
+         IsPlacementConstructor(ctor);
+}
+
+void DefinePlacementConstructors(clang::Sema &sema,
+                                 clang::CXXRecordDecl *decl) {
+  if (!IsPlacementRecord(decl)) {
+    return;
+  }
+  clang::Scope tu_scope(nullptr, clang::Scope::DeclScope,
+                        sema.getDiagnostics());
+  tu_scope.setEntity(sema.Context.getTranslationUnitDecl());
+  auto *saved_tu_scope = std::exchange(sema.TUScope, &tu_scope);
+  sema.ForceDeclarationOfImplicitMembers(decl);
+  for (auto *ctor : decl->ctors()) {
+    if (ctor->isUserProvided() || ctor->isDeleted() ||
+        ctor->doesThisDeclarationHaveABody()) {
+      continue;
+    }
+    RuleDecls::Trial trial(sema);
+    clang::DiagnosticErrorTrap errors(sema.getDiagnostics());
+    {
+      clang::Sema::GlobalEagerInstantiationScope instantiations(
+          sema, /*Enabled=*/true, /*AtEndOfTU=*/false);
+      if (ctor->isDefaultConstructor()) {
+        sema.DefineImplicitDefaultConstructor(decl->getLocation(), ctor);
+      } else if (ctor->isCopyConstructor()) {
+        sema.DefineImplicitCopyConstructor(decl->getLocation(), ctor);
+      } else if (ctor->isMoveConstructor()) {
+        sema.DefineImplicitMoveConstructor(decl->getLocation(), ctor);
+      }
+      instantiations.perform();
+    }
+    if (trial.failed() || errors.hasErrorOccurred()) {
+      ctor->setDeletedAsWritten(true);
+    }
+  }
+  sema.TUScope = saved_tu_scope;
+}
+
 bool IsConvertibleCXXRecordDecl(const clang::CXXRecordDecl *decl) {
   return decl->isThisDeclarationADefinition() && !decl->isDependentContext() &&
          !decl->isInvalidDecl();
@@ -1330,7 +1418,8 @@ std::string GetNamedDeclAsString(const clang::NamedDecl *decl) {
         llvm::dyn_cast<clang::FunctionDecl>(pdecl->getDeclContext());
     const auto *ctor = llvm::dyn_cast_or_null<clang::CXXConstructorDecl>(fn);
     if (pdecl->isExplicitObjectParameter() ||
-        (ctor && ctor->isCopyConstructor() && ctor->isDefaulted())) {
+        (ctor && ctor->isCopyConstructor() && ctor->isDefaulted() &&
+         !IsPlacementConstructor(ctor))) {
       name = "self";
     } else {
       name = std::format("_a{}", pdecl->getFunctionScopeIndex());
