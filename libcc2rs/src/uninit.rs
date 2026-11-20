@@ -38,6 +38,7 @@ impl_uninit!(
     isize => 0,
     f32 => 0.0,
     f64 => 0.0,
+    std::cmp::Ordering => std::cmp::Ordering::Equal,
 );
 
 impl<T> Uninit for Option<T> {

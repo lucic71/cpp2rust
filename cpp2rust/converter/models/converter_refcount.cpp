@@ -797,8 +797,8 @@ void ConverterRefCount::EmitRustUnion(clang::RecordDecl *decl) {
 
   auto size = ctx_.getTypeSizeInChars(ctx_.getCanonicalTagType(decl));
   StrCat(std::format(
-      "#[derive(ByteRepr, Clone)] #[byte_size({0})] pub struct {1} {{ "
-      "#[offset(0)] #[byte_size({0})] __bytes: Box<[u8]> }}",
+      "#[derive(ByteRepr, Clone, Uninit)] #[byte_size({0})] pub struct {1} {{ "
+      "#[offset(0)] #[byte_size({0})] #[array_len({0})] __bytes: Box<[u8]> }}",
       size.getQuantity(), name));
 
   StrCat("impl", name);
@@ -845,6 +845,31 @@ bool ConverterRefCount::VisitCXXConstructorDecl(
   return Converter::VisitCXXConstructorDecl(decl);
 }
 
+static std::vector<uint64_t> GetArrayLengths(const clang::ASTContext &ctx,
+                                             clang::QualType type) {
+  std::vector<uint64_t> lengths;
+  while (true) {
+    if (auto *array = ctx.getAsConstantArrayType(type)) {
+      lengths.push_back(array->getSize().getZExtValue());
+      type = array->getElementType();
+      continue;
+    }
+    if (ctx.getAsIncompleteArrayType(type)) {
+      lengths.push_back(0);
+      return lengths;
+    }
+    auto *array =
+        llvm::dyn_cast_or_null<clang::ClassTemplateSpecializationDecl>(
+            type->getAsCXXRecordDecl());
+    if (!IsStdDecl(array, "array")) {
+      return lengths;
+    }
+    auto &args = array->getTemplateArgs();
+    lengths.push_back(args[1].getAsIntegral().getZExtValue());
+    type = args[0].getAsType();
+  }
+}
+
 bool ConverterRefCount::VisitFieldDecl(clang::FieldDecl *decl) {
   // The C offset of the field, which locates it for pointers to it.
   const auto &layout = ctx_.getASTRecordLayout(decl->getParent());
@@ -857,6 +882,13 @@ bool ConverterRefCount::VisitFieldDecl(clang::FieldDecl *decl) {
       !type->isSpecificBuiltinType(clang::BuiltinType::Double)) {
     StrCat(std::format("#[byte_size({})]",
                        ctx_.getTypeSizeInChars(decl->getType()).getQuantity()));
+  }
+  if (auto lengths = GetArrayLengths(ctx_, decl->getType()); !lengths.empty()) {
+    std::string args;
+    for (auto length : lengths) {
+      args += std::format("{}{}", args.empty() ? "" : ", ", length);
+    }
+    StrCat(std::format("#[array_len({})]", args));
   }
   PushConversionKind push(*this, ConversionKind::Pointee);
   return Converter::VisitFieldDecl(decl);
@@ -2276,6 +2308,7 @@ ConverterRefCount::GetStructAttributes(const clang::RecordDecl *decl) {
   attrs.emplace_back("Record");
   // Gives access to the bytes of the struct, at the offsets of its fields.
   attrs.emplace_back("ByteRepr");
+  attrs.emplace_back("Uninit");
 
   if (RecordImplementsClone(decl)) {
     attrs.emplace_back("VaArg");
