@@ -7,6 +7,7 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
 #[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, CppFrom, Default)]
+#[placement]
 #[cpp_from(i32, new, value)]
 #[byte_size(4)]
 pub struct p1_1_parameter_hides_member_in_constructor_HasMemberNamedLikeParameter {
@@ -14,24 +15,31 @@ pub struct p1_1_parameter_hides_member_in_constructor_HasMemberNamedLikeParamete
     pub amount: i32,
 }
 impl p1_1_parameter_hides_member_in_constructor_HasMemberNamedLikeParameter {
-    pub fn new(mut amount: i32) -> Self {
-        let __this: Value<p1_1_parameter_hides_member_in_constructor_HasMemberNamedLikeParameter> =
-            Rc::new(RefCell::new(Self {
-                amount: (amount + 1),
-            }));
-        let this: Ptr<p1_1_parameter_hides_member_in_constructor_HasMemberNamedLikeParameter> =
-            __this.as_pointer();
+    pub fn new(
+        this: Ptr<p1_1_parameter_hides_member_in_constructor_HasMemberNamedLikeParameter>,
+        mut amount: i32,
+    ) {
+        field!(this, amount).write((amount + 1));
         amount += 10;
         assert!((amount == 14));
         assert!((this.with(|__s| __s.amount) == 5));
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+    }
+    pub fn copy_from(
+        this: Ptr<p1_1_parameter_hides_member_in_constructor_HasMemberNamedLikeParameter>,
+        _a0: Ptr<p1_1_parameter_hides_member_in_constructor_HasMemberNamedLikeParameter>,
+    ) {
+        field!(this, amount).write(_a0.with(|__s| __s.amount));
     }
 }
 pub fn test_0() {
     let object: Value<p1_1_parameter_hides_member_in_constructor_HasMemberNamedLikeParameter> =
         Rc::new(RefCell::new(
-            p1_1_parameter_hides_member_in_constructor_HasMemberNamedLikeParameter::new({ 4 }),
+            <p1_1_parameter_hides_member_in_constructor_HasMemberNamedLikeParameter>::uninit(),
         ));
+    p1_1_parameter_hides_member_in_constructor_HasMemberNamedLikeParameter::new(
+        object.as_pointer(),
+        { 4 },
+    );
     assert!(({ ({ (*object.borrow()).amount } == 5) }));
     assert!(
         (({

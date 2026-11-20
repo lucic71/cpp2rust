@@ -8,22 +8,29 @@ use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 #[repr(C)]
 #[derive(Clone, VaArg, FnPtrArg, DestructorUnsafe, Default)]
+#[placement]
 pub struct Tracker {
     pub tag: i32,
 }
 impl Tracker {
-    pub unsafe fn new(mut tag: i32) -> Self {
-        let mut this = Self { tag: tag };
+    pub unsafe fn new(this: *mut Tracker, mut tag: i32) {
+        (&raw mut (*this).tag).write(tag);
         (unsafe { libc::printf(c"construct %d\n".as_ptr() as *const libc::c_char, (tag)) });
-        this
     }
     pub unsafe fn destructor(&mut self) {
         (unsafe { libc::printf(c"destroy %d\n".as_ptr() as *const libc::c_char, (self.tag)) });
     }
+    pub unsafe fn copy_from(this: *mut Tracker, _a0: *const Tracker) {
+        (&raw mut (*this).tag).write((*_a0).tag);
+    }
 }
 pub static mut global_0: std::cell::LazyCell<Tracker> = std::cell::LazyCell::new(|| unsafe {
     {
-        let __static = Tracker::new({ 1 });
+        let __static = {
+            let mut __v: Tracker = ::std::mem::MaybeUninit::uninit().assume_init();
+            Tracker::new(&raw mut __v, { 1 });
+            __v
+        };
         libcc2rs::register_static_destructor(|| {
             (*std::cell::LazyCell::force_mut(&mut *&raw mut global_0)).destructor()
         });
@@ -37,14 +44,19 @@ pub unsafe fn exit_from_nested_call_1() {
             ((*std::cell::LazyCell::force_mut(&mut *&raw mut local_static_2)).tag),
         )
     });
-    let mut automatic: Tracker = Tracker::new({ 3 });
+    let mut automatic: Tracker = ::std::mem::MaybeUninit::uninit().assume_init();
+    Tracker::new(&raw mut automatic, { 3 });
     let _dtor_automatic =
         std::mem::DropGuard::new(&raw mut automatic, |__p| unsafe { (*__p).destructor() });
     libcc2rs::cpp2rust_exit(0);
 }
 static mut local_static_2: std::cell::LazyCell<Tracker> = std::cell::LazyCell::new(|| unsafe {
     {
-        let __static = Tracker::new({ 2 });
+        let __static = {
+            let mut __v: Tracker = ::std::mem::MaybeUninit::uninit().assume_init();
+            Tracker::new(&raw mut __v, { 2 });
+            __v
+        };
         libcc2rs::register_static_destructor(|| {
             (*std::cell::LazyCell::force_mut(&mut *&raw mut local_static_2)).destructor()
         });

@@ -7,6 +7,7 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
 #[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, CppFrom, Default)]
+#[placement]
 #[cpp_from(i32, new, value)]
 #[byte_size(4)]
 pub struct Degrees {
@@ -14,8 +15,11 @@ pub struct Degrees {
     pub value: i32,
 }
 impl Degrees {
-    pub fn new(mut v: i32) -> Self {
-        Self { value: v }
+    pub fn new(this: Ptr<Degrees>, mut v: i32) {
+        field!(this, value).write(v);
+    }
+    pub fn copy_from(this: Ptr<Degrees>, _a0: Ptr<Degrees>) {
+        field!(this, value).write(_a0.with(|__s| __s.value));
     }
 }
 pub fn main() {
@@ -57,8 +61,17 @@ fn main_0() -> i32 {
                 && ({ (*widened.borrow())[2_usize] } == 3_i64)
         })
     );
-    let constructed: Value<Vec<Degrees>> =
-        Rc::new(RefCell::new(vec![Degrees::new({ 0 },); 3_usize]));
+    let constructed: Value<Vec<Degrees>> = Rc::new(RefCell::new(vec![
+        Rc::try_unwrap({
+            let __v: Value<Degrees> = Rc::new(RefCell::new(<Degrees>::uninit()));
+            Degrees::new(__v.as_pointer(), { 0 });
+            __v
+        })
+        .ok()
+        .unwrap()
+        .into_inner();
+        3_usize
+    ]));
     {
         let mut __tmp_2 = { input.decay().offset((3) as isize) };
         let mut __first = input.decay();

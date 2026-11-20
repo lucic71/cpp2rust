@@ -11,24 +11,22 @@ pub static mut moves_1: std::cell::LazyCell<i32> = std::cell::LazyCell::new(|| u
 pub static mut made_2: std::cell::LazyCell<i32> = std::cell::LazyCell::new(|| unsafe { 0 });
 #[repr(C)]
 #[derive(VaArg, FnPtrArg, MoveCtorUnsafe, CppFromUnsafe, Default)]
+#[placement]
 #[cpp_from(i32, new, value)]
 pub struct Key {
     pub k: i32,
 }
 impl Key {
-    pub unsafe fn new(mut k: i32) -> Self {
-        let mut this = Self { k: k };
-        this
+    pub unsafe fn new(this: *mut Key, mut k: i32) {
+        (&raw mut (*this).k).write(k);
     }
-    pub unsafe fn copy_from(o: *const Key) -> Self {
-        let mut this = Self { k: (*o).k };
+    pub unsafe fn copy_from(this: *mut Key, o: *const Key) {
+        (&raw mut (*this).k).write((*o).k);
         (*std::cell::LazyCell::force_mut(&mut *&raw mut copies_0)).prefix_inc();
-        this
     }
-    pub unsafe fn move_from(o: *mut Key) -> Self {
-        let mut this = Self { k: (*o).k };
+    pub unsafe fn move_from(this: *mut Key, o: *mut Key) {
+        (&raw mut (*this).k).write((*o).k);
         (*std::cell::LazyCell::force_mut(&mut *&raw mut moves_1)).prefix_inc();
-        this
     }
     pub unsafe fn operator_lt(&self, o: *const Key) -> bool {
         return ((self.k) < ((*o).k));
@@ -63,12 +61,17 @@ impl std::cmp::PartialEq for Key {
 impl std::cmp::Eq for Key {}
 impl Clone for Key {
     fn clone(&self) -> Self {
-        unsafe { Key::copy_from(self as *const Key) }
+        unsafe {
+            let mut __v: Key = ::std::mem::MaybeUninit::uninit().assume_init();
+            Key::copy_from(&raw mut __v, self as *const Key);
+            __v
+        }
     }
 }
-pub unsafe fn make_key_3(mut k: i32) -> Key {
+pub unsafe fn make_key_3(__ret: *mut Key, mut k: i32) {
     (*std::cell::LazyCell::force_mut(&mut *&raw mut made_2)).prefix_inc();
-    return Key::new({ k });
+    Key::new(__ret.clone(), { k });
+    return;
 }
 pub fn main() {
     unsafe {
@@ -79,9 +82,12 @@ pub fn main() {
 unsafe fn main_0() -> i32 {
     let mut ok: bool = true;
     let mut m: UnsafeMap<Key, (Key, i32)> = UnsafeMap::new();
-    let mut a: Key = Key::new({ 1 });
-    let mut b: Key = Key::new({ 2 });
-    let mut c: Key = Key::new({ 3 });
+    let mut a: Key = ::std::mem::MaybeUninit::uninit().assume_init();
+    Key::new(&raw mut a, { 1 });
+    let mut b: Key = ::std::mem::MaybeUninit::uninit().assume_init();
+    Key::new(&raw mut b, { 2 });
+    let mut c: Key = ::std::mem::MaybeUninit::uninit().assume_init();
+    Key::new(&raw mut c, { 3 });
     (*m.subscript(&a, || 0_i32)) = 10;
     ok = ((ok as i32)
         & (((*std::cell::LazyCell::force_mut(&mut *&raw mut copies_0)) == (1)) as i32))
@@ -100,12 +106,18 @@ unsafe fn main_0() -> i32 {
         & (((*std::cell::LazyCell::force_mut(&mut *&raw mut copies_0)) == (2)) as i32))
         != 0;
     (*m.subscript_move(
-        &mut (unsafe { make_key_3(4) }),
+        &mut *(|__p: *mut Key| {
+            (unsafe { make_key_3(__p, 4) });
+            __p
+        })((&mut ::std::mem::MaybeUninit::<Key>::uninit()).as_mut_ptr()),
         |__k| cpp_move_unsafe!(__k),
         || 0_i32,
     )) = 40;
     (*m.subscript_move(
-        &mut (unsafe { make_key_3(4) }),
+        &mut *(|__p: *mut Key| {
+            (unsafe { make_key_3(__p, 4) });
+            __p
+        })((&mut ::std::mem::MaybeUninit::<Key>::uninit()).as_mut_ptr()),
         |__k| cpp_move_unsafe!(__k),
         || 0_i32,
     )) = 41;
@@ -129,7 +141,14 @@ unsafe fn main_0() -> i32 {
             && ((*m.subscript(&a, || 0_i32)) == (12))) as i32))
         != 0;
     let mut first: *const Key = (&(*m.begin().iter_deref()).0 as *const Key);
-    (*m.subscript_move(&mut Key::new({ 0 }), |__k| cpp_move_unsafe!(__k), || 0_i32)) = 0;
+    (*m.subscript_move(
+        &mut *(|__p: *mut Key| {
+            Key::new(__p, { 0 });
+            __p
+        })((&mut ::std::mem::MaybeUninit::<Key>::uninit()).as_mut_ptr()),
+        |__k| cpp_move_unsafe!(__k),
+        || 0_i32,
+    )) = 0;
     ok = ((ok as i32)
         & (((*std::cell::LazyCell::force_mut(&mut *&raw mut moves_1)) == (3)) as i32))
         != 0;

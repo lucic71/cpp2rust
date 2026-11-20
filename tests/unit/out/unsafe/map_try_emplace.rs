@@ -12,44 +12,47 @@ pub static mut copies_2: std::cell::LazyCell<i32> = std::cell::LazyCell::new(|| 
 pub static mut moves_3: std::cell::LazyCell<i32> = std::cell::LazyCell::new(|| unsafe { 0 });
 #[repr(C)]
 #[derive(VaArg, FnPtrArg, MoveCtorUnsafe, CppFromUnsafe)]
+#[placement]
 #[cpp_from(i32, new_1, value)]
 pub struct Item {
     pub value: i32,
 }
 impl Item {
-    pub unsafe fn new_2() -> Self {
-        let mut this = Self { value: 0 };
-        this
+    pub unsafe fn new_2(this: *mut Item) {
+        (&raw mut (*this).value).write(0);
     }
-    pub unsafe fn new_1(mut value: i32) -> Self {
-        let mut this = Self { value: value };
+    pub unsafe fn new_1(this: *mut Item, mut value: i32) {
+        (&raw mut (*this).value).write(value);
         (*std::cell::LazyCell::force_mut(&mut *&raw mut made_1)).prefix_inc();
-        this
     }
-    pub unsafe fn copy_from(other: *const Item) -> Self {
-        let mut this = Self {
-            value: (*other).value,
-        };
+    pub unsafe fn copy_from(this: *mut Item, other: *const Item) {
+        (&raw mut (*this).value).write((*other).value);
         (*std::cell::LazyCell::force_mut(&mut *&raw mut copies_2)).prefix_inc();
-        this
     }
-    pub unsafe fn move_from(other: *mut Item) -> Self {
-        let mut this = Self {
-            value: (*other).value,
-        };
+    pub unsafe fn move_from(this: *mut Item, other: *mut Item) {
+        (&raw mut (*this).value).write((*other).value);
         (*std::cell::LazyCell::force_mut(&mut *&raw mut moves_3)).prefix_inc();
         (*other).value = -1_i32;
-        this
     }
 }
 impl Clone for Item {
     fn clone(&self) -> Self {
-        unsafe { Item::copy_from(self as *const Item) }
+        unsafe {
+            let mut __v: Item = ::std::mem::MaybeUninit::uninit().assume_init();
+            Item::copy_from(&raw mut __v, self as *const Item);
+            __v
+        }
     }
 }
 impl Default for Item {
     fn default() -> Self {
-        unsafe { Item::new_2() }
+        unsafe {
+            {
+                let mut __v: Item = ::std::mem::MaybeUninit::uninit().assume_init();
+                Item::new_2(&raw mut __v);
+                __v
+            }
+        }
     }
 }
 pub unsafe fn argument_4(item: *mut Item) -> *mut Item {
@@ -58,28 +61,34 @@ pub unsafe fn argument_4(item: *mut Item) -> *mut Item {
 }
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg)]
+#[placement]
 pub struct RefItem {
     pub value: i32,
 }
 impl RefItem {
-    pub unsafe fn new_1() -> Self {
-        let mut this = Self { value: 0 };
-        this
+    pub unsafe fn new_1(this: *mut RefItem) {
+        (&raw mut (*this).value).write(0);
     }
-    pub unsafe fn new_2(counter: *mut i32, mut amount: i32) -> Self {
-        let mut this = Self {
-            value: {
-                (*counter) += amount;
-                (*counter)
-            },
-        };
+    pub unsafe fn new_2(this: *mut RefItem, counter: *mut i32, mut amount: i32) {
+        (&raw mut (*this).value).write({
+            (*counter) += amount;
+            (*counter)
+        });
         (*std::cell::LazyCell::force_mut(&mut *&raw mut made_1)).prefix_inc();
-        this
+    }
+    pub unsafe fn copy_from(this: *mut RefItem, _a0: *const RefItem) {
+        (&raw mut (*this).value).write((*_a0).value);
     }
 }
 impl Default for RefItem {
     fn default() -> Self {
-        unsafe { RefItem::new_1() }
+        unsafe {
+            {
+                let mut __v: RefItem = ::std::mem::MaybeUninit::uninit().assume_init();
+                RefItem::new_1(&raw mut __v);
+                __v
+            }
+        }
     }
 }
 pub unsafe fn reference_5(counter: *mut i32) -> *mut i32 {
@@ -219,8 +228,13 @@ unsafe fn main_0() -> i32 {
     }
     let mut items: UnsafeMap<i32, (i32, Item)> = UnsafeMap::new();
     let mut key: i32 = 0;
-    items.try_emplace(key, || Item::new_1({ 10 }));
-    let mut source: Item = Item::new_1({ 20 });
+    items.try_emplace(key, || {
+        let mut __v: Item = ::std::mem::MaybeUninit::uninit().assume_init();
+        Item::new_1(&raw mut __v, { 10 });
+        __v
+    });
+    let mut source: Item = ::std::mem::MaybeUninit::uninit().assume_init();
+    Item::new_1(&raw mut source, { 20 });
     (*std::cell::LazyCell::force_mut(&mut *&raw mut made_1)) = {
         (*std::cell::LazyCell::force_mut(&mut *&raw mut copies_2)) = {
             (*std::cell::LazyCell::force_mut(&mut *&raw mut moves_3)) = 0;
@@ -230,7 +244,11 @@ unsafe fn main_0() -> i32 {
     };
     let mut hit: (UnsafeBidirectionalIterator<(i32, Item)>, bool) =
         match (((unsafe { argument_4(&mut source) }) as *mut Item),) {
-            (__tmp_6,) => items.try_emplace(key, || Item::copy_from({ __tmp_6 })),
+            (__tmp_6,) => items.try_emplace(key, || {
+                let mut __v: Item = ::std::mem::MaybeUninit::uninit().assume_init();
+                Item::copy_from(&raw mut __v, { __tmp_6 });
+                __v
+            }),
         };
     ok = ((ok as i32)
         & ((((((*std::cell::LazyCell::force_mut(&mut *&raw mut calls_0)) == (1))
@@ -242,7 +260,11 @@ unsafe fn main_0() -> i32 {
     ok = ((ok as i32) & (((!(hit.1)) && (((*hit.0.iter_deref()).1.value) == (10))) as i32)) != 0;
     let mut move_hit: (UnsafeBidirectionalIterator<(i32, Item)>, bool) =
         match (((unsafe { argument_4(&mut source) }) as *mut Item),) {
-            (__tmp_7,) => items.try_emplace(key, || Item::move_from({ __tmp_7 })),
+            (__tmp_7,) => items.try_emplace(key, || {
+                let mut __v: Item = ::std::mem::MaybeUninit::uninit().assume_init();
+                Item::move_from(&raw mut __v, { __tmp_7 });
+                __v
+            }),
         };
     ok = ((ok as i32)
         & ((((((*std::cell::LazyCell::force_mut(&mut *&raw mut calls_0)) == (2))
@@ -255,7 +277,11 @@ unsafe fn main_0() -> i32 {
     key.prefix_inc();
     let mut copied: (UnsafeBidirectionalIterator<(i32, Item)>, bool) =
         match (((unsafe { argument_4(&mut source) }) as *mut Item),) {
-            (__tmp_8,) => items.try_emplace(key, || Item::copy_from({ __tmp_8 })),
+            (__tmp_8,) => items.try_emplace(key, || {
+                let mut __v: Item = ::std::mem::MaybeUninit::uninit().assume_init();
+                Item::copy_from(&raw mut __v, { __tmp_8 });
+                __v
+            }),
         };
     ok = ((ok as i32)
         & ((((((*std::cell::LazyCell::force_mut(&mut *&raw mut calls_0)) == (3))
@@ -268,7 +294,11 @@ unsafe fn main_0() -> i32 {
     key.prefix_inc();
     let mut moved: (UnsafeBidirectionalIterator<(i32, Item)>, bool) =
         match (((unsafe { argument_4(&mut source) }) as *mut Item),) {
-            (__tmp_9,) => items.try_emplace(key, || Item::move_from({ __tmp_9 })),
+            (__tmp_9,) => items.try_emplace(key, || {
+                let mut __v: Item = ::std::mem::MaybeUninit::uninit().assume_init();
+                Item::move_from(&raw mut __v, { __tmp_9 });
+                __v
+            }),
         };
     ok = ((ok as i32)
         & ((((((*std::cell::LazyCell::force_mut(&mut *&raw mut calls_0)) == (4))
@@ -284,11 +314,19 @@ unsafe fn main_0() -> i32 {
     let mut refs: UnsafeMap<i32, (i32, RefItem)> = UnsafeMap::new();
     key = 0;
     let mut counter: i32 = 0;
-    refs.try_emplace(key, || RefItem::new_2({ &mut counter }, { 5 }));
+    refs.try_emplace(key, || {
+        let mut __v: RefItem = ::std::mem::MaybeUninit::uninit().assume_init();
+        RefItem::new_2(&raw mut __v, { &mut counter }, { 5 });
+        __v
+    });
     (*std::cell::LazyCell::force_mut(&mut *&raw mut made_1)) = 0;
     let mut ref_hit: (UnsafeBidirectionalIterator<(i32, RefItem)>, bool) =
         match (((unsafe { reference_5(&mut counter) }) as *mut i32),) {
-            (__tmp_10,) => refs.try_emplace(key, || RefItem::new_2({ __tmp_10 }, { 2 })),
+            (__tmp_10,) => refs.try_emplace(key, || {
+                let mut __v: RefItem = ::std::mem::MaybeUninit::uninit().assume_init();
+                RefItem::new_2(&raw mut __v, { __tmp_10 }, { 2 });
+                __v
+            }),
         };
     ok = ((ok as i32)
         & ((((((*std::cell::LazyCell::force_mut(&mut *&raw mut calls_0)) == (5))
@@ -299,7 +337,11 @@ unsafe fn main_0() -> i32 {
     key.prefix_inc();
     let mut ref_new: (UnsafeBidirectionalIterator<(i32, RefItem)>, bool) =
         match (((unsafe { reference_5(&mut counter) }) as *mut i32),) {
-            (__tmp_11,) => refs.try_emplace(key, || RefItem::new_2({ __tmp_11 }, { 2 })),
+            (__tmp_11,) => refs.try_emplace(key, || {
+                let mut __v: RefItem = ::std::mem::MaybeUninit::uninit().assume_init();
+                RefItem::new_2(&raw mut __v, { __tmp_11 }, { 2 });
+                __v
+            }),
         };
     ok = ((ok as i32)
         & ((((((*std::cell::LazyCell::force_mut(&mut *&raw mut calls_0)) == (6))
@@ -322,11 +364,16 @@ unsafe fn main_0() -> i32 {
     let mut temporary_hit: (UnsafeBidirectionalIterator<(i32, Item)>, bool) = {
         let mut __tmp_13: Item;
         match (({
-            __tmp_13 = Item::new_1({ 30 });
+            __tmp_13 = ::std::mem::MaybeUninit::uninit().assume_init();
+            Item::new_1(&raw mut __tmp_13, { 30 });
             &mut __tmp_13
         } as *mut Item),)
         {
-            (__tmp_12,) => items.try_emplace(key, || Item::move_from({ __tmp_12 })),
+            (__tmp_12,) => items.try_emplace(key, || {
+                let mut __v: Item = ::std::mem::MaybeUninit::uninit().assume_init();
+                Item::move_from(&raw mut __v, { __tmp_12 });
+                __v
+            }),
         }
     };
     ok = ((ok as i32)
@@ -341,11 +388,16 @@ unsafe fn main_0() -> i32 {
     let mut temporary_new: (UnsafeBidirectionalIterator<(i32, Item)>, bool) = {
         let mut __tmp_15: Item;
         match (({
-            __tmp_15 = Item::new_1({ 40 });
+            __tmp_15 = ::std::mem::MaybeUninit::uninit().assume_init();
+            Item::new_1(&raw mut __tmp_15, { 40 });
             &mut __tmp_15
         } as *mut Item),)
         {
-            (__tmp_14,) => items.try_emplace(key, || Item::move_from({ __tmp_14 })),
+            (__tmp_14,) => items.try_emplace(key, || {
+                let mut __v: Item = ::std::mem::MaybeUninit::uninit().assume_init();
+                Item::move_from(&raw mut __v, { __tmp_14 });
+                __v
+            }),
         }
     };
     ok = ((ok as i32)

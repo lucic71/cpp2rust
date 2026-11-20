@@ -7,6 +7,7 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
 #[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
+#[placement]
 #[byte_size(8)]
 pub struct Point {
     #[offset(0)]
@@ -15,8 +16,17 @@ pub struct Point {
     pub y: i32,
 }
 impl Point {
-    pub fn new(mut x: i32, mut y: i32) -> Self {
-        Self { x: x, y: y }
+    pub fn new(this: Ptr<Point>, mut x: i32, mut y: i32) {
+        field!(this, x).write(x);
+        field!(this, y).write(y);
+    }
+    pub fn copy_from(this: Ptr<Point>, _a0: Ptr<Point>) {
+        field!(this, x).write(_a0.with(|__s| __s.x));
+        field!(this, y).write(_a0.with(|__s| __s.y));
+    }
+    pub fn move_from(this: Ptr<Point>, _a0: Ptr<Point>) {
+        field!(this, x).write({ (*_a0.upgrade().deref()).x });
+        field!(this, y).write({ (*_a0.upgrade().deref()).y });
     }
 }
 pub fn main() {
@@ -24,9 +34,17 @@ pub fn main() {
     libcc2rs::cpp2rust_exit(main_0());
 }
 fn main_0() -> i32 {
-    let a: Value<Option<Rc<dyn std::any::Any>>> = Rc::new(RefCell::new(Some(Rc::new(
-        RefCell::new(Point::new({ 3 }, { 4 })),
-    ))));
+    let a: Value<Option<Rc<dyn std::any::Any>>> =
+        Rc::new(RefCell::new(Some(Rc::new(RefCell::new(
+            Rc::try_unwrap({
+                let __v: Value<Point> = Rc::new(RefCell::new(<Point>::uninit()));
+                Point::new(__v.as_pointer(), { 3 }, { 4 });
+                __v
+            })
+            .ok()
+            .unwrap()
+            .into_inner(),
+        )))));
     assert!(({ (*a.borrow()).is_some() }));
     let mut p: Ptr<Point> = {
         let mut __tmp_0 = { (a.as_pointer()) };
@@ -61,7 +79,16 @@ fn main_0() -> i32 {
         .is_null()
     );
     let q: Ptr<Point> = {
-        let mut __tmp_2 = { Point::new({ 5 }, { 6 }) };
+        let mut __tmp_2 = {
+            Rc::try_unwrap({
+                let __v: Value<Point> = Rc::new(RefCell::new(<Point>::uninit()));
+                Point::new(__v.as_pointer(), { 5 }, { 6 });
+                __v
+            })
+            .ok()
+            .unwrap()
+            .into_inner()
+        };
         let __value: Value<Point> = Rc::new(RefCell::new(__tmp_2));
         let __ptr = __value.as_pointer();
         (*a.borrow_mut()) = Some(__value);

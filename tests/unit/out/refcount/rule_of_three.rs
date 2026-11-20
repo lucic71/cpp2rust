@@ -13,6 +13,7 @@ thread_local!(
     pub static copies_1: Value<i32> = Rc::new(RefCell::new(0));
 );
 #[derive(Record, ByteRepr, Uninit, VaArg, FnPtrArg, CppFrom, CopyAssign, Destructor)]
+#[placement]
 #[cpp_from(i32, new, value)]
 #[byte_size(20)]
 pub struct Buffer {
@@ -24,12 +25,8 @@ pub struct Buffer {
     pub size: i32,
 }
 impl Buffer {
-    pub fn new(mut size: i32) -> Self {
-        let __this: Value<Buffer> = Rc::new(RefCell::new(Self {
-            data: (0..4).map(|_| 0_i32).collect::<Box<[i32]>>(),
-            size: size,
-        }));
-        let this: Ptr<Buffer> = __this.as_pointer();
+    pub fn new(this: Ptr<Buffer>, mut size: i32) {
+        field!(this, size).write(size);
         {
             let mut i: i32 = 0;
             'loop_: while (i < 4) {
@@ -38,14 +35,9 @@ impl Buffer {
             }
         }
         (*alive_0.with(Value::clone).borrow_mut()).prefix_inc();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
-    pub fn copy_from(o: Ptr<Buffer>) -> Self {
-        let __this: Value<Buffer> = Rc::new(RefCell::new(Self {
-            data: (0..4).map(|_| 0_i32).collect::<Box<[i32]>>(),
-            size: o.with(|__s| __s.size),
-        }));
-        let this: Ptr<Buffer> = __this.as_pointer();
+    pub fn copy_from(this: Ptr<Buffer>, o: Ptr<Buffer>) {
+        field!(this, size).write(o.with(|__s| __s.size));
         {
             let mut i: i32 = 0;
             'loop_: while (i < 4) {
@@ -55,7 +47,6 @@ impl Buffer {
         }
         (*alive_0.with(Value::clone).borrow_mut()).prefix_inc();
         (*copies_1.with(Value::clone).borrow_mut()).prefix_inc();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
 }
 impl Clone for Buffer {
@@ -64,7 +55,9 @@ impl Clone for Buffer {
             data: self.data.clone(),
             size: self.size.clone(),
         }));
-        Buffer::copy_from(__src.as_pointer())
+        let __dst: Value<Buffer> = Rc::new(RefCell::new(<Buffer>::uninit()));
+        Buffer::copy_from(__dst.as_pointer(), __src.as_pointer());
+        Rc::try_unwrap(__dst).ok().unwrap().into_inner()
     }
 }
 impl Default for Buffer {
@@ -94,14 +87,17 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     {
-        let a: Value<Buffer> = Rc::new(RefCell::new(Buffer::new({ 4 })));
+        let a: Value<Buffer> = Rc::new(RefCell::new(<Buffer>::uninit()));
+        Buffer::new(a.as_pointer(), { 4 });
         let _dtor_a = std::mem::DropGuard::new(a.clone(), |__p| __p.as_pointer().destructor());
-        let b: Value<Buffer> = Rc::new(RefCell::new(Buffer::copy_from({ a.as_pointer() })));
+        let b: Value<Buffer> = Rc::new(RefCell::new(<Buffer>::uninit()));
+        Buffer::copy_from(b.as_pointer(), { a.as_pointer() });
         let _dtor_b = std::mem::DropGuard::new(b.clone(), |__p| __p.as_pointer().destructor());
         assert!((alive_0.with(|rc| *rc.borrow()) == 2) && (copies_1.with(|rc| *rc.borrow()) == 1));
         array_elem!(b.as_pointer(), data, 0).write(100);
         assert!(((array_elem!(a.as_pointer(), data, 0).read()) == 0));
-        let c: Value<Buffer> = Rc::new(RefCell::new(Buffer::new({ 2 })));
+        let c: Value<Buffer> = Rc::new(RefCell::new(<Buffer>::uninit()));
+        Buffer::new(c.as_pointer(), { 2 });
         let _dtor_c = std::mem::DropGuard::new(c.clone(), |__p| __p.as_pointer().destructor());
         ({ BufferImpl::copy_assign(&c.as_pointer(), a.as_pointer()) });
         assert!(
@@ -118,7 +114,8 @@ fn main_0() -> i32 {
         assert!((copies_1.with(|rc| *rc.borrow()) == 2));
         assert!((({ sum_2(a.as_pointer(),) }) == 6));
         assert!((({ sum_2(b.as_pointer(),) }) == 106));
-        let d: Value<Buffer> = Rc::new(RefCell::new(Buffer::copy_from({ a.as_pointer() })));
+        let d: Value<Buffer> = Rc::new(RefCell::new(<Buffer>::uninit()));
+        Buffer::copy_from(d.as_pointer(), { a.as_pointer() });
         let _dtor_d = std::mem::DropGuard::new(d.clone(), |__p| __p.as_pointer().destructor());
         assert!((alive_0.with(|rc| *rc.borrow()) == 4) && (copies_1.with(|rc| *rc.borrow()) == 3));
         assert!(

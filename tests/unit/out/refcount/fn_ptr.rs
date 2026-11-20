@@ -29,6 +29,7 @@ pub fn identity_hash_6(mut v: bool) -> usize {
     return (v as usize);
 }
 #[derive(Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, CppFrom, Default)]
+#[placement]
 #[cpp_from(FnPtr<fn(bool  ,) -> u64  >  , new, ptr)]
 #[byte_size(8)]
 pub struct HashHolder_unsigned_long__ptr__bool__ {
@@ -37,8 +38,14 @@ pub struct HashHolder_unsigned_long__ptr__bool__ {
     pub h: FnPtr<fn(bool) -> u64>,
 }
 impl HashHolder_unsigned_long__ptr__bool__ {
-    pub fn new(h: Ptr<FnPtr<fn(bool) -> u64>>) -> Self {
-        Self { h: (h.read()) }
+    pub fn new(this: Ptr<HashHolder_unsigned_long__ptr__bool__>, h: Ptr<FnPtr<fn(bool) -> u64>>) {
+        field!(this, h).write((h.read()));
+    }
+    pub fn copy_from(
+        this: Ptr<HashHolder_unsigned_long__ptr__bool__>,
+        _a0: Ptr<HashHolder_unsigned_long__ptr__bool__>,
+    ) {
+        field!(this, h).write(_a0.with(|__s| __s.h.clone()));
     }
 }
 thread_local!(
@@ -85,13 +92,16 @@ fn main_0() -> i32 {
     assert!((q == 42_usize));
     assert!(({ ((*m.borrow()) == 42_usize) }));
     assert!((({ call_fn_5(FnPtr::<fn(i32) -> usize>::new(ret_size_4), 3,) }) == 8_usize));
-    let mut hh: HashHolder_unsigned_long__ptr__bool__ = {
+    let hh: Value<HashHolder_unsigned_long__ptr__bool__> = Rc::new(RefCell::new(
+        <HashHolder_unsigned_long__ptr__bool__>::uninit(),
+    ));
+    {
         let __tmp_0: Value<FnPtr<fn(bool) -> u64>> = Rc::new(RefCell::new(
             (FnPtr::<fn(bool) -> usize>::new(identity_hash_6)).cast::<fn(bool) -> u64>(),
         ));
-        HashHolder_unsigned_long__ptr__bool__::new({ __tmp_0.as_pointer() })
+        HashHolder_unsigned_long__ptr__bool__::new(hh.as_pointer(), { __tmp_0.as_pointer() })
     };
-    assert!((({ hh.h.call(true,) }) == 1_u64));
+    assert!(({ (({ { (*hh.borrow()).h.clone() }.call(true,) }) == 1_u64) }));
     let mut handler: FnPtr<fn(i32)> = FnPtr::<fn(i32)>::new(add_to_total_8);
     ({ handler.call(2) });
     ({ handler.call(3) });

@@ -13,6 +13,7 @@ pub struct Inner {
 }
 #[repr(C)]
 #[derive(Clone, VaArg, FnPtrArg, CppFromUnsafe, DestructorUnsafe, Default)]
+#[placement]
 #[cpp_from(i32, new, value)]
 pub struct Explicit {
     pub v: i32,
@@ -20,13 +21,24 @@ pub struct Explicit {
     pub arr: [i32; 2],
 }
 impl Explicit {
-    pub unsafe fn new(mut v: i32) -> Self {
-        let mut this = Self {
-            v: v,
-            inner: Inner { x: ((v) * (10)) },
-            arr: [v, ((v) + (1))],
-        };
-        this
+    pub unsafe fn new(this: *mut Explicit, mut v: i32) {
+        (&raw mut (*this).v).write(v);
+        (&raw mut (*this).inner).write(Inner { x: ((v) * (10)) });
+        (&raw mut (*this).arr).write([v, ((v) + (1))]);
+    }
+    pub unsafe fn copy_from(this: *mut Explicit, _a0: *const Explicit) {
+        (&raw mut (*this).v).write((*_a0).v);
+        (&raw mut (*this).inner).write((*_a0).inner);
+        (&raw mut (*this).arr).write(std::array::from_fn::<_, 2, _>(|__i: usize| {
+            (*_a0).arr[(__i)]
+        }));
+    }
+    pub unsafe fn move_from(this: *mut Explicit, _a0: *mut Explicit) {
+        (&raw mut (*this).v).write((*_a0).v);
+        (&raw mut (*this).inner).write((*_a0).inner);
+        (&raw mut (*this).arr).write(std::array::from_fn::<_, 2, _>(|__i: usize| {
+            (*_a0).arr[(__i)]
+        }));
     }
     pub unsafe fn destructor(&mut self) {}
 }
@@ -41,19 +53,21 @@ pub struct Implicit {
 #[derive(
     Copy, Clone, VaArg, FnPtrArg, MoveCtorUnsafe, CppFromUnsafe, MoveAssignUnsafe, Default,
 )]
+#[placement]
 #[cpp_from(i32, new, value)]
 pub struct DefaultCopyUserMove {
     pub v: i32,
 }
 impl DefaultCopyUserMove {
-    pub unsafe fn new(mut v: i32) -> Self {
-        let mut this = Self { v: v };
-        this
+    pub unsafe fn new(this: *mut DefaultCopyUserMove, mut v: i32) {
+        (&raw mut (*this).v).write(v);
     }
-    pub unsafe fn move_from(o: *mut DefaultCopyUserMove) -> Self {
-        let mut this = Self { v: (*o).v };
+    pub unsafe fn copy_from(this: *mut DefaultCopyUserMove, _a0: *const DefaultCopyUserMove) {
+        (&raw mut (*this).v).write((*_a0).v);
+    }
+    pub unsafe fn move_from(this: *mut DefaultCopyUserMove, o: *mut DefaultCopyUserMove) {
+        (&raw mut (*this).v).write((*o).v);
         (*o).v = 0;
-        this
     }
     pub unsafe fn move_assign(&mut self, o: *mut DefaultCopyUserMove) -> *mut DefaultCopyUserMove {
         self.v = (*o).v;
@@ -65,24 +79,20 @@ impl DefaultCopyUserMove {
 #[derive(
     VaArg, FnPtrArg, MoveCtorUnsafe, CppFromUnsafe, CopyAssignUnsafe, MoveAssignUnsafe, Default,
 )]
+#[placement]
 #[cpp_from(i32, new, value)]
 pub struct UserCopyDefaultMove {
     pub v: i32,
 }
 impl UserCopyDefaultMove {
-    pub unsafe fn new(mut v: i32) -> Self {
-        let mut this = Self { v: v };
-        this
+    pub unsafe fn new(this: *mut UserCopyDefaultMove, mut v: i32) {
+        (&raw mut (*this).v).write(v);
     }
-    pub unsafe fn copy_from(o: *const UserCopyDefaultMove) -> Self {
-        let mut this = Self {
-            v: (((*o).v) + (100)),
-        };
-        this
+    pub unsafe fn copy_from(this: *mut UserCopyDefaultMove, o: *const UserCopyDefaultMove) {
+        (&raw mut (*this).v).write((((*o).v) + (100)));
     }
-    pub unsafe fn move_from(_a0: *mut UserCopyDefaultMove) -> Self {
-        let mut this = Self { v: (*_a0).v };
-        this
+    pub unsafe fn move_from(this: *mut UserCopyDefaultMove, _a0: *mut UserCopyDefaultMove) {
+        (&raw mut (*this).v).write((*_a0).v);
     }
     pub unsafe fn copy_assign(
         &mut self,
@@ -101,11 +111,16 @@ impl UserCopyDefaultMove {
 }
 impl Clone for UserCopyDefaultMove {
     fn clone(&self) -> Self {
-        unsafe { UserCopyDefaultMove::copy_from(self as *const UserCopyDefaultMove) }
+        unsafe {
+            let mut __v: UserCopyDefaultMove = ::std::mem::MaybeUninit::uninit().assume_init();
+            UserCopyDefaultMove::copy_from(&raw mut __v, self as *const UserCopyDefaultMove);
+            __v
+        }
     }
 }
 #[repr(C)]
 #[derive(FnPtrArg, MoveCtorUnsafe, CppFromUnsafe, MoveAssignUnsafe, Default)]
+#[placement]
 #[cpp_from(i32, new, value)]
 pub struct Buffer {
     pub data: Vec<i32>,
@@ -114,27 +129,23 @@ pub struct Buffer {
     pub arr: [i32; 2],
 }
 impl Buffer {
-    pub unsafe fn new(mut n: i32) -> Self {
-        let mut this = Self {
-            data: vec![n; (n as usize)],
-            rows: Vec::new(),
-            n: n,
-            arr: [n, ((n) + (1))],
-        };
+    pub unsafe fn new(this: *mut Buffer, mut n: i32) {
+        (&raw mut (*this).data).write(vec![n; (n as usize)]);
+        (&raw mut (*this).rows).write(Vec::new());
+        (&raw mut (*this).n).write(n);
+        (&raw mut (*this).arr).write([n, ((n) + (1))]);
         {
-            let a0_clone = this.data.clone();
-            this.rows.push(a0_clone)
+            let a0_clone = (*this).data.clone();
+            (*this).rows.push(a0_clone)
         };
-        this
     }
-    pub unsafe fn move_from(_a0: *mut Buffer) -> Self {
-        let mut this = Self {
-            data: std::mem::take(&mut (*_a0).data),
-            rows: std::mem::take(&mut (*_a0).rows),
-            n: (*_a0).n,
-            arr: std::array::from_fn::<_, 2, _>(|__i: usize| (*_a0).arr[(__i)]),
-        };
-        this
+    pub unsafe fn move_from(this: *mut Buffer, _a0: *mut Buffer) {
+        (&raw mut (*this).data).write(std::mem::take(&mut (*_a0).data));
+        (&raw mut (*this).rows).write(std::mem::take(&mut (*_a0).rows));
+        (&raw mut (*this).n).write((*_a0).n);
+        (&raw mut (*this).arr).write(std::array::from_fn::<_, 2, _>(|__i: usize| {
+            (*_a0).arr[(__i)]
+        }));
     }
     pub unsafe fn move_assign(&mut self, _a0: *mut Buffer) -> *mut Buffer {
         {
@@ -213,6 +224,7 @@ impl Copyable {
 }
 #[repr(C)]
 #[derive(FnPtrArg, MoveCtorUnsafe, CppFromUnsafe, MoveAssignUnsafe, DestructorUnsafe, Default)]
+#[placement]
 #[cpp_from(i32, new, value)]
 pub struct Holder {
     pub inner: Inner,
@@ -220,21 +232,15 @@ pub struct Holder {
     pub p: Option<Box<i32>>,
 }
 impl Holder {
-    pub unsafe fn new(mut v: i32) -> Self {
-        let mut this = Self {
-            inner: Inner { x: v },
-            e: Explicit::new({ v }),
-            p: None,
-        };
-        this
+    pub unsafe fn new(this: *mut Holder, mut v: i32) {
+        (&raw mut (*this).inner).write(Inner { x: v });
+        Explicit::new((&raw mut (*this).e), { v });
+        (&raw mut (*this).p).write(None);
     }
-    pub unsafe fn move_from(_a0: *mut Holder) -> Self {
-        let mut this = Self {
-            inner: (*_a0).inner,
-            e: (*_a0).e.clone(),
-            p: (*_a0).p.take(),
-        };
-        this
+    pub unsafe fn move_from(this: *mut Holder, _a0: *mut Holder) {
+        (&raw mut (*this).inner).write((*_a0).inner);
+        Explicit::move_from((&raw mut (*this).e), { &mut (*_a0).e });
+        (&raw mut (*this).p).write((*_a0).p.take());
     }
     pub unsafe fn move_assign(&mut self, _a0: *mut Holder) -> *mut Holder {
         self.inner = (*_a0).inner;
@@ -262,26 +268,33 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    let mut a: Explicit = Explicit::new({ 1 });
+    let mut a: Explicit = ::std::mem::MaybeUninit::uninit().assume_init();
+    Explicit::new(&raw mut a, { 1 });
     let _dtor_a = std::mem::DropGuard::new(&raw mut a, |__p| unsafe { (*__p).destructor() });
-    let mut b: Explicit = a.clone();
+    let mut b: Explicit = ::std::mem::MaybeUninit::uninit().assume_init();
+    Explicit::copy_from(&raw mut b, { &a });
     let _dtor_b = std::mem::DropGuard::new(&raw mut b, |__p| unsafe { (*__p).destructor() });
-    let mut c: Explicit = a.clone();
+    let mut c: Explicit = ::std::mem::MaybeUninit::uninit().assume_init();
+    Explicit::copy_from(&raw mut c, { &a });
     let _dtor_c = std::mem::DropGuard::new(&raw mut c, |__p| unsafe { (*__p).destructor() });
-    let mut d: Explicit = a.clone();
+    let mut d: Explicit = ::std::mem::MaybeUninit::uninit().assume_init();
+    Explicit::move_from(&raw mut d, { &mut a });
     let _dtor_d = std::mem::DropGuard::new(&raw mut d, |__p| unsafe { (*__p).destructor() });
     assert!(
         ((unsafe { same_0(&b, &a,) }) && (unsafe { same_0(&c, &a,) }))
             && (unsafe { same_0(&d, &a,) })
     );
-    let mut e: Explicit = Explicit::new({ 2 });
+    let mut e: Explicit = ::std::mem::MaybeUninit::uninit().assume_init();
+    Explicit::new(&raw mut e, { 2 });
     let _dtor_e = std::mem::DropGuard::new(&raw mut e, |__p| unsafe { (*__p).destructor() });
-    let mut f: Explicit = Explicit::new({ 3 });
+    let mut f: Explicit = ::std::mem::MaybeUninit::uninit().assume_init();
+    Explicit::new(&raw mut f, { 3 });
     let _dtor_f = std::mem::DropGuard::new(&raw mut f, |__p| unsafe { (*__p).destructor() });
     e = (b).clone();
     f = (c).clone();
     assert!((unsafe { same_0(&e, &b,) }) && (unsafe { same_0(&f, &c,) }));
-    let mut g: Explicit = Explicit::new({ 4 });
+    let mut g: Explicit = ::std::mem::MaybeUninit::uninit().assume_init();
+    Explicit::new(&raw mut g, { 4 });
     let _dtor_g = std::mem::DropGuard::new(&raw mut g, |__p| unsafe { (*__p).destructor() });
     g = {
         e = (f).clone();
@@ -310,35 +323,52 @@ unsafe fn main_0() -> i32 {
         vec_.push(a0_clone)
     };
     {
-        let __a1 = Explicit::new({ 9 });
+        let __a1 = {
+            let mut __v: Explicit = ::std::mem::MaybeUninit::uninit().assume_init();
+            Explicit::new(&raw mut __v, { 9 });
+            __v
+        };
         vec_.push(__a1)
     };
     assert!(((vec_[(0_usize)].v) == (1)) && ((vec_[(1_usize)].v) == (9)));
-    let mut m: DefaultCopyUserMove = DefaultCopyUserMove::new({ 7 });
-    let mut m1: DefaultCopyUserMove = m;
-    let mut m2: DefaultCopyUserMove = DefaultCopyUserMove::move_from({ &mut m });
+    let mut m: DefaultCopyUserMove = ::std::mem::MaybeUninit::uninit().assume_init();
+    DefaultCopyUserMove::new(&raw mut m, { 7 });
+    let mut m1: DefaultCopyUserMove = ::std::mem::MaybeUninit::uninit().assume_init();
+    DefaultCopyUserMove::copy_from(&raw mut m1, { &m });
+    let mut m2: DefaultCopyUserMove = ::std::mem::MaybeUninit::uninit().assume_init();
+    DefaultCopyUserMove::move_from(&raw mut m2, { &mut m });
     assert!((((m1.v) == (7)) && ((m2.v) == (7))) && ((m.v) == (0)));
-    let mut m3: DefaultCopyUserMove = DefaultCopyUserMove::new({ 1 });
-    let mut m4: DefaultCopyUserMove = DefaultCopyUserMove::new({ 1 });
+    let mut m3: DefaultCopyUserMove = ::std::mem::MaybeUninit::uninit().assume_init();
+    DefaultCopyUserMove::new(&raw mut m3, { 1 });
+    let mut m4: DefaultCopyUserMove = ::std::mem::MaybeUninit::uninit().assume_init();
+    DefaultCopyUserMove::new(&raw mut m4, { 1 });
     m3 = m1;
     (unsafe { DefaultCopyUserMove::move_assign(&mut m4, &mut m1) });
     assert!((((m3.v) == (7)) && ((m4.v) == (7))) && ((m1.v) == (0)));
-    let mut u: UserCopyDefaultMove = UserCopyDefaultMove::new({ 8 });
-    let mut u1: UserCopyDefaultMove = UserCopyDefaultMove::copy_from({ &u });
-    let mut u2: UserCopyDefaultMove = UserCopyDefaultMove::move_from({ &mut u });
+    let mut u: UserCopyDefaultMove = ::std::mem::MaybeUninit::uninit().assume_init();
+    UserCopyDefaultMove::new(&raw mut u, { 8 });
+    let mut u1: UserCopyDefaultMove = ::std::mem::MaybeUninit::uninit().assume_init();
+    UserCopyDefaultMove::copy_from(&raw mut u1, { &u });
+    let mut u2: UserCopyDefaultMove = ::std::mem::MaybeUninit::uninit().assume_init();
+    UserCopyDefaultMove::move_from(&raw mut u2, { &mut u });
     assert!((((u1.v) == (108)) && ((u2.v) == (8))) && ((u.v) == (8)));
-    let mut u3: UserCopyDefaultMove = UserCopyDefaultMove::new({ 1 });
-    let mut u4: UserCopyDefaultMove = UserCopyDefaultMove::new({ 1 });
+    let mut u3: UserCopyDefaultMove = ::std::mem::MaybeUninit::uninit().assume_init();
+    UserCopyDefaultMove::new(&raw mut u3, { 1 });
+    let mut u4: UserCopyDefaultMove = ::std::mem::MaybeUninit::uninit().assume_init();
+    UserCopyDefaultMove::new(&raw mut u4, { 1 });
     (unsafe { UserCopyDefaultMove::copy_assign(&mut u3, &u2) });
     (unsafe { UserCopyDefaultMove::move_assign(&mut u4, &mut u2) });
     assert!(((u3.v) == (108)) && ((u4.v) == (8)));
-    let mut p: Buffer = Buffer::new({ 3 });
-    let mut q: Buffer = Buffer::move_from({ &mut p });
+    let mut p: Buffer = ::std::mem::MaybeUninit::uninit().assume_init();
+    Buffer::new(&raw mut p, { 3 });
+    let mut q: Buffer = ::std::mem::MaybeUninit::uninit().assume_init();
+    Buffer::move_from(&raw mut q, { &mut p });
     assert!(
         ((((q.n) == (3)) && ((q.data.len()) == (3_usize))) && ((q.data[(2_usize)]) == (3)))
             && (p.data.is_empty())
     );
-    let mut r: Buffer = Buffer::new({ 1 });
+    let mut r: Buffer = ::std::mem::MaybeUninit::uninit().assume_init();
+    Buffer::new(&raw mut r, { 1 });
     (unsafe { Buffer::move_assign(&mut r, &mut q) });
     assert!(
         ((((r.n) == (3)) && ((r.data.len()) == (3_usize))) && ((r.arr[(1) as usize]) == (4)))
@@ -350,11 +380,21 @@ unsafe fn main_0() -> i32 {
     );
     let mut bufs: Vec<Buffer> = Vec::new();
     {
-        let __a1 = Buffer::move_from({ &mut r });
+        let __a1 = {
+            let mut __v: Buffer = ::std::mem::MaybeUninit::uninit().assume_init();
+            Buffer::move_from(&raw mut __v, { &mut r });
+            __v
+        };
         bufs.push(__a1)
     };
     {
-        let mut __tmp_4 = { Buffer::move_from({ &mut bufs[(0_usize)] }) };
+        let mut __tmp_4 = {
+            {
+                let mut __v: Buffer = ::std::mem::MaybeUninit::uninit().assume_init();
+                Buffer::move_from(&raw mut __v, { &mut bufs[(0_usize)] });
+                __v
+            }
+        };
         bufs.push_mut(__tmp_4)
     };
     assert!(
@@ -422,7 +462,8 @@ unsafe fn main_0() -> i32 {
     let mut c4: Copyable = <Copyable>::default();
     (unsafe { Copyable::move_assign(&mut c4, &mut c3) });
     assert!(((c4.data[(1_usize)]) == (2)) && (c3.data.is_empty()));
-    let mut h1: Holder = Holder::new({ 4 });
+    let mut h1: Holder = ::std::mem::MaybeUninit::uninit().assume_init();
+    Holder::new(&raw mut h1, { 4 });
     let _dtor_h1 = std::mem::DropGuard::new(&raw mut h1, |__p| unsafe { (*__p).destructor() });
     {
         let _a0: *mut i32 = (Box::leak(Box::new(9)) as *mut i32);
@@ -432,7 +473,8 @@ unsafe fn main_0() -> i32 {
             Some(Box::from_raw(_a0))
         }
     };
-    let mut h2: Holder = Holder::move_from({ &mut h1 });
+    let mut h2: Holder = ::std::mem::MaybeUninit::uninit().assume_init();
+    Holder::move_from(&raw mut h2, { &mut h1 });
     let _dtor_h2 = std::mem::DropGuard::new(&raw mut h2, |__p| unsafe { (*__p).destructor() });
     assert!(
         ((((h2.inner.x) == (4)) && ((h2.e.v) == (4)))
@@ -447,7 +489,8 @@ unsafe fn main_0() -> i32 {
                 .map_or(::std::ptr::null_mut(), |v| v as *mut i32))
             .is_null())
     );
-    let mut h3: Holder = Holder::new({ 1 });
+    let mut h3: Holder = ::std::mem::MaybeUninit::uninit().assume_init();
+    Holder::new(&raw mut h3, { 1 });
     let _dtor_h3 = std::mem::DropGuard::new(&raw mut h3, |__p| unsafe { (*__p).destructor() });
     (unsafe { Holder::move_assign(&mut h3, &mut h2) });
     assert!(

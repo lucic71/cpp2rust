@@ -9,17 +9,29 @@ use std::rc::Rc;
 pub static mut total_0: std::cell::LazyCell<i32> = std::cell::LazyCell::new(|| unsafe { 0 });
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, CppFromUnsafe, Default)]
+#[placement]
 #[cpp_from(i32, new, value)]
 pub struct S {}
 impl S {
-    pub unsafe fn new(mut x: i32) -> Self {
-        let mut this = Self {};
+    pub unsafe fn new(this: *mut S, mut x: i32) {
         (*std::cell::LazyCell::force_mut(&mut *&raw mut total_0)) += x;
-        this
     }
+    pub unsafe fn copy_from(this: *mut S, _a0: *const S) {}
 }
-pub static mut a_1: std::cell::LazyCell<S> = std::cell::LazyCell::new(|| unsafe { S::new({ 1 }) });
-pub static mut b_2: std::cell::LazyCell<S> = std::cell::LazyCell::new(|| unsafe { S::new({ 10 }) });
+pub static mut a_1: std::cell::LazyCell<S> = std::cell::LazyCell::new(|| unsafe {
+    {
+        let mut __v: S = ::std::mem::MaybeUninit::uninit().assume_init();
+        S::new(&raw mut __v, { 1 });
+        __v
+    }
+});
+pub static mut b_2: std::cell::LazyCell<S> = std::cell::LazyCell::new(|| unsafe {
+    {
+        let mut __v: S = ::std::mem::MaybeUninit::uninit().assume_init();
+        S::new(&raw mut __v, { 10 });
+        __v
+    }
+});
 pub fn main() {
     unsafe {
         __cpp2rust_init_globals();

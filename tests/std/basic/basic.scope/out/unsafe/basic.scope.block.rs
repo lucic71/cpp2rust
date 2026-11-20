@@ -12,6 +12,7 @@ pub static mut dtorCount_2: std::cell::LazyCell<i32> = std::cell::LazyCell::new(
 pub static mut useCount_3: std::cell::LazyCell<i32> = std::cell::LazyCell::new(|| unsafe { 0 });
 #[repr(C)]
 #[derive(VaArg, FnPtrArg, CopyAssignUnsafe, DestructorUnsafe)]
+#[placement]
 pub struct LifetimeTracked {
     pub uses: i32,
 }
@@ -28,15 +29,13 @@ impl LifetimeTracked {
             (*std::cell::LazyCell::force_mut(&mut *&raw mut copyCount_1))
         };
     }
-    pub unsafe fn new() -> Self {
-        let mut this = Self { uses: 0 };
+    pub unsafe fn new(this: *mut LifetimeTracked) {
+        (&raw mut (*this).uses).write(0);
         (*std::cell::LazyCell::force_mut(&mut *&raw mut ctorCount_0)).prefix_inc();
-        this
     }
-    pub unsafe fn copy_from(_a0: *const LifetimeTracked) -> Self {
-        let mut this = Self { uses: 0 };
+    pub unsafe fn copy_from(this: *mut LifetimeTracked, _a0: *const LifetimeTracked) {
+        (&raw mut (*this).uses).write(0);
         (*std::cell::LazyCell::force_mut(&mut *&raw mut copyCount_1)).prefix_inc();
-        this
     }
     pub unsafe fn destructor(&mut self) {
         (*std::cell::LazyCell::force_mut(&mut *&raw mut dtorCount_2)).prefix_inc();
@@ -52,12 +51,22 @@ impl LifetimeTracked {
 }
 impl Clone for LifetimeTracked {
     fn clone(&self) -> Self {
-        unsafe { LifetimeTracked::copy_from(self as *const LifetimeTracked) }
+        unsafe {
+            let mut __v: LifetimeTracked = ::std::mem::MaybeUninit::uninit().assume_init();
+            LifetimeTracked::copy_from(&raw mut __v, self as *const LifetimeTracked);
+            __v
+        }
     }
 }
 impl Default for LifetimeTracked {
     fn default() -> Self {
-        unsafe { LifetimeTracked::new() }
+        unsafe {
+            {
+                let mut __v: LifetimeTracked = ::std::mem::MaybeUninit::uninit().assume_init();
+                LifetimeTracked::new(&raw mut __v);
+                __v
+            }
+        }
     }
 }
 pub static mut then_runs_4: std::cell::LazyCell<i32> =
@@ -132,14 +141,16 @@ pub unsafe fn test_8() {
 }
 pub unsafe fn test_9() {
     (unsafe { LifetimeTracked::reset() });
-    let mut scoped: LifetimeTracked = LifetimeTracked::new();
+    let mut scoped: LifetimeTracked = ::std::mem::MaybeUninit::uninit().assume_init();
+    LifetimeTracked::new(&raw mut scoped);
     let _dtor_scoped =
         std::mem::DropGuard::new(&raw mut scoped, |__p| unsafe { (*__p).destructor() });
     assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut ctorCount_0)) == (1)));
     {
         let mut index: i32 = 0;
         'loop_: while ((index) < (3)) {
-            let mut scoped: LifetimeTracked = LifetimeTracked::new();
+            let mut scoped: LifetimeTracked = ::std::mem::MaybeUninit::uninit().assume_init();
+            LifetimeTracked::new(&raw mut scoped);
             let _dtor_scoped =
                 std::mem::DropGuard::new(&raw mut scoped, |__p| unsafe { (*__p).destructor() });
             index.prefix_inc();
@@ -148,7 +159,8 @@ pub unsafe fn test_9() {
     assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut ctorCount_0)) == (4)));
     assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut dtorCount_2)) == (3)));
     if ((*std::cell::LazyCell::force_mut(&mut *&raw mut ctorCount_0)) == (4)) {
-        let mut scoped: LifetimeTracked = LifetimeTracked::new();
+        let mut scoped: LifetimeTracked = ::std::mem::MaybeUninit::uninit().assume_init();
+        LifetimeTracked::new(&raw mut scoped);
         let _dtor_scoped =
             std::mem::DropGuard::new(&raw mut scoped, |__p| unsafe { (*__p).destructor() });
     }
@@ -156,7 +168,8 @@ pub unsafe fn test_9() {
     assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut dtorCount_2)) == (4)));
     if ((*std::cell::LazyCell::force_mut(&mut *&raw mut ctorCount_0)) == (0)) {
     } else {
-        let mut scoped: LifetimeTracked = LifetimeTracked::new();
+        let mut scoped: LifetimeTracked = ::std::mem::MaybeUninit::uninit().assume_init();
+        LifetimeTracked::new(&raw mut scoped);
         let _dtor_scoped =
             std::mem::DropGuard::new(&raw mut scoped, |__p| unsafe { (*__p).destructor() });
     }
@@ -183,11 +196,13 @@ pub unsafe fn test_10() {
 }
 pub unsafe fn test_11() {
     (unsafe { LifetimeTracked::reset() });
-    let mut tracked: LifetimeTracked = LifetimeTracked::new();
+    let mut tracked: LifetimeTracked = ::std::mem::MaybeUninit::uninit().assume_init();
+    LifetimeTracked::new(&raw mut tracked);
     let _dtor_tracked =
         std::mem::DropGuard::new(&raw mut tracked, |__p| unsafe { (*__p).destructor() });
     {
-        let mut tracked: LifetimeTracked = LifetimeTracked::new();
+        let mut tracked: LifetimeTracked = ::std::mem::MaybeUninit::uninit().assume_init();
+        LifetimeTracked::new(&raw mut tracked);
         let _dtor_tracked =
             std::mem::DropGuard::new(&raw mut tracked, |__p| unsafe { (*__p).destructor() });
         assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut ctorCount_0)) == (2)));

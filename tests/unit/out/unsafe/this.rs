@@ -8,40 +8,31 @@ use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, CppFromUnsafe, Default)]
+#[placement]
 #[cpp_from(i32, new_1, value)]
 pub struct S {
     pub a_: i32,
     pub self__: *mut S,
 }
 impl S {
-    pub unsafe fn new_1(mut a: i32) -> Self {
-        let mut this = Self {
-            a_: a,
-            self__: std::ptr::null_mut(),
-        };
-        this
+    pub unsafe fn new_1(this: *mut S, mut a: i32) {
+        (&raw mut (*this).a_).write(a);
+        (&raw mut (*this).self__).write(std::ptr::null_mut());
     }
-    pub unsafe fn new_2(mut a: i32, mut other: *mut S) -> Self {
-        let mut this = Self {
-            a_: a,
-            self__: std::ptr::null_mut(),
-        };
-        if ((&raw mut this) == (other)) {
-            this.self__ = std::ptr::null_mut();
+    pub unsafe fn new_2(this: *mut S, mut a: i32, mut other: *mut S) {
+        (&raw mut (*this).a_).write(a);
+        if ((this) == (other)) {
+            (*this).self__ = std::ptr::null_mut();
         } else {
-            this.self__ = other;
+            (*this).self__ = other;
         }
-        this
     }
-    pub unsafe fn new_3(mut a: i32, mut other: *const S) -> Self {
-        let mut this = Self {
-            a_: a,
-            self__: std::ptr::null_mut(),
-        };
-        if (((&raw mut this).cast_const()) == (other)) {
-            this.self__ = std::ptr::null_mut();
+    pub unsafe fn new_3(this: *mut S, mut a: i32, mut other: *const S) {
+        (&raw mut (*this).a_).write(a);
+        (&raw mut (*this).self__).write(std::ptr::null_mut());
+        if (((this).cast_const()) == (other)) {
+            (*this).self__ = std::ptr::null_mut();
         }
-        this
     }
     pub unsafe fn returns_this_reference(&mut self) -> *mut S {
         return &mut (*(self as *mut S));
@@ -83,7 +74,11 @@ impl S {
         };
     }
     pub unsafe fn reset(&mut self) {
-        (*(self as *mut S)) = S::new_1({ 0 });
+        (*(self as *mut S)) = {
+            let mut __v: S = ::std::mem::MaybeUninit::uninit().assume_init();
+            S::new_1(&raw mut __v, { 0 });
+            __v
+        };
     }
     pub unsafe fn copy_if_different_const(&mut self, mut other: *const S) -> bool {
         if (((self as *mut S).cast_const()) == (other)) {
@@ -101,21 +96,28 @@ impl S {
         self.self__ = (*other).self__;
         return true;
     }
+    pub unsafe fn copy_from(this: *mut S, _a0: *const S) {
+        (&raw mut (*this).a_).write((*_a0).a_);
+        (&raw mut (*this).self__).write((*_a0).self__);
+    }
 }
 pub unsafe fn bump_0(mut p: *mut S) {
     (*p).a_.postfix_inc();
 }
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, CppFromUnsafe, Default)]
+#[placement]
 #[cpp_from(i32, new, value)]
 pub struct D {
     pub a_: i32,
 }
 impl D {
-    pub unsafe fn new(mut a: i32) -> Self {
-        let mut this = Self { a_: a };
-        this.a_ *= 2;
-        this
+    pub unsafe fn new(this: *mut D, mut a: i32) {
+        (&raw mut (*this).a_).write(a);
+        (*this).a_ *= 2;
+    }
+    pub unsafe fn copy_from(this: *mut D, _a0: *const D) {
+        (&raw mut (*this).a_).write((*_a0).a_);
     }
 }
 pub fn main() {
@@ -125,7 +127,8 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    let mut s: S = S::new_1({ 1 });
+    let mut s: S = ::std::mem::MaybeUninit::uninit().assume_init();
+    S::new_1(&raw mut s, { 1 });
     let ref_: *mut S = (unsafe { S::returns_this_reference(&mut s) });
     (*ref_).a_.postfix_inc();
     assert!(((s.a_) == (2)));
@@ -143,11 +146,13 @@ unsafe fn main_0() -> i32 {
     assert!(((s.a_) == (8)));
     (unsafe { S::bump_me(&mut s) });
     assert!(((s.a_) == (9)));
-    let mut d: D = D::new({ 3 });
+    let mut d: D = ::std::mem::MaybeUninit::uninit().assume_init();
+    D::new(&raw mut d, { 3 });
     assert!(((d.a_) == (6)));
     let cr: *const S = (unsafe { S::cref(&s) });
     assert!((((*cr).a_) == (9)));
-    let mut t: S = S::new_1({ 0 });
+    let mut t: S = ::std::mem::MaybeUninit::uninit().assume_init();
+    S::new_1(&raw mut t, { 0 });
     assert!(
         (unsafe {
             let _o: *const S = (&mut s as *mut S).cast_const();
@@ -155,7 +160,11 @@ unsafe fn main_0() -> i32 {
         })
     );
     assert!(!(unsafe { S::is(&s, (&mut t as *mut S).cast_const(),) }));
-    let mut p: *mut S = (Box::leak(Box::new(S::new_1({ 1 }))) as *mut S);
+    let mut p: *mut S = {
+        let __p = Box::into_raw(Box::<S>::new_uninit()) as *mut S;
+        S::new_1(__p, { 1 });
+        __p
+    };
     let mut q: *mut S = (unsafe { S::returns_this_pointer(&mut (*p)) });
     (*q).a_.postfix_inc();
     assert!((((*p).a_) == (2)));
@@ -165,7 +174,11 @@ unsafe fn main_0() -> i32 {
             ::std::mem::drop(Box::from_raw(__p))
         }
     };
-    let mut h: *mut S = (Box::leak(Box::new(S::new_1({ 5 }))) as *mut S);
+    let mut h: *mut S = {
+        let __p = Box::into_raw(Box::<S>::new_uninit()) as *mut S;
+        S::new_1(__p, { 5 });
+        __p
+    };
     (unsafe { S::destroy(&mut (*h)) });
     (unsafe { S::reset(&mut s) });
     assert!(((s.a_) == (0)));
@@ -184,17 +197,21 @@ unsafe fn main_0() -> i32 {
         }) as i32)
             == (false as i32))
     );
-    let mut other: S = S::new_1({ 22 });
+    let mut other: S = ::std::mem::MaybeUninit::uninit().assume_init();
+    S::new_1(&raw mut other, { 22 });
     assert!(
         (((unsafe { S::copy_if_different(&mut s, (&mut other as *mut S),) }) as i32)
             == (true as i32))
     );
     assert!(((s.a_) == (other.a_)));
     assert!(((s.self__) == (other.self__)));
-    let mut u: S = S::new_2({ 1 }, { (&mut s as *mut S) });
+    let mut u: S = ::std::mem::MaybeUninit::uninit().assume_init();
+    S::new_2(&raw mut u, { 1 }, { (&mut s as *mut S) });
     assert!(((u.self__) == (&mut s as *mut S)));
-    let s_const: S = S::new_1({ 100 });
-    let mut u1: S = S::new_3({ 1 }, { (&s_const as *const S) });
+    let mut s_const: S = ::std::mem::MaybeUninit::uninit().assume_init();
+    S::new_1(&raw mut s_const, { 100 });
+    let mut u1: S = ::std::mem::MaybeUninit::uninit().assume_init();
+    S::new_3(&raw mut u1, { 1 }, { (&s_const as *const S) });
     assert!((u1.self__).is_null());
     return 0;
 }

@@ -25,6 +25,7 @@ pub struct Graph {
     pub adj: Ptr<Ptr<GraphNode>>,
 }
 #[derive(Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg)]
+#[placement]
 #[byte_size(8)]
 pub struct Partial {
     #[offset(0)]
@@ -32,8 +33,14 @@ pub struct Partial {
     pub p: Ptr<i32>,
 }
 impl Partial {
-    pub fn new_1(mut q: Ptr<i32>) -> Self {
-        Self { p: (q).clone() }
+    pub fn new_1(this: Ptr<Partial>) {
+        field!(this, p).write(Ptr::<i32>::null());
+    }
+    pub fn new_2(this: Ptr<Partial>, mut q: Ptr<i32>) {
+        field!(this, p).write((q).clone());
+    }
+    pub fn copy_from(this: Ptr<Partial>, _a0: Ptr<Partial>) {
+        field!(this, p).write(_a0.with(|__s| __s.p.clone()));
     }
 }
 impl Default for Partial {
@@ -46,9 +53,12 @@ impl Default for Partial {
     }
 }
 #[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
+#[placement]
 #[byte_size(1)]
 pub struct Declared {}
-impl Declared {}
+impl Declared {
+    pub fn copy_from(this: Ptr<Declared>, _a0: Ptr<Declared>) {}
+}
 #[derive(Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
 #[byte_size(16)]
 pub struct S {
@@ -68,12 +78,14 @@ fn main_0() -> i32 {
         adj: Ptr::<Ptr<GraphNode>>::null(),
     };
     let arr: Value<Box<[i32]>> = Rc::new(RefCell::new(Box::new([3, 1, 4])));
-    let mut it: Partial = Partial::new_1({ arr.decay() });
-    if ({ (it.p).clone() } != { arr.decay() }) {
+    let it: Value<Partial> = Rc::new(RefCell::new(<Partial>::uninit()));
+    Partial::new_2(it.as_pointer(), { arr.decay() });
+    if ({ { (*it.borrow()).p.clone() } } != { arr.decay() }) {
         return 1;
     }
-    let mut def: Partial = <Partial>::default();
-    if !((def.p).is_null()) {
+    let def: Value<Partial> = Rc::new(RefCell::new(<Partial>::uninit()));
+    Partial::new_1(def.as_pointer());
+    if !(({ (*def.borrow()).p.clone() }).is_null()) {
         return 1;
     }
     let mut s: S = S {
@@ -109,7 +121,7 @@ pub trait PartialImpl {
     fn next_4(&self) -> Ptr<Partial> {
         unimplemented!()
     }
-    fn next_5(&self, mut _a0: i32) -> Partial {
+    fn next_5(&self, __ret: Ptr<Partial>, mut _a0: i32) {
         unimplemented!()
     }
 }

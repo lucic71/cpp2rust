@@ -10,15 +10,18 @@ pub static mut ctorCount_0: std::cell::LazyCell<i32> = std::cell::LazyCell::new(
 pub static mut dtorCount_1: std::cell::LazyCell<i32> = std::cell::LazyCell::new(|| unsafe { 0 });
 #[repr(C)]
 #[derive(Clone, VaArg, FnPtrArg, CppFromUnsafe, DestructorUnsafe, Default)]
+#[placement]
 #[cpp_from(i32, new, value)]
 pub struct p2_condition_variable_created_each_iteration_ConvertsToBool {
     pub value: i32,
 }
 impl p2_condition_variable_created_each_iteration_ConvertsToBool {
-    pub unsafe fn new(mut value: i32) -> Self {
-        let mut this = Self { value: value };
+    pub unsafe fn new(
+        this: *mut p2_condition_variable_created_each_iteration_ConvertsToBool,
+        mut value: i32,
+    ) {
+        (&raw mut (*this).value).write(value);
         (*std::cell::LazyCell::force_mut(&mut *&raw mut ctorCount_0)).prefix_inc();
-        this
     }
     pub unsafe fn destructor(&mut self) {
         (*std::cell::LazyCell::force_mut(&mut *&raw mut dtorCount_1)).prefix_inc();
@@ -26,13 +29,22 @@ impl p2_condition_variable_created_each_iteration_ConvertsToBool {
     pub unsafe fn to_bool(&self) -> bool {
         return ((self.value) != (0));
     }
+    pub unsafe fn copy_from(
+        this: *mut p2_condition_variable_created_each_iteration_ConvertsToBool,
+        _a0: *const p2_condition_variable_created_each_iteration_ConvertsToBool,
+    ) {
+        (&raw mut (*this).value).write((*_a0).value);
+    }
 }
 pub unsafe fn test_2() {
     let mut remaining: i32 = 2;
     let mut iterations: i32 = 0;
     'loop_: loop {
         let mut condition: p2_condition_variable_created_each_iteration_ConvertsToBool =
-            p2_condition_variable_created_each_iteration_ConvertsToBool::new({ remaining });
+            ::std::mem::MaybeUninit::uninit().assume_init();
+        p2_condition_variable_created_each_iteration_ConvertsToBool::new(&raw mut condition, {
+            remaining
+        });
         let _dtor_condition =
             std::mem::DropGuard::new(&raw mut condition, |__p| unsafe { (*__p).destructor() });
         if !(unsafe {
@@ -56,21 +68,30 @@ pub static mut ctorCount_3: std::cell::LazyCell<i32> = std::cell::LazyCell::new(
 pub static mut dtorCount_4: std::cell::LazyCell<i32> = std::cell::LazyCell::new(|| unsafe { 0 });
 #[repr(C)]
 #[derive(Clone, VaArg, FnPtrArg, CppFromUnsafe, DestructorUnsafe, Default)]
+#[placement]
 #[cpp_from(i32, new, value)]
 pub struct p2_continue_destroys_condition_variable_ConvertsToBool {
     pub value: i32,
 }
 impl p2_continue_destroys_condition_variable_ConvertsToBool {
-    pub unsafe fn new(mut value: i32) -> Self {
-        let mut this = Self { value: value };
+    pub unsafe fn new(
+        this: *mut p2_continue_destroys_condition_variable_ConvertsToBool,
+        mut value: i32,
+    ) {
+        (&raw mut (*this).value).write(value);
         (*std::cell::LazyCell::force_mut(&mut *&raw mut ctorCount_3)).prefix_inc();
-        this
     }
     pub unsafe fn destructor(&mut self) {
         (*std::cell::LazyCell::force_mut(&mut *&raw mut dtorCount_4)).prefix_inc();
     }
     pub unsafe fn to_bool(&self) -> bool {
         return ((self.value) != (0));
+    }
+    pub unsafe fn copy_from(
+        this: *mut p2_continue_destroys_condition_variable_ConvertsToBool,
+        _a0: *const p2_continue_destroys_condition_variable_ConvertsToBool,
+    ) {
+        (&raw mut (*this).value).write((*_a0).value);
     }
 }
 pub unsafe fn test_5() {
@@ -79,7 +100,10 @@ pub unsafe fn test_5() {
     let mut completed: i32 = 0;
     'loop_: loop {
         let mut condition: p2_continue_destroys_condition_variable_ConvertsToBool =
-            p2_continue_destroys_condition_variable_ConvertsToBool::new({ remaining });
+            ::std::mem::MaybeUninit::uninit().assume_init();
+        p2_continue_destroys_condition_variable_ConvertsToBool::new(&raw mut condition, {
+            remaining
+        });
         let _dtor_condition =
             std::mem::DropGuard::new(&raw mut condition, |__p| unsafe { (*__p).destructor() });
         if !(unsafe { p2_continue_destroys_condition_variable_ConvertsToBool::to_bool(&condition) })

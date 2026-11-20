@@ -34,21 +34,31 @@ pub fn operator_eq_2(a: Ptr<Key>, b: Ptr<Key>) -> bool {
     return ({ a.with(|__s| __s.identity) } == { b.with(|__s| __s.identity) });
 }
 #[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg)]
+#[placement]
 #[byte_size(4)]
 pub struct Mapped {
     #[offset(0)]
     pub value: i32,
 }
 impl Mapped {
-    pub fn new() -> Self {
-        let __this: Mapped = Self { value: 0 };
+    pub fn new(this: Ptr<Mapped>) {
+        field!(this, value).write(0);
         (*default_constructions_0.with(Value::clone).borrow_mut()).prefix_inc();
-        __this
+    }
+    pub fn copy_from(this: Ptr<Mapped>, _a0: Ptr<Mapped>) {
+        field!(this, value).write(_a0.with(|__s| __s.value));
     }
 }
 impl Default for Mapped {
     fn default() -> Self {
-        { Mapped::new() }
+        Rc::try_unwrap({
+            let __v: Value<Mapped> = Rc::new(RefCell::new(<Mapped>::uninit()));
+            Mapped::new(__v.as_pointer());
+            __v
+        })
+        .ok()
+        .unwrap()
+        .into_inner()
     }
 }
 pub fn main() {

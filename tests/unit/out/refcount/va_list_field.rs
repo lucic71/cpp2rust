@@ -11,7 +11,8 @@ pub fn sum_0(n: i32, __args: Box<[VaArg]>) -> i32 {
     let n: Value<i32> = Rc::new(RefCell::new(n));
     let ap: Value<Ptr<VaArg>> = Rc::new(RefCell::new(Ptr::<VaArg>::default()));
     (*ap.borrow_mut()) = __args.decay();
-    let guard: Value<Guard_1> = Rc::new(RefCell::new(Guard_1::new({ ap.as_pointer() })));
+    let guard: Value<Guard_1> = Rc::new(RefCell::new(<Guard_1>::uninit()));
+    Guard_1::new(guard.as_pointer(), { ap.as_pointer() });
     let _dtor_guard = std::mem::DropGuard::new(guard.clone(), |__p| __p.as_pointer().destructor());
     let mut total: i32 = 0;
     {
@@ -24,6 +25,7 @@ pub fn sum_0(n: i32, __args: Box<[VaArg]>) -> i32 {
     return total;
 }
 #[derive(Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, CppFrom, Destructor, Default)]
+#[placement]
 #[cpp_from(Ptr<VaArg> , new, mut_ptr)]
 #[byte_size(16)]
 pub struct Guard_1 {
@@ -34,11 +36,13 @@ pub struct Guard_1 {
     pub active: bool,
 }
 impl Guard_1 {
-    pub fn new(val: Ptr<Ptr<VaArg>>) -> Self {
-        Self {
-            ap: (val).clone(),
-            active: true,
-        }
+    pub fn new(this: Ptr<Guard_1>, val: Ptr<Ptr<VaArg>>) {
+        field!(this, ap).write((val).clone());
+        field!(this, active).write(true);
+    }
+    pub fn copy_from(this: Ptr<Guard_1>, _a0: Ptr<Guard_1>) {
+        field!(this, ap).write((_a0.with(|__s| __s.ap.clone())).clone());
+        field!(this, active).write(_a0.with(|__s| __s.active));
     }
 }
 pub fn sum_ptr_2(n: i32, __args: Box<[VaArg]>) -> i32 {

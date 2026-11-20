@@ -8,14 +8,17 @@ use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, CppFromUnsafe, Default)]
+#[placement]
 #[cpp_from(i32, new, value)]
 pub struct Degrees {
     pub value: i32,
 }
 impl Degrees {
-    pub unsafe fn new(mut v: i32) -> Self {
-        let mut this = Self { value: v };
-        this
+    pub unsafe fn new(this: *mut Degrees, mut v: i32) {
+        (&raw mut (*this).value).write(v);
+    }
+    pub unsafe fn copy_from(this: *mut Degrees, _a0: *const Degrees) {
+        (&raw mut (*this).value).write((*_a0).value);
     }
 }
 #[repr(C)]

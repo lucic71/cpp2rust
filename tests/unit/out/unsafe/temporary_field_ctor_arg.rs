@@ -32,16 +32,17 @@ pub unsafe fn make_0() -> Outer {
 }
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, CppFromUnsafe, Default)]
+#[placement]
 #[cpp_from(Vec<i32 > , new, ptr)]
 pub struct H {
     pub last: i32,
 }
 impl H {
-    pub unsafe fn new(values: *const Vec<i32>) -> Self {
-        let mut this = Self {
-            last: (&(*values))[(3_usize)],
-        };
-        this
+    pub unsafe fn new(this: *mut H, values: *const Vec<i32>) {
+        (&raw mut (*this).last).write((&(*values))[(3_usize)]);
+    }
+    pub unsafe fn copy_from(this: *mut H, _a0: *const H) {
+        (&raw mut (*this).last).write((*_a0).last);
     }
 }
 pub fn main() {
@@ -51,7 +52,8 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    let mut h: H = H::new({ &(unsafe { make_0() }).values });
+    let mut h: H = ::std::mem::MaybeUninit::uninit().assume_init();
+    H::new(&raw mut h, { &(unsafe { make_0() }).values });
     (unsafe { libc::printf(c"%d\n".as_ptr() as *const libc::c_char, (h.last)) });
     return 0;
 }

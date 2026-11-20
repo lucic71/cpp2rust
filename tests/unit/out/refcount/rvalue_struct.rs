@@ -7,6 +7,7 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
 #[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
+#[placement]
 #[byte_size(8)]
 pub struct S {
     #[offset(0)]
@@ -15,8 +16,13 @@ pub struct S {
     pub b: i32,
 }
 impl S {
-    pub fn new(mut a: i32, mut b: i32) -> Self {
-        Self { a: a, b: b }
+    pub fn new(this: Ptr<S>, mut a: i32, mut b: i32) {
+        field!(this, a).write(a);
+        field!(this, b).write(b);
+    }
+    pub fn copy_from(this: Ptr<S>, _a0: Ptr<S>) {
+        field!(this, a).write(_a0.with(|__s| __s.a));
+        field!(this, b).write(_a0.with(|__s| __s.b));
     }
 }
 pub fn main() {
@@ -24,7 +30,8 @@ pub fn main() {
     libcc2rs::cpp2rust_exit(main_0());
 }
 fn main_0() -> i32 {
-    let s1: Value<S> = Rc::new(RefCell::new(S::new({ 1 }, { 2 })));
+    let s1: Value<S> = Rc::new(RefCell::new(<S>::uninit()));
+    S::new(s1.as_pointer(), { 1 }, { 2 });
     let s2: Ptr<S> = s1.as_pointer();
     assert!((s2.with(|__s| __s.a) == 1));
     assert!((s2.with(|__s| __s.b) == 2));

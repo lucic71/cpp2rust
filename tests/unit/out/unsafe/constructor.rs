@@ -9,6 +9,7 @@ use std::rc::Rc;
 pub static mut total_0: std::cell::LazyCell<i32> = std::cell::LazyCell::new(|| unsafe { 0 });
 #[repr(C)]
 #[derive(Clone, VaArg, FnPtrArg, CppFromUnsafe, DestructorUnsafe, Default)]
+#[placement]
 #[cpp_from(i32, new, value)]
 pub struct S {
     pub v: i32,
@@ -20,45 +21,56 @@ impl S {
     pub unsafe fn mut_method(&mut self) {
         self.v += 1;
     }
-    pub unsafe fn new(mut init: i32) -> Self {
-        let mut this = Self { v: init };
-        (unsafe { S::mut_method(&mut this) });
+    pub unsafe fn new(this: *mut S, mut init: i32) {
+        (&raw mut (*this).v).write(init);
+        (unsafe { S::mut_method(&mut *this) });
         (*std::cell::LazyCell::force_mut(&mut *&raw mut total_0)) +=
-            (unsafe { S::const_method(&mut this) });
-        this
+            (unsafe { S::const_method(&mut *this) });
     }
     pub unsafe fn destructor(&mut self) {
         (unsafe { S::mut_method(self) });
         (*std::cell::LazyCell::force_mut(&mut *&raw mut total_0)) +=
             (unsafe { S::const_method(self) });
     }
+    pub unsafe fn copy_from(this: *mut S, _a0: *const S) {
+        (&raw mut (*this).v).write((*_a0).v);
+    }
 }
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, CppFromUnsafe)]
+#[placement]
 #[cpp_from(i32, new_1, value)]
 pub struct Point {
     pub x: i32,
     pub y: i32,
 }
 impl Point {
-    pub unsafe fn new_2(mut x: i32, mut y: i32) -> Self {
-        let mut this = Self { x: x, y: y };
-        this
+    pub unsafe fn new_2(this: *mut Point, mut x: i32, mut y: i32) {
+        (&raw mut (*this).x).write(x);
+        (&raw mut (*this).y).write(y);
     }
-    pub unsafe fn new_1(mut v: i32) -> Self {
-        let mut this = Point::new_2({ v }, { ((v) + (1)) });
-        this.y *= 10;
-        this
+    pub unsafe fn new_1(this: *mut Point, mut v: i32) {
+        Point::new_2(this.clone(), { v }, { ((v) + (1)) });
+        (*this).y *= 10;
     }
-    pub unsafe fn new_3() -> Self {
-        let mut this = Point::new_1({ 4 });
-        this.x += 100;
-        this
+    pub unsafe fn new_3(this: *mut Point) {
+        Point::new_1(this.clone(), { 4 });
+        (*this).x += 100;
+    }
+    pub unsafe fn copy_from(this: *mut Point, _a0: *const Point) {
+        (&raw mut (*this).x).write((*_a0).x);
+        (&raw mut (*this).y).write((*_a0).y);
     }
 }
 impl Default for Point {
     fn default() -> Self {
-        unsafe { Point::new_3() }
+        unsafe {
+            {
+                let mut __v: Point = ::std::mem::MaybeUninit::uninit().assume_init();
+                Point::new_3(&raw mut __v);
+                __v
+            }
+        }
     }
 }
 pub fn main() {
@@ -69,16 +81,19 @@ pub fn main() {
 }
 unsafe fn main_0() -> i32 {
     {
-        let mut s: S = S::new({ 3 });
+        let mut s: S = ::std::mem::MaybeUninit::uninit().assume_init();
+        S::new(&raw mut s, { 3 });
         let _dtor_s = std::mem::DropGuard::new(&raw mut s, |__p| unsafe { (*__p).destructor() });
         assert!(((s.v) == (4)));
         assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut total_0)) == (8)));
     }
     assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut total_0)) == (18)));
-    let mut p: Point = Point::new_3();
+    let mut p: Point = ::std::mem::MaybeUninit::uninit().assume_init();
+    Point::new_3(&raw mut p);
     assert!(((p.x) == (104)));
     assert!(((p.y) == (50)));
-    let mut q: Point = Point::new_1({ 7 });
+    let mut q: Point = ::std::mem::MaybeUninit::uninit().assume_init();
+    Point::new_1(&raw mut q, { 7 });
     assert!(((q.x) == (7)));
     assert!(((q.y) == (80)));
     return 0;

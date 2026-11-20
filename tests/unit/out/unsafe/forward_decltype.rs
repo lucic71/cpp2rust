@@ -11,6 +11,7 @@ pub const Overload_kLvalueOverload: Overload = 1;
 pub const Overload_kRvalueOverload: Overload = 2;
 #[repr(C)]
 #[derive(VaArg, FnPtrArg, MoveCtorUnsafe, CppFromUnsafe, Default)]
+#[placement]
 #[cpp_from(i32, new, value)]
 pub struct Tracked {
     pub v: i32,
@@ -18,35 +19,30 @@ pub struct Tracked {
     pub moves: i32,
 }
 impl Tracked {
-    pub unsafe fn new(mut v: i32) -> Self {
-        let mut this = Self {
-            v: v,
-            copies: 0,
-            moves: 0,
-        };
-        this
+    pub unsafe fn new(this: *mut Tracked, mut v: i32) {
+        (&raw mut (*this).v).write(v);
+        (&raw mut (*this).copies).write(0);
+        (&raw mut (*this).moves).write(0);
     }
-    pub unsafe fn copy_from(o: *const Tracked) -> Self {
-        let mut this = Self {
-            v: (*o).v,
-            copies: (((*o).copies) + (1)),
-            moves: (*o).moves,
-        };
-        this
+    pub unsafe fn copy_from(this: *mut Tracked, o: *const Tracked) {
+        (&raw mut (*this).v).write((*o).v);
+        (&raw mut (*this).copies).write((((*o).copies) + (1)));
+        (&raw mut (*this).moves).write((*o).moves);
     }
-    pub unsafe fn move_from(o: *mut Tracked) -> Self {
-        let mut this = Self {
-            v: (*o).v,
-            copies: (*o).copies,
-            moves: (((*o).moves) + (1)),
-        };
+    pub unsafe fn move_from(this: *mut Tracked, o: *mut Tracked) {
+        (&raw mut (*this).v).write((*o).v);
+        (&raw mut (*this).copies).write((*o).copies);
+        (&raw mut (*this).moves).write((((*o).moves) + (1)));
         (*o).v = 0;
-        this
     }
 }
 impl Clone for Tracked {
     fn clone(&self) -> Self {
-        unsafe { Tracked::copy_from(self as *const Tracked) }
+        unsafe {
+            let mut __v: Tracked = ::std::mem::MaybeUninit::uninit().assume_init();
+            Tracked::copy_from(&raw mut __v, self as *const Tracked);
+            __v
+        }
     }
 }
 pub unsafe fn chosen_overload_0(_a0: *const Tracked) -> Overload {
@@ -78,34 +74,40 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    let mut a: Tracked = Tracked::new({ 3 });
+    let mut a: Tracked = ::std::mem::MaybeUninit::uninit().assume_init();
+    Tracked::new(&raw mut a, { 3 });
     assert!(
         (((unsafe { forward_by_decltype_2(&mut a,) }) as i32) == (Overload_kLvalueOverload as i32))
     );
     assert!(((a.v) == (3)));
     assert!(
         (((unsafe {
-            let mut _x: Tracked = Tracked::new({ 4 });
+            let mut _x: Tracked = ::std::mem::MaybeUninit::uninit().assume_init();
+            Tracked::new(&raw mut _x, { 4 });
             forward_by_decltype_3(&mut _x)
         }) as i32)
             == (Overload_kRvalueOverload as i32))
     );
-    let mut b: Tracked = Tracked::new({ 5 });
+    let mut b: Tracked = ::std::mem::MaybeUninit::uninit().assume_init();
+    Tracked::new(&raw mut b, { 5 });
     assert!(
         (((unsafe { forward_abbreviated_4(&mut b,) }) as i32) == (Overload_kLvalueOverload as i32))
     );
     assert!(((b.v) == (5)));
     assert!(
         (((unsafe {
-            let mut _x: Tracked = Tracked::new({ 6 });
+            let mut _x: Tracked = ::std::mem::MaybeUninit::uninit().assume_init();
+            Tracked::new(&raw mut _x, { 6 });
             forward_abbreviated_5(&mut _x)
         }) as i32)
             == (Overload_kRvalueOverload as i32))
     );
-    let mut c: Tracked = Tracked::new({ 7 });
+    let mut c: Tracked = ::std::mem::MaybeUninit::uninit().assume_init();
+    Tracked::new(&raw mut c, { 7 });
     assert!(
         ((unsafe {
-            let mut _args_1: Tracked = Tracked::new({ 8 });
+            let mut _args_1: Tracked = ::std::mem::MaybeUninit::uninit().assume_init();
+            Tracked::new(&raw mut _args_1, { 8 });
             forward_abbreviated_pack_6(&mut c, &mut _args_1)
         }) == ((Overload_kLvalueOverload as i32) + (Overload_kRvalueOverload as i32)))
     );

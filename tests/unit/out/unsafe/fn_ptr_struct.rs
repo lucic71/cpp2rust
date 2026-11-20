@@ -34,29 +34,32 @@ impl S {
 }
 #[repr(C)]
 #[derive(FnPtrArg, MoveCtorUnsafe, CppFromUnsafe, Default)]
+#[placement]
 #[cpp_from(i32, new, value)]
 pub struct MoveOnly {
     pub data_: i32,
 }
 impl MoveOnly {
-    pub unsafe fn new(mut data: i32) -> Self {
-        let mut this = Self { data_: data };
-        this
+    pub unsafe fn new(this: *mut MoveOnly, mut data: i32) {
+        (&raw mut (*this).data_).write(data);
     }
-    pub unsafe fn move_from(x: *mut MoveOnly) -> Self {
-        let mut this = Self { data_: (*x).data_ };
+    pub unsafe fn move_from(this: *mut MoveOnly, x: *mut MoveOnly) {
+        (&raw mut (*this).data_).write((*x).data_);
         (*x).data_ = 0;
-        this
     }
     pub unsafe fn get(&self) -> i32 {
         return self.data_;
     }
 }
-pub unsafe fn make_move_only_2() -> MoveOnly {
-    return MoveOnly::new({ 4 });
+pub unsafe fn make_move_only_2(__ret: *mut MoveOnly) {
+    MoveOnly::new(__ret.clone(), { 4 });
+    return;
 }
-pub unsafe fn scale_move_only_3(mut x: MoveOnly) -> MoveOnly {
-    return MoveOnly::new({ ((unsafe { MoveOnly::get(&x) }) * (10)) });
+pub unsafe fn scale_move_only_3(__ret: *mut MoveOnly, x: *mut MoveOnly) {
+    MoveOnly::new(__ret.clone(), {
+        ((unsafe { MoveOnly::get(&(*x)) }) * (10))
+    });
+    return;
 }
 pub fn main() {
     unsafe {
@@ -89,11 +92,21 @@ unsafe fn main_0() -> i32 {
     (h1.cb) = Some(negate_1);
     assert!(((unsafe { (h1.cb).unwrap()(3,) }) == (-3_i32)));
     assert!(((h1.cb) == (h2.cb)));
-    let mut mk: Option<unsafe fn() -> MoveOnly> = Some(make_move_only_2);
-    let mut m: MoveOnly = (unsafe { (mk).unwrap()() });
+    let mut mk: Option<unsafe fn(*mut MoveOnly)> = Some(make_move_only_2);
+    let mut m: MoveOnly = ::std::mem::MaybeUninit::uninit().assume_init();
+    (unsafe { (mk).unwrap()(&raw mut m) });
     assert!(((unsafe { MoveOnly::get(&m,) }) == (4)));
-    let mut sc: Option<unsafe fn(MoveOnly) -> MoveOnly> = Some(scale_move_only_3);
-    let mut n: MoveOnly = (unsafe { (sc).unwrap()(MoveOnly::move_from({ &mut m })) });
+    let mut sc: Option<unsafe fn(*mut MoveOnly, *mut MoveOnly)> = Some(scale_move_only_3);
+    let mut n: MoveOnly = ::std::mem::MaybeUninit::uninit().assume_init();
+    (unsafe {
+        (sc).unwrap()(
+            &raw mut n,
+            (|__p: *mut MoveOnly| {
+                MoveOnly::move_from(__p, { &mut m });
+                __p
+            })((&mut ::std::mem::MaybeUninit::<MoveOnly>::uninit()).as_mut_ptr()),
+        )
+    });
     assert!(((unsafe { MoveOnly::get(&n,) }) == (40)));
     assert!(((unsafe { MoveOnly::get(&m,) }) == (0)));
     return 0;

@@ -12,6 +12,7 @@ pub static mut dtorCount_2: std::cell::LazyCell<i32> = std::cell::LazyCell::new(
 pub static mut useCount_3: std::cell::LazyCell<i32> = std::cell::LazyCell::new(|| unsafe { 0 });
 #[repr(C)]
 #[derive(VaArg, FnPtrArg, CopyAssignUnsafe, DestructorUnsafe)]
+#[placement]
 pub struct LifetimeTracked {
     pub uses: i32,
 }
@@ -28,15 +29,13 @@ impl LifetimeTracked {
             (*std::cell::LazyCell::force_mut(&mut *&raw mut copyCount_1))
         };
     }
-    pub unsafe fn new() -> Self {
-        let mut this = Self { uses: 0 };
+    pub unsafe fn new(this: *mut LifetimeTracked) {
+        (&raw mut (*this).uses).write(0);
         (*std::cell::LazyCell::force_mut(&mut *&raw mut ctorCount_0)).prefix_inc();
-        this
     }
-    pub unsafe fn copy_from(_a0: *const LifetimeTracked) -> Self {
-        let mut this = Self { uses: 0 };
+    pub unsafe fn copy_from(this: *mut LifetimeTracked, _a0: *const LifetimeTracked) {
+        (&raw mut (*this).uses).write(0);
         (*std::cell::LazyCell::force_mut(&mut *&raw mut copyCount_1)).prefix_inc();
-        this
     }
     pub unsafe fn destructor(&mut self) {
         (*std::cell::LazyCell::force_mut(&mut *&raw mut dtorCount_2)).prefix_inc();
@@ -52,12 +51,22 @@ impl LifetimeTracked {
 }
 impl Clone for LifetimeTracked {
     fn clone(&self) -> Self {
-        unsafe { LifetimeTracked::copy_from(self as *const LifetimeTracked) }
+        unsafe {
+            let mut __v: LifetimeTracked = ::std::mem::MaybeUninit::uninit().assume_init();
+            LifetimeTracked::copy_from(&raw mut __v, self as *const LifetimeTracked);
+            __v
+        }
     }
 }
 impl Default for LifetimeTracked {
     fn default() -> Self {
-        unsafe { LifetimeTracked::new() }
+        unsafe {
+            {
+                let mut __v: LifetimeTracked = ::std::mem::MaybeUninit::uninit().assume_init();
+                LifetimeTracked::new(&raw mut __v);
+                __v
+            }
+        }
     }
 }
 #[repr(C)]
@@ -81,7 +90,11 @@ pub unsafe fn count_10() -> i32 {
 }
 static mut t_5: std::cell::LazyCell<LifetimeTracked> = std::cell::LazyCell::new(|| unsafe {
     {
-        let __static = LifetimeTracked::new();
+        let __static = {
+            let mut __v: LifetimeTracked = ::std::mem::MaybeUninit::uninit().assume_init();
+            LifetimeTracked::new(&raw mut __v);
+            __v
+        };
         libcc2rs::register_static_destructor(|| {
             (*std::cell::LazyCell::force_mut(&mut *&raw mut t_5)).destructor()
         });
@@ -91,7 +104,11 @@ static mut t_5: std::cell::LazyCell<LifetimeTracked> = std::cell::LazyCell::new(
 static mut n_6: std::cell::LazyCell<i32> = std::cell::LazyCell::new(|| unsafe { 0 });
 static mut t_8: std::cell::LazyCell<LifetimeTracked> = std::cell::LazyCell::new(|| unsafe {
     {
-        let __static = LifetimeTracked::new();
+        let __static = {
+            let mut __v: LifetimeTracked = ::std::mem::MaybeUninit::uninit().assume_init();
+            LifetimeTracked::new(&raw mut __v);
+            __v
+        };
         libcc2rs::register_static_destructor(|| {
             (*std::cell::LazyCell::force_mut(&mut *&raw mut t_8)).destructor()
         });
@@ -101,7 +118,11 @@ static mut t_8: std::cell::LazyCell<LifetimeTracked> = std::cell::LazyCell::new(
 static mut n_9: std::cell::LazyCell<i32> = std::cell::LazyCell::new(|| unsafe { 0 });
 static mut t_11: std::cell::LazyCell<LifetimeTracked> = std::cell::LazyCell::new(|| unsafe {
     {
-        let __static = LifetimeTracked::new();
+        let __static = {
+            let mut __v: LifetimeTracked = ::std::mem::MaybeUninit::uninit().assume_init();
+            LifetimeTracked::new(&raw mut __v);
+            __v
+        };
         libcc2rs::register_static_destructor(|| {
             (*std::cell::LazyCell::force_mut(&mut *&raw mut t_11)).destructor()
         });
@@ -147,7 +168,11 @@ pub unsafe fn count_18() -> i32 {
 }
 static mut t_19: std::cell::LazyCell<LifetimeTracked> = std::cell::LazyCell::new(|| unsafe {
     {
-        let __static = LifetimeTracked::new();
+        let __static = {
+            let mut __v: LifetimeTracked = ::std::mem::MaybeUninit::uninit().assume_init();
+            LifetimeTracked::new(&raw mut __v);
+            __v
+        };
         libcc2rs::register_static_destructor(|| {
             (*std::cell::LazyCell::force_mut(&mut *&raw mut t_19)).destructor()
         });

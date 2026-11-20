@@ -9,27 +9,24 @@ use std::rc::Rc;
 pub static mut copies_0: std::cell::LazyCell<i32> = std::cell::LazyCell::new(|| unsafe { 0 });
 #[repr(C)]
 #[derive(VaArg, FnPtrArg, MoveCtorUnsafe, CppFromUnsafe, CopyAssignUnsafe, MoveAssignUnsafe)]
+#[placement]
 #[cpp_from(i32, new_1, value)]
 pub struct Tracked {
     pub v: i32,
 }
 impl Tracked {
-    pub unsafe fn new_2() -> Self {
-        let mut this = Self { v: 0 };
-        this
+    pub unsafe fn new_2(this: *mut Tracked) {
+        (&raw mut (*this).v).write(0);
     }
-    pub unsafe fn new_1(mut v: i32) -> Self {
-        let mut this = Self { v: v };
-        this
+    pub unsafe fn new_1(this: *mut Tracked, mut v: i32) {
+        (&raw mut (*this).v).write(v);
     }
-    pub unsafe fn copy_from(o: *const Tracked) -> Self {
-        let mut this = Self { v: (*o).v };
+    pub unsafe fn copy_from(this: *mut Tracked, o: *const Tracked) {
+        (&raw mut (*this).v).write((*o).v);
         (*std::cell::LazyCell::force_mut(&mut *&raw mut copies_0)).prefix_inc();
-        this
     }
-    pub unsafe fn move_from(o: *mut Tracked) -> Self {
-        let mut this = Self { v: (*o).v };
-        this
+    pub unsafe fn move_from(this: *mut Tracked, o: *mut Tracked) {
+        (&raw mut (*this).v).write((*o).v);
     }
     pub unsafe fn copy_assign(&mut self, o: *const Tracked) -> *mut Tracked {
         self.v = (*o).v;
@@ -70,12 +67,22 @@ impl std::cmp::PartialEq for Tracked {
 impl std::cmp::Eq for Tracked {}
 impl Clone for Tracked {
     fn clone(&self) -> Self {
-        unsafe { Tracked::copy_from(self as *const Tracked) }
+        unsafe {
+            let mut __v: Tracked = ::std::mem::MaybeUninit::uninit().assume_init();
+            Tracked::copy_from(&raw mut __v, self as *const Tracked);
+            __v
+        }
     }
 }
 impl Default for Tracked {
     fn default() -> Self {
-        unsafe { Tracked::new_2() }
+        unsafe {
+            {
+                let mut __v: Tracked = ::std::mem::MaybeUninit::uninit().assume_init();
+                Tracked::new_2(&raw mut __v);
+                __v
+            }
+        }
     }
 }
 pub unsafe fn operator_lt_1(a: *const Tracked, b: *const Tracked) -> bool {
@@ -86,18 +93,17 @@ pub unsafe fn greater_2(a: *const Tracked, b: *const Tracked) -> bool {
 }
 #[repr(C)]
 #[derive(FnPtrArg, MoveCtorUnsafe, CppFromUnsafe, MoveAssignUnsafe, Default)]
+#[placement]
 #[cpp_from(i32, new, value)]
 pub struct MoveOnly {
     pub v: i32,
 }
 impl MoveOnly {
-    pub unsafe fn new(mut v: i32) -> Self {
-        let mut this = Self { v: v };
-        this
+    pub unsafe fn new(this: *mut MoveOnly, mut v: i32) {
+        (&raw mut (*this).v).write(v);
     }
-    pub unsafe fn move_from(_a0: *mut MoveOnly) -> Self {
-        let mut this = Self { v: (*_a0).v };
-        this
+    pub unsafe fn move_from(this: *mut MoveOnly, _a0: *mut MoveOnly) {
+        (&raw mut (*this).v).write((*_a0).v);
     }
     pub unsafe fn move_assign(&mut self, _a0: *mut MoveOnly) -> *mut MoveOnly {
         self.v = (*_a0).v;
@@ -190,13 +196,15 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    let mut arr: [Tracked; 5] = [
-        Tracked::new_1({ 3 }),
-        Tracked::new_1({ 1 }),
-        Tracked::new_1({ 4 }),
-        Tracked::new_1({ 1 }),
-        Tracked::new_1({ 5 }),
-    ];
+    let mut arr: [Tracked; 5] = ::std::mem::MaybeUninit::uninit().assume_init();
+    {
+        let __d = (&raw mut arr).cast::<Tracked>();
+        Tracked::new_1(__d.offset(0), { 3 });
+        Tracked::new_1(__d.offset(1), { 1 });
+        Tracked::new_1(__d.offset(2), { 4 });
+        Tracked::new_1(__d.offset(3), { 1 });
+        Tracked::new_1(__d.offset(4), { 5 });
+    };
     {
         let mut __tmp_0 = { arr.as_mut_ptr() };
         let __n = arr
@@ -225,10 +233,26 @@ unsafe fn main_0() -> i32 {
         let len_0 = vec_.len();
         vec_.reserve_exact(4_usize - len_0 as usize);
     };
-    vec_.push_mut(Tracked::new_1({ 2 }));
-    vec_.push_mut(Tracked::new_1({ 7 }));
-    vec_.push_mut(Tracked::new_1({ 1 }));
-    vec_.push_mut(Tracked::new_1({ 8 }));
+    vec_.push_mut({
+        let mut __v: Tracked = ::std::mem::MaybeUninit::uninit().assume_init();
+        Tracked::new_1(&raw mut __v, { 2 });
+        __v
+    });
+    vec_.push_mut({
+        let mut __v: Tracked = ::std::mem::MaybeUninit::uninit().assume_init();
+        Tracked::new_1(&raw mut __v, { 7 });
+        __v
+    });
+    vec_.push_mut({
+        let mut __v: Tracked = ::std::mem::MaybeUninit::uninit().assume_init();
+        Tracked::new_1(&raw mut __v, { 1 });
+        __v
+    });
+    vec_.push_mut({
+        let mut __v: Tracked = ::std::mem::MaybeUninit::uninit().assume_init();
+        Tracked::new_1(&raw mut __v, { 8 });
+        __v
+    });
     {
         let mut __tmp_1 = { vec_.begin() };
         let __n = vec_.end().iter_distance(&__tmp_1);
@@ -347,9 +371,21 @@ unsafe fn main_0() -> i32 {
     );
     assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut copies_0)) == (0)));
     let mut bags: [Bag; 3] = std::array::from_fn::<_, 3, _>(|_| <Bag>::default());
-    bags[(0) as usize].items.push_mut(Tracked::new_1({ 1 }));
-    bags[(0) as usize].items.push_mut(Tracked::new_1({ 2 }));
-    bags[(2) as usize].items.push_mut(Tracked::new_1({ 3 }));
+    bags[(0) as usize].items.push_mut({
+        let mut __v: Tracked = ::std::mem::MaybeUninit::uninit().assume_init();
+        Tracked::new_1(&raw mut __v, { 1 });
+        __v
+    });
+    bags[(0) as usize].items.push_mut({
+        let mut __v: Tracked = ::std::mem::MaybeUninit::uninit().assume_init();
+        Tracked::new_1(&raw mut __v, { 2 });
+        __v
+    });
+    bags[(2) as usize].items.push_mut({
+        let mut __v: Tracked = ::std::mem::MaybeUninit::uninit().assume_init();
+        Tracked::new_1(&raw mut __v, { 3 });
+        __v
+    });
     {
         let mut __tmp_5 = { bags.as_mut_ptr() };
         let __n = bags
@@ -372,9 +408,21 @@ unsafe fn main_0() -> i32 {
     );
     assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut copies_0)) == (0)));
     let mut bag_vec: Vec<Bag> = Vec::from_fn(3_usize, |_| <Bag>::default());
-    bag_vec[(1_usize)].items.push_mut(Tracked::new_1({ 4 }));
-    bag_vec[(1_usize)].items.push_mut(Tracked::new_1({ 5 }));
-    bag_vec[(2_usize)].items.push_mut(Tracked::new_1({ 6 }));
+    bag_vec[(1_usize)].items.push_mut({
+        let mut __v: Tracked = ::std::mem::MaybeUninit::uninit().assume_init();
+        Tracked::new_1(&raw mut __v, { 4 });
+        __v
+    });
+    bag_vec[(1_usize)].items.push_mut({
+        let mut __v: Tracked = ::std::mem::MaybeUninit::uninit().assume_init();
+        Tracked::new_1(&raw mut __v, { 5 });
+        __v
+    });
+    bag_vec[(2_usize)].items.push_mut({
+        let mut __v: Tracked = ::std::mem::MaybeUninit::uninit().assume_init();
+        Tracked::new_1(&raw mut __v, { 6 });
+        __v
+    });
     {
         let mut __tmp_6 = { bag_vec.begin() };
         let __n = bag_vec.end().iter_distance(&__tmp_6);
@@ -452,9 +500,21 @@ unsafe fn main_0() -> i32 {
     assert!(bag_map.find(&bags[(1) as usize]) == bag_map.end());
     assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut copies_0)) == (0)));
     let mut moves: Vec<MoveOnly> = Vec::new();
-    moves.push_mut(MoveOnly::new({ 3 }));
-    moves.push_mut(MoveOnly::new({ 1 }));
-    moves.push_mut(MoveOnly::new({ 2 }));
+    moves.push_mut({
+        let mut __v: MoveOnly = ::std::mem::MaybeUninit::uninit().assume_init();
+        MoveOnly::new(&raw mut __v, { 3 });
+        __v
+    });
+    moves.push_mut({
+        let mut __v: MoveOnly = ::std::mem::MaybeUninit::uninit().assume_init();
+        MoveOnly::new(&raw mut __v, { 1 });
+        __v
+    });
+    moves.push_mut({
+        let mut __v: MoveOnly = ::std::mem::MaybeUninit::uninit().assume_init();
+        MoveOnly::new(&raw mut __v, { 2 });
+        __v
+    });
     {
         let mut __tmp_11 = { moves.begin() };
         let __n = moves.end().iter_distance(&__tmp_11);

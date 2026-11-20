@@ -10,6 +10,7 @@ thread_local!(
     pub static copies_0: Value<i32> = Rc::new(RefCell::new(0));
 );
 #[derive(Record, ByteRepr, Uninit, VaArg, FnPtrArg, MoveCtor, CppFrom, CopyAssign, MoveAssign)]
+#[placement]
 #[cpp_from(i32, new_1, value)]
 #[byte_size(4)]
 pub struct Tracked {
@@ -17,23 +18,18 @@ pub struct Tracked {
     pub v: i32,
 }
 impl Tracked {
-    pub fn new_2() -> Self {
-        Self { v: 0 }
+    pub fn new_2(this: Ptr<Tracked>) {
+        field!(this, v).write(0);
     }
-    pub fn new_1(mut v: i32) -> Self {
-        Self { v: v }
+    pub fn new_1(this: Ptr<Tracked>, mut v: i32) {
+        field!(this, v).write(v);
     }
-    pub fn copy_from(o: Ptr<Tracked>) -> Self {
-        let __this: Tracked = Self {
-            v: o.with(|__s| __s.v),
-        };
+    pub fn copy_from(this: Ptr<Tracked>, o: Ptr<Tracked>) {
+        field!(this, v).write(o.with(|__s| __s.v));
         (*copies_0.with(Value::clone).borrow_mut()).prefix_inc();
-        __this
     }
-    pub fn move_from(o: Ptr<Tracked>) -> Self {
-        Self {
-            v: o.with(|__s| __s.v),
-        }
+    pub fn move_from(this: Ptr<Tracked>, o: Ptr<Tracked>) {
+        field!(this, v).write(o.with(|__s| __s.v));
     }
 }
 impl CppLess for Tracked {
@@ -50,12 +46,21 @@ impl CppEq for Tracked {
 impl Clone for Tracked {
     fn clone(&self) -> Self {
         let __src: Value<Tracked> = Rc::new(RefCell::new(Tracked { v: self.v.clone() }));
-        Tracked::copy_from(__src.as_pointer())
+        let __dst: Value<Tracked> = Rc::new(RefCell::new(<Tracked>::uninit()));
+        Tracked::copy_from(__dst.as_pointer(), __src.as_pointer());
+        Rc::try_unwrap(__dst).ok().unwrap().into_inner()
     }
 }
 impl Default for Tracked {
     fn default() -> Self {
-        { Tracked::new_2() }
+        Rc::try_unwrap({
+            let __v: Value<Tracked> = Rc::new(RefCell::new(<Tracked>::uninit()));
+            Tracked::new_2(__v.as_pointer());
+            __v
+        })
+        .ok()
+        .unwrap()
+        .into_inner()
     }
 }
 pub fn operator_lt_1(a: Ptr<Tracked>, b: Ptr<Tracked>) -> bool {
@@ -65,6 +70,7 @@ pub fn greater_2(a: Ptr<Tracked>, b: Ptr<Tracked>) -> bool {
     return ({ a.with(|__s| __s.v) } > { b.with(|__s| __s.v) });
 }
 #[derive(Record, ByteRepr, Uninit, FnPtrArg, MoveCtor, CppFrom, MoveAssign, Default)]
+#[placement]
 #[cpp_from(i32, new, value)]
 #[byte_size(4)]
 pub struct MoveOnly {
@@ -72,13 +78,11 @@ pub struct MoveOnly {
     pub v: i32,
 }
 impl MoveOnly {
-    pub fn new(mut v: i32) -> Self {
-        Self { v: v }
+    pub fn new(this: Ptr<MoveOnly>, mut v: i32) {
+        field!(this, v).write(v);
     }
-    pub fn move_from(_a0: Ptr<MoveOnly>) -> Self {
-        Self {
-            v: { (*_a0.upgrade().deref()).v },
-        }
+    pub fn move_from(this: Ptr<MoveOnly>, _a0: Ptr<MoveOnly>) {
+        field!(this, v).write({ (*_a0.upgrade().deref()).v });
     }
 }
 impl CppLess for MoveOnly {
@@ -130,13 +134,17 @@ pub fn main() {
     libcc2rs::cpp2rust_exit(main_0());
 }
 fn main_0() -> i32 {
-    let arr: Value<Box<[Tracked]>> = Rc::new(RefCell::new(Box::new([
-        Tracked::new_1({ 3 }),
-        Tracked::new_1({ 1 }),
-        Tracked::new_1({ 4 }),
-        Tracked::new_1({ 1 }),
-        Tracked::new_1({ 5 }),
-    ])));
+    let arr: Value<Box<[Tracked]>> = Rc::new(RefCell::new(
+        (0..5).map(|_| <Tracked>::uninit()).collect::<Box<[_]>>(),
+    ));
+    {
+        let __d = arr.decay();
+        Tracked::new_1(__d.offset(0), { 3 });
+        Tracked::new_1(__d.offset(1), { 1 });
+        Tracked::new_1(__d.offset(2), { 4 });
+        Tracked::new_1(__d.offset(3), { 1 });
+        Tracked::new_1(__d.offset(4), { 5 });
+    };
     {
         let mut __tmp_0 = { arr.decay() };
         let __n = arr.decay().offset((5) as isize).iter_distance(&__tmp_0);
@@ -162,19 +170,55 @@ fn main_0() -> i32 {
         }
     });
     {
-        let mut __tmp_1 = { Tracked::new_1({ 2 }) };
+        let mut __tmp_1 = {
+            Rc::try_unwrap({
+                let __v: Value<Tracked> = Rc::new(RefCell::new(<Tracked>::uninit()));
+                Tracked::new_1(__v.as_pointer(), { 2 });
+                __v
+            })
+            .ok()
+            .unwrap()
+            .into_inner()
+        };
         (*vec_.borrow_mut()).push(__tmp_1);
     };
     {
-        let mut __tmp_2 = { Tracked::new_1({ 7 }) };
+        let mut __tmp_2 = {
+            Rc::try_unwrap({
+                let __v: Value<Tracked> = Rc::new(RefCell::new(<Tracked>::uninit()));
+                Tracked::new_1(__v.as_pointer(), { 7 });
+                __v
+            })
+            .ok()
+            .unwrap()
+            .into_inner()
+        };
         (*vec_.borrow_mut()).push(__tmp_2);
     };
     {
-        let mut __tmp_3 = { Tracked::new_1({ 1 }) };
+        let mut __tmp_3 = {
+            Rc::try_unwrap({
+                let __v: Value<Tracked> = Rc::new(RefCell::new(<Tracked>::uninit()));
+                Tracked::new_1(__v.as_pointer(), { 1 });
+                __v
+            })
+            .ok()
+            .unwrap()
+            .into_inner()
+        };
         (*vec_.borrow_mut()).push(__tmp_3);
     };
     {
-        let mut __tmp_4 = { Tracked::new_1({ 8 }) };
+        let mut __tmp_4 = {
+            Rc::try_unwrap({
+                let __v: Value<Tracked> = Rc::new(RefCell::new(<Tracked>::uninit()));
+                Tracked::new_1(__v.as_pointer(), { 8 });
+                __v
+            })
+            .ok()
+            .unwrap()
+            .into_inner()
+        };
         (*vec_.borrow_mut()).push(__tmp_4);
     };
     {
@@ -274,15 +318,42 @@ fn main_0() -> i32 {
         (0..3).map(|_| <Bag>::default()).collect::<Box<[Bag]>>(),
     ));
     {
-        let mut __tmp_9 = { Tracked::new_1({ 1 }) };
+        let mut __tmp_9 = {
+            Rc::try_unwrap({
+                let __v: Value<Tracked> = Rc::new(RefCell::new(<Tracked>::uninit()));
+                Tracked::new_1(__v.as_pointer(), { 1 });
+                __v
+            })
+            .ok()
+            .unwrap()
+            .into_inner()
+        };
         (*bags.borrow_mut())[(0) as usize].items.push(__tmp_9);
     };
     {
-        let mut __tmp_10 = { Tracked::new_1({ 2 }) };
+        let mut __tmp_10 = {
+            Rc::try_unwrap({
+                let __v: Value<Tracked> = Rc::new(RefCell::new(<Tracked>::uninit()));
+                Tracked::new_1(__v.as_pointer(), { 2 });
+                __v
+            })
+            .ok()
+            .unwrap()
+            .into_inner()
+        };
         (*bags.borrow_mut())[(0) as usize].items.push(__tmp_10);
     };
     {
-        let mut __tmp_11 = { Tracked::new_1({ 3 }) };
+        let mut __tmp_11 = {
+            Rc::try_unwrap({
+                let __v: Value<Tracked> = Rc::new(RefCell::new(<Tracked>::uninit()));
+                Tracked::new_1(__v.as_pointer(), { 3 });
+                __v
+            })
+            .ok()
+            .unwrap()
+            .into_inner()
+        };
         (*bags.borrow_mut())[(2) as usize].items.push(__tmp_11);
     };
     {
@@ -304,7 +375,16 @@ fn main_0() -> i32 {
         Rc::new(RefCell::new(Vec::from_fn(3_usize, |_| <Bag>::default())));
     match (
         field_ref!(bag_vec.decay().offset(1_usize), items).as_pointer(),
-        { Tracked::new_1({ 4 }) },
+        {
+            Rc::try_unwrap({
+                let __v: Value<Tracked> = Rc::new(RefCell::new(<Tracked>::uninit()));
+                Tracked::new_1(__v.as_pointer(), { 4 });
+                __v
+            })
+            .ok()
+            .unwrap()
+            .into_inner()
+        },
     ) {
         (__tmp_13, mut __tmp_14) => {
             __tmp_13.with_mut(|__v: &mut Vec<Tracked>| __v.push(__tmp_14));
@@ -312,7 +392,16 @@ fn main_0() -> i32 {
     };
     match (
         field_ref!(bag_vec.decay().offset(1_usize), items).as_pointer(),
-        { Tracked::new_1({ 5 }) },
+        {
+            Rc::try_unwrap({
+                let __v: Value<Tracked> = Rc::new(RefCell::new(<Tracked>::uninit()));
+                Tracked::new_1(__v.as_pointer(), { 5 });
+                __v
+            })
+            .ok()
+            .unwrap()
+            .into_inner()
+        },
     ) {
         (__tmp_15, mut __tmp_16) => {
             __tmp_15.with_mut(|__v: &mut Vec<Tracked>| __v.push(__tmp_16));
@@ -320,7 +409,16 @@ fn main_0() -> i32 {
     };
     match (
         field_ref!(bag_vec.decay().offset(2_usize), items).as_pointer(),
-        { Tracked::new_1({ 6 }) },
+        {
+            Rc::try_unwrap({
+                let __v: Value<Tracked> = Rc::new(RefCell::new(<Tracked>::uninit()));
+                Tracked::new_1(__v.as_pointer(), { 6 });
+                __v
+            })
+            .ok()
+            .unwrap()
+            .into_inner()
+        },
     ) {
         (__tmp_17, mut __tmp_18) => {
             __tmp_17.with_mut(|__v: &mut Vec<Tracked>| __v.push(__tmp_18));
@@ -421,15 +519,42 @@ fn main_0() -> i32 {
     assert!((copies_0.with(|rc| *rc.borrow()) == 0));
     let moves: Value<Vec<MoveOnly>> = Rc::new(RefCell::new(Vec::new()));
     {
-        let mut __tmp_26 = { MoveOnly::new({ 3 }) };
+        let mut __tmp_26 = {
+            Rc::try_unwrap({
+                let __v: Value<MoveOnly> = Rc::new(RefCell::new(<MoveOnly>::uninit()));
+                MoveOnly::new(__v.as_pointer(), { 3 });
+                __v
+            })
+            .ok()
+            .unwrap()
+            .into_inner()
+        };
         (*moves.borrow_mut()).push(__tmp_26);
     };
     {
-        let mut __tmp_27 = { MoveOnly::new({ 1 }) };
+        let mut __tmp_27 = {
+            Rc::try_unwrap({
+                let __v: Value<MoveOnly> = Rc::new(RefCell::new(<MoveOnly>::uninit()));
+                MoveOnly::new(__v.as_pointer(), { 1 });
+                __v
+            })
+            .ok()
+            .unwrap()
+            .into_inner()
+        };
         (*moves.borrow_mut()).push(__tmp_27);
     };
     {
-        let mut __tmp_28 = { MoveOnly::new({ 2 }) };
+        let mut __tmp_28 = {
+            Rc::try_unwrap({
+                let __v: Value<MoveOnly> = Rc::new(RefCell::new(<MoveOnly>::uninit()));
+                MoveOnly::new(__v.as_pointer(), { 2 });
+                __v
+            })
+            .ok()
+            .unwrap()
+            .into_inner()
+        };
         (*moves.borrow_mut()).push(__tmp_28);
     };
     {

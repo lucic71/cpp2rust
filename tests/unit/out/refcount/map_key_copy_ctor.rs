@@ -16,6 +16,7 @@ thread_local!(
     pub static made_2: Value<i32> = Rc::new(RefCell::new(0));
 );
 #[derive(Record, ByteRepr, Uninit, VaArg, FnPtrArg, MoveCtor, CppFrom, Default)]
+#[placement]
 #[cpp_from(i32, new, value)]
 #[byte_size(4)]
 pub struct Key {
@@ -23,22 +24,16 @@ pub struct Key {
     pub k: i32,
 }
 impl Key {
-    pub fn new(mut k: i32) -> Self {
-        Self { k: k }
+    pub fn new(this: Ptr<Key>, mut k: i32) {
+        field!(this, k).write(k);
     }
-    pub fn copy_from(o: Ptr<Key>) -> Self {
-        let __this: Key = Self {
-            k: o.with(|__s| __s.k),
-        };
+    pub fn copy_from(this: Ptr<Key>, o: Ptr<Key>) {
+        field!(this, k).write(o.with(|__s| __s.k));
         (*copies_0.with(Value::clone).borrow_mut()).prefix_inc();
-        __this
     }
-    pub fn move_from(o: Ptr<Key>) -> Self {
-        let __this: Key = Self {
-            k: o.with(|__s| __s.k),
-        };
+    pub fn move_from(this: Ptr<Key>, o: Ptr<Key>) {
+        field!(this, k).write(o.with(|__s| __s.k));
         (*moves_1.with(Value::clone).borrow_mut()).prefix_inc();
-        __this
     }
 }
 impl CppLess for Key {
@@ -55,12 +50,15 @@ impl CppEq for Key {
 impl Clone for Key {
     fn clone(&self) -> Self {
         let __src: Value<Key> = Rc::new(RefCell::new(Key { k: self.k.clone() }));
-        Key::copy_from(__src.as_pointer())
+        let __dst: Value<Key> = Rc::new(RefCell::new(<Key>::uninit()));
+        Key::copy_from(__dst.as_pointer(), __src.as_pointer());
+        Rc::try_unwrap(__dst).ok().unwrap().into_inner()
     }
 }
-pub fn make_key_3(mut k: i32) -> Key {
+pub fn make_key_3(__ret: Ptr<Key>, mut k: i32) {
     (*made_2.with(Value::clone).borrow_mut()).prefix_inc();
-    return Key::new({ k });
+    Key::new(__ret.clone(), { k });
+    return;
 }
 pub fn main() {
     __cpp2rust_init_globals();
@@ -69,9 +67,12 @@ pub fn main() {
 fn main_0() -> i32 {
     let mut ok: bool = true;
     let m: Value<Map<Key, (Value<Key>, Value<i32>)>> = Rc::new(RefCell::new(Map::new()));
-    let a: Value<Key> = Rc::new(RefCell::new(Key::new({ 1 })));
-    let b: Value<Key> = Rc::new(RefCell::new(Key::new({ 2 })));
-    let c: Value<Key> = Rc::new(RefCell::new(Key::new({ 3 })));
+    let a: Value<Key> = Rc::new(RefCell::new(<Key>::uninit()));
+    Key::new(a.as_pointer(), { 1 });
+    let b: Value<Key> = Rc::new(RefCell::new(<Key>::uninit()));
+    Key::new(b.as_pointer(), { 2 });
+    let c: Value<Key> = Rc::new(RefCell::new(<Key>::uninit()));
+    Key::new(c.as_pointer(), { 3 });
     match (a.as_pointer(),) {
         (__tmp_0,) => ({ (*m.borrow_mut()).subscript(__tmp_0, || 0_i32) }),
     }
@@ -117,13 +118,25 @@ fn main_0() -> i32 {
         ok = rhs_0
     };
     ok = { ((ok as i32) & ((copies_0.with(|rc| *rc.borrow()) == 2) as i32)) != 0 };
-    match (Rc::new(RefCell::new(({ make_key_3(4) }))).as_pointer(),) {
+    match ({
+        let __v: Value<Key> = Rc::new(RefCell::new(<Key>::uninit()));
+        ({ make_key_3(__v.as_pointer(), 4) });
+        __v
+    }
+    .as_pointer(),)
+    {
         (__tmp_3,) => {
             ({ (*m.borrow_mut()).subscript_move(__tmp_3, |__k| cpp_move!(__k), || 0_i32) })
         }
     }
     .write(40);
-    match (Rc::new(RefCell::new(({ make_key_3(4) }))).as_pointer(),) {
+    match ({
+        let __v: Value<Key> = Rc::new(RefCell::new(<Key>::uninit()));
+        ({ make_key_3(__v.as_pointer(), 4) });
+        __v
+    }
+    .as_pointer(),)
+    {
         (__tmp_4,) => {
             ({ (*m.borrow_mut()).subscript_move(__tmp_4, |__k| cpp_move!(__k), || 0_i32) })
         }
@@ -190,7 +203,13 @@ fn main_0() -> i32 {
         .deref())
     .0
     .as_pointer());
-    match (Rc::new(RefCell::new(Key::new({ 0 }))).as_pointer(),) {
+    match ({
+        let __v: Value<Key> = Rc::new(RefCell::new(<Key>::uninit()));
+        Key::new(__v.as_pointer(), { 0 });
+        __v
+    }
+    .as_pointer(),)
+    {
         (__tmp_9,) => {
             ({ (*m.borrow_mut()).subscript_move(__tmp_9, |__k| cpp_move!(__k), || 0_i32) })
         }

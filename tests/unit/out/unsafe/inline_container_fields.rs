@@ -147,20 +147,22 @@ pub static mut copy_assigns_4: std::cell::LazyCell<i32> = std::cell::LazyCell::n
 pub static mut move_assigns_5: std::cell::LazyCell<i32> = std::cell::LazyCell::new(|| unsafe { 0 });
 #[repr(C)]
 #[derive(VaArg, FnPtrArg, MoveCtorUnsafe, CopyAssignUnsafe, MoveAssignUnsafe)]
+#[placement]
 pub struct Counted {
     pub v: i32,
 }
 impl Counted {
-    pub unsafe fn copy_from(o: *const Counted) -> Self {
-        let mut this = Self { v: (*o).v };
-        (*std::cell::LazyCell::force_mut(&mut *&raw mut copies_2)).prefix_inc();
-        this
+    pub unsafe fn new(this: *mut Counted) {
+        (&raw mut (*this).v).write(0);
     }
-    pub unsafe fn move_from(o: *mut Counted) -> Self {
-        let mut this = Self { v: (*o).v };
+    pub unsafe fn copy_from(this: *mut Counted, o: *const Counted) {
+        (&raw mut (*this).v).write((*o).v);
+        (*std::cell::LazyCell::force_mut(&mut *&raw mut copies_2)).prefix_inc();
+    }
+    pub unsafe fn move_from(this: *mut Counted, o: *mut Counted) {
+        (&raw mut (*this).v).write((*o).v);
         (*o).v = -1_i32;
         (*std::cell::LazyCell::force_mut(&mut *&raw mut moves_3)).prefix_inc();
-        this
     }
     pub unsafe fn copy_assign(&mut self, o: *const Counted) -> *mut Counted {
         self.v = (*o).v;
@@ -176,7 +178,11 @@ impl Counted {
 }
 impl Clone for Counted {
     fn clone(&self) -> Self {
-        unsafe { Counted::copy_from(self as *const Counted) }
+        unsafe {
+            let mut __v: Counted = ::std::mem::MaybeUninit::uninit().assume_init();
+            Counted::copy_from(&raw mut __v, self as *const Counted);
+            __v
+        }
     }
 }
 impl Default for Counted {
@@ -273,7 +279,8 @@ unsafe fn main_0() -> i32 {
     assert!(((assigned.arr[(1_usize)]) == (7)) && ((moved.arr[(1_usize)]) == (7)));
     let mut ca: [Counted; 3] = std::array::from_fn::<_, 3, _>(|_| <Counted>::default());
     ca[(1_usize)].v = 5;
-    let mut cb: [Counted; 3] = std::array::from_fn(|__i| Counted::move_from(&mut ca[__i]));
+    let mut cb: [Counted; 3] =
+        std::array::from_fn(|__i| <Counted as MoveCtorUnsafe>::move_ctor(&mut ca[__i]));
     assert!(
         ((((*std::cell::LazyCell::force_mut(&mut *&raw mut moves_3)) == (3))
             && ((*std::cell::LazyCell::force_mut(&mut *&raw mut copies_2)) == (0)))

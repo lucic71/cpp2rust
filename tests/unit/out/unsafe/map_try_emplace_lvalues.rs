@@ -10,28 +10,34 @@ pub static mut made_0: std::cell::LazyCell<i32> = std::cell::LazyCell::new(|| un
 pub static mut visits_1: std::cell::LazyCell<i32> = std::cell::LazyCell::new(|| unsafe { 0 });
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg)]
+#[placement]
 pub struct Item {
     pub value: i32,
 }
 impl Item {
-    pub unsafe fn new_1() -> Self {
-        let mut this = Self { value: 0 };
-        this
+    pub unsafe fn new_1(this: *mut Item) {
+        (&raw mut (*this).value).write(0);
     }
-    pub unsafe fn new_2(counter: *mut i32, mut amount: i32) -> Self {
-        let mut this = Self {
-            value: {
-                (*counter) += amount;
-                (*counter)
-            },
-        };
+    pub unsafe fn new_2(this: *mut Item, counter: *mut i32, mut amount: i32) {
+        (&raw mut (*this).value).write({
+            (*counter) += amount;
+            (*counter)
+        });
         (*std::cell::LazyCell::force_mut(&mut *&raw mut made_0)).prefix_inc();
-        this
+    }
+    pub unsafe fn copy_from(this: *mut Item, _a0: *const Item) {
+        (&raw mut (*this).value).write((*_a0).value);
     }
 }
 impl Default for Item {
     fn default() -> Self {
-        unsafe { Item::new_1() }
+        unsafe {
+            {
+                let mut __v: Item = ::std::mem::MaybeUninit::uninit().assume_init();
+                Item::new_1(&raw mut __v);
+                __v
+            }
+        }
     }
 }
 pub unsafe fn receiver_2(m: *mut UnsafeMap<i32, (i32, Item)>) -> *mut UnsafeMap<i32, (i32, Item)> {
@@ -46,44 +52,70 @@ pub static mut temporary_calls_4: std::cell::LazyCell<i32> =
     std::cell::LazyCell::new(|| unsafe { 0 });
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg)]
+#[placement]
 pub struct Temporary {
     pub n: i32,
     pub data: [i32; 2],
 }
 impl Temporary {
-    pub unsafe fn new() -> Self {
-        let mut this = Self { n: 5, data: [6, 7] };
+    pub unsafe fn new(this: *mut Temporary) {
+        (&raw mut (*this).n).write(5);
+        (&raw mut (*this).data).write([6, 7]);
         (*std::cell::LazyCell::force_mut(&mut *&raw mut temporary_calls_4)).prefix_inc();
-        this
+    }
+    pub unsafe fn copy_from(this: *mut Temporary, _a0: *const Temporary) {
+        (&raw mut (*this).n).write((*_a0).n);
+        (&raw mut (*this).data).write(std::array::from_fn::<_, 2, _>(|__i: usize| {
+            (*_a0).data[(__i)]
+        }));
     }
 }
 impl Default for Temporary {
     fn default() -> Self {
-        unsafe { Temporary::new() }
+        unsafe {
+            {
+                let mut __v: Temporary = ::std::mem::MaybeUninit::uninit().assume_init();
+                Temporary::new(&raw mut __v);
+                __v
+            }
+        }
     }
 }
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
+#[placement]
 pub struct Nested {
     pub inner: Temporary,
 }
-pub unsafe fn make_temporary_5() -> Temporary {
-    return Temporary::new();
+impl Nested {
+    pub unsafe fn new_1(this: *mut Nested) {
+        Temporary::new((&raw mut (*this).inner));
+    }
+    pub unsafe fn copy_from(this: *mut Nested, _a0: *const Nested) {
+        Temporary::copy_from((&raw mut (*this).inner), { &(*_a0).inner });
+    }
 }
-pub unsafe fn make_nested_6() -> Nested {
-    return <Nested>::default();
+pub unsafe fn make_temporary_5(__ret: *mut Temporary) {
+    Temporary::new(__ret.clone());
+    return;
+}
+pub unsafe fn make_nested_6(__ret: *mut Nested) {
+    Nested::new_1(__ret.clone());
+    return;
 }
 #[repr(C)]
 #[derive(FnPtrArg, MoveCtorUnsafe, MoveAssignUnsafe)]
+#[placement]
 pub struct Owner {
     pub ptr: Option<Box<Temporary>>,
 }
 impl Owner {
-    pub unsafe fn new() -> Self {
-        let mut this = Self {
-            ptr: Some(Box::new(Temporary::new())),
-        };
-        this
+    pub unsafe fn new(this: *mut Owner) {
+        (&raw mut (*this).ptr).write(Some(Box::new({
+            let mut __v: Temporary = ::std::mem::MaybeUninit::uninit().assume_init();
+            Temporary::new(&raw mut __v);
+            __v
+        })));
     }
     pub unsafe fn value(&mut self) -> *const i32 {
         return &(*self.ptr.as_deref().map_or(::std::ptr::null_mut(), |v| {
@@ -91,11 +123,8 @@ impl Owner {
         }))
         .n;
     }
-    pub unsafe fn move_from(_a0: *mut Owner) -> Self {
-        let mut this = Self {
-            ptr: (*_a0).ptr.take(),
-        };
-        this
+    pub unsafe fn move_from(this: *mut Owner, _a0: *mut Owner) {
+        (&raw mut (*this).ptr).write((*_a0).ptr.take());
     }
     pub unsafe fn move_assign(&mut self, _a0: *mut Owner) -> *mut Owner {
         {
@@ -106,7 +135,13 @@ impl Owner {
 }
 impl Default for Owner {
     fn default() -> Self {
-        unsafe { Owner::new() }
+        unsafe {
+            {
+                let mut __v: Owner = ::std::mem::MaybeUninit::uninit().assume_init();
+                Owner::new(&raw mut __v);
+                __v
+            }
+        }
     }
 }
 #[repr(C)]
@@ -121,29 +156,34 @@ impl Default for Noncopy {
 }
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, CppFromUnsafe)]
+#[placement]
 #[cpp_from(i32, new_1, ptr)]
 pub struct Held {
     pub ptr: *const i32,
 }
 impl Held {
-    pub unsafe fn new_2() -> Self {
-        let mut this = Self {
-            ptr: std::ptr::null(),
-        };
-        this
+    pub unsafe fn new_2(this: *mut Held) {
+        (&raw mut (*this).ptr).write(std::ptr::null());
     }
-    pub unsafe fn new_1(n: *const i32) -> Self {
-        let mut this = Self { ptr: (n) };
-        this
+    pub unsafe fn new_1(this: *mut Held, n: *const i32) {
+        (&raw mut (*this).ptr).write((n));
     }
-    pub unsafe fn new_3(n: *const [i32; 2], mut _a1: i32) -> Self {
-        let mut this = Self { ptr: (*n).as_ptr() };
-        this
+    pub unsafe fn new_3(this: *mut Held, n: *const [i32; 2], mut _a1: i32) {
+        (&raw mut (*this).ptr).write((*n).as_ptr());
+    }
+    pub unsafe fn copy_from(this: *mut Held, _a0: *const Held) {
+        (&raw mut (*this).ptr).write((*_a0).ptr);
     }
 }
 impl Default for Held {
     fn default() -> Self {
-        unsafe { Held::new_2() }
+        unsafe {
+            {
+                let mut __v: Held = ::std::mem::MaybeUninit::uninit().assume_init();
+                Held::new_2(&raw mut __v);
+                __v
+            }
+        }
     }
 }
 pub static mut global_values_7: std::cell::LazyCell<UnsafeMap<i32, (i32, i32)>> =
@@ -163,7 +203,8 @@ pub static mut global_temporary_14: std::cell::LazyCell<(
     {
         let mut __tmp_1: Temporary;
         match ((&mut (*{
-            __tmp_1 = (unsafe { make_temporary_5() });
+            __tmp_1 = ::std::mem::MaybeUninit::uninit().assume_init();
+            (unsafe { make_temporary_5(&raw mut __tmp_1) });
             &mut __tmp_1
         })
         .n as *mut i32),)
@@ -209,7 +250,11 @@ pub static mut global_owned_16: std::cell::LazyCell<(
     {
         let mut __tmp_6: Option<Box<Temporary>>;
         match ((&mut (*(*{
-            __tmp_6 = Some(Box::new(Temporary::new()));
+            __tmp_6 = Some(Box::new({
+                let mut __v: Temporary = ::std::mem::MaybeUninit::uninit().assume_init();
+                Temporary::new(&raw mut __v);
+                __v
+            }));
             &mut __tmp_6
         })
         .as_deref()
@@ -259,7 +304,11 @@ unsafe fn main_0() -> i32 {
     let mut m: UnsafeMap<i32, (i32, Item)> = UnsafeMap::new();
     let mut key: i32 = 0;
     let mut counter: i32 = 0;
-    m.try_emplace(key, || Item::new_2({ &mut counter }, { 3 }));
+    m.try_emplace(key, || {
+        let mut __v: Item = ::std::mem::MaybeUninit::uninit().assume_init();
+        Item::new_2(&raw mut __v, { &mut counter }, { 3 });
+        __v
+    });
     (*std::cell::LazyCell::force_mut(&mut *&raw mut made_0)) = 0;
     let mut hit: (UnsafeBidirectionalIterator<(i32, Item)>, bool) = match (
         ((unsafe { receiver_2(&mut m) }) as *mut UnsafeMap<i32, (i32, Item)>),
@@ -269,7 +318,11 @@ unsafe fn main_0() -> i32 {
             __tmp_9
         } as *mut i32),
     ) {
-        (__tmp_7, __tmp_8) => (*__tmp_7).try_emplace(key, || Item::new_2({ __tmp_8 }, { 2 })),
+        (__tmp_7, __tmp_8) => (*__tmp_7).try_emplace(key, || {
+            let mut __v: Item = ::std::mem::MaybeUninit::uninit().assume_init();
+            Item::new_2(&raw mut __v, { __tmp_8 }, { 2 });
+            __v
+        }),
     };
     assert!(
         ((((counter) == (4)) && ((*std::cell::LazyCell::force_mut(&mut *&raw mut made_0)) == (0)))
@@ -283,7 +336,11 @@ unsafe fn main_0() -> i32 {
         __tmp_11
     } as *mut i32),)
     {
-        (__tmp_10,) => m.try_emplace(key, || Item::new_2({ __tmp_10 }, { 2 })),
+        (__tmp_10,) => m.try_emplace(key, || {
+            let mut __v: Item = ::std::mem::MaybeUninit::uninit().assume_init();
+            Item::new_2(&raw mut __v, { __tmp_10 }, { 2 });
+            __v
+        }),
     };
     assert!(
         (((counter) == (7)) && ((*std::cell::LazyCell::force_mut(&mut *&raw mut made_0)) == (1)))
@@ -297,7 +354,11 @@ unsafe fn main_0() -> i32 {
             }
         } as *mut i32),)
         {
-            (__tmp_12,) => m.try_emplace(key, || Item::new_2({ __tmp_12 }, { 2 })),
+            (__tmp_12,) => m.try_emplace(key, || {
+                let mut __v: Item = ::std::mem::MaybeUninit::uninit().assume_init();
+                Item::new_2(&raw mut __v, { __tmp_12 }, { 2 });
+                __v
+            }),
         };
     assert!(
         (((counter) == (9)) && ((*std::cell::LazyCell::force_mut(&mut *&raw mut made_0)) == (1)))
@@ -312,7 +373,11 @@ unsafe fn main_0() -> i32 {
             }
         } as *mut i32),)
         {
-            (__tmp_15,) => m.try_emplace(key, || Item::new_2({ __tmp_15 }, { 2 })),
+            (__tmp_15,) => m.try_emplace(key, || {
+                let mut __v: Item = ::std::mem::MaybeUninit::uninit().assume_init();
+                Item::new_2(&raw mut __v, { __tmp_15 }, { 2 });
+                __v
+            }),
         };
     assert!(
         (((counter) == (15)) && ((*std::cell::LazyCell::force_mut(&mut *&raw mut made_0)) == (2)))
@@ -331,7 +396,11 @@ unsafe fn main_0() -> i32 {
         __tmp_19
     } as *mut i32),)
     {
-        (__tmp_18,) => m.try_emplace(key, || Item::new_2({ __tmp_18 }, { 3 })),
+        (__tmp_18,) => m.try_emplace(key, || {
+            let mut __v: Item = ::std::mem::MaybeUninit::uninit().assume_init();
+            Item::new_2(&raw mut __v, { __tmp_18 }, { 3 });
+            __v
+        }),
     };
     assert!(
         (((index) == (1)) && ((array[(0) as usize]) == (4)))
@@ -348,7 +417,11 @@ unsafe fn main_0() -> i32 {
         }
     } as *mut i32),)
     {
-        (__tmp_20,) => m.try_emplace(key, || Item::new_2({ __tmp_20 }, { 3 })),
+        (__tmp_20,) => m.try_emplace(key, || {
+            let mut __v: Item = ::std::mem::MaybeUninit::uninit().assume_init();
+            Item::new_2(&raw mut __v, { __tmp_20 }, { 3 });
+            __v
+        }),
     };
     assert!(
         (((index) == (2)) && ((array[(1) as usize]) == (8)))
@@ -361,7 +434,11 @@ unsafe fn main_0() -> i32 {
         }
     } as *mut i32),)
     {
-        (__tmp_23,) => m.try_emplace(key, || Item::new_2({ __tmp_23 }, { 3 })),
+        (__tmp_23,) => m.try_emplace(key, || {
+            let mut __v: Item = ::std::mem::MaybeUninit::uninit().assume_init();
+            Item::new_2(&raw mut __v, { __tmp_23 }, { 3 });
+            __v
+        }),
     };
     assert!(
         ((counter) == (16)) && ((*std::cell::LazyCell::force_mut(&mut *&raw mut made_0)) == (4))
@@ -383,7 +460,11 @@ unsafe fn main_0() -> i32 {
         } as *mut i32)
     } as *mut i32),)
     {
-        (__tmp_26,) => m.try_emplace(key, || Item::new_2({ __tmp_26 }, { 3 })),
+        (__tmp_26,) => m.try_emplace(key, || {
+            let mut __v: Item = ::std::mem::MaybeUninit::uninit().assume_init();
+            Item::new_2(&raw mut __v, { __tmp_26 }, { 3 });
+            __v
+        }),
     };
     assert!(
         (((a) == (0)) && ((b) == (1)))
@@ -404,7 +485,11 @@ unsafe fn main_0() -> i32 {
         } as *mut i32)
     } as *mut i32),)
     {
-        (__tmp_29,) => m.try_emplace(key, || Item::new_2({ __tmp_29 }, { 3 })),
+        (__tmp_29,) => m.try_emplace(key, || {
+            let mut __v: Item = ::std::mem::MaybeUninit::uninit().assume_init();
+            Item::new_2(&raw mut __v, { __tmp_29 }, { 3 });
+            __v
+        }),
     };
     assert!(
         (((a) == (1)) && ((b) == (1)))
@@ -415,7 +500,11 @@ unsafe fn main_0() -> i32 {
         &mut counter
     } as *mut i32),)
     {
-        (__tmp_32,) => m.try_emplace(key, || Item::new_2({ __tmp_32 }, { 3 })),
+        (__tmp_32,) => m.try_emplace(key, || {
+            let mut __v: Item = ::std::mem::MaybeUninit::uninit().assume_init();
+            Item::new_2(&raw mut __v, { __tmp_32 }, { 3 });
+            __v
+        }),
     };
     assert!(
         ((counter) == (17)) && ((*std::cell::LazyCell::force_mut(&mut *&raw mut made_0)) == (4))
@@ -636,7 +725,9 @@ unsafe fn main_0() -> i32 {
                         } as *mut i32),)
                         {
                             (__tmp_60,) => selected.try_emplace(keys[(0) as usize], || {
-                                Item::new_2({ __tmp_60 }, { 2 })
+                                let mut __v: Item = ::std::mem::MaybeUninit::uninit().assume_init();
+                                Item::new_2(&raw mut __v, { __tmp_60 }, { 2 });
+                                __v
                             }),
                         };
                     let mut assignment: (UnsafeBidirectionalIterator<(i32, Item)>, bool) =
@@ -657,7 +748,9 @@ unsafe fn main_0() -> i32 {
                         } as *mut i32),)
                         {
                             (__tmp_63,) => selected.try_emplace(keys[(1) as usize], || {
-                                Item::new_2({ __tmp_63 }, { 2 })
+                                let mut __v: Item = ::std::mem::MaybeUninit::uninit().assume_init();
+                                Item::new_2(&raw mut __v, { __tmp_63 }, { 2 });
+                                __v
                             }),
                         };
                     let mut compound: (UnsafeBidirectionalIterator<(i32, Item)>, bool) =
@@ -680,7 +773,9 @@ unsafe fn main_0() -> i32 {
                         } as *mut i32),)
                         {
                             (__tmp_68,) => selected.try_emplace(keys[(2) as usize], || {
-                                Item::new_2({ __tmp_68 }, { 2 })
+                                let mut __v: Item = ::std::mem::MaybeUninit::uninit().assume_init();
+                                Item::new_2(&raw mut __v, { __tmp_68 }, { 2 });
+                                __v
                             }),
                         };
                     assert!(
@@ -762,7 +857,8 @@ unsafe fn main_0() -> i32 {
             let mut member: (UnsafeBidirectionalIterator<(i32, i32)>, bool) = {
                 let mut __tmp_74: Temporary;
                 match ((&mut (*{
-                    __tmp_74 = (unsafe { make_temporary_5() });
+                    __tmp_74 = ::std::mem::MaybeUninit::uninit().assume_init();
+                    (unsafe { make_temporary_5(&raw mut __tmp_74) });
                     &mut __tmp_74
                 })
                 .n as *mut i32),)
@@ -773,7 +869,8 @@ unsafe fn main_0() -> i32 {
             let mut nested: (UnsafeBidirectionalIterator<(i32, i32)>, bool) = {
                 let mut __tmp_76: Nested;
                 match ((&mut (*&mut (*{
-                    __tmp_76 = (unsafe { make_nested_6() });
+                    __tmp_76 = ::std::mem::MaybeUninit::uninit().assume_init();
+                    (unsafe { make_nested_6(&raw mut __tmp_76) });
                     &mut __tmp_76
                 })
                 .inner)
@@ -785,7 +882,8 @@ unsafe fn main_0() -> i32 {
             let mut element: (UnsafeBidirectionalIterator<(i32, i32)>, bool) = {
                 let mut __tmp_78: Temporary;
                 match ((&mut (*{
-                    __tmp_78 = (unsafe { make_temporary_5() });
+                    __tmp_78 = ::std::mem::MaybeUninit::uninit().assume_init();
+                    (unsafe { make_temporary_5(&raw mut __tmp_78) });
                     &mut __tmp_78
                 })
                 .data[(index.postfix_inc()) as usize] as *mut i32),)
@@ -814,7 +912,11 @@ unsafe fn main_0() -> i32 {
                     let mut references: UnsafeMap<i32, (i32, Held)> = UnsafeMap::new();
                     let mut ordinary: i32 = 9;
                     if (hit != 0) {
-                        references.try_emplace(key, || Held::new_1({ &ordinary }));
+                        references.try_emplace(key, || {
+                            let mut __v: Held = ::std::mem::MaybeUninit::uninit().assume_init();
+                            Held::new_1(&raw mut __v, { &ordinary });
+                            __v
+                        });
                     }
                     before = (*std::cell::LazyCell::force_mut(&mut *&raw mut temporary_calls_4));
                     index = 0;
@@ -825,23 +927,28 @@ unsafe fn main_0() -> i32 {
                         {
                             match ((if (choose != 0) {
                                 (&mut (*&mut (*{
-                                    __tmp_80 = (unsafe { make_nested_6() });
+                                    __tmp_80 = ::std::mem::MaybeUninit::uninit().assume_init();
+                                    (unsafe { make_nested_6(&raw mut __tmp_80) });
                                     &mut __tmp_80
                                 })
                                 .inner)
                                     .n as *mut i32)
                             } else {
                                 (&mut (*{
-                                    __tmp_81 = (unsafe { make_temporary_5() });
+                                    __tmp_81 = ::std::mem::MaybeUninit::uninit().assume_init();
+                                    (unsafe { make_temporary_5(&raw mut __tmp_81) });
                                     &mut __tmp_81
                                 })
                                 .data[(index.postfix_inc()) as usize]
                                     as *mut i32)
                             } as *mut i32),)
                             {
-                                (__tmp_79,) => {
-                                    references.try_emplace(key, || Held::new_1({ __tmp_79 }))
-                                }
+                                (__tmp_79,) => references.try_emplace(key, || {
+                                    let mut __v: Held =
+                                        ::std::mem::MaybeUninit::uninit().assume_init();
+                                    Held::new_1(&raw mut __v, { __tmp_79 });
+                                    __v
+                                }),
                             };
                             value = (*(*references.subscript(&key, || <Held>::default())).ptr)
                         }
@@ -862,7 +969,11 @@ unsafe fn main_0() -> i32 {
                     let mut arrays: UnsafeMap<i32, (i32, Held)> = UnsafeMap::new();
                     let ordinary_array: [i32; 2] = [9, 10];
                     if (hit != 0) {
-                        arrays.try_emplace(key, || Held::new_3({ &ordinary_array }, { 0 }));
+                        arrays.try_emplace(key, || {
+                            let mut __v: Held = ::std::mem::MaybeUninit::uninit().assume_init();
+                            Held::new_3(&raw mut __v, { &ordinary_array }, { 0 });
+                            __v
+                        });
                     }
                     before = (*std::cell::LazyCell::force_mut(&mut *&raw mut temporary_calls_4));
                     {
@@ -871,22 +982,27 @@ unsafe fn main_0() -> i32 {
                         {
                             match ((if (choose != 0) {
                                 (&mut (*&mut (*{
-                                    __tmp_83 = (unsafe { make_nested_6() });
+                                    __tmp_83 = ::std::mem::MaybeUninit::uninit().assume_init();
+                                    (unsafe { make_nested_6(&raw mut __tmp_83) });
                                     &mut __tmp_83
                                 })
                                 .inner)
                                     .data as *mut [i32; 2])
                             } else {
                                 (&mut (*{
-                                    __tmp_84 = (unsafe { make_temporary_5() });
+                                    __tmp_84 = ::std::mem::MaybeUninit::uninit().assume_init();
+                                    (unsafe { make_temporary_5(&raw mut __tmp_84) });
                                     &mut __tmp_84
                                 })
                                 .data as *mut [i32; 2])
                             } as *mut [i32; 2]),)
                             {
-                                (__tmp_82,) => {
-                                    arrays.try_emplace(key, || Held::new_3({ __tmp_82 }, { 0 }))
-                                }
+                                (__tmp_82,) => arrays.try_emplace(key, || {
+                                    let mut __v: Held =
+                                        ::std::mem::MaybeUninit::uninit().assume_init();
+                                    Held::new_3(&raw mut __v, { __tmp_82 }, { 0 });
+                                    __v
+                                }),
                             };
                             value = (*(*arrays.subscript(&key, || <Held>::default()))
                                 .ptr
@@ -923,7 +1039,11 @@ unsafe fn main_0() -> i32 {
             let mut arrow: (UnsafeBidirectionalIterator<(i32, i32)>, bool) = {
                 let mut __tmp_86: Option<Box<Temporary>>;
                 match ((&mut (*(*{
-                    __tmp_86 = Some(Box::new(Temporary::new()));
+                    __tmp_86 = Some(Box::new({
+                        let mut __v: Temporary = ::std::mem::MaybeUninit::uninit().assume_init();
+                        Temporary::new(&raw mut __v);
+                        __v
+                    }));
                     &mut __tmp_86
                 })
                 .as_deref()
@@ -938,7 +1058,11 @@ unsafe fn main_0() -> i32 {
             let mut nested: (UnsafeBidirectionalIterator<(i32, i32)>, bool) = {
                 let mut __tmp_88: Option<Box<Nested>>;
                 match ((&mut (*&mut (*(*{
-                    __tmp_88 = Some(Box::new(<Nested>::default()));
+                    __tmp_88 = Some(Box::new({
+                        let mut __v: Nested = ::std::mem::MaybeUninit::uninit().assume_init();
+                        Nested::new_1(&raw mut __v);
+                        __v
+                    }));
                     &mut __tmp_88
                 })
                 .as_deref()
@@ -954,7 +1078,11 @@ unsafe fn main_0() -> i32 {
             let mut element: (UnsafeBidirectionalIterator<(i32, i32)>, bool) = {
                 let mut __tmp_90: Option<Box<Temporary>>;
                 match ((&mut (*(*{
-                    __tmp_90 = Some(Box::new(Temporary::new()));
+                    __tmp_90 = Some(Box::new({
+                        let mut __v: Temporary = ::std::mem::MaybeUninit::uninit().assume_init();
+                        Temporary::new(&raw mut __v);
+                        __v
+                    }));
                     &mut __tmp_90
                 })
                 .as_deref()
@@ -969,7 +1097,11 @@ unsafe fn main_0() -> i32 {
             let mut get: (UnsafeBidirectionalIterator<(i32, i32)>, bool) = {
                 let mut __tmp_92: Option<Box<Temporary>>;
                 match ((&mut (*(*{
-                    __tmp_92 = Some(Box::new(Temporary::new()));
+                    __tmp_92 = Some(Box::new({
+                        let mut __v: Temporary = ::std::mem::MaybeUninit::uninit().assume_init();
+                        Temporary::new(&raw mut __v);
+                        __v
+                    }));
                     &mut __tmp_92
                 })
                 .as_deref_mut()
@@ -982,7 +1114,11 @@ unsafe fn main_0() -> i32 {
             let mut deref: (UnsafeBidirectionalIterator<(i32, i32)>, bool) = {
                 let mut __tmp_94: Option<Box<Temporary>>;
                 match ((&mut (*((*{
-                    __tmp_94 = Some(Box::new(Temporary::new()));
+                    __tmp_94 = Some(Box::new({
+                        let mut __v: Temporary = ::std::mem::MaybeUninit::uninit().assume_init();
+                        Temporary::new(&raw mut __v);
+                        __v
+                    }));
                     &mut __tmp_94
                 })
                 .as_deref()
@@ -997,7 +1133,11 @@ unsafe fn main_0() -> i32 {
             let mut indirect: (UnsafeBidirectionalIterator<(i32, i32)>, bool) = {
                 let mut __tmp_96: Option<Box<Option<Box<Temporary>>>>;
                 match ((&mut (*((*(*{
-                    __tmp_96 = Some(Box::new(Some(Box::new(Temporary::new()))));
+                    __tmp_96 = Some(Box::new(Some(Box::new({
+                        let mut __v: Temporary = ::std::mem::MaybeUninit::uninit().assume_init();
+                        Temporary::new(&raw mut __v);
+                        __v
+                    }))));
                     &mut __tmp_96
                 })
                 .as_deref()
@@ -1043,7 +1183,11 @@ unsafe fn main_0() -> i32 {
                     let mut references: UnsafeMap<i32, (i32, Held)> = UnsafeMap::new();
                     let mut ordinary: i32 = 9;
                     if (hit != 0) {
-                        references.try_emplace(key, || Held::new_1({ &ordinary }));
+                        references.try_emplace(key, || {
+                            let mut __v: Held = ::std::mem::MaybeUninit::uninit().assume_init();
+                            Held::new_1(&raw mut __v, { &ordinary });
+                            __v
+                        });
                     }
                     before = (*std::cell::LazyCell::force_mut(&mut *&raw mut temporary_calls_4));
                     index = 0;
@@ -1054,7 +1198,12 @@ unsafe fn main_0() -> i32 {
                         {
                             match ((if (choose != 0) {
                                 (&mut (*(*{
-                                    __tmp_98 = Some(Box::new(Temporary::new()));
+                                    __tmp_98 = Some(Box::new({
+                                        let mut __v: Temporary =
+                                            ::std::mem::MaybeUninit::uninit().assume_init();
+                                        Temporary::new(&raw mut __v);
+                                        __v
+                                    }));
                                     &mut __tmp_98
                                 })
                                 .as_deref()
@@ -1064,7 +1213,12 @@ unsafe fn main_0() -> i32 {
                                 .n as *mut i32)
                             } else {
                                 (&mut (*(*{
-                                    __tmp_99 = Some(Box::new(Temporary::new()));
+                                    __tmp_99 = Some(Box::new({
+                                        let mut __v: Temporary =
+                                            ::std::mem::MaybeUninit::uninit().assume_init();
+                                        Temporary::new(&raw mut __v);
+                                        __v
+                                    }));
                                     &mut __tmp_99
                                 })
                                 .as_deref()
@@ -1075,9 +1229,12 @@ unsafe fn main_0() -> i32 {
                                     as *mut i32)
                             } as *mut i32),)
                             {
-                                (__tmp_97,) => {
-                                    references.try_emplace(key, || Held::new_1({ __tmp_97 }))
-                                }
+                                (__tmp_97,) => references.try_emplace(key, || {
+                                    let mut __v: Held =
+                                        ::std::mem::MaybeUninit::uninit().assume_init();
+                                    Held::new_1(&raw mut __v, { __tmp_97 });
+                                    __v
+                                }),
                             };
                             value = (*(*references.subscript(&key, || <Held>::default())).ptr)
                         }
@@ -1097,23 +1254,22 @@ unsafe fn main_0() -> i32 {
                     );
                     let mut owners: UnsafeMap<i32, (i32, Held)> = UnsafeMap::new();
                     {
-                        let mut __tmp_101: Owner;
+                        match (((unsafe {
+                            Owner::value(&mut *(|__p: *mut Owner| {
+                                Owner::new(__p);
+                                __p
+                            })(
+                                (&mut ::std::mem::MaybeUninit::<Owner>::uninit()).as_mut_ptr(),
+                            ))
+                        }) as *const i32),)
                         {
-                            match (((unsafe {
-                                Owner::value(
-                                    &mut (*{
-                                        __tmp_101 = Owner::new();
-                                        &mut __tmp_101
-                                    }),
-                                )
-                            }) as *const i32),)
-                            {
-                                (__tmp_100,) => {
-                                    owners.try_emplace(key, || Held::new_1({ __tmp_100 }))
-                                }
-                            };
-                            value = (*(*owners.subscript(&key, || <Held>::default())).ptr)
-                        }
+                            (__tmp_100,) => owners.try_emplace(key, || {
+                                let mut __v: Held = ::std::mem::MaybeUninit::uninit().assume_init();
+                                Held::new_1(&raw mut __v, { __tmp_100 });
+                                __v
+                            }),
+                        };
+                        value = (*(*owners.subscript(&key, || <Held>::default())).ptr)
                     };
                     assert!(((value) == (5)));
                     choose.prefix_inc();
@@ -1127,26 +1283,26 @@ unsafe fn main_0() -> i32 {
         UnsafeBidirectionalIterator<(i32, (Option<Box<Noncopy>>, i32))>,
         bool,
     ) = {
-        let mut __tmp_103: Option<Box<Noncopy>>;
+        let mut __tmp_102: Option<Box<Noncopy>>;
         match (({
-            __tmp_103 = Some(Box::new(<Noncopy>::default()));
-            &mut __tmp_103
+            __tmp_102 = Some(Box::new(<Noncopy>::default()));
+            &mut __tmp_102
         } as *mut Option<Box<Noncopy>>),)
         {
-            (__tmp_102,) => move_only.try_emplace(key, || ((*__tmp_102).take(), 7)),
+            (__tmp_101,) => move_only.try_emplace(key, || ((*__tmp_101).take(), 7)),
         }
     };
     let mut move_hit: (
         UnsafeBidirectionalIterator<(i32, (Option<Box<Noncopy>>, i32))>,
         bool,
     ) = {
-        let mut __tmp_105: Option<Box<Noncopy>>;
+        let mut __tmp_104: Option<Box<Noncopy>>;
         match (({
-            __tmp_105 = Some(Box::new(<Noncopy>::default()));
-            &mut __tmp_105
+            __tmp_104 = Some(Box::new(<Noncopy>::default()));
+            &mut __tmp_104
         } as *mut Option<Box<Noncopy>>),)
         {
-            (__tmp_104,) => move_only.try_emplace(key, || ((*__tmp_104).take(), 9)),
+            (__tmp_103,) => move_only.try_emplace(key, || ((*__tmp_103).take(), 9)),
         }
     };
     assert!((move_new.1) && (!(move_hit.1)));
@@ -1185,7 +1341,7 @@ unsafe fn main_0() -> i32 {
     }
         as *mut Vec<libc::c_char>),)
     {
-        (__tmp_106,) => strings.try_emplace(key, || std::mem::replace(&mut (*__tmp_106), vec![0])),
+        (__tmp_105,) => strings.try_emplace(key, || std::mem::replace(&mut (*__tmp_105), vec![0])),
     };
     assert!(
         (((*std::cell::LazyCell::force_mut(&mut *&raw mut visits_1)) == (3)) && (!(string_hit.1)))
@@ -1207,7 +1363,7 @@ unsafe fn main_0() -> i32 {
     }
         as *mut Vec<libc::c_char>),)
     {
-        (__tmp_107,) => strings.try_emplace(key, || std::mem::replace(&mut (*__tmp_107), vec![0])),
+        (__tmp_106,) => strings.try_emplace(key, || std::mem::replace(&mut (*__tmp_106), vec![0])),
     };
     assert!(
         (((*std::cell::LazyCell::force_mut(&mut *&raw mut visits_1)) == (4)) && (string_new.1))

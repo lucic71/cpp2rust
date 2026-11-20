@@ -8,6 +8,7 @@ use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
+#[placement]
 pub struct S {
     pub v: i32,
 }
@@ -15,16 +16,24 @@ impl S {
     pub unsafe fn get(&self) -> i32 {
         return self.v;
     }
+    pub unsafe fn copy_from(this: *mut S, _a0: *const S) {
+        (&raw mut (*this).v).write((*_a0).v);
+    }
 }
 pub unsafe trait Base {
     unsafe fn apply(&mut self, x: i32) -> i32;
 }
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
+#[placement]
 pub struct Derived {
     pub factor: i32,
 }
-impl Derived {}
+impl Derived {
+    pub unsafe fn copy_from(this: *mut Derived, _a0: *const Derived) {
+        (&raw mut (*this).factor).write((*_a0).factor);
+    }
+}
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct Pair {
@@ -41,12 +50,14 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    let mut s: S = S::new({ 1 });
+    let mut s: S = ::std::mem::MaybeUninit::uninit().assume_init();
+    S::new(&raw mut s, { 1 });
     assert!(((unsafe { S::get(&s,) }) == (1)));
     (unsafe { S::set(&mut s, 4) });
     assert!(((unsafe { S::get(&s,) }) == (4)));
     assert!(((unsafe { S::add(&mut s, 2,) }) == (6)));
-    let mut derived: Derived = Derived::new({ 3 });
+    let mut derived: Derived = ::std::mem::MaybeUninit::uninit().assume_init();
+    Derived::new(&raw mut derived, { 3 });
     let mut base: *mut dyn Base = (&mut derived as *mut Derived);
     assert!(((unsafe { (*base).apply(5,) }) == (15)));
     let mut pair: Pair = Pair {
@@ -58,15 +69,13 @@ unsafe fn main_0() -> i32 {
     return 0;
 }
 impl S {
-    pub unsafe fn new(mut x: i32) -> Self {
-        let mut this = Self { v: x };
-        this
+    pub unsafe fn new(this: *mut S, mut x: i32) {
+        (&raw mut (*this).v).write(x);
     }
 }
 impl Derived {
-    pub unsafe fn new(mut factor: i32) -> Self {
-        let mut this = Self { factor: factor };
-        this
+    pub unsafe fn new(this: *mut Derived, mut factor: i32) {
+        (&raw mut (*this).factor).write(factor);
     }
 }
 impl S {}

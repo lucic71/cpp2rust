@@ -7,6 +7,7 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
 #[derive(Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, CppFrom, Default)]
+#[placement]
 #[cpp_from(i32, new, ptr)]
 #[byte_size(8)]
 pub struct S {
@@ -15,8 +16,11 @@ pub struct S {
     pub r: Ptr<i32>,
 }
 impl S {
-    pub fn new(x: Ptr<i32>) -> Self {
-        Self { r: (x).clone() }
+    pub fn new(this: Ptr<S>, x: Ptr<i32>) {
+        field!(this, r).write((x).clone());
+    }
+    pub fn copy_from(this: Ptr<S>, _a0: Ptr<S>) {
+        field!(this, r).write((_a0.with(|__s| __s.r.clone())).clone());
     }
 }
 pub fn main() {
@@ -24,11 +28,12 @@ pub fn main() {
     libcc2rs::cpp2rust_exit(main_0());
 }
 fn main_0() -> i32 {
-    let mut s: S = {
+    let s: Value<S> = Rc::new(RefCell::new(<S>::uninit()));
+    {
         let __tmp_0: Value<i32> = Rc::new(RefCell::new(5));
-        S::new({ __tmp_0.as_pointer() })
+        S::new(s.as_pointer(), { __tmp_0.as_pointer() })
     };
-    assert!(((s.r.read()) == 5));
+    assert!(({ (({ (*s.borrow()).r.clone() }.read()) == 5) }));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

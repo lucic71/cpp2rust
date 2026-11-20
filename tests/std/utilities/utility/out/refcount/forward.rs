@@ -44,6 +44,7 @@ pub fn test_1() {
     assert!((element.x == 5) && (element.y == 6));
 }
 #[derive(Record, ByteRepr, Uninit, FnPtrArg, MoveCtor, CppFrom, Default)]
+#[placement]
 #[cpp_from(i32, new, value)]
 #[byte_size(4)]
 pub struct p10_move_constructor_A {
@@ -51,29 +52,37 @@ pub struct p10_move_constructor_A {
     pub value: i32,
 }
 impl p10_move_constructor_A {
-    pub fn new(mut value: i32) -> Self {
-        Self { value: value }
+    pub fn new(this: Ptr<p10_move_constructor_A>, mut value: i32) {
+        field!(this, value).write(value);
     }
-    pub fn move_from(other: Ptr<p10_move_constructor_A>) -> Self {
-        let __this: p10_move_constructor_A = Self {
-            value: other.with(|__s| __s.value),
-        };
+    pub fn move_from(this: Ptr<p10_move_constructor_A>, other: Ptr<p10_move_constructor_A>) {
+        field!(this, value).write(other.with(|__s| __s.value));
         field!(other, value).write(0);
-        __this
     }
 }
 pub fn test_2() {
     let source: Value<p10_move_constructor_A> =
-        Rc::new(RefCell::new(p10_move_constructor_A::new({ 1 })));
-    let mut target: p10_move_constructor_A =
-        p10_move_constructor_A::move_from({ source.as_pointer() });
-    assert!((target.value == 1));
+        Rc::new(RefCell::new(<p10_move_constructor_A>::uninit()));
+    p10_move_constructor_A::new(source.as_pointer(), { 1 });
+    let target: Value<p10_move_constructor_A> =
+        Rc::new(RefCell::new(<p10_move_constructor_A>::uninit()));
+    p10_move_constructor_A::move_from(target.as_pointer(), { source.as_pointer() });
+    assert!(({ ({ (*target.borrow()).value } == 1) }));
     assert!(({ ({ (*source.borrow()).value } == 0) }));
     let mut values: Vec<p10_move_constructor_A> = Vec::new();
     let element: Value<p10_move_constructor_A> =
-        Rc::new(RefCell::new(p10_move_constructor_A::new({ 2 })));
+        Rc::new(RefCell::new(<p10_move_constructor_A>::uninit()));
+    p10_move_constructor_A::new(element.as_pointer(), { 2 });
     {
-        let __a1 = p10_move_constructor_A::move_from({ element.as_pointer() });
+        let __a1 = Rc::try_unwrap({
+            let __v: Value<p10_move_constructor_A> =
+                Rc::new(RefCell::new(<p10_move_constructor_A>::uninit()));
+            p10_move_constructor_A::move_from(__v.as_pointer(), { element.as_pointer() });
+            __v
+        })
+        .ok()
+        .unwrap()
+        .into_inner();
         values.push(__a1)
     };
     assert!((values[0_usize].value == 2));

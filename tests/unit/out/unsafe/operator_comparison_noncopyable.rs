@@ -14,20 +14,17 @@ pub unsafe fn operator_lt_1(x: *const S, y: *const S) -> bool {
 }
 #[repr(C)]
 #[derive(FnPtrArg, MoveCtorUnsafe, CppFromUnsafe, Default)]
+#[placement]
 #[cpp_from(i32, new, value)]
 pub struct S {
     data_: i32,
 }
 impl S {
-    pub unsafe fn new(mut data: i32) -> Self {
-        let mut this = Self { data_: data };
-        this
+    pub unsafe fn new(this: *mut S, mut data: i32) {
+        (&raw mut (*this).data_).write(data);
     }
-    pub unsafe fn move_from(_a0: *mut S) -> Self {
-        let mut this = Self {
-            data_: (*_a0).data_,
-        };
-        this
+    pub unsafe fn move_from(this: *mut S, _a0: *mut S) {
+        (&raw mut (*this).data_).write((*_a0).data_);
     }
 }
 impl std::cmp::Ord for S {
@@ -61,9 +58,12 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    let mut a: S = S::new({ 1 });
-    let mut b: S = S::new({ 2 });
-    let mut c: S = S::new({ 1 });
+    let mut a: S = ::std::mem::MaybeUninit::uninit().assume_init();
+    S::new(&raw mut a, { 1 });
+    let mut b: S = ::std::mem::MaybeUninit::uninit().assume_init();
+    S::new(&raw mut b, { 2 });
+    let mut c: S = ::std::mem::MaybeUninit::uninit().assume_init();
+    S::new(&raw mut c, { 1 });
     assert!(
         (unsafe {
             let _x: *const S = &a;

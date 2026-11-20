@@ -26,6 +26,7 @@ pub fn make_0() -> Outer {
     };
 }
 #[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, CppFrom, Default)]
+#[placement]
 #[cpp_from(Vec<i32  >  , new, ptr)]
 #[byte_size(4)]
 pub struct H {
@@ -33,10 +34,11 @@ pub struct H {
     pub last: i32,
 }
 impl H {
-    pub fn new(values: Ptr<Vec<i32>>) -> Self {
-        Self {
-            last: (index!(values, 3_usize).read()),
-        }
+    pub fn new(this: Ptr<H>, values: Ptr<Vec<i32>>) {
+        field!(this, last).write((index!(values, 3_usize).read()));
+    }
+    pub fn copy_from(this: Ptr<H>, _a0: Ptr<H>) {
+        field!(this, last).write(_a0.with(|__s| __s.last));
     }
 }
 pub fn main() {
@@ -44,12 +46,13 @@ pub fn main() {
     libcc2rs::cpp2rust_exit(main_0());
 }
 fn main_0() -> i32 {
-    let mut h: H = H::new({
+    let h: Value<H> = Rc::new(RefCell::new(<H>::uninit()));
+    H::new(h.as_pointer(), {
         (match Rc::new(RefCell::new(({ make_0() }))).as_pointer() {
             __tmp_0 => field_ref!(__tmp_0, values).as_pointer(),
         })
     });
-    printf!(b"%d\n", h.last);
+    printf!(b"%d\n", { (*h.borrow()).last });
     return 0;
 }
 pub trait OuterImpl {

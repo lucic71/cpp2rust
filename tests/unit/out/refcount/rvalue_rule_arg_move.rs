@@ -13,6 +13,7 @@ thread_local!(
     pub static moves_1: Value<i32> = Rc::new(RefCell::new(0));
 );
 #[derive(Record, ByteRepr, Uninit, VaArg, FnPtrArg, MoveCtor, CppFrom, CopyAssign, Default)]
+#[placement]
 #[cpp_from(i32, new, value)]
 #[byte_size(4)]
 pub struct Elem {
@@ -20,28 +21,24 @@ pub struct Elem {
     pub v: i32,
 }
 impl Elem {
-    pub fn new(mut v: i32) -> Self {
-        Self { v: v }
+    pub fn new(this: Ptr<Elem>, mut v: i32) {
+        field!(this, v).write(v);
     }
-    pub fn copy_from(o: Ptr<Elem>) -> Self {
-        let __this: Elem = Self {
-            v: o.with(|__s| __s.v),
-        };
+    pub fn copy_from(this: Ptr<Elem>, o: Ptr<Elem>) {
+        field!(this, v).write(o.with(|__s| __s.v));
         (*copies_0.with(Value::clone).borrow_mut()).prefix_inc();
-        __this
     }
-    pub fn move_from(o: Ptr<Elem>) -> Self {
-        let __this: Elem = Self {
-            v: o.with(|__s| __s.v),
-        };
+    pub fn move_from(this: Ptr<Elem>, o: Ptr<Elem>) {
+        field!(this, v).write(o.with(|__s| __s.v));
         (*moves_1.with(Value::clone).borrow_mut()).prefix_inc();
-        __this
     }
 }
 impl Clone for Elem {
     fn clone(&self) -> Self {
         let __src: Value<Elem> = Rc::new(RefCell::new(Elem { v: self.v.clone() }));
-        Elem::copy_from(__src.as_pointer())
+        let __dst: Value<Elem> = Rc::new(RefCell::new(<Elem>::uninit()));
+        Elem::copy_from(__dst.as_pointer(), __src.as_pointer());
+        Rc::try_unwrap(__dst).ok().unwrap().into_inner()
     }
 }
 pub fn main() {
@@ -56,16 +53,29 @@ fn main_0() -> i32 {
             (*__b0).reserve_exact(4_usize - len_0 as usize);
         }
     });
-    let a: Value<Elem> = Rc::new(RefCell::new(Elem::new({ 1 })));
-    let mut b: Elem = Elem::new({ 2 });
+    let a: Value<Elem> = Rc::new(RefCell::new(<Elem>::uninit()));
+    Elem::new(a.as_pointer(), { 1 });
+    let b: Value<Elem> = Rc::new(RefCell::new(<Elem>::uninit()));
+    Elem::new(b.as_pointer(), { 2 });
     {
         let mut __tmp_0 = { <RandomAccessIterator<Elem>>::from(v.decay().end()) };
-        (*v.borrow_mut()).insert(__tmp_0.index(), Elem::move_from({ a.as_pointer() }));
+        (*v.borrow_mut()).insert(
+            __tmp_0.index(),
+            Rc::try_unwrap({
+                let __v: Value<Elem> = Rc::new(RefCell::new(<Elem>::uninit()));
+                Elem::move_from(__v.as_pointer(), { a.as_pointer() });
+                __v
+            })
+            .ok()
+            .unwrap()
+            .into_inner(),
+        );
         (__tmp_0).clone()
     };
     {
         let mut __tmp_1 = { <RandomAccessIterator<Elem>>::from(v.decay().end()) };
-        (*v.borrow_mut()).insert(__tmp_1.index(), (b).clone());
+        let mut __tmp_2 = { (*b.borrow()).clone() };
+        (*v.borrow_mut()).insert(__tmp_1.index(), __tmp_2);
         (__tmp_1).clone()
     };
     let mut ok: bool = (((copies_0.with(|rc| *rc.borrow()) == 1)

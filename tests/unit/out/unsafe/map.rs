@@ -14,23 +14,38 @@ pub unsafe fn bar_1(x: *mut u32) {
 }
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg)]
+#[placement]
 pub struct Point {
     pub x: i32,
     pub y: i32,
 }
 impl Point {
-    pub unsafe fn new_1() -> Self {
-        let mut this = Self { x: 0, y: 0 };
-        this
+    pub unsafe fn new_1(this: *mut Point) {
+        (&raw mut (*this).x).write(0);
+        (&raw mut (*this).y).write(0);
     }
-    pub unsafe fn new_2(mut x: i32, mut y: i32) -> Self {
-        let mut this = Self { x: x, y: y };
-        this
+    pub unsafe fn new_2(this: *mut Point, mut x: i32, mut y: i32) {
+        (&raw mut (*this).x).write(x);
+        (&raw mut (*this).y).write(y);
+    }
+    pub unsafe fn copy_from(this: *mut Point, _a0: *const Point) {
+        (&raw mut (*this).x).write((*_a0).x);
+        (&raw mut (*this).y).write((*_a0).y);
+    }
+    pub unsafe fn move_from(this: *mut Point, _a0: *mut Point) {
+        (&raw mut (*this).x).write((*_a0).x);
+        (&raw mut (*this).y).write((*_a0).y);
     }
 }
 impl Default for Point {
     fn default() -> Self {
-        unsafe { Point::new_1() }
+        unsafe {
+            {
+                let mut __v: Point = ::std::mem::MaybeUninit::uninit().assume_init();
+                Point::new_1(&raw mut __v);
+                __v
+            }
+        }
     }
 }
 pub fn main() {
@@ -223,7 +238,11 @@ unsafe fn main_0() -> i32 {
     assert!(((m3.len()) == (4_usize)));
     let mut points: UnsafeMap<i32, (i32, Point)> = UnsafeMap::new();
     let mut point_new: (UnsafeBidirectionalIterator<(i32, Point)>, bool) =
-        points.try_emplace(key1, || Point::new_2({ 3 }, { 4 }));
+        points.try_emplace(key1, || {
+            let mut __v: Point = ::std::mem::MaybeUninit::uninit().assume_init();
+            Point::new_2(&raw mut __v, { 3 }, { 4 });
+            __v
+        });
     assert!(((point_new.1) as bool));
     assert!(
         (((*points.subscript_move(&mut 1, |__k| cpp_move_unsafe!(__k), || <Point>::default())).x)
@@ -233,7 +252,11 @@ unsafe fn main_0() -> i32 {
         (((*points.subscript_move(&mut 1, |__k| cpp_move_unsafe!(__k), || <Point>::default())).y)
             == (4))
     );
-    points.emplace((key8, Point::new_2({ 5 }, { 6 })));
+    points.emplace((key8, {
+        let mut __v: Point = ::std::mem::MaybeUninit::uninit().assume_init();
+        Point::new_2(&raw mut __v, { 5 }, { 6 });
+        __v
+    }));
     assert!(
         (((*points.subscript_move(&mut 8, |__k| cpp_move_unsafe!(__k), || <Point>::default())).x)
             == (5))

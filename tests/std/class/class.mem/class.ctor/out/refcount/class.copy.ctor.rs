@@ -7,6 +7,7 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
 #[derive(Record, ByteRepr, Uninit, FnPtrArg, MoveCtor, CppFrom, Default)]
+#[placement]
 #[cpp_from(i32, new, value)]
 #[byte_size(4)]
 pub struct p11_defaulted_move_constructor_is_trivial_MoveOnly {
@@ -14,29 +15,39 @@ pub struct p11_defaulted_move_constructor_is_trivial_MoveOnly {
     pub value: i32,
 }
 impl p11_defaulted_move_constructor_is_trivial_MoveOnly {
-    pub fn new(mut value: i32) -> Self {
-        Self { value: value }
+    pub fn new(this: Ptr<p11_defaulted_move_constructor_is_trivial_MoveOnly>, mut value: i32) {
+        field!(this, value).write(value);
     }
-    pub fn move_from(_a0: Ptr<p11_defaulted_move_constructor_is_trivial_MoveOnly>) -> Self {
-        Self {
-            value: { (*_a0.upgrade().deref()).value },
-        }
+    pub fn move_from(
+        this: Ptr<p11_defaulted_move_constructor_is_trivial_MoveOnly>,
+        _a0: Ptr<p11_defaulted_move_constructor_is_trivial_MoveOnly>,
+    ) {
+        field!(this, value).write({ (*_a0.upgrade().deref()).value });
     }
 }
 pub fn pass_0(
-    object: p11_defaulted_move_constructor_is_trivial_MoveOnly,
-) -> p11_defaulted_move_constructor_is_trivial_MoveOnly {
-    let object: Value<p11_defaulted_move_constructor_is_trivial_MoveOnly> =
-        Rc::new(RefCell::new(object));
-    return p11_defaulted_move_constructor_is_trivial_MoveOnly::move_from({ object.as_pointer() });
+    __ret: Ptr<p11_defaulted_move_constructor_is_trivial_MoveOnly>,
+    object: Value<p11_defaulted_move_constructor_is_trivial_MoveOnly>,
+) {
+    p11_defaulted_move_constructor_is_trivial_MoveOnly::move_from(__ret.clone(), {
+        object.as_pointer()
+    });
+    return;
 }
 pub fn test_1() {
-    let mut result: p11_defaulted_move_constructor_is_trivial_MoveOnly = ({
-        pass_0(p11_defaulted_move_constructor_is_trivial_MoveOnly::new({
-            7
-        }))
+    let result: Value<p11_defaulted_move_constructor_is_trivial_MoveOnly> = Rc::new(RefCell::new(
+        <p11_defaulted_move_constructor_is_trivial_MoveOnly>::uninit(),
+    ));
+    ({
+        pass_0(result.as_pointer(), {
+            let __v: Value<p11_defaulted_move_constructor_is_trivial_MoveOnly> = Rc::new(
+                RefCell::new(<p11_defaulted_move_constructor_is_trivial_MoveOnly>::uninit()),
+            );
+            p11_defaulted_move_constructor_is_trivial_MoveOnly::new(__v.as_pointer(), { 7 });
+            __v
+        })
     });
-    assert!((result.value == 7));
+    assert!(({ ({ (*result.borrow()).value } == 7) }));
 }
 pub fn read_by_value_2(it: RandomAccessIterator<i32>) -> i32 {
     let it: Value<RandomAccessIterator<i32>> = Rc::new(RefCell::new(it));

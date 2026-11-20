@@ -115,6 +115,7 @@ pub fn self_ref_push_6(mut comps: Ptr<Vec<Chunk>>) {
     };
 }
 #[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, CppFrom)]
+#[placement]
 #[cpp_from(i32, new_1, value)]
 #[byte_size(8)]
 pub struct Pair {
@@ -124,50 +125,108 @@ pub struct Pair {
     pub second: i32,
 }
 impl Pair {
-    pub fn new_2() -> Self {
-        Self {
-            first: -1_i32,
-            second: -1_i32,
-        }
+    pub fn new_2(this: Ptr<Pair>) {
+        field!(this, first).write(-1_i32);
+        field!(this, second).write(-1_i32);
     }
-    pub fn new_1(mut a: i32) -> Self {
-        Self {
-            first: a,
-            second: 0,
-        }
+    pub fn new_1(this: Ptr<Pair>, mut a: i32) {
+        field!(this, first).write(a);
+        field!(this, second).write(0);
     }
-    pub fn new_3(mut a: i32, mut b: i32) -> Self {
-        Self {
-            first: a,
-            second: (b * 2),
-        }
+    pub fn new_3(this: Ptr<Pair>, mut a: i32, mut b: i32) {
+        field!(this, first).write(a);
+        field!(this, second).write((b * 2));
+    }
+    pub fn copy_from(this: Ptr<Pair>, _a0: Ptr<Pair>) {
+        field!(this, first).write(_a0.with(|__s| __s.first));
+        field!(this, second).write(_a0.with(|__s| __s.second));
+    }
+    pub fn move_from(this: Ptr<Pair>, _a0: Ptr<Pair>) {
+        field!(this, first).write({ (*_a0.upgrade().deref()).first });
+        field!(this, second).write({ (*_a0.upgrade().deref()).second });
     }
 }
 impl Default for Pair {
     fn default() -> Self {
-        { Pair::new_2() }
+        Rc::try_unwrap({
+            let __v: Value<Pair> = Rc::new(RefCell::new(<Pair>::uninit()));
+            Pair::new_2(__v.as_pointer());
+            __v
+        })
+        .ok()
+        .unwrap()
+        .into_inner()
     }
 }
 pub fn emplace_ctor_args_7(mut pairs: Ptr<Vec<Pair>>) {
     {
-        pairs.with_mut(|__v: &mut Vec<Pair>| __v.push(Pair::new_2()));
+        pairs.with_mut(|__v: &mut Vec<Pair>| {
+            __v.push(
+                Rc::try_unwrap({
+                    let __v: Value<Pair> = Rc::new(RefCell::new(<Pair>::uninit()));
+                    Pair::new_2(__v.as_pointer());
+                    __v
+                })
+                .ok()
+                .unwrap()
+                .into_inner(),
+            )
+        });
     };
     {
-        let mut __tmp_4 = { Pair::new_1({ 3 }) };
+        let mut __tmp_4 = {
+            Rc::try_unwrap({
+                let __v: Value<Pair> = Rc::new(RefCell::new(<Pair>::uninit()));
+                Pair::new_1(__v.as_pointer(), { 3 });
+                __v
+            })
+            .ok()
+            .unwrap()
+            .into_inner()
+        };
         pairs.with_mut(|__v: &mut Vec<Pair>| __v.push(__tmp_4));
     };
     {
-        let mut __tmp_5 = { Pair::new_3({ 4 }, { 5 }) };
+        let mut __tmp_5 = {
+            Rc::try_unwrap({
+                let __v: Value<Pair> = Rc::new(RefCell::new(<Pair>::uninit()));
+                Pair::new_3(__v.as_pointer(), { 4 }, { 5 });
+                __v
+            })
+            .ok()
+            .unwrap()
+            .into_inner()
+        };
         pairs.with_mut(|__v: &mut Vec<Pair>| __v.push(__tmp_5));
     };
 }
 pub fn emplace_deque_8(mut queue: Ptr<Vec<Pair>>) {
     {
-        let mut __tmp_6 = { Pair::new_3({ 6 }, { 7 }) };
+        let mut __tmp_6 = {
+            Rc::try_unwrap({
+                let __v: Value<Pair> = Rc::new(RefCell::new(<Pair>::uninit()));
+                Pair::new_3(__v.as_pointer(), { 6 }, { 7 });
+                __v
+            })
+            .ok()
+            .unwrap()
+            .into_inner()
+        };
         queue.with_mut(|__v: &mut Vec<Pair>| __v.push(__tmp_6));
     };
     {
-        queue.with_mut(|__v: &mut Vec<Pair>| __v.push(Pair::new_2()));
+        queue.with_mut(|__v: &mut Vec<Pair>| {
+            __v.push(
+                Rc::try_unwrap({
+                    let __v: Value<Pair> = Rc::new(RefCell::new(<Pair>::uninit()));
+                    Pair::new_2(__v.as_pointer());
+                    __v
+                })
+                .ok()
+                .unwrap()
+                .into_inner(),
+            )
+        });
     };
 }
 pub fn emplace_scalar_9(mut values: Ptr<Vec<i64>>, x: i32) {
@@ -181,7 +240,16 @@ pub fn emplace_scalar_9(mut values: Ptr<Vec<i64>>, x: i32) {
 }
 pub fn emplace_ref_through_ptr_10(mut pairs: Ptr<Vec<Pair>>) {
     let p: Ptr<Pair> = {
-        let mut __tmp_7 = { Pair::new_3({ 1 }, { 2 }) };
+        let mut __tmp_7 = {
+            Rc::try_unwrap({
+                let __v: Value<Pair> = Rc::new(RefCell::new(<Pair>::uninit()));
+                Pair::new_3(__v.as_pointer(), { 1 }, { 2 });
+                __v
+            })
+            .ok()
+            .unwrap()
+            .into_inner()
+        };
         pairs.with_mut(|__b0| {
             (*__b0).push(__tmp_7);
             let __n = (*__b0).len() - 1;
@@ -192,7 +260,16 @@ pub fn emplace_ref_through_ptr_10(mut pairs: Ptr<Vec<Pair>>) {
     {
         field!(
             {
-                let mut __tmp_8 = { Pair::new_1({ 4 }) };
+                let mut __tmp_8 = {
+                    Rc::try_unwrap({
+                        let __v: Value<Pair> = Rc::new(RefCell::new(<Pair>::uninit()));
+                        Pair::new_1(__v.as_pointer(), { 4 });
+                        __v
+                    })
+                    .ok()
+                    .unwrap()
+                    .into_inner()
+                };
                 pairs.with_mut(|__b0| {
                     (*__b0).push(__tmp_8);
                     let __n = (*__b0).len() - 1;
@@ -217,25 +294,42 @@ pub fn emplace_self_reads_12(mut values: Ptr<Vec<i64>>, mut pairs: Ptr<Vec<Pair>
         values.with_mut(|__v: &mut Vec<i64>| __v.push(__tmp_9));
     };
     {
-        let mut __tmp_10 = { index!(pairs, 0_usize).read() };
+        let mut __tmp_10 = {
+            Rc::try_unwrap({
+                let __v: Value<Pair> = Rc::new(RefCell::new(<Pair>::uninit()));
+                Pair::copy_from(__v.as_pointer(), { (pairs).decay().offset(0_usize) });
+                __v
+            })
+            .ok()
+            .unwrap()
+            .into_inner()
+        };
         pairs.with_mut(|__v: &mut Vec<Pair>| __v.push(__tmp_10));
     };
     {
         let mut __tmp_11 = {
-            Pair::new_3(
-                {
-                    pairs.with(|__s| {
-                        (*{
-                            let __n = __s.len() - 1;
-                            pairs.decay().offset((__n) as isize)
-                        }
-                        .upgrade()
-                        .deref())
-                        .first
-                    })
-                },
-                { (((*pairs.upgrade().deref()).len()) as i32) },
-            )
+            Rc::try_unwrap({
+                let __v: Value<Pair> = Rc::new(RefCell::new(<Pair>::uninit()));
+                Pair::new_3(
+                    __v.as_pointer(),
+                    {
+                        pairs.with(|__s| {
+                            (*{
+                                let __n = __s.len() - 1;
+                                pairs.decay().offset((__n) as isize)
+                            }
+                            .upgrade()
+                            .deref())
+                            .first
+                        })
+                    },
+                    { (((*pairs.upgrade().deref()).len()) as i32) },
+                );
+                __v
+            })
+            .ok()
+            .unwrap()
+            .into_inner()
         };
         pairs.with_mut(|__v: &mut Vec<Pair>| __v.push(__tmp_11));
     };
@@ -333,25 +427,41 @@ thread_local!(
         Rc::new(RefCell::new(Ptr::<Vec<Counted>>::null()));
 );
 #[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
+#[placement]
 #[byte_size(8)]
 pub struct Counted {
     #[offset(0)]
     pub seen: usize,
 }
 impl Counted {
-    pub fn new(mut _a0: i32) -> Self {
-        Self {
-            seen: (*(*all_counted_16.with(Value::clone).borrow())
+    pub fn new(this: Ptr<Counted>, mut _a0: i32) {
+        field!(this, seen).write(
+            (*(*all_counted_16.with(Value::clone).borrow())
                 .upgrade()
                 .deref())
             .len(),
-        }
+        );
+    }
+    pub fn copy_from(this: Ptr<Counted>, _a0: Ptr<Counted>) {
+        field!(this, seen).write(_a0.with(|__s| __s.seen));
+    }
+    pub fn move_from(this: Ptr<Counted>, _a0: Ptr<Counted>) {
+        field!(this, seen).write({ (*_a0.upgrade().deref()).seen });
     }
 }
 impl Counted {}
 pub fn emplace_counted_17(mut v: Ptr<Vec<Counted>>) {
     {
-        let mut __tmp_16 = { Counted::new({ 1 }) };
+        let mut __tmp_16 = {
+            Rc::try_unwrap({
+                let __v: Value<Counted> = Rc::new(RefCell::new(<Counted>::uninit()));
+                Counted::new(__v.as_pointer(), { 1 });
+                __v
+            })
+            .ok()
+            .unwrap()
+            .into_inner()
+        };
         v.with_mut(|__v: &mut Vec<Counted>| __v.push(__tmp_16));
     };
 }
@@ -538,7 +648,16 @@ fn main_0() -> i32 {
     let self_values: Value<Vec<i64>> = Rc::new(RefCell::new(Vec::from([7_i64])));
     let self_pairs: Value<Vec<Pair>> = Rc::new(RefCell::new(Vec::new()));
     {
-        let mut __tmp_19 = { Pair::new_3({ 1 }, { 2 }) };
+        let mut __tmp_19 = {
+            Rc::try_unwrap({
+                let __v: Value<Pair> = Rc::new(RefCell::new(<Pair>::uninit()));
+                Pair::new_3(__v.as_pointer(), { 1 }, { 2 });
+                __v
+            })
+            .ok()
+            .unwrap()
+            .into_inner()
+        };
         (*self_pairs.borrow_mut()).push(__tmp_19);
     };
     ({ emplace_self_reads_12((self_values.as_pointer()), (self_pairs.as_pointer())) });

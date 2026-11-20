@@ -8,14 +8,14 @@ use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 #[repr(C)]
 #[derive(Clone, VaArg, FnPtrArg, DestructorUnsafe, Default)]
+#[placement]
 pub struct Tracker {
     pub tag: i32,
 }
 impl Tracker {
-    pub unsafe fn new(mut tag: i32) -> Self {
-        let mut this = Self { tag: tag };
+    pub unsafe fn new(this: *mut Tracker, mut tag: i32) {
+        (&raw mut (*this).tag).write(tag);
         (unsafe { libc::printf(c"construct %d\n".as_ptr() as *const libc::c_char, (tag)) });
-        this
     }
     pub unsafe fn destructor(&mut self) {
         (unsafe { libc::printf(c"destroy %d\n".as_ptr() as *const libc::c_char, (self.tag)) });
@@ -23,11 +23,20 @@ impl Tracker {
     pub unsafe fn touch(&self) {
         (unsafe { libc::printf(c"touch %d\n".as_ptr() as *const libc::c_char, (self.tag)) });
     }
+    pub unsafe fn copy_from(this: *mut Tracker, _a0: *const Tracker) {
+        (&raw mut (*this).tag).write((*_a0).tag);
+    }
 }
 #[repr(C)]
 #[derive(Clone, VaArg, FnPtrArg, DestructorUnsafe, Default)]
+#[placement]
 pub struct HoldsTracker {
     pub member: Tracker,
+}
+impl HoldsTracker {
+    pub unsafe fn copy_from(this: *mut HoldsTracker, _a0: *const HoldsTracker) {
+        Tracker::copy_from((&raw mut (*this).member), { &(*_a0).member });
+    }
 }
 impl HoldsTracker {
     pub unsafe fn destructor(&mut self) {
@@ -41,7 +50,11 @@ pub struct TriviallyDestructible {
 }
 pub static mut global_0: std::cell::LazyCell<Tracker> = std::cell::LazyCell::new(|| unsafe {
     {
-        let __static = Tracker::new({ 1 });
+        let __static = {
+            let mut __v: Tracker = ::std::mem::MaybeUninit::uninit().assume_init();
+            Tracker::new(&raw mut __v, { 1 });
+            __v
+        };
         libcc2rs::register_static_destructor(|| {
             (*std::cell::LazyCell::force_mut(&mut *&raw mut global_0)).destructor()
         });
@@ -59,7 +72,11 @@ pub unsafe fn test_3() {
 static mut never_constructed_2: std::cell::LazyCell<Tracker> =
     std::cell::LazyCell::new(|| unsafe {
         {
-            let __static = Tracker::new({ 100 });
+            let __static = {
+                let mut __v: Tracker = ::std::mem::MaybeUninit::uninit().assume_init();
+                Tracker::new(&raw mut __v, { 100 });
+                __v
+            };
             libcc2rs::register_static_destructor(|| {
                 (*std::cell::LazyCell::force_mut(&mut *&raw mut never_constructed_2)).destructor()
             });
@@ -71,7 +88,11 @@ pub unsafe fn local_static_during_global_init_4() -> *const Tracker {
 }
 pub static mut before_6: std::cell::LazyCell<Tracker> = std::cell::LazyCell::new(|| unsafe {
     {
-        let __static = Tracker::new({ 2 });
+        let __static = {
+            let mut __v: Tracker = ::std::mem::MaybeUninit::uninit().assume_init();
+            Tracker::new(&raw mut __v, { 2 });
+            __v
+        };
         libcc2rs::register_static_destructor(|| {
             (*std::cell::LazyCell::force_mut(&mut *&raw mut before_6)).destructor()
         });
@@ -80,8 +101,13 @@ pub static mut before_6: std::cell::LazyCell<Tracker> = std::cell::LazyCell::new
 });
 pub static mut after_7: std::cell::LazyCell<Tracker> = std::cell::LazyCell::new(|| unsafe {
     {
-        let __static =
-            Tracker::new({ (((*(unsafe { local_static_during_global_init_4() })).tag) + (1)) });
+        let __static = {
+            let mut __v: Tracker = ::std::mem::MaybeUninit::uninit().assume_init();
+            Tracker::new(&raw mut __v, {
+                (((*(unsafe { local_static_during_global_init_4() })).tag) + (1))
+            });
+            __v
+        };
         libcc2rs::register_static_destructor(|| {
             (*std::cell::LazyCell::force_mut(&mut *&raw mut after_7)).destructor()
         });
@@ -91,7 +117,11 @@ pub static mut after_7: std::cell::LazyCell<Tracker> = std::cell::LazyCell::new(
 pub static mut holder_8: std::cell::LazyCell<HoldsTracker> = std::cell::LazyCell::new(|| unsafe {
     {
         let __static = HoldsTracker {
-            member: Tracker::new({ 5 }),
+            member: {
+                let mut __v: Tracker = ::std::mem::MaybeUninit::uninit().assume_init();
+                Tracker::new(&raw mut __v, { 5 });
+                __v
+            },
         };
         libcc2rs::register_static_destructor(|| {
             (*std::cell::LazyCell::force_mut(&mut *&raw mut holder_8)).destructor()
@@ -106,7 +136,11 @@ pub static mut trivial_9: std::cell::LazyCell<TriviallyDestructible> =
 pub struct p3_reverse_completion_order_WithStaticMember {}
 pub static mut member_10: std::cell::LazyCell<Tracker> = std::cell::LazyCell::new(|| unsafe {
     {
-        let __static = Tracker::new({ 7 });
+        let __static = {
+            let mut __v: Tracker = ::std::mem::MaybeUninit::uninit().assume_init();
+            Tracker::new(&raw mut __v, { 7 });
+            __v
+        };
         libcc2rs::register_static_destructor(|| {
             (*std::cell::LazyCell::force_mut(&mut *&raw mut member_10)).destructor()
         });
@@ -118,7 +152,11 @@ pub static mut capturing_11: std::cell::LazyCell<FnPtr<fn() -> i32>> =
         {
             let __static = lambda_unsafe!(
                 {
-                    let captured: Tracker = Tracker::new({ 8 });
+                    let captured: Tracker = {
+                        let mut __v: Tracker = ::std::mem::MaybeUninit::uninit().assume_init();
+                        Tracker::new(&raw mut __v, { 8 });
+                        __v
+                    };
                 },
                 || -> i32 {
                     return captured.tag;
@@ -153,7 +191,11 @@ pub unsafe fn test_14() {
 }
 static mut during_init_5: std::cell::LazyCell<Tracker> = std::cell::LazyCell::new(|| unsafe {
     {
-        let __static = Tracker::new({ 3 });
+        let __static = {
+            let mut __v: Tracker = ::std::mem::MaybeUninit::uninit().assume_init();
+            Tracker::new(&raw mut __v, { 3 });
+            __v
+        };
         libcc2rs::register_static_destructor(|| {
             (*std::cell::LazyCell::force_mut(&mut *&raw mut during_init_5)).destructor()
         });
@@ -162,7 +204,11 @@ static mut during_init_5: std::cell::LazyCell<Tracker> = std::cell::LazyCell::ne
 });
 static mut during_main_13: std::cell::LazyCell<Tracker> = std::cell::LazyCell::new(|| unsafe {
     {
-        let __static = Tracker::new({ 9 });
+        let __static = {
+            let mut __v: Tracker = ::std::mem::MaybeUninit::uninit().assume_init();
+            Tracker::new(&raw mut __v, { 9 });
+            __v
+        };
         libcc2rs::register_static_destructor(|| {
             (*std::cell::LazyCell::force_mut(&mut *&raw mut during_main_13)).destructor()
         });

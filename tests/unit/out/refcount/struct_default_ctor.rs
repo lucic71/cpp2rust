@@ -7,6 +7,7 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
 #[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg)]
+#[placement]
 #[byte_size(8)]
 pub struct S {
     #[offset(0)]
@@ -15,29 +16,67 @@ pub struct S {
     pub b: bool,
 }
 impl S {
-    pub fn new() -> Self {
-        Self { a: 11, b: true }
+    pub fn new(this: Ptr<S>) {
+        field!(this, a).write(11);
+        field!(this, b).write(true);
+    }
+    pub fn copy_from(this: Ptr<S>, _a0: Ptr<S>) {
+        field!(this, a).write(_a0.with(|__s| __s.a));
+        field!(this, b).write(_a0.with(|__s| __s.b));
     }
 }
 impl Default for S {
     fn default() -> Self {
-        { S::new() }
+        Rc::try_unwrap({
+            let __v: Value<S> = Rc::new(RefCell::new(<S>::uninit()));
+            S::new(__v.as_pointer());
+            __v
+        })
+        .ok()
+        .unwrap()
+        .into_inner()
     }
 }
 #[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
+#[placement]
 #[byte_size(4)]
 pub struct Declared {
     #[offset(0)]
     pub v: i32,
 }
-impl Declared {}
+impl Declared {
+    pub fn copy_from(this: Ptr<Declared>, _a0: Ptr<Declared>) {
+        field!(this, v).write(_a0.with(|__s| __s.v));
+    }
+}
 #[derive(Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg)]
+#[placement]
 #[byte_size(16)]
 pub struct Holder {
     #[offset(0)]
     #[byte_size(16)]
     #[array_len(2)]
     pub items: Box<[S]>,
+}
+impl Holder {
+    pub fn new_1(this: Ptr<Holder>) {
+        {
+            let __d = array_field_ptr!(this, items);
+            for __i in 0..2_isize {
+                S::new(__d.offset(__i));
+            }
+        };
+    }
+    pub fn copy_from(this: Ptr<Holder>, _a0: Ptr<Holder>) {
+        {
+            let __d = array_field_ptr!(this, items);
+            for __i in 0..2_usize {
+                S::copy_from(__d.offset(__i as isize), {
+                    array_field_ptr!(_a0, items).offset(__i)
+                });
+            }
+        };
+    }
 }
 impl Default for Holder {
     fn default() -> Self {
@@ -73,9 +112,10 @@ pub fn main() {
 fn main_0() -> i32 {
     let mut d: Ptr<Declared> = Ptr::<Declared>::null();
     assert!((d).is_null());
-    let mut s: S = S::new();
-    assert!((s.a == 11));
-    assert!(((s.b as i32) == (true as i32)));
+    let s: Value<S> = Rc::new(RefCell::new(<S>::uninit()));
+    S::new(s.as_pointer());
+    assert!(({ ({ (*s.borrow()).a } == 11) }));
+    assert!(({ (({ (*s.borrow()).b } as i32) == (true as i32)) }));
     let mut h: Ptr<Holder> = Ptr::alloc_array(
         (0..1_usize)
             .map(|_| <Holder>::default())

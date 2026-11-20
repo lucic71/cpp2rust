@@ -106,19 +106,34 @@ pub unsafe fn combine_14(mut first: i32, mut second: i32) -> i32 {
 }
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, CppFromUnsafe)]
+#[placement]
 #[cpp_from(i32, new, value)]
 pub struct p9_evaluated_each_time_called_Widget {
     pub id: i32,
 }
 impl p9_evaluated_each_time_called_Widget {
-    pub unsafe fn new(mut id: i32) -> Self {
-        let mut this = Self { id: id };
-        this
+    pub unsafe fn new(this: *mut p9_evaluated_each_time_called_Widget, mut id: i32) {
+        (&raw mut (*this).id).write(id);
+    }
+    pub unsafe fn copy_from(
+        this: *mut p9_evaluated_each_time_called_Widget,
+        _a0: *const p9_evaluated_each_time_called_Widget,
+    ) {
+        (&raw mut (*this).id).write((*_a0).id);
     }
 }
 impl Default for p9_evaluated_each_time_called_Widget {
     fn default() -> Self {
-        unsafe { p9_evaluated_each_time_called_Widget::new({ (unsafe { count_default_13() }) }) }
+        unsafe {
+            {
+                let mut __v: p9_evaluated_each_time_called_Widget =
+                    ::std::mem::MaybeUninit::uninit().assume_init();
+                p9_evaluated_each_time_called_Widget::new(&raw mut __v, {
+                    (unsafe { count_default_13() })
+                });
+                __v
+            }
+        }
     }
 }
 static mut base_15: std::cell::LazyCell<i32> = std::cell::LazyCell::new(|| unsafe { 10 });
@@ -159,11 +174,14 @@ pub unsafe fn test_17() {
     assert!(((first) == (1)));
     assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut defaults_evaluated_12)) == (3)));
     let mut a: p9_evaluated_each_time_called_Widget =
-        p9_evaluated_each_time_called_Widget::new({ (unsafe { count_default_13() }) });
+        ::std::mem::MaybeUninit::uninit().assume_init();
+    p9_evaluated_each_time_called_Widget::new(&raw mut a, { (unsafe { count_default_13() }) });
     let mut b: p9_evaluated_each_time_called_Widget =
-        p9_evaluated_each_time_called_Widget::new({ 40 });
+        ::std::mem::MaybeUninit::uninit().assume_init();
+    p9_evaluated_each_time_called_Widget::new(&raw mut b, { 40 });
     let mut c: p9_evaluated_each_time_called_Widget =
-        p9_evaluated_each_time_called_Widget::new({ (unsafe { count_default_13() }) });
+        ::std::mem::MaybeUninit::uninit().assume_init();
+    p9_evaluated_each_time_called_Widget::new(&raw mut c, { (unsafe { count_default_13() }) });
     assert!(((a.id) == (4)));
     assert!(((b.id) == (40)));
     assert!(((c.id) == (5)));

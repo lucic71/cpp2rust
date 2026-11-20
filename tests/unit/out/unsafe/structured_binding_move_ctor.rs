@@ -10,37 +10,36 @@ pub static mut copies_0: std::cell::LazyCell<i32> = std::cell::LazyCell::new(|| 
 pub static mut moves_1: std::cell::LazyCell<i32> = std::cell::LazyCell::new(|| unsafe { 0 });
 #[repr(C)]
 #[derive(VaArg, FnPtrArg, MoveCtorUnsafe, Default)]
+#[placement]
 pub struct Movable {
     pub x: i32,
     pub y: i32,
 }
 impl Movable {
-    pub unsafe fn new(mut x: i32, mut y: i32) -> Self {
-        let mut this = Self { x: x, y: y };
-        this
+    pub unsafe fn new(this: *mut Movable, mut x: i32, mut y: i32) {
+        (&raw mut (*this).x).write(x);
+        (&raw mut (*this).y).write(y);
     }
-    pub unsafe fn copy_from(other: *const Movable) -> Self {
-        let mut this = Self {
-            x: (*other).x,
-            y: (*other).y,
-        };
+    pub unsafe fn copy_from(this: *mut Movable, other: *const Movable) {
+        (&raw mut (*this).x).write((*other).x);
+        (&raw mut (*this).y).write((*other).y);
         (*std::cell::LazyCell::force_mut(&mut *&raw mut copies_0)).prefix_inc();
-        this
     }
-    pub unsafe fn move_from(other: *mut Movable) -> Self {
-        let mut this = Self {
-            x: (*other).x,
-            y: (*other).y,
-        };
+    pub unsafe fn move_from(this: *mut Movable, other: *mut Movable) {
+        (&raw mut (*this).x).write((*other).x);
+        (&raw mut (*this).y).write((*other).y);
         (*other).x = 0;
         (*other).y = 0;
         (*std::cell::LazyCell::force_mut(&mut *&raw mut moves_1)).prefix_inc();
-        this
     }
 }
 impl Clone for Movable {
     fn clone(&self) -> Self {
-        unsafe { Movable::copy_from(self as *const Movable) }
+        unsafe {
+            let mut __v: Movable = ::std::mem::MaybeUninit::uninit().assume_init();
+            Movable::copy_from(&raw mut __v, self as *const Movable);
+            __v
+        }
     }
 }
 #[repr(C)]
@@ -80,8 +79,10 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    let mut m: Movable = Movable::new({ 3 }, { 4 });
-    let mut __decomp_2: Movable = Movable::move_from({ &mut m });
+    let mut m: Movable = ::std::mem::MaybeUninit::uninit().assume_init();
+    Movable::new(&raw mut m, { 3 }, { 4 });
+    let mut __decomp_2: Movable = ::std::mem::MaybeUninit::uninit().assume_init();
+    Movable::move_from(&raw mut __decomp_2, { &mut m });
     assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut moves_1)) == (1)));
     assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut copies_0)) == (0)));
     assert!(((__decomp_2.x) == (3)));

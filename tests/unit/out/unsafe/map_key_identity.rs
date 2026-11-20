@@ -46,19 +46,28 @@ pub unsafe fn operator_eq_2(a: *const Key, b: *const Key) -> bool {
 }
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg)]
+#[placement]
 pub struct Mapped {
     pub value: i32,
 }
 impl Mapped {
-    pub unsafe fn new() -> Self {
-        let mut this = Self { value: 0 };
+    pub unsafe fn new(this: *mut Mapped) {
+        (&raw mut (*this).value).write(0);
         (*std::cell::LazyCell::force_mut(&mut *&raw mut default_constructions_0)).prefix_inc();
-        this
+    }
+    pub unsafe fn copy_from(this: *mut Mapped, _a0: *const Mapped) {
+        (&raw mut (*this).value).write((*_a0).value);
     }
 }
 impl Default for Mapped {
     fn default() -> Self {
-        unsafe { Mapped::new() }
+        unsafe {
+            {
+                let mut __v: Mapped = ::std::mem::MaybeUninit::uninit().assume_init();
+                Mapped::new(&raw mut __v);
+                __v
+            }
+        }
     }
 }
 pub fn main() {

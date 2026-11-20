@@ -77,25 +77,26 @@ impl Holder__lambda_at_lambda_as_field_cpp_51_12__ {
 }
 #[repr(C)]
 #[derive(FnPtrArg, MoveCtorUnsafe, CppFromUnsafe)]
+#[placement]
 #[cpp_from(FnPtr<fn(i32 ,) -> i32 > , new, value)]
 pub struct Moving__lambda_at_lambda_as_field_cpp_64_12__ {
     pub f: FnPtr<fn(i32) -> i32>,
     pub moves: i32,
 }
 impl Moving__lambda_at_lambda_as_field_cpp_64_12__ {
-    pub unsafe fn new(mut f: FnPtr<fn(i32) -> i32>) -> Self {
-        let mut this = Self {
-            f: f.copy_from(),
-            moves: 0,
-        };
-        this
+    pub unsafe fn new(
+        this: *mut Moving__lambda_at_lambda_as_field_cpp_64_12__,
+        mut f: FnPtr<fn(i32) -> i32>,
+    ) {
+        (&raw mut (*this).f).write(f.copy_from());
+        (&raw mut (*this).moves).write(0);
     }
-    pub unsafe fn move_from(o: *mut Moving__lambda_at_lambda_as_field_cpp_64_12__) -> Self {
-        let mut this = Self {
-            f: (*o).f.move_from(),
-            moves: (((*o).moves) + (1)),
-        };
-        this
+    pub unsafe fn move_from(
+        this: *mut Moving__lambda_at_lambda_as_field_cpp_64_12__,
+        o: *mut Moving__lambda_at_lambda_as_field_cpp_64_12__,
+    ) {
+        (&raw mut (*this).f).write((*o).f.move_from());
+        (&raw mut (*this).moves).write((((*o).moves) + (1)));
     }
 }
 impl Default for Moving__lambda_at_lambda_as_field_cpp_64_12__ {
@@ -211,15 +212,17 @@ unsafe fn main_0() -> i32 {
     let mut ww: FnPtr<fn(i32) -> i32> = (unsafe { wrap_2(w.copy_from()) });
     assert!(((unsafe { ww.call(2,) }) == (202)));
     let mut m: Moving__lambda_at_lambda_as_field_cpp_64_12__ =
-        Moving__lambda_at_lambda_as_field_cpp_64_12__::new({
-            FnPtr::<fn(i32) -> i32>::new(|mut x: i32| -> i32 {
-                unsafe {
-                    return ((x) * (2));
-                }
-            })
-        });
+        ::std::mem::MaybeUninit::uninit().assume_init();
+    Moving__lambda_at_lambda_as_field_cpp_64_12__::new(&raw mut m, {
+        FnPtr::<fn(i32) -> i32>::new(|mut x: i32| -> i32 {
+            unsafe {
+                return ((x) * (2));
+            }
+        })
+    });
     let mut m2: Moving__lambda_at_lambda_as_field_cpp_64_12__ =
-        Moving__lambda_at_lambda_as_field_cpp_64_12__::move_from({ &mut m });
+        ::std::mem::MaybeUninit::uninit().assume_init();
+    Moving__lambda_at_lambda_as_field_cpp_64_12__::move_from(&raw mut m2, { &mut m });
     assert!(((unsafe { m2.f.call(3,) }) == (6)));
     assert!(((m2.moves) == (1)));
     return 0;

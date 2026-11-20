@@ -9,27 +9,24 @@ use std::rc::Rc;
 pub static mut copies_0: std::cell::LazyCell<i32> = std::cell::LazyCell::new(|| unsafe { 0 });
 #[repr(C)]
 #[derive(VaArg, FnPtrArg, MoveCtorUnsafe, CppFromUnsafe, CopyAssignUnsafe, MoveAssignUnsafe)]
+#[placement]
 #[cpp_from(i32, new_1, value)]
 pub struct Tracked {
     pub v: i32,
 }
 impl Tracked {
-    pub unsafe fn new_2() -> Self {
-        let mut this = Self { v: 0 };
-        this
+    pub unsafe fn new_2(this: *mut Tracked) {
+        (&raw mut (*this).v).write(0);
     }
-    pub unsafe fn new_1(mut v: i32) -> Self {
-        let mut this = Self { v: v };
-        this
+    pub unsafe fn new_1(this: *mut Tracked, mut v: i32) {
+        (&raw mut (*this).v).write(v);
     }
-    pub unsafe fn copy_from(o: *const Tracked) -> Self {
-        let mut this = Self { v: (*o).v };
+    pub unsafe fn copy_from(this: *mut Tracked, o: *const Tracked) {
+        (&raw mut (*this).v).write((*o).v);
         (*std::cell::LazyCell::force_mut(&mut *&raw mut copies_0)).prefix_inc();
-        this
     }
-    pub unsafe fn move_from(o: *mut Tracked) -> Self {
-        let mut this = Self { v: (*o).v };
-        this
+    pub unsafe fn move_from(this: *mut Tracked, o: *mut Tracked) {
+        (&raw mut (*this).v).write((*o).v);
     }
     pub unsafe fn copy_assign(&mut self, o: *const Tracked) -> *mut Tracked {
         self.v = (*o).v;
@@ -43,27 +40,39 @@ impl Tracked {
 }
 impl Clone for Tracked {
     fn clone(&self) -> Self {
-        unsafe { Tracked::copy_from(self as *const Tracked) }
+        unsafe {
+            let mut __v: Tracked = ::std::mem::MaybeUninit::uninit().assume_init();
+            Tracked::copy_from(&raw mut __v, self as *const Tracked);
+            __v
+        }
     }
 }
 impl Default for Tracked {
     fn default() -> Self {
-        unsafe { Tracked::new_2() }
+        unsafe {
+            {
+                let mut __v: Tracked = ::std::mem::MaybeUninit::uninit().assume_init();
+                Tracked::new_2(&raw mut __v);
+                __v
+            }
+        }
     }
 }
 #[repr(C)]
 #[derive(Clone, VaArg, FnPtrArg, MoveCtorUnsafe, CopyAssignUnsafe, MoveAssignUnsafe, Default)]
+#[placement]
 pub struct Pair {
     pub x: Tracked,
     pub y: Tracked,
 }
 impl Pair {
-    pub unsafe fn move_from(_a0: *mut Pair) -> Self {
-        let mut this = Self {
-            x: Tracked::move_from({ &mut (*_a0).x }),
-            y: Tracked::move_from({ &mut (*_a0).y }),
-        };
-        this
+    pub unsafe fn copy_from(this: *mut Pair, _a0: *const Pair) {
+        Tracked::copy_from((&raw mut (*this).x), { &(*_a0).x });
+        Tracked::copy_from((&raw mut (*this).y), { &(*_a0).y });
+    }
+    pub unsafe fn move_from(this: *mut Pair, _a0: *mut Pair) {
+        Tracked::move_from((&raw mut (*this).x), { &mut (*_a0).x });
+        Tracked::move_from((&raw mut (*this).y), { &mut (*_a0).y });
     }
     pub unsafe fn copy_assign(&mut self, _a0: *const Pair) -> *mut Pair {
         (unsafe {
@@ -90,21 +99,39 @@ impl Pair {
 }
 #[repr(C)]
 #[derive(Clone, VaArg, FnPtrArg, MoveCtorUnsafe, CopyAssignUnsafe, MoveAssignUnsafe, Default)]
+#[placement]
 pub struct Arrays {
     pub a: [Tracked; 2],
     pub b: [Tracked; 2],
 }
 impl Arrays {
-    pub unsafe fn move_from(_a0: *mut Arrays) -> Self {
-        let mut this = Self {
-            a: std::array::from_fn::<_, 2, _>(|__i: usize| {
-                Tracked::move_from({ &mut (*_a0).a[(__i)] })
-            }),
-            b: std::array::from_fn::<_, 2, _>(|__i: usize| {
-                Tracked::move_from({ &mut (*_a0).b[(__i)] })
-            }),
+    pub unsafe fn copy_from(this: *mut Arrays, _a0: *const Arrays) {
+        {
+            let __d = (&raw mut (*this).a).cast::<Tracked>();
+            for __i in 0..2_usize {
+                Tracked::copy_from(__d.offset(__i as isize), { &(*_a0).a[(__i)] });
+            }
         };
-        this
+        {
+            let __d = (&raw mut (*this).b).cast::<Tracked>();
+            for __i in 0..2_usize {
+                Tracked::copy_from(__d.offset(__i as isize), { &(*_a0).b[(__i)] });
+            }
+        };
+    }
+    pub unsafe fn move_from(this: *mut Arrays, _a0: *mut Arrays) {
+        {
+            let __d = (&raw mut (*this).a).cast::<Tracked>();
+            for __i in 0..2_usize {
+                Tracked::move_from(__d.offset(__i as isize), { &mut (*_a0).a[(__i)] });
+            }
+        };
+        {
+            let __d = (&raw mut (*this).b).cast::<Tracked>();
+            for __i in 0..2_usize {
+                Tracked::move_from(__d.offset(__i as isize), { &mut (*_a0).b[(__i)] });
+            }
+        };
     }
     pub unsafe fn copy_assign(&mut self, _a0: *const Arrays) -> *mut Arrays {
         {
@@ -152,6 +179,20 @@ impl Arrays {
         }
         return &mut (*(self as *mut Arrays));
     }
+    pub unsafe fn new_1(this: *mut Arrays) {
+        {
+            let __d = (&raw mut (*this).a).cast::<Tracked>();
+            for __i in 0..2_isize {
+                Tracked::new_2(__d.offset(__i));
+            }
+        };
+        {
+            let __d = (&raw mut (*this).b).cast::<Tracked>();
+            for __i in 0..2_isize {
+                Tracked::new_2(__d.offset(__i));
+            }
+        };
+    }
 }
 pub static mut copy_only_copies_1: std::cell::LazyCell<i32> =
     std::cell::LazyCell::new(|| unsafe { 0 });
@@ -159,19 +200,18 @@ pub static mut copy_only_dtors_2: std::cell::LazyCell<i32> =
     std::cell::LazyCell::new(|| unsafe { 0 });
 #[repr(C)]
 #[derive(VaArg, FnPtrArg, CppFromUnsafe, CopyAssignUnsafe, DestructorUnsafe, Default)]
+#[placement]
 #[cpp_from(i32, new, value)]
 pub struct CopyOnly {
     pub v: i32,
 }
 impl CopyOnly {
-    pub unsafe fn new(mut v: i32) -> Self {
-        let mut this = Self { v: v };
-        this
+    pub unsafe fn new(this: *mut CopyOnly, mut v: i32) {
+        (&raw mut (*this).v).write(v);
     }
-    pub unsafe fn copy_from(o: *const CopyOnly) -> Self {
-        let mut this = Self { v: (*o).v };
+    pub unsafe fn copy_from(this: *mut CopyOnly, o: *const CopyOnly) {
+        (&raw mut (*this).v).write((*o).v);
         (*std::cell::LazyCell::force_mut(&mut *&raw mut copy_only_copies_1)).prefix_inc();
-        this
     }
     pub unsafe fn destructor(&mut self) {
         (*std::cell::LazyCell::force_mut(&mut *&raw mut copy_only_dtors_2)).prefix_inc();
@@ -184,16 +224,25 @@ impl CopyOnly {
 }
 impl Clone for CopyOnly {
     fn clone(&self) -> Self {
-        unsafe { CopyOnly::copy_from(self as *const CopyOnly) }
+        unsafe {
+            let mut __v: CopyOnly = ::std::mem::MaybeUninit::uninit().assume_init();
+            CopyOnly::copy_from(&raw mut __v, self as *const CopyOnly);
+            __v
+        }
     }
 }
 #[repr(C)]
 #[derive(Clone, VaArg, FnPtrArg, CopyAssignUnsafe, DestructorUnsafe, Default)]
+#[placement]
 pub struct CopyOnlyPair {
     pub x: CopyOnly,
     pub y: CopyOnly,
 }
 impl CopyOnlyPair {
+    pub unsafe fn copy_from(this: *mut CopyOnlyPair, _a0: *const CopyOnlyPair) {
+        CopyOnly::copy_from((&raw mut (*this).x), { &(*_a0).x });
+        CopyOnly::copy_from((&raw mut (*this).y), { &(*_a0).y });
+    }
     pub unsafe fn copy_assign(&mut self, _a0: *const CopyOnlyPair) -> *mut CopyOnlyPair {
         (unsafe {
             let _o: *const CopyOnly = &(*_a0).x;
@@ -226,25 +275,23 @@ pub static mut moved_dtors_5: std::cell::LazyCell<i32> = std::cell::LazyCell::ne
     DestructorUnsafe,
     Default,
 )]
+#[placement]
 #[cpp_from(i32, new, value)]
 pub struct Moved {
     pub v: i32,
 }
 impl Moved {
-    pub unsafe fn new(mut v: i32) -> Self {
-        let mut this = Self { v: v };
-        this
+    pub unsafe fn new(this: *mut Moved, mut v: i32) {
+        (&raw mut (*this).v).write(v);
     }
-    pub unsafe fn copy_from(o: *const Moved) -> Self {
-        let mut this = Self { v: (*o).v };
+    pub unsafe fn copy_from(this: *mut Moved, o: *const Moved) {
+        (&raw mut (*this).v).write((*o).v);
         (*std::cell::LazyCell::force_mut(&mut *&raw mut copies_0)).prefix_inc();
-        this
     }
-    pub unsafe fn move_from(o: *mut Moved) -> Self {
-        let mut this = Self { v: (*o).v };
+    pub unsafe fn move_from(this: *mut Moved, o: *mut Moved) {
+        (&raw mut (*this).v).write((*o).v);
         (*o).v = -1_i32;
         (*std::cell::LazyCell::force_mut(&mut *&raw mut moves_3)).prefix_inc();
-        this
     }
     pub unsafe fn copy_assign(&mut self, o: *const Moved) -> *mut Moved {
         self.v = (*o).v;
@@ -263,7 +310,11 @@ impl Moved {
 }
 impl Clone for Moved {
     fn clone(&self) -> Self {
-        unsafe { Moved::copy_from(self as *const Moved) }
+        unsafe {
+            let mut __v: Moved = ::std::mem::MaybeUninit::uninit().assume_init();
+            Moved::copy_from(&raw mut __v, self as *const Moved);
+            __v
+        }
     }
 }
 #[repr(C)]
@@ -277,17 +328,19 @@ impl Clone for Moved {
     DestructorUnsafe,
     Default,
 )]
+#[placement]
 pub struct MovedPair {
     pub x: Moved,
     pub y: Moved,
 }
 impl MovedPair {
-    pub unsafe fn move_from(_a0: *mut MovedPair) -> Self {
-        let mut this = Self {
-            x: Moved::move_from({ &mut (*_a0).x }),
-            y: Moved::move_from({ &mut (*_a0).y }),
-        };
-        this
+    pub unsafe fn copy_from(this: *mut MovedPair, _a0: *const MovedPair) {
+        Moved::copy_from((&raw mut (*this).x), { &(*_a0).x });
+        Moved::copy_from((&raw mut (*this).y), { &(*_a0).y });
+    }
+    pub unsafe fn move_from(this: *mut MovedPair, _a0: *mut MovedPair) {
+        Moved::move_from((&raw mut (*this).x), { &mut (*_a0).x });
+        Moved::move_from((&raw mut (*this).y), { &mut (*_a0).y });
     }
     pub unsafe fn copy_assign(&mut self, _a0: *const MovedPair) -> *mut MovedPair {
         (unsafe {
@@ -355,21 +408,25 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    let mut a: Tracked = Tracked::new_1({ 1 });
-    let mut b: Tracked = Tracked::new_1({ 2 });
+    let mut a: Tracked = ::std::mem::MaybeUninit::uninit().assume_init();
+    Tracked::new_1(&raw mut a, { 1 });
+    let mut b: Tracked = ::std::mem::MaybeUninit::uninit().assume_init();
+    Tracked::new_1(&raw mut b, { 2 });
     cpp_swap_unsafe!(&mut a, &mut b);
     assert!(((a.v) == (2)) && ((b.v) == (1)));
     assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut copies_0)) == (0)));
     let mut m1: UnsafeMap<i32, (i32, Tracked)> = UnsafeMap::new();
     (unsafe {
-        let mut _o: Tracked = Tracked::new_1({ 10 });
+        let mut _o: Tracked = ::std::mem::MaybeUninit::uninit().assume_init();
+        Tracked::new_1(&raw mut _o, { 10 });
         Tracked::move_assign(
             &mut (*m1.subscript_move(&mut 1, |__k| cpp_move_unsafe!(__k), || <Tracked>::default())),
             &mut _o,
         )
     });
     (unsafe {
-        let mut _o: Tracked = Tracked::new_1({ 20 });
+        let mut _o: Tracked = ::std::mem::MaybeUninit::uninit().assume_init();
+        Tracked::new_1(&raw mut _o, { 20 });
         Tracked::move_assign(
             &mut (*m1.subscript_move(&mut 2, |__k| cpp_move_unsafe!(__k), || <Tracked>::default())),
             &mut _o,
@@ -377,7 +434,8 @@ unsafe fn main_0() -> i32 {
     });
     let mut m2: UnsafeMap<i32, (i32, Tracked)> = UnsafeMap::new();
     (unsafe {
-        let mut _o: Tracked = Tracked::new_1({ 30 });
+        let mut _o: Tracked = ::std::mem::MaybeUninit::uninit().assume_init();
+        Tracked::new_1(&raw mut _o, { 30 });
         Tracked::move_assign(
             &mut (*m2.subscript_move(&mut 3, |__k| cpp_move_unsafe!(__k), || <Tracked>::default())),
             &mut _o,
@@ -425,35 +483,51 @@ unsafe fn main_0() -> i32 {
             .v) == (10))
     );
     assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut copies_0)) == (0)));
-    let mut arr: [Tracked; 3] = [
-        Tracked::new_1({ 1 }),
-        Tracked::new_1({ 2 }),
-        Tracked::new_1({ 3 }),
-    ];
+    let mut arr: [Tracked; 3] = ::std::mem::MaybeUninit::uninit().assume_init();
+    {
+        let __d = (&raw mut arr).cast::<Tracked>();
+        Tracked::new_1(__d.offset(0), { 1 });
+        Tracked::new_1(__d.offset(1), { 2 });
+        Tracked::new_1(__d.offset(2), { 3 });
+    };
     cpp_swap_unsafe!(&mut arr[(0) as usize], &mut arr[(2) as usize]);
     assert!(((arr[(0) as usize].v) == (3)) && ((arr[(2) as usize].v) == (1)));
     cpp_swap_unsafe!(&mut arr[(1) as usize], &mut arr[(1) as usize]);
     assert!(((arr[(1) as usize].v) == (2)));
     assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut copies_0)) == (0)));
     let mut vec_: Vec<Tracked> = Vec::new();
-    vec_.push_mut(Tracked::new_1({ 4 }));
-    vec_.push_mut(Tracked::new_1({ 5 }));
+    vec_.push_mut({
+        let mut __v: Tracked = ::std::mem::MaybeUninit::uninit().assume_init();
+        Tracked::new_1(&raw mut __v, { 4 });
+        __v
+    });
+    vec_.push_mut({
+        let mut __v: Tracked = ::std::mem::MaybeUninit::uninit().assume_init();
+        Tracked::new_1(&raw mut __v, { 5 });
+        __v
+    });
     cpp_swap_unsafe!(&mut vec_[(0_usize)], &mut vec_[(1_usize)]);
     assert!(((vec_[(0_usize)].v) == (5)) && ((vec_[(1_usize)].v) == (4)));
     assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut copies_0)) == (0)));
-    let mut pairs: [Pair; 2] = [
-        Pair {
-            x: Tracked::new_1({ 6 }),
-            y: Tracked::new_1({ 7 }),
-        },
-        Pair {
-            x: Tracked::new_1({ 8 }),
-            y: Tracked::new_1({ 9 }),
-        },
-    ];
-    let mut p: Pair = Pair {
-        x: Tracked::new_1({ 10 }),
-        y: Tracked::new_1({ 11 }),
+    let mut pairs: [Pair; 2] = ::std::mem::MaybeUninit::uninit().assume_init();
+    {
+        let __d = (&raw mut pairs).cast::<Pair>();
+        {
+            let __d = __d.offset(0);
+            Tracked::new_1((&raw mut (*__d).x), { 6 });
+            Tracked::new_1((&raw mut (*__d).y), { 7 });
+        };
+        {
+            let __d = __d.offset(1);
+            Tracked::new_1((&raw mut (*__d).x), { 8 });
+            Tracked::new_1((&raw mut (*__d).y), { 9 });
+        };
+    };
+    let mut p: Pair = ::std::mem::MaybeUninit::uninit().assume_init();
+    {
+        let __d = &raw mut p;
+        Tracked::new_1((&raw mut (*__d).x), { 10 });
+        Tracked::new_1((&raw mut (*__d).y), { 11 });
     };
     cpp_swap_unsafe!(&mut pairs[(0) as usize].x, &mut p.y);
     assert!(((pairs[(0) as usize].x.v) == (11)) && ((p.y.v) == (6)));
@@ -465,7 +539,8 @@ unsafe fn main_0() -> i32 {
     cpp_swap_unsafe!(&mut pairs[(0) as usize].x, &mut pairs[(1) as usize].y);
     assert!(((pairs[(0) as usize].x.v) == (7)) && ((pairs[(1) as usize].y.v) == (8)));
     assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut copies_0)) == (0)));
-    let mut arrays: Arrays = <Arrays>::default();
+    let mut arrays: Arrays = ::std::mem::MaybeUninit::uninit().assume_init();
+    Arrays::new_1(&raw mut arrays);
     arrays.a[(0) as usize].v = 1;
     arrays.b[(1) as usize].v = 2;
     cpp_swap_unsafe!(&mut arrays.a[(0) as usize], &mut arrays.b[(1) as usize]);
@@ -474,9 +549,21 @@ unsafe fn main_0() -> i32 {
     assert!(((arrays.a[(0) as usize].v) == (0)) && ((arrays.a[(1) as usize].v) == (2)));
     assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut copies_0)) == (0)));
     let mut grid: Vec<Vec<Tracked>> = Vec::from_fn(2_usize, |_| Default::default());
-    grid[(0_usize)].push_mut(Tracked::new_1({ 1 }));
-    grid[(0_usize)].push_mut(Tracked::new_1({ 2 }));
-    grid[(1_usize)].push_mut(Tracked::new_1({ 3 }));
+    grid[(0_usize)].push_mut({
+        let mut __v: Tracked = ::std::mem::MaybeUninit::uninit().assume_init();
+        Tracked::new_1(&raw mut __v, { 1 });
+        __v
+    });
+    grid[(0_usize)].push_mut({
+        let mut __v: Tracked = ::std::mem::MaybeUninit::uninit().assume_init();
+        Tracked::new_1(&raw mut __v, { 2 });
+        __v
+    });
+    grid[(1_usize)].push_mut({
+        let mut __v: Tracked = ::std::mem::MaybeUninit::uninit().assume_init();
+        Tracked::new_1(&raw mut __v, { 3 });
+        __v
+    });
     cpp_swap_unsafe!(
         &mut grid[(0_usize)][(1_usize)],
         &mut grid[(1_usize)][(0_usize)]
@@ -488,7 +575,8 @@ unsafe fn main_0() -> i32 {
     let mut maps: [UnsafeMap<i32, (i32, Tracked)>; 2] =
         std::array::from_fn::<_, 2, _>(|_| UnsafeMap::new());
     (unsafe {
-        let mut _o: Tracked = Tracked::new_1({ 1 });
+        let mut _o: Tracked = ::std::mem::MaybeUninit::uninit().assume_init();
+        Tracked::new_1(&raw mut _o, { 1 });
         Tracked::move_assign(
             &mut (*maps[(0) as usize].subscript_move(
                 &mut 1,
@@ -499,7 +587,8 @@ unsafe fn main_0() -> i32 {
         )
     });
     (unsafe {
-        let mut _o: Tracked = Tracked::new_1({ 2 });
+        let mut _o: Tracked = ::std::mem::MaybeUninit::uninit().assume_init();
+        Tracked::new_1(&raw mut _o, { 2 });
         Tracked::move_assign(
             &mut (*maps[(1) as usize].subscript_move(
                 &mut 2,
@@ -529,9 +618,11 @@ unsafe fn main_0() -> i32 {
             .v) == (1))
     );
     assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut copies_0)) == (0)));
-    let mut c1: CopyOnly = CopyOnly::new({ 1 });
+    let mut c1: CopyOnly = ::std::mem::MaybeUninit::uninit().assume_init();
+    CopyOnly::new(&raw mut c1, { 1 });
     let _dtor_c1 = std::mem::DropGuard::new(&raw mut c1, |__p| unsafe { (*__p).destructor() });
-    let mut c2: CopyOnly = CopyOnly::new({ 2 });
+    let mut c2: CopyOnly = ::std::mem::MaybeUninit::uninit().assume_init();
+    CopyOnly::new(&raw mut c2, { 2 });
     let _dtor_c2 = std::mem::DropGuard::new(&raw mut c2, |__p| unsafe { (*__p).destructor() });
     cpp_swap_unsafe!(&mut c1, &mut c2);
     assert!(((c1.v) == (2)) && ((c2.v) == (1)));
@@ -539,9 +630,11 @@ unsafe fn main_0() -> i32 {
         ((*std::cell::LazyCell::force_mut(&mut *&raw mut copy_only_copies_1)) == (3))
             && ((*std::cell::LazyCell::force_mut(&mut *&raw mut copy_only_dtors_2)) == (1))
     );
-    let mut cp: CopyOnlyPair = CopyOnlyPair {
-        x: CopyOnly::new({ 3 }),
-        y: CopyOnly::new({ 4 }),
+    let mut cp: CopyOnlyPair = ::std::mem::MaybeUninit::uninit().assume_init();
+    {
+        let __d = &raw mut cp;
+        CopyOnly::new((&raw mut (*__d).x), { 3 });
+        CopyOnly::new((&raw mut (*__d).y), { 4 });
     };
     let _dtor_cp = std::mem::DropGuard::new(&raw mut cp, |__p| unsafe { (*__p).destructor() });
     cpp_swap_unsafe!(&mut cp.x, &mut cp.y);
@@ -550,29 +643,43 @@ unsafe fn main_0() -> i32 {
         ((*std::cell::LazyCell::force_mut(&mut *&raw mut copy_only_copies_1)) == (6))
             && ((*std::cell::LazyCell::force_mut(&mut *&raw mut copy_only_dtors_2)) == (2))
     );
-    let mut carr: [CopyOnly; 2] = [CopyOnly::new({ 5 }), CopyOnly::new({ 6 })];
+    let mut carr: [CopyOnly; 2] = ::std::mem::MaybeUninit::uninit().assume_init();
+    {
+        let __d = (&raw mut carr).cast::<CopyOnly>();
+        CopyOnly::new(__d.offset(0), { 5 });
+        CopyOnly::new(__d.offset(1), { 6 });
+    };
     cpp_swap_unsafe!(&mut carr[(0) as usize], &mut carr[(1) as usize]);
     assert!(((carr[(0) as usize].v) == (6)) && ((carr[(1) as usize].v) == (5)));
     assert!(
         ((*std::cell::LazyCell::force_mut(&mut *&raw mut copy_only_copies_1)) == (9))
             && ((*std::cell::LazyCell::force_mut(&mut *&raw mut copy_only_dtors_2)) == (3))
     );
-    let mut mv1: Moved = Moved::new({ 1 });
+    let mut mv1: Moved = ::std::mem::MaybeUninit::uninit().assume_init();
+    Moved::new(&raw mut mv1, { 1 });
     let _dtor_mv1 = std::mem::DropGuard::new(&raw mut mv1, |__p| unsafe { (*__p).destructor() });
-    let mut mv2: Moved = Moved::new({ 2 });
+    let mut mv2: Moved = ::std::mem::MaybeUninit::uninit().assume_init();
+    Moved::new(&raw mut mv2, { 2 });
     let _dtor_mv2 = std::mem::DropGuard::new(&raw mut mv2, |__p| unsafe { (*__p).destructor() });
     cpp_swap_unsafe!(&mut mv1, &mut mv2);
     assert!(((mv1.v) == (2)) && ((mv2.v) == (1)));
     assert!((unsafe { swapped_once_6() }));
-    let mut mp: MovedPair = MovedPair {
-        x: Moved::new({ 3 }),
-        y: Moved::new({ 4 }),
+    let mut mp: MovedPair = ::std::mem::MaybeUninit::uninit().assume_init();
+    {
+        let __d = &raw mut mp;
+        Moved::new((&raw mut (*__d).x), { 3 });
+        Moved::new((&raw mut (*__d).y), { 4 });
     };
     let _dtor_mp = std::mem::DropGuard::new(&raw mut mp, |__p| unsafe { (*__p).destructor() });
     cpp_swap_unsafe!(&mut mp.x, &mut mp.y);
     assert!(((mp.x.v) == (4)) && ((mp.y.v) == (3)));
     assert!((unsafe { swapped_once_6() }));
-    let mut marr: [Moved; 2] = [Moved::new({ 5 }), Moved::new({ 6 })];
+    let mut marr: [Moved; 2] = ::std::mem::MaybeUninit::uninit().assume_init();
+    {
+        let __d = (&raw mut marr).cast::<Moved>();
+        Moved::new(__d.offset(0), { 5 });
+        Moved::new(__d.offset(1), { 6 });
+    };
     cpp_swap_unsafe!(&mut marr[(0) as usize], &mut marr[(1) as usize]);
     assert!(((marr[(0) as usize].v) == (6)) && ((marr[(1) as usize].v) == (5)));
     assert!((unsafe { swapped_once_6() }));

@@ -33,29 +33,48 @@ thread_local!(
         Rc::new(RefCell::new((from_call_5.with(|rc| *rc.borrow()) + 1)));
 );
 #[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg)]
+#[placement]
 #[byte_size(4)]
 pub struct Ctor {
     #[offset(0)]
     pub v: i32,
 }
 impl Ctor {
-    pub fn new_1() -> Self {
-        Self { v: ({ next_0() }) }
+    pub fn new_1(this: Ptr<Ctor>) {
+        field!(this, v).write(({ next_0() }));
     }
-    pub fn new_2(mut x: i32) -> Self {
-        Self { v: x }
+    pub fn new_2(this: Ptr<Ctor>, mut x: i32) {
+        field!(this, v).write(x);
+    }
+    pub fn copy_from(this: Ptr<Ctor>, _a0: Ptr<Ctor>) {
+        field!(this, v).write(_a0.with(|__s| __s.v));
     }
 }
 impl Default for Ctor {
     fn default() -> Self {
-        { Ctor::new_1() }
+        Rc::try_unwrap({
+            let __v: Value<Ctor> = Rc::new(RefCell::new(<Ctor>::uninit()));
+            Ctor::new_1(__v.as_pointer());
+            __v
+        })
+        .ok()
+        .unwrap()
+        .into_inner()
     }
 }
 thread_local!(
-    pub static default_ctor_7: Value<Ctor> = Rc::new(RefCell::new(Ctor::new_1()));
+    pub static default_ctor_7: Value<Ctor> = {
+        let __v: Value<Ctor> = Rc::new(RefCell::new(<Ctor>::uninit()));
+        Ctor::new_1(__v.as_pointer());
+        __v
+    };
 );
 thread_local!(
-    pub static arg_ctor_8: Value<Ctor> = Rc::new(RefCell::new(Ctor::new_2({ 7 })));
+    pub static arg_ctor_8: Value<Ctor> = {
+        let __v: Value<Ctor> = Rc::new(RefCell::new(<Ctor>::uninit()));
+        Ctor::new_2(__v.as_pointer(), { 7 });
+        __v
+    };
 );
 thread_local!(
     pub static str_9: Value<Vec<i8>> = Rc::new(RefCell::new({
@@ -65,7 +84,11 @@ thread_local!(
     }));
 );
 thread_local!(
-    pub static inline_member_11: Value<Ctor> = Rc::new(RefCell::new(Ctor::new_2({ 5 })));
+    pub static inline_member_11: Value<Ctor> = {
+        let __v: Value<Ctor> = Rc::new(RefCell::new(<Ctor>::uninit()));
+        Ctor::new_2(__v.as_pointer(), { 5 });
+        __v
+    };
 );
 #[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
 #[byte_size(1)]
@@ -80,29 +103,48 @@ thread_local!(
     static once_13: Value<i32> = Rc::new(RefCell::new(({ next_0() })));
 );
 thread_local!(
-    static local_ctor_14: Value<Ctor> = Rc::new(RefCell::new(Ctor::new_2({ 3 })));
+    static local_ctor_14: Value<Ctor> = {
+        let __v: Value<Ctor> = Rc::new(RefCell::new(<Ctor>::uninit()));
+        Ctor::new_2(__v.as_pointer(), { 3 });
+        __v
+    };
 );
 #[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg)]
+#[placement]
 #[byte_size(4)]
 pub struct Singleton {
     #[offset(0)]
     pub hits: i32,
 }
 impl Singleton {
-    pub fn new() -> Self {
-        Self { hits: 0 }
+    pub fn new(this: Ptr<Singleton>) {
+        field!(this, hits).write(0);
     }
     pub fn instance() -> Ptr<Singleton> {
         return s_15.with(|v| v.as_pointer());
     }
+    pub fn copy_from(this: Ptr<Singleton>, _a0: Ptr<Singleton>) {
+        field!(this, hits).write(_a0.with(|__s| __s.hits));
+    }
 }
 impl Default for Singleton {
     fn default() -> Self {
-        { Singleton::new() }
+        Rc::try_unwrap({
+            let __v: Value<Singleton> = Rc::new(RefCell::new(<Singleton>::uninit()));
+            Singleton::new(__v.as_pointer());
+            __v
+        })
+        .ok()
+        .unwrap()
+        .into_inner()
     }
 }
 thread_local!(
-    static s_15: Value<Singleton> = Rc::new(RefCell::new(Singleton::new()));
+    static s_15: Value<Singleton> = {
+        let __v: Value<Singleton> = Rc::new(RefCell::new(<Singleton>::uninit()));
+        Singleton::new(__v.as_pointer());
+        __v
+    };
 );
 pub fn main() {
     __cpp2rust_init_globals();

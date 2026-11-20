@@ -14,19 +14,28 @@ pub unsafe fn baz_1(mut a: *mut i32, mut b: *mut i32) -> bool {
 }
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, CppFromUnsafe)]
+#[placement]
 #[cpp_from(i32, new, value)]
 pub struct Bar {
     pub v: i32,
 }
 impl Bar {
-    pub unsafe fn new(mut v: i32) -> Self {
-        let mut this = Self { v: v };
-        this
+    pub unsafe fn new(this: *mut Bar, mut v: i32) {
+        (&raw mut (*this).v).write(v);
+    }
+    pub unsafe fn copy_from(this: *mut Bar, _a0: *const Bar) {
+        (&raw mut (*this).v).write((*_a0).v);
     }
 }
 impl Default for Bar {
     fn default() -> Self {
-        unsafe { Bar::new({ 1 }) }
+        unsafe {
+            {
+                let mut __v: Bar = ::std::mem::MaybeUninit::uninit().assume_init();
+                Bar::new(&raw mut __v, { 1 });
+                __v
+            }
+        }
     }
 }
 pub static mut counter_2: std::cell::LazyCell<i32> = std::cell::LazyCell::new(|| unsafe { 0 });
@@ -39,8 +48,13 @@ pub unsafe fn lazy_4(mut x: i32) -> i32 {
 pub unsafe fn by_ref_5(b: *const Bar) -> i32 {
     return (*b).v;
 }
-pub static mut global_bar_6: std::cell::LazyCell<Bar> =
-    std::cell::LazyCell::new(|| unsafe { Bar::new({ 9 }) });
+pub static mut global_bar_6: std::cell::LazyCell<Bar> = std::cell::LazyCell::new(|| unsafe {
+    {
+        let mut __v: Bar = ::std::mem::MaybeUninit::uninit().assume_init();
+        Bar::new(&raw mut __v, { 9 });
+        __v
+    }
+});
 pub unsafe fn by_global_ref_7(b: *const Bar) -> i32 {
     return (*b).v;
 }
@@ -52,13 +66,16 @@ pub unsafe fn first_9(r: *mut [i32; 3]) -> i32 {
 }
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
+#[placement]
 pub struct Holder_int_ {
     pub v: i32,
 }
 impl Holder_int_ {
-    pub unsafe fn new(mut v: i32) -> Self {
-        let mut this = Self { v: v };
-        this
+    pub unsafe fn new(this: *mut Holder_int_, mut v: i32) {
+        (&raw mut (*this).v).write(v);
+    }
+    pub unsafe fn copy_from(this: *mut Holder_int_, _a0: *const Holder_int_) {
+        (&raw mut (*this).v).write((*_a0).v);
     }
 }
 pub fn main() {
@@ -83,10 +100,24 @@ unsafe fn main_0() -> i32 {
         }) as i32)
             == (true as i32))
     );
-    let mut b: Bar = Bar::new({ 1 });
+    let mut b: Bar = ::std::mem::MaybeUninit::uninit().assume_init();
+    Bar::new(&raw mut b, { 1 });
     assert!(((b.v) == (1)));
-    assert!(((Bar::new({ 2 },).v) == (2)));
-    let mut arr: [Bar; 3] = [Bar::new({ 1 }), Bar::new({ 1 }), Bar::new({ 1 })];
+    assert!(
+        (({
+            let mut __v: Bar = ::std::mem::MaybeUninit::uninit().assume_init();
+            Bar::new(&raw mut __v, { 2 });
+            __v
+        }
+        .v) == (2))
+    );
+    let mut arr: [Bar; 3] = ::std::mem::MaybeUninit::uninit().assume_init();
+    {
+        let __d = (&raw mut arr).cast::<Bar>();
+        Bar::new(__d.offset(0), { 1 });
+        Bar::new(__d.offset(1), { 1 });
+        Bar::new(__d.offset(2), { 1 });
+    };
     assert!(((arr[(0) as usize].v) == (1)));
     assert!(((arr[(2) as usize].v) == (1)));
     assert!(((unsafe { lazy_4(5,) }) == (5)));
@@ -95,13 +126,15 @@ unsafe fn main_0() -> i32 {
     assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut counter_2)) == (1)));
     assert!(
         ((unsafe {
-            let mut _b: Bar = Bar::new({ 7 });
+            let mut _b: Bar = ::std::mem::MaybeUninit::uninit().assume_init();
+            Bar::new(&raw mut _b, { 7 });
             by_ref_5(&mut _b)
         }) == (7))
     );
     assert!(
         ((unsafe {
-            let mut _b: Bar = Bar::new({ 3 });
+            let mut _b: Bar = ::std::mem::MaybeUninit::uninit().assume_init();
+            Bar::new(&raw mut _b, { 3 });
             by_ref_5(&mut _b)
         }) == (3))
     );
@@ -112,11 +145,13 @@ unsafe fn main_0() -> i32 {
     );
     assert!(
         ((unsafe {
-            let mut _b: Bar = Bar::new({ 4 });
+            let mut _b: Bar = ::std::mem::MaybeUninit::uninit().assume_init();
+            Bar::new(&raw mut _b, { 4 });
             by_global_ref_7(&mut _b)
         }) == (4))
     );
-    let mut h: Holder_int_ = Holder_int_::new({ 4 });
+    let mut h: Holder_int_ = ::std::mem::MaybeUninit::uninit().assume_init();
+    Holder_int_::new(&raw mut h, { 4 });
     assert!(((h.v) == (4)));
     assert!(((unsafe { shifted_8(3, -1_i32,) }) == (2)));
     assert!(((unsafe { shifted_8(3, 4,) }) == (7)));

@@ -8,13 +8,31 @@ use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg)]
+#[placement]
 pub struct p2_reference_does_not_instantiate_Member {
     pub value: i32,
 }
 impl p2_reference_does_not_instantiate_Member {
-    pub unsafe fn new_1(_a0: *const p2_reference_does_not_instantiate_Wrapper_int_) -> Self {
-        let mut this = Self { value: 2 };
-        this
+    pub unsafe fn new_1(this: *mut p2_reference_does_not_instantiate_Member) {
+        (&raw mut (*this).value).write(1);
+    }
+    pub unsafe fn new_2(
+        this: *mut p2_reference_does_not_instantiate_Member,
+        _a0: *const p2_reference_does_not_instantiate_Wrapper_int_,
+    ) {
+        (&raw mut (*this).value).write(2);
+    }
+    pub unsafe fn copy_from(
+        this: *mut p2_reference_does_not_instantiate_Member,
+        _a0: *const p2_reference_does_not_instantiate_Member,
+    ) {
+        (&raw mut (*this).value).write((*_a0).value);
+    }
+    pub unsafe fn move_from(
+        this: *mut p2_reference_does_not_instantiate_Member,
+        _a0: *mut p2_reference_does_not_instantiate_Member,
+    ) {
+        (&raw mut (*this).value).write((*_a0).value);
     }
 }
 impl Default for p2_reference_does_not_instantiate_Member {
@@ -24,20 +42,27 @@ impl Default for p2_reference_does_not_instantiate_Member {
 }
 #[repr(C)]
 #[derive(FnPtrArg, MoveCtorUnsafe, Default)]
+#[placement]
 pub struct p2_reference_does_not_instantiate_Holder {
     pub member: p2_reference_does_not_instantiate_Member,
 }
 impl p2_reference_does_not_instantiate_Holder {
-    pub unsafe fn move_from(_a0: *mut p2_reference_does_not_instantiate_Holder) -> Self {
-        let mut this = Self {
-            member: (*_a0).member,
-        };
-        this
+    pub unsafe fn new_1(this: *mut p2_reference_does_not_instantiate_Holder) {
+        p2_reference_does_not_instantiate_Member::new_1((&raw mut (*this).member));
+    }
+    pub unsafe fn move_from(
+        this: *mut p2_reference_does_not_instantiate_Holder,
+        _a0: *mut p2_reference_does_not_instantiate_Holder,
+    ) {
+        p2_reference_does_not_instantiate_Member::move_from((&raw mut (*this).member), {
+            &mut (*_a0).member
+        });
     }
 }
 pub unsafe fn test_0() {
     let mut holder: p2_reference_does_not_instantiate_Holder =
-        <p2_reference_does_not_instantiate_Holder>::default();
+        ::std::mem::MaybeUninit::uninit().assume_init();
+    p2_reference_does_not_instantiate_Holder::new_1(&raw mut holder);
     assert!(((holder.member.value) == (1)));
     holder.member.value = 3;
     assert!(((holder.member.value) == (3)));

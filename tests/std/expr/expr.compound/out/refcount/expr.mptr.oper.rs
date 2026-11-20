@@ -99,18 +99,22 @@ thread_local!(
     pub static moveCount_10: Value<i32> = Rc::new(RefCell::new(0));
 );
 #[derive(Record, ByteRepr, Uninit, VaArg, FnPtrArg, MoveCtor, Default)]
+#[placement]
 #[byte_size(1)]
 pub struct p6_data_member_of_rvalue_is_xvalue_CountsCopiesAndMoves {}
 impl p6_data_member_of_rvalue_is_xvalue_CountsCopiesAndMoves {
-    pub fn copy_from(_a0: Ptr<p6_data_member_of_rvalue_is_xvalue_CountsCopiesAndMoves>) -> Self {
-        let __this: p6_data_member_of_rvalue_is_xvalue_CountsCopiesAndMoves = Self {};
+    pub fn new(this: Ptr<p6_data_member_of_rvalue_is_xvalue_CountsCopiesAndMoves>) {}
+    pub fn copy_from(
+        this: Ptr<p6_data_member_of_rvalue_is_xvalue_CountsCopiesAndMoves>,
+        _a0: Ptr<p6_data_member_of_rvalue_is_xvalue_CountsCopiesAndMoves>,
+    ) {
         (*copyCount_9.with(Value::clone).borrow_mut()).prefix_inc();
-        __this
     }
-    pub fn move_from(_a0: Ptr<p6_data_member_of_rvalue_is_xvalue_CountsCopiesAndMoves>) -> Self {
-        let __this: p6_data_member_of_rvalue_is_xvalue_CountsCopiesAndMoves = Self {};
+    pub fn move_from(
+        this: Ptr<p6_data_member_of_rvalue_is_xvalue_CountsCopiesAndMoves>,
+        _a0: Ptr<p6_data_member_of_rvalue_is_xvalue_CountsCopiesAndMoves>,
+    ) {
         (*moveCount_10.with(Value::clone).borrow_mut()).prefix_inc();
-        __this
     }
 }
 impl Clone for p6_data_member_of_rvalue_is_xvalue_CountsCopiesAndMoves {
@@ -118,10 +122,18 @@ impl Clone for p6_data_member_of_rvalue_is_xvalue_CountsCopiesAndMoves {
         let __src: Value<p6_data_member_of_rvalue_is_xvalue_CountsCopiesAndMoves> = Rc::new(
             RefCell::new(p6_data_member_of_rvalue_is_xvalue_CountsCopiesAndMoves {}),
         );
-        p6_data_member_of_rvalue_is_xvalue_CountsCopiesAndMoves::copy_from(__src.as_pointer())
+        let __dst: Value<p6_data_member_of_rvalue_is_xvalue_CountsCopiesAndMoves> = Rc::new(
+            RefCell::new(<p6_data_member_of_rvalue_is_xvalue_CountsCopiesAndMoves>::uninit()),
+        );
+        p6_data_member_of_rvalue_is_xvalue_CountsCopiesAndMoves::copy_from(
+            __dst.as_pointer(),
+            __src.as_pointer(),
+        );
+        Rc::try_unwrap(__dst).ok().unwrap().into_inner()
     }
 }
 #[derive(Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, MoveCtor, Default)]
+#[placement]
 #[byte_size(1)]
 pub struct p6_data_member_of_rvalue_is_xvalue_HoldsCounted {
     #[offset(0)]
@@ -129,32 +141,49 @@ pub struct p6_data_member_of_rvalue_is_xvalue_HoldsCounted {
     pub member: p6_data_member_of_rvalue_is_xvalue_CountsCopiesAndMoves,
 }
 impl p6_data_member_of_rvalue_is_xvalue_HoldsCounted {
-    pub fn move_from(_a0: Ptr<p6_data_member_of_rvalue_is_xvalue_HoldsCounted>) -> Self {
-        Self {
-            member: p6_data_member_of_rvalue_is_xvalue_CountsCopiesAndMoves::move_from({
-                field_ptr!(_a0, member)
-            }),
-        }
+    pub fn copy_from(
+        this: Ptr<p6_data_member_of_rvalue_is_xvalue_HoldsCounted>,
+        _a0: Ptr<p6_data_member_of_rvalue_is_xvalue_HoldsCounted>,
+    ) {
+        p6_data_member_of_rvalue_is_xvalue_CountsCopiesAndMoves::copy_from(
+            field_ptr!(this, member),
+            { field_ptr!(_a0, member) },
+        );
+    }
+    pub fn move_from(
+        this: Ptr<p6_data_member_of_rvalue_is_xvalue_HoldsCounted>,
+        _a0: Ptr<p6_data_member_of_rvalue_is_xvalue_HoldsCounted>,
+    ) {
+        p6_data_member_of_rvalue_is_xvalue_CountsCopiesAndMoves::move_from(
+            field_ptr!(this, member),
+            { field_ptr!(_a0, member) },
+        );
+    }
+    pub fn new_1(this: Ptr<p6_data_member_of_rvalue_is_xvalue_HoldsCounted>) {
+        p6_data_member_of_rvalue_is_xvalue_CountsCopiesAndMoves::new(field_ptr!(this, member));
     }
 }
 pub fn test_11() {
     let mut pm: isize =
         (offset_of_field!(p6_data_member_of_rvalue_is_xvalue_HoldsCounted, member) as isize);
     let holder: Value<p6_data_member_of_rvalue_is_xvalue_HoldsCounted> = Rc::new(RefCell::new(
-        <p6_data_member_of_rvalue_is_xvalue_HoldsCounted>::default(),
+        <p6_data_member_of_rvalue_is_xvalue_HoldsCounted>::uninit(),
     ));
-    let mut from_lvalue: p6_data_member_of_rvalue_is_xvalue_CountsCopiesAndMoves =
-        p6_data_member_of_rvalue_is_xvalue_CountsCopiesAndMoves::copy_from({
-            (holder.as_pointer())
-                .member::<p6_data_member_of_rvalue_is_xvalue_CountsCopiesAndMoves>(pm)
-        });
+    p6_data_member_of_rvalue_is_xvalue_HoldsCounted::new_1(holder.as_pointer());
+    let from_lvalue: Value<p6_data_member_of_rvalue_is_xvalue_CountsCopiesAndMoves> = Rc::new(
+        RefCell::new(<p6_data_member_of_rvalue_is_xvalue_CountsCopiesAndMoves>::uninit()),
+    );
+    p6_data_member_of_rvalue_is_xvalue_CountsCopiesAndMoves::copy_from(from_lvalue.as_pointer(), {
+        (holder.as_pointer()).member::<p6_data_member_of_rvalue_is_xvalue_CountsCopiesAndMoves>(pm)
+    });
     assert!((copyCount_9.with(|rc| *rc.borrow()) == 1));
     assert!((moveCount_10.with(|rc| *rc.borrow()) == 0));
-    let mut from_xvalue: p6_data_member_of_rvalue_is_xvalue_CountsCopiesAndMoves =
-        p6_data_member_of_rvalue_is_xvalue_CountsCopiesAndMoves::move_from({
-            (holder.as_pointer())
-                .member::<p6_data_member_of_rvalue_is_xvalue_CountsCopiesAndMoves>(pm)
-        });
+    let from_xvalue: Value<p6_data_member_of_rvalue_is_xvalue_CountsCopiesAndMoves> = Rc::new(
+        RefCell::new(<p6_data_member_of_rvalue_is_xvalue_CountsCopiesAndMoves>::uninit()),
+    );
+    p6_data_member_of_rvalue_is_xvalue_CountsCopiesAndMoves::move_from(from_xvalue.as_pointer(), {
+        (holder.as_pointer()).member::<p6_data_member_of_rvalue_is_xvalue_CountsCopiesAndMoves>(pm)
+    });
     assert!((copyCount_9.with(|rc| *rc.borrow()) == 1));
     assert!((moveCount_10.with(|rc| *rc.borrow()) == 1));
 }

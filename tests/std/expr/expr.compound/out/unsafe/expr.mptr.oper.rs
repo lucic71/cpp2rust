@@ -95,66 +95,87 @@ pub static mut copyCount_9: std::cell::LazyCell<i32> = std::cell::LazyCell::new(
 pub static mut moveCount_10: std::cell::LazyCell<i32> = std::cell::LazyCell::new(|| unsafe { 0 });
 #[repr(C)]
 #[derive(VaArg, FnPtrArg, MoveCtorUnsafe, Default)]
+#[placement]
 pub struct p6_data_member_of_rvalue_is_xvalue_CountsCopiesAndMoves {}
 impl p6_data_member_of_rvalue_is_xvalue_CountsCopiesAndMoves {
+    pub unsafe fn new(this: *mut p6_data_member_of_rvalue_is_xvalue_CountsCopiesAndMoves) {}
     pub unsafe fn copy_from(
+        this: *mut p6_data_member_of_rvalue_is_xvalue_CountsCopiesAndMoves,
         _a0: *const p6_data_member_of_rvalue_is_xvalue_CountsCopiesAndMoves,
-    ) -> Self {
-        let mut this = Self {};
+    ) {
         (*std::cell::LazyCell::force_mut(&mut *&raw mut copyCount_9)).prefix_inc();
-        this
     }
     pub unsafe fn move_from(
+        this: *mut p6_data_member_of_rvalue_is_xvalue_CountsCopiesAndMoves,
         _a0: *mut p6_data_member_of_rvalue_is_xvalue_CountsCopiesAndMoves,
-    ) -> Self {
-        let mut this = Self {};
+    ) {
         (*std::cell::LazyCell::force_mut(&mut *&raw mut moveCount_10)).prefix_inc();
-        this
     }
 }
 impl Clone for p6_data_member_of_rvalue_is_xvalue_CountsCopiesAndMoves {
     fn clone(&self) -> Self {
         unsafe {
+            let mut __v: p6_data_member_of_rvalue_is_xvalue_CountsCopiesAndMoves =
+                ::std::mem::MaybeUninit::uninit().assume_init();
             p6_data_member_of_rvalue_is_xvalue_CountsCopiesAndMoves::copy_from(
+                &raw mut __v,
                 self as *const p6_data_member_of_rvalue_is_xvalue_CountsCopiesAndMoves,
-            )
+            );
+            __v
         }
     }
 }
 #[repr(C)]
 #[derive(Clone, VaArg, FnPtrArg, MoveCtorUnsafe, Default)]
+#[placement]
 pub struct p6_data_member_of_rvalue_is_xvalue_HoldsCounted {
     pub member: p6_data_member_of_rvalue_is_xvalue_CountsCopiesAndMoves,
 }
 impl p6_data_member_of_rvalue_is_xvalue_HoldsCounted {
-    pub unsafe fn move_from(_a0: *mut p6_data_member_of_rvalue_is_xvalue_HoldsCounted) -> Self {
-        let mut this = Self {
-            member: p6_data_member_of_rvalue_is_xvalue_CountsCopiesAndMoves::move_from({
-                &mut (*_a0).member
-            }),
-        };
-        this
+    pub unsafe fn copy_from(
+        this: *mut p6_data_member_of_rvalue_is_xvalue_HoldsCounted,
+        _a0: *const p6_data_member_of_rvalue_is_xvalue_HoldsCounted,
+    ) {
+        p6_data_member_of_rvalue_is_xvalue_CountsCopiesAndMoves::copy_from(
+            (&raw mut (*this).member),
+            { &(*_a0).member },
+        );
+    }
+    pub unsafe fn move_from(
+        this: *mut p6_data_member_of_rvalue_is_xvalue_HoldsCounted,
+        _a0: *mut p6_data_member_of_rvalue_is_xvalue_HoldsCounted,
+    ) {
+        p6_data_member_of_rvalue_is_xvalue_CountsCopiesAndMoves::move_from(
+            (&raw mut (*this).member),
+            { &mut (*_a0).member },
+        );
+    }
+    pub unsafe fn new_1(this: *mut p6_data_member_of_rvalue_is_xvalue_HoldsCounted) {
+        p6_data_member_of_rvalue_is_xvalue_CountsCopiesAndMoves::new((&raw mut (*this).member));
     }
 }
 pub unsafe fn test_11() {
     let mut pm: isize =
         (::std::mem::offset_of!(p6_data_member_of_rvalue_is_xvalue_HoldsCounted, member) as isize);
     let mut holder: p6_data_member_of_rvalue_is_xvalue_HoldsCounted =
-        <p6_data_member_of_rvalue_is_xvalue_HoldsCounted>::default();
+        ::std::mem::MaybeUninit::uninit().assume_init();
+    p6_data_member_of_rvalue_is_xvalue_HoldsCounted::new_1(&raw mut holder);
     let mut from_lvalue: p6_data_member_of_rvalue_is_xvalue_CountsCopiesAndMoves =
-        p6_data_member_of_rvalue_is_xvalue_CountsCopiesAndMoves::copy_from({
-            &(*(&mut holder as *mut p6_data_member_of_rvalue_is_xvalue_HoldsCounted)
-                .wrapping_byte_offset(pm)
-                .cast::<p6_data_member_of_rvalue_is_xvalue_CountsCopiesAndMoves>())
-        });
+        ::std::mem::MaybeUninit::uninit().assume_init();
+    p6_data_member_of_rvalue_is_xvalue_CountsCopiesAndMoves::copy_from(&raw mut from_lvalue, {
+        &(*(&mut holder as *mut p6_data_member_of_rvalue_is_xvalue_HoldsCounted)
+            .wrapping_byte_offset(pm)
+            .cast::<p6_data_member_of_rvalue_is_xvalue_CountsCopiesAndMoves>())
+    });
     assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut copyCount_9)) == (1)));
     assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut moveCount_10)) == (0)));
     let mut from_xvalue: p6_data_member_of_rvalue_is_xvalue_CountsCopiesAndMoves =
-        p6_data_member_of_rvalue_is_xvalue_CountsCopiesAndMoves::move_from({
-            &mut (*(&mut holder as *mut p6_data_member_of_rvalue_is_xvalue_HoldsCounted)
-                .wrapping_byte_offset(pm)
-                .cast::<p6_data_member_of_rvalue_is_xvalue_CountsCopiesAndMoves>())
-        });
+        ::std::mem::MaybeUninit::uninit().assume_init();
+    p6_data_member_of_rvalue_is_xvalue_CountsCopiesAndMoves::move_from(&raw mut from_xvalue, {
+        &mut (*(&mut holder as *mut p6_data_member_of_rvalue_is_xvalue_HoldsCounted)
+            .wrapping_byte_offset(pm)
+            .cast::<p6_data_member_of_rvalue_is_xvalue_CountsCopiesAndMoves>())
+    });
     assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut copyCount_9)) == (1)));
     assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut moveCount_10)) == (1)));
 }

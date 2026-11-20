@@ -9,22 +9,20 @@ use std::rc::Rc;
 pub static mut copies_0: std::cell::LazyCell<i32> = std::cell::LazyCell::new(|| unsafe { 0 });
 #[repr(C)]
 #[derive(VaArg, FnPtrArg, CopyAssignUnsafe, Default)]
+#[placement]
 pub struct Counted {
     pub x: i32,
     pub y: i32,
 }
 impl Counted {
-    pub unsafe fn new(mut x: i32, mut y: i32) -> Self {
-        let mut this = Self { x: x, y: y };
-        this
+    pub unsafe fn new(this: *mut Counted, mut x: i32, mut y: i32) {
+        (&raw mut (*this).x).write(x);
+        (&raw mut (*this).y).write(y);
     }
-    pub unsafe fn copy_from(other: *const Counted) -> Self {
-        let mut this = Self {
-            x: (((*other).x) * (2)),
-            y: (((*other).y) * (2)),
-        };
+    pub unsafe fn copy_from(this: *mut Counted, other: *const Counted) {
+        (&raw mut (*this).x).write((((*other).x) * (2)));
+        (&raw mut (*this).y).write((((*other).y) * (2)));
         (*std::cell::LazyCell::force_mut(&mut *&raw mut copies_0)).prefix_inc();
-        this
     }
     pub unsafe fn copy_assign(&mut self, _a0: *const Counted) -> *mut Counted {
         self.x = (*_a0).x;
@@ -34,11 +32,16 @@ impl Counted {
 }
 impl Clone for Counted {
     fn clone(&self) -> Self {
-        unsafe { Counted::copy_from(self as *const Counted) }
+        unsafe {
+            let mut __v: Counted = ::std::mem::MaybeUninit::uninit().assume_init();
+            Counted::copy_from(&raw mut __v, self as *const Counted);
+            __v
+        }
     }
 }
-pub unsafe fn make_counted_1() -> Counted {
-    return Counted::new({ 5 }, { 6 });
+pub unsafe fn make_counted_1(__ret: *mut Counted) {
+    Counted::new(__ret.clone(), { 5 }, { 6 });
+    return;
 }
 pub fn main() {
     unsafe {
@@ -47,8 +50,10 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    let mut s: Counted = Counted::new({ 1 }, { 2 });
-    let mut __decomp_2: Counted = Counted::copy_from({ &s });
+    let mut s: Counted = ::std::mem::MaybeUninit::uninit().assume_init();
+    Counted::new(&raw mut s, { 1 }, { 2 });
+    let mut __decomp_2: Counted = ::std::mem::MaybeUninit::uninit().assume_init();
+    Counted::copy_from(&raw mut __decomp_2, { &s });
     assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut copies_0)) == (1)));
     assert!(((__decomp_2.x) == (2)));
     assert!(((__decomp_2.y) == (4)));
@@ -59,7 +64,8 @@ unsafe fn main_0() -> i32 {
     let __decomp_4: *const Counted = &s;
     assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut copies_0)) == (1)));
     assert!((((*__decomp_4).x) == (1)));
-    let mut __decomp_5: Counted = (unsafe { make_counted_1() });
+    let mut __decomp_5: Counted = ::std::mem::MaybeUninit::uninit().assume_init();
+    (unsafe { make_counted_1(&raw mut __decomp_5) });
     assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut copies_0)) == (1)));
     assert!(((__decomp_5.x) == (5)));
     assert!(((__decomp_5.y) == (6)));

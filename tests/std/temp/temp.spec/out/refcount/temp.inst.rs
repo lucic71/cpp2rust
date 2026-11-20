@@ -7,14 +7,33 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
 #[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg)]
+#[placement]
 #[byte_size(4)]
 pub struct p2_reference_does_not_instantiate_Member {
     #[offset(0)]
     pub value: i32,
 }
 impl p2_reference_does_not_instantiate_Member {
-    pub fn new_1(_a0: Ptr<p2_reference_does_not_instantiate_Wrapper_int_>) -> Self {
-        Self { value: 2 }
+    pub fn new_1(this: Ptr<p2_reference_does_not_instantiate_Member>) {
+        field!(this, value).write(1);
+    }
+    pub fn new_2(
+        this: Ptr<p2_reference_does_not_instantiate_Member>,
+        _a0: Ptr<p2_reference_does_not_instantiate_Wrapper_int_>,
+    ) {
+        field!(this, value).write(2);
+    }
+    pub fn copy_from(
+        this: Ptr<p2_reference_does_not_instantiate_Member>,
+        _a0: Ptr<p2_reference_does_not_instantiate_Member>,
+    ) {
+        field!(this, value).write(_a0.with(|__s| __s.value));
+    }
+    pub fn move_from(
+        this: Ptr<p2_reference_does_not_instantiate_Member>,
+        _a0: Ptr<p2_reference_does_not_instantiate_Member>,
+    ) {
+        field!(this, value).write({ (*_a0.upgrade().deref()).value });
     }
 }
 impl Default for p2_reference_does_not_instantiate_Member {
@@ -23,6 +42,7 @@ impl Default for p2_reference_does_not_instantiate_Member {
     }
 }
 #[derive(Record, ByteRepr, Uninit, FnPtrArg, MoveCtor, Default)]
+#[placement]
 #[byte_size(4)]
 pub struct p2_reference_does_not_instantiate_Holder {
     #[offset(0)]
@@ -30,18 +50,26 @@ pub struct p2_reference_does_not_instantiate_Holder {
     pub member: p2_reference_does_not_instantiate_Member,
 }
 impl p2_reference_does_not_instantiate_Holder {
-    pub fn move_from(_a0: Ptr<p2_reference_does_not_instantiate_Holder>) -> Self {
-        Self {
-            member: { (*_a0.upgrade().deref()).member },
-        }
+    pub fn new_1(this: Ptr<p2_reference_does_not_instantiate_Holder>) {
+        p2_reference_does_not_instantiate_Member::new_1(field_ptr!(this, member));
+    }
+    pub fn move_from(
+        this: Ptr<p2_reference_does_not_instantiate_Holder>,
+        _a0: Ptr<p2_reference_does_not_instantiate_Holder>,
+    ) {
+        p2_reference_does_not_instantiate_Member::move_from(field_ptr!(this, member), {
+            field_ptr!(_a0, member)
+        });
     }
 }
 pub fn test_0() {
-    let mut holder: p2_reference_does_not_instantiate_Holder =
-        <p2_reference_does_not_instantiate_Holder>::default();
-    assert!((holder.member.value == 1));
-    holder.member.value = 3;
-    assert!((holder.member.value == 3));
+    let holder: Value<p2_reference_does_not_instantiate_Holder> = Rc::new(RefCell::new(
+        <p2_reference_does_not_instantiate_Holder>::uninit(),
+    ));
+    p2_reference_does_not_instantiate_Holder::new_1(holder.as_pointer());
+    assert!(({ ({ (*holder.borrow()).member.value } == 1) }));
+    (*holder.borrow_mut()).member.value = 3;
+    assert!(({ ({ (*holder.borrow()).member.value } == 3) }));
 }
 pub fn main() {
     __cpp2rust_init_globals();

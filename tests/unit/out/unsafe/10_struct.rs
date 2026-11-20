@@ -32,13 +32,19 @@ impl Graph {
 }
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg)]
+#[placement]
 pub struct Partial {
     pub p: *mut i32,
 }
 impl Partial {
-    pub unsafe fn new_1(mut q: *mut i32) -> Self {
-        let mut this = Self { p: q };
-        this
+    pub unsafe fn new_1(this: *mut Partial) {
+        (&raw mut (*this).p).write(std::ptr::null_mut());
+    }
+    pub unsafe fn new_2(this: *mut Partial, mut q: *mut i32) {
+        (&raw mut (*this).p).write(q);
+    }
+    pub unsafe fn copy_from(this: *mut Partial, _a0: *const Partial) {
+        (&raw mut (*this).p).write((*_a0).p);
     }
 }
 impl Default for Partial {
@@ -52,8 +58,11 @@ impl Default for Partial {
 }
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
+#[placement]
 pub struct Declared {}
-impl Declared {}
+impl Declared {
+    pub unsafe fn copy_from(this: *mut Declared, _a0: *const Declared) {}
+}
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct S {
@@ -72,11 +81,13 @@ unsafe fn main_0() -> i32 {
         adj: std::ptr::null_mut(),
     };
     let mut arr: [i32; 3] = [3, 1, 4];
-    let mut it: Partial = Partial::new_1({ arr.as_mut_ptr() });
+    let mut it: Partial = ::std::mem::MaybeUninit::uninit().assume_init();
+    Partial::new_2(&raw mut it, { arr.as_mut_ptr() });
     if ((it.p) != (arr.as_mut_ptr())) {
         return 1;
     }
-    let mut def: Partial = <Partial>::default();
+    let mut def: Partial = ::std::mem::MaybeUninit::uninit().assume_init();
+    Partial::new_1(&raw mut def);
     if !((def.p).is_null()) {
         return 1;
     }

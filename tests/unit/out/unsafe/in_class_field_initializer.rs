@@ -39,14 +39,19 @@ impl Default for S {
 }
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg)]
+#[placement]
 pub struct Boxed_int_ {
     pub v: i32,
     pub tag: i32,
 }
 impl Boxed_int_ {
-    pub unsafe fn new(mut x: i32, mut t: i32) -> Self {
-        let mut this = Self { v: x, tag: t };
-        this
+    pub unsafe fn new(this: *mut Boxed_int_, mut x: i32, mut t: i32) {
+        (&raw mut (*this).v).write(x);
+        (&raw mut (*this).tag).write(t);
+    }
+    pub unsafe fn copy_from(this: *mut Boxed_int_, _a0: *const Boxed_int_) {
+        (&raw mut (*this).v).write((*_a0).v);
+        (&raw mut (*this).tag).write((*_a0).tag);
     }
 }
 impl Default for Boxed_int_ {
@@ -68,7 +73,8 @@ unsafe fn main_0() -> i32 {
     assert!(((s.c.y) == (4)));
     assert!(((s.d.x) == (3)));
     assert!(((s.d.y) == (4)));
-    let mut boxed: Boxed_int_ = Boxed_int_::new({ 5 }, { 9 });
+    let mut boxed: Boxed_int_ = ::std::mem::MaybeUninit::uninit().assume_init();
+    Boxed_int_::new(&raw mut boxed, { 5 }, { 9 });
     assert!(((boxed.v) == (5)));
     assert!(((boxed.tag) == (9)));
     return 0;

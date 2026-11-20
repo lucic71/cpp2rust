@@ -10,6 +10,7 @@ thread_local!(
     pub static copies_0: Value<i32> = Rc::new(RefCell::new(0));
 );
 #[derive(Record, ByteRepr, Uninit, VaArg, FnPtrArg, CppFrom, CopyAssign, Default)]
+#[placement]
 #[cpp_from(i32, new, value)]
 #[byte_size(4)]
 pub struct Counted {
@@ -17,42 +18,38 @@ pub struct Counted {
     pub v: i32,
 }
 impl Counted {
-    pub fn new(mut v: i32) -> Self {
-        Self { v: v }
+    pub fn new(this: Ptr<Counted>, mut v: i32) {
+        field!(this, v).write(v);
     }
-    pub fn copy_from(o: Ptr<Counted>) -> Self {
-        let __this: Counted = Self {
-            v: o.with(|__s| __s.v),
-        };
+    pub fn copy_from(this: Ptr<Counted>, o: Ptr<Counted>) {
+        field!(this, v).write(o.with(|__s| __s.v));
         (*copies_0.with(Value::clone).borrow_mut()).prefix_inc();
-        __this
     }
 }
 impl Clone for Counted {
     fn clone(&self) -> Self {
         let __src: Value<Counted> = Rc::new(RefCell::new(Counted { v: self.v.clone() }));
-        Counted::copy_from(__src.as_pointer())
+        let __dst: Value<Counted> = Rc::new(RefCell::new(<Counted>::uninit()));
+        Counted::copy_from(__dst.as_pointer(), __src.as_pointer());
+        Rc::try_unwrap(__dst).ok().unwrap().into_inner()
     }
 }
 #[derive(Record, ByteRepr, Uninit, VaArg, FnPtrArg, CopyAssign)]
+#[placement]
 #[byte_size(4)]
 pub struct NonConst {
     #[offset(0)]
     pub mark: i32,
 }
 impl NonConst {
-    pub fn new() -> Self {
-        Self { mark: 0 }
+    pub fn new(this: Ptr<NonConst>) {
+        field!(this, mark).write(0);
     }
-    pub fn new_1(o: Ptr<NonConst>) -> Self {
-        Self {
-            mark: (o.with(|__s| __s.mark) + 1),
-        }
+    pub fn new_1(this: Ptr<NonConst>, o: Ptr<NonConst>) {
+        field!(this, mark).write((o.with(|__s| __s.mark) + 1));
     }
-    pub fn new_2(o: Ptr<NonConst>) -> Self {
-        Self {
-            mark: (o.with(|__s| __s.mark) + 10),
-        }
+    pub fn new_2(this: Ptr<NonConst>, o: Ptr<NonConst>) {
+        field!(this, mark).write((o.with(|__s| __s.mark) + 10));
     }
 }
 impl Clone for NonConst {
@@ -60,15 +57,25 @@ impl Clone for NonConst {
         let __src: Value<NonConst> = Rc::new(RefCell::new(NonConst {
             mark: self.mark.clone(),
         }));
-        NonConst::new_1(__src.as_pointer())
+        let __dst: Value<NonConst> = Rc::new(RefCell::new(<NonConst>::uninit()));
+        NonConst::new_1(__dst.as_pointer(), __src.as_pointer());
+        Rc::try_unwrap(__dst).ok().unwrap().into_inner()
     }
 }
 impl Default for NonConst {
     fn default() -> Self {
-        { NonConst::new() }
+        Rc::try_unwrap({
+            let __v: Value<NonConst> = Rc::new(RefCell::new(<NonConst>::uninit()));
+            NonConst::new(__v.as_pointer());
+            __v
+        })
+        .ok()
+        .unwrap()
+        .into_inner()
     }
 }
 #[derive(Record, ByteRepr, Uninit, VaArg, FnPtrArg, CppFrom, CopyAssign, Default)]
+#[placement]
 #[cpp_from(i32, new, value)]
 #[byte_size(4)]
 pub struct Ignored {
@@ -76,22 +83,24 @@ pub struct Ignored {
     pub v: i32,
 }
 impl Ignored {
-    pub fn new(mut v: i32) -> Self {
-        Self { v: v }
+    pub fn new(this: Ptr<Ignored>, mut v: i32) {
+        field!(this, v).write(v);
     }
-    pub fn copy_from(_a0: Ptr<Ignored>) -> Self {
-        let __this: Ignored = Self { v: -1_i32 };
+    pub fn copy_from(this: Ptr<Ignored>, _a0: Ptr<Ignored>) {
+        field!(this, v).write(-1_i32);
         (*copies_0.with(Value::clone).borrow_mut()).prefix_inc();
-        __this
     }
 }
 impl Clone for Ignored {
     fn clone(&self) -> Self {
         let __src: Value<Ignored> = Rc::new(RefCell::new(Ignored { v: self.v.clone() }));
-        Ignored::copy_from(__src.as_pointer())
+        let __dst: Value<Ignored> = Rc::new(RefCell::new(<Ignored>::uninit()));
+        Ignored::copy_from(__dst.as_pointer(), __src.as_pointer());
+        Rc::try_unwrap(__dst).ok().unwrap().into_inner()
     }
 }
 #[derive(Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, CopyAssign)]
+#[placement]
 #[byte_size(12)]
 pub struct Holder {
     #[offset(0)]
@@ -101,6 +110,19 @@ pub struct Holder {
     #[byte_size(8)]
     #[array_len(2)]
     pub arr: Box<[Counted]>,
+}
+impl Holder {
+    pub fn copy_from(this: Ptr<Holder>, _a0: Ptr<Holder>) {
+        Counted::copy_from(field_ptr!(this, c), { field_ptr!(_a0, c) });
+        {
+            let __d = array_field_ptr!(this, arr);
+            for __i in 0..2_usize {
+                Counted::copy_from(__d.offset(__i as isize), {
+                    array_field_ptr!(_a0, arr).offset(__i)
+                });
+            }
+        };
+    }
 }
 impl Default for Holder {
     fn default() -> Self {
@@ -115,6 +137,7 @@ impl Default for Holder {
     }
 }
 #[derive(Record, ByteRepr, Uninit, VaArg, FnPtrArg, MoveCtor, CppFrom, Default)]
+#[placement]
 #[cpp_from(i32, new, value)]
 #[byte_size(4)]
 pub struct Box_int_ {
@@ -122,18 +145,14 @@ pub struct Box_int_ {
     pub val: i32,
 }
 impl Box_int_ {
-    pub fn new(mut v: i32) -> Self {
-        Self { val: v }
+    pub fn new(this: Ptr<Box_int_>, mut v: i32) {
+        field!(this, val).write(v);
     }
-    pub fn copy_from(o: Ptr<Box_int_>) -> Self {
-        Self {
-            val: o.with(|__s| __s.val),
-        }
+    pub fn copy_from(this: Ptr<Box_int_>, o: Ptr<Box_int_>) {
+        field!(this, val).write(o.with(|__s| __s.val));
     }
-    pub fn move_from(_a0: Ptr<Box_int_>) -> Self {
-        Self {
-            val: { (*_a0.upgrade().deref()).val },
-        }
+    pub fn move_from(this: Ptr<Box_int_>, _a0: Ptr<Box_int_>) {
+        field!(this, val).write({ (*_a0.upgrade().deref()).val });
     }
 }
 impl Clone for Box_int_ {
@@ -141,10 +160,13 @@ impl Clone for Box_int_ {
         let __src: Value<Box_int_> = Rc::new(RefCell::new(Box_int_ {
             val: self.val.clone(),
         }));
-        Box_int_::copy_from(__src.as_pointer())
+        let __dst: Value<Box_int_> = Rc::new(RefCell::new(<Box_int_>::uninit()));
+        Box_int_::copy_from(__dst.as_pointer(), __src.as_pointer());
+        Rc::try_unwrap(__dst).ok().unwrap().into_inner()
     }
 }
 #[derive(Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, MoveCtor, Default)]
+#[placement]
 #[byte_size(4)]
 pub struct Owner {
     #[offset(0)]
@@ -152,13 +174,15 @@ pub struct Owner {
     pub box_: Box_int_,
 }
 impl Owner {
-    pub fn move_from(_a0: Ptr<Owner>) -> Self {
-        Self {
-            box_: Box_int_::move_from({ field_ptr!(_a0, box_) }),
-        }
+    pub fn copy_from(this: Ptr<Owner>, _a0: Ptr<Owner>) {
+        Box_int_::copy_from(field_ptr!(this, box_), { field_ptr!(_a0, box_) });
+    }
+    pub fn move_from(this: Ptr<Owner>, _a0: Ptr<Owner>) {
+        Box_int_::move_from(field_ptr!(this, box_), { field_ptr!(_a0, box_) });
     }
 }
 #[derive(Record, ByteRepr, Uninit, VaArg, FnPtrArg, CppFrom, CopyAssign, Default)]
+#[placement]
 #[cpp_from(i32, new, value)]
 #[byte_size(4)]
 pub struct OutOfLine {
@@ -166,37 +190,39 @@ pub struct OutOfLine {
     pub v: i32,
 }
 impl OutOfLine {
-    pub fn new(mut v: i32) -> Self {
-        Self { v: v }
+    pub fn new(this: Ptr<OutOfLine>, mut v: i32) {
+        field!(this, v).write(v);
     }
-    pub fn copy_from(o: Ptr<OutOfLine>) -> Self {
-        let __this: OutOfLine = Self {
-            v: (o.with(|__s| __s.v) + 100),
-        };
+    pub fn copy_from(this: Ptr<OutOfLine>, o: Ptr<OutOfLine>) {
+        field!(this, v).write((o.with(|__s| __s.v) + 100));
         (*copies_0.with(Value::clone).borrow_mut()).prefix_inc();
-        __this
     }
 }
 impl Clone for OutOfLine {
     fn clone(&self) -> Self {
         let __src: Value<OutOfLine> = Rc::new(RefCell::new(OutOfLine { v: self.v.clone() }));
-        OutOfLine::copy_from(__src.as_pointer())
+        let __dst: Value<OutOfLine> = Rc::new(RefCell::new(<OutOfLine>::uninit()));
+        OutOfLine::copy_from(__dst.as_pointer(), __src.as_pointer());
+        Rc::try_unwrap(__dst).ok().unwrap().into_inner()
     }
 }
 impl OutOfLine {}
 #[derive(Record, ByteRepr, Uninit, VaArg, FnPtrArg, CopyAssign)]
+#[placement]
 #[byte_size(4)]
 pub struct Tracked {
     #[offset(0)]
     pub copied_from: i32,
 }
 impl Tracked {
-    pub fn copy_from(o: Ptr<Tracked>) -> Self {
-        let __this: Tracked = Self { copied_from: 0 };
+    pub fn new(this: Ptr<Tracked>) {
+        field!(this, copied_from).write(0);
+    }
+    pub fn copy_from(this: Ptr<Tracked>, o: Ptr<Tracked>) {
+        field!(this, copied_from).write(0);
         field!(o, copied_from).with_mut(|__v| {
             __v.prefix_inc();
         });
-        __this
     }
 }
 impl Clone for Tracked {
@@ -204,7 +230,9 @@ impl Clone for Tracked {
         let __src: Value<Tracked> = Rc::new(RefCell::new(Tracked {
             copied_from: self.copied_from.clone(),
         }));
-        Tracked::copy_from(__src.as_pointer())
+        let __dst: Value<Tracked> = Rc::new(RefCell::new(<Tracked>::uninit()));
+        Tracked::copy_from(__dst.as_pointer(), __src.as_pointer());
+        Rc::try_unwrap(__dst).ok().unwrap().into_inner()
     }
 }
 impl Default for Tracked {
@@ -217,43 +245,76 @@ pub fn touch_1(mut t: Ptr<Tracked>) {
         __v.prefix_inc();
     });
 }
-pub fn by_value_2(mut c: Counted) -> i32 {
-    return c.v;
+pub fn by_value_2(c: Value<Counted>) -> i32 {
+    return { (*c.borrow()).v };
 }
-pub fn make_3(mut v: i32) -> Counted {
-    let c: Value<Counted> = Rc::new(RefCell::new(Counted::new({ v })));
-    return Counted::copy_from({ c.as_pointer() });
+pub fn make_3(__ret: Ptr<Counted>, mut v: i32) {
+    let c: Value<Counted> = Rc::new(RefCell::new(<Counted>::uninit()));
+    Counted::new(c.as_pointer(), { v });
+    Counted::copy_from(__ret.clone(), { c.as_pointer() });
+    return;
 }
 pub fn main() {
     __cpp2rust_init_globals();
     libcc2rs::cpp2rust_exit(main_0());
 }
 fn main_0() -> i32 {
-    let a: Value<Counted> = Rc::new(RefCell::new(Counted::new({ 1 })));
-    let mut b: Counted = Counted::copy_from({ a.as_pointer() });
-    let mut c: Counted = Counted::copy_from({ a.as_pointer() });
-    let mut d: Counted = Counted::copy_from({ a.as_pointer() });
+    let a: Value<Counted> = Rc::new(RefCell::new(<Counted>::uninit()));
+    Counted::new(a.as_pointer(), { 1 });
+    let b: Value<Counted> = Rc::new(RefCell::new(<Counted>::uninit()));
+    Counted::copy_from(b.as_pointer(), { a.as_pointer() });
+    let c: Value<Counted> = Rc::new(RefCell::new(<Counted>::uninit()));
+    Counted::copy_from(c.as_pointer(), { a.as_pointer() });
+    let d: Value<Counted> = Rc::new(RefCell::new(<Counted>::uninit()));
+    Counted::copy_from(d.as_pointer(), { a.as_pointer() });
     assert!((copies_0.with(|rc| *rc.borrow()) == 3));
-    assert!(((b.v == 1) && (c.v == 1)) && (d.v == 1));
-    assert!((({ by_value_2(Counted::copy_from({ a.as_pointer() },),) }) == 1));
-    assert!((copies_0.with(|rc| *rc.borrow()) == 4));
-    let mut e: Counted = ({ make_3(5) });
-    assert!((e.v == 5));
-    assert!((copies_0.with(|rc| *rc.borrow()) == 5));
-    let mut f: Counted = Counted::new({ 6 });
-    assert!((f.v == 6));
-    assert!((copies_0.with(|rc| *rc.borrow()) == 5));
-    let g: Value<Counted> = Rc::new(RefCell::new(Counted::new({ 7 })));
-    let mut h: Counted = Counted::copy_from({ g.as_pointer() });
-    assert!((h.v == 7));
-    assert!((copies_0.with(|rc| *rc.borrow()) == 6));
-    let hold: Value<Holder> = Rc::new(RefCell::new(Holder {
-        c: Counted::new({ 8 }),
-        arr: Box::new([Counted::new({ 9 }), Counted::new({ 10 })]),
-    }));
-    let mut hold2: Holder = (*hold.borrow()).clone();
     assert!(
-        ((hold2.c.v == 8) && (hold2.arr[(0) as usize].v == 9)) && (hold2.arr[(1) as usize].v == 10)
+        ({
+            (({ (*b.borrow()).v } == 1) && ({ (*c.borrow()).v } == 1)) && ({ (*d.borrow()).v } == 1)
+        })
+    );
+    assert!(
+        (({
+            by_value_2({
+                let __v: Value<Counted> = Rc::new(RefCell::new(<Counted>::uninit()));
+                Counted::copy_from(__v.as_pointer(), { a.as_pointer() });
+                __v
+            })
+        }) == 1)
+    );
+    assert!((copies_0.with(|rc| *rc.borrow()) == 4));
+    let e: Value<Counted> = Rc::new(RefCell::new(<Counted>::uninit()));
+    ({ make_3(e.as_pointer(), 5) });
+    assert!(({ ({ (*e.borrow()).v } == 5) }));
+    assert!((copies_0.with(|rc| *rc.borrow()) == 5));
+    let f: Value<Counted> = Rc::new(RefCell::new(<Counted>::uninit()));
+    Counted::new(f.as_pointer(), { 6 });
+    assert!(({ ({ (*f.borrow()).v } == 6) }));
+    assert!((copies_0.with(|rc| *rc.borrow()) == 5));
+    let g: Value<Counted> = Rc::new(RefCell::new(<Counted>::uninit()));
+    Counted::new(g.as_pointer(), { 7 });
+    let h: Value<Counted> = Rc::new(RefCell::new(<Counted>::uninit()));
+    Counted::copy_from(h.as_pointer(), { g.as_pointer() });
+    assert!(({ ({ (*h.borrow()).v } == 7) }));
+    assert!((copies_0.with(|rc| *rc.borrow()) == 6));
+    let hold: Value<Holder> = Rc::new(RefCell::new(<Holder>::uninit()));
+    {
+        let __d = hold.as_pointer();
+        Counted::new(field_ptr!(__d, c), { 8 });
+        {
+            let __d = array_field_ptr!(__d, arr);
+            Counted::new(__d.offset(0), { 9 });
+            Counted::new(__d.offset(1), { 10 });
+        };
+    };
+    let hold2: Value<Holder> = Rc::new(RefCell::new(<Holder>::uninit()));
+    Holder::copy_from(hold2.as_pointer(), { hold.as_pointer() });
+    assert!(
+        ({
+            (({ (*hold2.borrow()).c.v } == 8)
+                && (array_elem!(hold2.as_pointer(), arr, 0).with(|__s| __s.v) == 9))
+                && (array_elem!(hold2.as_pointer(), arr, 1).with(|__s| __s.v) == 10)
+        })
     );
     assert!((copies_0.with(|rc| *rc.borrow()) == 9));
     let mut vec_: Vec<Counted> = Vec::new();
@@ -263,31 +324,46 @@ fn main_0() -> i32 {
     };
     assert!((vec_[0_usize].v == 1));
     assert!((copies_0.with(|rc| *rc.borrow()) == 10));
-    let i1: Value<Ignored> = Rc::new(RefCell::new(Ignored::new({ 1 })));
-    let mut i2: Ignored = Ignored::copy_from({ i1.as_pointer() });
-    assert!(({ ({ (*i1.borrow()).v } == 1) && (i2.v == -1_i32) }));
+    let i1: Value<Ignored> = Rc::new(RefCell::new(<Ignored>::uninit()));
+    Ignored::new(i1.as_pointer(), { 1 });
+    let i2: Value<Ignored> = Rc::new(RefCell::new(<Ignored>::uninit()));
+    Ignored::copy_from(i2.as_pointer(), { i1.as_pointer() });
+    assert!(({ ({ (*i1.borrow()).v } == 1) && ({ (*i2.borrow()).v } == -1_i32) }));
     assert!((copies_0.with(|rc| *rc.borrow()) == 11));
-    let o: Value<Owner> = Rc::new(RefCell::new(Owner {
-        box_: Box_int_::new({ 3 }),
-    }));
-    let mut o2: Owner = Owner::move_from({ o.as_pointer() });
-    assert!((o2.box_.val == 3));
-    let ol1: Value<OutOfLine> = Rc::new(RefCell::new(OutOfLine::new({ 5 })));
-    let mut ol2: OutOfLine = OutOfLine::copy_from({ ol1.as_pointer() });
-    assert!((ol2.v == 105));
+    let o: Value<Owner> = Rc::new(RefCell::new(<Owner>::uninit()));
+    {
+        let __d = o.as_pointer();
+        Box_int_::new(field_ptr!(__d, box_), { 3 });
+    };
+    let o2: Value<Owner> = Rc::new(RefCell::new(<Owner>::uninit()));
+    Owner::move_from(o2.as_pointer(), { o.as_pointer() });
+    assert!(({ ({ (*o2.borrow()).box_.val } == 3) }));
+    let ol1: Value<OutOfLine> = Rc::new(RefCell::new(<OutOfLine>::uninit()));
+    OutOfLine::new(ol1.as_pointer(), { 5 });
+    let ol2: Value<OutOfLine> = Rc::new(RefCell::new(<OutOfLine>::uninit()));
+    OutOfLine::copy_from(ol2.as_pointer(), { ol1.as_pointer() });
+    assert!(({ ({ (*ol2.borrow()).v } == 105) }));
     assert!((copies_0.with(|rc| *rc.borrow()) == 12));
-    let n: Value<NonConst> = Rc::new(RefCell::new(NonConst::new()));
-    let mut n1: NonConst = NonConst::new_1({ n.as_pointer() });
-    let cn: Value<NonConst> = Rc::new(RefCell::new(NonConst::new()));
-    let mut n2: NonConst = NonConst::new_2({ cn.as_pointer() });
-    assert!((n1.mark == 1));
-    assert!((n2.mark == 10));
-    let t1: Value<Tracked> = Rc::new(RefCell::new(<Tracked>::default()));
-    let t2: Value<Tracked> = Rc::new(RefCell::new(Tracked::copy_from({ t1.as_pointer() })));
+    let n: Value<NonConst> = Rc::new(RefCell::new(<NonConst>::uninit()));
+    NonConst::new(n.as_pointer());
+    let n1: Value<NonConst> = Rc::new(RefCell::new(<NonConst>::uninit()));
+    NonConst::new_1(n1.as_pointer(), { n.as_pointer() });
+    let cn: Value<NonConst> = Rc::new(RefCell::new(<NonConst>::uninit()));
+    NonConst::new(cn.as_pointer());
+    let n2: Value<NonConst> = Rc::new(RefCell::new(<NonConst>::uninit()));
+    NonConst::new_2(n2.as_pointer(), { cn.as_pointer() });
+    assert!(({ ({ (*n1.borrow()).mark } == 1) }));
+    assert!(({ ({ (*n2.borrow()).mark } == 10) }));
+    let t1: Value<Tracked> = Rc::new(RefCell::new(<Tracked>::uninit()));
+    Tracked::new(t1.as_pointer());
+    let t2: Value<Tracked> = Rc::new(RefCell::new(<Tracked>::uninit()));
+    Tracked::copy_from(t2.as_pointer(), { t1.as_pointer() });
     ({ TrackedImpl::copy_assign(&t2.as_pointer(), t1.as_pointer()) });
     assert!(({ ({ (*t1.borrow()).copied_from } == 2) }));
-    let ct: Value<Tracked> = Rc::new(RefCell::new(<Tracked>::default()));
-    let mut t3: Tracked = Tracked::copy_from({ ct.as_pointer() });
+    let ct: Value<Tracked> = Rc::new(RefCell::new(<Tracked>::uninit()));
+    Tracked::new(ct.as_pointer());
+    let t3: Value<Tracked> = Rc::new(RefCell::new(<Tracked>::uninit()));
+    Tracked::copy_from(t3.as_pointer(), { ct.as_pointer() });
     ({ touch_1((ct.as_pointer())) });
     assert!(({ ({ (*ct.borrow()).copied_from } == 2) }));
     return 0;

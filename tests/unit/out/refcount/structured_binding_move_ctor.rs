@@ -13,6 +13,7 @@ thread_local!(
     pub static moves_1: Value<i32> = Rc::new(RefCell::new(0));
 );
 #[derive(Record, ByteRepr, Uninit, VaArg, FnPtrArg, MoveCtor, Default)]
+#[placement]
 #[byte_size(8)]
 pub struct Movable {
     #[offset(0)]
@@ -21,26 +22,21 @@ pub struct Movable {
     pub y: i32,
 }
 impl Movable {
-    pub fn new(mut x: i32, mut y: i32) -> Self {
-        Self { x: x, y: y }
+    pub fn new(this: Ptr<Movable>, mut x: i32, mut y: i32) {
+        field!(this, x).write(x);
+        field!(this, y).write(y);
     }
-    pub fn copy_from(other: Ptr<Movable>) -> Self {
-        let __this: Movable = Self {
-            x: other.with(|__s| __s.x),
-            y: other.with(|__s| __s.y),
-        };
+    pub fn copy_from(this: Ptr<Movable>, other: Ptr<Movable>) {
+        field!(this, x).write(other.with(|__s| __s.x));
+        field!(this, y).write(other.with(|__s| __s.y));
         (*copies_0.with(Value::clone).borrow_mut()).prefix_inc();
-        __this
     }
-    pub fn move_from(other: Ptr<Movable>) -> Self {
-        let __this: Movable = Self {
-            x: other.with(|__s| __s.x),
-            y: other.with(|__s| __s.y),
-        };
+    pub fn move_from(this: Ptr<Movable>, other: Ptr<Movable>) {
+        field!(this, x).write(other.with(|__s| __s.x));
+        field!(this, y).write(other.with(|__s| __s.y));
         field!(other, x).write(0);
         field!(other, y).write(0);
         (*moves_1.with(Value::clone).borrow_mut()).prefix_inc();
-        __this
     }
 }
 impl Clone for Movable {
@@ -49,7 +45,9 @@ impl Clone for Movable {
             x: self.x.clone(),
             y: self.y.clone(),
         }));
-        Movable::copy_from(__src.as_pointer())
+        let __dst: Value<Movable> = Rc::new(RefCell::new(<Movable>::uninit()));
+        Movable::copy_from(__dst.as_pointer(), __src.as_pointer());
+        Rc::try_unwrap(__dst).ok().unwrap().into_inner()
     }
 }
 #[derive(Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, MoveCtor, MoveAssign, Default)]
@@ -75,8 +73,10 @@ pub fn main() {
     libcc2rs::cpp2rust_exit(main_0());
 }
 fn main_0() -> i32 {
-    let m: Value<Movable> = Rc::new(RefCell::new(Movable::new({ 3 }, { 4 })));
-    let __decomp_2: Value<Movable> = Rc::new(RefCell::new(Movable::move_from({ m.as_pointer() })));
+    let m: Value<Movable> = Rc::new(RefCell::new(<Movable>::uninit()));
+    Movable::new(m.as_pointer(), { 3 }, { 4 });
+    let __decomp_2: Value<Movable> = Rc::new(RefCell::new(<Movable>::uninit()));
+    Movable::move_from(__decomp_2.as_pointer(), { m.as_pointer() });
     assert!((moves_1.with(|rc| *rc.borrow()) == 1));
     assert!((copies_0.with(|rc| *rc.borrow()) == 0));
     assert!(({ ({ (*__decomp_2.borrow()).x } == 3) }));

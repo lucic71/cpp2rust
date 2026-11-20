@@ -10,6 +10,7 @@ thread_local!(
     pub static copies_0: Value<i32> = Rc::new(RefCell::new(0));
 );
 #[derive(Record, ByteRepr, Uninit, VaArg, FnPtrArg, MoveCtor, CppFrom, CopyAssign, MoveAssign)]
+#[placement]
 #[cpp_from(i32, new_1, value)]
 #[byte_size(4)]
 pub struct Tracked {
@@ -17,39 +18,44 @@ pub struct Tracked {
     pub v: i32,
 }
 impl Tracked {
-    pub fn new_2() -> Self {
-        Self { v: 0 }
+    pub fn new_2(this: Ptr<Tracked>) {
+        field!(this, v).write(0);
     }
-    pub fn new_1(mut v: i32) -> Self {
-        Self { v: v }
+    pub fn new_1(this: Ptr<Tracked>, mut v: i32) {
+        field!(this, v).write(v);
     }
-    pub fn copy_from(o: Ptr<Tracked>) -> Self {
-        let __this: Tracked = Self {
-            v: o.with(|__s| __s.v),
-        };
+    pub fn copy_from(this: Ptr<Tracked>, o: Ptr<Tracked>) {
+        field!(this, v).write(o.with(|__s| __s.v));
         (*copies_0.with(Value::clone).borrow_mut()).prefix_inc();
-        __this
     }
-    pub fn move_from(o: Ptr<Tracked>) -> Self {
-        Self {
-            v: o.with(|__s| __s.v),
-        }
+    pub fn move_from(this: Ptr<Tracked>, o: Ptr<Tracked>) {
+        field!(this, v).write(o.with(|__s| __s.v));
     }
 }
 impl Clone for Tracked {
     fn clone(&self) -> Self {
         let __src: Value<Tracked> = Rc::new(RefCell::new(Tracked { v: self.v.clone() }));
-        Tracked::copy_from(__src.as_pointer())
+        let __dst: Value<Tracked> = Rc::new(RefCell::new(<Tracked>::uninit()));
+        Tracked::copy_from(__dst.as_pointer(), __src.as_pointer());
+        Rc::try_unwrap(__dst).ok().unwrap().into_inner()
     }
 }
 impl Default for Tracked {
     fn default() -> Self {
-        { Tracked::new_2() }
+        Rc::try_unwrap({
+            let __v: Value<Tracked> = Rc::new(RefCell::new(<Tracked>::uninit()));
+            Tracked::new_2(__v.as_pointer());
+            __v
+        })
+        .ok()
+        .unwrap()
+        .into_inner()
     }
 }
 #[derive(
     Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, MoveCtor, CopyAssign, MoveAssign, Default,
 )]
+#[placement]
 #[byte_size(8)]
 pub struct Pair {
     #[offset(0)]
@@ -60,14 +66,17 @@ pub struct Pair {
     pub y: Tracked,
 }
 impl Pair {
-    pub fn move_from(_a0: Ptr<Pair>) -> Self {
-        Self {
-            x: Tracked::move_from({ field_ptr!(_a0, x) }),
-            y: Tracked::move_from({ field_ptr!(_a0, y) }),
-        }
+    pub fn copy_from(this: Ptr<Pair>, _a0: Ptr<Pair>) {
+        Tracked::copy_from(field_ptr!(this, x), { field_ptr!(_a0, x) });
+        Tracked::copy_from(field_ptr!(this, y), { field_ptr!(_a0, y) });
+    }
+    pub fn move_from(this: Ptr<Pair>, _a0: Ptr<Pair>) {
+        Tracked::move_from(field_ptr!(this, x), { field_ptr!(_a0, x) });
+        Tracked::move_from(field_ptr!(this, y), { field_ptr!(_a0, y) });
     }
 }
 #[derive(Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, MoveCtor, CopyAssign, MoveAssign)]
+#[placement]
 #[byte_size(16)]
 pub struct Arrays {
     #[offset(0)]
@@ -80,15 +89,55 @@ pub struct Arrays {
     pub b: Box<[Tracked]>,
 }
 impl Arrays {
-    pub fn move_from(_a0: Ptr<Arrays>) -> Self {
-        Self {
-            a: Box::new(std::array::from_fn::<_, 2, _>(|__i: usize| {
-                Tracked::move_from({ array_field_ptr!(_a0, a).offset(__i) })
-            })),
-            b: Box::new(std::array::from_fn::<_, 2, _>(|__i: usize| {
-                Tracked::move_from({ array_field_ptr!(_a0, b).offset(__i) })
-            })),
-        }
+    pub fn copy_from(this: Ptr<Arrays>, _a0: Ptr<Arrays>) {
+        {
+            let __d = array_field_ptr!(this, a);
+            for __i in 0..2_usize {
+                Tracked::copy_from(__d.offset(__i as isize), {
+                    array_field_ptr!(_a0, a).offset(__i)
+                });
+            }
+        };
+        {
+            let __d = array_field_ptr!(this, b);
+            for __i in 0..2_usize {
+                Tracked::copy_from(__d.offset(__i as isize), {
+                    array_field_ptr!(_a0, b).offset(__i)
+                });
+            }
+        };
+    }
+    pub fn move_from(this: Ptr<Arrays>, _a0: Ptr<Arrays>) {
+        {
+            let __d = array_field_ptr!(this, a);
+            for __i in 0..2_usize {
+                Tracked::move_from(__d.offset(__i as isize), {
+                    array_field_ptr!(_a0, a).offset(__i)
+                });
+            }
+        };
+        {
+            let __d = array_field_ptr!(this, b);
+            for __i in 0..2_usize {
+                Tracked::move_from(__d.offset(__i as isize), {
+                    array_field_ptr!(_a0, b).offset(__i)
+                });
+            }
+        };
+    }
+    pub fn new_1(this: Ptr<Arrays>) {
+        {
+            let __d = array_field_ptr!(this, a);
+            for __i in 0..2_isize {
+                Tracked::new_2(__d.offset(__i));
+            }
+        };
+        {
+            let __d = array_field_ptr!(this, b);
+            for __i in 0..2_isize {
+                Tracked::new_2(__d.offset(__i));
+            }
+        };
     }
 }
 impl Default for Arrays {
@@ -112,6 +161,7 @@ thread_local!(
     pub static copy_only_dtors_2: Value<i32> = Rc::new(RefCell::new(0));
 );
 #[derive(Record, ByteRepr, Uninit, VaArg, FnPtrArg, CppFrom, CopyAssign, Destructor, Default)]
+#[placement]
 #[cpp_from(i32, new, value)]
 #[byte_size(4)]
 pub struct CopyOnly {
@@ -119,24 +169,24 @@ pub struct CopyOnly {
     pub v: i32,
 }
 impl CopyOnly {
-    pub fn new(mut v: i32) -> Self {
-        Self { v: v }
+    pub fn new(this: Ptr<CopyOnly>, mut v: i32) {
+        field!(this, v).write(v);
     }
-    pub fn copy_from(o: Ptr<CopyOnly>) -> Self {
-        let __this: CopyOnly = Self {
-            v: o.with(|__s| __s.v),
-        };
+    pub fn copy_from(this: Ptr<CopyOnly>, o: Ptr<CopyOnly>) {
+        field!(this, v).write(o.with(|__s| __s.v));
         (*copy_only_copies_1.with(Value::clone).borrow_mut()).prefix_inc();
-        __this
     }
 }
 impl Clone for CopyOnly {
     fn clone(&self) -> Self {
         let __src: Value<CopyOnly> = Rc::new(RefCell::new(CopyOnly { v: self.v.clone() }));
-        CopyOnly::copy_from(__src.as_pointer())
+        let __dst: Value<CopyOnly> = Rc::new(RefCell::new(<CopyOnly>::uninit()));
+        CopyOnly::copy_from(__dst.as_pointer(), __src.as_pointer());
+        Rc::try_unwrap(__dst).ok().unwrap().into_inner()
     }
 }
 #[derive(Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, CopyAssign, Destructor, Default)]
+#[placement]
 #[byte_size(8)]
 pub struct CopyOnlyPair {
     #[offset(0)]
@@ -145,6 +195,12 @@ pub struct CopyOnlyPair {
     #[offset(4)]
     #[byte_size(4)]
     pub y: CopyOnly,
+}
+impl CopyOnlyPair {
+    pub fn copy_from(this: Ptr<CopyOnlyPair>, _a0: Ptr<CopyOnlyPair>) {
+        CopyOnly::copy_from(field_ptr!(this, x), { field_ptr!(_a0, x) });
+        CopyOnly::copy_from(field_ptr!(this, y), { field_ptr!(_a0, y) });
+    }
 }
 thread_local!(
     pub static moves_3: Value<i32> = Rc::new(RefCell::new(0));
@@ -168,6 +224,7 @@ thread_local!(
     Destructor,
     Default,
 )]
+#[placement]
 #[cpp_from(i32, new, value)]
 #[byte_size(4)]
 pub struct Moved {
@@ -175,29 +232,25 @@ pub struct Moved {
     pub v: i32,
 }
 impl Moved {
-    pub fn new(mut v: i32) -> Self {
-        Self { v: v }
+    pub fn new(this: Ptr<Moved>, mut v: i32) {
+        field!(this, v).write(v);
     }
-    pub fn copy_from(o: Ptr<Moved>) -> Self {
-        let __this: Moved = Self {
-            v: o.with(|__s| __s.v),
-        };
+    pub fn copy_from(this: Ptr<Moved>, o: Ptr<Moved>) {
+        field!(this, v).write(o.with(|__s| __s.v));
         (*copies_0.with(Value::clone).borrow_mut()).prefix_inc();
-        __this
     }
-    pub fn move_from(o: Ptr<Moved>) -> Self {
-        let __this: Moved = Self {
-            v: o.with(|__s| __s.v),
-        };
+    pub fn move_from(this: Ptr<Moved>, o: Ptr<Moved>) {
+        field!(this, v).write(o.with(|__s| __s.v));
         field!(o, v).write(-1_i32);
         (*moves_3.with(Value::clone).borrow_mut()).prefix_inc();
-        __this
     }
 }
 impl Clone for Moved {
     fn clone(&self) -> Self {
         let __src: Value<Moved> = Rc::new(RefCell::new(Moved { v: self.v.clone() }));
-        Moved::copy_from(__src.as_pointer())
+        let __dst: Value<Moved> = Rc::new(RefCell::new(<Moved>::uninit()));
+        Moved::copy_from(__dst.as_pointer(), __src.as_pointer());
+        Rc::try_unwrap(__dst).ok().unwrap().into_inner()
     }
 }
 #[derive(
@@ -213,6 +266,7 @@ impl Clone for Moved {
     Destructor,
     Default,
 )]
+#[placement]
 #[byte_size(8)]
 pub struct MovedPair {
     #[offset(0)]
@@ -223,11 +277,13 @@ pub struct MovedPair {
     pub y: Moved,
 }
 impl MovedPair {
-    pub fn move_from(_a0: Ptr<MovedPair>) -> Self {
-        Self {
-            x: Moved::move_from({ field_ptr!(_a0, x) }),
-            y: Moved::move_from({ field_ptr!(_a0, y) }),
-        }
+    pub fn copy_from(this: Ptr<MovedPair>, _a0: Ptr<MovedPair>) {
+        Moved::copy_from(field_ptr!(this, x), { field_ptr!(_a0, x) });
+        Moved::copy_from(field_ptr!(this, y), { field_ptr!(_a0, y) });
+    }
+    pub fn move_from(this: Ptr<MovedPair>, _a0: Ptr<MovedPair>) {
+        Moved::move_from(field_ptr!(this, x), { field_ptr!(_a0, x) });
+        Moved::move_from(field_ptr!(this, y), { field_ptr!(_a0, y) });
     }
 }
 pub fn swapped_once_6() -> bool {
@@ -266,14 +322,20 @@ pub fn main() {
     libcc2rs::cpp2rust_exit(main_0());
 }
 fn main_0() -> i32 {
-    let a: Value<Tracked> = Rc::new(RefCell::new(Tracked::new_1({ 1 })));
-    let b: Value<Tracked> = Rc::new(RefCell::new(Tracked::new_1({ 2 })));
+    let a: Value<Tracked> = Rc::new(RefCell::new(<Tracked>::uninit()));
+    Tracked::new_1(a.as_pointer(), { 1 });
+    let b: Value<Tracked> = Rc::new(RefCell::new(<Tracked>::uninit()));
+    Tracked::new_1(b.as_pointer(), { 2 });
     cpp_swap!(a.as_pointer(), b.as_pointer());
     assert!(({ ({ (*a.borrow()).v } == 2) && ({ (*b.borrow()).v } == 1) }));
     assert!((copies_0.with(|rc| *rc.borrow()) == 0));
     let m1: Value<Map<i32, (Value<i32>, Value<Tracked>)>> = Rc::new(RefCell::new(Map::new()));
     ({
-        let _o: Value<Tracked> = Rc::new(RefCell::new(Tracked::new_1({ 10 })));
+        let _o: Value<Tracked> = {
+            let __v: Value<Tracked> = Rc::new(RefCell::new(<Tracked>::uninit()));
+            Tracked::new_1(__v.as_pointer(), { 10 });
+            __v
+        };
         TrackedImpl::move_assign(
             &match (Rc::new(RefCell::new(1)).as_pointer(),) {
                 (__tmp_0,) => {
@@ -290,7 +352,11 @@ fn main_0() -> i32 {
         )
     });
     ({
-        let _o: Value<Tracked> = Rc::new(RefCell::new(Tracked::new_1({ 20 })));
+        let _o: Value<Tracked> = {
+            let __v: Value<Tracked> = Rc::new(RefCell::new(<Tracked>::uninit()));
+            Tracked::new_1(__v.as_pointer(), { 20 });
+            __v
+        };
         TrackedImpl::move_assign(
             &match (Rc::new(RefCell::new(2)).as_pointer(),) {
                 (__tmp_1,) => {
@@ -308,7 +374,11 @@ fn main_0() -> i32 {
     });
     let m2: Value<Map<i32, (Value<i32>, Value<Tracked>)>> = Rc::new(RefCell::new(Map::new()));
     ({
-        let _o: Value<Tracked> = Rc::new(RefCell::new(Tracked::new_1({ 30 })));
+        let _o: Value<Tracked> = {
+            let __v: Value<Tracked> = Rc::new(RefCell::new(<Tracked>::uninit()));
+            Tracked::new_1(__v.as_pointer(), { 30 });
+            __v
+        };
         TrackedImpl::move_assign(
             &match (Rc::new(RefCell::new(3)).as_pointer(),) {
                 (__tmp_2,) => {
@@ -425,11 +495,15 @@ fn main_0() -> i32 {
                 == 10)
     );
     assert!((copies_0.with(|rc| *rc.borrow()) == 0));
-    let arr: Value<Box<[Tracked]>> = Rc::new(RefCell::new(Box::new([
-        Tracked::new_1({ 1 }),
-        Tracked::new_1({ 2 }),
-        Tracked::new_1({ 3 }),
-    ])));
+    let arr: Value<Box<[Tracked]>> = Rc::new(RefCell::new(
+        (0..3).map(|_| <Tracked>::uninit()).collect::<Box<[_]>>(),
+    ));
+    {
+        let __d = arr.decay();
+        Tracked::new_1(__d.offset(0), { 1 });
+        Tracked::new_1(__d.offset(1), { 2 });
+        Tracked::new_1(__d.offset(2), { 3 });
+    };
     cpp_swap!(arr.decay().offset(0), arr.decay().offset(2));
     assert!(
         ({
@@ -441,30 +515,56 @@ fn main_0() -> i32 {
     assert!((copies_0.with(|rc| *rc.borrow()) == 0));
     let vec_: Value<Vec<Tracked>> = Rc::new(RefCell::new(Vec::new()));
     {
-        let mut __tmp_10 = { Tracked::new_1({ 4 }) };
+        let mut __tmp_10 = {
+            Rc::try_unwrap({
+                let __v: Value<Tracked> = Rc::new(RefCell::new(<Tracked>::uninit()));
+                Tracked::new_1(__v.as_pointer(), { 4 });
+                __v
+            })
+            .ok()
+            .unwrap()
+            .into_inner()
+        };
         (*vec_.borrow_mut()).push(__tmp_10);
     };
     {
-        let mut __tmp_11 = { Tracked::new_1({ 5 }) };
+        let mut __tmp_11 = {
+            Rc::try_unwrap({
+                let __v: Value<Tracked> = Rc::new(RefCell::new(<Tracked>::uninit()));
+                Tracked::new_1(__v.as_pointer(), { 5 });
+                __v
+            })
+            .ok()
+            .unwrap()
+            .into_inner()
+        };
         (*vec_.borrow_mut()).push(__tmp_11);
     };
     cpp_swap!(vec_.decay().offset(0_usize), vec_.decay().offset(1_usize));
     assert!(({ ({ (*vec_.borrow())[0_usize].v } == 5) && ({ (*vec_.borrow())[1_usize].v } == 4) }));
     assert!((copies_0.with(|rc| *rc.borrow()) == 0));
-    let pairs: Value<Box<[Pair]>> = Rc::new(RefCell::new(Box::new([
-        Pair {
-            x: Tracked::new_1({ 6 }),
-            y: Tracked::new_1({ 7 }),
-        },
-        Pair {
-            x: Tracked::new_1({ 8 }),
-            y: Tracked::new_1({ 9 }),
-        },
-    ])));
-    let p: Value<Pair> = Rc::new(RefCell::new(Pair {
-        x: Tracked::new_1({ 10 }),
-        y: Tracked::new_1({ 11 }),
-    }));
+    let pairs: Value<Box<[Pair]>> = Rc::new(RefCell::new(
+        (0..2).map(|_| <Pair>::uninit()).collect::<Box<[_]>>(),
+    ));
+    {
+        let __d = pairs.decay();
+        {
+            let __d = __d.offset(0);
+            Tracked::new_1(field_ptr!(__d, x), { 6 });
+            Tracked::new_1(field_ptr!(__d, y), { 7 });
+        };
+        {
+            let __d = __d.offset(1);
+            Tracked::new_1(field_ptr!(__d, x), { 8 });
+            Tracked::new_1(field_ptr!(__d, y), { 9 });
+        };
+    };
+    let p: Value<Pair> = Rc::new(RefCell::new(<Pair>::uninit()));
+    {
+        let __d = p.as_pointer();
+        Tracked::new_1(field_ptr!(__d, x), { 10 });
+        Tracked::new_1(field_ptr!(__d, y), { 11 });
+    };
     cpp_swap!(
         field_ptr!(pairs.decay().offset(0), x),
         field_ptr!(p.as_pointer(), y)
@@ -491,7 +591,8 @@ fn main_0() -> i32 {
         })
     );
     assert!((copies_0.with(|rc| *rc.borrow()) == 0));
-    let arrays: Value<Arrays> = Rc::new(RefCell::new(<Arrays>::default()));
+    let arrays: Value<Arrays> = Rc::new(RefCell::new(<Arrays>::uninit()));
+    Arrays::new_1(arrays.as_pointer());
     field!(array_elem!(arrays.as_pointer(), a, 0), v).write(1);
     field!(array_elem!(arrays.as_pointer(), b, 1), v).write(2);
     cpp_swap!(
@@ -513,17 +614,44 @@ fn main_0() -> i32 {
     assert!((copies_0.with(|rc| *rc.borrow()) == 0));
     let grid: Value<Vec<Vec<Tracked>>> =
         Rc::new(RefCell::new(Vec::from_fn(2_usize, |_| Default::default())));
-    match (grid.decay().offset(0_usize), { Tracked::new_1({ 1 }) }) {
+    match (grid.decay().offset(0_usize), {
+        Rc::try_unwrap({
+            let __v: Value<Tracked> = Rc::new(RefCell::new(<Tracked>::uninit()));
+            Tracked::new_1(__v.as_pointer(), { 1 });
+            __v
+        })
+        .ok()
+        .unwrap()
+        .into_inner()
+    }) {
         (__tmp_12, mut __tmp_13) => {
             __tmp_12.with_mut(|__v: &mut Vec<Tracked>| __v.push(__tmp_13));
         }
     };
-    match (grid.decay().offset(0_usize), { Tracked::new_1({ 2 }) }) {
+    match (grid.decay().offset(0_usize), {
+        Rc::try_unwrap({
+            let __v: Value<Tracked> = Rc::new(RefCell::new(<Tracked>::uninit()));
+            Tracked::new_1(__v.as_pointer(), { 2 });
+            __v
+        })
+        .ok()
+        .unwrap()
+        .into_inner()
+    }) {
         (__tmp_14, mut __tmp_15) => {
             __tmp_14.with_mut(|__v: &mut Vec<Tracked>| __v.push(__tmp_15));
         }
     };
-    match (grid.decay().offset(1_usize), { Tracked::new_1({ 3 }) }) {
+    match (grid.decay().offset(1_usize), {
+        Rc::try_unwrap({
+            let __v: Value<Tracked> = Rc::new(RefCell::new(<Tracked>::uninit()));
+            Tracked::new_1(__v.as_pointer(), { 3 });
+            __v
+        })
+        .ok()
+        .unwrap()
+        .into_inner()
+    }) {
         (__tmp_16, mut __tmp_17) => {
             __tmp_16.with_mut(|__v: &mut Vec<Tracked>| __v.push(__tmp_17));
         }
@@ -550,7 +678,11 @@ fn main_0() -> i32 {
             .collect::<Box<[Map<i32, (Value<i32>, Value<Tracked>)>]>>(),
     ));
     ({
-        let _o: Value<Tracked> = Rc::new(RefCell::new(Tracked::new_1({ 1 })));
+        let _o: Value<Tracked> = {
+            let __v: Value<Tracked> = Rc::new(RefCell::new(<Tracked>::uninit()));
+            Tracked::new_1(__v.as_pointer(), { 1 });
+            __v
+        };
         TrackedImpl::move_assign(
             &match (Rc::new(RefCell::new(1)).as_pointer(),) {
                 (__tmp_18,) => {
@@ -567,7 +699,11 @@ fn main_0() -> i32 {
         )
     });
     ({
-        let _o: Value<Tracked> = Rc::new(RefCell::new(Tracked::new_1({ 2 })));
+        let _o: Value<Tracked> = {
+            let __v: Value<Tracked> = Rc::new(RefCell::new(<Tracked>::uninit()));
+            Tracked::new_1(__v.as_pointer(), { 2 });
+            __v
+        };
         TrackedImpl::move_assign(
             &match (Rc::new(RefCell::new(2)).as_pointer(),) {
                 (__tmp_19,) => {
@@ -617,9 +753,11 @@ fn main_0() -> i32 {
                 == 1)
     );
     assert!((copies_0.with(|rc| *rc.borrow()) == 0));
-    let c1: Value<CopyOnly> = Rc::new(RefCell::new(CopyOnly::new({ 1 })));
+    let c1: Value<CopyOnly> = Rc::new(RefCell::new(<CopyOnly>::uninit()));
+    CopyOnly::new(c1.as_pointer(), { 1 });
     let _dtor_c1 = std::mem::DropGuard::new(c1.clone(), |__p| __p.as_pointer().destructor());
-    let c2: Value<CopyOnly> = Rc::new(RefCell::new(CopyOnly::new({ 2 })));
+    let c2: Value<CopyOnly> = Rc::new(RefCell::new(<CopyOnly>::uninit()));
+    CopyOnly::new(c2.as_pointer(), { 2 });
     let _dtor_c2 = std::mem::DropGuard::new(c2.clone(), |__p| __p.as_pointer().destructor());
     cpp_swap!(c1.as_pointer(), c2.as_pointer());
     assert!(({ ({ (*c1.borrow()).v } == 2) && ({ (*c2.borrow()).v } == 1) }));
@@ -627,10 +765,12 @@ fn main_0() -> i32 {
         (copy_only_copies_1.with(|rc| *rc.borrow()) == 3)
             && (copy_only_dtors_2.with(|rc| *rc.borrow()) == 1)
     );
-    let cp: Value<CopyOnlyPair> = Rc::new(RefCell::new(CopyOnlyPair {
-        x: CopyOnly::new({ 3 }),
-        y: CopyOnly::new({ 4 }),
-    }));
+    let cp: Value<CopyOnlyPair> = Rc::new(RefCell::new(<CopyOnlyPair>::uninit()));
+    {
+        let __d = cp.as_pointer();
+        CopyOnly::new(field_ptr!(__d, x), { 3 });
+        CopyOnly::new(field_ptr!(__d, y), { 4 });
+    };
     let _dtor_cp = std::mem::DropGuard::new(cp.clone(), |__p| __p.as_pointer().destructor());
     cpp_swap!(
         field_ptr!(cp.as_pointer(), x),
@@ -641,10 +781,14 @@ fn main_0() -> i32 {
         (copy_only_copies_1.with(|rc| *rc.borrow()) == 6)
             && (copy_only_dtors_2.with(|rc| *rc.borrow()) == 2)
     );
-    let carr: Value<Box<[CopyOnly]>> = Rc::new(RefCell::new(Box::new([
-        CopyOnly::new({ 5 }),
-        CopyOnly::new({ 6 }),
-    ])));
+    let carr: Value<Box<[CopyOnly]>> = Rc::new(RefCell::new(
+        (0..2).map(|_| <CopyOnly>::uninit()).collect::<Box<[_]>>(),
+    ));
+    {
+        let __d = carr.decay();
+        CopyOnly::new(__d.offset(0), { 5 });
+        CopyOnly::new(__d.offset(1), { 6 });
+    };
     cpp_swap!(carr.decay().offset(0), carr.decay().offset(1));
     assert!(
         ({
@@ -656,17 +800,21 @@ fn main_0() -> i32 {
         (copy_only_copies_1.with(|rc| *rc.borrow()) == 9)
             && (copy_only_dtors_2.with(|rc| *rc.borrow()) == 3)
     );
-    let mv1: Value<Moved> = Rc::new(RefCell::new(Moved::new({ 1 })));
+    let mv1: Value<Moved> = Rc::new(RefCell::new(<Moved>::uninit()));
+    Moved::new(mv1.as_pointer(), { 1 });
     let _dtor_mv1 = std::mem::DropGuard::new(mv1.clone(), |__p| __p.as_pointer().destructor());
-    let mv2: Value<Moved> = Rc::new(RefCell::new(Moved::new({ 2 })));
+    let mv2: Value<Moved> = Rc::new(RefCell::new(<Moved>::uninit()));
+    Moved::new(mv2.as_pointer(), { 2 });
     let _dtor_mv2 = std::mem::DropGuard::new(mv2.clone(), |__p| __p.as_pointer().destructor());
     cpp_swap!(mv1.as_pointer(), mv2.as_pointer());
     assert!(({ ({ (*mv1.borrow()).v } == 2) && ({ (*mv2.borrow()).v } == 1) }));
     assert!(({ swapped_once_6() }));
-    let mp: Value<MovedPair> = Rc::new(RefCell::new(MovedPair {
-        x: Moved::new({ 3 }),
-        y: Moved::new({ 4 }),
-    }));
+    let mp: Value<MovedPair> = Rc::new(RefCell::new(<MovedPair>::uninit()));
+    {
+        let __d = mp.as_pointer();
+        Moved::new(field_ptr!(__d, x), { 3 });
+        Moved::new(field_ptr!(__d, y), { 4 });
+    };
     let _dtor_mp = std::mem::DropGuard::new(mp.clone(), |__p| __p.as_pointer().destructor());
     cpp_swap!(
         field_ptr!(mp.as_pointer(), x),
@@ -674,10 +822,14 @@ fn main_0() -> i32 {
     );
     assert!(({ ({ (*mp.borrow()).x.v } == 4) && ({ (*mp.borrow()).y.v } == 3) }));
     assert!(({ swapped_once_6() }));
-    let marr: Value<Box<[Moved]>> = Rc::new(RefCell::new(Box::new([
-        Moved::new({ 5 }),
-        Moved::new({ 6 }),
-    ])));
+    let marr: Value<Box<[Moved]>> = Rc::new(RefCell::new(
+        (0..2).map(|_| <Moved>::uninit()).collect::<Box<[_]>>(),
+    ));
+    {
+        let __d = marr.decay();
+        Moved::new(__d.offset(0), { 5 });
+        Moved::new(__d.offset(1), { 6 });
+    };
     cpp_swap!(marr.decay().offset(0), marr.decay().offset(1));
     assert!(
         ({

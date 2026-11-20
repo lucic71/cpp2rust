@@ -108,73 +108,117 @@ pub unsafe fn self_ref_push_6(mut comps: *mut Vec<Chunk>) {
 }
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, CppFromUnsafe)]
+#[placement]
 #[cpp_from(i32, new_1, value)]
 pub struct Pair {
     pub first: i32,
     pub second: i32,
 }
 impl Pair {
-    pub unsafe fn new_2() -> Self {
-        let mut this = Self {
-            first: -1_i32,
-            second: -1_i32,
-        };
-        this
+    pub unsafe fn new_2(this: *mut Pair) {
+        (&raw mut (*this).first).write(-1_i32);
+        (&raw mut (*this).second).write(-1_i32);
     }
-    pub unsafe fn new_1(mut a: i32) -> Self {
-        let mut this = Self {
-            first: a,
-            second: 0,
-        };
-        this
+    pub unsafe fn new_1(this: *mut Pair, mut a: i32) {
+        (&raw mut (*this).first).write(a);
+        (&raw mut (*this).second).write(0);
     }
-    pub unsafe fn new_3(mut a: i32, mut b: i32) -> Self {
-        let mut this = Self {
-            first: a,
-            second: ((b) * (2)),
-        };
-        this
+    pub unsafe fn new_3(this: *mut Pair, mut a: i32, mut b: i32) {
+        (&raw mut (*this).first).write(a);
+        (&raw mut (*this).second).write(((b) * (2)));
+    }
+    pub unsafe fn copy_from(this: *mut Pair, _a0: *const Pair) {
+        (&raw mut (*this).first).write((*_a0).first);
+        (&raw mut (*this).second).write((*_a0).second);
+    }
+    pub unsafe fn move_from(this: *mut Pair, _a0: *mut Pair) {
+        (&raw mut (*this).first).write((*_a0).first);
+        (&raw mut (*this).second).write((*_a0).second);
     }
 }
 impl Default for Pair {
     fn default() -> Self {
-        unsafe { Pair::new_2() }
+        unsafe {
+            {
+                let mut __v: Pair = ::std::mem::MaybeUninit::uninit().assume_init();
+                Pair::new_2(&raw mut __v);
+                __v
+            }
+        }
     }
 }
 pub unsafe fn emplace_ctor_args_7(mut pairs: *mut Vec<Pair>) {
-    (*pairs).push_mut(Pair::new_2());
-    (*pairs).push_mut(Pair::new_1({ 3 }));
-    (*pairs).push_mut(Pair::new_3({ 4 }, { 5 }));
+    (*pairs).push_mut({
+        let mut __v: Pair = ::std::mem::MaybeUninit::uninit().assume_init();
+        Pair::new_2(&raw mut __v);
+        __v
+    });
+    (*pairs).push_mut({
+        let mut __v: Pair = ::std::mem::MaybeUninit::uninit().assume_init();
+        Pair::new_1(&raw mut __v, { 3 });
+        __v
+    });
+    (*pairs).push_mut({
+        let mut __v: Pair = ::std::mem::MaybeUninit::uninit().assume_init();
+        Pair::new_3(&raw mut __v, { 4 }, { 5 });
+        __v
+    });
 }
 pub unsafe fn emplace_deque_8(mut queue: *mut Vec<Pair>) {
-    (*queue).push_mut(Pair::new_3({ 6 }, { 7 }));
-    (*queue).push_mut(Pair::new_2());
+    (*queue).push_mut({
+        let mut __v: Pair = ::std::mem::MaybeUninit::uninit().assume_init();
+        Pair::new_3(&raw mut __v, { 6 }, { 7 });
+        __v
+    });
+    (*queue).push_mut({
+        let mut __v: Pair = ::std::mem::MaybeUninit::uninit().assume_init();
+        Pair::new_2(&raw mut __v);
+        __v
+    });
 }
 pub unsafe fn emplace_scalar_9(mut values: *mut Vec<i64>, mut x: i32) {
     (*values).push_mut(0_i64);
     (*values).push_mut((x as i64));
 }
 pub unsafe fn emplace_ref_through_ptr_10(mut pairs: *mut Vec<Pair>) {
-    let p: *mut Pair = (*pairs).push_mut(Pair::new_3({ 1 }, { 2 }));
+    let p: *mut Pair = (*pairs).push_mut({
+        let mut __v: Pair = ::std::mem::MaybeUninit::uninit().assume_init();
+        Pair::new_3(&raw mut __v, { 1 }, { 2 });
+        __v
+    });
     (*p).second = 3;
-    (*(*pairs).push_mut(Pair::new_1({ 4 }))).second += 1;
+    (*(*pairs).push_mut({
+        let mut __v: Pair = ::std::mem::MaybeUninit::uninit().assume_init();
+        Pair::new_1(&raw mut __v, { 4 });
+        __v
+    }))
+    .second += 1;
 }
 pub unsafe fn emplace_addr_11(values: *mut Vec<i32>) -> *mut i32 {
     return ((*values).push_mut(9));
 }
 pub unsafe fn emplace_self_reads_12(mut values: *mut Vec<i64>, mut pairs: *mut Vec<Pair>) {
     (*values).push_mut((((*(values).cast_const()).len()) as i64));
-    (*pairs).push_mut((&mut (*pairs))[(0_usize)]);
-    (*pairs).push_mut(Pair::new_3(
-        {
-            (*{
-                let __n = (*pairs).len() - 1;
-                &mut (&mut (*pairs))[__n]
-            })
-            .first
-        },
-        { (((*(pairs).cast_const()).len()) as i32) },
-    ));
+    (*pairs).push_mut({
+        let mut __v: Pair = ::std::mem::MaybeUninit::uninit().assume_init();
+        Pair::copy_from(&raw mut __v, { &(&mut (*pairs))[(0_usize)] });
+        __v
+    });
+    (*pairs).push_mut({
+        let mut __v: Pair = ::std::mem::MaybeUninit::uninit().assume_init();
+        Pair::new_3(
+            &raw mut __v,
+            {
+                (*{
+                    let __n = (*pairs).len() - 1;
+                    &mut (&mut (*pairs))[__n]
+                })
+                .first
+            },
+            { (((*(pairs).cast_const()).len()) as i32) },
+        );
+        __v
+    });
 }
 pub unsafe fn emplace_ref_self_read_13(values: *mut Vec<i64>) -> *mut i64 {
     return (*values).push_mut((&mut (*values))[0]);
@@ -238,21 +282,30 @@ pub static mut all_counted_16: std::cell::LazyCell<*mut Vec<Counted>> =
     std::cell::LazyCell::new(|| unsafe { std::ptr::null_mut() });
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
+#[placement]
 pub struct Counted {
     pub seen: usize,
 }
 impl Counted {
-    pub unsafe fn new(mut _a0: i32) -> Self {
-        let mut this = Self {
-            seen: (*(*std::cell::LazyCell::force_mut(&mut *&raw mut all_counted_16)).cast_const())
-                .len(),
-        };
-        this
+    pub unsafe fn new(this: *mut Counted, mut _a0: i32) {
+        (&raw mut (*this).seen).write(
+            (*(*std::cell::LazyCell::force_mut(&mut *&raw mut all_counted_16)).cast_const()).len(),
+        );
+    }
+    pub unsafe fn copy_from(this: *mut Counted, _a0: *const Counted) {
+        (&raw mut (*this).seen).write((*_a0).seen);
+    }
+    pub unsafe fn move_from(this: *mut Counted, _a0: *mut Counted) {
+        (&raw mut (*this).seen).write((*_a0).seen);
     }
 }
 impl Counted {}
 pub unsafe fn emplace_counted_17(mut v: *mut Vec<Counted>) {
-    (*v).push_mut(Counted::new({ 1 }));
+    (*v).push_mut({
+        let mut __v: Counted = ::std::mem::MaybeUninit::uninit().assume_init();
+        Counted::new(&raw mut __v, { 1 });
+        __v
+    });
 }
 pub unsafe fn emplace_from_sibling_18(mut s: *mut Bytes) {
     let mut p: *mut u8 = (*s).b.as_mut_ptr();
@@ -356,7 +409,11 @@ unsafe fn main_0() -> i32 {
     assert!(((more_pairs[(1_usize)].first) == (4)) && ((more_pairs[(1_usize)].second) == (1)));
     let mut self_values: Vec<i64> = Vec::from([7_i64]);
     let mut self_pairs: Vec<Pair> = Vec::new();
-    self_pairs.push_mut(Pair::new_3({ 1 }, { 2 }));
+    self_pairs.push_mut({
+        let mut __v: Pair = ::std::mem::MaybeUninit::uninit().assume_init();
+        Pair::new_3(&raw mut __v, { 1 }, { 2 });
+        __v
+    });
     (unsafe {
         emplace_self_reads_12(
             (&mut self_values as *mut Vec<i64>),

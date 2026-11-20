@@ -73,21 +73,32 @@ pub const anon_4_limit: anon_4 = 13;
 pub const anon_4_above: anon_4 = 14;
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg)]
+#[placement]
 pub struct p9_func_declared_before_function_body_RecordsConstructorName {
     pub name: *const libc::c_char,
 }
 impl p9_func_declared_before_function_body_RecordsConstructorName {
-    pub unsafe fn new() -> Self {
-        let mut this = Self {
-            name: c"RecordsConstructorName".as_ptr(),
-        };
-        assert!(((this.name) == (c"RecordsConstructorName".as_ptr())));
-        this
+    pub unsafe fn new(this: *mut p9_func_declared_before_function_body_RecordsConstructorName) {
+        (&raw mut (*this).name).write(c"RecordsConstructorName".as_ptr());
+        assert!((((*this).name) == (c"RecordsConstructorName".as_ptr())));
+    }
+    pub unsafe fn copy_from(
+        this: *mut p9_func_declared_before_function_body_RecordsConstructorName,
+        _a0: *const p9_func_declared_before_function_body_RecordsConstructorName,
+    ) {
+        (&raw mut (*this).name).write((*_a0).name);
     }
 }
 impl Default for p9_func_declared_before_function_body_RecordsConstructorName {
     fn default() -> Self {
-        unsafe { p9_func_declared_before_function_body_RecordsConstructorName::new() }
+        unsafe {
+            {
+                let mut __v: p9_func_declared_before_function_body_RecordsConstructorName =
+                    ::std::mem::MaybeUninit::uninit().assume_init();
+                p9_func_declared_before_function_body_RecordsConstructorName::new(&raw mut __v);
+                __v
+            }
+        }
     }
 }
 pub unsafe fn plain_function_5() -> *const libc::c_char {
@@ -97,7 +108,8 @@ pub unsafe fn test_6() {
     assert!(((libc::strcmp((unsafe { plain_function_5() }), c"plain_function".as_ptr())) == (0)));
     assert!(((unsafe { plain_function_5() }) == (unsafe { plain_function_5() })));
     let mut object: p9_func_declared_before_function_body_RecordsConstructorName =
-        p9_func_declared_before_function_body_RecordsConstructorName::new();
+        ::std::mem::MaybeUninit::uninit().assume_init();
+    p9_func_declared_before_function_body_RecordsConstructorName::new(&raw mut object);
     assert!(((libc::strcmp(object.name, c"RecordsConstructorName".as_ptr())) == (0)));
     let mut enclosing: *const libc::c_char = c"test".as_ptr();
     let mut lambda: FnPtr<fn() -> *const libc::c_char> =

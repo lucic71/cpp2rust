@@ -13,6 +13,7 @@ pub fn operator_lt_1(x: Ptr<S>, y: Ptr<S>) -> bool {
     return ({ x.with(|__s| __s.data_) } < { y.with(|__s| __s.data_) });
 }
 #[derive(Record, ByteRepr, Uninit, FnPtrArg, MoveCtor, CppFrom, Default)]
+#[placement]
 #[cpp_from(i32, new, value)]
 #[byte_size(4)]
 pub struct S {
@@ -20,13 +21,11 @@ pub struct S {
     data_: i32,
 }
 impl S {
-    pub fn new(mut data: i32) -> Self {
-        Self { data_: data }
+    pub fn new(this: Ptr<S>, mut data: i32) {
+        field!(this, data_).write(data);
     }
-    pub fn move_from(_a0: Ptr<S>) -> Self {
-        Self {
-            data_: { (*_a0.upgrade().deref()).data_ },
-        }
+    pub fn move_from(this: Ptr<S>, _a0: Ptr<S>) {
+        field!(this, data_).write({ (*_a0.upgrade().deref()).data_ });
     }
 }
 impl CppLess for S {
@@ -44,9 +43,12 @@ pub fn main() {
     libcc2rs::cpp2rust_exit(main_0());
 }
 fn main_0() -> i32 {
-    let a: Value<S> = Rc::new(RefCell::new(S::new({ 1 })));
-    let b: Value<S> = Rc::new(RefCell::new(S::new({ 2 })));
-    let c: Value<S> = Rc::new(RefCell::new(S::new({ 1 })));
+    let a: Value<S> = Rc::new(RefCell::new(<S>::uninit()));
+    S::new(a.as_pointer(), { 1 });
+    let b: Value<S> = Rc::new(RefCell::new(<S>::uninit()));
+    S::new(b.as_pointer(), { 2 });
+    let c: Value<S> = Rc::new(RefCell::new(<S>::uninit()));
+    S::new(c.as_pointer(), { 1 });
     assert!(
         ({
             let _x: Ptr<S> = a.as_pointer();

@@ -21,6 +21,7 @@ pub fn pick_3(mut i: i32) -> Ptr<i32> {
     return xs_1.with(|v| v.decay()).offset(i);
 }
 #[derive(Record, ByteRepr, Uninit, VaArg, FnPtrArg, CppFrom, CopyAssign, Default)]
+#[placement]
 #[cpp_from(i32, new, value)]
 #[byte_size(4)]
 pub struct Bag {
@@ -28,15 +29,12 @@ pub struct Bag {
     pub n: i32,
 }
 impl Bag {
-    pub fn new(mut n: i32) -> Self {
-        Self { n: n }
+    pub fn new(this: Ptr<Bag>, mut n: i32) {
+        field!(this, n).write(n);
     }
-    pub fn copy_from(o: Ptr<Bag>) -> Self {
-        let __this: Bag = Self {
-            n: o.with(|__s| __s.n),
-        };
+    pub fn copy_from(this: Ptr<Bag>, o: Ptr<Bag>) {
+        field!(this, n).write(o.with(|__s| __s.n));
         (*calls_0.with(Value::clone).borrow_mut()).prefix_inc();
-        __this
     }
 }
 impl CppLess for Bag {
@@ -53,14 +51,17 @@ impl CppEq for Bag {
 impl Clone for Bag {
     fn clone(&self) -> Self {
         let __src: Value<Bag> = Rc::new(RefCell::new(Bag { n: self.n.clone() }));
-        Bag::copy_from(__src.as_pointer())
+        let __dst: Value<Bag> = Rc::new(RefCell::new(<Bag>::uninit()));
+        Bag::copy_from(__dst.as_pointer(), __src.as_pointer());
+        Rc::try_unwrap(__dst).ok().unwrap().into_inner()
     }
 }
 pub fn operator_lt_4(a: Ptr<Bag>, b: Ptr<Bag>) -> bool {
     return ({ a.with(|__s| __s.n) } < { b.with(|__s| __s.n) });
 }
-pub fn make_5(mut n: i32) -> Bag {
-    return Bag::new({ n });
+pub fn make_5(__ret: Ptr<Bag>, mut n: i32) {
+    Bag::new(__ret.clone(), { n });
+    return;
 }
 pub fn main() {
     __cpp2rust_init_globals();
@@ -157,8 +158,18 @@ fn main_0() -> i32 {
     calls_0.with(|rc| *rc.borrow_mut() = 0);
     assert!(
         (match (
-            Rc::new(RefCell::new(({ make_5(1,) }))).as_pointer(),
-            Rc::new(RefCell::new(({ make_5(2,) }))).as_pointer(),
+            {
+                let __v: Value<Bag> = Rc::new(RefCell::new(<Bag>::uninit()));
+                ({ make_5(__v.as_pointer(), 1) });
+                __v
+            }
+            .as_pointer(),
+            {
+                let __v: Value<Bag> = Rc::new(RefCell::new(<Bag>::uninit()));
+                ({ make_5(__v.as_pointer(), 2) });
+                __v
+            }
+            .as_pointer(),
         ) {
             (__tmp_8, __tmp_9) => {
                 if CppLess::less(&(__tmp_8).clone(), &(__tmp_9).clone()) {
@@ -171,8 +182,18 @@ fn main_0() -> i32 {
         .with(|__s| __s.n)
             == 2)
             && (match (
-                Rc::new(RefCell::new(({ make_5(1,) }))).as_pointer(),
-                Rc::new(RefCell::new(({ make_5(2,) }))).as_pointer(),
+                {
+                    let __v: Value<Bag> = Rc::new(RefCell::new(<Bag>::uninit()));
+                    ({ make_5(__v.as_pointer(), 1) });
+                    __v
+                }
+                .as_pointer(),
+                {
+                    let __v: Value<Bag> = Rc::new(RefCell::new(<Bag>::uninit()));
+                    ({ make_5(__v.as_pointer(), 2) });
+                    __v
+                }
+                .as_pointer(),
             ) {
                 (__tmp_10, __tmp_11) => {
                     if CppLess::less(&(__tmp_11).clone(), &(__tmp_10).clone()) {

@@ -15,6 +15,7 @@ pub fn test_0() {
     assert!(({ ((*value.borrow()) == 2) }));
 }
 #[derive(Record, ByteRepr, Uninit, VaArg, FnPtrArg, MoveCtor, CppFrom, Default)]
+#[placement]
 #[cpp_from(i32, new, value)]
 #[byte_size(4)]
 pub struct p6_forward_like_Movable {
@@ -22,20 +23,15 @@ pub struct p6_forward_like_Movable {
     pub value: i32,
 }
 impl p6_forward_like_Movable {
-    pub fn new(mut value: i32) -> Self {
-        Self { value: value }
+    pub fn new(this: Ptr<p6_forward_like_Movable>, mut value: i32) {
+        field!(this, value).write(value);
     }
-    pub fn copy_from(other: Ptr<p6_forward_like_Movable>) -> Self {
-        Self {
-            value: other.with(|__s| __s.value),
-        }
+    pub fn copy_from(this: Ptr<p6_forward_like_Movable>, other: Ptr<p6_forward_like_Movable>) {
+        field!(this, value).write(other.with(|__s| __s.value));
     }
-    pub fn move_from(other: Ptr<p6_forward_like_Movable>) -> Self {
-        let __this: p6_forward_like_Movable = Self {
-            value: other.with(|__s| __s.value),
-        };
+    pub fn move_from(this: Ptr<p6_forward_like_Movable>, other: Ptr<p6_forward_like_Movable>) {
+        field!(this, value).write(other.with(|__s| __s.value));
         field!(other, value).write(0);
-        __this
     }
 }
 impl Clone for p6_forward_like_Movable {
@@ -44,10 +40,14 @@ impl Clone for p6_forward_like_Movable {
             Rc::new(RefCell::new(p6_forward_like_Movable {
                 value: self.value.clone(),
             }));
-        p6_forward_like_Movable::copy_from(__src.as_pointer())
+        let __dst: Value<p6_forward_like_Movable> =
+            Rc::new(RefCell::new(<p6_forward_like_Movable>::uninit()));
+        p6_forward_like_Movable::copy_from(__dst.as_pointer(), __src.as_pointer());
+        Rc::try_unwrap(__dst).ok().unwrap().into_inner()
     }
 }
 #[derive(Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, MoveCtor)]
+#[placement]
 #[byte_size(4)]
 pub struct p6_forward_like_Holder {
     #[offset(0)]
@@ -55,36 +55,58 @@ pub struct p6_forward_like_Holder {
     pub member: p6_forward_like_Movable,
 }
 impl p6_forward_like_Holder {
-    pub fn move_from(_a0: Ptr<p6_forward_like_Holder>) -> Self {
-        Self {
-            member: p6_forward_like_Movable::move_from({ field_ptr!(_a0, member) }),
-        }
+    pub fn copy_from(this: Ptr<p6_forward_like_Holder>, _a0: Ptr<p6_forward_like_Holder>) {
+        p6_forward_like_Movable::copy_from(field_ptr!(this, member), { field_ptr!(_a0, member) });
+    }
+    pub fn move_from(this: Ptr<p6_forward_like_Holder>, _a0: Ptr<p6_forward_like_Holder>) {
+        p6_forward_like_Movable::move_from(field_ptr!(this, member), { field_ptr!(_a0, member) });
+    }
+    pub fn new_1(this: Ptr<p6_forward_like_Holder>) {
+        p6_forward_like_Movable::new(field_ptr!(this, member), { 1 });
     }
 }
 impl Default for p6_forward_like_Holder {
     fn default() -> Self {
         {
             p6_forward_like_Holder {
-                member: p6_forward_like_Movable::new({ 1 }),
+                member: Rc::try_unwrap({
+                    let __v: Value<p6_forward_like_Movable> =
+                        Rc::new(RefCell::new(<p6_forward_like_Movable>::uninit()));
+                    p6_forward_like_Movable::new(__v.as_pointer(), { 1 });
+                    __v
+                })
+                .ok()
+                .unwrap()
+                .into_inner(),
             }
         }
     }
 }
-pub fn take_1(self_: Ptr<p6_forward_like_Holder>) -> p6_forward_like_Movable {
-    return p6_forward_like_Movable::copy_from({ field_ptr!(self_, member) });
+pub fn take_1(__ret: Ptr<p6_forward_like_Movable>, self_: Ptr<p6_forward_like_Holder>) {
+    p6_forward_like_Movable::copy_from(__ret.clone(), { field_ptr!(self_, member) });
+    return;
 }
-pub fn take_2(self_: Ptr<p6_forward_like_Holder>) -> p6_forward_like_Movable {
-    return p6_forward_like_Movable::move_from({ field_ptr!(self_, member) });
+pub fn take_2(__ret: Ptr<p6_forward_like_Movable>, self_: Ptr<p6_forward_like_Holder>) {
+    p6_forward_like_Movable::move_from(__ret.clone(), { field_ptr!(self_, member) });
+    return;
 }
 pub fn test_3() {
     let holder: Value<p6_forward_like_Holder> =
-        Rc::new(RefCell::new(<p6_forward_like_Holder>::default()));
-    let mut copied: p6_forward_like_Movable = ({ take_1(holder.as_pointer()) });
-    assert!(({ (copied.value == 1) && ({ (*holder.borrow()).member.value } == 1) }));
-    let mut moved: p6_forward_like_Movable = ({ take_2(holder.as_pointer()) });
-    assert!(({ (moved.value == 1) && ({ (*holder.borrow()).member.value } == 0) }));
+        Rc::new(RefCell::new(<p6_forward_like_Holder>::uninit()));
+    p6_forward_like_Holder::new_1(holder.as_pointer());
+    let copied: Value<p6_forward_like_Movable> =
+        Rc::new(RefCell::new(<p6_forward_like_Movable>::uninit()));
+    ({ take_1(copied.as_pointer(), holder.as_pointer()) });
+    assert!(
+        ({ ({ (*copied.borrow()).value } == 1) && ({ (*holder.borrow()).member.value } == 1) })
+    );
+    let moved: Value<p6_forward_like_Movable> =
+        Rc::new(RefCell::new(<p6_forward_like_Movable>::uninit()));
+    ({ take_2(moved.as_pointer(), holder.as_pointer()) });
+    assert!(({ ({ (*moved.borrow()).value } == 1) && ({ (*holder.borrow()).member.value } == 0) }));
 }
 #[derive(Record, ByteRepr, Uninit, FnPtrArg, MoveCtor, CppFrom, Default)]
+#[placement]
 #[cpp_from(i32, new, value)]
 #[byte_size(4)]
 pub struct p9_move_Movable {
@@ -92,15 +114,12 @@ pub struct p9_move_Movable {
     pub value: i32,
 }
 impl p9_move_Movable {
-    pub fn new(mut value: i32) -> Self {
-        Self { value: value }
+    pub fn new(this: Ptr<p9_move_Movable>, mut value: i32) {
+        field!(this, value).write(value);
     }
-    pub fn move_from(other: Ptr<p9_move_Movable>) -> Self {
-        let __this: p9_move_Movable = Self {
-            value: other.with(|__s| __s.value),
-        };
+    pub fn move_from(this: Ptr<p9_move_Movable>, other: Ptr<p9_move_Movable>) {
+        field!(this, value).write(other.with(|__s| __s.value));
         field!(other, value).write(0);
-        __this
     }
 }
 pub fn test_4() {
@@ -114,9 +133,11 @@ pub fn test_4() {
         ({ (moved_pointer).clone() } == { (target.as_pointer()) })
             && ({ (pointer).clone() } == { (target.as_pointer()) })
     );
-    let source: Value<p9_move_Movable> = Rc::new(RefCell::new(p9_move_Movable::new({ 3 })));
-    let mut destination: p9_move_Movable = p9_move_Movable::move_from({ source.as_pointer() });
-    assert!(({ (destination.value == 3) && ({ (*source.borrow()).value } == 0) }));
+    let source: Value<p9_move_Movable> = Rc::new(RefCell::new(<p9_move_Movable>::uninit()));
+    p9_move_Movable::new(source.as_pointer(), { 3 });
+    let destination: Value<p9_move_Movable> = Rc::new(RefCell::new(<p9_move_Movable>::uninit()));
+    p9_move_Movable::move_from(destination.as_pointer(), { source.as_pointer() });
+    assert!(({ ({ (*destination.borrow()).value } == 3) && ({ (*source.borrow()).value } == 0) }));
     let strings: Value<Vec<Vec<i8>>> = Rc::new(RefCell::new(Vec::new()));
     let mut text: Vec<i8> = {
         let mut __bytes = Ptr::<i8>::from_string_literal(b"text").to_c_bytes();
@@ -140,6 +161,7 @@ pub fn test_4() {
     );
 }
 #[derive(Record, ByteRepr, Uninit, VaArg, FnPtrArg, MoveCtor, CppFrom)]
+#[placement]
 #[cpp_from(i32, new, value)]
 #[byte_size(12)]
 pub struct p10_forward_in_template_A {
@@ -151,28 +173,21 @@ pub struct p10_forward_in_template_A {
     pub moves: i32,
 }
 impl p10_forward_in_template_A {
-    pub fn new(mut value: i32) -> Self {
-        Self {
-            value: value,
-            copies: 0,
-            moves: 0,
-        }
+    pub fn new(this: Ptr<p10_forward_in_template_A>, mut value: i32) {
+        field!(this, value).write(value);
+        field!(this, copies).write(0);
+        field!(this, moves).write(0);
     }
-    pub fn copy_from(other: Ptr<p10_forward_in_template_A>) -> Self {
-        Self {
-            value: other.with(|__s| __s.value),
-            copies: (other.with(|__s| __s.copies) + 1),
-            moves: 0,
-        }
+    pub fn copy_from(this: Ptr<p10_forward_in_template_A>, other: Ptr<p10_forward_in_template_A>) {
+        field!(this, value).write(other.with(|__s| __s.value));
+        field!(this, copies).write((other.with(|__s| __s.copies) + 1));
+        field!(this, moves).write(0);
     }
-    pub fn move_from(other: Ptr<p10_forward_in_template_A>) -> Self {
-        let __this: p10_forward_in_template_A = Self {
-            value: other.with(|__s| __s.value),
-            copies: 0,
-            moves: (other.with(|__s| __s.moves) + 1),
-        };
+    pub fn move_from(this: Ptr<p10_forward_in_template_A>, other: Ptr<p10_forward_in_template_A>) {
+        field!(this, value).write(other.with(|__s| __s.value));
+        field!(this, copies).write(0);
+        field!(this, moves).write((other.with(|__s| __s.moves) + 1));
         field!(other, value).write(0);
-        __this
     }
 }
 impl Clone for p10_forward_in_template_A {
@@ -183,7 +198,10 @@ impl Clone for p10_forward_in_template_A {
                 copies: self.copies.clone(),
                 moves: self.moves.clone(),
             }));
-        p10_forward_in_template_A::copy_from(__src.as_pointer())
+        let __dst: Value<p10_forward_in_template_A> =
+            Rc::new(RefCell::new(<p10_forward_in_template_A>::uninit()));
+        p10_forward_in_template_A::copy_from(__dst.as_pointer(), __src.as_pointer());
+        Rc::try_unwrap(__dst).ok().unwrap().into_inner()
     }
 }
 impl Default for p10_forward_in_template_A {
@@ -197,23 +215,41 @@ impl Default for p10_forward_in_template_A {
         }
     }
 }
-pub fn make_5(source: Ptr<p10_forward_in_template_A>) -> p10_forward_in_template_A {
-    return p10_forward_in_template_A::copy_from({ (source).clone() });
+pub fn make_5(__ret: Ptr<p10_forward_in_template_A>, source: Ptr<p10_forward_in_template_A>) {
+    p10_forward_in_template_A::copy_from(__ret.clone(), { (source).clone() });
+    return;
 }
-pub fn make_6(source: Ptr<p10_forward_in_template_A>) -> p10_forward_in_template_A {
-    return p10_forward_in_template_A::move_from({ (source).clone() });
+pub fn make_6(__ret: Ptr<p10_forward_in_template_A>, source: Ptr<p10_forward_in_template_A>) {
+    p10_forward_in_template_A::move_from(__ret.clone(), { (source).clone() });
+    return;
 }
 pub fn test_7() {
     let a: Value<p10_forward_in_template_A> =
-        Rc::new(RefCell::new(p10_forward_in_template_A::new({ 1 })));
-    let mut copied: p10_forward_in_template_A = ({ make_5(a.as_pointer()) });
-    assert!(((copied.value == 1) && (copied.copies == 1)) && (copied.moves == 0));
+        Rc::new(RefCell::new(<p10_forward_in_template_A>::uninit()));
+    p10_forward_in_template_A::new(a.as_pointer(), { 1 });
+    let copied: Value<p10_forward_in_template_A> =
+        Rc::new(RefCell::new(<p10_forward_in_template_A>::uninit()));
+    ({ make_5(copied.as_pointer(), a.as_pointer()) });
+    assert!(
+        ({
+            (({ (*copied.borrow()).value } == 1) && ({ (*copied.borrow()).copies } == 1))
+                && ({ (*copied.borrow()).moves } == 0)
+        })
+    );
     assert!(({ ({ (*a.borrow()).value } == 1) }));
-    let mut moved: p10_forward_in_template_A = ({ make_6(a.as_pointer()) });
-    assert!(((moved.value == 1) && (moved.copies == 0)) && (moved.moves == 1));
+    let moved: Value<p10_forward_in_template_A> =
+        Rc::new(RefCell::new(<p10_forward_in_template_A>::uninit()));
+    ({ make_6(moved.as_pointer(), a.as_pointer()) });
+    assert!(
+        ({
+            (({ (*moved.borrow()).value } == 1) && ({ (*moved.borrow()).copies } == 0))
+                && ({ (*moved.borrow()).moves } == 1)
+        })
+    );
     assert!(({ ({ (*a.borrow()).value } == 0) }));
 }
 #[derive(Record, ByteRepr, Uninit, VaArg, FnPtrArg, MoveCtor, CppFrom, Default)]
+#[placement]
 #[cpp_from(i32, new, value)]
 #[byte_size(4)]
 pub struct p11_move_if_noexcept_NoexceptMove {
@@ -221,20 +257,21 @@ pub struct p11_move_if_noexcept_NoexceptMove {
     pub value: i32,
 }
 impl p11_move_if_noexcept_NoexceptMove {
-    pub fn new(mut value: i32) -> Self {
-        Self { value: value }
+    pub fn new(this: Ptr<p11_move_if_noexcept_NoexceptMove>, mut value: i32) {
+        field!(this, value).write(value);
     }
-    pub fn copy_from(other: Ptr<p11_move_if_noexcept_NoexceptMove>) -> Self {
-        Self {
-            value: other.with(|__s| __s.value),
-        }
+    pub fn copy_from(
+        this: Ptr<p11_move_if_noexcept_NoexceptMove>,
+        other: Ptr<p11_move_if_noexcept_NoexceptMove>,
+    ) {
+        field!(this, value).write(other.with(|__s| __s.value));
     }
-    pub fn move_from(other: Ptr<p11_move_if_noexcept_NoexceptMove>) -> Self {
-        let __this: p11_move_if_noexcept_NoexceptMove = Self {
-            value: other.with(|__s| __s.value),
-        };
+    pub fn move_from(
+        this: Ptr<p11_move_if_noexcept_NoexceptMove>,
+        other: Ptr<p11_move_if_noexcept_NoexceptMove>,
+    ) {
+        field!(this, value).write(other.with(|__s| __s.value));
         field!(other, value).write(0);
-        __this
     }
 }
 impl Clone for p11_move_if_noexcept_NoexceptMove {
@@ -243,10 +280,14 @@ impl Clone for p11_move_if_noexcept_NoexceptMove {
             Rc::new(RefCell::new(p11_move_if_noexcept_NoexceptMove {
                 value: self.value.clone(),
             }));
-        p11_move_if_noexcept_NoexceptMove::copy_from(__src.as_pointer())
+        let __dst: Value<p11_move_if_noexcept_NoexceptMove> =
+            Rc::new(RefCell::new(<p11_move_if_noexcept_NoexceptMove>::uninit()));
+        p11_move_if_noexcept_NoexceptMove::copy_from(__dst.as_pointer(), __src.as_pointer());
+        Rc::try_unwrap(__dst).ok().unwrap().into_inner()
     }
 }
 #[derive(Record, ByteRepr, Uninit, VaArg, FnPtrArg, MoveCtor, CppFrom, Default)]
+#[placement]
 #[cpp_from(i32, new, value)]
 #[byte_size(4)]
 pub struct p11_move_if_noexcept_ThrowingMove {
@@ -254,20 +295,21 @@ pub struct p11_move_if_noexcept_ThrowingMove {
     pub value: i32,
 }
 impl p11_move_if_noexcept_ThrowingMove {
-    pub fn new(mut value: i32) -> Self {
-        Self { value: value }
+    pub fn new(this: Ptr<p11_move_if_noexcept_ThrowingMove>, mut value: i32) {
+        field!(this, value).write(value);
     }
-    pub fn copy_from(other: Ptr<p11_move_if_noexcept_ThrowingMove>) -> Self {
-        Self {
-            value: other.with(|__s| __s.value),
-        }
+    pub fn copy_from(
+        this: Ptr<p11_move_if_noexcept_ThrowingMove>,
+        other: Ptr<p11_move_if_noexcept_ThrowingMove>,
+    ) {
+        field!(this, value).write(other.with(|__s| __s.value));
     }
-    pub fn move_from(other: Ptr<p11_move_if_noexcept_ThrowingMove>) -> Self {
-        let __this: p11_move_if_noexcept_ThrowingMove = Self {
-            value: other.with(|__s| __s.value),
-        };
+    pub fn move_from(
+        this: Ptr<p11_move_if_noexcept_ThrowingMove>,
+        other: Ptr<p11_move_if_noexcept_ThrowingMove>,
+    ) {
+        field!(this, value).write(other.with(|__s| __s.value));
         field!(other, value).write(0);
-        __this
     }
 }
 impl Clone for p11_move_if_noexcept_ThrowingMove {
@@ -276,20 +318,27 @@ impl Clone for p11_move_if_noexcept_ThrowingMove {
             Rc::new(RefCell::new(p11_move_if_noexcept_ThrowingMove {
                 value: self.value.clone(),
             }));
-        p11_move_if_noexcept_ThrowingMove::copy_from(__src.as_pointer())
+        let __dst: Value<p11_move_if_noexcept_ThrowingMove> =
+            Rc::new(RefCell::new(<p11_move_if_noexcept_ThrowingMove>::uninit()));
+        p11_move_if_noexcept_ThrowingMove::copy_from(__dst.as_pointer(), __src.as_pointer());
+        Rc::try_unwrap(__dst).ok().unwrap().into_inner()
     }
 }
 pub fn test_8() {
     let moved_from: Value<p11_move_if_noexcept_NoexceptMove> =
-        Rc::new(RefCell::new(p11_move_if_noexcept_NoexceptMove::new({ 1 })));
-    let mut moved: p11_move_if_noexcept_NoexceptMove =
-        p11_move_if_noexcept_NoexceptMove::move_from({ moved_from.as_pointer() });
-    assert!(({ (moved.value == 1) && ({ (*moved_from.borrow()).value } == 0) }));
+        Rc::new(RefCell::new(<p11_move_if_noexcept_NoexceptMove>::uninit()));
+    p11_move_if_noexcept_NoexceptMove::new(moved_from.as_pointer(), { 1 });
+    let moved: Value<p11_move_if_noexcept_NoexceptMove> =
+        Rc::new(RefCell::new(<p11_move_if_noexcept_NoexceptMove>::uninit()));
+    p11_move_if_noexcept_NoexceptMove::move_from(moved.as_pointer(), { moved_from.as_pointer() });
+    assert!(({ ({ (*moved.borrow()).value } == 1) && ({ (*moved_from.borrow()).value } == 0) }));
     let copied_from: Value<p11_move_if_noexcept_ThrowingMove> =
-        Rc::new(RefCell::new(p11_move_if_noexcept_ThrowingMove::new({ 2 })));
-    let mut copied: p11_move_if_noexcept_ThrowingMove =
-        p11_move_if_noexcept_ThrowingMove::copy_from({ copied_from.as_pointer() });
-    assert!(({ (copied.value == 2) && ({ (*copied_from.borrow()).value } == 2) }));
+        Rc::new(RefCell::new(<p11_move_if_noexcept_ThrowingMove>::uninit()));
+    p11_move_if_noexcept_ThrowingMove::new(copied_from.as_pointer(), { 2 });
+    let copied: Value<p11_move_if_noexcept_ThrowingMove> =
+        Rc::new(RefCell::new(<p11_move_if_noexcept_ThrowingMove>::uninit()));
+    p11_move_if_noexcept_ThrowingMove::copy_from(copied.as_pointer(), { copied_from.as_pointer() });
+    assert!(({ ({ (*copied.borrow()).value } == 2) && ({ (*copied_from.borrow()).value } == 2) }));
 }
 pub fn main() {
     __cpp2rust_init_globals();

@@ -8,32 +8,40 @@ use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 #[repr(C)]
 #[derive(FnPtrArg, MoveCtorUnsafe, CppFromUnsafe, Default)]
+#[placement]
 #[cpp_from(i32, new, value)]
 pub struct p11_defaulted_move_constructor_is_trivial_MoveOnly {
     pub value: i32,
 }
 impl p11_defaulted_move_constructor_is_trivial_MoveOnly {
-    pub unsafe fn new(mut value: i32) -> Self {
-        let mut this = Self { value: value };
-        this
+    pub unsafe fn new(
+        this: *mut p11_defaulted_move_constructor_is_trivial_MoveOnly,
+        mut value: i32,
+    ) {
+        (&raw mut (*this).value).write(value);
     }
-    pub unsafe fn move_from(_a0: *mut p11_defaulted_move_constructor_is_trivial_MoveOnly) -> Self {
-        let mut this = Self {
-            value: (*_a0).value,
-        };
-        this
+    pub unsafe fn move_from(
+        this: *mut p11_defaulted_move_constructor_is_trivial_MoveOnly,
+        _a0: *mut p11_defaulted_move_constructor_is_trivial_MoveOnly,
+    ) {
+        (&raw mut (*this).value).write((*_a0).value);
     }
 }
 pub unsafe fn pass_0(
-    mut object: p11_defaulted_move_constructor_is_trivial_MoveOnly,
-) -> p11_defaulted_move_constructor_is_trivial_MoveOnly {
-    return p11_defaulted_move_constructor_is_trivial_MoveOnly::move_from({ &mut object });
+    __ret: *mut p11_defaulted_move_constructor_is_trivial_MoveOnly,
+    object: *mut p11_defaulted_move_constructor_is_trivial_MoveOnly,
+) {
+    p11_defaulted_move_constructor_is_trivial_MoveOnly::move_from(__ret.clone(), {
+        &mut (*object)
+    });
+    return;
 }
 pub unsafe fn test_1() {
-    let mut result: p11_defaulted_move_constructor_is_trivial_MoveOnly = (unsafe {
-        pass_0(p11_defaulted_move_constructor_is_trivial_MoveOnly::new({
-            7
-        }))
+    let mut result: p11_defaulted_move_constructor_is_trivial_MoveOnly =
+        ::std::mem::MaybeUninit::uninit().assume_init();
+    (unsafe {
+        pass_0 ( &raw mut result , (|__p: *mut p11_defaulted_move_constructor_is_trivial_MoveOnly | { p11_defaulted_move_constructor_is_trivial_MoveOnly :: new ( __p , { 7 } , )  ;
+ __p } )((&mut ::std::mem::MaybeUninit::<p11_defaulted_move_constructor_is_trivial_MoveOnly >::uninit()).as_mut_ptr())  , )
     });
     assert!(((result.value) == (7)));
 }

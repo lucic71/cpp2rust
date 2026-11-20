@@ -46,6 +46,7 @@ impl Default for S {
     }
 }
 #[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg)]
+#[placement]
 #[byte_size(8)]
 pub struct Boxed_int_ {
     #[offset(0)]
@@ -54,8 +55,13 @@ pub struct Boxed_int_ {
     pub tag: i32,
 }
 impl Boxed_int_ {
-    pub fn new(mut x: i32, mut t: i32) -> Self {
-        Self { v: x, tag: t }
+    pub fn new(this: Ptr<Boxed_int_>, mut x: i32, mut t: i32) {
+        field!(this, v).write(x);
+        field!(this, tag).write(t);
+    }
+    pub fn copy_from(this: Ptr<Boxed_int_>, _a0: Ptr<Boxed_int_>) {
+        field!(this, v).write(_a0.with(|__s| __s.v));
+        field!(this, tag).write(_a0.with(|__s| __s.tag));
     }
 }
 impl Default for Boxed_int_ {
@@ -75,9 +81,10 @@ fn main_0() -> i32 {
     assert!((s.c.y == 4));
     assert!((s.d.x == 3));
     assert!((s.d.y == 4));
-    let mut boxed: Boxed_int_ = Boxed_int_::new({ 5 }, { 9 });
-    assert!((boxed.v == 5));
-    assert!((boxed.tag == 9));
+    let boxed: Value<Boxed_int_> = Rc::new(RefCell::new(<Boxed_int_>::uninit()));
+    Boxed_int_::new(boxed.as_pointer(), { 5 }, { 9 });
+    assert!(({ ({ (*boxed.borrow()).v } == 5) }));
+    assert!(({ ({ (*boxed.borrow()).tag } == 9) }));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

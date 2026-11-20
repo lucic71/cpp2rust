@@ -43,32 +43,36 @@ pub unsafe fn test_1() {
 }
 #[repr(C)]
 #[derive(FnPtrArg, MoveCtorUnsafe, CppFromUnsafe, Default)]
+#[placement]
 #[cpp_from(i32, new, value)]
 pub struct p10_move_constructor_A {
     pub value: i32,
 }
 impl p10_move_constructor_A {
-    pub unsafe fn new(mut value: i32) -> Self {
-        let mut this = Self { value: value };
-        this
+    pub unsafe fn new(this: *mut p10_move_constructor_A, mut value: i32) {
+        (&raw mut (*this).value).write(value);
     }
-    pub unsafe fn move_from(other: *mut p10_move_constructor_A) -> Self {
-        let mut this = Self {
-            value: (*other).value,
-        };
+    pub unsafe fn move_from(this: *mut p10_move_constructor_A, other: *mut p10_move_constructor_A) {
+        (&raw mut (*this).value).write((*other).value);
         (*other).value = 0;
-        this
     }
 }
 pub unsafe fn test_2() {
-    let mut source: p10_move_constructor_A = p10_move_constructor_A::new({ 1 });
-    let mut target: p10_move_constructor_A = p10_move_constructor_A::move_from({ &mut source });
+    let mut source: p10_move_constructor_A = ::std::mem::MaybeUninit::uninit().assume_init();
+    p10_move_constructor_A::new(&raw mut source, { 1 });
+    let mut target: p10_move_constructor_A = ::std::mem::MaybeUninit::uninit().assume_init();
+    p10_move_constructor_A::move_from(&raw mut target, { &mut source });
     assert!(((target.value) == (1)));
     assert!(((source.value) == (0)));
     let mut values: Vec<p10_move_constructor_A> = Vec::new();
-    let mut element: p10_move_constructor_A = p10_move_constructor_A::new({ 2 });
+    let mut element: p10_move_constructor_A = ::std::mem::MaybeUninit::uninit().assume_init();
+    p10_move_constructor_A::new(&raw mut element, { 2 });
     {
-        let __a1 = p10_move_constructor_A::move_from({ &mut element });
+        let __a1 = {
+            let mut __v: p10_move_constructor_A = ::std::mem::MaybeUninit::uninit().assume_init();
+            p10_move_constructor_A::move_from(&raw mut __v, { &mut element });
+            __v
+        };
         values.push(__a1)
     };
     assert!(((values[(0_usize)].value) == (2)));

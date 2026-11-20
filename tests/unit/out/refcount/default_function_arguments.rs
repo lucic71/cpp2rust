@@ -13,6 +13,7 @@ pub fn baz_1(mut a: Ptr<i32>, mut b: Ptr<i32>) -> bool {
     return ({ a } == { b });
 }
 #[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, CppFrom)]
+#[placement]
 #[cpp_from(i32, new, value)]
 #[byte_size(4)]
 pub struct Bar {
@@ -20,13 +21,23 @@ pub struct Bar {
     pub v: i32,
 }
 impl Bar {
-    pub fn new(mut v: i32) -> Self {
-        Self { v: v }
+    pub fn new(this: Ptr<Bar>, mut v: i32) {
+        field!(this, v).write(v);
+    }
+    pub fn copy_from(this: Ptr<Bar>, _a0: Ptr<Bar>) {
+        field!(this, v).write(_a0.with(|__s| __s.v));
     }
 }
 impl Default for Bar {
     fn default() -> Self {
-        { Bar::new({ 1 }) }
+        Rc::try_unwrap({
+            let __v: Value<Bar> = Rc::new(RefCell::new(<Bar>::uninit()));
+            Bar::new(__v.as_pointer(), { 1 });
+            __v
+        })
+        .ok()
+        .unwrap()
+        .into_inner()
     }
 }
 thread_local!(
@@ -42,7 +53,11 @@ pub fn by_ref_5(b: Ptr<Bar>) -> i32 {
     return b.with(|__s| __s.v);
 }
 thread_local!(
-    pub static global_bar_6: Value<Bar> = Rc::new(RefCell::new(Bar::new({ 9 })));
+    pub static global_bar_6: Value<Bar> = {
+        let __v: Value<Bar> = Rc::new(RefCell::new(<Bar>::uninit()));
+        Bar::new(__v.as_pointer(), { 9 });
+        __v
+    };
 );
 pub fn by_global_ref_7(b: Ptr<Bar>) -> i32 {
     return b.with(|__s| __s.v);
@@ -54,14 +69,18 @@ pub fn first_9(r: Ptr<i32>) -> i32 {
     return (elem!(r, 0).read());
 }
 #[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
+#[placement]
 #[byte_size(4)]
 pub struct Holder_int_ {
     #[offset(0)]
     pub v: i32,
 }
 impl Holder_int_ {
-    pub fn new(mut v: i32) -> Self {
-        Self { v: v }
+    pub fn new(this: Ptr<Holder_int_>, mut v: i32) {
+        field!(this, v).write(v);
+    }
+    pub fn copy_from(this: Ptr<Holder_int_>, _a0: Ptr<Holder_int_>) {
+        field!(this, v).write(_a0.with(|__s| __s.v));
     }
 }
 pub fn main() {
@@ -81,37 +100,71 @@ fn main_0() -> i32 {
         }) as i32)
             == (true as i32))
     );
-    let mut b: Bar = Bar::new({ 1 });
-    assert!((b.v == 1));
-    assert!(({ Bar::new({ 2 },).v } == 2));
-    let mut arr: [Bar; 3] = [Bar::new({ 1 }), Bar::new({ 1 }), Bar::new({ 1 })];
-    assert!((arr[(0) as usize].v == 1));
-    assert!((arr[(2) as usize].v == 1));
+    let b: Value<Bar> = Rc::new(RefCell::new(<Bar>::uninit()));
+    Bar::new(b.as_pointer(), { 1 });
+    assert!(({ ({ (*b.borrow()).v } == 1) }));
+    assert!(
+        ({
+            Rc::try_unwrap({
+                let __v: Value<Bar> = Rc::new(RefCell::new(<Bar>::uninit()));
+                Bar::new(__v.as_pointer(), { 2 });
+                __v
+            })
+            .ok()
+            .unwrap()
+            .into_inner()
+            .v
+        } == 2)
+    );
+    let arr: Value<Box<[Bar]>> = Rc::new(RefCell::new(
+        (0..3).map(|_| <Bar>::uninit()).collect::<Box<[_]>>(),
+    ));
+    {
+        let __d = arr.decay();
+        Bar::new(__d.offset(0), { 1 });
+        Bar::new(__d.offset(1), { 1 });
+        Bar::new(__d.offset(2), { 1 });
+    };
+    assert!(({ ({ (*arr.borrow())[(0) as usize].v } == 1) }));
+    assert!(({ ({ (*arr.borrow())[(2) as usize].v } == 1) }));
     assert!((({ lazy_4(5,) }) == 5));
     assert!((counter_2.with(|rc| *rc.borrow()) == 0));
     assert!((({ lazy_4(({ next_3() }),) }) == 1));
     assert!((counter_2.with(|rc| *rc.borrow()) == 1));
     assert!(
         (({
-            let _b: Value<Bar> = Rc::new(RefCell::new(Bar::new({ 7 })));
+            let _b: Value<Bar> = {
+                let __v: Value<Bar> = Rc::new(RefCell::new(<Bar>::uninit()));
+                Bar::new(__v.as_pointer(), { 7 });
+                __v
+            };
             by_ref_5(_b.as_pointer())
         }) == 7)
     );
     assert!(
         (({
-            let _b: Value<Bar> = Rc::new(RefCell::new(Bar::new({ 3 })));
+            let _b: Value<Bar> = {
+                let __v: Value<Bar> = Rc::new(RefCell::new(<Bar>::uninit()));
+                Bar::new(__v.as_pointer(), { 3 });
+                __v
+            };
             by_ref_5(_b.as_pointer())
         }) == 3)
     );
     assert!((({ by_global_ref_7(global_bar_6.with(|v| v.as_pointer()),) }) == 9));
     assert!(
         (({
-            let _b: Value<Bar> = Rc::new(RefCell::new(Bar::new({ 4 })));
+            let _b: Value<Bar> = {
+                let __v: Value<Bar> = Rc::new(RefCell::new(<Bar>::uninit()));
+                Bar::new(__v.as_pointer(), { 4 });
+                __v
+            };
             by_global_ref_7(_b.as_pointer())
         }) == 4)
     );
-    let mut h: Holder_int_ = Holder_int_::new({ 4 });
-    assert!((h.v == 4));
+    let h: Value<Holder_int_> = Rc::new(RefCell::new(<Holder_int_>::uninit()));
+    Holder_int_::new(h.as_pointer(), { 4 });
+    assert!(({ ({ (*h.borrow()).v } == 4) }));
     assert!((({ shifted_8(3, -1_i32,) }) == 2));
     assert!((({ shifted_8(3, 4,) }) == 7));
     assert!(

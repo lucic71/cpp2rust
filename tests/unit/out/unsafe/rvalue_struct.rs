@@ -8,14 +8,19 @@ use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
+#[placement]
 pub struct S {
     pub a: i32,
     pub b: i32,
 }
 impl S {
-    pub unsafe fn new(mut a: i32, mut b: i32) -> Self {
-        let mut this = Self { a: a, b: b };
-        this
+    pub unsafe fn new(this: *mut S, mut a: i32, mut b: i32) {
+        (&raw mut (*this).a).write(a);
+        (&raw mut (*this).b).write(b);
+    }
+    pub unsafe fn copy_from(this: *mut S, _a0: *const S) {
+        (&raw mut (*this).a).write((*_a0).a);
+        (&raw mut (*this).b).write((*_a0).b);
     }
 }
 pub fn main() {
@@ -25,7 +30,8 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    let mut s1: S = S::new({ 1 }, { 2 });
+    let mut s1: S = ::std::mem::MaybeUninit::uninit().assume_init();
+    S::new(&raw mut s1, { 1 }, { 2 });
     let s2: *mut S = &mut s1;
     assert!((((*s2).a) == (1)));
     assert!((((*s2).b) == (2)));

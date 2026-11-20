@@ -28,17 +28,19 @@ pub fn with_default_3(s: S) -> i32 {
     return { (*s.borrow()).v };
 }
 #[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
+#[placement]
 #[byte_size(4)]
 pub struct Holder {
     #[offset(0)]
     pub v: i32,
 }
 impl Holder {
-    pub fn new(s: S) -> Self {
+    pub fn new(this: Ptr<Holder>, s: S) {
         let s: Value<S> = Rc::new(RefCell::new(s));
-        Self {
-            v: { (*s.borrow()).v },
-        }
+        field!(this, v).write({ (*s.borrow()).v });
+    }
+    pub fn copy_from(this: Ptr<Holder>, _a0: Ptr<Holder>) {
+        field!(this, v).write(_a0.with(|__s| __s.v));
     }
 }
 pub fn main() {
@@ -63,7 +65,8 @@ fn main_0() -> i32 {
     assert!((destroyed_0.with(|rc| *rc.borrow()) == 1) && (last_1.with(|rc| *rc.borrow()) == 5));
     destroyed_0.with(|rc| *rc.borrow_mut() = 0);
     {
-        let h: Value<Holder> = Rc::new(RefCell::new(Holder::new({ S { v: 3 } })));
+        let h: Value<Holder> = Rc::new(RefCell::new(<Holder>::uninit()));
+        Holder::new(h.as_pointer(), { S { v: 3 } });
         assert!(
             (destroyed_0.with(|rc| *rc.borrow()) == 1) && (last_1.with(|rc| *rc.borrow()) == 3)
         );

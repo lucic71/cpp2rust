@@ -64,6 +64,7 @@ pub struct Holder__lambda_at_lambda_as_field_cpp_51_12__ {
     pub calls: i32,
 }
 #[derive(Record, ByteRepr, Uninit, FnPtrArg, MoveCtor, CppFrom)]
+#[placement]
 #[cpp_from(FnPtr<fn(i32  ,) -> i32  >  , new, value)]
 #[byte_size(8)]
 pub struct Moving__lambda_at_lambda_as_field_cpp_64_12__ {
@@ -74,18 +75,17 @@ pub struct Moving__lambda_at_lambda_as_field_cpp_64_12__ {
     pub moves: i32,
 }
 impl Moving__lambda_at_lambda_as_field_cpp_64_12__ {
-    pub fn new(f: FnPtr<fn(i32) -> i32>) -> Self {
+    pub fn new(this: Ptr<Moving__lambda_at_lambda_as_field_cpp_64_12__>, f: FnPtr<fn(i32) -> i32>) {
         let f: Value<FnPtr<fn(i32) -> i32>> = Rc::new(RefCell::new(f));
-        Self {
-            f: (*f.borrow()).copy_from(),
-            moves: 0,
-        }
+        field!(this, f).write((*f.borrow()).copy_from());
+        field!(this, moves).write(0);
     }
-    pub fn move_from(o: Ptr<Moving__lambda_at_lambda_as_field_cpp_64_12__>) -> Self {
-        Self {
-            f: (*o.upgrade().deref()).f.move_from(),
-            moves: (o.with(|__s| __s.moves) + 1),
-        }
+    pub fn move_from(
+        this: Ptr<Moving__lambda_at_lambda_as_field_cpp_64_12__>,
+        o: Ptr<Moving__lambda_at_lambda_as_field_cpp_64_12__>,
+    ) {
+        field!(this, f).write((*o.upgrade().deref()).f.move_from());
+        field!(this, moves).write((o.with(|__s| __s.moves) + 1));
     }
 }
 impl Default for Moving__lambda_at_lambda_as_field_cpp_64_12__ {
@@ -216,17 +216,19 @@ fn main_0() -> i32 {
         Rc::new(RefCell::new(({ wrap_2((*w.borrow()).copy_from()) })));
     assert!(({ (({ (*ww.borrow()).call(2,) }) == 202) }));
     let m: Value<Moving__lambda_at_lambda_as_field_cpp_64_12__> = Rc::new(RefCell::new(
-        Moving__lambda_at_lambda_as_field_cpp_64_12__::new({
-            FnPtr::<fn(i32) -> i32>::new(|mut x: i32| -> i32 {
-                {
-                    return (x * 2);
-                }
-            })
-        }),
+        <Moving__lambda_at_lambda_as_field_cpp_64_12__>::uninit(),
     ));
+    Moving__lambda_at_lambda_as_field_cpp_64_12__::new(m.as_pointer(), {
+        FnPtr::<fn(i32) -> i32>::new(|mut x: i32| -> i32 {
+            {
+                return (x * 2);
+            }
+        })
+    });
     let m2: Value<Moving__lambda_at_lambda_as_field_cpp_64_12__> = Rc::new(RefCell::new(
-        Moving__lambda_at_lambda_as_field_cpp_64_12__::move_from({ m.as_pointer() }),
+        <Moving__lambda_at_lambda_as_field_cpp_64_12__>::uninit(),
     ));
+    Moving__lambda_at_lambda_as_field_cpp_64_12__::move_from(m2.as_pointer(), { m.as_pointer() });
     assert!(({ (({ (*m2.borrow()).f.call(3,) }) == 6) }));
     assert!(({ ({ (*m2.borrow()).moves } == 1) }));
     return 0;

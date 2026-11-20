@@ -8,25 +8,20 @@ use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 #[repr(C)]
 #[derive(FnPtrArg, MoveCtorUnsafe, CppFromUnsafe, MoveAssignUnsafe, Default)]
+#[placement]
 #[cpp_from(i32, new, value)]
 pub struct S {
     pub v: Vec<i32>,
     pub n: [i32; 2],
 }
 impl S {
-    pub unsafe fn new(mut x: i32) -> Self {
-        let mut this = Self {
-            v: vec![x; (x as usize)],
-            n: [x, ((x) + (1))],
-        };
-        this
+    pub unsafe fn new(this: *mut S, mut x: i32) {
+        (&raw mut (*this).v).write(vec![x; (x as usize)]);
+        (&raw mut (*this).n).write([x, ((x) + (1))]);
     }
-    pub unsafe fn move_from(_a0: *mut S) -> Self {
-        let mut this = Self {
-            v: std::mem::take(&mut (*_a0).v),
-            n: std::array::from_fn::<_, 2, _>(|__i: usize| (*_a0).n[(__i)]),
-        };
-        this
+    pub unsafe fn move_from(this: *mut S, _a0: *mut S) {
+        (&raw mut (*this).v).write(std::mem::take(&mut (*_a0).v));
+        (&raw mut (*this).n).write(std::array::from_fn::<_, 2, _>(|__i: usize| (*_a0).n[(__i)]));
     }
     pub unsafe fn move_assign(&mut self, _a0: *mut S) -> *mut S {
         {
@@ -75,7 +70,8 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    let mut s: S = S::new({ 2 });
+    let mut s: S = ::std::mem::MaybeUninit::uninit().assume_init();
+    S::new(&raw mut s, { 2 });
     assert!(((unsafe { sum_0(&s,) }) == (7)));
     assert!(((unsafe { shuffle_1(3,) }) == (10)));
     let mut t: T = T {
@@ -85,10 +81,13 @@ unsafe fn main_0() -> i32 {
     return 0;
 }
 pub unsafe fn shuffle_1(mut x: i32) -> i32 {
-    let mut a: S = S::new({ x });
-    let mut b: S = S::move_from({ &mut a });
+    let mut a: S = ::std::mem::MaybeUninit::uninit().assume_init();
+    S::new(&raw mut a, { x });
+    let mut b: S = ::std::mem::MaybeUninit::uninit().assume_init();
+    S::move_from(&raw mut b, { &mut a });
     assert!(a.v.is_empty());
-    let mut c: S = S::new({ 1 });
+    let mut c: S = ::std::mem::MaybeUninit::uninit().assume_init();
+    S::new(&raw mut c, { 1 });
     (unsafe { S::move_assign(&mut c, &mut b) });
     assert!(b.v.is_empty());
     let mut t: T = T { v: Vec::from([1]) };

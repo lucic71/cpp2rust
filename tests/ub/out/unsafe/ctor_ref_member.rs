@@ -8,14 +8,17 @@ use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, CppFromUnsafe, Default)]
+#[placement]
 #[cpp_from(i32, new, ptr)]
 pub struct S {
     pub r: *const i32,
 }
 impl S {
-    pub unsafe fn new(x: *const i32) -> Self {
-        let mut this = Self { r: x };
-        this
+    pub unsafe fn new(this: *mut S, x: *const i32) {
+        (&raw mut (*this).r).write(x);
+    }
+    pub unsafe fn copy_from(this: *mut S, _a0: *const S) {
+        (&raw mut (*this).r).write((*_a0).r);
     }
 }
 pub fn main() {
@@ -25,9 +28,10 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    let mut s: S = {
+    let mut s: S = ::std::mem::MaybeUninit::uninit().assume_init();
+    {
         let mut __tmp_0: i32 = 5;
-        S::new({ &mut __tmp_0 })
+        S::new(&raw mut s, { &mut __tmp_0 })
     };
     assert!(((*s.r) == (5)));
     return 0;

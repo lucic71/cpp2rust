@@ -7,6 +7,7 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
 #[derive(Record, ByteRepr, Uninit, FnPtrArg, MoveCtor, CppFrom, MoveAssign)]
+#[placement]
 #[cpp_from(i32, new, value)]
 #[byte_size(32)]
 pub struct S {
@@ -19,19 +20,15 @@ pub struct S {
     pub n: Box<[i32]>,
 }
 impl S {
-    pub fn new(mut x: i32) -> Self {
-        Self {
-            v: vec![x; (x as usize)],
-            n: Box::new([x, (x + 1)]),
-        }
+    pub fn new(this: Ptr<S>, mut x: i32) {
+        field!(this, v).write(vec![x; (x as usize)]);
+        field!(this, n).write(Box::new([x, (x + 1)]));
     }
-    pub fn move_from(_a0: Ptr<S>) -> Self {
-        Self {
-            v: field!(_a0, v).with_mut(std::mem::take),
-            n: Box::new(std::array::from_fn::<_, 2, _>(|__i: usize| {
-                (*_a0.upgrade().deref()).n[(__i) as usize]
-            })),
-        }
+    pub fn move_from(this: Ptr<S>, _a0: Ptr<S>) {
+        field!(this, v).write(field!(_a0, v).with_mut(std::mem::take));
+        field!(this, n).write(Box::new(std::array::from_fn::<_, 2, _>(|__i: usize| {
+            (*_a0.upgrade().deref()).n[(__i) as usize]
+        })));
     }
 }
 impl Default for S {
@@ -68,7 +65,8 @@ pub fn main() {
     libcc2rs::cpp2rust_exit(main_0());
 }
 fn main_0() -> i32 {
-    let s: Value<S> = Rc::new(RefCell::new(S::new({ 2 })));
+    let s: Value<S> = Rc::new(RefCell::new(<S>::uninit()));
+    S::new(s.as_pointer(), { 2 });
     assert!((({ sum_0(s.as_pointer(),) }) == 7));
     assert!((({ shuffle_1(3,) }) == 10));
     let t: Value<T> = Rc::new(RefCell::new(T {
@@ -78,10 +76,13 @@ fn main_0() -> i32 {
     return 0;
 }
 pub fn shuffle_1(mut x: i32) -> i32 {
-    let a: Value<S> = Rc::new(RefCell::new(S::new({ x })));
-    let b: Value<S> = Rc::new(RefCell::new(S::move_from({ a.as_pointer() })));
+    let a: Value<S> = Rc::new(RefCell::new(<S>::uninit()));
+    S::new(a.as_pointer(), { x });
+    let b: Value<S> = Rc::new(RefCell::new(<S>::uninit()));
+    S::move_from(b.as_pointer(), { a.as_pointer() });
     assert!(({ (*a.borrow()).v.is_empty() }));
-    let c: Value<S> = Rc::new(RefCell::new(S::new({ 1 })));
+    let c: Value<S> = Rc::new(RefCell::new(<S>::uninit()));
+    S::new(c.as_pointer(), { 1 });
     ({ SImpl::move_assign(&c.as_pointer(), b.as_pointer()) });
     assert!(({ (*b.borrow()).v.is_empty() }));
     let t: Value<T> = Rc::new(RefCell::new(T { v: Vec::from([1]) }));

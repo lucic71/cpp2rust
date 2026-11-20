@@ -28,16 +28,19 @@ pub unsafe fn with_default_3(mut s: S) -> i32 {
 }
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
+#[placement]
 pub struct Holder {
     pub v: i32,
 }
 impl Holder {
-    pub unsafe fn new(mut s: S) -> Self {
-        let mut this = Self { v: s.v };
-        this
+    pub unsafe fn new(this: *mut Holder, mut s: S) {
+        (&raw mut (*this).v).write(s.v);
     }
     pub unsafe fn add(&self, mut s: S) -> i32 {
         return ((self.v) + (s.v));
+    }
+    pub unsafe fn copy_from(this: *mut Holder, _a0: *const Holder) {
+        (&raw mut (*this).v).write((*_a0).v);
     }
 }
 pub fn main() {
@@ -71,7 +74,8 @@ unsafe fn main_0() -> i32 {
     );
     (*std::cell::LazyCell::force_mut(&mut *&raw mut destroyed_0)) = 0;
     {
-        let mut h: Holder = Holder::new({ S { v: 3 } });
+        let mut h: Holder = ::std::mem::MaybeUninit::uninit().assume_init();
+        Holder::new(&raw mut h, { S { v: 3 } });
         assert!(
             ((*std::cell::LazyCell::force_mut(&mut *&raw mut destroyed_0)) == (1))
                 && ((*std::cell::LazyCell::force_mut(&mut *&raw mut last_1)) == (3))

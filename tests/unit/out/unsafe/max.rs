@@ -18,19 +18,18 @@ pub unsafe fn pick_3(mut i: i32) -> *mut i32 {
 }
 #[repr(C)]
 #[derive(VaArg, FnPtrArg, CppFromUnsafe, CopyAssignUnsafe, Default)]
+#[placement]
 #[cpp_from(i32, new, value)]
 pub struct Bag {
     pub n: i32,
 }
 impl Bag {
-    pub unsafe fn new(mut n: i32) -> Self {
-        let mut this = Self { n: n };
-        this
+    pub unsafe fn new(this: *mut Bag, mut n: i32) {
+        (&raw mut (*this).n).write(n);
     }
-    pub unsafe fn copy_from(o: *const Bag) -> Self {
-        let mut this = Self { n: (*o).n };
+    pub unsafe fn copy_from(this: *mut Bag, o: *const Bag) {
+        (&raw mut (*this).n).write((*o).n);
         (*std::cell::LazyCell::force_mut(&mut *&raw mut calls_0)).prefix_inc();
-        this
     }
     pub unsafe fn copy_assign(&mut self, _a0: *const Bag) -> *mut Bag {
         self.n = (*_a0).n;
@@ -66,14 +65,19 @@ impl std::cmp::PartialEq for Bag {
 impl std::cmp::Eq for Bag {}
 impl Clone for Bag {
     fn clone(&self) -> Self {
-        unsafe { Bag::copy_from(self as *const Bag) }
+        unsafe {
+            let mut __v: Bag = ::std::mem::MaybeUninit::uninit().assume_init();
+            Bag::copy_from(&raw mut __v, self as *const Bag);
+            __v
+        }
     }
 }
 pub unsafe fn operator_lt_4(a: *const Bag, b: *const Bag) -> bool {
     return (((*a).n) < ((*b).n));
 }
-pub unsafe fn make_5(mut n: i32) -> Bag {
-    return Bag::new({ n });
+pub unsafe fn make_5(__ret: *mut Bag, mut n: i32) {
+    Bag::new(__ret.clone(), { n });
+    return;
 }
 pub fn main() {
     unsafe {
@@ -155,8 +159,16 @@ unsafe fn main_0() -> i32 {
     (*std::cell::LazyCell::force_mut(&mut *&raw mut calls_0)) = 0;
     assert!(
         (((*match (
-            (&mut (unsafe { make_5(1,) }) as *const Bag),
-            (&mut (unsafe { make_5(2,) }) as *const Bag),
+            (&mut *(|__p: *mut Bag| {
+                (unsafe { make_5(__p, 1) });
+                __p
+            })((&mut ::std::mem::MaybeUninit::<Bag>::uninit()).as_mut_ptr())
+                as *const Bag),
+            (&mut *(|__p: *mut Bag| {
+                (unsafe { make_5(__p, 2) });
+                __p
+            })((&mut ::std::mem::MaybeUninit::<Bag>::uninit()).as_mut_ptr())
+                as *const Bag),
         ) {
             (__tmp_4, __tmp_5) => {
                 {
@@ -168,8 +180,18 @@ unsafe fn main_0() -> i32 {
         })
         .n) == (2))
             && (((*match (
-                (&mut (unsafe { make_5(1,) }) as *const Bag),
-                (&mut (unsafe { make_5(2,) }) as *const Bag),
+                (&mut *(|__p: *mut Bag| {
+                    (unsafe { make_5(__p, 1) });
+                    __p
+                })(
+                    (&mut ::std::mem::MaybeUninit::<Bag>::uninit()).as_mut_ptr()
+                ) as *const Bag),
+                (&mut *(|__p: *mut Bag| {
+                    (unsafe { make_5(__p, 2) });
+                    __p
+                })(
+                    (&mut ::std::mem::MaybeUninit::<Bag>::uninit()).as_mut_ptr()
+                ) as *const Bag),
             ) {
                 (__tmp_6, __tmp_7) => {
                     {

@@ -69,6 +69,7 @@ impl CppEq for Mixed {
     }
 }
 #[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, CppFrom, Default)]
+#[placement]
 #[cpp_into(bool, to_bool)]
 #[byte_size(1)]
 pub struct MyBool {
@@ -76,8 +77,11 @@ pub struct MyBool {
     pub value: bool,
 }
 impl MyBool {
-    pub fn new(mut v: bool) -> Self {
-        Self { value: v }
+    pub fn new(this: Ptr<MyBool>, mut v: bool) {
+        field!(this, value).write(v);
+    }
+    pub fn copy_from(this: Ptr<MyBool>, _a0: Ptr<MyBool>) {
+        field!(this, value).write(_a0.with(|__s| __s.value));
     }
 }
 #[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
@@ -89,26 +93,31 @@ pub struct Boolish {
 impl CppLess for Boolish {
     fn less(__lhs: &Ptr<Self>, __rhs: &Ptr<Self>) -> bool {
         {
-            let __cmp = operator_lt_6(__lhs.read(), __rhs.read());
-            MyBoolImpl::to_bool(&Rc::new(RefCell::new(__cmp)).as_pointer())
+            let __cmp: Value<MyBool> = Rc::new(RefCell::new(<MyBool>::uninit()));
+            operator_lt_6(__cmp.as_pointer(), __lhs.read(), __rhs.read());
+            MyBoolImpl::to_bool(&__cmp.as_pointer())
         }
     }
 }
 impl CppEq for Boolish {
     fn equal(__lhs: &Ptr<Self>, __rhs: &Ptr<Self>) -> bool {
         {
-            let __cmp = operator_eq_7(__lhs.read(), __rhs.read());
-            MyBoolImpl::to_bool(&Rc::new(RefCell::new(__cmp)).as_pointer())
+            let __cmp: Value<MyBool> = Rc::new(RefCell::new(<MyBool>::uninit()));
+            operator_eq_7(__cmp.as_pointer(), __lhs.read(), __rhs.read());
+            MyBoolImpl::to_bool(&__cmp.as_pointer())
         }
     }
 }
-pub fn operator_eq_7(mut a: Boolish, mut b: Boolish) -> MyBool {
-    return MyBool::new({ (a.v == b.v) });
+pub fn operator_eq_7(__ret: Ptr<MyBool>, mut a: Boolish, mut b: Boolish) {
+    MyBool::new(__ret.clone(), { (a.v == b.v) });
+    return;
 }
-pub fn operator_lt_6(mut a: Boolish, mut b: Boolish) -> MyBool {
-    return MyBool::new({ (a.v < b.v) });
+pub fn operator_lt_6(__ret: Ptr<MyBool>, mut a: Boolish, mut b: Boolish) {
+    MyBool::new(__ret.clone(), { (a.v < b.v) });
+    return;
 }
 #[derive(Record, ByteRepr, Uninit, FnPtrArg, CppFrom, Default)]
+#[placement]
 #[cpp_into(bool, to_bool)]
 #[byte_size(1)]
 pub struct RefBool {
@@ -116,12 +125,16 @@ pub struct RefBool {
     pub value: bool,
 }
 impl RefBool {
-    pub fn new(mut v: bool) -> Self {
-        Self { value: v }
+    pub fn new(this: Ptr<RefBool>, mut v: bool) {
+        field!(this, value).write(v);
     }
 }
 thread_local!(
-    pub static ref_true_8: Value<RefBool> = Rc::new(RefCell::new(RefBool::new({ true })));
+    pub static ref_true_8: Value<RefBool> = {
+        let __v: Value<RefBool> = Rc::new(RefCell::new(<RefBool>::uninit()));
+        RefBool::new(__v.as_pointer(), { true });
+        __v
+    };
 );
 #[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
 #[byte_size(4)]
@@ -238,12 +251,14 @@ fn main_0() -> i32 {
     assert!(
         ({
             MyBoolImpl::to_bool(
-                &Rc::new(RefCell::new(
+                &{
+                    let __v: Value<MyBool> = Rc::new(RefCell::new(<MyBool>::uninit()));
                     ({
                         let _a: Boolish = b1;
-                        operator_eq_7(_a, Boolish { v: 1 })
-                    }),
-                ))
+                        operator_eq_7(__v.as_pointer(), _a, Boolish { v: 1 })
+                    });
+                    __v
+                }
                 .as_pointer(),
             )
         })
@@ -251,21 +266,24 @@ fn main_0() -> i32 {
     assert!(
         !({
             MyBoolImpl::to_bool(
-                &Rc::new(RefCell::new(
+                &{
+                    let __v: Value<MyBool> = Rc::new(RefCell::new(<MyBool>::uninit()));
                     ({
                         let _a: Boolish = b2;
-                        operator_lt_6(_a, b1)
-                    }),
-                ))
+                        operator_lt_6(__v.as_pointer(), _a, b1)
+                    });
+                    __v
+                }
                 .as_pointer(),
             )
         })
     );
-    let mut lt: MyBool = ({
+    let lt: Value<MyBool> = Rc::new(RefCell::new(<MyBool>::uninit()));
+    ({
         let _a: Boolish = b1;
-        operator_lt_6(_a, b2)
+        operator_lt_6(lt.as_pointer(), _a, b2)
     });
-    assert!(lt.value);
+    assert!(({ { (*lt.borrow()).value } }));
     let bs: Value<Box<[Boolish]>> = Rc::new(RefCell::new(Box::new([
         Boolish { v: 3 },
         Boolish { v: 1 },

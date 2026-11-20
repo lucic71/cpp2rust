@@ -7,6 +7,7 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
 #[derive(Record, ByteRepr, Uninit, FnPtrArg, MoveCtor, CppFrom, Destructor, Default)]
+#[placement]
 #[cpp_from(i32, new, value)]
 #[byte_size(8)]
 pub struct Owner {
@@ -15,15 +16,12 @@ pub struct Owner {
     pub p: Ptr<i32>,
 }
 impl Owner {
-    pub fn new(mut v: i32) -> Self {
-        Self { p: Ptr::alloc(v) }
+    pub fn new(this: Ptr<Owner>, mut v: i32) {
+        field!(this, p).write(Ptr::alloc(v));
     }
-    pub fn move_from(o: Ptr<Owner>) -> Self {
-        let __this: Owner = Self {
-            p: o.with(|__s| __s.p.clone()),
-        };
+    pub fn move_from(this: Ptr<Owner>, o: Ptr<Owner>) {
+        field!(this, p).write(o.with(|__s| __s.p.clone()));
         field!(o, p).write(Ptr::<i32>::null());
-        __this
     }
 }
 pub fn main() {
@@ -31,11 +29,16 @@ pub fn main() {
     libcc2rs::cpp2rust_exit(main_0());
 }
 fn main_0() -> i32 {
-    let o: Value<Owner> = Rc::new(RefCell::new(Owner::new({ 5 })));
+    let o: Value<Owner> = Rc::new(RefCell::new(<Owner>::uninit()));
+    Owner::new(o.as_pointer(), { 5 });
     let _dtor_o = std::mem::DropGuard::new(o.clone(), |__p| __p.as_pointer().destructor());
     let f: Value<FnPtr<fn() -> i32>> = Rc::new(RefCell::new(lambda!(
         {
-            let h: Value<Owner> = Rc::new(RefCell::new(Owner::move_from({ o.as_pointer() })));
+            let h: Value<Owner> = {
+                let __v: Value<Owner> = Rc::new(RefCell::new(<Owner>::uninit()));
+                Owner::move_from(__v.as_pointer(), { o.as_pointer() });
+                __v
+            };
         },
         || -> i32 {
             return ({ (*h.borrow()).p.clone() }.read());
@@ -52,7 +55,11 @@ fn main_0() -> i32 {
     let total: Value<i32> = Rc::new(RefCell::new(0));
     let consume: Value<FnPtr<fn()>> = Rc::new(RefCell::new(lambda!(
         {
-            let h: Value<Owner> = Rc::new(RefCell::new(Owner::new({ 7 })));
+            let h: Value<Owner> = {
+                let __v: Value<Owner> = Rc::new(RefCell::new(<Owner>::uninit()));
+                Owner::new(__v.as_pointer(), { 7 });
+                __v
+            };
             let total: Ptr<i32> = total.as_pointer();
         },
         || {
@@ -69,7 +76,8 @@ fn main_0() -> i32 {
     ({ (*consume.borrow()).call() });
     ({ (*consume.borrow()).call() });
     assert!(({ ((*total.borrow()) == 7) }));
-    let o2: Value<Owner> = Rc::new(RefCell::new(Owner::new({ 9 })));
+    let o2: Value<Owner> = Rc::new(RefCell::new(<Owner>::uninit()));
+    Owner::new(o2.as_pointer(), { 9 });
     let _dtor_o2 = std::mem::DropGuard::new(o2.clone(), |__p| __p.as_pointer().destructor());
     let t: Value<FnPtr<fn() -> i32>> =
         Rc::new(RefCell::new(({ OwnerImpl::take(&o2.as_pointer()) })));
@@ -90,8 +98,11 @@ impl OwnerImpl for Ptr<Owner> {
     fn take(&self) -> FnPtr<fn() -> i32> {
         return lambda!(
             {
-                let self_: Value<Owner> =
-                    Rc::new(RefCell::new(Owner::move_from({ (*self).clone() })));
+                let self_: Value<Owner> = {
+                    let __v: Value<Owner> = Rc::new(RefCell::new(<Owner>::uninit()));
+                    Owner::move_from(__v.as_pointer(), { (*self).clone() });
+                    __v
+                };
             },
             || -> i32 {
                 return ({ (*self_.borrow()).p.clone() }.read());

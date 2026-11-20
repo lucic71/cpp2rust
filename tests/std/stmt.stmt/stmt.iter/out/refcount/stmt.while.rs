@@ -13,6 +13,7 @@ thread_local!(
     pub static dtorCount_1: Value<i32> = Rc::new(RefCell::new(0));
 );
 #[derive(Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, CppFrom, Destructor, Default)]
+#[placement]
 #[cpp_from(i32, new, value)]
 #[byte_size(4)]
 pub struct p2_condition_variable_created_each_iteration_ConvertsToBool {
@@ -20,21 +21,30 @@ pub struct p2_condition_variable_created_each_iteration_ConvertsToBool {
     pub value: i32,
 }
 impl p2_condition_variable_created_each_iteration_ConvertsToBool {
-    pub fn new(mut value: i32) -> Self {
-        let __this: p2_condition_variable_created_each_iteration_ConvertsToBool =
-            Self { value: value };
+    pub fn new(
+        this: Ptr<p2_condition_variable_created_each_iteration_ConvertsToBool>,
+        mut value: i32,
+    ) {
+        field!(this, value).write(value);
         (*ctorCount_0.with(Value::clone).borrow_mut()).prefix_inc();
-        __this
+    }
+    pub fn copy_from(
+        this: Ptr<p2_condition_variable_created_each_iteration_ConvertsToBool>,
+        _a0: Ptr<p2_condition_variable_created_each_iteration_ConvertsToBool>,
+    ) {
+        field!(this, value).write(_a0.with(|__s| __s.value));
     }
 }
 pub fn test_2() {
     let mut remaining: i32 = 2;
     let mut iterations: i32 = 0;
     'loop_: loop {
-        let condition: Value<p2_condition_variable_created_each_iteration_ConvertsToBool> =
-            Rc::new(RefCell::new(
-                p2_condition_variable_created_each_iteration_ConvertsToBool::new({ remaining }),
-            ));
+        let condition: Value<p2_condition_variable_created_each_iteration_ConvertsToBool> = Rc::new(
+            RefCell::new(<p2_condition_variable_created_each_iteration_ConvertsToBool>::uninit()),
+        );
+        p2_condition_variable_created_each_iteration_ConvertsToBool::new(condition.as_pointer(), {
+            remaining
+        });
         let _dtor_condition =
             std::mem::DropGuard::new(condition.clone(), |__p| __p.as_pointer().destructor());
         if !({
@@ -61,6 +71,7 @@ thread_local!(
     pub static dtorCount_4: Value<i32> = Rc::new(RefCell::new(0));
 );
 #[derive(Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, CppFrom, Destructor, Default)]
+#[placement]
 #[cpp_from(i32, new, value)]
 #[byte_size(4)]
 pub struct p2_continue_destroys_condition_variable_ConvertsToBool {
@@ -68,10 +79,15 @@ pub struct p2_continue_destroys_condition_variable_ConvertsToBool {
     pub value: i32,
 }
 impl p2_continue_destroys_condition_variable_ConvertsToBool {
-    pub fn new(mut value: i32) -> Self {
-        let __this: p2_continue_destroys_condition_variable_ConvertsToBool = Self { value: value };
+    pub fn new(this: Ptr<p2_continue_destroys_condition_variable_ConvertsToBool>, mut value: i32) {
+        field!(this, value).write(value);
         (*ctorCount_3.with(Value::clone).borrow_mut()).prefix_inc();
-        __this
+    }
+    pub fn copy_from(
+        this: Ptr<p2_continue_destroys_condition_variable_ConvertsToBool>,
+        _a0: Ptr<p2_continue_destroys_condition_variable_ConvertsToBool>,
+    ) {
+        field!(this, value).write(_a0.with(|__s| __s.value));
     }
 }
 pub fn test_5() {
@@ -79,10 +95,12 @@ pub fn test_5() {
     let mut continued: i32 = 0;
     let mut completed: i32 = 0;
     'loop_: loop {
-        let condition: Value<p2_continue_destroys_condition_variable_ConvertsToBool> =
-            Rc::new(RefCell::new(
-                p2_continue_destroys_condition_variable_ConvertsToBool::new({ remaining }),
-            ));
+        let condition: Value<p2_continue_destroys_condition_variable_ConvertsToBool> = Rc::new(
+            RefCell::new(<p2_continue_destroys_condition_variable_ConvertsToBool>::uninit()),
+        );
+        p2_continue_destroys_condition_variable_ConvertsToBool::new(condition.as_pointer(), {
+            remaining
+        });
         let _dtor_condition =
             std::mem::DropGuard::new(condition.clone(), |__p| __p.as_pointer().destructor());
         if !({

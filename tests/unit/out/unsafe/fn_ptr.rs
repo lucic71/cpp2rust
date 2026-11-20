@@ -33,14 +33,23 @@ pub unsafe fn identity_hash_6(mut v: bool) -> usize {
 }
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, CppFromUnsafe, Default)]
+#[placement]
 #[cpp_from(Option<unsafe fn(bool ,) -> u64 > , new, ptr)]
 pub struct HashHolder_unsigned_long__ptr__bool__ {
     pub h: Option<unsafe fn(bool) -> u64>,
 }
 impl HashHolder_unsigned_long__ptr__bool__ {
-    pub unsafe fn new(h: *const Option<unsafe fn(bool) -> u64>) -> Self {
-        let mut this = Self { h: (*h) };
-        this
+    pub unsafe fn new(
+        this: *mut HashHolder_unsigned_long__ptr__bool__,
+        h: *const Option<unsafe fn(bool) -> u64>,
+    ) {
+        (&raw mut (*this).h).write((*h));
+    }
+    pub unsafe fn copy_from(
+        this: *mut HashHolder_unsigned_long__ptr__bool__,
+        _a0: *const HashHolder_unsigned_long__ptr__bool__,
+    ) {
+        (&raw mut (*this).h).write(((*_a0).h));
     }
 }
 pub static mut total_7: std::cell::LazyCell<i32> = std::cell::LazyCell::new(|| unsafe { 0 });
@@ -85,12 +94,14 @@ unsafe fn main_0() -> i32 {
     assert!(((q) == (42_usize)));
     assert!(((m) == (42_usize)));
     assert!(((unsafe { call_fn_5(Some(ret_size_4), 3,) }) == (8_usize)));
-    let mut hh: HashHolder_unsigned_long__ptr__bool__ = {
+    let mut hh: HashHolder_unsigned_long__ptr__bool__ =
+        ::std::mem::MaybeUninit::uninit().assume_init();
+    {
         let mut __tmp_0: Option<unsafe fn(bool) -> u64> = std::mem::transmute::<
             Option<unsafe fn(bool) -> usize>,
             Option<unsafe fn(bool) -> u64>,
         >(Some(identity_hash_6));
-        HashHolder_unsigned_long__ptr__bool__::new({ &mut __tmp_0 })
+        HashHolder_unsigned_long__ptr__bool__::new(&raw mut hh, { &mut __tmp_0 })
     };
     assert!(((unsafe { (hh.h).unwrap()(true,) }) == (1_u64)));
     let mut handler: Option<unsafe fn(i32)> = Some(add_to_total_8);

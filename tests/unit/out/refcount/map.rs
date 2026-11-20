@@ -13,6 +13,7 @@ pub fn bar_1(x: Ptr<u32>) {
     x.write({ (x.read()).wrapping_add(1_u32) });
 }
 #[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg)]
+#[placement]
 #[byte_size(8)]
 pub struct Point {
     #[offset(0)]
@@ -21,16 +22,33 @@ pub struct Point {
     pub y: i32,
 }
 impl Point {
-    pub fn new_1() -> Self {
-        Self { x: 0, y: 0 }
+    pub fn new_1(this: Ptr<Point>) {
+        field!(this, x).write(0);
+        field!(this, y).write(0);
     }
-    pub fn new_2(mut x: i32, mut y: i32) -> Self {
-        Self { x: x, y: y }
+    pub fn new_2(this: Ptr<Point>, mut x: i32, mut y: i32) {
+        field!(this, x).write(x);
+        field!(this, y).write(y);
+    }
+    pub fn copy_from(this: Ptr<Point>, _a0: Ptr<Point>) {
+        field!(this, x).write(_a0.with(|__s| __s.x));
+        field!(this, y).write(_a0.with(|__s| __s.y));
+    }
+    pub fn move_from(this: Ptr<Point>, _a0: Ptr<Point>) {
+        field!(this, x).write({ (*_a0.upgrade().deref()).x });
+        field!(this, y).write({ (*_a0.upgrade().deref()).y });
     }
 }
 impl Default for Point {
     fn default() -> Self {
-        { Point::new_1() }
+        Rc::try_unwrap({
+            let __v: Value<Point> = Rc::new(RefCell::new(<Point>::uninit()));
+            Point::new_1(__v.as_pointer());
+            __v
+        })
+        .ok()
+        .unwrap()
+        .into_inner()
     }
 }
 pub fn main() {
@@ -720,7 +738,16 @@ fn main_0() -> i32 {
         let (__it, __inserted) = Map::emplace(points.as_pointer(), &key1.as_pointer(), || {
             (
                 Rc::new(RefCell::new(key1.as_pointer().read())),
-                Rc::new(RefCell::new(Point::new_2({ 3 }, { 4 }))),
+                Rc::new(RefCell::new(
+                    Rc::try_unwrap({
+                        let __v: Value<Point> = Rc::new(RefCell::new(<Point>::uninit()));
+                        Point::new_2(__v.as_pointer(), { 3 }, { 4 });
+                        __v
+                    })
+                    .ok()
+                    .unwrap()
+                    .into_inner(),
+                )),
             )
         });
         (
@@ -763,7 +790,16 @@ fn main_0() -> i32 {
         let mut __tmp_52 = {
             (
                 Rc::new(RefCell::new(({ (*key8.borrow()) }))),
-                Rc::new(RefCell::new(Point::new_2({ 5 }, { 6 }))),
+                Rc::new(RefCell::new(
+                    Rc::try_unwrap({
+                        let __v: Value<Point> = Rc::new(RefCell::new(<Point>::uninit()));
+                        Point::new_2(__v.as_pointer(), { 5 }, { 6 });
+                        __v
+                    })
+                    .ok()
+                    .unwrap()
+                    .into_inner(),
+                )),
             )
         };
         let (__it, __inserted) =

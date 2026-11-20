@@ -74,6 +74,7 @@ pub type anon_4 = u32;
 pub const anon_4_limit: anon_4 = 13;
 pub const anon_4_above: anon_4 = 14;
 #[derive(Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg)]
+#[placement]
 #[byte_size(8)]
 pub struct p9_func_declared_before_function_body_RecordsConstructorName {
     #[offset(0)]
@@ -81,23 +82,33 @@ pub struct p9_func_declared_before_function_body_RecordsConstructorName {
     pub name: Ptr<i8>,
 }
 impl p9_func_declared_before_function_body_RecordsConstructorName {
-    pub fn new() -> Self {
-        let __this: Value<p9_func_declared_before_function_body_RecordsConstructorName> =
-            Rc::new(RefCell::new(Self {
-                name: Ptr::<i8>::from_string_literal(b"RecordsConstructorName"),
-            }));
-        let this: Ptr<p9_func_declared_before_function_body_RecordsConstructorName> =
-            __this.as_pointer();
+    pub fn new(this: Ptr<p9_func_declared_before_function_body_RecordsConstructorName>) {
+        field!(this, name).write(Ptr::<i8>::from_string_literal(b"RecordsConstructorName"));
         assert!(
             (this.with(|__s| __s.name.clone())
                 == Ptr::<i8>::from_string_literal(b"RecordsConstructorName"))
         );
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+    }
+    pub fn copy_from(
+        this: Ptr<p9_func_declared_before_function_body_RecordsConstructorName>,
+        _a0: Ptr<p9_func_declared_before_function_body_RecordsConstructorName>,
+    ) {
+        field!(this, name).write(_a0.with(|__s| __s.name.clone()));
     }
 }
 impl Default for p9_func_declared_before_function_body_RecordsConstructorName {
     fn default() -> Self {
-        { p9_func_declared_before_function_body_RecordsConstructorName::new() }
+        Rc::try_unwrap({
+            let __v: Value<p9_func_declared_before_function_body_RecordsConstructorName> =
+                Rc::new(RefCell::new(
+                    <p9_func_declared_before_function_body_RecordsConstructorName>::uninit(),
+                ));
+            p9_func_declared_before_function_body_RecordsConstructorName::new(__v.as_pointer());
+            __v
+        })
+        .ok()
+        .unwrap()
+        .into_inner()
     }
 }
 pub fn plain_function_5() -> Ptr<i8> {
@@ -122,11 +133,13 @@ pub fn test_6() {
         } == 0)
     );
     assert!((({ plain_function_5() }) == ({ plain_function_5() })));
-    let mut object: p9_func_declared_before_function_body_RecordsConstructorName =
-        p9_func_declared_before_function_body_RecordsConstructorName::new();
+    let object: Value<p9_func_declared_before_function_body_RecordsConstructorName> = Rc::new(
+        RefCell::new(<p9_func_declared_before_function_body_RecordsConstructorName>::uninit()),
+    );
+    p9_func_declared_before_function_body_RecordsConstructorName::new(object.as_pointer());
     assert!(
         ({
-            let mut __it1 = object.name.to_c_string_iterator();
+            let mut __it1 = ({ { (*object.borrow()).name.clone() } }).to_c_string_iterator();
             let mut __it2 =
                 Ptr::<i8>::from_string_literal(b"RecordsConstructorName").to_c_string_iterator();
             loop {

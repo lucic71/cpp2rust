@@ -12,30 +12,32 @@ pub unsafe fn array_ref_0(a: *mut [u64; 3]) -> u64 {
 }
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, CppFromUnsafe, Default)]
+#[placement]
 #[cpp_from(*const u64 , new, value)]
 pub struct PtrCtor_unsigned_long_ {
     pub v: u64,
 }
 impl PtrCtor_unsigned_long_ {
-    pub unsafe fn new(mut p: *const u64) -> Self {
-        let mut this = Self {
-            v: (*p.offset((1) as isize)),
-        };
-        this
+    pub unsafe fn new(this: *mut PtrCtor_unsigned_long_, mut p: *const u64) {
+        (&raw mut (*this).v).write((*p.offset((1) as isize)));
+    }
+    pub unsafe fn copy_from(this: *mut PtrCtor_unsigned_long_, _a0: *const PtrCtor_unsigned_long_) {
+        (&raw mut (*this).v).write((*_a0).v);
     }
 }
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, CppFromUnsafe, Default)]
+#[placement]
 #[cpp_from(u64, new, ptr)]
 pub struct RefCtor_unsigned_long_ {
     pub v: u64,
 }
 impl RefCtor_unsigned_long_ {
-    pub unsafe fn new(x: *const u64) -> Self {
-        let mut this = Self {
-            v: (*x).wrapping_add(1_u64),
-        };
-        this
+    pub unsafe fn new(this: *mut RefCtor_unsigned_long_, x: *const u64) {
+        (&raw mut (*this).v).write((*x).wrapping_add(1_u64));
+    }
+    pub unsafe fn copy_from(this: *mut RefCtor_unsigned_long_, _a0: *const RefCtor_unsigned_long_) {
+        (&raw mut (*this).v).write((*_a0).v);
     }
 }
 pub unsafe fn neg_ll_1() -> i64 {
@@ -58,13 +60,14 @@ unsafe fn main_0() -> i32 {
     assert!(((unsafe { array_ref_0(&mut *(&raw mut a1).cast::<[u64; 3]>(),) }) == (3_u64)));
     assert!(((a1[(0) as usize]) == (2_usize)));
     let mut a2: [usize; 2] = [4_usize, 5_usize];
-    let mut pc: PtrCtor_unsigned_long_ = PtrCtor_unsigned_long_::new({
+    let mut pc: PtrCtor_unsigned_long_ = ::std::mem::MaybeUninit::uninit().assume_init();
+    PtrCtor_unsigned_long_::new(&raw mut pc, {
         ((a2.as_mut_ptr()).cast_const() as *const usize).cast::<u64>()
     });
     assert!(((pc.v) == (5_u64)));
     let mut v1: usize = 6_usize;
-    let mut rc: RefCtor_unsigned_long_ =
-        RefCtor_unsigned_long_::new({ &*(&raw const v1).cast::<u64>() });
+    let mut rc: RefCtor_unsigned_long_ = ::std::mem::MaybeUninit::uninit().assume_init();
+    RefCtor_unsigned_long_::new(&raw mut rc, { &*(&raw const v1).cast::<u64>() });
     assert!(((rc.v) == (7_u64)));
     assert!(((unsafe { neg_ll_1() }) == (-9000000_i32 as i64)));
     assert!((((unsafe { neg_char_2() }) as i32) == ((b'\x80' as libc::c_char) as i32)));

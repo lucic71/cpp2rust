@@ -8,31 +8,66 @@ use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg)]
+#[placement]
 pub struct S {
     pub a: i32,
     pub b: bool,
 }
 impl S {
-    pub unsafe fn new() -> Self {
-        let mut this = Self { a: 11, b: true };
-        this
+    pub unsafe fn new(this: *mut S) {
+        (&raw mut (*this).a).write(11);
+        (&raw mut (*this).b).write(true);
+    }
+    pub unsafe fn copy_from(this: *mut S, _a0: *const S) {
+        (&raw mut (*this).a).write((*_a0).a);
+        (&raw mut (*this).b).write((*_a0).b);
     }
 }
 impl Default for S {
     fn default() -> Self {
-        unsafe { S::new() }
+        unsafe {
+            {
+                let mut __v: S = ::std::mem::MaybeUninit::uninit().assume_init();
+                S::new(&raw mut __v);
+                __v
+            }
+        }
     }
 }
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
+#[placement]
 pub struct Declared {
     pub v: i32,
 }
-impl Declared {}
+impl Declared {
+    pub unsafe fn copy_from(this: *mut Declared, _a0: *const Declared) {
+        (&raw mut (*this).v).write((*_a0).v);
+    }
+}
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
+#[placement]
 pub struct Holder {
     pub items: [S; 2],
+}
+impl Holder {
+    pub unsafe fn new_1(this: *mut Holder) {
+        {
+            let __d = (&raw mut (*this).items).cast::<S>();
+            for __i in 0..2_isize {
+                S::new(__d.offset(__i));
+            }
+        };
+    }
+    pub unsafe fn copy_from(this: *mut Holder, _a0: *const Holder) {
+        {
+            let __d = (&raw mut (*this).items).cast::<S>();
+            for __i in 0..2_usize {
+                S::copy_from(__d.offset(__i as isize), { &(*_a0).items[(__i)] });
+            }
+        };
+    }
 }
 pub static mut kInit_0: std::cell::LazyCell<i32> = std::cell::LazyCell::new(|| unsafe { 3 });
 #[repr(C)]
@@ -58,7 +93,8 @@ pub fn main() {
 unsafe fn main_0() -> i32 {
     let mut d: *mut Declared = std::ptr::null_mut();
     assert!((d).is_null());
-    let mut s: S = S::new();
+    let mut s: S = ::std::mem::MaybeUninit::uninit().assume_init();
+    S::new(&raw mut s);
     assert!(((s.a) == (11)));
     assert!(((s.b as i32) == (true as i32)));
     let mut h: *mut Holder = Box::leak(

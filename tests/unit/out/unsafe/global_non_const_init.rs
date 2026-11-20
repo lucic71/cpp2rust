@@ -29,30 +29,46 @@ pub static mut depends_on_call_6: std::cell::LazyCell<i32> = std::cell::LazyCell
 });
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg)]
+#[placement]
 pub struct Ctor {
     pub v: i32,
 }
 impl Ctor {
-    pub unsafe fn new_1() -> Self {
-        let mut this = Self {
-            v: (unsafe { next_0() }),
-        };
-        this
+    pub unsafe fn new_1(this: *mut Ctor) {
+        (&raw mut (*this).v).write((unsafe { next_0() }));
     }
-    pub unsafe fn new_2(mut x: i32) -> Self {
-        let mut this = Self { v: x };
-        this
+    pub unsafe fn new_2(this: *mut Ctor, mut x: i32) {
+        (&raw mut (*this).v).write(x);
+    }
+    pub unsafe fn copy_from(this: *mut Ctor, _a0: *const Ctor) {
+        (&raw mut (*this).v).write((*_a0).v);
     }
 }
 impl Default for Ctor {
     fn default() -> Self {
-        unsafe { Ctor::new_1() }
+        unsafe {
+            {
+                let mut __v: Ctor = ::std::mem::MaybeUninit::uninit().assume_init();
+                Ctor::new_1(&raw mut __v);
+                __v
+            }
+        }
     }
 }
-pub static mut default_ctor_7: std::cell::LazyCell<Ctor> =
-    std::cell::LazyCell::new(|| unsafe { Ctor::new_1() });
-pub static mut arg_ctor_8: std::cell::LazyCell<Ctor> =
-    std::cell::LazyCell::new(|| unsafe { Ctor::new_2({ 7 }) });
+pub static mut default_ctor_7: std::cell::LazyCell<Ctor> = std::cell::LazyCell::new(|| unsafe {
+    {
+        let mut __v: Ctor = ::std::mem::MaybeUninit::uninit().assume_init();
+        Ctor::new_1(&raw mut __v);
+        __v
+    }
+});
+pub static mut arg_ctor_8: std::cell::LazyCell<Ctor> = std::cell::LazyCell::new(|| unsafe {
+    {
+        let mut __v: Ctor = ::std::mem::MaybeUninit::uninit().assume_init();
+        Ctor::new_2(&raw mut __v, { 7 });
+        __v
+    }
+});
 pub static mut str_9: std::cell::LazyCell<Vec<libc::c_char>> =
     std::cell::LazyCell::new(|| unsafe {
         std::slice::from_raw_parts(
@@ -61,8 +77,13 @@ pub static mut str_9: std::cell::LazyCell<Vec<libc::c_char>> =
         )
         .to_vec()
     });
-pub static mut inline_member_11: std::cell::LazyCell<Ctor> =
-    std::cell::LazyCell::new(|| unsafe { Ctor::new_2({ 5 }) });
+pub static mut inline_member_11: std::cell::LazyCell<Ctor> = std::cell::LazyCell::new(|| unsafe {
+    {
+        let mut __v: Ctor = ::std::mem::MaybeUninit::uninit().assume_init();
+        Ctor::new_2(&raw mut __v, { 5 });
+        __v
+    }
+});
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct Holder {}
@@ -74,29 +95,48 @@ pub unsafe fn local_static_12() -> i32 {
 }
 static mut once_13: std::cell::LazyCell<i32> =
     std::cell::LazyCell::new(|| unsafe { (unsafe { next_0() }) });
-static mut local_ctor_14: std::cell::LazyCell<Ctor> =
-    std::cell::LazyCell::new(|| unsafe { Ctor::new_2({ 3 }) });
+static mut local_ctor_14: std::cell::LazyCell<Ctor> = std::cell::LazyCell::new(|| unsafe {
+    {
+        let mut __v: Ctor = ::std::mem::MaybeUninit::uninit().assume_init();
+        Ctor::new_2(&raw mut __v, { 3 });
+        __v
+    }
+});
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg)]
+#[placement]
 pub struct Singleton {
     pub hits: i32,
 }
 impl Singleton {
-    pub unsafe fn new() -> Self {
-        let mut this = Self { hits: 0 };
-        this
+    pub unsafe fn new(this: *mut Singleton) {
+        (&raw mut (*this).hits).write(0);
     }
     pub unsafe fn instance() -> *mut Singleton {
         return &mut (*std::cell::LazyCell::force_mut(&mut *&raw mut s_15));
     }
+    pub unsafe fn copy_from(this: *mut Singleton, _a0: *const Singleton) {
+        (&raw mut (*this).hits).write((*_a0).hits);
+    }
 }
 impl Default for Singleton {
     fn default() -> Self {
-        unsafe { Singleton::new() }
+        unsafe {
+            {
+                let mut __v: Singleton = ::std::mem::MaybeUninit::uninit().assume_init();
+                Singleton::new(&raw mut __v);
+                __v
+            }
+        }
     }
 }
-static mut s_15: std::cell::LazyCell<Singleton> =
-    std::cell::LazyCell::new(|| unsafe { Singleton::new() });
+static mut s_15: std::cell::LazyCell<Singleton> = std::cell::LazyCell::new(|| unsafe {
+    {
+        let mut __v: Singleton = ::std::mem::MaybeUninit::uninit().assume_init();
+        Singleton::new(&raw mut __v);
+        __v
+    }
+});
 pub fn main() {
     unsafe {
         __cpp2rust_init_globals();

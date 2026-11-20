@@ -106,6 +106,7 @@ pub fn combine_14(mut first: i32, mut second: i32) -> i32 {
     return ((first * 100) + second);
 }
 #[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, CppFrom)]
+#[placement]
 #[cpp_from(i32, new, value)]
 #[byte_size(4)]
 pub struct p9_evaluated_each_time_called_Widget {
@@ -113,13 +114,30 @@ pub struct p9_evaluated_each_time_called_Widget {
     pub id: i32,
 }
 impl p9_evaluated_each_time_called_Widget {
-    pub fn new(mut id: i32) -> Self {
-        Self { id: id }
+    pub fn new(this: Ptr<p9_evaluated_each_time_called_Widget>, mut id: i32) {
+        field!(this, id).write(id);
+    }
+    pub fn copy_from(
+        this: Ptr<p9_evaluated_each_time_called_Widget>,
+        _a0: Ptr<p9_evaluated_each_time_called_Widget>,
+    ) {
+        field!(this, id).write(_a0.with(|__s| __s.id));
     }
 }
 impl Default for p9_evaluated_each_time_called_Widget {
     fn default() -> Self {
-        { p9_evaluated_each_time_called_Widget::new({ ({ count_default_13() }) }) }
+        Rc::try_unwrap({
+            let __v: Value<p9_evaluated_each_time_called_Widget> = Rc::new(RefCell::new(
+                <p9_evaluated_each_time_called_Widget>::uninit(),
+            ));
+            p9_evaluated_each_time_called_Widget::new(__v.as_pointer(), {
+                ({ count_default_13() })
+            });
+            __v
+        })
+        .ok()
+        .unwrap()
+        .into_inner()
     }
 }
 thread_local!(
@@ -156,15 +174,21 @@ pub fn test_17() {
     assert!((({ combine_14((*first.prefix_inc()), ({ count_default_13() }),) }) == 103));
     assert!((first == 1));
     assert!((defaults_evaluated_12.with(|rc| *rc.borrow()) == 3));
-    let mut a: p9_evaluated_each_time_called_Widget =
-        p9_evaluated_each_time_called_Widget::new({ ({ count_default_13() }) });
-    let mut b: p9_evaluated_each_time_called_Widget =
-        p9_evaluated_each_time_called_Widget::new({ 40 });
-    let mut c: p9_evaluated_each_time_called_Widget =
-        p9_evaluated_each_time_called_Widget::new({ ({ count_default_13() }) });
-    assert!((a.id == 4));
-    assert!((b.id == 40));
-    assert!((c.id == 5));
+    let a: Value<p9_evaluated_each_time_called_Widget> = Rc::new(RefCell::new(
+        <p9_evaluated_each_time_called_Widget>::uninit(),
+    ));
+    p9_evaluated_each_time_called_Widget::new(a.as_pointer(), { ({ count_default_13() }) });
+    let b: Value<p9_evaluated_each_time_called_Widget> = Rc::new(RefCell::new(
+        <p9_evaluated_each_time_called_Widget>::uninit(),
+    ));
+    p9_evaluated_each_time_called_Widget::new(b.as_pointer(), { 40 });
+    let c: Value<p9_evaluated_each_time_called_Widget> = Rc::new(RefCell::new(
+        <p9_evaluated_each_time_called_Widget>::uninit(),
+    ));
+    p9_evaluated_each_time_called_Widget::new(c.as_pointer(), { ({ count_default_13() }) });
+    assert!(({ ({ (*a.borrow()).id } == 4) }));
+    assert!(({ ({ (*b.borrow()).id } == 40) }));
+    assert!(({ ({ (*c.borrow()).id } == 5) }));
     assert!((defaults_evaluated_12.with(|rc| *rc.borrow()) == 5));
     let account: Value<p9_evaluated_each_time_called_Account> = Rc::new(RefCell::new(
         <p9_evaluated_each_time_called_Account>::default(),

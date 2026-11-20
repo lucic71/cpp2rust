@@ -19,6 +19,7 @@ thread_local!(
     pub static moves_3: Value<i32> = Rc::new(RefCell::new(0));
 );
 #[derive(Record, ByteRepr, Uninit, VaArg, FnPtrArg, MoveCtor, CppFrom)]
+#[placement]
 #[cpp_from(i32, new_1, value)]
 #[byte_size(4)]
 pub struct Item {
@@ -26,28 +27,21 @@ pub struct Item {
     pub value: i32,
 }
 impl Item {
-    pub fn new_2() -> Self {
-        Self { value: 0 }
+    pub fn new_2(this: Ptr<Item>) {
+        field!(this, value).write(0);
     }
-    pub fn new_1(mut value: i32) -> Self {
-        let __this: Item = Self { value: value };
+    pub fn new_1(this: Ptr<Item>, mut value: i32) {
+        field!(this, value).write(value);
         (*made_1.with(Value::clone).borrow_mut()).prefix_inc();
-        __this
     }
-    pub fn copy_from(other: Ptr<Item>) -> Self {
-        let __this: Item = Self {
-            value: other.with(|__s| __s.value),
-        };
+    pub fn copy_from(this: Ptr<Item>, other: Ptr<Item>) {
+        field!(this, value).write(other.with(|__s| __s.value));
         (*copies_2.with(Value::clone).borrow_mut()).prefix_inc();
-        __this
     }
-    pub fn move_from(other: Ptr<Item>) -> Self {
-        let __this: Item = Self {
-            value: other.with(|__s| __s.value),
-        };
+    pub fn move_from(this: Ptr<Item>, other: Ptr<Item>) {
+        field!(this, value).write(other.with(|__s| __s.value));
         (*moves_3.with(Value::clone).borrow_mut()).prefix_inc();
         field!(other, value).write(-1_i32);
-        __this
     }
 }
 impl Clone for Item {
@@ -55,12 +49,21 @@ impl Clone for Item {
         let __src: Value<Item> = Rc::new(RefCell::new(Item {
             value: self.value.clone(),
         }));
-        Item::copy_from(__src.as_pointer())
+        let __dst: Value<Item> = Rc::new(RefCell::new(<Item>::uninit()));
+        Item::copy_from(__dst.as_pointer(), __src.as_pointer());
+        Rc::try_unwrap(__dst).ok().unwrap().into_inner()
     }
 }
 impl Default for Item {
     fn default() -> Self {
-        { Item::new_2() }
+        Rc::try_unwrap({
+            let __v: Value<Item> = Rc::new(RefCell::new(<Item>::uninit()));
+            Item::new_2(__v.as_pointer());
+            __v
+        })
+        .ok()
+        .unwrap()
+        .into_inner()
     }
 }
 pub fn argument_4(item: Ptr<Item>) -> Ptr<Item> {
@@ -68,32 +71,40 @@ pub fn argument_4(item: Ptr<Item>) -> Ptr<Item> {
     return (item).clone();
 }
 #[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg)]
+#[placement]
 #[byte_size(4)]
 pub struct RefItem {
     #[offset(0)]
     pub value: i32,
 }
 impl RefItem {
-    pub fn new_1() -> Self {
-        Self { value: 0 }
+    pub fn new_1(this: Ptr<RefItem>) {
+        field!(this, value).write(0);
     }
-    pub fn new_2(counter: Ptr<i32>, mut amount: i32) -> Self {
-        let __this: RefItem = Self {
-            value: {
-                {
-                    let __rhs = { amount };
-                    counter.with_mut(|__v| *__v = *__v + __rhs)
-                };
-                (counter.read())
-            },
-        };
+    pub fn new_2(this: Ptr<RefItem>, counter: Ptr<i32>, mut amount: i32) {
+        field!(this, value).write({
+            {
+                let __rhs = { amount };
+                counter.with_mut(|__v| *__v = *__v + __rhs)
+            };
+            (counter.read())
+        });
         (*made_1.with(Value::clone).borrow_mut()).prefix_inc();
-        __this
+    }
+    pub fn copy_from(this: Ptr<RefItem>, _a0: Ptr<RefItem>) {
+        field!(this, value).write(_a0.with(|__s| __s.value));
     }
 }
 impl Default for RefItem {
     fn default() -> Self {
-        { RefItem::new_1() }
+        Rc::try_unwrap({
+            let __v: Value<RefItem> = Rc::new(RefCell::new(<RefItem>::uninit()));
+            RefItem::new_1(__v.as_pointer());
+            __v
+        })
+        .ok()
+        .unwrap()
+        .into_inner()
     }
 }
 pub fn reference_5(counter: Ptr<i32>) -> Ptr<i32> {
@@ -342,7 +353,16 @@ fn main_0() -> i32 {
         let (__it, __inserted) = Map::emplace(items.as_pointer(), &key.as_pointer(), || {
             (
                 Rc::new(RefCell::new(key.as_pointer().read())),
-                Rc::new(RefCell::new(Item::new_1({ 10 }))),
+                Rc::new(RefCell::new(
+                    Rc::try_unwrap({
+                        let __v: Value<Item> = Rc::new(RefCell::new(<Item>::uninit()));
+                        Item::new_1(__v.as_pointer(), { 10 });
+                        __v
+                    })
+                    .ok()
+                    .unwrap()
+                    .into_inner(),
+                )),
             )
         });
         (
@@ -350,7 +370,8 @@ fn main_0() -> i32 {
             Rc::new(RefCell::new(__inserted)),
         )
     };
-    let source: Value<Item> = Rc::new(RefCell::new(Item::new_1({ 20 })));
+    let source: Value<Item> = Rc::new(RefCell::new(<Item>::uninit()));
+    Item::new_1(source.as_pointer(), { 20 });
     made_1.with(|rc| {
         *rc.borrow_mut() = {
             copies_2.with(|rc| {
@@ -372,7 +393,16 @@ fn main_0() -> i32 {
                     Map::emplace(items.as_pointer(), &key.as_pointer(), || {
                         (
                             Rc::new(RefCell::new(key.as_pointer().read())),
-                            Rc::new(RefCell::new(Item::copy_from({ (__tmp_6).clone() }))),
+                            Rc::new(RefCell::new(
+                                Rc::try_unwrap({
+                                    let __v: Value<Item> = Rc::new(RefCell::new(<Item>::uninit()));
+                                    Item::copy_from(__v.as_pointer(), { (__tmp_6).clone() });
+                                    __v
+                                })
+                                .ok()
+                                .unwrap()
+                                .into_inner(),
+                            )),
                         )
                     });
                 (
@@ -408,7 +438,16 @@ fn main_0() -> i32 {
                     Map::emplace(items.as_pointer(), &key.as_pointer(), || {
                         (
                             Rc::new(RefCell::new(key.as_pointer().read())),
-                            Rc::new(RefCell::new(Item::move_from({ (__tmp_7).clone() }))),
+                            Rc::new(RefCell::new(
+                                Rc::try_unwrap({
+                                    let __v: Value<Item> = Rc::new(RefCell::new(<Item>::uninit()));
+                                    Item::move_from(__v.as_pointer(), { (__tmp_7).clone() });
+                                    __v
+                                })
+                                .ok()
+                                .unwrap()
+                                .into_inner(),
+                            )),
                         )
                     });
                 (
@@ -442,7 +481,16 @@ fn main_0() -> i32 {
                     Map::emplace(items.as_pointer(), &key.as_pointer(), || {
                         (
                             Rc::new(RefCell::new(key.as_pointer().read())),
-                            Rc::new(RefCell::new(Item::copy_from({ (__tmp_8).clone() }))),
+                            Rc::new(RefCell::new(
+                                Rc::try_unwrap({
+                                    let __v: Value<Item> = Rc::new(RefCell::new(<Item>::uninit()));
+                                    Item::copy_from(__v.as_pointer(), { (__tmp_8).clone() });
+                                    __v
+                                })
+                                .ok()
+                                .unwrap()
+                                .into_inner(),
+                            )),
                         )
                     });
                 (
@@ -479,7 +527,16 @@ fn main_0() -> i32 {
                     Map::emplace(items.as_pointer(), &key.as_pointer(), || {
                         (
                             Rc::new(RefCell::new(key.as_pointer().read())),
-                            Rc::new(RefCell::new(Item::move_from({ (__tmp_9).clone() }))),
+                            Rc::new(RefCell::new(
+                                Rc::try_unwrap({
+                                    let __v: Value<Item> = Rc::new(RefCell::new(<Item>::uninit()));
+                                    Item::move_from(__v.as_pointer(), { (__tmp_9).clone() });
+                                    __v
+                                })
+                                .ok()
+                                .unwrap()
+                                .into_inner(),
+                            )),
                         )
                     });
                 (
@@ -513,9 +570,16 @@ fn main_0() -> i32 {
         let (__it, __inserted) = Map::emplace(refs.as_pointer(), &key.as_pointer(), || {
             (
                 Rc::new(RefCell::new(key.as_pointer().read())),
-                Rc::new(RefCell::new(RefItem::new_2({ counter.as_pointer() }, {
-                    5
-                }))),
+                Rc::new(RefCell::new(
+                    Rc::try_unwrap({
+                        let __v: Value<RefItem> = Rc::new(RefCell::new(<RefItem>::uninit()));
+                        RefItem::new_2(__v.as_pointer(), { counter.as_pointer() }, { 5 });
+                        __v
+                    })
+                    .ok()
+                    .unwrap()
+                    .into_inner(),
+                )),
             )
         });
         (
@@ -533,7 +597,17 @@ fn main_0() -> i32 {
                 let (__it, __inserted) = Map::emplace(refs.as_pointer(), &key.as_pointer(), || {
                     (
                         Rc::new(RefCell::new(key.as_pointer().read())),
-                        Rc::new(RefCell::new(RefItem::new_2({ (__tmp_10).clone() }, { 2 }))),
+                        Rc::new(RefCell::new(
+                            Rc::try_unwrap({
+                                let __v: Value<RefItem> =
+                                    Rc::new(RefCell::new(<RefItem>::uninit()));
+                                RefItem::new_2(__v.as_pointer(), { (__tmp_10).clone() }, { 2 });
+                                __v
+                            })
+                            .ok()
+                            .unwrap()
+                            .into_inner(),
+                        )),
                     )
                 });
                 (
@@ -560,7 +634,17 @@ fn main_0() -> i32 {
                 let (__it, __inserted) = Map::emplace(refs.as_pointer(), &key.as_pointer(), || {
                     (
                         Rc::new(RefCell::new(key.as_pointer().read())),
-                        Rc::new(RefCell::new(RefItem::new_2({ (__tmp_11).clone() }, { 2 }))),
+                        Rc::new(RefCell::new(
+                            Rc::try_unwrap({
+                                let __v: Value<RefItem> =
+                                    Rc::new(RefCell::new(<RefItem>::uninit()));
+                                RefItem::new_2(__v.as_pointer(), { (__tmp_11).clone() }, { 2 });
+                                __v
+                            })
+                            .ok()
+                            .unwrap()
+                            .into_inner(),
+                        )),
                     )
                 });
                 (
@@ -606,7 +690,11 @@ fn main_0() -> i32 {
     )> = Rc::new(RefCell::new({
         let __tmp_13: Value<Item>;
         match ({
-            __tmp_13 = Rc::new(RefCell::new(Item::new_1({ 30 })));
+            __tmp_13 = {
+                let __v: Value<Item> = Rc::new(RefCell::new(<Item>::uninit()));
+                Item::new_1(__v.as_pointer(), { 30 });
+                __v
+            };
             __tmp_13.as_pointer()
         },)
         {
@@ -615,7 +703,16 @@ fn main_0() -> i32 {
                     Map::emplace(items.as_pointer(), &key.as_pointer(), || {
                         (
                             Rc::new(RefCell::new(key.as_pointer().read())),
-                            Rc::new(RefCell::new(Item::move_from({ (__tmp_12).clone() }))),
+                            Rc::new(RefCell::new(
+                                Rc::try_unwrap({
+                                    let __v: Value<Item> = Rc::new(RefCell::new(<Item>::uninit()));
+                                    Item::move_from(__v.as_pointer(), { (__tmp_12).clone() });
+                                    __v
+                                })
+                                .ok()
+                                .unwrap()
+                                .into_inner(),
+                            )),
                         )
                     });
                 (
@@ -642,7 +739,11 @@ fn main_0() -> i32 {
     )> = Rc::new(RefCell::new({
         let __tmp_15: Value<Item>;
         match ({
-            __tmp_15 = Rc::new(RefCell::new(Item::new_1({ 40 })));
+            __tmp_15 = {
+                let __v: Value<Item> = Rc::new(RefCell::new(<Item>::uninit()));
+                Item::new_1(__v.as_pointer(), { 40 });
+                __v
+            };
             __tmp_15.as_pointer()
         },)
         {
@@ -651,7 +752,16 @@ fn main_0() -> i32 {
                     Map::emplace(items.as_pointer(), &key.as_pointer(), || {
                         (
                             Rc::new(RefCell::new(key.as_pointer().read())),
-                            Rc::new(RefCell::new(Item::move_from({ (__tmp_14).clone() }))),
+                            Rc::new(RefCell::new(
+                                Rc::try_unwrap({
+                                    let __v: Value<Item> = Rc::new(RefCell::new(<Item>::uninit()));
+                                    Item::move_from(__v.as_pointer(), { (__tmp_14).clone() });
+                                    __v
+                                })
+                                .ok()
+                                .unwrap()
+                                .into_inner(),
+                            )),
                         )
                     });
                 (

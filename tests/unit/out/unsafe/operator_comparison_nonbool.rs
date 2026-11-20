@@ -114,17 +114,20 @@ impl std::cmp::PartialEq for Mixed {
 impl std::cmp::Eq for Mixed {}
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, CppFromUnsafe, Default)]
+#[placement]
 #[cpp_into(bool, to_bool)]
 pub struct MyBool {
     pub value: bool,
 }
 impl MyBool {
-    pub unsafe fn new(mut v: bool) -> Self {
-        let mut this = Self { value: v };
-        this
+    pub unsafe fn new(this: *mut MyBool, mut v: bool) {
+        (&raw mut (*this).value).write(v);
     }
     pub unsafe fn to_bool(&self) -> bool {
         return self.value;
+    }
+    pub unsafe fn copy_from(this: *mut MyBool, _a0: *const MyBool) {
+        (&raw mut (*this).value).write((*_a0).value);
     }
 }
 #[repr(C)]
@@ -136,12 +139,14 @@ impl std::cmp::Ord for Boolish {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering {
         unsafe {
             if {
-                let __cmp = operator_lt_6(self.clone(), other.clone());
+                let mut __cmp: MyBool = ::std::mem::MaybeUninit::uninit().assume_init();
+                operator_lt_6(&raw mut __cmp, self.clone(), other.clone());
                 MyBool::to_bool(&__cmp)
             } {
                 std::cmp::Ordering::Less
             } else if {
-                let __cmp = operator_lt_6(other.clone(), self.clone());
+                let mut __cmp: MyBool = ::std::mem::MaybeUninit::uninit().assume_init();
+                operator_lt_6(&raw mut __cmp, other.clone(), self.clone());
                 MyBool::to_bool(&__cmp)
             } {
                 std::cmp::Ordering::Greater
@@ -160,36 +165,44 @@ impl std::cmp::PartialEq for Boolish {
     fn eq(&self, other: &Self) -> bool {
         unsafe {
             {
-                let __cmp = operator_eq_7(self.clone(), other.clone());
+                let mut __cmp: MyBool = ::std::mem::MaybeUninit::uninit().assume_init();
+                operator_eq_7(&raw mut __cmp, self.clone(), other.clone());
                 MyBool::to_bool(&__cmp)
             }
         }
     }
 }
 impl std::cmp::Eq for Boolish {}
-pub unsafe fn operator_eq_7(mut a: Boolish, mut b: Boolish) -> MyBool {
-    return MyBool::new({ ((a.v) == (b.v)) });
+pub unsafe fn operator_eq_7(__ret: *mut MyBool, mut a: Boolish, mut b: Boolish) {
+    MyBool::new(__ret.clone(), { ((a.v) == (b.v)) });
+    return;
 }
-pub unsafe fn operator_lt_6(mut a: Boolish, mut b: Boolish) -> MyBool {
-    return MyBool::new({ ((a.v) < (b.v)) });
+pub unsafe fn operator_lt_6(__ret: *mut MyBool, mut a: Boolish, mut b: Boolish) {
+    MyBool::new(__ret.clone(), { ((a.v) < (b.v)) });
+    return;
 }
 #[repr(C)]
 #[derive(FnPtrArg, CppFromUnsafe, Default)]
+#[placement]
 #[cpp_into(bool, to_bool)]
 pub struct RefBool {
     pub value: bool,
 }
 impl RefBool {
-    pub unsafe fn new(mut v: bool) -> Self {
-        let mut this = Self { value: v };
-        this
+    pub unsafe fn new(this: *mut RefBool, mut v: bool) {
+        (&raw mut (*this).value).write(v);
     }
     pub unsafe fn to_bool(&self) -> bool {
         return self.value;
     }
 }
-pub static mut ref_true_8: std::cell::LazyCell<RefBool> =
-    std::cell::LazyCell::new(|| unsafe { RefBool::new({ true }) });
+pub static mut ref_true_8: std::cell::LazyCell<RefBool> = std::cell::LazyCell::new(|| unsafe {
+    {
+        let mut __v: RefBool = ::std::mem::MaybeUninit::uninit().assume_init();
+        RefBool::new(&raw mut __v, { true });
+        __v
+    }
+});
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct RefInt {
@@ -317,27 +330,34 @@ unsafe fn main_0() -> i32 {
     let mut b2: Boolish = Boolish { v: 2 };
     assert!(
         (unsafe {
-            MyBool::to_bool(
-                &(unsafe {
+            MyBool::to_bool(&mut *(|__p: *mut MyBool| {
+                (unsafe {
                     let _a: Boolish = b1;
-                    operator_eq_7(_a, Boolish { v: 1 })
-                }),
-            )
+                    operator_eq_7(__p, _a, Boolish { v: 1 })
+                });
+                __p
+            })(
+                (&mut ::std::mem::MaybeUninit::<MyBool>::uninit()).as_mut_ptr(),
+            ))
         })
     );
     assert!(
         !(unsafe {
-            MyBool::to_bool(
-                &(unsafe {
+            MyBool::to_bool(&mut *(|__p: *mut MyBool| {
+                (unsafe {
                     let _a: Boolish = b2;
-                    operator_lt_6(_a, b1)
-                }),
-            )
+                    operator_lt_6(__p, _a, b1)
+                });
+                __p
+            })(
+                (&mut ::std::mem::MaybeUninit::<MyBool>::uninit()).as_mut_ptr(),
+            ))
         })
     );
-    let mut lt: MyBool = (unsafe {
+    let mut lt: MyBool = ::std::mem::MaybeUninit::uninit().assume_init();
+    (unsafe {
         let _a: Boolish = b1;
-        operator_lt_6(_a, b2)
+        operator_lt_6(&raw mut lt, _a, b2)
     });
     assert!(lt.value);
     let mut bs: [Boolish; 3] = [Boolish { v: 3 }, Boolish { v: 1 }, Boolish { v: 2 }];

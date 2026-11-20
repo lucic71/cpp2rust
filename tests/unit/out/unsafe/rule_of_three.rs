@@ -10,45 +10,38 @@ pub static mut alive_0: std::cell::LazyCell<i32> = std::cell::LazyCell::new(|| u
 pub static mut copies_1: std::cell::LazyCell<i32> = std::cell::LazyCell::new(|| unsafe { 0 });
 #[repr(C)]
 #[derive(VaArg, FnPtrArg, CppFromUnsafe, CopyAssignUnsafe, DestructorUnsafe, Default)]
+#[placement]
 #[cpp_from(i32, new, value)]
 pub struct Buffer {
     pub data: [i32; 4],
     pub size: i32,
 }
 impl Buffer {
-    pub unsafe fn new(mut size: i32) -> Self {
-        let mut this = Self {
-            data: [0_i32; 4],
-            size: size,
-        };
+    pub unsafe fn new(this: *mut Buffer, mut size: i32) {
+        (&raw mut (*this).size).write(size);
         {
             let mut i: i32 = 0;
             'loop_: while ((i) < (4)) {
-                this.data[(i) as usize] = if ((i) < (size)) { i } else { -1_i32 };
+                (*this).data[(i) as usize] = if ((i) < (size)) { i } else { -1_i32 };
                 i.prefix_inc();
             }
         }
         (*std::cell::LazyCell::force_mut(&mut *&raw mut alive_0)).prefix_inc();
-        this
     }
     pub unsafe fn destructor(&mut self) {
         (*std::cell::LazyCell::force_mut(&mut *&raw mut alive_0)).prefix_dec();
     }
-    pub unsafe fn copy_from(o: *const Buffer) -> Self {
-        let mut this = Self {
-            data: [0_i32; 4],
-            size: (*o).size,
-        };
+    pub unsafe fn copy_from(this: *mut Buffer, o: *const Buffer) {
+        (&raw mut (*this).size).write((*o).size);
         {
             let mut i: i32 = 0;
             'loop_: while ((i) < (4)) {
-                this.data[(i) as usize] = (*o).data[(i) as usize];
+                (*this).data[(i) as usize] = (*o).data[(i) as usize];
                 i.prefix_inc();
             }
         }
         (*std::cell::LazyCell::force_mut(&mut *&raw mut alive_0)).prefix_inc();
         (*std::cell::LazyCell::force_mut(&mut *&raw mut copies_1)).prefix_inc();
-        this
     }
     pub unsafe fn copy_assign(&mut self, o: *const Buffer) -> *mut Buffer {
         if (((self as *mut Buffer).cast_const()) == (o)) {
@@ -68,7 +61,11 @@ impl Buffer {
 }
 impl Clone for Buffer {
     fn clone(&self) -> Self {
-        unsafe { Buffer::copy_from(self as *const Buffer) }
+        unsafe {
+            let mut __v: Buffer = ::std::mem::MaybeUninit::uninit().assume_init();
+            Buffer::copy_from(&raw mut __v, self as *const Buffer);
+            __v
+        }
     }
 }
 pub unsafe fn sum_2(b: *const Buffer) -> i32 {
@@ -90,9 +87,11 @@ pub fn main() {
 }
 unsafe fn main_0() -> i32 {
     {
-        let mut a: Buffer = Buffer::new({ 4 });
+        let mut a: Buffer = ::std::mem::MaybeUninit::uninit().assume_init();
+        Buffer::new(&raw mut a, { 4 });
         let _dtor_a = std::mem::DropGuard::new(&raw mut a, |__p| unsafe { (*__p).destructor() });
-        let mut b: Buffer = Buffer::copy_from({ &a });
+        let mut b: Buffer = ::std::mem::MaybeUninit::uninit().assume_init();
+        Buffer::copy_from(&raw mut b, { &a });
         let _dtor_b = std::mem::DropGuard::new(&raw mut b, |__p| unsafe { (*__p).destructor() });
         assert!(
             ((*std::cell::LazyCell::force_mut(&mut *&raw mut alive_0)) == (2))
@@ -100,7 +99,8 @@ unsafe fn main_0() -> i32 {
         );
         b.data[(0) as usize] = 100;
         assert!(((a.data[(0) as usize]) == (0)));
-        let mut c: Buffer = Buffer::new({ 2 });
+        let mut c: Buffer = ::std::mem::MaybeUninit::uninit().assume_init();
+        Buffer::new(&raw mut c, { 2 });
         let _dtor_c = std::mem::DropGuard::new(&raw mut c, |__p| unsafe { (*__p).destructor() });
         (unsafe { Buffer::copy_assign(&mut c, &a) });
         assert!(((c.size) == (4)) && ((c.data[(3) as usize]) == (3)));
@@ -115,7 +115,8 @@ unsafe fn main_0() -> i32 {
         assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut copies_1)) == (2)));
         assert!(((unsafe { sum_2(&a,) }) == (6)));
         assert!(((unsafe { sum_2(&b,) }) == (106)));
-        let mut d: Buffer = Buffer::copy_from({ &a });
+        let mut d: Buffer = ::std::mem::MaybeUninit::uninit().assume_init();
+        Buffer::copy_from(&raw mut d, { &a });
         let _dtor_d = std::mem::DropGuard::new(&raw mut d, |__p| unsafe { (*__p).destructor() });
         assert!(
             ((*std::cell::LazyCell::force_mut(&mut *&raw mut alive_0)) == (4))

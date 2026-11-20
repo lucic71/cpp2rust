@@ -10,6 +10,7 @@ thread_local!(
     pub static copyCount_0: Value<i32> = Rc::new(RefCell::new(0));
 );
 #[derive(Record, ByteRepr, Uninit, VaArg, FnPtrArg, CppFrom, CopyAssign, Default)]
+#[placement]
 #[cpp_from(i32, new, value)]
 #[byte_size(4)]
 pub struct HasConstexprCtor {
@@ -20,22 +21,21 @@ impl HasConstexprCtor {
     pub fn reset() {
         copyCount_0.with(|rc| *rc.borrow_mut() = 0);
     }
-    pub fn new(mut v: i32) -> Self {
-        Self { m: v }
+    pub fn new(this: Ptr<HasConstexprCtor>, mut v: i32) {
+        field!(this, m).write(v);
     }
-    pub fn copy_from(o: Ptr<HasConstexprCtor>) -> Self {
-        let __this: HasConstexprCtor = Self {
-            m: o.with(|__s| __s.m),
-        };
+    pub fn copy_from(this: Ptr<HasConstexprCtor>, o: Ptr<HasConstexprCtor>) {
+        field!(this, m).write(o.with(|__s| __s.m));
         (*copyCount_0.with(Value::clone).borrow_mut()).prefix_inc();
-        __this
     }
 }
 impl Clone for HasConstexprCtor {
     fn clone(&self) -> Self {
         let __src: Value<HasConstexprCtor> =
             Rc::new(RefCell::new(HasConstexprCtor { m: self.m.clone() }));
-        HasConstexprCtor::copy_from(__src.as_pointer())
+        let __dst: Value<HasConstexprCtor> = Rc::new(RefCell::new(<HasConstexprCtor>::uninit()));
+        HasConstexprCtor::copy_from(__dst.as_pointer(), __src.as_pointer());
+        Rc::try_unwrap(__dst).ok().unwrap().into_inner()
     }
 }
 thread_local!(
@@ -51,6 +51,7 @@ thread_local!(
     pub static useCount_4: Value<i32> = Rc::new(RefCell::new(0));
 );
 #[derive(Record, ByteRepr, Uninit, VaArg, FnPtrArg, CopyAssign, Destructor)]
+#[placement]
 #[byte_size(4)]
 pub struct LifetimeTracked {
     #[offset(0)]
@@ -75,15 +76,13 @@ impl LifetimeTracked {
             }
         });
     }
-    pub fn new() -> Self {
-        let __this: LifetimeTracked = Self { uses: 0 };
+    pub fn new(this: Ptr<LifetimeTracked>) {
+        field!(this, uses).write(0);
         (*ctorCount_1.with(Value::clone).borrow_mut()).prefix_inc();
-        __this
     }
-    pub fn copy_from(_a0: Ptr<LifetimeTracked>) -> Self {
-        let __this: LifetimeTracked = Self { uses: 0 };
+    pub fn copy_from(this: Ptr<LifetimeTracked>, _a0: Ptr<LifetimeTracked>) {
+        field!(this, uses).write(0);
         (*copyCount_2.with(Value::clone).borrow_mut()).prefix_inc();
-        __this
     }
 }
 impl Clone for LifetimeTracked {
@@ -91,23 +90,61 @@ impl Clone for LifetimeTracked {
         let __src: Value<LifetimeTracked> = Rc::new(RefCell::new(LifetimeTracked {
             uses: self.uses.clone(),
         }));
-        LifetimeTracked::copy_from(__src.as_pointer())
+        let __dst: Value<LifetimeTracked> = Rc::new(RefCell::new(<LifetimeTracked>::uninit()));
+        LifetimeTracked::copy_from(__dst.as_pointer(), __src.as_pointer());
+        Rc::try_unwrap(__dst).ok().unwrap().into_inner()
     }
 }
 impl Default for LifetimeTracked {
     fn default() -> Self {
-        { LifetimeTracked::new() }
+        Rc::try_unwrap({
+            let __v: Value<LifetimeTracked> = Rc::new(RefCell::new(<LifetimeTracked>::uninit()));
+            LifetimeTracked::new(__v.as_pointer());
+            __v
+        })
+        .ok()
+        .unwrap()
+        .into_inner()
     }
 }
 pub fn test_5() {
     ({ HasConstexprCtor::reset() });
-    let mut arr: [HasConstexprCtor; 2] =
-        [HasConstexprCtor::new({ 3 }), HasConstexprCtor::new({ 4 })];
+    let arr: Value<Box<[HasConstexprCtor]>> = Rc::new(RefCell::new(
+        (0..2)
+            .map(|_| <HasConstexprCtor>::uninit())
+            .collect::<Box<[_]>>(),
+    ));
+    {
+        let __d = arr.decay();
+        HasConstexprCtor::new(__d.offset(0), { 3 });
+        HasConstexprCtor::new(__d.offset(1), { 4 });
+    };
     let f: Value<FnPtr<fn() -> i32>> =
         Rc::new(RefCell::new(FnPtr::<fn() -> i32>::new(|| -> i32 {
             {
-                return [HasConstexprCtor::new({ 3 }), HasConstexprCtor::new({ 4 })][(1) as usize]
-                    .m;
+                return {
+                    [
+                        Rc::try_unwrap({
+                            let __v: Value<HasConstexprCtor> =
+                                Rc::new(RefCell::new(<HasConstexprCtor>::uninit()));
+                            HasConstexprCtor::new(__v.as_pointer(), { 3 });
+                            __v
+                        })
+                        .ok()
+                        .unwrap()
+                        .into_inner(),
+                        Rc::try_unwrap({
+                            let __v: Value<HasConstexprCtor> =
+                                Rc::new(RefCell::new(<HasConstexprCtor>::uninit()));
+                            HasConstexprCtor::new(__v.as_pointer(), { 4 });
+                            __v
+                        })
+                        .ok()
+                        .unwrap()
+                        .into_inner(),
+                    ][(1) as usize]
+                        .m
+                };
             }
         })));
     assert!((copyCount_0.with(|rc| *rc.borrow()) == 0));
@@ -116,11 +153,23 @@ pub fn test_5() {
 }
 pub fn test_6() {
     ({ HasConstexprCtor::reset() });
-    let mut k: HasConstexprCtor = HasConstexprCtor::new({ 5 });
+    let k: Value<HasConstexprCtor> = Rc::new(RefCell::new(<HasConstexprCtor>::uninit()));
+    HasConstexprCtor::new(k.as_pointer(), { 5 });
     let f: Value<FnPtr<fn() -> i32>> =
         Rc::new(RefCell::new(FnPtr::<fn() -> i32>::new(|| -> i32 {
             {
-                return HasConstexprCtor::new({ 5 }).m;
+                return {
+                    Rc::try_unwrap({
+                        let __v: Value<HasConstexprCtor> =
+                            Rc::new(RefCell::new(<HasConstexprCtor>::uninit()));
+                        HasConstexprCtor::new(__v.as_pointer(), { 5 });
+                        __v
+                    })
+                    .ok()
+                    .unwrap()
+                    .into_inner()
+                    .m
+                };
             }
         })));
     assert!((copyCount_0.with(|rc| *rc.borrow()) == 0));
@@ -129,16 +178,34 @@ pub fn test_6() {
 }
 pub fn test_7() {
     ({ HasConstexprCtor::reset() });
-    let mut k1: HasConstexprCtor = HasConstexprCtor::new({ 7 });
-    let mut k2: HasConstexprCtor = HasConstexprCtor::new({ 9 });
+    let k1: Value<HasConstexprCtor> = Rc::new(RefCell::new(<HasConstexprCtor>::uninit()));
+    HasConstexprCtor::new(k1.as_pointer(), { 7 });
+    let k2: Value<HasConstexprCtor> = Rc::new(RefCell::new(<HasConstexprCtor>::uninit()));
+    HasConstexprCtor::new(k2.as_pointer(), { 9 });
     let f: Value<FnPtr<fn(bool) -> i32>> = Rc::new(RefCell::new(FnPtr::<fn(bool) -> i32>::new(
         |mut b: bool| -> i32 {
             {
                 return {
                     (if b {
-                        HasConstexprCtor::new({ 7 })
+                        Rc::try_unwrap({
+                            let __v: Value<HasConstexprCtor> =
+                                Rc::new(RefCell::new(<HasConstexprCtor>::uninit()));
+                            HasConstexprCtor::new(__v.as_pointer(), { 7 });
+                            __v
+                        })
+                        .ok()
+                        .unwrap()
+                        .into_inner()
                     } else {
-                        HasConstexprCtor::new({ 9 })
+                        Rc::try_unwrap({
+                            let __v: Value<HasConstexprCtor> =
+                                Rc::new(RefCell::new(<HasConstexprCtor>::uninit()));
+                            HasConstexprCtor::new(__v.as_pointer(), { 9 });
+                            __v
+                        })
+                        .ok()
+                        .unwrap()
+                        .into_inner()
                     })
                     .m
                 };
@@ -155,14 +222,23 @@ thread_local!(
 );
 pub fn test_9() {
     ({ HasConstexprCtor::reset() });
-    let k: Value<HasConstexprCtor> = Rc::new(RefCell::new(HasConstexprCtor::new({ 5 })));
+    let k: Value<HasConstexprCtor> = Rc::new(RefCell::new(<HasConstexprCtor>::uninit()));
+    HasConstexprCtor::new(k.as_pointer(), { 5 });
     let f: Value<FnPtr<fn() -> i32>> =
         Rc::new(RefCell::new(FnPtr::<fn() -> i32>::new(|| -> i32 {
             {
                 return {
                     {
                         (*left_8.with(Value::clone).borrow_mut()).prefix_inc();
-                        HasConstexprCtor::new({ 5 })
+                        Rc::try_unwrap({
+                            let __v: Value<HasConstexprCtor> =
+                                Rc::new(RefCell::new(<HasConstexprCtor>::uninit()));
+                            HasConstexprCtor::new(__v.as_pointer(), { 5 });
+                            __v
+                        })
+                        .ok()
+                        .unwrap()
+                        .into_inner()
                     }
                     .m
                 };
@@ -194,7 +270,11 @@ pub fn test_11() {
 }
 thread_local!(
     pub static global_12: Value<LifetimeTracked> = {
-        let __static = Rc::new(RefCell::new(LifetimeTracked::new()));
+        let __static = {
+            let __v: Value<LifetimeTracked> = Rc::new(RefCell::new(<LifetimeTracked>::uninit()));
+            LifetimeTracked::new(__v.as_pointer());
+            __v
+        };
         libcc2rs::register_static_destructor(|| {
             global_12.with(Value::clone).as_pointer().destructor()
         });
@@ -215,13 +295,18 @@ pub fn test_13() {
 }
 pub fn test_14() {
     ({ LifetimeTracked::reset() });
-    let t: Value<LifetimeTracked> = Rc::new(RefCell::new(LifetimeTracked::new()));
+    let t: Value<LifetimeTracked> = Rc::new(RefCell::new(<LifetimeTracked>::uninit()));
+    LifetimeTracked::new(t.as_pointer());
     let _dtor_t = std::mem::DropGuard::new(t.clone(), |__p| __p.as_pointer().destructor());
     let r: Ptr<LifetimeTracked> = t.as_pointer();
     let f: Value<FnPtr<fn()>> = Rc::new(RefCell::new(lambda!(
         {
-            let r: Value<LifetimeTracked> =
-                Rc::new(RefCell::new(LifetimeTracked::copy_from({ (r).clone() })));
+            let r: Value<LifetimeTracked> = {
+                let __v: Value<LifetimeTracked> =
+                    Rc::new(RefCell::new(<LifetimeTracked>::uninit()));
+                LifetimeTracked::copy_from(__v.as_pointer(), { (r).clone() });
+                __v
+            };
         },
         || {
             ({ LifetimeTrackedImpl::use_(&r.as_pointer()) });
@@ -250,16 +335,21 @@ pub fn test_15() {
 }
 pub fn test_16() {
     ({ HasConstexprCtor::reset() });
-    let k: Value<HasConstexprCtor> = Rc::new(RefCell::new(HasConstexprCtor::new({ 5 })));
+    let k: Value<HasConstexprCtor> = Rc::new(RefCell::new(<HasConstexprCtor>::uninit()));
+    HasConstexprCtor::new(k.as_pointer(), { 5 });
     let f: Value<FnPtr<fn() -> i32>> = Rc::new(RefCell::new(lambda!(
         {
-            let k: Value<HasConstexprCtor> = Rc::new(RefCell::new(HasConstexprCtor::copy_from({
-                k.as_pointer()
-            })));
+            let k: Value<HasConstexprCtor> = {
+                let __v: Value<HasConstexprCtor> =
+                    Rc::new(RefCell::new(<HasConstexprCtor>::uninit()));
+                HasConstexprCtor::copy_from(__v.as_pointer(), { k.as_pointer() });
+                __v
+            };
         },
         || -> i32 {
-            let mut c: HasConstexprCtor = HasConstexprCtor::copy_from({ k.as_pointer() });
-            return c.m;
+            let c: Value<HasConstexprCtor> = Rc::new(RefCell::new(<HasConstexprCtor>::uninit()));
+            HasConstexprCtor::copy_from(c.as_pointer(), { k.as_pointer() });
+            return { (*c.borrow()).m };
         }
     )));
     assert!((copyCount_0.with(|rc| *rc.borrow()) == 1));
@@ -280,6 +370,7 @@ thread_local!(
     pub static copies_18: Value<i32> = Rc::new(RefCell::new(0_i32));
 );
 #[derive(Record, ByteRepr, Uninit, VaArg, FnPtrArg, CppFrom, CopyAssign, Default)]
+#[placement]
 #[cpp_from(i32, new, value)]
 #[byte_size(8)]
 pub struct p5_2_mutable_subobject_is_odr_used_HasMutableMember {
@@ -289,19 +380,17 @@ pub struct p5_2_mutable_subobject_is_odr_used_HasMutableMember {
     pub scratch: i32,
 }
 impl p5_2_mutable_subobject_is_odr_used_HasMutableMember {
-    pub fn new(mut v: i32) -> Self {
-        Self {
-            value: v,
-            scratch: 0,
-        }
+    pub fn new(this: Ptr<p5_2_mutable_subobject_is_odr_used_HasMutableMember>, mut v: i32) {
+        field!(this, value).write(v);
+        field!(this, scratch).write(0);
     }
-    pub fn copy_from(o: Ptr<p5_2_mutable_subobject_is_odr_used_HasMutableMember>) -> Self {
-        let __this: p5_2_mutable_subobject_is_odr_used_HasMutableMember = Self {
-            value: o.with(|__s| __s.value),
-            scratch: o.with(|__s| __s.scratch),
-        };
+    pub fn copy_from(
+        this: Ptr<p5_2_mutable_subobject_is_odr_used_HasMutableMember>,
+        o: Ptr<p5_2_mutable_subobject_is_odr_used_HasMutableMember>,
+    ) {
+        field!(this, value).write(o.with(|__s| __s.value));
+        field!(this, scratch).write(o.with(|__s| __s.scratch));
         (*copies_18.with(Value::clone).borrow_mut()).prefix_inc();
-        __this
     }
 }
 impl Clone for p5_2_mutable_subobject_is_odr_used_HasMutableMember {
@@ -312,21 +401,32 @@ impl Clone for p5_2_mutable_subobject_is_odr_used_HasMutableMember {
                 scratch: self.scratch.clone(),
             }),
         );
-        p5_2_mutable_subobject_is_odr_used_HasMutableMember::copy_from(__src.as_pointer())
+        let __dst: Value<p5_2_mutable_subobject_is_odr_used_HasMutableMember> = Rc::new(
+            RefCell::new(<p5_2_mutable_subobject_is_odr_used_HasMutableMember>::uninit()),
+        );
+        p5_2_mutable_subobject_is_odr_used_HasMutableMember::copy_from(
+            __dst.as_pointer(),
+            __src.as_pointer(),
+        );
+        Rc::try_unwrap(__dst).ok().unwrap().into_inner()
     }
 }
 pub fn test_19() {
     let k: Value<p5_2_mutable_subobject_is_odr_used_HasMutableMember> = Rc::new(RefCell::new(
-        p5_2_mutable_subobject_is_odr_used_HasMutableMember::new({ 5 }),
+        <p5_2_mutable_subobject_is_odr_used_HasMutableMember>::uninit(),
     ));
+    p5_2_mutable_subobject_is_odr_used_HasMutableMember::new(k.as_pointer(), { 5 });
     let f: Value<FnPtr<fn() -> i32>> = Rc::new(RefCell::new(lambda!(
         {
-            let k: Value<p5_2_mutable_subobject_is_odr_used_HasMutableMember> =
-                Rc::new(RefCell::new(
-                    p5_2_mutable_subobject_is_odr_used_HasMutableMember::copy_from({
-                        k.as_pointer()
-                    }),
-                ));
+            let k: Value<p5_2_mutable_subobject_is_odr_used_HasMutableMember> = {
+                let __v: Value<p5_2_mutable_subobject_is_odr_used_HasMutableMember> = Rc::new(
+                    RefCell::new(<p5_2_mutable_subobject_is_odr_used_HasMutableMember>::uninit()),
+                );
+                p5_2_mutable_subobject_is_odr_used_HasMutableMember::copy_from(__v.as_pointer(), {
+                    k.as_pointer()
+                });
+                __v
+            };
         },
         || -> i32 {
             return { (*k.borrow()).value };
@@ -337,6 +437,7 @@ pub fn test_19() {
     assert!((copies_18.with(|rc| *rc.borrow()) == 1));
 }
 #[derive(Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, CopyAssign, Destructor, Default)]
+#[placement]
 #[byte_size(8)]
 pub struct p6_unevaluated_binding_needs_no_capture_HasTwoMembers {
     #[offset(0)]
@@ -346,14 +447,25 @@ pub struct p6_unevaluated_binding_needs_no_capture_HasTwoMembers {
     #[byte_size(4)]
     pub b: LifetimeTracked,
 }
+impl p6_unevaluated_binding_needs_no_capture_HasTwoMembers {
+    pub fn copy_from(
+        this: Ptr<p6_unevaluated_binding_needs_no_capture_HasTwoMembers>,
+        _a0: Ptr<p6_unevaluated_binding_needs_no_capture_HasTwoMembers>,
+    ) {
+        LifetimeTracked::copy_from(field_ptr!(this, a), { field_ptr!(_a0, a) });
+        LifetimeTracked::copy_from(field_ptr!(this, b), { field_ptr!(_a0, b) });
+    }
+}
 pub fn test_20() {
     ({ LifetimeTracked::reset() });
     let p: Value<p6_unevaluated_binding_needs_no_capture_HasTwoMembers> = Rc::new(RefCell::new(
-        p6_unevaluated_binding_needs_no_capture_HasTwoMembers {
-            a: LifetimeTracked::new(),
-            b: LifetimeTracked::new(),
-        },
+        <p6_unevaluated_binding_needs_no_capture_HasTwoMembers>::uninit(),
     ));
+    {
+        let __d = p.as_pointer();
+        LifetimeTracked::new(field_ptr!(__d, a));
+        LifetimeTracked::new(field_ptr!(__d, b));
+    };
     let _dtor_p = std::mem::DropGuard::new(p.clone(), |__p| __p.as_pointer().destructor());
     let __decomp_21: Ptr<p6_unevaluated_binding_needs_no_capture_HasTwoMembers> = p.as_pointer();
     let f: Value<FnPtr<fn() -> usize>> =
@@ -368,6 +480,7 @@ pub fn test_20() {
     assert!((useCount_4.with(|rc| *rc.borrow()) == 0));
 }
 #[derive(Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, CopyAssign, Destructor)]
+#[placement]
 #[byte_size(8)]
 pub struct p7_member_access_captures_this_HasMemberUsedInLambda {
     #[offset(0)]
@@ -375,6 +488,19 @@ pub struct p7_member_access_captures_this_HasMemberUsedInLambda {
     pub x: LifetimeTracked,
     #[offset(4)]
     pub n: i32,
+}
+impl p7_member_access_captures_this_HasMemberUsedInLambda {
+    pub fn copy_from(
+        this: Ptr<p7_member_access_captures_this_HasMemberUsedInLambda>,
+        _a0: Ptr<p7_member_access_captures_this_HasMemberUsedInLambda>,
+    ) {
+        LifetimeTracked::copy_from(field_ptr!(this, x), { field_ptr!(_a0, x) });
+        field!(this, n).write(_a0.with(|__s| __s.n));
+    }
+    pub fn new_1(this: Ptr<p7_member_access_captures_this_HasMemberUsedInLambda>) {
+        LifetimeTracked::new(field_ptr!(this, x));
+        field!(this, n).write(1);
+    }
 }
 impl Default for p7_member_access_captures_this_HasMemberUsedInLambda {
     fn default() -> Self {
@@ -389,8 +515,9 @@ impl Default for p7_member_access_captures_this_HasMemberUsedInLambda {
 pub fn test_22() {
     ({ LifetimeTracked::reset() });
     let c: Value<p7_member_access_captures_this_HasMemberUsedInLambda> = Rc::new(RefCell::new(
-        <p7_member_access_captures_this_HasMemberUsedInLambda>::default(),
+        <p7_member_access_captures_this_HasMemberUsedInLambda>::uninit(),
     ));
+    p7_member_access_captures_this_HasMemberUsedInLambda::new_1(c.as_pointer());
     let _dtor_c = std::mem::DropGuard::new(c.clone(), |__p| __p.as_pointer().destructor());
     let f: Value<FnPtr<fn() -> i32>> = Rc::new(RefCell::new(
         ({ p7_member_access_captures_this_HasMemberUsedInLambdaImpl::makeLambda(&c.as_pointer()) }),
@@ -404,17 +531,30 @@ pub fn test_22() {
     assert!((copyCount_2.with(|rc| *rc.borrow()) == 0));
 }
 #[derive(Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, CopyAssign, Destructor, Default)]
+#[placement]
 #[byte_size(4)]
 pub struct p7_unevaluated_this_needs_no_capture_HasMemberUsedInLambda {
     #[offset(0)]
     #[byte_size(4)]
     pub x: LifetimeTracked,
 }
+impl p7_unevaluated_this_needs_no_capture_HasMemberUsedInLambda {
+    pub fn copy_from(
+        this: Ptr<p7_unevaluated_this_needs_no_capture_HasMemberUsedInLambda>,
+        _a0: Ptr<p7_unevaluated_this_needs_no_capture_HasMemberUsedInLambda>,
+    ) {
+        LifetimeTracked::copy_from(field_ptr!(this, x), { field_ptr!(_a0, x) });
+    }
+    pub fn new_1(this: Ptr<p7_unevaluated_this_needs_no_capture_HasMemberUsedInLambda>) {
+        LifetimeTracked::new(field_ptr!(this, x));
+    }
+}
 pub fn test_23() {
     ({ LifetimeTracked::reset() });
     let c: Value<p7_unevaluated_this_needs_no_capture_HasMemberUsedInLambda> = Rc::new(
-        RefCell::new(<p7_unevaluated_this_needs_no_capture_HasMemberUsedInLambda>::default()),
+        RefCell::new(<p7_unevaluated_this_needs_no_capture_HasMemberUsedInLambda>::uninit()),
     );
+    p7_unevaluated_this_needs_no_capture_HasMemberUsedInLambda::new_1(c.as_pointer());
     let _dtor_c = std::mem::DropGuard::new(c.clone(), |__p| __p.as_pointer().destructor());
     let f: Value<FnPtr<fn() -> usize>> = Rc::new(RefCell::new(
         ({
@@ -449,23 +589,41 @@ thread_local!(
     pub static t_ctors_27: Value<i32> = Rc::new(RefCell::new(0_i32));
 );
 #[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg)]
+#[placement]
 #[byte_size(1)]
 pub struct p9_destructor_not_potentially_invoked_HasUndefinedDestructor {}
 impl p9_destructor_not_potentially_invoked_HasUndefinedDestructor {
-    pub fn new() -> Self {
-        let __this: p9_destructor_not_potentially_invoked_HasUndefinedDestructor = Self {};
+    pub fn new(this: Ptr<p9_destructor_not_potentially_invoked_HasUndefinedDestructor>) {
         (*t_ctors_27.with(Value::clone).borrow_mut()).prefix_inc();
-        __this
+    }
+    pub fn copy_from(
+        this: Ptr<p9_destructor_not_potentially_invoked_HasUndefinedDestructor>,
+        _a0: Ptr<p9_destructor_not_potentially_invoked_HasUndefinedDestructor>,
+    ) {
     }
 }
 impl Default for p9_destructor_not_potentially_invoked_HasUndefinedDestructor {
     fn default() -> Self {
-        { p9_destructor_not_potentially_invoked_HasUndefinedDestructor::new() }
+        Rc::try_unwrap({
+            let __v: Value<p9_destructor_not_potentially_invoked_HasUndefinedDestructor> =
+                Rc::new(RefCell::new(
+                    <p9_destructor_not_potentially_invoked_HasUndefinedDestructor>::uninit(),
+                ));
+            p9_destructor_not_potentially_invoked_HasUndefinedDestructor::new(__v.as_pointer());
+            __v
+        })
+        .ok()
+        .unwrap()
+        .into_inner()
     }
 }
 pub fn test_28() {
-    let mut p: Ptr<p9_destructor_not_potentially_invoked_HasUndefinedDestructor> =
-        Ptr::alloc(p9_destructor_not_potentially_invoked_HasUndefinedDestructor::new());
+    let mut p: Ptr<p9_destructor_not_potentially_invoked_HasUndefinedDestructor> = {
+        let __p =
+            Ptr::alloc(<p9_destructor_not_potentially_invoked_HasUndefinedDestructor>::uninit());
+        p9_destructor_not_potentially_invoked_HasUndefinedDestructor::new(__p.clone());
+        __p
+    };
     assert!(!((p).is_null()));
     assert!((t_ctors_27.with(|rc| *rc.borrow()) == 1));
 }
@@ -473,21 +631,30 @@ thread_local!(
     pub static ctor_calls_29: Value<i32> = Rc::new(RefCell::new(0_i32));
 );
 #[derive(Record, ByteRepr, Uninit, FnPtrArg)]
+#[placement]
 #[byte_size(4)]
 pub struct p9_unused_copy_constructor_HasUndefinedCopyCtor {
     #[offset(0)]
     pub value: i32,
 }
 impl p9_unused_copy_constructor_HasUndefinedCopyCtor {
-    pub fn new() -> Self {
-        let __this: p9_unused_copy_constructor_HasUndefinedCopyCtor = Self { value: 3 };
+    pub fn new(this: Ptr<p9_unused_copy_constructor_HasUndefinedCopyCtor>) {
+        field!(this, value).write(3);
         (*ctor_calls_29.with(Value::clone).borrow_mut()).prefix_inc();
-        __this
     }
 }
 impl Default for p9_unused_copy_constructor_HasUndefinedCopyCtor {
     fn default() -> Self {
-        { p9_unused_copy_constructor_HasUndefinedCopyCtor::new() }
+        Rc::try_unwrap({
+            let __v: Value<p9_unused_copy_constructor_HasUndefinedCopyCtor> = Rc::new(
+                RefCell::new(<p9_unused_copy_constructor_HasUndefinedCopyCtor>::uninit()),
+            );
+            p9_unused_copy_constructor_HasUndefinedCopyCtor::new(__v.as_pointer());
+            __v
+        })
+        .ok()
+        .unwrap()
+        .into_inner()
     }
 }
 pub fn read_30(object: Ptr<p9_unused_copy_constructor_HasUndefinedCopyCtor>) -> i32 {
@@ -495,8 +662,9 @@ pub fn read_30(object: Ptr<p9_unused_copy_constructor_HasUndefinedCopyCtor>) -> 
 }
 pub fn test_31() {
     let a: Value<p9_unused_copy_constructor_HasUndefinedCopyCtor> = Rc::new(RefCell::new(
-        p9_unused_copy_constructor_HasUndefinedCopyCtor::new(),
+        <p9_unused_copy_constructor_HasUndefinedCopyCtor>::uninit(),
     ));
+    p9_unused_copy_constructor_HasUndefinedCopyCtor::new(a.as_pointer());
     assert!((({ read_30(a.as_pointer(),) }) == 3));
     assert!((ctor_calls_29.with(|rc| *rc.borrow()) == 1));
 }
@@ -504,32 +672,65 @@ thread_local!(
     pub static m_ctors_32: Value<i32> = Rc::new(RefCell::new(0_i32));
 );
 #[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg)]
+#[placement]
 #[byte_size(1)]
 pub struct p9_unused_implicit_assignment_HasUndefinedCopyAssignment {}
 impl p9_unused_implicit_assignment_HasUndefinedCopyAssignment {
-    pub fn new() -> Self {
-        let __this: p9_unused_implicit_assignment_HasUndefinedCopyAssignment = Self {};
+    pub fn new(this: Ptr<p9_unused_implicit_assignment_HasUndefinedCopyAssignment>) {
         (*m_ctors_32.with(Value::clone).borrow_mut()).prefix_inc();
-        __this
+    }
+    pub fn copy_from(
+        this: Ptr<p9_unused_implicit_assignment_HasUndefinedCopyAssignment>,
+        _a0: Ptr<p9_unused_implicit_assignment_HasUndefinedCopyAssignment>,
+    ) {
     }
 }
 impl Default for p9_unused_implicit_assignment_HasUndefinedCopyAssignment {
     fn default() -> Self {
-        { p9_unused_implicit_assignment_HasUndefinedCopyAssignment::new() }
+        Rc::try_unwrap({
+            let __v: Value<p9_unused_implicit_assignment_HasUndefinedCopyAssignment> = Rc::new(
+                RefCell::new(<p9_unused_implicit_assignment_HasUndefinedCopyAssignment>::uninit()),
+            );
+            p9_unused_implicit_assignment_HasUndefinedCopyAssignment::new(__v.as_pointer());
+            __v
+        })
+        .ok()
+        .unwrap()
+        .into_inner()
     }
 }
 #[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
+#[placement]
 #[byte_size(1)]
 pub struct p9_unused_implicit_assignment_HasMemberWithUndefinedCopyAssignment {
     #[offset(0)]
     #[byte_size(1)]
     pub m: p9_unused_implicit_assignment_HasUndefinedCopyAssignment,
 }
+impl p9_unused_implicit_assignment_HasMemberWithUndefinedCopyAssignment {
+    pub fn new_1(this: Ptr<p9_unused_implicit_assignment_HasMemberWithUndefinedCopyAssignment>) {
+        p9_unused_implicit_assignment_HasUndefinedCopyAssignment::new(field_ptr!(this, m));
+    }
+    pub fn copy_from(
+        this: Ptr<p9_unused_implicit_assignment_HasMemberWithUndefinedCopyAssignment>,
+        _a0: Ptr<p9_unused_implicit_assignment_HasMemberWithUndefinedCopyAssignment>,
+    ) {
+        p9_unused_implicit_assignment_HasUndefinedCopyAssignment::copy_from(field_ptr!(this, m), {
+            field_ptr!(_a0, m)
+        });
+    }
+}
 pub fn test_33() {
-    let mut a: p9_unused_implicit_assignment_HasMemberWithUndefinedCopyAssignment =
-        <p9_unused_implicit_assignment_HasMemberWithUndefinedCopyAssignment>::default();
-    let mut b: p9_unused_implicit_assignment_HasMemberWithUndefinedCopyAssignment =
-        <p9_unused_implicit_assignment_HasMemberWithUndefinedCopyAssignment>::default();
+    let a: Value<p9_unused_implicit_assignment_HasMemberWithUndefinedCopyAssignment> =
+        Rc::new(RefCell::new(
+            <p9_unused_implicit_assignment_HasMemberWithUndefinedCopyAssignment>::uninit(),
+        ));
+    p9_unused_implicit_assignment_HasMemberWithUndefinedCopyAssignment::new_1(a.as_pointer());
+    let b: Value<p9_unused_implicit_assignment_HasMemberWithUndefinedCopyAssignment> =
+        Rc::new(RefCell::new(
+            <p9_unused_implicit_assignment_HasMemberWithUndefinedCopyAssignment>::uninit(),
+        ));
+    p9_unused_implicit_assignment_HasMemberWithUndefinedCopyAssignment::new_1(b.as_pointer());
     assert!((m_ctors_32.with(|rc| *rc.borrow()) == 2));
 }
 thread_local!(

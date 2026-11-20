@@ -9,7 +9,8 @@ use std::rc::Rc;
 pub unsafe fn sum_0(mut n: i32, __args: Box<[VaArg]>) -> i32 {
     let mut ap: *const VaArg = ::std::ptr::null();
     ap = __args.as_ptr();
-    let mut guard: Guard_1 = Guard_1::new({ &mut ap });
+    let mut guard: Guard_1 = ::std::mem::MaybeUninit::uninit().assume_init();
+    Guard_1::new(&raw mut guard, { &mut ap });
     let _dtor_guard =
         std::mem::DropGuard::new(&raw mut guard, |__p| unsafe { (*__p).destructor() });
     let mut total: i32 = 0;
@@ -24,21 +25,23 @@ pub unsafe fn sum_0(mut n: i32, __args: Box<[VaArg]>) -> i32 {
 }
 #[repr(C)]
 #[derive(Clone, VaArg, FnPtrArg, CppFromUnsafe, DestructorUnsafe, Default)]
+#[placement]
 #[cpp_from(*const VaArg , new, mut_ptr)]
 pub struct Guard_1 {
     pub ap: *mut *const VaArg,
     pub active: bool,
 }
 impl Guard_1 {
-    pub unsafe fn new(val: *mut *const VaArg) -> Self {
-        let mut this = Self {
-            ap: val,
-            active: true,
-        };
-        this
+    pub unsafe fn new(this: *mut Guard_1, val: *mut *const VaArg) {
+        (&raw mut (*this).ap).write(val);
+        (&raw mut (*this).active).write(true);
     }
     pub unsafe fn destructor(&mut self) {
         if self.active {}
+    }
+    pub unsafe fn copy_from(this: *mut Guard_1, _a0: *const Guard_1) {
+        (&raw mut (*this).ap).write((*_a0).ap);
+        (&raw mut (*this).active).write((*_a0).active);
     }
 }
 pub unsafe fn sum_ptr_2(mut n: i32, __args: Box<[VaArg]>) -> i32 {

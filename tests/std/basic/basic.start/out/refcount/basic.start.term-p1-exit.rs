@@ -7,21 +7,28 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
 #[derive(Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Destructor, Default)]
+#[placement]
 #[byte_size(4)]
 pub struct Tracker {
     #[offset(0)]
     pub tag: i32,
 }
 impl Tracker {
-    pub fn new(mut tag: i32) -> Self {
-        let __this: Tracker = Self { tag: tag };
+    pub fn new(this: Ptr<Tracker>, mut tag: i32) {
+        field!(this, tag).write(tag);
         printf!(b"construct %d\n", tag);
-        __this
+    }
+    pub fn copy_from(this: Ptr<Tracker>, _a0: Ptr<Tracker>) {
+        field!(this, tag).write(_a0.with(|__s| __s.tag));
     }
 }
 thread_local!(
     pub static global_0: Value<Tracker> = {
-        let __static = Rc::new(RefCell::new(Tracker::new({ 1 })));
+        let __static = {
+            let __v: Value<Tracker> = Rc::new(RefCell::new(<Tracker>::uninit()));
+            Tracker::new(__v.as_pointer(), { 1 });
+            __v
+        };
         libcc2rs::register_static_destructor(|| {
             global_0.with(Value::clone).as_pointer().destructor()
         });
@@ -32,14 +39,19 @@ pub fn exit_from_nested_call_1() {
     printf!(b"local static %d\n", {
         (*local_static_2.with(Value::clone).borrow()).tag
     });
-    let automatic: Value<Tracker> = Rc::new(RefCell::new(Tracker::new({ 3 })));
+    let automatic: Value<Tracker> = Rc::new(RefCell::new(<Tracker>::uninit()));
+    Tracker::new(automatic.as_pointer(), { 3 });
     let _dtor_automatic =
         std::mem::DropGuard::new(automatic.clone(), |__p| __p.as_pointer().destructor());
     libcc2rs::cpp2rust_exit(0);
 }
 thread_local!(
     static local_static_2: Value<Tracker> = {
-        let __static = Rc::new(RefCell::new(Tracker::new({ 2 })));
+        let __static = {
+            let __v: Value<Tracker> = Rc::new(RefCell::new(<Tracker>::uninit()));
+            Tracker::new(__v.as_pointer(), { 2 });
+            __v
+        };
         libcc2rs::register_static_destructor(|| {
             local_static_2.with(Value::clone).as_pointer().destructor()
         });

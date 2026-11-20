@@ -19,6 +19,7 @@ thread_local!(
     pub static useCount_3: Value<i32> = Rc::new(RefCell::new(0));
 );
 #[derive(Record, ByteRepr, Uninit, VaArg, FnPtrArg, CopyAssign, Destructor)]
+#[placement]
 #[byte_size(4)]
 pub struct LifetimeTracked {
     #[offset(0)]
@@ -43,15 +44,13 @@ impl LifetimeTracked {
             }
         });
     }
-    pub fn new() -> Self {
-        let __this: LifetimeTracked = Self { uses: 0 };
+    pub fn new(this: Ptr<LifetimeTracked>) {
+        field!(this, uses).write(0);
         (*ctorCount_0.with(Value::clone).borrow_mut()).prefix_inc();
-        __this
     }
-    pub fn copy_from(_a0: Ptr<LifetimeTracked>) -> Self {
-        let __this: LifetimeTracked = Self { uses: 0 };
+    pub fn copy_from(this: Ptr<LifetimeTracked>, _a0: Ptr<LifetimeTracked>) {
+        field!(this, uses).write(0);
         (*copyCount_1.with(Value::clone).borrow_mut()).prefix_inc();
-        __this
     }
 }
 impl Clone for LifetimeTracked {
@@ -59,12 +58,21 @@ impl Clone for LifetimeTracked {
         let __src: Value<LifetimeTracked> = Rc::new(RefCell::new(LifetimeTracked {
             uses: self.uses.clone(),
         }));
-        LifetimeTracked::copy_from(__src.as_pointer())
+        let __dst: Value<LifetimeTracked> = Rc::new(RefCell::new(<LifetimeTracked>::uninit()));
+        LifetimeTracked::copy_from(__dst.as_pointer(), __src.as_pointer());
+        Rc::try_unwrap(__dst).ok().unwrap().into_inner()
     }
 }
 impl Default for LifetimeTracked {
     fn default() -> Self {
-        { LifetimeTracked::new() }
+        Rc::try_unwrap({
+            let __v: Value<LifetimeTracked> = Rc::new(RefCell::new(<LifetimeTracked>::uninit()));
+            LifetimeTracked::new(__v.as_pointer());
+            __v
+        })
+        .ok()
+        .unwrap()
+        .into_inner()
     }
 }
 thread_local!(
@@ -126,7 +134,8 @@ pub fn test_10() {
     ({ LifetimeTracked::reset() });
     let mut selector: i32 = 9;
     {
-        let guard: Value<LifetimeTracked> = Rc::new(RefCell::new(LifetimeTracked::new()));
+        let guard: Value<LifetimeTracked> = Rc::new(RefCell::new(<LifetimeTracked>::uninit()));
+        LifetimeTracked::new(guard.as_pointer());
         let _dtor_guard =
             std::mem::DropGuard::new(guard.clone(), |__p| __p.as_pointer().destructor());
         let mut selector: i32 = 2;

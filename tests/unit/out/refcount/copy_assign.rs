@@ -10,6 +10,7 @@ thread_local!(
     pub static assigns_0: Value<i32> = Rc::new(RefCell::new(0));
 );
 #[derive(Record, ByteRepr, Uninit, VaArg, FnPtrArg, CopyAssign, Default)]
+#[placement]
 #[byte_size(8)]
 pub struct Partial {
     #[offset(0)]
@@ -18,14 +19,13 @@ pub struct Partial {
     pub keep: i32,
 }
 impl Partial {
-    pub fn new(mut v: i32, mut keep: i32) -> Self {
-        Self { v: v, keep: keep }
+    pub fn new(this: Ptr<Partial>, mut v: i32, mut keep: i32) {
+        field!(this, v).write(v);
+        field!(this, keep).write(keep);
     }
-    pub fn copy_from(o: Ptr<Partial>) -> Self {
-        Self {
-            v: o.with(|__s| __s.v),
-            keep: o.with(|__s| __s.keep),
-        }
+    pub fn copy_from(this: Ptr<Partial>, o: Ptr<Partial>) {
+        field!(this, v).write(o.with(|__s| __s.v));
+        field!(this, keep).write(o.with(|__s| __s.keep));
     }
 }
 impl Clone for Partial {
@@ -34,42 +34,67 @@ impl Clone for Partial {
             v: self.v.clone(),
             keep: self.keep.clone(),
         }));
-        Partial::copy_from(__src.as_pointer())
+        let __dst: Value<Partial> = Rc::new(RefCell::new(<Partial>::uninit()));
+        Partial::copy_from(__dst.as_pointer(), __src.as_pointer());
+        Rc::try_unwrap(__dst).ok().unwrap().into_inner()
     }
 }
 #[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg)]
+#[placement]
 #[byte_size(4)]
 pub struct NonConstAssign {
     #[offset(0)]
     pub mark: i32,
 }
 impl NonConstAssign {
-    pub fn new() -> Self {
-        Self { mark: 0 }
+    pub fn new(this: Ptr<NonConstAssign>) {
+        field!(this, mark).write(0);
+    }
+    pub fn copy_from(this: Ptr<NonConstAssign>, _a0: Ptr<NonConstAssign>) {
+        field!(this, mark).write(_a0.with(|__s| __s.mark));
     }
 }
 impl Default for NonConstAssign {
     fn default() -> Self {
-        { NonConstAssign::new() }
+        Rc::try_unwrap({
+            let __v: Value<NonConstAssign> = Rc::new(RefCell::new(<NonConstAssign>::uninit()));
+            NonConstAssign::new(__v.as_pointer());
+            __v
+        })
+        .ok()
+        .unwrap()
+        .into_inner()
     }
 }
 #[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, CopyAssign)]
+#[placement]
 #[byte_size(4)]
 pub struct RefQualified {
     #[offset(0)]
     pub mark: i32,
 }
 impl RefQualified {
-    pub fn new() -> Self {
-        Self { mark: 0 }
+    pub fn new(this: Ptr<RefQualified>) {
+        field!(this, mark).write(0);
+    }
+    pub fn copy_from(this: Ptr<RefQualified>, _a0: Ptr<RefQualified>) {
+        field!(this, mark).write(_a0.with(|__s| __s.mark));
     }
 }
 impl Default for RefQualified {
     fn default() -> Self {
-        { RefQualified::new() }
+        Rc::try_unwrap({
+            let __v: Value<RefQualified> = Rc::new(RefCell::new(<RefQualified>::uninit()));
+            RefQualified::new(__v.as_pointer());
+            __v
+        })
+        .ok()
+        .unwrap()
+        .into_inner()
     }
 }
 #[derive(Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, CopyAssign)]
+#[placement]
 #[byte_size(24)]
 pub struct Holder {
     #[offset(0)]
@@ -79,6 +104,19 @@ pub struct Holder {
     #[byte_size(16)]
     #[array_len(2)]
     pub arr: Box<[Partial]>,
+}
+impl Holder {
+    pub fn copy_from(this: Ptr<Holder>, _a0: Ptr<Holder>) {
+        Partial::copy_from(field_ptr!(this, p), { field_ptr!(_a0, p) });
+        {
+            let __d = array_field_ptr!(this, arr);
+            for __i in 0..2_usize {
+                Partial::copy_from(__d.offset(__i as isize), {
+                    array_field_ptr!(_a0, arr).offset(__i)
+                });
+            }
+        };
+    }
 }
 impl Default for Holder {
     fn default() -> Self {
@@ -96,6 +134,7 @@ thread_local!(
     pub static copies_1: Value<i32> = Rc::new(RefCell::new(0));
 );
 #[derive(Record, ByteRepr, Uninit, VaArg, FnPtrArg, CppFrom, CopyAssign, Default)]
+#[placement]
 #[cpp_from(i32, new, value)]
 #[byte_size(4)]
 pub struct CopyCounted {
@@ -103,24 +142,24 @@ pub struct CopyCounted {
     pub v: i32,
 }
 impl CopyCounted {
-    pub fn new(mut v: i32) -> Self {
-        Self { v: v }
+    pub fn new(this: Ptr<CopyCounted>, mut v: i32) {
+        field!(this, v).write(v);
     }
-    pub fn copy_from(o: Ptr<CopyCounted>) -> Self {
-        let __this: CopyCounted = Self {
-            v: o.with(|__s| __s.v),
-        };
+    pub fn copy_from(this: Ptr<CopyCounted>, o: Ptr<CopyCounted>) {
+        field!(this, v).write(o.with(|__s| __s.v));
         (*copies_1.with(Value::clone).borrow_mut()).prefix_inc();
-        __this
     }
 }
 impl Clone for CopyCounted {
     fn clone(&self) -> Self {
         let __src: Value<CopyCounted> = Rc::new(RefCell::new(CopyCounted { v: self.v.clone() }));
-        CopyCounted::copy_from(__src.as_pointer())
+        let __dst: Value<CopyCounted> = Rc::new(RefCell::new(<CopyCounted>::uninit()));
+        CopyCounted::copy_from(__dst.as_pointer(), __src.as_pointer());
+        Rc::try_unwrap(__dst).ok().unwrap().into_inner()
     }
 }
 #[derive(Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, CopyAssign)]
+#[placement]
 #[byte_size(12)]
 pub struct HasCopyCounted {
     #[offset(0)]
@@ -130,6 +169,19 @@ pub struct HasCopyCounted {
     #[byte_size(8)]
     #[array_len(2)]
     pub arr: Box<[CopyCounted]>,
+}
+impl HasCopyCounted {
+    pub fn copy_from(this: Ptr<HasCopyCounted>, _a0: Ptr<HasCopyCounted>) {
+        CopyCounted::copy_from(field_ptr!(this, c), { field_ptr!(_a0, c) });
+        {
+            let __d = array_field_ptr!(this, arr);
+            for __i in 0..2_usize {
+                CopyCounted::copy_from(__d.offset(__i as isize), {
+                    array_field_ptr!(_a0, arr).offset(__i)
+                });
+            }
+        };
+    }
 }
 impl Default for HasCopyCounted {
     fn default() -> Self {
@@ -148,9 +200,12 @@ pub fn main() {
     libcc2rs::cpp2rust_exit(main_0());
 }
 fn main_0() -> i32 {
-    let a: Value<Partial> = Rc::new(RefCell::new(Partial::new({ 1 }, { 100 })));
-    let b: Value<Partial> = Rc::new(RefCell::new(Partial::new({ 2 }, { 200 })));
-    let c: Value<Partial> = Rc::new(RefCell::new(Partial::new({ 3 }, { 300 })));
+    let a: Value<Partial> = Rc::new(RefCell::new(<Partial>::uninit()));
+    Partial::new(a.as_pointer(), { 1 }, { 100 });
+    let b: Value<Partial> = Rc::new(RefCell::new(<Partial>::uninit()));
+    Partial::new(b.as_pointer(), { 2 }, { 200 });
+    let c: Value<Partial> = Rc::new(RefCell::new(<Partial>::uninit()));
+    Partial::new(c.as_pointer(), { 3 }, { 300 });
     ({ PartialImpl::copy_assign(&a.as_pointer(), b.as_pointer()) });
     assert!(({ ({ (*a.borrow()).v } == 2) && ({ (*a.borrow()).keep } == 100) }));
     assert!((assigns_0.with(|rc| *rc.borrow()) == 1));
@@ -168,7 +223,11 @@ fn main_0() -> i32 {
     });
     assert!((assigns_0.with(|rc| *rc.borrow()) == 3));
     ({
-        let _o: Value<Partial> = Rc::new(RefCell::new(Partial::new({ 9 }, { 900 })));
+        let _o: Value<Partial> = {
+            let __v: Value<Partial> = Rc::new(RefCell::new(<Partial>::uninit()));
+            Partial::new(__v.as_pointer(), { 9 }, { 900 });
+            __v
+        };
         PartialImpl::copy_assign(&a.as_pointer(), _o.as_pointer())
     });
     assert!(({ ({ (*a.borrow()).v } == 9) && ({ (*a.borrow()).keep } == 100) }));
@@ -186,10 +245,16 @@ fn main_0() -> i32 {
     });
     assert!(({ ({ (*a.borrow()).v } == 2) }));
     assert!((assigns_0.with(|rc| *rc.borrow()) == 6));
-    let h: Value<Holder> = Rc::new(RefCell::new(Holder {
-        p: Partial::new({ 4 }, { 40 }),
-        arr: Box::new([Partial::new({ 5 }, { 50 }), Partial::new({ 6 }, { 60 })]),
-    }));
+    let h: Value<Holder> = Rc::new(RefCell::new(<Holder>::uninit()));
+    {
+        let __d = h.as_pointer();
+        Partial::new(field_ptr!(__d, p), { 4 }, { 40 });
+        {
+            let __d = array_field_ptr!(__d, arr);
+            Partial::new(__d.offset(0), { 5 }, { 50 });
+            Partial::new(__d.offset(1), { 6 }, { 60 });
+        };
+    };
     ({ PartialImpl::copy_assign(&field_ptr!(h.as_pointer(), p), b.as_pointer()) });
     ({
         PartialImpl::copy_assign(
@@ -203,22 +268,34 @@ fn main_0() -> i32 {
             && (array_elem!(h.as_pointer(), arr, 1).with(|__s| __s.keep) == 60)
     );
     assert!((assigns_0.with(|rc| *rc.borrow()) == 8));
-    let n: Value<NonConstAssign> = Rc::new(RefCell::new(NonConstAssign::new()));
-    let n1: Value<NonConstAssign> = Rc::new(RefCell::new(NonConstAssign::new()));
-    let n2: Value<NonConstAssign> = Rc::new(RefCell::new(NonConstAssign::new()));
-    let cn: Value<NonConstAssign> = Rc::new(RefCell::new(NonConstAssign::new()));
+    let n: Value<NonConstAssign> = Rc::new(RefCell::new(<NonConstAssign>::uninit()));
+    NonConstAssign::new(n.as_pointer());
+    let n1: Value<NonConstAssign> = Rc::new(RefCell::new(<NonConstAssign>::uninit()));
+    NonConstAssign::new(n1.as_pointer());
+    let n2: Value<NonConstAssign> = Rc::new(RefCell::new(<NonConstAssign>::uninit()));
+    NonConstAssign::new(n2.as_pointer());
+    let cn: Value<NonConstAssign> = Rc::new(RefCell::new(<NonConstAssign>::uninit()));
+    NonConstAssign::new(cn.as_pointer());
     ({ NonConstAssignImpl::operator_assign_2(&n1.as_pointer(), n.as_pointer()) });
     ({ NonConstAssignImpl::operator_assign_3(&n2.as_pointer(), cn.as_pointer()) });
     assert!(({ ({ (*n1.borrow()).mark } == 1) }));
     assert!(({ ({ (*n2.borrow()).mark } == 10) }));
-    let r: Value<RefQualified> = Rc::new(RefCell::new(RefQualified::new()));
-    let r1: Value<RefQualified> = Rc::new(RefCell::new(RefQualified::new()));
+    let r: Value<RefQualified> = Rc::new(RefCell::new(<RefQualified>::uninit()));
+    RefQualified::new(r.as_pointer());
+    let r1: Value<RefQualified> = Rc::new(RefCell::new(<RefQualified>::uninit()));
+    RefQualified::new(r1.as_pointer());
     ({ RefQualifiedImpl::copy_assign(&r1.as_pointer(), r.as_pointer()) });
     assert!(({ ({ (*r1.borrow()).mark } == 1) }));
-    let h2: Value<Holder> = Rc::new(RefCell::new(Holder {
-        p: Partial::new({ 7 }, { 70 }),
-        arr: Box::new([Partial::new({ 8 }, { 80 }), Partial::new({ 9 }, { 90 })]),
-    }));
+    let h2: Value<Holder> = Rc::new(RefCell::new(<Holder>::uninit()));
+    {
+        let __d = h2.as_pointer();
+        Partial::new(field_ptr!(__d, p), { 7 }, { 70 });
+        {
+            let __d = array_field_ptr!(__d, arr);
+            Partial::new(__d.offset(0), { 8 }, { 80 });
+            Partial::new(__d.offset(1), { 9 }, { 90 });
+        };
+    };
     ({ HolderImpl::copy_assign(&h2.as_pointer(), h.as_pointer()) });
     assert!(({ ({ (*h2.borrow()).p.v } == 2) && ({ (*h2.borrow()).p.keep } == 70) }));
     assert!(
@@ -226,18 +303,32 @@ fn main_0() -> i32 {
             && (array_elem!(h2.as_pointer(), arr, 1).with(|__s| __s.keep) == 90)
     );
     assert!((assigns_0.with(|rc| *rc.borrow()) == 11));
-    let cc1: Value<CopyCounted> = Rc::new(RefCell::new(CopyCounted::new({ 1 })));
-    let cc2: Value<CopyCounted> = Rc::new(RefCell::new(CopyCounted::new({ 2 })));
+    let cc1: Value<CopyCounted> = Rc::new(RefCell::new(<CopyCounted>::uninit()));
+    CopyCounted::new(cc1.as_pointer(), { 1 });
+    let cc2: Value<CopyCounted> = Rc::new(RefCell::new(<CopyCounted>::uninit()));
+    CopyCounted::new(cc2.as_pointer(), { 2 });
     ({ CopyCountedImpl::copy_assign(&cc1.as_pointer(), cc2.as_pointer()) });
     assert!(({ ({ (*cc1.borrow()).v } == 2) }));
-    let hc1: Value<HasCopyCounted> = Rc::new(RefCell::new(HasCopyCounted {
-        c: CopyCounted::new({ 1 }),
-        arr: Box::new([CopyCounted::new({ 2 }), CopyCounted::new({ 3 })]),
-    }));
-    let hc2: Value<HasCopyCounted> = Rc::new(RefCell::new(HasCopyCounted {
-        c: CopyCounted::new({ 4 }),
-        arr: Box::new([CopyCounted::new({ 5 }), CopyCounted::new({ 6 })]),
-    }));
+    let hc1: Value<HasCopyCounted> = Rc::new(RefCell::new(<HasCopyCounted>::uninit()));
+    {
+        let __d = hc1.as_pointer();
+        CopyCounted::new(field_ptr!(__d, c), { 1 });
+        {
+            let __d = array_field_ptr!(__d, arr);
+            CopyCounted::new(__d.offset(0), { 2 });
+            CopyCounted::new(__d.offset(1), { 3 });
+        };
+    };
+    let hc2: Value<HasCopyCounted> = Rc::new(RefCell::new(<HasCopyCounted>::uninit()));
+    {
+        let __d = hc2.as_pointer();
+        CopyCounted::new(field_ptr!(__d, c), { 4 });
+        {
+            let __d = array_field_ptr!(__d, arr);
+            CopyCounted::new(__d.offset(0), { 5 });
+            CopyCounted::new(__d.offset(1), { 6 });
+        };
+    };
     ({ HasCopyCountedImpl::copy_assign(&hc1.as_pointer(), hc2.as_pointer()) });
     assert!(
         ({

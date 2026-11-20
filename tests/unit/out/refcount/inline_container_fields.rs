@@ -150,32 +150,32 @@ thread_local!(
     pub static move_assigns_5: Value<i32> = Rc::new(RefCell::new(0));
 );
 #[derive(Record, ByteRepr, Uninit, VaArg, FnPtrArg, MoveCtor, CopyAssign, MoveAssign)]
+#[placement]
 #[byte_size(4)]
 pub struct Counted {
     #[offset(0)]
     pub v: i32,
 }
 impl Counted {
-    pub fn copy_from(o: Ptr<Counted>) -> Self {
-        let __this: Counted = Self {
-            v: o.with(|__s| __s.v),
-        };
-        (*copies_2.with(Value::clone).borrow_mut()).prefix_inc();
-        __this
+    pub fn new(this: Ptr<Counted>) {
+        field!(this, v).write(0);
     }
-    pub fn move_from(o: Ptr<Counted>) -> Self {
-        let __this: Counted = Self {
-            v: o.with(|__s| __s.v),
-        };
+    pub fn copy_from(this: Ptr<Counted>, o: Ptr<Counted>) {
+        field!(this, v).write(o.with(|__s| __s.v));
+        (*copies_2.with(Value::clone).borrow_mut()).prefix_inc();
+    }
+    pub fn move_from(this: Ptr<Counted>, o: Ptr<Counted>) {
+        field!(this, v).write(o.with(|__s| __s.v));
         field!(o, v).write(-1_i32);
         (*moves_3.with(Value::clone).borrow_mut()).prefix_inc();
-        __this
     }
 }
 impl Clone for Counted {
     fn clone(&self) -> Self {
         let __src: Value<Counted> = Rc::new(RefCell::new(Counted { v: self.v.clone() }));
-        Counted::copy_from(__src.as_pointer())
+        let __dst: Value<Counted> = Rc::new(RefCell::new(<Counted>::uninit()));
+        Counted::copy_from(__dst.as_pointer(), __src.as_pointer());
+        Rc::try_unwrap(__dst).ok().unwrap().into_inner()
     }
 }
 impl Default for Counted {
@@ -350,7 +350,7 @@ fn main_0() -> i32 {
     (*ca.borrow_mut())[1_usize].v = 5;
     let cb: Value<Box<[Counted]>> = Rc::new(RefCell::new(
         (0..3)
-            .map(|__i| Counted::move_from(ca.decay().offset(__i)))
+            .map(|__i| <Counted as MoveCtor>::move_ctor(ca.decay().offset(__i)))
             .collect(),
     ));
     assert!(
