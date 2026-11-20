@@ -1,20 +1,21 @@
 // Copyright (c) 2022-present INESC-ID.
 // Distributed under the MIT license that can be found in the LICENSE file.
 
-use crate::{ByteRepr, Ptr, Record};
+use crate::{ByteRepr, Ptr, Record, Uninit};
 
-#[derive(Clone, Default, Record, ByteRepr)]
+#[derive(Clone, Default, Record, ByteRepr, Uninit)]
 #[byte_size(4)]
 pub struct InAddr {
     #[offset(0)]
     pub s_addr: u32,
 }
 
-#[derive(Clone, Record, ByteRepr)]
+#[derive(Clone, Record, ByteRepr, Uninit)]
 #[byte_size(16)]
 pub struct In6Addr {
     #[offset(0)]
     #[byte_size(16)]
+    #[array_len(16)]
     pub s6_addr: Box<[u8]>,
 }
 

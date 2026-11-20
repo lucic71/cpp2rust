@@ -477,6 +477,13 @@ impl<T> Default for Ptr<T> {
     }
 }
 
+impl<T> crate::Uninit for Ptr<T> {
+    #[inline]
+    fn uninit() -> Self {
+        Ptr::null()
+    }
+}
+
 impl<T> Clone for Ptr<T> {
     #[inline]
     fn clone(&self) -> Self {

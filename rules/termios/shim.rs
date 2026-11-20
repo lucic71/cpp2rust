@@ -1,10 +1,10 @@
 // Copyright (c) 2022-present INESC-ID.
 // Distributed under the MIT license that can be found in the LICENSE file.
 
-use crate::{ByteRepr, Record};
+use crate::{ByteRepr, Record, Uninit};
 use std::mem::{offset_of, size_of};
 
-#[derive(Clone, Record, ByteRepr)]
+#[derive(Clone, Record, ByteRepr, Uninit)]
 #[byte_size(size_of::<::libc::termios>())]
 pub struct Termios {
     #[offset(offset_of!(::libc::termios, c_iflag))]
@@ -20,6 +20,7 @@ pub struct Termios {
     pub c_line: u8,
     #[offset(offset_of!(::libc::termios, c_cc))]
     #[byte_size(::libc::NCCS)]
+    #[array_len(32)]
     pub c_cc: Box<[u8]>,
     #[offset(offset_of!(::libc::termios, c_ispeed))]
     pub c_ispeed: u32,
@@ -104,7 +105,7 @@ impl Termios {
     }
 }
 
-#[derive(Clone, Default, Record, ByteRepr)]
+#[derive(Clone, Default, Record, ByteRepr, Uninit)]
 #[byte_size(size_of::<::libc::winsize>())]
 pub struct Winsize {
     #[offset(offset_of!(::libc::winsize, ws_row))]

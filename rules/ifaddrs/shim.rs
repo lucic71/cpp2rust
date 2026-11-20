@@ -1,10 +1,10 @@
 // Copyright (c) 2022-present INESC-ID.
 // Distributed under the MIT license that can be found in the LICENSE file.
 
-use crate::{ByteRepr, Ptr, Record, Sockaddr, SockaddrIn, SockaddrIn6, SockaddrStorage};
+use crate::{ByteRepr, Ptr, Record, Sockaddr, SockaddrIn, SockaddrIn6, SockaddrStorage, Uninit};
 use std::mem::{offset_of, size_of};
 
-#[derive(Clone, Default, Record, ByteRepr)]
+#[derive(Clone, Default, Record, ByteRepr, Uninit)]
 #[byte_size(size_of::<::libc::ifaddrs>())]
 pub struct Ifaddrs {
     #[offset(offset_of!(::libc::ifaddrs, ifa_next))]

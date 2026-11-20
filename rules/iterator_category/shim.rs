@@ -216,6 +216,12 @@ pub enum BidirectionalIterator<T> {
     Map(Value<MapNode<T>>),
 }
 
+impl<T> crate::Uninit for BidirectionalIterator<T> {
+    fn uninit() -> Self {
+        Self::default()
+    }
+}
+
 impl<T> Default for BidirectionalIterator<T> {
     fn default() -> Self {
         Self::Map(MapNode::header())
@@ -345,6 +351,12 @@ macro_rules! random_access_iterator {
         impl<T> Default for $name<T> {
             fn default() -> Self {
                 Self::Vec($null)
+            }
+        }
+
+        impl<T> crate::Uninit for $name<T> {
+            fn uninit() -> Self {
+                Self::default()
             }
         }
 

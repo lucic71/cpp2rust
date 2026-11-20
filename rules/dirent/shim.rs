@@ -1,11 +1,11 @@
 // Copyright (c) 2022-present INESC-ID.
 // Distributed under the MIT license that can be found in the LICENSE file.
 
-use crate::{ByteRepr, Record, size_of_field};
+use crate::{ByteRepr, Record, Uninit, size_of_field};
 use std::cell::Cell;
 use std::mem::{offset_of, size_of};
 
-#[derive(Clone, Record, ByteRepr)]
+#[derive(Clone, Record, ByteRepr, Uninit)]
 #[byte_size(size_of::<::libc::dirent>())]
 pub struct Dirent {
     #[offset(offset_of!(::libc::dirent, d_ino))]
@@ -19,6 +19,7 @@ pub struct Dirent {
     pub d_type: u8,
     #[offset(offset_of!(::libc::dirent, d_name))]
     #[byte_size(size_of_field!(::libc::dirent, d_name))]
+    #[array_len(size_of_field!(::libc::dirent, d_name))]
     pub d_name: Box<[i8]>,
 }
 

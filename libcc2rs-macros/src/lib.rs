@@ -14,6 +14,7 @@ mod move_ctor;
 mod record;
 mod state_machine;
 mod switch;
+mod uninit;
 mod va_arg;
 
 //     switch!(match <condition> {
@@ -146,6 +147,22 @@ pub fn derive_fn_ptr_arg(input: TokenStream) -> TokenStream {
 #[proc_macro_derive(Record, attributes(offset))]
 pub fn derive_record(input: TokenStream) -> TokenStream {
     record::expand(input)
+}
+
+//     #[derive(Uninit)]
+//     pub struct S {
+//         pub a: i32,
+//         #[array_len(2, 3)]
+//         pub b: Box<[Box<[i32]>]>,
+//     }
+//
+// Implements libcc2rs::Uninit for S, whose uninit is the uninit of each of
+// its fields. The arguments of the array_len attribute are the lengths of
+// the dimensions of a field that is an array, outermost first.
+
+#[proc_macro_derive(Uninit, attributes(array_len))]
+pub fn derive_uninit(input: TokenStream) -> TokenStream {
+    uninit::expand(input)
 }
 
 //     #[derive(MoveCtor)]

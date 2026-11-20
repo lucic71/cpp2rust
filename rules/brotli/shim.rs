@@ -50,6 +50,12 @@ pub struct BrotliDecoderState {
 
 impl ByteRepr for BrotliDecoderState {}
 
+impl crate::Uninit for BrotliDecoderState {
+    fn uninit() -> Self {
+        Self::default()
+    }
+}
+
 impl Default for BrotliDecoderState {
     fn default() -> Self {
         Self {

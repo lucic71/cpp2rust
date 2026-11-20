@@ -1,10 +1,10 @@
 // Copyright (c) 2022-present INESC-ID.
 // Distributed under the MIT license that can be found in the LICENSE file.
 
-use crate::{ByteRepr, Ptr, Record};
+use crate::{ByteRepr, Ptr, Record, Uninit};
 use std::mem::{offset_of, size_of};
 
-#[derive(Clone, Default, Record, ByteRepr)]
+#[derive(Clone, Default, Record, ByteRepr, Uninit)]
 #[byte_size(size_of::<::libc::tm>())]
 pub struct Tm {
     #[offset(offset_of!(::libc::tm, tm_sec))]
@@ -65,7 +65,7 @@ impl Tm {
     }
 }
 
-#[derive(Clone, Default, Record, ByteRepr)]
+#[derive(Clone, Default, Record, ByteRepr, Uninit)]
 #[byte_size(size_of::<::libc::timeval>())]
 pub struct Timeval {
     #[offset(offset_of!(::libc::timeval, tv_sec))]
@@ -74,7 +74,7 @@ pub struct Timeval {
     pub tv_usec: i64,
 }
 
-#[derive(Clone, Default, Record, ByteRepr)]
+#[derive(Clone, Default, Record, ByteRepr, Uninit)]
 #[byte_size(size_of::<::libc::timespec>())]
 pub struct Timespec {
     #[offset(offset_of!(::libc::timespec, tv_sec))]

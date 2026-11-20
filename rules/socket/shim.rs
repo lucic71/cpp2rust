@@ -1,20 +1,21 @@
 // Copyright (c) 2022-present INESC-ID.
 // Distributed under the MIT license that can be found in the LICENSE file.
 
-use crate::{ByteRepr, CChar, In6Addr, InAddr, Ptr, Record};
+use crate::{ByteRepr, CChar, In6Addr, InAddr, Ptr, Record, Uninit};
 
 // The fields are at the offsets of the byte representation below.
-#[derive(Clone, Record, ByteRepr)]
+#[derive(Clone, Record, ByteRepr, Uninit)]
 #[byte_size(16)]
 pub struct Sockaddr {
     #[offset(0)]
     pub sa_family: u16,
     #[offset(2)]
     #[byte_size(14)]
+    #[array_len(14)]
     pub sa_data: Box<[i8]>,
 }
 
-#[derive(Clone, Record, ByteRepr)]
+#[derive(Clone, Record, ByteRepr, Uninit)]
 #[byte_size(16)]
 pub struct SockaddrIn {
     #[offset(0)]
@@ -25,10 +26,11 @@ pub struct SockaddrIn {
     pub sin_addr: InAddr,
     #[offset(8)]
     #[byte_size(8)]
+    #[array_len(8)]
     pub sin_zero: Box<[u8]>,
 }
 
-#[derive(Clone, Default, Record, ByteRepr)]
+#[derive(Clone, Default, Record, ByteRepr, Uninit)]
 #[byte_size(28)]
 pub struct SockaddrIn6 {
     #[offset(0)]
@@ -43,23 +45,25 @@ pub struct SockaddrIn6 {
     pub sin6_scope_id: u32,
 }
 
-#[derive(Clone, Record, ByteRepr)]
+#[derive(Clone, Record, ByteRepr, Uninit)]
 #[byte_size(110)]
 pub struct SockaddrUn {
     #[offset(0)]
     pub sun_family: u16,
     #[offset(2)]
     #[byte_size(108)]
+    #[array_len(108)]
     pub sun_path: Box<[i8]>,
 }
 
-#[derive(Clone, Record, ByteRepr)]
+#[derive(Clone, Record, ByteRepr, Uninit)]
 #[byte_size(128)]
 pub struct SockaddrStorage {
     #[offset(0)]
     pub ss_family: u16,
     #[offset(2)]
     #[byte_size(126)]
+    #[array_len(126)]
     pub __pad: Box<[u8]>,
 }
 

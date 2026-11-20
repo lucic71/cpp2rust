@@ -89,6 +89,12 @@ pub struct Map<K, T> {
     header: Value<MapNode<T>>,
 }
 
+impl<K, T> crate::Uninit for Map<K, T> {
+    fn uninit() -> Self {
+        Self::default()
+    }
+}
+
 impl<K, T> Default for Map<K, T> {
     fn default() -> Self {
         Self {

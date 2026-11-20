@@ -10,6 +10,12 @@ pub struct CFdSet {
 
 impl crate::ByteRepr for CFdSet {}
 
+impl crate::Uninit for CFdSet {
+    fn uninit() -> Self {
+        Self::default()
+    }
+}
+
 impl CFdSet {
     pub fn zero(&mut self) {
         self.fds.clear();

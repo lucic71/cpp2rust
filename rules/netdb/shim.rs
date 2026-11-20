@@ -1,10 +1,10 @@
 // Copyright (c) 2022-present INESC-ID.
 // Distributed under the MIT license that can be found in the LICENSE file.
 
-use crate::{ByteRepr, Ptr, Record, Sockaddr};
+use crate::{ByteRepr, Ptr, Record, Sockaddr, Uninit};
 use std::mem::{offset_of, size_of};
 
-#[derive(Clone, Default, Record, ByteRepr)]
+#[derive(Clone, Default, Record, ByteRepr, Uninit)]
 #[byte_size(size_of::<::libc::addrinfo>())]
 pub struct Addrinfo {
     #[offset(offset_of!(::libc::addrinfo, ai_flags))]

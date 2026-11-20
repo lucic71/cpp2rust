@@ -105,6 +105,13 @@ impl<T: ByteRepr + 'static> Ptr<T> {
     }
 }
 
+impl crate::Uninit for AnyPtr {
+    #[inline]
+    fn uninit() -> Self {
+        AnyPtr::default()
+    }
+}
+
 impl Default for AnyPtr {
     fn default() -> Self {
         Ptr::<()>::null().to_any()

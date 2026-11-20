@@ -495,6 +495,13 @@ impl<T: FnSig> Eq for FnPtr<T> {}
 
 impl<T: FnSig> ByteRepr for FnPtr<T> {}
 
+impl<T: FnSig> crate::Uninit for FnPtr<T> {
+    #[inline]
+    fn uninit() -> Self {
+        FnPtr::null()
+    }
+}
+
 impl<T: FnSig> FnPtrArg for FnPtr<T> {
     #[inline]
     fn to_repr(self) -> ArgRepr {

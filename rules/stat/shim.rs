@@ -1,10 +1,10 @@
 // Copyright (c) 2022-present INESC-ID.
 // Distributed under the MIT license that can be found in the LICENSE file.
 
-use crate::{ByteRepr, Record};
+use crate::{ByteRepr, Record, Uninit};
 use std::mem::{offset_of, size_of};
 
-#[derive(Clone, Default, Record)]
+#[derive(Clone, Default, Record, Uninit)]
 // The fields have the sizes of those of libc::stat only in x86-64 Linux.
 #[cfg_attr(
     all(target_os = "linux", target_arch = "x86_64"),
