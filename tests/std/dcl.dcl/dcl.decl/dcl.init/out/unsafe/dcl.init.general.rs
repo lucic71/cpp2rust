@@ -12,22 +12,39 @@ pub struct p6_1_zero_initialized_pointer_to_member_HasTwoInts {
     pub first: i32,
     pub second: i32,
 }
+impl p6_1_zero_initialized_pointer_to_member_HasTwoInts {
+    pub unsafe fn copy_from(
+        this: *mut p6_1_zero_initialized_pointer_to_member_HasTwoInts,
+        _a0: *const p6_1_zero_initialized_pointer_to_member_HasTwoInts,
+    ) {
+        (&raw mut (*this).first).write((*_a0).first);
+        (&raw mut (*this).second).write((*_a0).second);
+    }
+}
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg)]
 pub struct p6_1_zero_initialized_pointer_to_member_HoldsSelector {
     pub selector: isize,
+}
+impl p6_1_zero_initialized_pointer_to_member_HoldsSelector {
+    pub unsafe fn copy_from(
+        this: *mut p6_1_zero_initialized_pointer_to_member_HoldsSelector,
+        _a0: *const p6_1_zero_initialized_pointer_to_member_HoldsSelector,
+    ) {
+        (&raw mut (*this).selector).write((*_a0).selector);
+    }
 }
 impl Default for p6_1_zero_initialized_pointer_to_member_HoldsSelector {
     fn default() -> Self {
         unsafe { p6_1_zero_initialized_pointer_to_member_HoldsSelector { selector: -1_isize } }
     }
 }
-pub static mut static_pm_0: std::cell::LazyCell<isize> =
-    std::cell::LazyCell::new(|| unsafe { -1_isize });
+pub static mut static_pm_0: libcc2rs::LazyStorage<isize> =
+    libcc2rs::LazyStorage::new(|__p| unsafe { __p.write(-1_isize) });
 pub unsafe fn test_1() {
-    assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut static_pm_0)) == -1_isize));
+    assert!(((*(*&raw const static_pm_0).get()) == -1_isize));
     assert!(
-        ((*std::cell::LazyCell::force_mut(&mut *&raw mut static_pm_0))
+        ((*(*&raw const static_pm_0).get())
             != (::std::mem::offset_of!(p6_1_zero_initialized_pointer_to_member_HasTwoInts, first)
                 as isize))
     );
@@ -39,7 +56,11 @@ pub unsafe fn test_1() {
                 as isize))
     );
     let mut holder: p6_1_zero_initialized_pointer_to_member_HoldsSelector =
-        <p6_1_zero_initialized_pointer_to_member_HoldsSelector>::default();
+        ::std::mem::MaybeUninit::uninit().assume_init();
+    {
+        let __d = &raw mut holder;
+        (&raw mut (*__d).selector).write(-1_isize);
+    };
     assert!(((holder.selector) == -1_isize));
     assert!(
         ((holder.selector)
@@ -58,5 +79,5 @@ unsafe fn main_0() -> i32 {
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {
-    std::cell::LazyCell::force(&*&raw const static_pm_0);
+    (*&raw const static_pm_0).get();
 }

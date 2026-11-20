@@ -8,7 +8,6 @@ use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 #[repr(C)]
 #[derive(VaArg, FnPtrArg, MoveCtorUnsafe, CppFromUnsafe, Default)]
-#[placement]
 #[cpp_from(i32, new, value)]
 pub struct Chain {
     pub v: i32,

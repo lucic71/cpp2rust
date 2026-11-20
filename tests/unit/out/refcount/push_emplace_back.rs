@@ -12,6 +12,15 @@ pub struct Chunk {
     #[offset(0)]
     pub data: i32,
 }
+impl Chunk {
+    pub fn new_1(this: Ptr<Chunk>) {}
+    pub fn copy_from(this: Ptr<Chunk>, _a0: Ptr<Chunk>) {
+        field!(this, data).write(_a0.with(|__s| __s.data));
+    }
+    pub fn move_from(this: Ptr<Chunk>, _a0: Ptr<Chunk>) {
+        field!(this, data).write({ (*_a0.upgrade().deref()).data });
+    }
+}
 #[derive(Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
 #[byte_size(16)]
 pub struct Writer {
@@ -21,6 +30,15 @@ pub struct Writer {
     #[offset(8)]
     #[byte_size(4)]
     pub chunk: Chunk,
+}
+impl Writer {
+    pub fn new_1(this: Ptr<Writer>) {
+        Chunk::new_1(field_ptr!(this, chunk));
+    }
+    pub fn copy_from(this: Ptr<Writer>, _a0: Ptr<Writer>) {
+        field!(this, output).write(_a0.with(|__s| __s.output.clone()));
+        Chunk::copy_from(field_ptr!(this, chunk), { field_ptr!(_a0, chunk) });
+    }
 }
 #[derive(Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, MoveCtor, MoveAssign, Default)]
 #[byte_size(48)]
@@ -33,11 +51,17 @@ pub struct JPEGData {
     pub app_data: Vec<Vec<u8>>,
 }
 impl JPEGData {
-    pub fn move_from(_a0: Ptr<JPEGData>) -> Self {
-        Self {
-            com_data: field!(_a0, com_data).with_mut(std::mem::take),
-            app_data: field!(_a0, app_data).with_mut(std::mem::take),
-        }
+    pub fn copy_from(this: Ptr<JPEGData>, _a0: Ptr<JPEGData>) {
+        field!(this, com_data).write((*_a0.upgrade().deref()).com_data.clone());
+        field!(this, app_data).write((*_a0.upgrade().deref()).app_data.clone());
+    }
+    pub fn move_from(this: Ptr<JPEGData>, _a0: Ptr<JPEGData>) {
+        field!(this, com_data).write(field!(_a0, com_data).with_mut(std::mem::take));
+        field!(this, app_data).write(field!(_a0, app_data).with_mut(std::mem::take));
+    }
+    pub fn new_1(this: Ptr<JPEGData>) {
+        field!(this, com_data).write(Vec::new());
+        field!(this, app_data).write(Vec::new());
     }
 }
 pub fn push_param_0(mut dest: Ptr<Vec<Vec<u8>>>) {
@@ -104,7 +128,16 @@ pub fn emplace_local_from_field_4(mut jpg: Ptr<JPEGData>, mut cond: bool) {
 pub fn nested_emplace_move_5(mut bw: Ptr<Writer>) {
     {
         let mut __tmp_2 = { bw.with(|__s| __s.output.clone()) };
-        let mut __tmp_3 = { bw.with(|__s| __s.chunk) };
+        let mut __tmp_3 = {
+            Rc::try_unwrap({
+                let __v: Value<Chunk> = Rc::new(RefCell::new(<Chunk>::uninit()));
+                Chunk::move_from(__v.as_pointer(), { field_ptr!(bw, chunk) });
+                __v
+            })
+            .ok()
+            .unwrap()
+            .into_inner()
+        };
         __tmp_2.with_mut(|__v: &mut Vec<Chunk>| __v.push(__tmp_3));
     };
 }
@@ -115,7 +148,6 @@ pub fn self_ref_push_6(mut comps: Ptr<Vec<Chunk>>) {
     };
 }
 #[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, CppFrom)]
-#[placement]
 #[cpp_from(i32, new_1, value)]
 #[byte_size(8)]
 pub struct Pair {
@@ -356,13 +388,17 @@ pub struct Bytes {
     pub b: Box<[u8]>,
 }
 impl Bytes {
-    pub fn move_from(_a0: Ptr<Bytes>) -> Self {
-        Self {
-            v: field!(_a0, v).with_mut(std::mem::take),
-            b: Box::new(std::array::from_fn::<_, 3, _>(|__i: usize| {
-                (*_a0.upgrade().deref()).b[(__i) as usize]
-            })),
-        }
+    pub fn copy_from(this: Ptr<Bytes>, _a0: Ptr<Bytes>) {
+        field!(this, v).write((*_a0.upgrade().deref()).v.clone());
+        field!(this, b).write(Box::new(std::array::from_fn::<_, 3, _>(|__i: usize| {
+            (*_a0.upgrade().deref()).b[(__i) as usize]
+        })));
+    }
+    pub fn move_from(this: Ptr<Bytes>, _a0: Ptr<Bytes>) {
+        field!(this, v).write(field!(_a0, v).with_mut(std::mem::take));
+        field!(this, b).write(Box::new(std::array::from_fn::<_, 3, _>(|__i: usize| {
+            (*_a0.upgrade().deref()).b[(__i) as usize]
+        })));
     }
 }
 impl Default for Bytes {
@@ -403,6 +439,14 @@ pub struct Plain {
     #[array_len(2)]
     pub b: Box<[f64]>,
 }
+impl Plain {
+    pub fn copy_from(this: Ptr<Plain>, _a0: Ptr<Plain>) {
+        field!(this, a).write(_a0.with(|__s| __s.a));
+        field!(this, b).write(Box::new(std::array::from_fn::<_, 2, _>(|__i: usize| {
+            (*_a0.upgrade().deref()).b[(__i) as usize]
+        })));
+    }
+}
 impl Default for Plain {
     fn default() -> Self {
         {
@@ -414,12 +458,25 @@ impl Default for Plain {
     }
 }
 pub fn emplace_plain_15(mut v: Ptr<Vec<Plain>>) {
-    let p: Value<Plain> = Rc::new(RefCell::new(Plain {
-        a: 1,
-        b: Box::new([2_f64, 3_f64]),
-    }));
+    let p: Value<Plain> = Rc::new(RefCell::new(<Plain>::uninit()));
     {
-        v.with_mut(|__v: &mut Vec<Plain>| __v.push((*p.borrow()).clone()));
+        let __d = p.as_pointer();
+        field!(__d, a).write(1);
+        field!(__d, b).write(Box::new([2_f64, 3_f64]));
+    };
+    {
+        v.with_mut(|__v: &mut Vec<Plain>| {
+            __v.push(
+                Rc::try_unwrap({
+                    let __v: Value<Plain> = Rc::new(RefCell::new(<Plain>::uninit()));
+                    Plain::copy_from(__v.as_pointer(), { p.as_pointer() });
+                    __v
+                })
+                .ok()
+                .unwrap()
+                .into_inner(),
+            )
+        });
     };
 }
 thread_local!(
@@ -427,7 +484,6 @@ thread_local!(
         Rc::new(RefCell::new(Ptr::<Vec<Counted>>::null()));
 );
 #[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
-#[placement]
 #[byte_size(8)]
 pub struct Counted {
     #[offset(0)]
@@ -493,7 +549,8 @@ fn main_0() -> i32 {
     ({ push_param_0((vecs.as_pointer())) });
     assert!(({ ((*vecs.borrow()).len() == 1_usize) }));
     assert!(({ (*vecs.decay().offset(0_usize).upgrade().deref()).is_empty() }));
-    let jpg: Value<JPEGData> = Rc::new(RefCell::new(<JPEGData>::default()));
+    let jpg: Value<JPEGData> = Rc::new(RefCell::new(<JPEGData>::uninit()));
+    JPEGData::new_1(jpg.as_pointer());
     ({ push_local_from_field_1((jpg.as_pointer()), true) });
     assert!(({ ((*jpg.borrow()).com_data.len() == 1_usize) }));
     assert!(
@@ -520,7 +577,8 @@ fn main_0() -> i32 {
     let chunks: Value<Vec<Chunk>> = Rc::new(RefCell::new(Vec::new()));
     ({ shrink_through_ptr_2((chunks.as_pointer())) });
     assert!(({ (*chunks.borrow()).is_empty() }));
-    let w: Value<Writer> = Rc::new(RefCell::new(<Writer>::default()));
+    let w: Value<Writer> = Rc::new(RefCell::new(<Writer>::uninit()));
+    Writer::new_1(w.as_pointer());
     (*w.borrow_mut()).chunk.data = 42;
     (*w.borrow_mut()).output = (chunks.as_pointer());
     ({ nested_push_move_3((w.as_pointer())) });
@@ -692,10 +750,12 @@ fn main_0() -> i32 {
                 && (((index!(elem!(rows.decay(), 1_usize), 2_usize).read()) as i32) == 3)
         })
     );
-    let bytes: Value<Bytes> = Rc::new(RefCell::new(Bytes {
-        v: Vec::new(),
-        b: Box::new([4_u8, 5_u8, 6_u8]),
-    }));
+    let bytes: Value<Bytes> = Rc::new(RefCell::new(<Bytes>::uninit()));
+    {
+        let __d = bytes.as_pointer();
+        field!(__d, v).write(Vec::new());
+        field!(__d, b).write(Box::new([4_u8, 5_u8, 6_u8]));
+    };
     ({ emplace_from_sibling_18((bytes.as_pointer())) });
     assert!(
         ({

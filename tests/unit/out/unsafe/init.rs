@@ -11,6 +11,12 @@ use std::rc::Rc;
 pub struct X {
     pub x: i32,
 }
+impl X {
+    pub unsafe fn new_1(this: *mut X) {}
+    pub unsafe fn copy_from(this: *mut X, _a0: *const X) {
+        (&raw mut (*this).x).write((*_a0).x);
+    }
+}
 pub unsafe fn func_0() -> i32 {
     return 42;
 }
@@ -26,13 +32,15 @@ unsafe fn main_0() -> i32 {
     let g: *mut i32 = &mut x;
     let mut q: *mut i32 = (&mut x as *mut i32);
     let mut z: *mut i32 = p;
-    let mut xx: X = <X>::default();
+    let mut xx: X = ::std::mem::MaybeUninit::uninit().assume_init();
+    X::new_1(&raw mut xx);
     let mut zz: *mut X = (&mut xx as *mut X);
     xx.x = 1;
     q = (&mut xx.x as *mut i32);
     q = (&mut (*zz).x as *mut i32);
     (*zz).x = 2;
-    let mut ww: X = xx;
+    let mut ww: X = ::std::mem::MaybeUninit::uninit().assume_init();
+    X::copy_from(&raw mut ww, { &xx });
     ww = xx;
     let mut aa: i32 = (unsafe { func_0() });
     aa = (unsafe { func_0() });

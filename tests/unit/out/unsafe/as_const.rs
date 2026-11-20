@@ -27,6 +27,9 @@ impl S {
     pub unsafe fn value_ref_4(&self) -> *const i32 {
         return &self.v;
     }
+    pub unsafe fn copy_from(this: *mut S, _a0: *const S) {
+        (&raw mut (*this).v).write((*_a0).v);
+    }
 }
 pub unsafe fn g_0(_a0: *mut S) -> Overload {
     return Overload_kMutableOverload;
@@ -41,7 +44,11 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    let mut s: S = S { v: 7 };
+    let mut s: S = ::std::mem::MaybeUninit::uninit().assume_init();
+    {
+        let __d = &raw mut s;
+        (&raw mut (*__d).v).write(7);
+    };
     assert!((((unsafe { S::f_1(&mut s,) }) as i32) == (Overload_kMutableOverload as i32)));
     assert!((((unsafe { S::f_2(&s,) }) as i32) == (Overload_kConstOverload as i32)));
     assert!((((unsafe { g_0(&mut s,) }) as i32) == (Overload_kMutableOverload as i32)));

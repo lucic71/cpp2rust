@@ -12,8 +12,16 @@ pub struct Val {
     #[offset(0)]
     pub x: i32,
 }
-pub fn sum_0(mut a: Val, mut b: Val) -> i32 {
-    return (a.x + b.x);
+impl Val {
+    pub fn copy_from(this: Ptr<Val>, _a0: Ptr<Val>) {
+        field!(this, x).write(_a0.with(|__s| __s.x));
+    }
+    pub fn move_from(this: Ptr<Val>, _a0: Ptr<Val>) {
+        field!(this, x).write({ (*_a0.upgrade().deref()).x });
+    }
+}
+pub fn sum_0(a: Value<Val>, b: Value<Val>) -> i32 {
+    return ({ (*a.borrow()).x } + { (*b.borrow()).x });
 }
 pub fn main() {
     __cpp2rust_init_globals();
@@ -48,7 +56,11 @@ fn main_0() -> i32 {
     ({ (*tally.borrow()).spec::<fn()>(0).call() });
     ({ (*tally.borrow()).spec::<fn()>(1).call() });
     assert!(({ ((*total.borrow()) == 7) }));
-    let v: Value<Val> = Rc::new(RefCell::new(Val { x: 5 }));
+    let v: Value<Val> = Rc::new(RefCell::new(<Val>::uninit()));
+    {
+        let __d = v.as_pointer();
+        field!(__d, x).write(5);
+    };
     let acc: Value<i32> = Rc::new(RefCell::new(0));
     let pick: Value<FnPtr<Generic>> = Rc::new(RefCell::new(lambda!(
         Generic,
@@ -59,8 +71,16 @@ fn main_0() -> i32 {
         || {
             {
                 let __rhs = ({
-                    let _a: Val = (*v.upgrade().deref());
-                    let _b: Val = (*v.upgrade().deref());
+                    let _a: Val = {
+                        let __v: Value<Val> = Rc::new(RefCell::new(<Val>::uninit()));
+                        Val::copy_from(__v.as_pointer(), { (v).clone() });
+                        __v
+                    };
+                    let _b: Val = {
+                        let __v: Value<Val> = Rc::new(RefCell::new(<Val>::uninit()));
+                        Val::copy_from(__v.as_pointer(), { (v).clone() });
+                        __v
+                    };
                     sum_0(_a, _b)
                 });
                 acc.with_mut(|__v| *__v = *__v + __rhs)
@@ -69,8 +89,16 @@ fn main_0() -> i32 {
         || {
             {
                 let __rhs = ({
-                    let _a: Val = (*v.upgrade().deref());
-                    let _b: Val = (*v.upgrade().deref());
+                    let _a: Val = {
+                        let __v: Value<Val> = Rc::new(RefCell::new(<Val>::uninit()));
+                        Val::copy_from(__v.as_pointer(), { (v).clone() });
+                        __v
+                    };
+                    let _b: Val = {
+                        let __v: Value<Val> = Rc::new(RefCell::new(<Val>::uninit()));
+                        Val::copy_from(__v.as_pointer(), { (v).clone() });
+                        __v
+                    };
                     sum_0(_a, _b)
                 });
                 acc.with_mut(|__v| *__v = *__v + __rhs)
@@ -79,8 +107,16 @@ fn main_0() -> i32 {
         || {
             {
                 let __rhs = ({
-                    let _a: Val = (*v.upgrade().deref());
-                    let _b: Val = (*v.upgrade().deref());
+                    let _a: Val = {
+                        let __v: Value<Val> = Rc::new(RefCell::new(<Val>::uninit()));
+                        Val::move_from(__v.as_pointer(), { (v).clone() });
+                        __v
+                    };
+                    let _b: Val = {
+                        let __v: Value<Val> = Rc::new(RefCell::new(<Val>::uninit()));
+                        Val::copy_from(__v.as_pointer(), { (v).clone() });
+                        __v
+                    };
                     sum_0(_a, _b)
                 });
                 acc.with_mut(|__v| *__v = *__v + __rhs)

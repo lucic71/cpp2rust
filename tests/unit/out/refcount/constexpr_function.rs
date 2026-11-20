@@ -27,8 +27,12 @@ pub struct Flag {
     #[offset(0)]
     pub v: i32,
 }
-pub fn use_4(f: Flag) -> i32 {
-    let f: Value<Flag> = Rc::new(RefCell::new(f));
+impl Flag {
+    pub fn copy_from(this: Ptr<Flag>, _a0: Ptr<Flag>) {
+        field!(this, v).write(_a0.with(|__s| __s.v));
+    }
+}
+pub fn use_4(f: Value<Flag>) -> i32 {
     assert!(({ FlagImpl::to_bool(&f.as_pointer(),) }));
     return { (*f.borrow()).v };
 }
@@ -50,6 +54,11 @@ pub struct P {
     #[offset(0)]
     pub v: i32,
 }
+impl P {
+    pub fn copy_from(this: Ptr<P>, _a0: Ptr<P>) {
+        field!(this, v).write(_a0.with(|__s| __s.v));
+    }
+}
 pub fn main() {
     __cpp2rust_init_globals();
     libcc2rs::cpp2rust_exit(main_0());
@@ -66,12 +75,36 @@ fn main_0() -> i32 {
     assert!((({ checked_5(1,) }) == 2));
     let mut c: i32 = ({ checked_5(4) });
     assert!((c == 5));
-    assert!((({ use_4(Flag { v: 2 },) }) == 2));
-    let mut u: i32 = ({ use_4(Flag { v: 3 }) });
+    assert!(
+        (({
+            use_4({
+                let __v: Value<Flag> = Rc::new(RefCell::new(<Flag>::uninit()));
+                {
+                    let __d = __v.as_pointer();
+                    field!(__d, v).write(2);
+                };
+                __v
+            })
+        }) == 2)
+    );
+    let mut u: i32 = ({
+        use_4({
+            let __v: Value<Flag> = Rc::new(RefCell::new(<Flag>::uninit()));
+            {
+                let __d = __v.as_pointer();
+                field!(__d, v).write(3);
+            };
+            __v
+        })
+    });
     assert!((u == 3));
     let mut ptr: Ptr<i32> = arr.decay();
     assert!(!(ptr).is_null());
-    let p: Value<P> = Rc::new(RefCell::new(P { v: 9 }));
+    let p: Value<P> = Rc::new(RefCell::new(<P>::uninit()));
+    {
+        let __d = p.as_pointer();
+        field!(__d, v).write(9);
+    };
     assert!((({ PImpl::get(&p.as_pointer(),) }) == 9));
     let mut k: i32 = ({ scaled_2(4) });
     assert!((k == 4));

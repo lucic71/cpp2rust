@@ -16,7 +16,6 @@ pub unsafe fn test_0() {
 }
 #[repr(C)]
 #[derive(VaArg, FnPtrArg, MoveCtorUnsafe, CppFromUnsafe, Default)]
-#[placement]
 #[cpp_from(i32, new, value)]
 pub struct p6_forward_like_Movable {
     pub value: i32,
@@ -53,7 +52,6 @@ impl Clone for p6_forward_like_Movable {
 }
 #[repr(C)]
 #[derive(Clone, VaArg, FnPtrArg, MoveCtorUnsafe)]
-#[placement]
 pub struct p6_forward_like_Holder {
     pub member: p6_forward_like_Movable,
 }
@@ -102,7 +100,6 @@ pub unsafe fn test_3() {
 }
 #[repr(C)]
 #[derive(FnPtrArg, MoveCtorUnsafe, CppFromUnsafe, Default)]
-#[placement]
 #[cpp_from(i32, new, value)]
 pub struct p9_move_Movable {
     pub value: i32,
@@ -153,7 +150,6 @@ pub unsafe fn test_4() {
 }
 #[repr(C)]
 #[derive(VaArg, FnPtrArg, MoveCtorUnsafe, CppFromUnsafe)]
-#[placement]
 #[cpp_from(i32, new, value)]
 pub struct p10_forward_in_template_A {
     pub value: i32,
@@ -236,7 +232,6 @@ pub unsafe fn test_7() {
 }
 #[repr(C)]
 #[derive(VaArg, FnPtrArg, MoveCtorUnsafe, CppFromUnsafe, Default)]
-#[placement]
 #[cpp_from(i32, new, value)]
 pub struct p11_move_if_noexcept_NoexceptMove {
     pub value: i32,
@@ -274,7 +269,6 @@ impl Clone for p11_move_if_noexcept_NoexceptMove {
 }
 #[repr(C)]
 #[derive(VaArg, FnPtrArg, MoveCtorUnsafe, CppFromUnsafe, Default)]
-#[placement]
 #[cpp_from(i32, new, value)]
 pub struct p11_move_if_noexcept_ThrowingMove {
     pub value: i32,

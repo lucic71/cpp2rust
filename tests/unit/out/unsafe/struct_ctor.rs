@@ -8,7 +8,6 @@ use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
-#[placement]
 pub struct StructWithCtor {
     x1_: i32,
     x2_: i32,
@@ -36,7 +35,6 @@ pub unsafe fn foo_0(x: *mut i32) -> *mut i32 {
 }
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, CppFromUnsafe, Default)]
-#[placement]
 #[cpp_from(i32, new, value)]
 pub struct Value_ {
     pub v: i32,
@@ -51,7 +49,6 @@ impl Value_ {
 }
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg)]
-#[placement]
 pub struct Ptr_ {
     pub v1: Value_,
     pub v2: Value_,

@@ -19,7 +19,6 @@ thread_local!(
     pub static useCount_3: Value<i32> = Rc::new(RefCell::new(0));
 );
 #[derive(Record, ByteRepr, Uninit, VaArg, FnPtrArg, CopyAssign, Destructor)]
-#[placement]
 #[byte_size(4)]
 pub struct LifetimeTracked {
     #[offset(0)]
@@ -91,12 +90,24 @@ pub struct p2_condition_variable_lives_for_whole_statement_ConvertsToInt {
     #[offset(0)]
     pub value: i32,
 }
+impl p2_condition_variable_lives_for_whole_statement_ConvertsToInt {
+    pub fn copy_from(
+        this: Ptr<p2_condition_variable_lives_for_whole_statement_ConvertsToInt>,
+        _a0: Ptr<p2_condition_variable_lives_for_whole_statement_ConvertsToInt>,
+    ) {
+        field!(this, value).write(_a0.with(|__s| __s.value));
+    }
+}
 pub fn test_7() {
     {
         let selector: Value<p2_condition_variable_lives_for_whole_statement_ConvertsToInt> =
             Rc::new(RefCell::new(
-                p2_condition_variable_lives_for_whole_statement_ConvertsToInt { value: 2 },
+                <p2_condition_variable_lives_for_whole_statement_ConvertsToInt>::uninit(),
             ));
+        {
+            let __d = selector.as_pointer();
+            field!(__d, value).write(2);
+        };
         let _dtor_selector =
             std::mem::DropGuard::new(selector.clone(), |__p| __p.as_pointer().destructor());
         'switch: {

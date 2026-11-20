@@ -16,10 +16,20 @@ impl p2_non_const_conversion_function_Gauge {
     pub unsafe fn to_i64(&mut self) -> i64 {
         return (*self.value.prefix_inc());
     }
+    pub unsafe fn copy_from(
+        this: *mut p2_non_const_conversion_function_Gauge,
+        _a0: *const p2_non_const_conversion_function_Gauge,
+    ) {
+        (&raw mut (*this).value).write((*_a0).value);
+    }
 }
 pub unsafe fn test_0() {
     let mut gauge: p2_non_const_conversion_function_Gauge =
-        p2_non_const_conversion_function_Gauge { value: 20_i64 };
+        ::std::mem::MaybeUninit::uninit().assume_init();
+    {
+        let __d = &raw mut gauge;
+        (&raw mut (*__d).value).write(20_i64);
+    };
     let mut converted: i64 =
         (unsafe { p2_non_const_conversion_function_Gauge::to_i64(&mut gauge) });
     assert!(((converted) == (21_i64)));

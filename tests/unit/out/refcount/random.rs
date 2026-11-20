@@ -31,6 +31,21 @@ pub struct Pair {
     #[array_len(2)]
     pub ap: Box<[Ptr<i32>]>,
 }
+impl Pair {
+    pub fn copy_from(this: Ptr<Pair>, _a0: Ptr<Pair>) {
+        field!(this, x).write(_a0.with(|__s| __s.x));
+        field!(this, y).write(_a0.with(|__s| __s.y));
+        field!(this, a).write(Box::new(std::array::from_fn::<_, 5, _>(|__i: usize| {
+            (*_a0.upgrade().deref()).a[(__i) as usize]
+        })));
+        field!(this, r).write((_a0.with(|__s| __s.r.clone())).clone());
+        field!(this, p).write(_a0.with(|__s| __s.p.clone()));
+        field!(this, pair).write(_a0.with(|__s| __s.pair.clone()));
+        field!(this, ap).write(Box::new(std::array::from_fn::<_, 2, _>(|__i: usize| {
+            ((*_a0.upgrade().deref()).ap[(__i) as usize]).clone()
+        })));
+    }
+}
 impl Default for Pair {
     fn default() -> Self {
         {
@@ -54,6 +69,9 @@ pub fn zero_0() -> i32 {
 #[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
 #[byte_size(1)]
 pub struct X1 {}
+impl X1 {
+    pub fn copy_from(this: Ptr<X1>, _a0: Ptr<X1>) {}
+}
 pub fn foo_1(mut x1: i32, x2: Ptr<i32>, mut x3: Ptr<i32>, p2: Ptr<Pair>, mut p3: Ptr<Pair>) {}
 pub fn main() {
     __cpp2rust_init_globals();
@@ -72,73 +90,81 @@ fn main_0() -> i32 {
     let mut px3: Ptr<i32> = (*px1.borrow()).clone();
     let mut res: i32 = ((*x1.borrow()) + (*x2.borrow()));
     res = ((*x1.borrow()) + (*x2.borrow()));
-    let y1: Value<Pair> = Rc::new(RefCell::new(Pair {
-        x: 1,
-        y: 2,
-        a: Box::new([1, 2, 3, 4, 5]),
-        r: x1.as_pointer(),
-        p: Ptr::<i32>::null(),
-        pair: Ptr::<Pair>::null(),
-        ap: Box::new([Ptr::<i32>::null(), Ptr::<i32>::null()]),
-    }));
-    let mut y4: Pair = Pair {
-        x: { (*y1.borrow()).x },
-        y: { (*y1.borrow()).y },
-        a: Box::new([
+    let y1: Value<Pair> = Rc::new(RefCell::new(<Pair>::uninit()));
+    {
+        let __d = y1.as_pointer();
+        field!(__d, x).write(1);
+        field!(__d, y).write(2);
+        field!(__d, a).write(Box::new([1, 2, 3, 4, 5]));
+        field!(__d, r).write(x1.as_pointer());
+        field!(__d, p).write(Ptr::<i32>::null());
+        field!(__d, pair).write(Ptr::<Pair>::null());
+        field!(__d, ap).write(Box::new([Ptr::<i32>::null(), Ptr::<i32>::null()]));
+    };
+    let y4: Value<Pair> = Rc::new(RefCell::new(<Pair>::uninit()));
+    {
+        let __d = y4.as_pointer();
+        field!(__d, x).write({ (*y1.borrow()).x });
+        field!(__d, y).write({ (*y1.borrow()).y });
+        field!(__d, a).write(Box::new([
             (array_elem!(y1.as_pointer(), a, 0).read()),
             (array_elem!(y1.as_pointer(), a, 1).read()),
             (array_elem!(y1.as_pointer(), a, 2).read()),
             (array_elem!(y1.as_pointer(), a, 3).read()),
             (array_elem!(y1.as_pointer(), a, 4).read()),
-        ]),
-        r: ({ (*y1.borrow()).r.clone() }).clone(),
-        p: { (*y1.borrow()).p.clone() },
-        pair: { (*y1.borrow()).pair.clone() },
-        ap: Box::new([
+        ]));
+        field!(__d, r).write(({ (*y1.borrow()).r.clone() }).clone());
+        field!(__d, p).write({ (*y1.borrow()).p.clone() });
+        field!(__d, pair).write({ (*y1.borrow()).pair.clone() });
+        field!(__d, ap).write(Box::new([
             (array_elem!(y1.as_pointer(), ap, 0).read()),
             (array_elem!(y1.as_pointer(), ap, 1).read()),
-        ]),
+        ]));
     };
     let ry1: Ptr<Pair> = y1.as_pointer();
     let py1: Value<Ptr<Pair>> = Rc::new(RefCell::new((y1.as_pointer())));
-    let y2: Value<Pair> = Rc::new(RefCell::new(Pair {
-        x: ry1.with(|__s| __s.x),
-        y: ry1.with(|__s| __s.y),
-        a: Box::new([
+    let y2: Value<Pair> = Rc::new(RefCell::new(<Pair>::uninit()));
+    {
+        let __d = y2.as_pointer();
+        field!(__d, x).write(ry1.with(|__s| __s.x));
+        field!(__d, y).write(ry1.with(|__s| __s.y));
+        field!(__d, a).write(Box::new([
             (array_elem!(ry1, a, 0).read()),
             (array_elem!(ry1, a, 1).read()),
             (array_elem!(ry1, a, 2).read()),
             (array_elem!(ry1, a, 3).read()),
             (array_elem!(ry1, a, 4).read()),
-        ]),
-        r: (ry1.with(|__s| __s.r.clone())).clone(),
-        p: ry1.with(|__s| __s.p.clone()),
-        pair: ry1.with(|__s| __s.pair.clone()),
-        ap: Box::new([
+        ]));
+        field!(__d, r).write((ry1.with(|__s| __s.r.clone())).clone());
+        field!(__d, p).write(ry1.with(|__s| __s.p.clone()));
+        field!(__d, pair).write(ry1.with(|__s| __s.pair.clone()));
+        field!(__d, ap).write(Box::new([
             (array_elem!(ry1, ap, 0).read()),
             (array_elem!(ry1, ap, 1).read()),
-        ]),
-    }));
+        ]));
+    };
     let ry2: Ptr<Pair> = (ry1).clone();
     let mut py2: Ptr<Pair> = (ry1).clone();
-    let y3: Value<Pair> = Rc::new(RefCell::new(Pair {
-        x: (*py1.borrow()).with(|__s| __s.x),
-        y: (*py1.borrow()).with(|__s| __s.y),
-        a: Box::new([
+    let y3: Value<Pair> = Rc::new(RefCell::new(<Pair>::uninit()));
+    {
+        let __d = y3.as_pointer();
+        field!(__d, x).write((*py1.borrow()).with(|__s| __s.x));
+        field!(__d, y).write((*py1.borrow()).with(|__s| __s.y));
+        field!(__d, a).write(Box::new([
             (array_elem!((*py1.borrow()), a, 0).read()),
             (array_elem!((*py1.borrow()), a, 1).read()),
             (array_elem!((*py1.borrow()), a, 2).read()),
             (array_elem!((*py1.borrow()), a, 3).read()),
             (array_elem!((*py1.borrow()), a, 4).read()),
-        ]),
-        r: ((*py1.borrow()).with(|__s| __s.r.clone())).clone(),
-        p: (*py1.borrow()).with(|__s| __s.p.clone()),
-        pair: (*py1.borrow()).with(|__s| __s.pair.clone()),
-        ap: Box::new([
+        ]));
+        field!(__d, r).write(((*py1.borrow()).with(|__s| __s.r.clone())).clone());
+        field!(__d, p).write((*py1.borrow()).with(|__s| __s.p.clone()));
+        field!(__d, pair).write((*py1.borrow()).with(|__s| __s.pair.clone()));
+        field!(__d, ap).write(Box::new([
             (array_elem!((*py1.borrow()), ap, 0).read()),
             (array_elem!((*py1.borrow()), ap, 1).read()),
-        ]),
-    }));
+        ]));
+    };
     let ry3: Ptr<Pair> = (*py1.borrow()).clone();
     let mut py3: Ptr<Pair> = (*py1.borrow()).clone();
     py3 = Ptr::<Pair>::null();
@@ -201,16 +227,18 @@ fn main_0() -> i32 {
     (array_elem!(y1.as_pointer(), ap, 0).read()).write(0);
     (*c1.borrow_mut()) = ((*x1.borrow()) + 1);
     let j: Value<i32> = Rc::new(RefCell::new(0));
-    let mut new_y: Pair = Pair {
-        x: 1,
-        y: 2,
-        a: Box::new([1, 2, 3, 4, 5]),
-        r: j.as_pointer(),
-        p: Ptr::<i32>::null(),
-        pair: Ptr::<Pair>::null(),
-        ap: Box::new([Ptr::<i32>::null(), Ptr::<i32>::null()]),
+    let new_y: Value<Pair> = Rc::new(RefCell::new(<Pair>::uninit()));
+    {
+        let __d = new_y.as_pointer();
+        field!(__d, x).write(1);
+        field!(__d, y).write(2);
+        field!(__d, a).write(Box::new([1, 2, 3, 4, 5]));
+        field!(__d, r).write(j.as_pointer());
+        field!(__d, p).write(Ptr::<i32>::null());
+        field!(__d, pair).write(Ptr::<Pair>::null());
+        field!(__d, ap).write(Box::new([Ptr::<i32>::null(), Ptr::<i32>::null()]));
     };
-    (*y1.borrow_mut()).x = { new_y.x };
+    (*y1.borrow_mut()).x = { { (*new_y.borrow()).x } };
     let mut i: u32 = 1_u32;
     array_elem!(y1.as_pointer(), a, i).write(-1_i32);
     (*x1.borrow_mut()).postfix_inc();
@@ -226,8 +254,14 @@ fn main_0() -> i32 {
     (*y1.borrow_mut()).pair = (y2.as_pointer());
     (*y2.borrow_mut()).pair = (y3.as_pointer());
     ({ PairImpl::method(&{ (*y1.borrow()).pair.clone() }.with(|__s| __s.pair.clone())) });
-    let mut x: X1 = <X1>::default();
-    let mut y: X1 = <X1>::default();
+    let x: Value<X1> = Rc::new(RefCell::new(<X1>::uninit()));
+    {
+        let __d = x.as_pointer();
+    };
+    let y: Value<X1> = Rc::new(RefCell::new(<X1>::uninit()));
+    {
+        let __d = y.as_pointer();
+    };
     (*x1.borrow_mut()) = (({ zero_0() }) + { (*y1.borrow()).x });
     (*y1.borrow_mut()).x = (({ zero_0() }) + 5);
     let mut ptr2ptr_1: Ptr<Ptr<i32>> = (px1.as_pointer());

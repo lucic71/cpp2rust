@@ -8,7 +8,6 @@ use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 #[repr(C)]
 #[derive(FnPtrArg, MoveCtorUnsafe, CppFromUnsafe, Default)]
-#[placement]
 #[cpp_from(i32, new, value)]
 pub struct MoveOnly {
     pub v: i32,
@@ -24,7 +23,6 @@ impl MoveOnly {
 }
 #[repr(C)]
 #[derive(FnPtrArg)]
-#[placement]
 pub struct ConstMove {
     pub mark: i32,
 }
@@ -52,7 +50,6 @@ impl Default for ConstMove {
 }
 #[repr(C)]
 #[derive(VaArg, FnPtrArg, MoveCtorUnsafe, CppFromUnsafe, Default)]
-#[placement]
 #[cpp_from(i32, new, value)]
 pub struct ThrowingMove {
     pub v: i32,
@@ -88,7 +85,6 @@ impl Clone for ThrowingMove {
 }
 #[repr(C)]
 #[derive(VaArg, FnPtrArg, MoveCtorUnsafe, CppFromUnsafe, Default)]
-#[placement]
 #[cpp_from(i32, new, value)]
 pub struct NoexceptMove {
     pub v: i32,

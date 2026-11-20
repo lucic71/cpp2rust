@@ -12,7 +12,6 @@ pub const Overload_kRvalueOverload: Overload = 2;
 pub const Overload_kIntLvalueOverload: Overload = 3;
 pub const Overload_kIntRvalueOverload: Overload = 4;
 #[derive(Record, ByteRepr, Uninit, VaArg, FnPtrArg, MoveCtor, CppFrom, Default)]
-#[placement]
 #[cpp_from(i32, new, value)]
 #[byte_size(12)]
 pub struct Tracked {

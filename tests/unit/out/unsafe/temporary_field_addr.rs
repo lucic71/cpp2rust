@@ -12,11 +12,11 @@ pub struct Inner {
     pub values: Vec<i32>,
 }
 impl Inner {
-    pub unsafe fn move_from(_a0: *mut Inner) -> Self {
-        let mut this = Self {
-            values: std::mem::take(&mut (*_a0).values),
-        };
-        this
+    pub unsafe fn copy_from(this: *mut Inner, _a0: *const Inner) {
+        (&raw mut (*this).values).write((*_a0).values.clone());
+    }
+    pub unsafe fn move_from(this: *mut Inner, _a0: *mut Inner) {
+        (&raw mut (*this).values).write(std::mem::take(&mut (*_a0).values));
     }
     pub unsafe fn move_assign(&mut self, _a0: *mut Inner) -> *mut Inner {
         {
@@ -33,13 +33,19 @@ pub struct Outer {
     pub name: [libc::c_char; 8],
 }
 impl Outer {
-    pub unsafe fn move_from(_a0: *mut Outer) -> Self {
-        let mut this = Self {
-            values: std::mem::take(&mut (*_a0).values),
-            inner: Inner::move_from({ &mut (*_a0).inner }),
-            name: std::array::from_fn::<_, 8, _>(|__i: usize| (*_a0).name[(__i)]),
-        };
-        this
+    pub unsafe fn copy_from(this: *mut Outer, _a0: *const Outer) {
+        (&raw mut (*this).values).write((*_a0).values.clone());
+        Inner::copy_from((&raw mut (*this).inner), { &(*_a0).inner });
+        (&raw mut (*this).name).write(std::array::from_fn::<_, 8, _>(|__i: usize| {
+            (*_a0).name[(__i)]
+        }));
+    }
+    pub unsafe fn move_from(this: *mut Outer, _a0: *mut Outer) {
+        (&raw mut (*this).values).write(std::mem::take(&mut (*_a0).values));
+        Inner::move_from((&raw mut (*this).inner), { &mut (*_a0).inner });
+        (&raw mut (*this).name).write(std::array::from_fn::<_, 8, _>(|__i: usize| {
+            (*_a0).name[(__i)]
+        }));
     }
     pub unsafe fn move_assign(&mut self, _a0: *mut Outer) -> *mut Outer {
         {
@@ -62,15 +68,18 @@ impl Outer {
         return &mut (*(self as *mut Outer));
     }
 }
-pub unsafe fn make_0(calls: *mut i32) -> Outer {
+pub unsafe fn make_0(__ret: *mut Outer, calls: *mut i32) {
     (*calls).prefix_inc();
-    return Outer {
-        values: Vec::from([1, 2, 3]),
-        inner: Inner {
-            values: Vec::from([4, 5, 6]),
-        },
-        name: std::mem::transmute(*b"abc\0\0\0\0\0"),
+    {
+        let __d = __ret.clone();
+        (&raw mut (*__d).values).write(Vec::from([1, 2, 3]));
+        {
+            let __d = (&raw mut (*__d).inner);
+            (&raw mut (*__d).values).write(Vec::from([4, 5, 6]));
+        };
+        (&raw mut (*__d).name).write(std::mem::transmute(*b"abc\0\0\0\0\0"));
     };
+    return;
 }
 pub unsafe fn sum_1(values: *const Vec<i32>) -> i32 {
     let mut total: i32 = 0;
@@ -88,11 +97,43 @@ pub fn main() {
 }
 unsafe fn main_0() -> i32 {
     let mut calls: i32 = 0;
-    let mut member: i32 = (unsafe { sum_1(&(unsafe { make_0(&mut calls) }).values) });
-    let mut nested: i32 = (unsafe { sum_1(&(unsafe { make_0(&mut calls) }).inner.values) });
-    let mut element: i32 = (unsafe { make_0(&mut calls) }).values[(((calls) - (2)) as usize)];
-    let mut length: usize =
-        libc::strlen(((unsafe { make_0(&mut calls) }).name.as_mut_ptr()).cast_const());
+    let mut member: i32 = (unsafe {
+        sum_1(
+            &{
+                let mut __v: Outer = ::std::mem::MaybeUninit::uninit().assume_init();
+                (unsafe { make_0(&raw mut __v, &mut calls) });
+                __v
+            }
+            .values,
+        )
+    });
+    let mut nested: i32 = (unsafe {
+        sum_1(
+            &{
+                let mut __v: Outer = ::std::mem::MaybeUninit::uninit().assume_init();
+                (unsafe { make_0(&raw mut __v, &mut calls) });
+                __v
+            }
+            .inner
+            .values,
+        )
+    });
+    let mut element: i32 = {
+        let mut __v: Outer = ::std::mem::MaybeUninit::uninit().assume_init();
+        (unsafe { make_0(&raw mut __v, &mut calls) });
+        __v
+    }
+    .values[(((calls) - (2)) as usize)];
+    let mut length: usize = libc::strlen(
+        ({
+            let mut __v: Outer = ::std::mem::MaybeUninit::uninit().assume_init();
+            (unsafe { make_0(&raw mut __v, &mut calls) });
+            __v
+        }
+        .name
+        .as_mut_ptr())
+        .cast_const(),
+    );
     let mut aggregate: i32 = (unsafe {
         sum_1(
             &Outer {

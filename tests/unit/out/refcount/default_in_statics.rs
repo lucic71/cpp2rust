@@ -15,6 +15,13 @@ pub struct Inner {
     #[byte_size(8)]
     pub name: Ptr<i8>,
 }
+impl Inner {
+    pub fn new_1(this: Ptr<Inner>) {}
+    pub fn copy_from(this: Ptr<Inner>, _a0: Ptr<Inner>) {
+        field!(this, v).write(_a0.with(|__s| __s.v));
+        field!(this, name).write(_a0.with(|__s| __s.name.clone()));
+    }
+}
 #[derive(Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg)]
 #[byte_size(88)]
 pub struct Outer {
@@ -42,6 +49,23 @@ pub struct Outer {
     #[offset(80)]
     #[byte_size(8)]
     pub fn_: FnPtr<fn(i32) -> i32>,
+}
+impl Outer {
+    pub fn new_1(this: Ptr<Outer>) {
+        Inner::new_1(field_ptr!(this, inner));
+    }
+    pub fn copy_from(this: Ptr<Outer>, _a0: Ptr<Outer>) {
+        field!(this, p1).write(_a0.with(|__s| __s.p1.clone()));
+        field!(this, p2).write(_a0.with(|__s| __s.p2.clone()));
+        field!(this, arr).write(Box::new(std::array::from_fn::<_, 3, _>(|__i: usize| {
+            ((*_a0.upgrade().deref()).arr[(__i) as usize]).clone()
+        })));
+        field!(this, cp).write(_a0.with(|__s| __s.cp.clone()));
+        field!(this, pp).write(_a0.with(|__s| __s.pp.clone()));
+        Inner::copy_from(field_ptr!(this, inner), { field_ptr!(_a0, inner) });
+        field!(this, x).write(_a0.with(|__s| __s.x));
+        field!(this, fn_).write(_a0.with(|__s| __s.fn_.clone()));
+    }
 }
 impl Default for Outer {
     fn default() -> Self {
@@ -79,44 +103,80 @@ pub struct Foo {
     #[offset(32)]
     pub n: i32,
 }
+impl Foo {
+    pub fn copy_from(this: Ptr<Foo>, _a0: Ptr<Foo>) {
+        field!(this, s1).write(_a0.with(|__s| __s.s1.clone()));
+        field!(this, s2).write(_a0.with(|__s| __s.s2.clone()));
+        field!(this, fn1).write(_a0.with(|__s| __s.fn1.clone()));
+        field!(this, fn2).write(_a0.with(|__s| __s.fn2.clone()));
+        field!(this, n).write(_a0.with(|__s| __s.n));
+    }
+}
 thread_local!(
     pub static static_fn_0: Value<FnPtr<fn(i32) -> i32>> =
         Rc::new(RefCell::new(FnPtr::<fn(i32) -> i32>::null()));
 );
 thread_local!(
-    pub static static_outer_1: Value<Outer> = Rc::new(RefCell::new(<Outer>::default()));
+    pub static static_outer_1: Value<Outer> = {
+        let __v: Value<Outer> = Rc::new(RefCell::new(<Outer>::uninit()));
+        Outer::new_1(__v.as_pointer());
+        __v
+    };
 );
 thread_local!(
-    pub static static_inner_array_2: Value<Box<[Inner]>> = Rc::new(RefCell::new(
-        (0..2).map(|_| <Inner>::default()).collect::<Box<[Inner]>>(),
-    ));
+    pub static static_inner_array_2: Value<Box<[Inner]>> = {
+        let __v: Value<Box<[Inner]>> = Rc::new(RefCell::new(
+            (0..2).map(|_| <Inner>::uninit()).collect::<Box<[_]>>(),
+        ));
+        {
+            let __d = __v.decay();
+            for __i in 0..2_isize {
+                Inner::new_1(__d.offset(__i));
+            }
+        };
+        __v
+    };
 );
 thread_local!(
-    pub static static_foo_3: Value<Foo> = Rc::new(RefCell::new(Foo {
-        s1: Ptr::<i8>::from_string_literal(b"hello"),
-        s2: Ptr::<i8>::null(),
-        fn1: FnPtr::<fn(i32) -> i32>::null(),
-        fn2: FnPtr::<fn(i32) -> i32>::null(),
-        n: 42,
-    }));
+    pub static static_foo_3: Value<Foo> = {
+        let __v: Value<Foo> = Rc::new(RefCell::new(<Foo>::uninit()));
+        {
+            let __d = __v.as_pointer();
+            field!(__d, s1).write(Ptr::<i8>::from_string_literal(b"hello"));
+            field!(__d, s2).write(Ptr::<i8>::null());
+            field!(__d, fn1).write(FnPtr::<fn(i32) -> i32>::null());
+            field!(__d, fn2).write(FnPtr::<fn(i32) -> i32>::null());
+            field!(__d, n).write(42);
+        };
+        __v
+    };
 );
 thread_local!(
-    pub static static_foo_array_4: Value<Box<[Foo]>> = Rc::new(RefCell::new(Box::new([
-        Foo {
-            s1: Ptr::<i8>::from_string_literal(b"first"),
-            s2: Ptr::<i8>::null(),
-            fn1: FnPtr::<fn(i32) -> i32>::null(),
-            fn2: FnPtr::<fn(i32) -> i32>::null(),
-            n: 1,
-        },
-        Foo {
-            s1: Ptr::<i8>::from_string_literal(b"second"),
-            s2: Ptr::<i8>::null(),
-            fn1: FnPtr::<fn(i32) -> i32>::null(),
-            fn2: FnPtr::<fn(i32) -> i32>::null(),
-            n: 2,
-        },
-    ])));
+    pub static static_foo_array_4: Value<Box<[Foo]>> = {
+        let __v: Value<Box<[Foo]>> = Rc::new(RefCell::new(
+            (0..2).map(|_| <Foo>::uninit()).collect::<Box<[_]>>(),
+        ));
+        {
+            let __d = __v.decay();
+            {
+                let __d = __d.offset(0);
+                field!(__d, s1).write(Ptr::<i8>::from_string_literal(b"first"));
+                field!(__d, s2).write(Ptr::<i8>::null());
+                field!(__d, fn1).write(FnPtr::<fn(i32) -> i32>::null());
+                field!(__d, fn2).write(FnPtr::<fn(i32) -> i32>::null());
+                field!(__d, n).write(1);
+            };
+            {
+                let __d = __d.offset(1);
+                field!(__d, s1).write(Ptr::<i8>::from_string_literal(b"second"));
+                field!(__d, s2).write(Ptr::<i8>::null());
+                field!(__d, fn1).write(FnPtr::<fn(i32) -> i32>::null());
+                field!(__d, fn2).write(FnPtr::<fn(i32) -> i32>::null());
+                field!(__d, n).write(2);
+            };
+        };
+        __v
+    };
 );
 pub fn check_local_static_5() {
     assert!(({ ({ (*local_outer_6.with(Value::clone).borrow()).p1.clone() }).is_null() }));
@@ -125,7 +185,11 @@ pub fn check_local_static_5() {
     assert!(({ (*local_p_8.with(Value::clone).borrow()).is_null() }));
 }
 thread_local!(
-    static local_outer_6: Value<Outer> = Rc::new(RefCell::new(<Outer>::default()));
+    static local_outer_6: Value<Outer> = {
+        let __v: Value<Outer> = Rc::new(RefCell::new(<Outer>::uninit()));
+        Outer::new_1(__v.as_pointer());
+        __v
+    };
 );
 thread_local!(
     static local_fn_7: Value<FnPtr<fn(i32) -> i32>> =

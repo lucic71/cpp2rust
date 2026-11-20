@@ -12,6 +12,14 @@ pub struct Counter {
     #[offset(0)]
     pub n: i32,
 }
+impl Counter {
+    pub fn copy_from(this: Ptr<Counter>, _a0: Ptr<Counter>) {
+        field!(this, n).write(_a0.with(|__s| __s.n));
+    }
+    pub fn move_from(this: Ptr<Counter>, _a0: Ptr<Counter>) {
+        field!(this, n).write({ (*_a0.upgrade().deref()).n });
+    }
+}
 #[derive(Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, MoveCtor, MoveAssign)]
 #[byte_size(40)]
 pub struct S {
@@ -29,15 +37,31 @@ pub struct S {
     pub v: Vec<i32>,
 }
 impl S {
-    pub fn move_from(_a0: Ptr<S>) -> Self {
-        Self {
-            tag: { (*_a0.upgrade().deref()).tag },
-            c: { (*_a0.upgrade().deref()).c },
-            arr: Box::new(std::array::from_fn::<_, 2, _>(|__i: usize| {
-                (*_a0.upgrade().deref()).arr[(__i) as usize]
-            })),
-            v: field!(_a0, v).with_mut(std::mem::take),
-        }
+    pub fn copy_from(this: Ptr<S>, _a0: Ptr<S>) {
+        field!(this, tag).write(_a0.with(|__s| __s.tag));
+        Counter::copy_from(field_ptr!(this, c), { field_ptr!(_a0, c) });
+        {
+            let __d = array_field_ptr!(this, arr);
+            for __i in 0..2_usize {
+                Counter::copy_from(__d.offset(__i as isize), {
+                    array_field_ptr!(_a0, arr).offset(__i)
+                });
+            }
+        };
+        field!(this, v).write((*_a0.upgrade().deref()).v.clone());
+    }
+    pub fn move_from(this: Ptr<S>, _a0: Ptr<S>) {
+        field!(this, tag).write({ (*_a0.upgrade().deref()).tag });
+        Counter::move_from(field_ptr!(this, c), { field_ptr!(_a0, c) });
+        {
+            let __d = array_field_ptr!(this, arr);
+            for __i in 0..2_usize {
+                Counter::move_from(__d.offset(__i as isize), {
+                    array_field_ptr!(_a0, arr).offset(__i)
+                });
+            }
+        };
+        field!(this, v).write(field!(_a0, v).with_mut(std::mem::take));
     }
 }
 impl Default for S {
@@ -93,10 +117,53 @@ pub fn main() {
     libcc2rs::cpp2rust_exit(main_0());
 }
 fn main_0() -> i32 {
-    let local: Value<S> = Rc::new(RefCell::new(<S>::default()));
+    let local: Value<S> = Rc::new(RefCell::new(<S>::uninit()));
+    {
+        let __d = local.as_pointer();
+        field!(__d, tag).write(0_i32);
+        {
+            let __d = field_ptr!(__d, c);
+            field!(__d, n).write(0_i32);
+        };
+        {
+            let __d = array_field_ptr!(__d, arr);
+            {
+                let __d = __d.offset(0);
+                field!(__d, n).write(0_i32);
+            };
+            {
+                let __d = __d.offset(1);
+                field!(__d, n).write(0_i32);
+            };
+        };
+        field!(__d, v).write(Vec::new());
+    };
     (*local.borrow_mut()).tag = 1;
     ({ run_0((local.as_pointer())) });
-    let mut heap: Ptr<S> = Ptr::alloc(<S>::default());
+    let mut heap: Ptr<S> = {
+        let __p = Ptr::alloc(<S>::uninit());
+        {
+            let __d = __p.clone();
+            field!(__d, tag).write(0_i32);
+            {
+                let __d = field_ptr!(__d, c);
+                field!(__d, n).write(0_i32);
+            };
+            {
+                let __d = array_field_ptr!(__d, arr);
+                {
+                    let __d = __d.offset(0);
+                    field!(__d, n).write(0_i32);
+                };
+                {
+                    let __d = __d.offset(1);
+                    field!(__d, n).write(0_i32);
+                };
+            };
+            field!(__d, v).write(Vec::new());
+        };
+        __p
+    };
     field!(heap, tag).write(1);
     ({ run_0((heap).clone()) });
     heap.delete();

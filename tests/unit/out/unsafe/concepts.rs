@@ -18,6 +18,7 @@ impl Sized {
     pub unsafe fn size(&mut self) -> i32 {
         return 4;
     }
+    pub unsafe fn copy_from(this: *mut Sized, _a0: *const Sized) {}
 }
 pub unsafe fn is_small_0() -> bool {
     return true;

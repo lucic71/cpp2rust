@@ -16,10 +16,22 @@ pub struct Pair {
     pub x: i32,
     pub y: i32,
 }
+impl Pair {
+    pub unsafe fn copy_from(this: *mut Pair, _a0: *const Pair) {
+        (&raw mut (*this).x).write((*_a0).x);
+        (&raw mut (*this).y).write((*_a0).y);
+    }
+}
 #[repr(C, align(64))]
 #[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct Wide {
     pub c: libc::c_char,
+}
+impl Wide {
+    pub unsafe fn new_1(this: *mut Wide) {}
+    pub unsafe fn copy_from(this: *mut Wide, _a0: *const Wide) {
+        (&raw mut (*this).c).write((*_a0).c);
+    }
 }
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
@@ -28,6 +40,17 @@ pub struct Grid {
     pub row: [i32; 3],
     pub cells: [[i32; 3]; 2],
 }
+impl Grid {
+    pub unsafe fn copy_from(this: *mut Grid, _a0: *const Grid) {
+        (&raw mut (*this).h).write((*_a0).h);
+        (&raw mut (*this).row).write(std::array::from_fn::<_, 3, _>(|__i: usize| {
+            (*_a0).row[(__i)]
+        }));
+        (&raw mut (*this).cells).write(std::array::from_fn::<_, 2, _>(|__i: usize| {
+            std::array::from_fn::<_, 3, _>(|__i2: usize| (*_a0).cells[(__i)][(__i2)])
+        }));
+    }
+}
 #[repr(C)]
 #[derive(Clone, VaArg, FnPtrArg, MoveCtorUnsafe, MoveAssignUnsafe, Default)]
 pub struct Bag {
@@ -35,12 +58,13 @@ pub struct Bag {
     pub items: Vec<i32>,
 }
 impl Bag {
-    pub unsafe fn move_from(_a0: *mut Bag) -> Self {
-        let mut this = Self {
-            n: (*_a0).n,
-            items: std::mem::take(&mut (*_a0).items),
-        };
-        this
+    pub unsafe fn copy_from(this: *mut Bag, _a0: *const Bag) {
+        (&raw mut (*this).n).write((*_a0).n);
+        (&raw mut (*this).items).write((*_a0).items.clone());
+    }
+    pub unsafe fn move_from(this: *mut Bag, _a0: *mut Bag) {
+        (&raw mut (*this).n).write((*_a0).n);
+        (&raw mut (*this).items).write(std::mem::take(&mut (*_a0).items));
     }
     pub unsafe fn move_assign(&mut self, _a0: *mut Bag) -> *mut Bag {
         self.n = (*_a0).n;
@@ -48,6 +72,9 @@ impl Bag {
             self.items = std::mem::take(&mut (*_a0).items);
         };
         return &mut (*(self as *mut Bag));
+    }
+    pub unsafe fn new_1(this: *mut Bag) {
+        (&raw mut (*this).items).write(Vec::new());
     }
 }
 pub unsafe fn adjacent_arrays_0() {
@@ -173,7 +200,13 @@ pub unsafe fn order_physical_2() {
 pub unsafe fn over_aligned_3() {
     let mut c: libc::c_char = ('c' as libc::c_char);
     assert!((((&mut c as *mut libc::c_char) as usize) != (0_usize)));
-    let mut w: [Wide; 3] = [<Wide>::default(); 3];
+    let mut w: [Wide; 3] = ::std::mem::MaybeUninit::uninit().assume_init();
+    {
+        let __d = (&raw mut w).cast::<Wide>();
+        for __i in 0..3_isize {
+            Wide::new_1(__d.offset(__i));
+        }
+    };
     let mut iw: usize = (w.as_mut_ptr() as usize);
     assert!((((iw as u64).wrapping_rem((::std::mem::align_of::<Wide>() as u64))) == (0_u64)));
     assert!(
@@ -245,7 +278,13 @@ pub unsafe fn vector_capacity_4() {
     );
 }
 pub unsafe fn nested_5() {
-    let mut g: Grid = <Grid>::default();
+    let mut g: Grid = ::std::mem::MaybeUninit::uninit().assume_init();
+    {
+        let __d = &raw mut g;
+        (&raw mut (*__d).h).write(0_i32);
+        (&raw mut (*__d).row).write([0; 3]);
+        (&raw mut (*__d).cells).write(std::array::from_fn::<_, 2, _>(|_| Default::default()));
+    };
     let mut ig: usize = ((&mut g as *mut Grid) as usize);
     assert!(
         (((&mut g.row[(2) as usize] as *mut i32) as *mut i32 as usize)
@@ -282,7 +321,8 @@ pub unsafe fn nested_5() {
     assert!(((m[(1) as usize][(1) as usize]) == (42)));
     assert!(((pm) == (&mut m[(1) as usize][(1) as usize] as *mut i32)));
     assert!(((pm) < (&mut m[(2) as usize][(0) as usize] as *mut i32)));
-    let mut b: Bag = <Bag>::default();
+    let mut b: Bag = ::std::mem::MaybeUninit::uninit().assume_init();
+    Bag::new_1(&raw mut b);
     if 4_usize > b.items.capacity() as usize {
         let len_0 = b.items.len();
         b.items.reserve_exact(4_usize - len_0 as usize);
@@ -333,7 +373,12 @@ pub unsafe fn nested_5() {
     );
 }
 pub unsafe fn struct_fields_6() {
-    let mut pr: Pair = Pair { x: 1, y: 2 };
+    let mut pr: Pair = ::std::mem::MaybeUninit::uninit().assume_init();
+    {
+        let __d = &raw mut pr;
+        (&raw mut (*__d).x).write(1);
+        (&raw mut (*__d).y).write(2);
+    };
     let mut ip: usize = ((&mut pr as *mut Pair) as usize);
     assert!(
         (((&mut pr.y as *mut i32) as usize)

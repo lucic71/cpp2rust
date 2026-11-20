@@ -60,6 +60,17 @@ pub struct p9_static_member_hides_namespace_variable_HasStaticStep {
     #[offset(0)]
     pub total: i32,
 }
+impl p9_static_member_hides_namespace_variable_HasStaticStep {
+    pub fn new_1(this: Ptr<p9_static_member_hides_namespace_variable_HasStaticStep>) {
+        field!(this, total).write(1);
+    }
+    pub fn copy_from(
+        this: Ptr<p9_static_member_hides_namespace_variable_HasStaticStep>,
+        _a0: Ptr<p9_static_member_hides_namespace_variable_HasStaticStep>,
+    ) {
+        field!(this, total).write(_a0.with(|__s| __s.total));
+    }
+}
 impl Default for p9_static_member_hides_namespace_variable_HasStaticStep {
     fn default() -> Self {
         { p9_static_member_hides_namespace_variable_HasStaticStep { total: 1 } }
@@ -67,8 +78,9 @@ impl Default for p9_static_member_hides_namespace_variable_HasStaticStep {
 }
 pub fn test_11() {
     let object: Value<p9_static_member_hides_namespace_variable_HasStaticStep> = Rc::new(
-        RefCell::new(<p9_static_member_hides_namespace_variable_HasStaticStep>::default()),
+        RefCell::new(<p9_static_member_hides_namespace_variable_HasStaticStep>::uninit()),
     );
+    p9_static_member_hides_namespace_variable_HasStaticStep::new_1(object.as_pointer());
     assert!(
         (({
             p9_static_member_hides_namespace_variable_HasStaticStepImpl::advance(
@@ -106,7 +118,6 @@ pub fn combine_14(mut first: i32, mut second: i32) -> i32 {
     return ((first * 100) + second);
 }
 #[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, CppFrom)]
-#[placement]
 #[cpp_from(i32, new, value)]
 #[byte_size(4)]
 pub struct p9_evaluated_each_time_called_Widget {
@@ -158,6 +169,15 @@ impl p9_evaluated_each_time_called_Account {
     pub fn set_base(mut value: i32) {
         base_15.with(|rc| *rc.borrow_mut() = value);
     }
+    pub fn new_1(this: Ptr<p9_evaluated_each_time_called_Account>) {
+        field!(this, balance).write(0);
+    }
+    pub fn copy_from(
+        this: Ptr<p9_evaluated_each_time_called_Account>,
+        _a0: Ptr<p9_evaluated_each_time_called_Account>,
+    ) {
+        field!(this, balance).write(_a0.with(|__s| __s.balance));
+    }
 }
 impl Default for p9_evaluated_each_time_called_Account {
     fn default() -> Self {
@@ -191,8 +211,9 @@ pub fn test_17() {
     assert!(({ ({ (*c.borrow()).id } == 5) }));
     assert!((defaults_evaluated_12.with(|rc| *rc.borrow()) == 5));
     let account: Value<p9_evaluated_each_time_called_Account> = Rc::new(RefCell::new(
-        <p9_evaluated_each_time_called_Account>::default(),
+        <p9_evaluated_each_time_called_Account>::uninit(),
     ));
+    p9_evaluated_each_time_called_Account::new_1(account.as_pointer());
     assert!(
         (({
             p9_evaluated_each_time_called_AccountImpl::deposit(
@@ -227,6 +248,11 @@ pub struct p9_not_part_of_the_type_Scale {}
 impl p9_not_part_of_the_type_Scale {
     pub fn times(mut a: i32, mut b: i32) -> i32 {
         return (a * b);
+    }
+    pub fn copy_from(
+        this: Ptr<p9_not_part_of_the_type_Scale>,
+        _a0: Ptr<p9_not_part_of_the_type_Scale>,
+    ) {
     }
 }
 pub fn descending_19(a: Ptr<i32>, b: Ptr<i32>) -> bool {

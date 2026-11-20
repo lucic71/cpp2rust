@@ -24,17 +24,16 @@ unsafe fn main_0() -> i32 {
         {
             assert!(
                 (((*special.offset((i) as isize)) as i32)
-                    == ((*std::cell::LazyCell::force_mut(&mut *&raw mut expected_0))[(i) as usize]
-                        as i32))
+                    == ((*(*&raw const expected_0).get())[(i) as usize] as i32))
             );
             i.postfix_inc();
         }
     }
     return 0;
 }
-static mut expected_0: std::cell::LazyCell<[libc::c_char; 41]> =
-    std::cell::LazyCell::new(|| unsafe {
-        [
+static mut expected_0: libcc2rs::LazyStorage<[libc::c_char; 41]> =
+    libcc2rs::LazyStorage::new(|__p| unsafe {
+        __p.write([
             (7 as libc::c_char),
             (8 as libc::c_char),
             (9 as libc::c_char),
@@ -76,6 +75,6 @@ static mut expected_0: std::cell::LazyCell<[libc::c_char; 41]> =
             (125 as libc::c_char),
             (126 as libc::c_char),
             (b'\xff' as libc::c_char),
-        ]
+        ])
     });
 pub unsafe fn __cpp2rust_init_globals() {}

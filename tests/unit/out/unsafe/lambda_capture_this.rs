@@ -53,6 +53,10 @@ impl S {
         );
         return (unsafe { get.call() });
     }
+    pub unsafe fn copy_from(this: *mut S, _a0: *const S) {
+        (&raw mut (*this).n).write((*_a0).n);
+        (&raw mut (*this).step).write((*_a0).step);
+    }
 }
 pub fn main() {
     unsafe {
@@ -61,7 +65,12 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    let mut s: S = S { n: 0, step: 2 };
+    let mut s: S = ::std::mem::MaybeUninit::uninit().assume_init();
+    {
+        let __d = &raw mut s;
+        (&raw mut (*__d).n).write(0);
+        (&raw mut (*__d).step).write(2);
+    };
     (unsafe { S::bump(&mut s, 3) });
     assert!(((s.n) == (6)));
     (unsafe { S::bump_via_method(&mut s, 4) });

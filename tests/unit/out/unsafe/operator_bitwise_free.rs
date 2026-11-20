@@ -11,33 +11,52 @@ use std::rc::Rc;
 pub struct S {
     pub v: u32,
 }
-pub unsafe fn operator_bitnot_0(a: *const S) -> S {
-    return S { v: !(*a).v };
+impl S {
+    pub unsafe fn copy_from(this: *mut S, _a0: *const S) {
+        (&raw mut (*this).v).write((*_a0).v);
+    }
 }
-pub unsafe fn operator_bitand_1(a: *const S, b: *const S) -> S {
-    return S {
-        v: (((*a).v) & ((*b).v)),
+pub unsafe fn operator_bitnot_0(__ret: *mut S, a: *const S) {
+    {
+        let __d = __ret.clone();
+        (&raw mut (*__d).v).write(!(*a).v);
     };
+    return;
 }
-pub unsafe fn operator_bitor_2(a: *const S, b: *const S) -> S {
-    return S {
-        v: (((*a).v) | ((*b).v)),
+pub unsafe fn operator_bitand_1(__ret: *mut S, a: *const S, b: *const S) {
+    {
+        let __d = __ret.clone();
+        (&raw mut (*__d).v).write((((*a).v) & ((*b).v)));
     };
+    return;
 }
-pub unsafe fn operator_bitxor_3(a: *const S, b: *const S) -> S {
-    return S {
-        v: (((*a).v) ^ ((*b).v)),
+pub unsafe fn operator_bitor_2(__ret: *mut S, a: *const S, b: *const S) {
+    {
+        let __d = __ret.clone();
+        (&raw mut (*__d).v).write((((*a).v) | ((*b).v)));
     };
+    return;
 }
-pub unsafe fn operator_shl_4(a: *const S, mut n: i32) -> S {
-    return S {
-        v: (((*a).v) << (n)),
+pub unsafe fn operator_bitxor_3(__ret: *mut S, a: *const S, b: *const S) {
+    {
+        let __d = __ret.clone();
+        (&raw mut (*__d).v).write((((*a).v) ^ ((*b).v)));
     };
+    return;
 }
-pub unsafe fn operator_shr_5(a: *const S, mut n: i32) -> S {
-    return S {
-        v: (((*a).v) >> (n)),
+pub unsafe fn operator_shl_4(__ret: *mut S, a: *const S, mut n: i32) {
+    {
+        let __d = __ret.clone();
+        (&raw mut (*__d).v).write((((*a).v) << (n)));
     };
+    return;
+}
+pub unsafe fn operator_shr_5(__ret: *mut S, a: *const S, mut n: i32) {
+    {
+        let __d = __ret.clone();
+        (&raw mut (*__d).v).write((((*a).v) >> (n)));
+    };
+    return;
 }
 pub fn main() {
     unsafe {
@@ -46,47 +65,79 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    let mut a: S = S { v: 12_u32 };
-    let mut b: S = S { v: 10_u32 };
+    let mut a: S = ::std::mem::MaybeUninit::uninit().assume_init();
+    {
+        let __d = &raw mut a;
+        (&raw mut (*__d).v).write(12_u32);
+    };
+    let mut b: S = ::std::mem::MaybeUninit::uninit().assume_init();
+    {
+        let __d = &raw mut b;
+        (&raw mut (*__d).v).write(10_u32);
+    };
     assert!(
-        (((unsafe {
-            let _a: *const S = &a;
-            operator_bitnot_0(_a)
+        ((({
+            let mut __v: S = ::std::mem::MaybeUninit::uninit().assume_init();
+            (unsafe {
+                let _a: *const S = &a;
+                operator_bitnot_0(&raw mut __v, _a)
+            });
+            __v
         })
         .v) == (!12_u32))
     );
     assert!(
-        (((unsafe {
-            let _a: *const S = &a;
-            operator_bitand_1(_a, &b)
+        ((({
+            let mut __v: S = ::std::mem::MaybeUninit::uninit().assume_init();
+            (unsafe {
+                let _a: *const S = &a;
+                operator_bitand_1(&raw mut __v, _a, &b)
+            });
+            __v
         })
         .v) == (8_u32))
     );
     assert!(
-        (((unsafe {
-            let _a: *const S = &a;
-            operator_bitor_2(_a, &b)
+        ((({
+            let mut __v: S = ::std::mem::MaybeUninit::uninit().assume_init();
+            (unsafe {
+                let _a: *const S = &a;
+                operator_bitor_2(&raw mut __v, _a, &b)
+            });
+            __v
         })
         .v) == (14_u32))
     );
     assert!(
-        (((unsafe {
-            let _a: *const S = &a;
-            operator_bitxor_3(_a, &b)
+        ((({
+            let mut __v: S = ::std::mem::MaybeUninit::uninit().assume_init();
+            (unsafe {
+                let _a: *const S = &a;
+                operator_bitxor_3(&raw mut __v, _a, &b)
+            });
+            __v
         })
         .v) == (6_u32))
     );
     assert!(
-        (((unsafe {
-            let _a: *const S = &a;
-            operator_shl_4(_a, 2)
+        ((({
+            let mut __v: S = ::std::mem::MaybeUninit::uninit().assume_init();
+            (unsafe {
+                let _a: *const S = &a;
+                operator_shl_4(&raw mut __v, _a, 2)
+            });
+            __v
         })
         .v) == (48_u32))
     );
     assert!(
-        (((unsafe {
-            let _a: *const S = &a;
-            operator_shr_5(_a, 2)
+        ((({
+            let mut __v: S = ::std::mem::MaybeUninit::uninit().assume_init();
+            (unsafe {
+                let _a: *const S = &a;
+                operator_shr_5(&raw mut __v, _a, 2)
+            });
+            __v
         })
         .v) == (3_u32))
     );

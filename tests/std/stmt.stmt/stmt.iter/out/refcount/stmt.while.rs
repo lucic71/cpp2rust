@@ -13,7 +13,6 @@ thread_local!(
     pub static dtorCount_1: Value<i32> = Rc::new(RefCell::new(0));
 );
 #[derive(Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, CppFrom, Destructor, Default)]
-#[placement]
 #[cpp_from(i32, new, value)]
 #[byte_size(4)]
 pub struct p2_condition_variable_created_each_iteration_ConvertsToBool {
@@ -71,7 +70,6 @@ thread_local!(
     pub static dtorCount_4: Value<i32> = Rc::new(RefCell::new(0));
 );
 #[derive(Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, CppFrom, Destructor, Default)]
-#[placement]
 #[cpp_from(i32, new, value)]
 #[byte_size(4)]
 pub struct p2_continue_destroys_condition_variable_ConvertsToBool {

@@ -12,11 +12,11 @@ pub struct Outer {
     pub values: Vec<i32>,
 }
 impl Outer {
-    pub unsafe fn move_from(_a0: *mut Outer) -> Self {
-        let mut this = Self {
-            values: std::mem::take(&mut (*_a0).values),
-        };
-        this
+    pub unsafe fn copy_from(this: *mut Outer, _a0: *const Outer) {
+        (&raw mut (*this).values).write((*_a0).values.clone());
+    }
+    pub unsafe fn move_from(this: *mut Outer, _a0: *mut Outer) {
+        (&raw mut (*this).values).write(std::mem::take(&mut (*_a0).values));
     }
     pub unsafe fn move_assign(&mut self, _a0: *mut Outer) -> *mut Outer {
         {
@@ -25,14 +25,15 @@ impl Outer {
         return &mut (*(self as *mut Outer));
     }
 }
-pub unsafe fn make_0() -> Outer {
-    return Outer {
-        values: Vec::from([1, 2, 3, 4]),
+pub unsafe fn make_0(__ret: *mut Outer) {
+    {
+        let __d = __ret.clone();
+        (&raw mut (*__d).values).write(Vec::from([1, 2, 3, 4]));
     };
+    return;
 }
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, CppFromUnsafe, Default)]
-#[placement]
 #[cpp_from(Vec<i32 > , new, ptr)]
 pub struct H {
     pub last: i32,
@@ -53,7 +54,14 @@ pub fn main() {
 }
 unsafe fn main_0() -> i32 {
     let mut h: H = ::std::mem::MaybeUninit::uninit().assume_init();
-    H::new(&raw mut h, { &(unsafe { make_0() }).values });
+    H::new(&raw mut h, {
+        &{
+            let mut __v: Outer = ::std::mem::MaybeUninit::uninit().assume_init();
+            (unsafe { make_0(&raw mut __v) });
+            __v
+        }
+        .values
+    });
     (unsafe { libc::printf(c"%d\n".as_ptr() as *const libc::c_char, (h.last)) });
     return 0;
 }

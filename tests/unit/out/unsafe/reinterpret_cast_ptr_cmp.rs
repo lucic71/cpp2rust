@@ -12,11 +12,37 @@ pub struct S {
     pub x: i32,
     pub y: i32,
 }
+impl S {
+    pub unsafe fn new_1(this: *mut S) {}
+    pub unsafe fn copy_from(this: *mut S, _a0: *const S) {
+        (&raw mut (*this).x).write((*_a0).x);
+        (&raw mut (*this).y).write((*_a0).y);
+    }
+}
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct W {
     pub h: i32,
     pub arr: [S; 3],
+}
+impl W {
+    pub unsafe fn new_1(this: *mut W) {
+        {
+            let __d = (&raw mut (*this).arr).cast::<S>();
+            for __i in 0..3_isize {
+                S::new_1(__d.offset(__i));
+            }
+        };
+    }
+    pub unsafe fn copy_from(this: *mut W, _a0: *const W) {
+        (&raw mut (*this).h).write((*_a0).h);
+        {
+            let __d = (&raw mut (*this).arr).cast::<S>();
+            for __i in 0..3_usize {
+                S::copy_from(__d.offset(__i as isize), { &(*_a0).arr[(__i)] });
+            }
+        };
+    }
 }
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
@@ -24,8 +50,18 @@ pub struct P {
     pub a: *mut i32,
     pub arr: [*mut i32; 3],
 }
+impl P {
+    pub unsafe fn new_1(this: *mut P) {}
+    pub unsafe fn copy_from(this: *mut P, _a0: *const P) {
+        (&raw mut (*this).a).write((*_a0).a);
+        (&raw mut (*this).arr).write(std::array::from_fn::<_, 3, _>(|__i: usize| {
+            (*_a0).arr[(__i)]
+        }));
+    }
+}
 pub unsafe fn typed_0() {
-    let mut w: W = <W>::default();
+    let mut w: W = ::std::mem::MaybeUninit::uninit().assume_init();
+    W::new_1(&raw mut w);
     let mut p: *mut S = (&mut w.arr[(2) as usize] as *mut S);
     let mut q: *mut S = ((((&mut w as *mut W) as *mut libc::c_char)
         .offset((::std::mem::size_of::<i32>()) as isize)
@@ -56,7 +92,8 @@ pub unsafe fn typed_0() {
         ((((f as usize - ptrs.as_mut_ptr() as usize) / ::std::mem::size_of::<*mut i32>()) as i64)
             == (2_i64))
     );
-    let mut s: P = <P>::default();
+    let mut s: P = ::std::mem::MaybeUninit::uninit().assume_init();
+    P::new_1(&raw mut s);
     let mut a: *mut *mut i32 = (&mut s.a as *mut *mut i32);
     let mut b: *mut *mut i32 = (&mut s.arr[(1) as usize] as *mut *mut i32);
     assert!(((a) < (b)));

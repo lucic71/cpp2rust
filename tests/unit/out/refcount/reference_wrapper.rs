@@ -14,6 +14,12 @@ pub struct Point {
     #[offset(4)]
     pub y: i32,
 }
+impl Point {
+    pub fn copy_from(this: Ptr<Point>, _a0: Ptr<Point>) {
+        field!(this, x).write(_a0.with(|__s| __s.x));
+        field!(this, y).write(_a0.with(|__s| __s.y));
+    }
+}
 pub fn set_0(mut ref_: Ptr<i32>, mut val: i32) {
     ref_.write(val);
 }
@@ -53,7 +59,12 @@ fn main_0() -> i32 {
         (*i1.borrow()),
         ({ read_1((ref_1).clone(),) }),
     );
-    let point: Value<Point> = Rc::new(RefCell::new(Point { x: 3, y: 4 }));
+    let point: Value<Point> = Rc::new(RefCell::new(<Point>::uninit()));
+    {
+        let __d = point.as_pointer();
+        field!(__d, x).write(3);
+        field!(__d, y).write(4);
+    };
     let mut point_ref: Ptr<Point> = point.as_pointer();
     field!(point_ref, x).write(30);
     field!(point_ref, y).write(40);

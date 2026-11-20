@@ -8,7 +8,6 @@ use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, CppFromUnsafe, Default)]
-#[placement]
 #[cpp_from(i32, new, value)]
 pub struct p1_1_parameter_hides_member_in_constructor_HasMemberNamedLikeParameter {
     pub amount: i32,
@@ -47,17 +46,18 @@ pub unsafe fn test_0() {
     );
     assert!(((object.amount) == (5)));
 }
-pub static mut rate_1: std::cell::LazyCell<i32> = std::cell::LazyCell::new(|| unsafe { 3 });
+pub static mut rate_1: libcc2rs::LazyStorage<i32> =
+    libcc2rs::LazyStorage::new(|__p| unsafe { __p.write(3) });
 pub unsafe fn scale_2(mut rate: i32) -> i32 {
     rate *= 2;
     return rate;
 }
 pub unsafe fn read_rate_3() -> i32 {
-    return (*std::cell::LazyCell::force_mut(&mut *&raw mut rate_1));
+    return (*(*&raw const rate_1).get());
 }
 pub unsafe fn test_4() {
     assert!(((unsafe { scale_2(5,) }) == (10)));
-    assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut rate_1)) == (3)));
+    assert!(((*(*&raw const rate_1).get()) == (3)));
     assert!(((unsafe { read_rate_3() }) == (3)));
 }
 pub unsafe fn test_5() {
@@ -90,5 +90,5 @@ unsafe fn main_0() -> i32 {
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {
-    std::cell::LazyCell::force(&*&raw const rate_1);
+    (*&raw const rate_1).get();
 }

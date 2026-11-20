@@ -12,11 +12,23 @@ pub struct HasTwoInts {
     pub first: i32,
     pub second: i32,
 }
+impl HasTwoInts {
+    pub unsafe fn copy_from(this: *mut HasTwoInts, _a0: *const HasTwoInts) {
+        (&raw mut (*this).first).write((*_a0).first);
+        (&raw mut (*this).second).write((*_a0).second);
+    }
+}
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct AlsoHasTwoInts {
     pub first: i32,
     pub second: i32,
+}
+impl AlsoHasTwoInts {
+    pub unsafe fn copy_from(this: *mut AlsoHasTwoInts, _a0: *const AlsoHasTwoInts) {
+        (&raw mut (*this).first).write((*_a0).first);
+        (&raw mut (*this).second).write((*_a0).second);
+    }
 }
 pub fn main() {
     unsafe {

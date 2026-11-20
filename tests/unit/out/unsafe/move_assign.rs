@@ -8,7 +8,6 @@ use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 #[repr(C)]
 #[derive(FnPtrArg, MoveCtorUnsafe, CppFromUnsafe, MoveAssignUnsafe, Default)]
-#[placement]
 #[cpp_from(i32, new, value)]
 pub struct MoveOnly {
     pub v: i32,
@@ -32,7 +31,6 @@ impl MoveOnly {
 }
 #[repr(C)]
 #[derive(FnPtrArg)]
-#[placement]
 pub struct ConstMoveAssign {
     pub mark: i32,
 }

@@ -7,7 +7,6 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
 #[derive(Record, ByteRepr, Uninit, FnPtrArg, MoveCtor, CppFrom, Default)]
-#[placement]
 #[cpp_from(i32, new, value)]
 #[byte_size(4)]
 pub struct MoveOnly {
@@ -24,7 +23,6 @@ impl MoveOnly {
     }
 }
 #[derive(Record, ByteRepr, Uninit, FnPtrArg)]
-#[placement]
 #[byte_size(4)]
 pub struct ConstMove {
     #[offset(0)]
@@ -54,7 +52,6 @@ impl Default for ConstMove {
     }
 }
 #[derive(Record, ByteRepr, Uninit, VaArg, FnPtrArg, MoveCtor, CppFrom, Default)]
-#[placement]
 #[cpp_from(i32, new, value)]
 #[byte_size(12)]
 pub struct ThrowingMove {
@@ -96,7 +93,6 @@ impl Clone for ThrowingMove {
     }
 }
 #[derive(Record, ByteRepr, Uninit, VaArg, FnPtrArg, MoveCtor, CppFrom, Default)]
-#[placement]
 #[cpp_from(i32, new, value)]
 #[byte_size(12)]
 pub struct NoexceptMove {

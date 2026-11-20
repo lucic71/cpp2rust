@@ -10,7 +10,6 @@ thread_local!(
     pub static assigns_0: Value<i32> = Rc::new(RefCell::new(0));
 );
 #[derive(Record, ByteRepr, Uninit, VaArg, FnPtrArg, CopyAssign, Default)]
-#[placement]
 #[byte_size(8)]
 pub struct Partial {
     #[offset(0)]
@@ -40,7 +39,6 @@ impl Clone for Partial {
     }
 }
 #[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg)]
-#[placement]
 #[byte_size(4)]
 pub struct NonConstAssign {
     #[offset(0)]
@@ -67,7 +65,6 @@ impl Default for NonConstAssign {
     }
 }
 #[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, CopyAssign)]
-#[placement]
 #[byte_size(4)]
 pub struct RefQualified {
     #[offset(0)]
@@ -94,7 +91,6 @@ impl Default for RefQualified {
     }
 }
 #[derive(Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, CopyAssign)]
-#[placement]
 #[byte_size(24)]
 pub struct Holder {
     #[offset(0)]
@@ -134,7 +130,6 @@ thread_local!(
     pub static copies_1: Value<i32> = Rc::new(RefCell::new(0));
 );
 #[derive(Record, ByteRepr, Uninit, VaArg, FnPtrArg, CppFrom, CopyAssign, Default)]
-#[placement]
 #[cpp_from(i32, new, value)]
 #[byte_size(4)]
 pub struct CopyCounted {
@@ -159,7 +154,6 @@ impl Clone for CopyCounted {
     }
 }
 #[derive(Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, CopyAssign)]
-#[placement]
 #[byte_size(12)]
 pub struct HasCopyCounted {
     #[offset(0)]

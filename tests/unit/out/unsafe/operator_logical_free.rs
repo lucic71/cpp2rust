@@ -11,6 +11,11 @@ use std::rc::Rc;
 pub struct S {
     pub v: i32,
 }
+impl S {
+    pub unsafe fn copy_from(this: *mut S, _a0: *const S) {
+        (&raw mut (*this).v).write((*_a0).v);
+    }
+}
 pub unsafe fn operator_not_0(a: *const S) -> bool {
     return (((*a).v) == (0));
 }
@@ -27,8 +32,16 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    let mut t: S = S { v: 1 };
-    let mut f: S = S { v: 0 };
+    let mut t: S = ::std::mem::MaybeUninit::uninit().assume_init();
+    {
+        let __d = &raw mut t;
+        (&raw mut (*__d).v).write(1);
+    };
+    let mut f: S = ::std::mem::MaybeUninit::uninit().assume_init();
+    {
+        let __d = &raw mut f;
+        (&raw mut (*__d).v).write(0);
+    };
     assert!(
         (unsafe {
             let _a: *const S = &f;

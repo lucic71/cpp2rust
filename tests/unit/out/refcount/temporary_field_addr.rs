@@ -14,10 +14,11 @@ pub struct Inner {
     pub values: Vec<i32>,
 }
 impl Inner {
-    pub fn move_from(_a0: Ptr<Inner>) -> Self {
-        Self {
-            values: field!(_a0, values).with_mut(std::mem::take),
-        }
+    pub fn copy_from(this: Ptr<Inner>, _a0: Ptr<Inner>) {
+        field!(this, values).write((*_a0.upgrade().deref()).values.clone());
+    }
+    pub fn move_from(this: Ptr<Inner>, _a0: Ptr<Inner>) {
+        field!(this, values).write(field!(_a0, values).with_mut(std::mem::take));
     }
 }
 #[derive(Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, MoveCtor, MoveAssign)]
@@ -35,14 +36,19 @@ pub struct Outer {
     pub name: Box<[i8]>,
 }
 impl Outer {
-    pub fn move_from(_a0: Ptr<Outer>) -> Self {
-        Self {
-            values: field!(_a0, values).with_mut(std::mem::take),
-            inner: Inner::move_from({ field_ptr!(_a0, inner) }),
-            name: Box::new(std::array::from_fn::<_, 8, _>(|__i: usize| {
-                (*_a0.upgrade().deref()).name[(__i) as usize]
-            })),
-        }
+    pub fn copy_from(this: Ptr<Outer>, _a0: Ptr<Outer>) {
+        field!(this, values).write((*_a0.upgrade().deref()).values.clone());
+        Inner::copy_from(field_ptr!(this, inner), { field_ptr!(_a0, inner) });
+        field!(this, name).write(Box::new(std::array::from_fn::<_, 8, _>(|__i: usize| {
+            (*_a0.upgrade().deref()).name[(__i) as usize]
+        })));
+    }
+    pub fn move_from(this: Ptr<Outer>, _a0: Ptr<Outer>) {
+        field!(this, values).write(field!(_a0, values).with_mut(std::mem::take));
+        Inner::move_from(field_ptr!(this, inner), { field_ptr!(_a0, inner) });
+        field!(this, name).write(Box::new(std::array::from_fn::<_, 8, _>(|__i: usize| {
+            (*_a0.upgrade().deref()).name[(__i) as usize]
+        })));
     }
 }
 impl Default for Outer {
@@ -56,17 +62,20 @@ impl Default for Outer {
         }
     }
 }
-pub fn make_0(calls: Ptr<i32>) -> Outer {
+pub fn make_0(__ret: Ptr<Outer>, calls: Ptr<i32>) {
     calls.with_mut(|__v| {
         __v.prefix_inc();
     });
-    return Outer {
-        values: Vec::from([1, 2, 3]),
-        inner: Inner {
-            values: Vec::from([4, 5, 6]),
-        },
-        name: i8::array_from_literal(b"abc\0\0\0\0\0"),
+    {
+        let __d = __ret.clone();
+        field!(__d, values).write(Vec::from([1, 2, 3]));
+        {
+            let __d = field_ptr!(__d, inner);
+            field!(__d, values).write(Vec::from([4, 5, 6]));
+        };
+        field!(__d, name).write(i8::array_from_literal(b"abc\0\0\0\0\0"));
     };
+    return;
 }
 pub fn sum_1(values: Ptr<Vec<i32>>) -> i32 {
     let mut total: i32 = 0;
@@ -84,20 +93,38 @@ fn main_0() -> i32 {
     let calls: Value<i32> = Rc::new(RefCell::new(0));
     let mut member: i32 = ({
         sum_1(
-            (match Rc::new(RefCell::new(({ make_0(calls.as_pointer()) }))).as_pointer() {
+            (match {
+                let __v: Value<Outer> = Rc::new(RefCell::new(<Outer>::uninit()));
+                ({ make_0(__v.as_pointer(), calls.as_pointer()) });
+                __v
+            }
+            .as_pointer()
+            {
                 __tmp_1 => field_ref!(__tmp_1, values).as_pointer(),
             }),
         )
     });
     let mut nested: i32 = ({
         sum_1(
-            (match Rc::new(RefCell::new(({ make_0(calls.as_pointer()) }))).as_pointer() {
+            (match {
+                let __v: Value<Outer> = Rc::new(RefCell::new(<Outer>::uninit()));
+                ({ make_0(__v.as_pointer(), calls.as_pointer()) });
+                __v
+            }
+            .as_pointer()
+            {
                 __tmp_2 => field_ref!(field_ptr!(__tmp_2, inner), values).as_pointer(),
             }),
         )
     });
     let mut element: i32 = (match (
-        (match Rc::new(RefCell::new(({ make_0(calls.as_pointer()) }))).as_pointer() {
+        (match {
+            let __v: Value<Outer> = Rc::new(RefCell::new(<Outer>::uninit()));
+            ({ make_0(__v.as_pointer(), calls.as_pointer()) });
+            __v
+        }
+        .as_pointer()
+        {
             __tmp_4 => field_ref!(__tmp_4, values).as_pointer(),
         }),
         { (((*calls.borrow()) - 2) as usize) },
@@ -110,21 +137,32 @@ fn main_0() -> i32 {
         }
     }
     .read());
-    let mut length: usize =
-        (match Rc::new(RefCell::new(({ make_0(calls.as_pointer()) }))).as_pointer() {
-            __tmp_6 => array_field_ptr!(__tmp_6, name),
-        })
-        .to_c_string_iterator()
-        .count();
+    let mut length: usize = (match {
+        let __v: Value<Outer> = Rc::new(RefCell::new(<Outer>::uninit()));
+        ({ make_0(__v.as_pointer(), calls.as_pointer()) });
+        __v
+    }
+    .as_pointer()
+    {
+        __tmp_6 => array_field_ptr!(__tmp_6, name),
+    })
+    .to_c_string_iterator()
+    .count();
     let mut aggregate: i32 = ({
         sum_1(
-            (match Rc::new(RefCell::new(Outer {
-                values: Vec::from([7]),
-                inner: Inner {
-                    values: Vec::from([8, 9]),
-                },
-                name: i8::array_from_literal(b"x\0\0\0\0\0\0\0"),
-            }))
+            (match {
+                let __v: Value<Outer> = Rc::new(RefCell::new(<Outer>::uninit()));
+                {
+                    let __d = __v.as_pointer();
+                    field!(__d, values).write(Vec::from([7]));
+                    {
+                        let __d = field_ptr!(__d, inner);
+                        field!(__d, values).write(Vec::from([8, 9]));
+                    };
+                    field!(__d, name).write(i8::array_from_literal(b"x\0\0\0\0\0\0\0"));
+                };
+                __v
+            }
             .as_pointer()
             {
                 __tmp_7 => field_ref!(field_ptr!(__tmp_7, inner), values).as_pointer(),

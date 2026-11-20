@@ -14,12 +14,29 @@ pub struct p6_1_zero_initialized_pointer_to_member_HasTwoInts {
     #[offset(4)]
     pub second: i32,
 }
+impl p6_1_zero_initialized_pointer_to_member_HasTwoInts {
+    pub fn copy_from(
+        this: Ptr<p6_1_zero_initialized_pointer_to_member_HasTwoInts>,
+        _a0: Ptr<p6_1_zero_initialized_pointer_to_member_HasTwoInts>,
+    ) {
+        field!(this, first).write(_a0.with(|__s| __s.first));
+        field!(this, second).write(_a0.with(|__s| __s.second));
+    }
+}
 #[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg)]
 #[byte_size(8)]
 pub struct p6_1_zero_initialized_pointer_to_member_HoldsSelector {
     #[offset(0)]
     #[byte_size(8)]
     pub selector: isize,
+}
+impl p6_1_zero_initialized_pointer_to_member_HoldsSelector {
+    pub fn copy_from(
+        this: Ptr<p6_1_zero_initialized_pointer_to_member_HoldsSelector>,
+        _a0: Ptr<p6_1_zero_initialized_pointer_to_member_HoldsSelector>,
+    ) {
+        field!(this, selector).write(_a0.with(|__s| __s.selector));
+    }
 }
 impl Default for p6_1_zero_initialized_pointer_to_member_HoldsSelector {
     fn default() -> Self {
@@ -43,13 +60,20 @@ pub fn test_1() {
             != (offset_of_field!(p6_1_zero_initialized_pointer_to_member_HasTwoInts, first)
                 as isize))
     );
-    let mut holder: p6_1_zero_initialized_pointer_to_member_HoldsSelector =
-        <p6_1_zero_initialized_pointer_to_member_HoldsSelector>::default();
-    assert!(((holder.selector) == -1_isize));
+    let holder: Value<p6_1_zero_initialized_pointer_to_member_HoldsSelector> = Rc::new(
+        RefCell::new(<p6_1_zero_initialized_pointer_to_member_HoldsSelector>::uninit()),
+    );
+    {
+        let __d = holder.as_pointer();
+        field!(__d, selector).write(-1_isize);
+    };
+    assert!(({ (({ (*holder.borrow()).selector }) == -1_isize) }));
     assert!(
-        (holder.selector
-            != (offset_of_field!(p6_1_zero_initialized_pointer_to_member_HasTwoInts, first)
-                as isize))
+        ({
+            ({ (*holder.borrow()).selector }
+                != (offset_of_field!(p6_1_zero_initialized_pointer_to_member_HasTwoInts, first)
+                    as isize))
+        })
     );
 }
 pub fn main() {

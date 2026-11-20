@@ -24,20 +24,33 @@ pub struct p1_own_address_in_initializer_SelfLinked {
     pub next: *mut p1_own_address_in_initializer_SelfLinked,
     pub value: i32,
 }
+impl p1_own_address_in_initializer_SelfLinked {
+    pub unsafe fn copy_from(
+        this: *mut p1_own_address_in_initializer_SelfLinked,
+        _a0: *const p1_own_address_in_initializer_SelfLinked,
+    ) {
+        (&raw mut (*this).next).write((*_a0).next);
+        (&raw mut (*this).value).write((*_a0).value);
+    }
+}
 pub unsafe fn test_1() {
     let mut node: p1_own_address_in_initializer_SelfLinked =
-        p1_own_address_in_initializer_SelfLinked {
-            next: std::ptr::null_mut(),
-            value: 3,
-        };
+        ::std::mem::MaybeUninit::uninit().assume_init();
+    {
+        let __d = &raw mut node;
+        (&raw mut (*__d).next).write(std::ptr::null_mut());
+        (&raw mut (*__d).value).write(3);
+    };
     let mut outer: *mut p1_own_address_in_initializer_SelfLinked =
         (&mut node as *mut p1_own_address_in_initializer_SelfLinked);
     {
         let mut node: p1_own_address_in_initializer_SelfLinked =
-            <p1_own_address_in_initializer_SelfLinked>::default();
-        node = p1_own_address_in_initializer_SelfLinked {
-            next: (&mut node as *mut p1_own_address_in_initializer_SelfLinked),
-            value: 7,
+            ::std::mem::MaybeUninit::uninit().assume_init();
+        {
+            let __d = &raw mut node;
+            (&raw mut (*__d).next)
+                .write((&mut node as *mut p1_own_address_in_initializer_SelfLinked));
+            (&raw mut (*__d).value).write(7);
         };
         assert!(((node.next) == (&mut node as *mut p1_own_address_in_initializer_SelfLinked)));
         assert!(((node.next) != (outer)));
@@ -73,7 +86,6 @@ pub const anon_4_limit: anon_4 = 13;
 pub const anon_4_above: anon_4 = 14;
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg)]
-#[placement]
 pub struct p9_func_declared_before_function_body_RecordsConstructorName {
     pub name: *const libc::c_char,
 }

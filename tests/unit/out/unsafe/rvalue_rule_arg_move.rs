@@ -6,11 +6,12 @@ use std::collections::BTreeMap;
 use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
-pub static mut copies_0: std::cell::LazyCell<i32> = std::cell::LazyCell::new(|| unsafe { 0 });
-pub static mut moves_1: std::cell::LazyCell<i32> = std::cell::LazyCell::new(|| unsafe { 0 });
+pub static mut copies_0: libcc2rs::LazyStorage<i32> =
+    libcc2rs::LazyStorage::new(|__p| unsafe { __p.write(0) });
+pub static mut moves_1: libcc2rs::LazyStorage<i32> =
+    libcc2rs::LazyStorage::new(|__p| unsafe { __p.write(0) });
 #[repr(C)]
 #[derive(VaArg, FnPtrArg, MoveCtorUnsafe, CppFromUnsafe, CopyAssignUnsafe, Default)]
-#[placement]
 #[cpp_from(i32, new, value)]
 pub struct Elem {
     pub v: i32,
@@ -21,11 +22,11 @@ impl Elem {
     }
     pub unsafe fn copy_from(this: *mut Elem, o: *const Elem) {
         (&raw mut (*this).v).write((*o).v);
-        (*std::cell::LazyCell::force_mut(&mut *&raw mut copies_0)).prefix_inc();
+        (*(*&raw const copies_0).get()).prefix_inc();
     }
     pub unsafe fn move_from(this: *mut Elem, o: *mut Elem) {
         (&raw mut (*this).v).write((*o).v);
-        (*std::cell::LazyCell::force_mut(&mut *&raw mut moves_1)).prefix_inc();
+        (*(*&raw const moves_1).get()).prefix_inc();
     }
     pub unsafe fn copy_assign(&mut self, _a0: *const Elem) -> *mut Elem {
         self.v = (*_a0).v;
@@ -73,22 +74,22 @@ unsafe fn main_0() -> i32 {
             as usize;
         UnsafeRandomAccessIterator::Vec(v.insert_mut(pos, (b).clone()))
     };
-    let mut ok: bool = ((((*std::cell::LazyCell::force_mut(&mut *&raw mut copies_0)) == (1))
-        && ((*std::cell::LazyCell::force_mut(&mut *&raw mut moves_1)) == (1)))
+    let mut ok: bool = ((((*(*&raw const copies_0).get()) == (1))
+        && ((*(*&raw const moves_1).get()) == (1)))
         && ((v[(0_usize)].v) == (1)))
         && ((v[(1_usize)].v) == (2));
     let mut pa: *mut Elem = (&mut a as *mut Elem);
     (unsafe {
         libc::printf(
             c"%d %d %d\n".as_ptr() as *const libc::c_char,
-            (*std::cell::LazyCell::force_mut(&mut *&raw mut copies_0)),
-            (*std::cell::LazyCell::force_mut(&mut *&raw mut moves_1)),
+            (*(*&raw const copies_0).get()),
+            (*(*&raw const moves_1).get()),
             ((*pa).v),
         )
     });
     return if ok { 0 } else { 1 };
 }
 pub unsafe fn __cpp2rust_init_globals() {
-    std::cell::LazyCell::force(&*&raw const copies_0);
-    std::cell::LazyCell::force(&*&raw const moves_1);
+    (*&raw const copies_0).get();
+    (*&raw const moves_1).get();
 }

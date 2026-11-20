@@ -12,6 +12,11 @@ pub struct S {
     #[offset(0)]
     pub v: u32,
 }
+impl S {
+    pub fn copy_from(this: Ptr<S>, _a0: Ptr<S>) {
+        field!(this, v).write(_a0.with(|__s| __s.v));
+    }
+}
 pub fn operator_add_assign_0(a: Ptr<S>, b: Ptr<S>) -> Ptr<S> {
     field!(a, v).write({ (a.with(|__s| __s.v)).wrapping_add(b.with(|__s| __s.v)) });
     return (a).clone();
@@ -72,8 +77,16 @@ pub fn main() {
     libcc2rs::cpp2rust_exit(main_0());
 }
 fn main_0() -> i32 {
-    let a: Value<S> = Rc::new(RefCell::new(S { v: 6_u32 }));
-    let b: Value<S> = Rc::new(RefCell::new(S { v: 4_u32 }));
+    let a: Value<S> = Rc::new(RefCell::new(<S>::uninit()));
+    {
+        let __d = a.as_pointer();
+        field!(__d, v).write(6_u32);
+    };
+    let b: Value<S> = Rc::new(RefCell::new(<S>::uninit()));
+    {
+        let __d = b.as_pointer();
+        field!(__d, v).write(4_u32);
+    };
     ({
         let _a: Ptr<S> = a.as_pointer();
         operator_add_assign_0(_a, b.as_pointer())

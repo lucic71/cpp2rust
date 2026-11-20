@@ -14,19 +14,21 @@ pub struct Outer {
     pub values: Vec<i32>,
 }
 impl Outer {
-    pub fn move_from(_a0: Ptr<Outer>) -> Self {
-        Self {
-            values: field!(_a0, values).with_mut(std::mem::take),
-        }
+    pub fn copy_from(this: Ptr<Outer>, _a0: Ptr<Outer>) {
+        field!(this, values).write((*_a0.upgrade().deref()).values.clone());
+    }
+    pub fn move_from(this: Ptr<Outer>, _a0: Ptr<Outer>) {
+        field!(this, values).write(field!(_a0, values).with_mut(std::mem::take));
     }
 }
-pub fn make_0() -> Outer {
-    return Outer {
-        values: Vec::from([1, 2, 3, 4]),
+pub fn make_0(__ret: Ptr<Outer>) {
+    {
+        let __d = __ret.clone();
+        field!(__d, values).write(Vec::from([1, 2, 3, 4]));
     };
+    return;
 }
 #[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, CppFrom, Default)]
-#[placement]
 #[cpp_from(Vec<i32  >  , new, ptr)]
 #[byte_size(4)]
 pub struct H {
@@ -48,7 +50,13 @@ pub fn main() {
 fn main_0() -> i32 {
     let h: Value<H> = Rc::new(RefCell::new(<H>::uninit()));
     H::new(h.as_pointer(), {
-        (match Rc::new(RefCell::new(({ make_0() }))).as_pointer() {
+        (match {
+            let __v: Value<Outer> = Rc::new(RefCell::new(<Outer>::uninit()));
+            ({ make_0(__v.as_pointer()) });
+            __v
+        }
+        .as_pointer()
+        {
             __tmp_0 => field_ref!(__tmp_0, values).as_pointer(),
         })
     });

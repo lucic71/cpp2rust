@@ -12,6 +12,12 @@ pub struct Handler {
     pub tag: i32,
     pub cb: Option<unsafe fn(i32) -> i32>,
 }
+impl Handler {
+    pub unsafe fn copy_from(this: *mut Handler, _a0: *const Handler) {
+        (&raw mut (*this).tag).write((*_a0).tag);
+        (&raw mut (*this).cb).write(((*_a0).cb));
+    }
+}
 pub unsafe fn double_it_0(mut x: i32) -> i32 {
     return ((x) * (2));
 }
@@ -31,10 +37,10 @@ impl S {
     pub unsafe fn solo(mut x: i32) -> i32 {
         return ((x) + (3));
     }
+    pub unsafe fn copy_from(this: *mut S, _a0: *const S) {}
 }
 #[repr(C)]
 #[derive(FnPtrArg, MoveCtorUnsafe, CppFromUnsafe, Default)]
-#[placement]
 #[cpp_from(i32, new, value)]
 pub struct MoveOnly {
     pub data_: i32,
@@ -73,18 +79,24 @@ unsafe fn main_0() -> i32 {
     assert!(((unsafe { (p1).unwrap()(5,) }) == (6)));
     assert!(((unsafe { (p2).unwrap()(5,) }) == (8)));
     assert!(((unsafe { S::pick_2(5_i64,) }) == (7)));
-    let mut h3: Handler = Handler {
-        tag: 3,
-        cb: (Some(S::pick_1)),
+    let mut h3: Handler = ::std::mem::MaybeUninit::uninit().assume_init();
+    {
+        let __d = &raw mut h3;
+        (&raw mut (*__d).tag).write(3);
+        (&raw mut (*__d).cb).write((Some(S::pick_1)));
     };
     assert!(((unsafe { (h3.cb).unwrap()(1,) }) == (2)));
-    let mut h1: Handler = Handler {
-        tag: 1,
-        cb: Some(double_it_0),
+    let mut h1: Handler = ::std::mem::MaybeUninit::uninit().assume_init();
+    {
+        let __d = &raw mut h1;
+        (&raw mut (*__d).tag).write(1);
+        (&raw mut (*__d).cb).write(Some(double_it_0));
     };
-    let mut h2: Handler = Handler {
-        tag: 2,
-        cb: Some(negate_1),
+    let mut h2: Handler = ::std::mem::MaybeUninit::uninit().assume_init();
+    {
+        let __d = &raw mut h2;
+        (&raw mut (*__d).tag).write(2);
+        (&raw mut (*__d).cb).write(Some(negate_1));
     };
     assert!(!((h1.cb).is_none()));
     assert!(((unsafe { (h1.cb).unwrap()(5,) }) == (10)));

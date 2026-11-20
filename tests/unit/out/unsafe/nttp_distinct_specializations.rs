@@ -16,6 +16,10 @@ impl S_2_ {
     pub unsafe fn get(&self) -> i32 {
         return ((self.v) - (self.w));
     }
+    pub unsafe fn copy_from(this: *mut S_2_, _a0: *const S_2_) {
+        (&raw mut (*this).v).write((*_a0).v);
+        (&raw mut (*this).w).write((*_a0).w);
+    }
 }
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
@@ -26,6 +30,9 @@ impl S_1_ {
     pub unsafe fn get(&self) -> i32 {
         return ((self.v) * (1));
     }
+    pub unsafe fn copy_from(this: *mut S_1_, _a0: *const S_1_) {
+        (&raw mut (*this).v).write((*_a0).v);
+    }
 }
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
@@ -35,6 +42,9 @@ pub struct S_3_ {
 impl S_3_ {
     pub unsafe fn get(&self) -> i32 {
         return ((self.v) * (3));
+    }
+    pub unsafe fn copy_from(this: *mut S_3_, _a0: *const S_3_) {
+        (&raw mut (*this).v).write((*_a0).v);
     }
 }
 pub unsafe fn scale_0(mut x: i32) -> i32 {
@@ -71,9 +81,22 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    let mut s1: S_1_ = S_1_ { v: 5 };
-    let mut s2: S_2_ = S_2_ { v: 5, w: 1 };
-    let mut s3: S_3_ = S_3_ { v: 5 };
+    let mut s1: S_1_ = ::std::mem::MaybeUninit::uninit().assume_init();
+    {
+        let __d = &raw mut s1;
+        (&raw mut (*__d).v).write(5);
+    };
+    let mut s2: S_2_ = ::std::mem::MaybeUninit::uninit().assume_init();
+    {
+        let __d = &raw mut s2;
+        (&raw mut (*__d).v).write(5);
+        (&raw mut (*__d).w).write(1);
+    };
+    let mut s3: S_3_ = ::std::mem::MaybeUninit::uninit().assume_init();
+    {
+        let __d = &raw mut s3;
+        (&raw mut (*__d).v).write(5);
+    };
     assert!(((unsafe { S_1_::get(&s1,) }) == (5)));
     assert!(((unsafe { S_2_::get(&s2,) }) == (4)));
     assert!(((unsafe { S_3_::get(&s3,) }) == (15)));

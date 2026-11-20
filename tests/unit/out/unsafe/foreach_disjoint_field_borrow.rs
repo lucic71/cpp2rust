@@ -13,12 +13,13 @@ pub struct S {
     pub a: i32,
 }
 impl S {
-    pub unsafe fn move_from(_a0: *mut S) -> Self {
-        let mut this = Self {
-            v: std::mem::take(&mut (*_a0).v),
-            a: (*_a0).a,
-        };
-        this
+    pub unsafe fn copy_from(this: *mut S, _a0: *const S) {
+        (&raw mut (*this).v).write((*_a0).v.clone());
+        (&raw mut (*this).a).write((*_a0).a);
+    }
+    pub unsafe fn move_from(this: *mut S, _a0: *mut S) {
+        (&raw mut (*this).v).write(std::mem::take(&mut (*_a0).v));
+        (&raw mut (*this).a).write((*_a0).a);
     }
     pub unsafe fn move_assign(&mut self, _a0: *mut S) -> *mut S {
         {
@@ -26,6 +27,9 @@ impl S {
         };
         self.a = (*_a0).a;
         return &mut (*(self as *mut S));
+    }
+    pub unsafe fn new_1(this: *mut S) {
+        (&raw mut (*this).v).write(Vec::new());
     }
 }
 pub fn main() {
@@ -35,7 +39,8 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    let mut s: S = <S>::default();
+    let mut s: S = ::std::mem::MaybeUninit::uninit().assume_init();
+    S::new_1(&raw mut s);
     {
         let __a1 = 1;
         s.v.push(__a1)

@@ -14,6 +14,12 @@ pub struct S {
     #[offset(4)]
     pub y: i32,
 }
+impl S {
+    pub fn copy_from(this: Ptr<S>, _a0: Ptr<S>) {
+        field!(this, x).write(_a0.with(|__s| __s.x));
+        field!(this, y).write(_a0.with(|__s| __s.y));
+    }
+}
 pub fn read_0(v: Ptr<i32>) -> i32 {
     return (v.read());
 }
@@ -46,10 +52,19 @@ fn main_0() -> i32 {
     )));
     (*slot.borrow_mut()) = 8;
     assert!(({ (({ (*read_ptr.borrow()).call() }) == 8) }));
-    let s: Value<S> = Rc::new(RefCell::new(S { x: 1, y: 2 }));
+    let s: Value<S> = Rc::new(RefCell::new(<S>::uninit()));
+    {
+        let __d = s.as_pointer();
+        field!(__d, x).write(1);
+        field!(__d, y).write(2);
+    };
     let sum: Value<FnPtr<fn() -> i32>> = Rc::new(RefCell::new(lambda!(
         {
-            let s: Value<S> = Rc::new(RefCell::new((*s.borrow())));
+            let s: Value<S> = {
+                let __v: Value<S> = Rc::new(RefCell::new(<S>::uninit()));
+                S::copy_from(__v.as_pointer(), { s.as_pointer() });
+                __v
+            };
         },
         || -> i32 {
             return ({ (*s.borrow()).x } + { (*s.borrow()).y });

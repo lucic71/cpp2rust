@@ -31,6 +31,14 @@ pub struct HoldsEmpty {
     #[offset(0)]
     pub e: Empty,
 }
+impl HoldsEmpty {
+    pub fn new_1(this: Ptr<HoldsEmpty>) {
+        field!(this, e).write(<Empty>::default());
+    }
+    pub fn copy_from(this: Ptr<HoldsEmpty>, _a0: Ptr<HoldsEmpty>) {
+        field!(this, e).write(_a0.with(|__s| __s.e));
+    }
+}
 impl Default for HoldsEmpty {
     fn default() -> Self {
         {
@@ -71,10 +79,11 @@ fn main_0() -> i32 {
     let mut sc: Scoped = Scoped_NEG;
     assert!(((sc as i32) == -2_i32));
     assert!((((Scoped_POS as i8) as i32) == 2));
-    let mut he: HoldsEmpty = <HoldsEmpty>::default();
-    assert!(!(he.e));
+    let he: Value<HoldsEmpty> = Rc::new(RefCell::new(<HoldsEmpty>::uninit()));
+    HoldsEmpty::new_1(he.as_pointer());
+    assert!(({ !({ (*he.borrow()).e }) }));
     let mut ev: Empty = <Empty>::default();
-    assert!(((ev as i32) == (he.e as i32)));
+    assert!(({ ((ev as i32) == ({ (*he.borrow()).e } as i32)) }));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

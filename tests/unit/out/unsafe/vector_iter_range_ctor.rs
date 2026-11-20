@@ -8,7 +8,6 @@ use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, CppFromUnsafe, Default)]
-#[placement]
 #[cpp_from(i32, new, value)]
 pub struct Degrees {
     pub value: i32,
@@ -30,6 +29,9 @@ pub struct Reading {
 impl Reading {
     pub unsafe fn to_i64(&self) -> i64 {
         return ((self.raw_ as i64) * (10_i64));
+    }
+    pub unsafe fn copy_from(this: *mut Reading, _a0: *const Reading) {
+        (&raw mut (*this).raw_).write((*_a0).raw_);
     }
 }
 pub fn main() {
@@ -171,7 +173,18 @@ unsafe fn main_0() -> i32 {
         __v
     };
     assert!(((v7[(1_usize)].value) == (5)));
-    let mut readings: [Reading; 2] = [Reading { raw_: 4 }, Reading { raw_: 5 }];
+    let mut readings: [Reading; 2] = ::std::mem::MaybeUninit::uninit().assume_init();
+    {
+        let __d = (&raw mut readings).cast::<Reading>();
+        {
+            let __d = __d.offset(0);
+            (&raw mut (*__d).raw_).write(4);
+        };
+        {
+            let __d = __d.offset(1);
+            (&raw mut (*__d).raw_).write(5);
+        };
+    };
     let mut v8: Vec<i64> = {
         let mut __tmp_12 = { readings.as_mut_ptr().offset((2) as isize) };
         let mut __v = Vec::new();

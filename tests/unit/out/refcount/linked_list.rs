@@ -15,6 +15,12 @@ pub struct Node {
     #[byte_size(8)]
     pub next: Ptr<Node>,
 }
+impl Node {
+    pub fn copy_from(this: Ptr<Node>, _a0: Ptr<Node>) {
+        field!(this, val).write(_a0.with(|__s| __s.val));
+        field!(this, next).write(_a0.with(|__s| __s.next.clone()));
+    }
+}
 pub fn Find_0(mut head: Ptr<Node>, mut idx: i32) -> Ptr<Node> {
     let mut curr: Ptr<Node> = (head).clone();
     {
@@ -55,39 +61,55 @@ pub fn main() {
     libcc2rs::cpp2rust_exit(main_0());
 }
 fn main_0() -> i32 {
-    let n0: Value<Node> = Rc::new(RefCell::new(Node {
-        val: 5,
-        next: Ptr::<Node>::null(),
-    }));
+    let n0: Value<Node> = Rc::new(RefCell::new(<Node>::uninit()));
+    {
+        let __d = n0.as_pointer();
+        field!(__d, val).write(5);
+        field!(__d, next).write(Ptr::<Node>::null());
+    };
     let mut head: Ptr<Node> = (n0.as_pointer());
-    let n1: Value<Node> = Rc::new(RefCell::new(Node {
-        val: 4,
-        next: Ptr::<Node>::null(),
-    }));
-    let n2: Value<Node> = Rc::new(RefCell::new(Node {
-        val: 3,
-        next: Ptr::<Node>::null(),
-    }));
-    let n3: Value<Node> = Rc::new(RefCell::new(Node {
-        val: 2,
-        next: Ptr::<Node>::null(),
-    }));
-    let n4: Value<Node> = Rc::new(RefCell::new(Node {
-        val: 1,
-        next: Ptr::<Node>::null(),
-    }));
-    let n5: Value<Node> = Rc::new(RefCell::new(Node {
-        val: 0,
-        next: Ptr::<Node>::null(),
-    }));
-    let n6: Value<Node> = Rc::new(RefCell::new(Node {
-        val: -1_i32,
-        next: Ptr::<Node>::null(),
-    }));
-    let n7: Value<Node> = Rc::new(RefCell::new(Node {
-        val: -2_i32,
-        next: Ptr::<Node>::null(),
-    }));
+    let n1: Value<Node> = Rc::new(RefCell::new(<Node>::uninit()));
+    {
+        let __d = n1.as_pointer();
+        field!(__d, val).write(4);
+        field!(__d, next).write(Ptr::<Node>::null());
+    };
+    let n2: Value<Node> = Rc::new(RefCell::new(<Node>::uninit()));
+    {
+        let __d = n2.as_pointer();
+        field!(__d, val).write(3);
+        field!(__d, next).write(Ptr::<Node>::null());
+    };
+    let n3: Value<Node> = Rc::new(RefCell::new(<Node>::uninit()));
+    {
+        let __d = n3.as_pointer();
+        field!(__d, val).write(2);
+        field!(__d, next).write(Ptr::<Node>::null());
+    };
+    let n4: Value<Node> = Rc::new(RefCell::new(<Node>::uninit()));
+    {
+        let __d = n4.as_pointer();
+        field!(__d, val).write(1);
+        field!(__d, next).write(Ptr::<Node>::null());
+    };
+    let n5: Value<Node> = Rc::new(RefCell::new(<Node>::uninit()));
+    {
+        let __d = n5.as_pointer();
+        field!(__d, val).write(0);
+        field!(__d, next).write(Ptr::<Node>::null());
+    };
+    let n6: Value<Node> = Rc::new(RefCell::new(<Node>::uninit()));
+    {
+        let __d = n6.as_pointer();
+        field!(__d, val).write(-1_i32);
+        field!(__d, next).write(Ptr::<Node>::null());
+    };
+    let n7: Value<Node> = Rc::new(RefCell::new(<Node>::uninit()));
+    {
+        let __d = n7.as_pointer();
+        field!(__d, val).write(-2_i32);
+        field!(__d, next).write(Ptr::<Node>::null());
+    };
     ({
         let _head: Ptr<Node> = (head).clone();
         let _new_node: Ptr<Node> = n1.as_pointer();

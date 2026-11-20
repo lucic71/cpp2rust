@@ -14,10 +14,11 @@ pub struct Inner {
     pub values: Vec<i32>,
 }
 impl Inner {
-    pub fn move_from(_a0: Ptr<Inner>) -> Self {
-        Self {
-            values: field!(_a0, values).with_mut(std::mem::take),
-        }
+    pub fn copy_from(this: Ptr<Inner>, _a0: Ptr<Inner>) {
+        field!(this, values).write((*_a0.upgrade().deref()).values.clone());
+    }
+    pub fn move_from(this: Ptr<Inner>, _a0: Ptr<Inner>) {
+        field!(this, values).write(field!(_a0, values).with_mut(std::mem::take));
     }
 }
 #[derive(Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, MoveCtor, MoveAssign, Default)]
@@ -31,20 +32,25 @@ pub struct Outer {
     pub inner: Inner,
 }
 impl Outer {
-    pub fn move_from(_a0: Ptr<Outer>) -> Self {
-        Self {
-            values: field!(_a0, values).with_mut(std::mem::take),
-            inner: Inner::move_from({ field_ptr!(_a0, inner) }),
-        }
+    pub fn copy_from(this: Ptr<Outer>, _a0: Ptr<Outer>) {
+        field!(this, values).write((*_a0.upgrade().deref()).values.clone());
+        Inner::copy_from(field_ptr!(this, inner), { field_ptr!(_a0, inner) });
+    }
+    pub fn move_from(this: Ptr<Outer>, _a0: Ptr<Outer>) {
+        field!(this, values).write(field!(_a0, values).with_mut(std::mem::take));
+        Inner::move_from(field_ptr!(this, inner), { field_ptr!(_a0, inner) });
     }
 }
-pub fn make_0() -> Outer {
-    return Outer {
-        values: Vec::from([1, 2, 3]),
-        inner: Inner {
-            values: Vec::from([4, 5, 6]),
-        },
+pub fn make_0(__ret: Ptr<Outer>) {
+    {
+        let __d = __ret.clone();
+        field!(__d, values).write(Vec::from([1, 2, 3]));
+        {
+            let __d = field_ptr!(__d, inner);
+            field!(__d, values).write(Vec::from([4, 5, 6]));
+        };
     };
+    return;
 }
 pub fn two_1(a: Ptr<Vec<i32>>, b: Ptr<Vec<i32>>) -> i32 {
     return ({ (index!(a, 0_usize).read()) } + { (index!(b, 2_usize).read()) });
@@ -57,10 +63,22 @@ fn main_0() -> i32 {
     printf!(
         b"%d\n",
         ({
-            let _a: Ptr<Vec<i32>> = (match Rc::new(RefCell::new(({ make_0() }))).as_pointer() {
+            let _a: Ptr<Vec<i32>> = (match {
+                let __v: Value<Outer> = Rc::new(RefCell::new(<Outer>::uninit()));
+                ({ make_0(__v.as_pointer()) });
+                __v
+            }
+            .as_pointer()
+            {
                 __tmp_0 => field_ref!(__tmp_0, values).as_pointer(),
             });
-            let _b: Ptr<Vec<i32>> = (match Rc::new(RefCell::new(({ make_0() }))).as_pointer() {
+            let _b: Ptr<Vec<i32>> = (match {
+                let __v: Value<Outer> = Rc::new(RefCell::new(<Outer>::uninit()));
+                ({ make_0(__v.as_pointer()) });
+                __v
+            }
+            .as_pointer()
+            {
                 __tmp_1 => field_ref!(field_ptr!(__tmp_1, inner), values).as_pointer(),
             });
             two_1(_a, _b)

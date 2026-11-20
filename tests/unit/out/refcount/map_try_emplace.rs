@@ -19,7 +19,6 @@ thread_local!(
     pub static moves_3: Value<i32> = Rc::new(RefCell::new(0));
 );
 #[derive(Record, ByteRepr, Uninit, VaArg, FnPtrArg, MoveCtor, CppFrom)]
-#[placement]
 #[cpp_from(i32, new_1, value)]
 #[byte_size(4)]
 pub struct Item {
@@ -71,7 +70,6 @@ pub fn argument_4(item: Ptr<Item>) -> Ptr<Item> {
     return (item).clone();
 }
 #[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg)]
-#[placement]
 #[byte_size(4)]
 pub struct RefItem {
     #[offset(0)]

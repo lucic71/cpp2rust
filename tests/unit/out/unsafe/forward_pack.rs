@@ -13,7 +13,6 @@ pub const Overload_kIntLvalueOverload: Overload = 3;
 pub const Overload_kIntRvalueOverload: Overload = 4;
 #[repr(C)]
 #[derive(VaArg, FnPtrArg, MoveCtorUnsafe, CppFromUnsafe, Default)]
-#[placement]
 #[cpp_from(i32, new, value)]
 pub struct Tracked {
     pub v: i32,
@@ -101,7 +100,6 @@ impl Pair {
 }
 #[repr(C)]
 #[derive(Clone, VaArg, FnPtrArg, MoveCtorUnsafe, Default)]
-#[placement]
 pub struct Pair {
     pub a: Tracked,
     pub b: Tracked,

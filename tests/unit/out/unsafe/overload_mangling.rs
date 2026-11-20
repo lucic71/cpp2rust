@@ -31,6 +31,8 @@ impl Access_S_ {
     pub unsafe fn ref_4(&mut self, r: *const S) -> i32 {
         return (((*r).base) + (3));
     }
+    pub unsafe fn new_1(this: *mut Access_S_) {}
+    pub unsafe fn copy_from(this: *mut Access_S_, _a0: *const Access_S_) {}
 }
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
@@ -91,6 +93,9 @@ impl S {
         });
         return (((self.base) + ((*p).0)) + (*q));
     }
+    pub unsafe fn copy_from(this: *mut S, _a0: *const S) {
+        (&raw mut (*this).base).write((*_a0).base);
+    }
     pub unsafe fn width_1_char(&self, mut x: i32) -> i32 {
         return ((self.base) + ((x) * (::std::mem::size_of::<libc::c_char>() as i32)));
     }
@@ -115,6 +120,11 @@ impl S {
 pub struct Box_ {
     pub v: i32,
 }
+impl Box_ {
+    pub unsafe fn copy_from(this: *mut Box_, _a0: *const Box_) {
+        (&raw mut (*this).v).write((*_a0).v);
+    }
+}
 pub fn main() {
     unsafe {
         __cpp2rust_init_globals();
@@ -122,7 +132,11 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    let mut s: S = S { base: 100 };
+    let mut s: S = ::std::mem::MaybeUninit::uninit().assume_init();
+    {
+        let __d = &raw mut s;
+        (&raw mut (*__d).base).write(100);
+    };
     assert!(((unsafe { S::width_1_char(&s, 3,) }) == (103)));
     assert!(((unsafe { S::width_1_int(&s, 3,) }) == (112)));
     assert!(((unsafe { S::scale_2_2(&s, 5,) }) == (110)));
@@ -159,7 +173,8 @@ unsafe fn main_0() -> i32 {
         }) == (107))
     );
     assert!(((z) == (6)));
-    let mut a: Access_S_ = <Access_S_>::default();
+    let mut a: Access_S_ = ::std::mem::MaybeUninit::uninit().assume_init();
+    Access_S_::new_1(&raw mut a);
     let mut cs: *const S = (&mut s as *mut S).cast_const();
     let cr: *const S = &s;
     assert!(((unsafe { Access_S_::get_1(&mut a, (&mut s as *mut S),) }) == (100)));
@@ -171,7 +186,11 @@ unsafe fn main_0() -> i32 {
             Access_S_::ref_4(&mut a, _r)
         }) == (103))
     );
-    let mut b: Box_ = Box_ { v: 4 };
+    let mut b: Box_ = ::std::mem::MaybeUninit::uninit().assume_init();
+    {
+        let __d = &raw mut b;
+        (&raw mut (*__d).v).write(4);
+    };
     assert!(((b.v) == (4)));
     return 0;
 }

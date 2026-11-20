@@ -12,12 +12,21 @@ pub struct S {
     #[offset(0)]
     pub n: i32,
 }
+impl S {
+    pub fn copy_from(this: Ptr<S>, _a0: Ptr<S>) {
+        field!(this, n).write(_a0.with(|__s| __s.n));
+    }
+}
 pub fn main() {
     __cpp2rust_init_globals();
     libcc2rs::cpp2rust_exit(main_0());
 }
 fn main_0() -> i32 {
-    let s: Value<S> = Rc::new(RefCell::new(S { n: 1 }));
+    let s: Value<S> = Rc::new(RefCell::new(<S>::uninit()));
+    {
+        let __d = s.as_pointer();
+        field!(__d, n).write(1);
+    };
     assert!((({ SImpl::modify_copy(&s.as_pointer(),) }) == 1101));
     assert!(({ ({ (*s.borrow()).n } == 1) }));
     assert!((({ SImpl::snapshot(&s.as_pointer(),) }) == 2));
@@ -39,7 +48,11 @@ impl SImpl for Ptr<S> {
     fn modify_copy(&self) -> i32 {
         let f: Value<FnPtr<fn() -> i32>> = Rc::new(RefCell::new(lambda!(
             {
-                let this_: Value<S> = Rc::new(RefCell::new((*(*self).upgrade().deref())));
+                let this_: Value<S> = {
+                    let __v: Value<S> = Rc::new(RefCell::new(<S>::uninit()));
+                    S::copy_from(__v.as_pointer(), { (*self).clone() });
+                    __v
+                };
             },
             || -> i32 {
                 {
@@ -54,7 +67,11 @@ impl SImpl for Ptr<S> {
     fn snapshot(&self) -> i32 {
         let f: Value<FnPtr<fn() -> i32>> = Rc::new(RefCell::new(lambda!(
             {
-                let this_: Value<S> = Rc::new(RefCell::new((*(*self).upgrade().deref())));
+                let this_: Value<S> = {
+                    let __v: Value<S> = Rc::new(RefCell::new(<S>::uninit()));
+                    S::copy_from(__v.as_pointer(), { (*self).clone() });
+                    __v
+                };
             },
             || -> i32 {
                 return ({ SImpl::twice(&this_.as_pointer()) });
@@ -67,7 +84,11 @@ impl SImpl for Ptr<S> {
         let k: Value<i32> = Rc::new(RefCell::new(k));
         let f: Value<FnPtr<fn() -> i32>> = Rc::new(RefCell::new(lambda!(
             {
-                let this_: Value<S> = Rc::new(RefCell::new((*(*self).upgrade().deref())));
+                let this_: Value<S> = {
+                    let __v: Value<S> = Rc::new(RefCell::new(<S>::uninit()));
+                    S::copy_from(__v.as_pointer(), { (*self).clone() });
+                    __v
+                };
                 let k: Value<i32> = Rc::new(RefCell::new((*k.borrow())));
             },
             || -> i32 {

@@ -12,7 +12,6 @@ pub unsafe fn array_ref_0(a: *mut [u64; 3]) -> u64 {
 }
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, CppFromUnsafe, Default)]
-#[placement]
 #[cpp_from(*const u64 , new, value)]
 pub struct PtrCtor_unsigned_long_ {
     pub v: u64,
@@ -27,7 +26,6 @@ impl PtrCtor_unsigned_long_ {
 }
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, CppFromUnsafe, Default)]
-#[placement]
 #[cpp_from(u64, new, ptr)]
 pub struct RefCtor_unsigned_long_ {
     pub v: u64,

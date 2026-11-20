@@ -11,11 +11,24 @@ use std::rc::Rc;
 pub struct Inner {
     pub x: i32,
 }
+impl Inner {
+    pub unsafe fn copy_from(this: *mut Inner, _a0: *const Inner) {
+        (&raw mut (*this).x).write((*_a0).x);
+    }
+}
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct S {
     pub data: [i32; 3],
     pub inner: Inner,
+}
+impl S {
+    pub unsafe fn copy_from(this: *mut S, _a0: *const S) {
+        (&raw mut (*this).data).write(std::array::from_fn::<_, 3, _>(|__i: usize| {
+            (*_a0).data[(__i)]
+        }));
+        Inner::copy_from((&raw mut (*this).inner), { &(*_a0).inner });
+    }
 }
 pub unsafe fn operator_deref_0(s: *mut S) -> *mut Inner {
     return &mut (*s).inner;
@@ -30,9 +43,14 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    let mut s: S = S {
-        data: [1, 2, 3],
-        inner: Inner { x: 9 },
+    let mut s: S = ::std::mem::MaybeUninit::uninit().assume_init();
+    {
+        let __d = &raw mut s;
+        (&raw mut (*__d).data).write([1, 2, 3]);
+        {
+            let __d = (&raw mut (*__d).inner);
+            (&raw mut (*__d).x).write(9);
+        };
     };
     assert!(
         (((*(unsafe {

@@ -8,7 +8,6 @@ use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 #[repr(C)]
 #[derive(FnPtrArg, MoveCtorUnsafe, CppFromUnsafe, MoveAssignUnsafe, Default)]
-#[placement]
 #[cpp_from(i32, new, value)]
 pub struct S {
     pub v: Vec<i32>,
@@ -47,11 +46,11 @@ impl T {
     pub unsafe fn size(&self) -> i32 {
         return ((self.v.len()) as i32);
     }
-    pub unsafe fn move_from(_a0: *mut T) -> Self {
-        let mut this = Self {
-            v: std::mem::take(&mut (*_a0).v),
-        };
-        this
+    pub unsafe fn copy_from(this: *mut T, _a0: *const T) {
+        (&raw mut (*this).v).write((*_a0).v.clone());
+    }
+    pub unsafe fn move_from(this: *mut T, _a0: *mut T) {
+        (&raw mut (*this).v).write(std::mem::take(&mut (*_a0).v));
     }
     pub unsafe fn move_assign(&mut self, _a0: *mut T) -> *mut T {
         {
@@ -74,8 +73,10 @@ unsafe fn main_0() -> i32 {
     S::new(&raw mut s, { 2 });
     assert!(((unsafe { sum_0(&s,) }) == (7)));
     assert!(((unsafe { shuffle_1(3,) }) == (10)));
-    let mut t: T = T {
-        v: Vec::from([1, 2]),
+    let mut t: T = ::std::mem::MaybeUninit::uninit().assume_init();
+    {
+        let __d = &raw mut t;
+        (&raw mut (*__d).v).write(Vec::from([1, 2]));
     };
     assert!(((unsafe { T::size(&t,) }) == (2)));
     return 0;
@@ -90,9 +91,15 @@ pub unsafe fn shuffle_1(mut x: i32) -> i32 {
     S::new(&raw mut c, { 1 });
     (unsafe { S::move_assign(&mut c, &mut b) });
     assert!(b.v.is_empty());
-    let mut t: T = T { v: Vec::from([1]) };
-    let mut u: T = T::move_from({ &mut t });
-    let mut w: T = <T>::default();
+    let mut t: T = ::std::mem::MaybeUninit::uninit().assume_init();
+    {
+        let __d = &raw mut t;
+        (&raw mut (*__d).v).write(Vec::from([1]));
+    };
+    let mut u: T = ::std::mem::MaybeUninit::uninit().assume_init();
+    T::move_from(&raw mut u, { &mut t });
+    let mut w: T = ::std::mem::MaybeUninit::uninit().assume_init();
+    T::new_1(&raw mut w);
     (unsafe { T::move_assign(&mut w, &mut u) });
     assert!(
         (((unsafe { T::size(&t,) }) == (0)) && ((unsafe { T::size(&u,) }) == (0)))

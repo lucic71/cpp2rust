@@ -12,12 +12,18 @@ thread_local!(
 #[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
 #[byte_size(1)]
 pub struct S {}
+impl S {
+    pub fn copy_from(this: Ptr<S>, _a0: Ptr<S>) {}
+}
 thread_local!(
     pub static table_size_1: Value<usize> = Rc::new(RefCell::new(256_usize));
 );
 #[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
 #[byte_size(1)]
 pub struct Table_char_ {}
+impl Table_char_ {
+    pub fn copy_from(this: Ptr<Table_char_>, _a0: Ptr<Table_char_>) {}
+}
 pub fn main() {
     __cpp2rust_init_globals();
     libcc2rs::cpp2rust_exit(main_0());

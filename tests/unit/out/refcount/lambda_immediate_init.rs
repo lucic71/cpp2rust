@@ -17,6 +17,25 @@ pub struct S {
     #[offset(4)]
     pub k: i32,
 }
+impl S {
+    pub fn new_1(this: Ptr<S>) {
+        field!(this, j).write(10);
+        field!(this, k).write(
+            (({
+                FnPtr::<fn() -> i32>::new(|| -> i32 {
+                    {
+                        return 3;
+                    }
+                })
+                .call()
+            }) + 1),
+        );
+    }
+    pub fn copy_from(this: Ptr<S>, _a0: Ptr<S>) {
+        field!(this, j).write(_a0.with(|__s| __s.j));
+        field!(this, k).write(_a0.with(|__s| __s.k));
+    }
+}
 impl Default for S {
     fn default() -> Self {
         {
@@ -74,8 +93,9 @@ fn main_0() -> i32 {
         }) == 237)
     );
     assert!((({ pick_0(1,) }) == 1));
-    let mut s: S = <S>::default();
-    assert!((s.k == 4));
+    let s: Value<S> = Rc::new(RefCell::new(<S>::uninit()));
+    S::new_1(s.as_pointer());
+    assert!(({ ({ (*s.borrow()).k } == 4) }));
     assert!((g_1.with(|rc| *rc.borrow()) == 10));
     let a: Value<i32> = Rc::new(RefCell::new(2));
     let mut c: i32 = ({

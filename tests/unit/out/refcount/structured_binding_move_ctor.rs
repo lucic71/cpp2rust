@@ -13,7 +13,6 @@ thread_local!(
     pub static moves_1: Value<i32> = Rc::new(RefCell::new(0));
 );
 #[derive(Record, ByteRepr, Uninit, VaArg, FnPtrArg, MoveCtor, Default)]
-#[placement]
 #[byte_size(8)]
 pub struct Movable {
     #[offset(0)]
@@ -61,11 +60,13 @@ pub struct Holder {
     pub ys: Vec<i32>,
 }
 impl Holder {
-    pub fn move_from(_a0: Ptr<Holder>) -> Self {
-        Self {
-            xs: field!(_a0, xs).with_mut(std::mem::take),
-            ys: field!(_a0, ys).with_mut(std::mem::take),
-        }
+    pub fn copy_from(this: Ptr<Holder>, _a0: Ptr<Holder>) {
+        field!(this, xs).write((*_a0.upgrade().deref()).xs.clone());
+        field!(this, ys).write((*_a0.upgrade().deref()).ys.clone());
+    }
+    pub fn move_from(this: Ptr<Holder>, _a0: Ptr<Holder>) {
+        field!(this, xs).write(field!(_a0, xs).with_mut(std::mem::take));
+        field!(this, ys).write(field!(_a0, ys).with_mut(std::mem::take));
     }
 }
 pub fn main() {
@@ -83,12 +84,14 @@ fn main_0() -> i32 {
     assert!(({ ({ (*__decomp_2.borrow()).y } == 4) }));
     assert!(({ ({ (*m.borrow()).x } == 0) }));
     assert!(({ ({ (*m.borrow()).y } == 0) }));
-    let h: Value<Holder> = Rc::new(RefCell::new(Holder {
-        xs: Vec::from([1, 2, 3]),
-        ys: Vec::from([4, 5]),
-    }));
-    let __decomp_3: Value<Holder> =
-        Rc::new(RefCell::new(({ HolderImpl::extract(&h.as_pointer()) })));
+    let h: Value<Holder> = Rc::new(RefCell::new(<Holder>::uninit()));
+    {
+        let __d = h.as_pointer();
+        field!(__d, xs).write(Vec::from([1, 2, 3]));
+        field!(__d, ys).write(Vec::from([4, 5]));
+    };
+    let __decomp_3: Value<Holder> = Rc::new(RefCell::new(<Holder>::uninit()));
+    ({ HolderImpl::extract(&h.as_pointer(), __decomp_3.as_pointer()) });
     assert!(({ ((*__decomp_3.borrow()).xs.len() == 3_usize) }));
     assert!(({ ((*__decomp_3.borrow()).ys.len() == 2_usize) }));
     assert!(((elem!(field_ref!(__decomp_3.as_pointer(), xs).decay(), 2_usize).read()) == 3));
@@ -98,15 +101,17 @@ fn main_0() -> i32 {
     return 0;
 }
 pub trait HolderImpl {
-    fn extract(&self) -> Holder;
+    fn extract(&self, __ret: Ptr<Holder>);
     fn move_assign(&self, _a0: Ptr<Holder>) -> Ptr<Holder>;
 }
 impl HolderImpl for Ptr<Holder> {
-    fn extract(&self) -> Holder {
-        return Holder {
-            xs: field!((*self), xs).with_mut(std::mem::take),
-            ys: field!((*self), ys).with_mut(std::mem::take),
+    fn extract(&self, __ret: Ptr<Holder>) {
+        {
+            let __d = __ret.clone();
+            field!(__d, xs).write(field!((*self), xs).with_mut(std::mem::take));
+            field!(__d, ys).write(field!((*self), ys).with_mut(std::mem::take));
         };
+        return;
     }
     fn move_assign(&self, _a0: Ptr<Holder>) -> Ptr<Holder> {
         field!((*self), xs).with_mut(|__b0| {

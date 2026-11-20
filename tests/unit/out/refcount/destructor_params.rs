@@ -18,25 +18,26 @@ pub struct S {
     #[offset(0)]
     pub v: i32,
 }
-pub fn by_value_2(s: S) -> i32 {
-    let s: Value<S> = Rc::new(RefCell::new(s));
+impl S {
+    pub fn copy_from(this: Ptr<S>, _a0: Ptr<S>) {
+        field!(this, v).write(_a0.with(|__s| __s.v));
+    }
+}
+pub fn by_value_2(s: Value<S>) -> i32 {
     assert!((destroyed_0.with(|rc| *rc.borrow()) == 0));
     return { (*s.borrow()).v };
 }
-pub fn with_default_3(s: S) -> i32 {
-    let s: Value<S> = Rc::new(RefCell::new(s));
+pub fn with_default_3(s: Value<S>) -> i32 {
     return { (*s.borrow()).v };
 }
 #[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
-#[placement]
 #[byte_size(4)]
 pub struct Holder {
     #[offset(0)]
     pub v: i32,
 }
 impl Holder {
-    pub fn new(this: Ptr<Holder>, s: S) {
-        let s: Value<S> = Rc::new(RefCell::new(s));
+    pub fn new(this: Ptr<Holder>, s: Value<S>) {
         field!(this, v).write({ (*s.borrow()).v });
     }
     pub fn copy_from(this: Ptr<Holder>, _a0: Ptr<Holder>) {
@@ -49,28 +50,82 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     {
-        let s: Value<S> = Rc::new(RefCell::new(S { v: 1 }));
+        let s: Value<S> = Rc::new(RefCell::new(<S>::uninit()));
+        {
+            let __d = s.as_pointer();
+            field!(__d, v).write(1);
+        };
         let _dtor_s = std::mem::DropGuard::new(s.clone(), |__p| __p.as_pointer().destructor());
-        assert!(({ (({ by_value_2((*s.borrow()).clone(),) }) == 1) }));
+        assert!(
+            (({
+                by_value_2({
+                    let __v: Value<S> = Rc::new(RefCell::new(<S>::uninit()));
+                    S::copy_from(__v.as_pointer(), { s.as_pointer() });
+                    __v
+                })
+            }) == 1)
+        );
         assert!(
             (destroyed_0.with(|rc| *rc.borrow()) == 1) && (last_1.with(|rc| *rc.borrow()) == 1)
         );
     }
     assert!((destroyed_0.with(|rc| *rc.borrow()) == 2));
     destroyed_0.with(|rc| *rc.borrow_mut() = 0);
-    assert!((({ by_value_2(S { v: 2 },) }) == 2));
+    assert!(
+        (({
+            by_value_2({
+                let __v: Value<S> = Rc::new(RefCell::new(<S>::uninit()));
+                {
+                    let __d = __v.as_pointer();
+                    field!(__d, v).write(2);
+                };
+                __v
+            })
+        }) == 2)
+    );
     assert!((destroyed_0.with(|rc| *rc.borrow()) == 1) && (last_1.with(|rc| *rc.borrow()) == 2));
     destroyed_0.with(|rc| *rc.borrow_mut() = 0);
-    assert!((({ with_default_3(S { v: 5 },) }) == 5));
+    assert!(
+        (({
+            with_default_3({
+                let __v: Value<S> = Rc::new(RefCell::new(<S>::uninit()));
+                {
+                    let __d = __v.as_pointer();
+                    field!(__d, v).write(5);
+                };
+                __v
+            })
+        }) == 5)
+    );
     assert!((destroyed_0.with(|rc| *rc.borrow()) == 1) && (last_1.with(|rc| *rc.borrow()) == 5));
     destroyed_0.with(|rc| *rc.borrow_mut() = 0);
     {
         let h: Value<Holder> = Rc::new(RefCell::new(<Holder>::uninit()));
-        Holder::new(h.as_pointer(), { S { v: 3 } });
+        Holder::new(h.as_pointer(), {
+            {
+                let __v: Value<S> = Rc::new(RefCell::new(<S>::uninit()));
+                {
+                    let __d = __v.as_pointer();
+                    field!(__d, v).write(3);
+                };
+                __v
+            }
+        });
         assert!(
             (destroyed_0.with(|rc| *rc.borrow()) == 1) && (last_1.with(|rc| *rc.borrow()) == 3)
         );
-        assert!((({ HolderImpl::add(&h.as_pointer(), S { v: 4 },) }) == 7));
+        assert!(
+            (({
+                HolderImpl::add(&h.as_pointer(), {
+                    let __v: Value<S> = Rc::new(RefCell::new(<S>::uninit()));
+                    {
+                        let __d = __v.as_pointer();
+                        field!(__d, v).write(4);
+                    };
+                    __v
+                })
+            }) == 7)
+        );
         assert!(
             (destroyed_0.with(|rc| *rc.borrow()) == 2) && (last_1.with(|rc| *rc.borrow()) == 4)
         );
@@ -79,11 +134,10 @@ fn main_0() -> i32 {
     return 0;
 }
 pub trait HolderImpl {
-    fn add(&self, s: S) -> i32;
+    fn add(&self, s: Value<S>) -> i32;
 }
 impl HolderImpl for Ptr<Holder> {
-    fn add(&self, s: S) -> i32 {
-        let s: Value<S> = Rc::new(RefCell::new(s));
+    fn add(&self, s: Value<S>) -> i32 {
         return ((*self).with(|__s| __s.v) + { (*s.borrow()).v });
     }
 }

@@ -30,6 +30,14 @@ pub type Empty = bool;
 pub struct HoldsEmpty {
     pub e: Empty,
 }
+impl HoldsEmpty {
+    pub unsafe fn new_1(this: *mut HoldsEmpty) {
+        (&raw mut (*this).e).write(false);
+    }
+    pub unsafe fn copy_from(this: *mut HoldsEmpty, _a0: *const HoldsEmpty) {
+        (&raw mut (*this).e).write((*_a0).e);
+    }
+}
 impl Default for HoldsEmpty {
     fn default() -> Self {
         unsafe { HoldsEmpty { e: false } }
@@ -68,7 +76,8 @@ unsafe fn main_0() -> i32 {
     let mut sc: Scoped = Scoped_NEG;
     assert!(((sc as i32) == (-2_i32)));
     assert!((((Scoped_POS as i8) as i32) == (2)));
-    let mut he: HoldsEmpty = <HoldsEmpty>::default();
+    let mut he: HoldsEmpty = ::std::mem::MaybeUninit::uninit().assume_init();
+    HoldsEmpty::new_1(&raw mut he);
     assert!(!(he.e));
     let mut ev: Empty = false;
     assert!(((ev as i32) == (he.e as i32)));

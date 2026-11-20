@@ -13,6 +13,13 @@ pub struct Edge {
     pub v: i32,
     pub weight: f64,
 }
+impl Edge {
+    pub unsafe fn copy_from(this: *mut Edge, _a0: *const Edge) {
+        (&raw mut (*this).u).write((*_a0).u);
+        (&raw mut (*this).v).write((*_a0).v);
+        (&raw mut (*this).weight).write((*_a0).weight);
+    }
+}
 pub unsafe fn partition_0(arr: *mut Option<Box<[Edge]>>, mut start: i32, mut end: i32) -> i32 {
     let pivot: *mut Edge = &mut (*(*arr)
         .as_deref()
@@ -35,22 +42,30 @@ pub unsafe fn partition_0(arr: *mut Option<Box<[Edge]>>, mut start: i32, mut end
         }
     }
     let mut pidx: i32 = ((start) + (count));
-    let mut tmp: Edge = Edge {
-        u: (*(*arr)
-            .as_deref()
-            .map_or(::std::ptr::null_mut(), |s| s.as_ptr() as *mut Edge)
-            .add((pidx as usize)))
-        .u,
-        v: (*(*arr)
-            .as_deref()
-            .map_or(::std::ptr::null_mut(), |s| s.as_ptr() as *mut Edge)
-            .add((pidx as usize)))
-        .v,
-        weight: (*(*arr)
-            .as_deref()
-            .map_or(::std::ptr::null_mut(), |s| s.as_ptr() as *mut Edge)
-            .add((pidx as usize)))
-        .weight,
+    let mut tmp: Edge = ::std::mem::MaybeUninit::uninit().assume_init();
+    {
+        let __d = &raw mut tmp;
+        (&raw mut (*__d).u).write(
+            (*(*arr)
+                .as_deref()
+                .map_or(::std::ptr::null_mut(), |s| s.as_ptr() as *mut Edge)
+                .add((pidx as usize)))
+            .u,
+        );
+        (&raw mut (*__d).v).write(
+            (*(*arr)
+                .as_deref()
+                .map_or(::std::ptr::null_mut(), |s| s.as_ptr() as *mut Edge)
+                .add((pidx as usize)))
+            .v,
+        );
+        (&raw mut (*__d).weight).write(
+            (*(*arr)
+                .as_deref()
+                .map_or(::std::ptr::null_mut(), |s| s.as_ptr() as *mut Edge)
+                .add((pidx as usize)))
+            .weight,
+        );
     };
     (*(*arr)
         .as_deref()
@@ -285,13 +300,10 @@ impl DisjointSet {
                 + (1));
         }
     }
-    pub unsafe fn move_from(_a0: *mut DisjointSet) -> Self {
-        let mut this = Self {
-            rank: (*_a0).rank.take(),
-            parent: (*_a0).parent.take(),
-            n: (*_a0).n,
-        };
-        this
+    pub unsafe fn move_from(this: *mut DisjointSet, _a0: *mut DisjointSet) {
+        (&raw mut (*this).rank).write((*_a0).rank.take());
+        (&raw mut (*this).parent).write((*_a0).parent.take());
+        (&raw mut (*this).n).write((*_a0).n);
     }
     pub unsafe fn move_assign(&mut self, _a0: *mut DisjointSet) -> *mut DisjointSet {
         {
@@ -312,13 +324,10 @@ pub struct Graph {
     pub E: i32,
 }
 impl Graph {
-    pub unsafe fn move_from(_a0: *mut Graph) -> Self {
-        let mut this = Self {
-            edges: (*_a0).edges.take(),
-            V: (*_a0).V,
-            E: (*_a0).E,
-        };
-        this
+    pub unsafe fn move_from(this: *mut Graph, _a0: *mut Graph) {
+        (&raw mut (*this).edges).write((*_a0).edges.take());
+        (&raw mut (*this).V).write((*_a0).V);
+        (&raw mut (*this).E).write((*_a0).E);
     }
     pub unsafe fn move_assign(&mut self, _a0: *mut Graph) -> *mut Graph {
         {
@@ -335,18 +344,20 @@ pub unsafe fn MSTKruskal_2(graph: *mut Graph) -> f64 {
         let _end: i32 = (((*graph).E) - (1));
         quicksort_1(_arr, 0, _end)
     });
-    let mut set: DisjointSet = DisjointSet {
-        rank: Some(
+    let mut set: DisjointSet = ::std::mem::MaybeUninit::uninit().assume_init();
+    {
+        let __d = &raw mut set;
+        (&raw mut (*__d).rank).write(Some(
             (0..((*graph).V as usize))
                 .map(|_| 0_i32)
                 .collect::<Box<[_]>>(),
-        ),
-        parent: Some(
+        ));
+        (&raw mut (*__d).parent).write(Some(
             (0..((*graph).V as usize))
                 .map(|_| 0_i32)
                 .collect::<Box<[_]>>(),
-        ),
-        n: (*graph).V,
+        ));
+        (&raw mut (*__d).n).write((*graph).V);
     };
     (unsafe { DisjointSet::makeSet(&mut set) });
     let mut total_weight: f64 = 0_f64;
@@ -391,14 +402,16 @@ pub fn main() {
 unsafe fn main_0() -> i32 {
     let mut V: i32 = 4;
     let mut E: i32 = 5;
-    let mut graph: Graph = Graph {
-        edges: Some(
+    let mut graph: Graph = ::std::mem::MaybeUninit::uninit().assume_init();
+    {
+        let __d = &raw mut graph;
+        (&raw mut (*__d).edges).write(Some(
             (0..(E as usize))
                 .map(|_| <Edge>::default())
                 .collect::<Box<[_]>>(),
-        ),
-        V: V,
-        E: E,
+        ));
+        (&raw mut (*__d).V).write(V);
+        (&raw mut (*__d).E).write(E);
     };
     (*graph
         .edges

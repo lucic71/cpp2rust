@@ -16,6 +16,13 @@ pub struct Layout {
     #[offset(8)]
     pub c: u16,
 }
+impl Layout {
+    pub fn copy_from(this: Ptr<Layout>, _a0: Ptr<Layout>) {
+        field!(this, a).write(_a0.with(|__s| __s.a));
+        field!(this, b).write(_a0.with(|__s| __s.b));
+        field!(this, c).write(_a0.with(|__s| __s.c));
+    }
+}
 #[derive(Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg)]
 #[byte_size(66)]
 pub struct Frame {
@@ -25,6 +32,14 @@ pub struct Frame {
     #[byte_size(64)]
     #[array_len(64)]
     pub body: Box<[i8]>,
+}
+impl Frame {
+    pub fn copy_from(this: Ptr<Frame>, _a0: Ptr<Frame>) {
+        field!(this, tag).write(_a0.with(|__s| __s.tag));
+        field!(this, body).write(Box::new(std::array::from_fn::<_, 64, _>(|__i: usize| {
+            (*_a0.upgrade().deref()).body[(__i) as usize]
+        })));
+    }
 }
 impl Default for Frame {
     fn default() -> Self {
@@ -44,11 +59,13 @@ fn main_0() -> i32 {
     assert!((0_usize == 0_usize));
     assert!((4_usize == 4_usize));
     assert!((8_usize == 8_usize));
-    let v: Value<Layout> = Rc::new(RefCell::new(Layout {
-        a: 0_u8,
-        b: 0_u32,
-        c: 0_u16,
-    }));
+    let v: Value<Layout> = Rc::new(RefCell::new(<Layout>::uninit()));
+    {
+        let __d = v.as_pointer();
+        field!(__d, a).write(0_u8);
+        field!(__d, b).write(0_u32);
+        field!(__d, c).write(0_u16);
+    };
     (*v.borrow_mut()).b = 3735928559_u32;
     let mut base: Ptr<u8> = (v.as_pointer()).reinterpret_cast::<u8>();
     let mut bp: Ptr<u32> = (base.offset((4_usize) as isize)).reinterpret_cast::<u32>();

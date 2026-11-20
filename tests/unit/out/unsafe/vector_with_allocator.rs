@@ -25,6 +25,7 @@ impl TestAllocator_int_ {
             }
         };
     }
+    pub unsafe fn copy_from(this: *mut TestAllocator_int_, _a0: *const TestAllocator_int_) {}
 }
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
@@ -45,6 +46,7 @@ impl TestAllocator_double_ {
             }
         };
     }
+    pub unsafe fn copy_from(this: *mut TestAllocator_double_, _a0: *const TestAllocator_double_) {}
 }
 pub unsafe fn copy_0(mut copy_vector: Vec<i32>) {}
 pub unsafe fn fn_1(v: *mut Vec<i32>, mut v3: Vec<i32>) {

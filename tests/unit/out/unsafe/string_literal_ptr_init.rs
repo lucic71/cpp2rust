@@ -16,20 +16,21 @@ pub struct label {
 pub unsafe fn probe_two_0() -> i32 {
     return 1;
 }
-pub static mut table_1: std::cell::LazyCell<[label; 2]> = std::cell::LazyCell::new(|| unsafe {
-    [
-        label {
-            name: ((c"first").as_ptr().cast_mut()).cast_const(),
-            probe: None,
-            mask: ((1) << (4)),
-        },
-        label {
-            name: ((c"second").as_ptr().cast_mut()).cast_const(),
-            probe: (Some(probe_two_0)),
-            mask: ((1) << (5)),
-        },
-    ]
-});
+pub static mut table_1: libcc2rs::LazyStorage<[label; 2]> =
+    libcc2rs::LazyStorage::new(|__p| unsafe {
+        __p.write([
+            label {
+                name: ((c"first").as_ptr().cast_mut()).cast_const(),
+                probe: None,
+                mask: ((1) << (4)),
+            },
+            label {
+                name: ((c"second").as_ptr().cast_mut()).cast_const(),
+                probe: (Some(probe_two_0)),
+                mask: ((1) << (5)),
+            },
+        ])
+    });
 pub fn main() {
     unsafe {
         __cpp2rust_init_globals();
@@ -38,38 +39,27 @@ pub fn main() {
 }
 unsafe fn main_0() -> i32 {
     assert!(
-        (((*(*std::cell::LazyCell::force_mut(&mut *&raw mut table_1))[(0) as usize]
+        (((*(*(*&raw const table_1).get())[(0) as usize]
             .name
             .offset((0) as isize)) as i32)
             == ('f' as i32))
     );
     assert!(
-        (((*(*std::cell::LazyCell::force_mut(&mut *&raw mut table_1))[(0) as usize]
+        (((*(*(*&raw const table_1).get())[(0) as usize]
             .name
             .offset((4) as isize)) as i32)
             == ('t' as i32))
     );
+    assert!((((*(*&raw const table_1).get())[(0) as usize].probe).is_none()));
+    assert!((((*(*&raw const table_1).get())[(0) as usize].mask) == (16)));
     assert!(
-        (((*std::cell::LazyCell::force_mut(&mut *&raw mut table_1))[(0) as usize].probe).is_none())
-    );
-    assert!(
-        (((*std::cell::LazyCell::force_mut(&mut *&raw mut table_1))[(0) as usize].mask) == (16))
-    );
-    assert!(
-        (((*(*std::cell::LazyCell::force_mut(&mut *&raw mut table_1))[(1) as usize]
+        (((*(*(*&raw const table_1).get())[(1) as usize]
             .name
             .offset((0) as isize)) as i32)
             == ('s' as i32))
     );
-    assert!(
-        ((unsafe {
-            ((*std::cell::LazyCell::force_mut(&mut *&raw mut table_1))[(1) as usize].probe).unwrap()(
-            )
-        }) == (1))
-    );
-    assert!(
-        (((*std::cell::LazyCell::force_mut(&mut *&raw mut table_1))[(1) as usize].mask) == (32))
-    );
+    assert!(((unsafe { ((*(*&raw const table_1).get())[(1) as usize].probe).unwrap()() }) == (1)));
+    assert!((((*(*&raw const table_1).get())[(1) as usize].mask) == (32)));
     let mut tail: *const libc::c_char = (&mut (*c"ab.cd".as_ptr().cast_mut().offset((2) as isize))
         as *mut libc::c_char)
         .cast_const();
@@ -78,16 +68,14 @@ unsafe fn main_0() -> i32 {
     assert!((((*tail.offset((2) as isize)) as i32) == ('d' as i32)));
     let mut have: i32 = 0;
     let mut p: *mut ::libc::c_void = if (have != 0) {
-        ((*std::cell::LazyCell::force_mut(&mut *&raw mut table_1))[(0) as usize].name
-            as *mut ::libc::c_void)
+        ((*(*&raw const table_1).get())[(0) as usize].name as *mut ::libc::c_void)
     } else {
         (c"".as_ptr().cast_mut() as *mut ::libc::c_void)
     };
     assert!((((*(p as *const libc::c_char).offset((0) as isize)) as i32) == ('\0' as i32)));
     have = 1;
     p = if (have != 0) {
-        ((*std::cell::LazyCell::force_mut(&mut *&raw mut table_1))[(0) as usize].name
-            as *mut ::libc::c_void)
+        ((*(*&raw const table_1).get())[(0) as usize].name as *mut ::libc::c_void)
     } else {
         (c"".as_ptr().cast_mut() as *mut ::libc::c_void)
     };
@@ -95,5 +83,5 @@ unsafe fn main_0() -> i32 {
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {
-    std::cell::LazyCell::force(&*&raw const table_1);
+    (*&raw const table_1).get();
 }

@@ -10,7 +10,6 @@ thread_local!(
     pub static copies_0: Value<i32> = Rc::new(RefCell::new(0));
 );
 #[derive(Record, ByteRepr, Uninit, VaArg, FnPtrArg, CopyAssign, Default)]
-#[placement]
 #[byte_size(8)]
 pub struct Counted {
     #[offset(0)]

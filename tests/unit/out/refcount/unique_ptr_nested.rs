@@ -14,6 +14,16 @@ pub struct Inner {
     #[offset(4)]
     pub y: i32,
 }
+impl Inner {
+    pub fn copy_from(this: Ptr<Inner>, _a0: Ptr<Inner>) {
+        field!(this, x).write(_a0.with(|__s| __s.x));
+        field!(this, y).write(_a0.with(|__s| __s.y));
+    }
+    pub fn move_from(this: Ptr<Inner>, _a0: Ptr<Inner>) {
+        field!(this, x).write({ (*_a0.upgrade().deref()).x });
+        field!(this, y).write({ (*_a0.upgrade().deref()).y });
+    }
+}
 #[derive(Record, ByteRepr, Uninit, FnPtrArg, MoveCtor, MoveAssign, Default)]
 #[byte_size(8)]
 pub struct Outer {
@@ -22,10 +32,9 @@ pub struct Outer {
     pub inner: Option<Value<Inner>>,
 }
 impl Outer {
-    pub fn move_from(_a0: Ptr<Outer>) -> Self {
-        Self {
-            inner: field!(_a0, inner).with_mut(|__v: &mut Option<Value<Inner>>| __v.take()),
-        }
+    pub fn move_from(this: Ptr<Outer>, _a0: Ptr<Outer>) {
+        field!(this, inner)
+            .write(field!(_a0, inner).with_mut(|__v: &mut Option<Value<Inner>>| __v.take()));
     }
 }
 pub fn main() {
@@ -33,9 +42,32 @@ pub fn main() {
     libcc2rs::cpp2rust_exit(main_0());
 }
 fn main_0() -> i32 {
-    let mut o: Option<Value<Outer>> = Some(Rc::new(RefCell::new(Outer {
-        inner: Some(Rc::new(RefCell::new(Inner { x: 10, y: 20 }))),
-    })));
+    let mut o: Option<Value<Outer>> = Some(Rc::new(RefCell::new(
+        Rc::try_unwrap({
+            let __v: Value<Outer> = Rc::new(RefCell::new(<Outer>::uninit()));
+            {
+                let __d = __v.as_pointer();
+                field!(__d, inner).write(Some(Rc::new(RefCell::new(
+                    Rc::try_unwrap({
+                        let __v: Value<Inner> = Rc::new(RefCell::new(<Inner>::uninit()));
+                        {
+                            let __d = __v.as_pointer();
+                            field!(__d, x).write(10);
+                            field!(__d, y).write(20);
+                        };
+                        __v
+                    })
+                    .ok()
+                    .unwrap()
+                    .into_inner(),
+                ))));
+            };
+            __v
+        })
+        .ok()
+        .unwrap()
+        .into_inner(),
+    )));
     {
         field!(o.as_pointer().with(|__s| __s.inner.clone()).as_pointer(), x)
             .with_mut(|__v| *__v = *__v + 5)

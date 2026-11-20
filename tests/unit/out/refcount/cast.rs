@@ -18,12 +18,24 @@ pub struct Pair {
     #[offset(4)]
     pub y: i32,
 }
+impl Pair {
+    pub fn copy_from(this: Ptr<Pair>, _a0: Ptr<Pair>) {
+        field!(this, x).write(_a0.with(|__s| __s.x));
+        field!(this, y).write(_a0.with(|__s| __s.y));
+    }
+}
 #[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
 #[byte_size(64)]
 #[byte_align(64)]
 pub struct Wide {
     #[offset(0)]
     pub c: i8,
+}
+impl Wide {
+    pub fn new_1(this: Ptr<Wide>) {}
+    pub fn copy_from(this: Ptr<Wide>, _a0: Ptr<Wide>) {
+        field!(this, c).write(_a0.with(|__s| __s.c));
+    }
 }
 #[derive(Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg)]
 #[byte_size(40)]
@@ -38,6 +50,19 @@ pub struct Grid {
     #[byte_size(24)]
     #[array_len(2, 3)]
     pub cells: Box<[Box<[i32]>]>,
+}
+impl Grid {
+    pub fn copy_from(this: Ptr<Grid>, _a0: Ptr<Grid>) {
+        field!(this, h).write(_a0.with(|__s| __s.h));
+        field!(this, row).write(Box::new(std::array::from_fn::<_, 3, _>(|__i: usize| {
+            (*_a0.upgrade().deref()).row[(__i) as usize]
+        })));
+        field!(this, cells).write(Box::new(std::array::from_fn::<_, 2, _>(|__i: usize| {
+            Box::<[_]>::from(std::array::from_fn::<_, 3, _>(|__i2: usize| {
+                (*_a0.upgrade().deref()).cells[(__i) as usize][(__i2) as usize]
+            }))
+        })));
+    }
 }
 impl Default for Grid {
     fn default() -> Self {
@@ -62,11 +87,16 @@ pub struct Bag {
     pub items: Vec<i32>,
 }
 impl Bag {
-    pub fn move_from(_a0: Ptr<Bag>) -> Self {
-        Self {
-            n: { (*_a0.upgrade().deref()).n },
-            items: field!(_a0, items).with_mut(std::mem::take),
-        }
+    pub fn copy_from(this: Ptr<Bag>, _a0: Ptr<Bag>) {
+        field!(this, n).write(_a0.with(|__s| __s.n));
+        field!(this, items).write((*_a0.upgrade().deref()).items.clone());
+    }
+    pub fn move_from(this: Ptr<Bag>, _a0: Ptr<Bag>) {
+        field!(this, n).write({ (*_a0.upgrade().deref()).n });
+        field!(this, items).write(field!(_a0, items).with_mut(std::mem::take));
+    }
+    pub fn new_1(this: Ptr<Bag>) {
+        field!(this, items).write(Vec::new());
     }
 }
 pub fn adjacent_arrays_0() {
@@ -220,8 +250,14 @@ pub fn over_aligned_3() {
     let c: Value<i8> = Rc::new(RefCell::new(('c' as i8)));
     assert!(((c.as_pointer()).to_int() != 0_usize));
     let w: Value<Box<[Wide]>> = Rc::new(RefCell::new(
-        (0..3).map(|_| <Wide>::default()).collect::<Box<[Wide]>>(),
+        (0..3).map(|_| <Wide>::uninit()).collect::<Box<[_]>>(),
     ));
+    {
+        let __d = w.decay();
+        for __i in 0..3_isize {
+            Wide::new_1(__d.offset(__i));
+        }
+    };
     let mut iw: usize = w.decay().to_int();
     assert!(((iw as u64).wrapping_rem((64usize as u64)) == 0_u64));
     assert!((((w.decay().offset(1)).to_int()).wrapping_sub(iw) == 64usize));
@@ -289,7 +325,15 @@ pub fn vector_capacity_4() {
     );
 }
 pub fn nested_5() {
-    let g: Value<Grid> = Rc::new(RefCell::new(<Grid>::default()));
+    let g: Value<Grid> = Rc::new(RefCell::new(<Grid>::uninit()));
+    {
+        let __d = g.as_pointer();
+        field!(__d, h).write(0_i32);
+        field!(__d, row).write(Box::new([0; 3]));
+        field!(__d, cells).write(Box::new(std::array::from_fn::<_, 2, _>(|_| {
+            Default::default()
+        })));
+    };
     let mut ig: usize = (g.as_pointer()).to_int();
     assert!(
         ((array_field_ptr!(g.as_pointer(), row).offset((2) as isize)).to_int()
@@ -338,7 +382,8 @@ pub fn nested_5() {
     assert!(({ ((*m.borrow())[(1) as usize][(1) as usize] == 42) }));
     assert!(({ (pm).clone() } == { (m.decay().offset(1).decay().offset(1)) }));
     assert!(({ (pm).clone() } < { (m.decay().offset(2).decay().offset(0)) }));
-    let b: Value<Bag> = Rc::new(RefCell::new(<Bag>::default()));
+    let b: Value<Bag> = Rc::new(RefCell::new(<Bag>::uninit()));
+    Bag::new_1(b.as_pointer());
     if 4_usize > (*b.borrow()).items.capacity() as usize {
         let len_0 = (*b.borrow()).items.len();
         (*b.borrow_mut())
@@ -400,7 +445,12 @@ pub fn nested_5() {
     );
 }
 pub fn struct_fields_6() {
-    let pr: Value<Pair> = Rc::new(RefCell::new(Pair { x: 1, y: 2 }));
+    let pr: Value<Pair> = Rc::new(RefCell::new(<Pair>::uninit()));
+    {
+        let __d = pr.as_pointer();
+        field!(__d, x).write(1);
+        field!(__d, y).write(2);
+    };
     let mut ip: usize = (pr.as_pointer()).to_int();
     assert!(
         ((field_ptr!(pr.as_pointer(), y)).to_int()

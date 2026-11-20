@@ -21,7 +21,6 @@ pub fn pick_3(mut i: i32) -> Ptr<i32> {
     return xs_1.with(|v| v.decay()).offset(i);
 }
 #[derive(Record, ByteRepr, Uninit, VaArg, FnPtrArg, CppFrom, CopyAssign, Default)]
-#[placement]
 #[cpp_from(i32, new, value)]
 #[byte_size(4)]
 pub struct Bag {

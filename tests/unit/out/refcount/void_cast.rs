@@ -15,10 +15,14 @@ pub struct NonTrivial {
     pub data: Vec<i32>,
 }
 impl NonTrivial {
-    pub fn move_from(_a0: Ptr<NonTrivial>) -> Self {
-        Self {
-            data: field!(_a0, data).with_mut(std::mem::take),
-        }
+    pub fn copy_from(this: Ptr<NonTrivial>, _a0: Ptr<NonTrivial>) {
+        field!(this, data).write((*_a0.upgrade().deref()).data.clone());
+    }
+    pub fn move_from(this: Ptr<NonTrivial>, _a0: Ptr<NonTrivial>) {
+        field!(this, data).write(field!(_a0, data).with_mut(std::mem::take));
+    }
+    pub fn new_1(this: Ptr<NonTrivial>) {
+        field!(this, data).write(Vec::new());
     }
 }
 pub fn unused_ref_param_1(x: Ptr<NonTrivial>) {}
@@ -36,6 +40,11 @@ pub struct Holder {
     #[offset(0)]
     pub field: i32,
 }
+impl Holder {
+    pub fn copy_from(this: Ptr<Holder>, _a0: Ptr<Holder>) {
+        field!(this, field).write(_a0.with(|__s| __s.field));
+    }
+}
 #[derive(Record, ByteRepr, Uninit, FnPtrArg, MoveCtor, MoveAssign, Default)]
 #[byte_size(8)]
 pub struct NonCopyable {
@@ -44,10 +53,9 @@ pub struct NonCopyable {
     pub value: Option<Value<i32>>,
 }
 impl NonCopyable {
-    pub fn move_from(_a0: Ptr<NonCopyable>) -> Self {
-        Self {
-            value: field!(_a0, value).with_mut(|__v: &mut Option<Value<i32>>| __v.take()),
-        }
+    pub fn move_from(this: Ptr<NonCopyable>, _a0: Ptr<NonCopyable>) {
+        field!(this, value)
+            .write(field!(_a0, value).with_mut(|__v: &mut Option<Value<i32>>| __v.take()));
     }
 }
 pub fn unused_noncopyable_param_5(x: Ptr<NonCopyable>) {}
@@ -96,14 +104,21 @@ fn main_0() -> i32 {
     let storage: Value<i32> = Rc::new(RefCell::new(11));
     let mut p: Ptr<i32> = (storage.as_pointer());
     let mut arr: [i32; 3] = [1, 2, 3];
-    let h: Value<Holder> = Rc::new(RefCell::new(Holder { field: 17 }));
+    let h: Value<Holder> = Rc::new(RefCell::new(<Holder>::uninit()));
+    {
+        let __d = h.as_pointer();
+        field!(__d, field).write(17);
+    };
     let mut hp: Ptr<Holder> = (h.as_pointer());
-    let nt: Value<NonTrivial> = Rc::new(RefCell::new(<NonTrivial>::default()));
+    let nt: Value<NonTrivial> = Rc::new(RefCell::new(<NonTrivial>::uninit()));
+    NonTrivial::new_1(nt.as_pointer());
     ({ unused_ref_param_1(nt.as_pointer()) });
     ({ unused_ptr_param_2((nt.as_pointer())) });
-    let g: Value<NonCopyable> = Rc::new(RefCell::new(NonCopyable {
-        value: Some(Rc::new(RefCell::new(9))),
-    }));
+    let g: Value<NonCopyable> = Rc::new(RefCell::new(<NonCopyable>::uninit()));
+    {
+        let __d = g.as_pointer();
+        field!(__d, value).write(Some(Rc::new(RefCell::new(9))));
+    };
     ();
     ({ unused_noncopyable_param_5(g.as_pointer()) });
     assert!(((({ { (*g.borrow()).value.clone() } }).as_pointer().read()) == 9));

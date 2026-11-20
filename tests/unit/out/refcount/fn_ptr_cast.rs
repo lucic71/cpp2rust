@@ -31,11 +31,17 @@ pub struct Command {
     #[byte_size(8)]
     pub data: AnyPtr,
 }
+impl Command {
+    pub fn new_1(this: Ptr<Command>) {}
+    pub fn copy_from(this: Ptr<Command>, _a0: Ptr<Command>) {
+        field!(this, data).write(_a0.with(|__s| __s.data.clone()));
+    }
+}
 pub fn test_void_ptr_to_fn_3() {
-    let mut cmd: Command = <Command>::default();
-    cmd.data = FnPtr::<fn(i32) -> i32>::new(double_it_0).to_any();
-    let mut fn_: FnPtr<fn(i32) -> i32> = cmd
-        .data
+    let cmd: Value<Command> = Rc::new(RefCell::new(<Command>::uninit()));
+    Command::new_1(cmd.as_pointer());
+    (*cmd.borrow_mut()).data = FnPtr::<fn(i32) -> i32>::new(double_it_0).to_any();
+    let mut fn_: FnPtr<fn(i32) -> i32> = { (*cmd.borrow()).data.clone() }
         .cast_fn::<fn(i32) -> i32>()
         .expect("ub:wrong fn type");
     assert!((({ fn_.call(5,) }) == 10));

@@ -25,7 +25,6 @@ pub fn sum_0(n: i32, __args: Box<[VaArg]>) -> i32 {
     return total;
 }
 #[derive(Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, CppFrom, Destructor, Default)]
-#[placement]
 #[cpp_from(Ptr<VaArg> , new, mut_ptr)]
 #[byte_size(16)]
 pub struct Guard_1 {
@@ -50,14 +49,16 @@ pub fn sum_ptr_2(n: i32, __args: Box<[VaArg]>) -> i32 {
     let n: Value<i32> = Rc::new(RefCell::new(n));
     let ap: Value<Ptr<VaArg>> = Rc::new(RefCell::new(Ptr::<VaArg>::default()));
     (*ap.borrow_mut()) = __args.decay();
-    let mut cursor: Cursor_3 = Cursor_3 {
-        ap: (ap.as_pointer()),
+    let cursor: Value<Cursor_3> = Rc::new(RefCell::new(<Cursor_3>::uninit()));
+    {
+        let __d = cursor.as_pointer();
+        field!(__d, ap).write((ap.as_pointer()));
     };
     let mut total: i32 = 0;
     {
         let mut i: i32 = 0;
         'loop_: while (i < (*n.borrow())) {
-            total += cursor.ap.with_mut(|__v| __v.arg::<i32>());
+            total += { (*cursor.borrow()).ap.clone() }.with_mut(|__v| __v.arg::<i32>());
             i.prefix_inc();
         }
     };
@@ -69,6 +70,11 @@ pub struct Cursor_3 {
     #[offset(0)]
     #[byte_size(8)]
     pub ap: Ptr<Ptr<VaArg>>,
+}
+impl Cursor_3 {
+    pub fn copy_from(this: Ptr<Cursor_3>, _a0: Ptr<Cursor_3>) {
+        field!(this, ap).write(_a0.with(|__s| __s.ap.clone()));
+    }
 }
 pub fn main() {
     __cpp2rust_init_globals();

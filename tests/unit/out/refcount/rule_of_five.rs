@@ -18,7 +18,6 @@ thread_local!(
 #[derive(
     Record, ByteRepr, Uninit, VaArg, FnPtrArg, MoveCtor, CppFrom, CopyAssign, MoveAssign, Destructor,
 )]
-#[placement]
 #[cpp_from(i32, new, value)]
 #[byte_size(20)]
 pub struct Buffer {

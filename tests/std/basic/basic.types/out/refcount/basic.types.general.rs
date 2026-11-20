@@ -14,6 +14,15 @@ pub struct p2_pointer_to_data_member_bytes_round_trip_HasTwoInts {
     #[offset(4)]
     pub second: i32,
 }
+impl p2_pointer_to_data_member_bytes_round_trip_HasTwoInts {
+    pub fn copy_from(
+        this: Ptr<p2_pointer_to_data_member_bytes_round_trip_HasTwoInts>,
+        _a0: Ptr<p2_pointer_to_data_member_bytes_round_trip_HasTwoInts>,
+    ) {
+        field!(this, first).write(_a0.with(|__s| __s.first));
+        field!(this, second).write(_a0.with(|__s| __s.second));
+    }
+}
 pub fn test_0() {
     let pm: Value<isize> = Rc::new(RefCell::new(
         (offset_of_field!(
@@ -45,11 +54,13 @@ pub fn test_0() {
         })
     );
     let obj: Value<p2_pointer_to_data_member_bytes_round_trip_HasTwoInts> = Rc::new(RefCell::new(
-        p2_pointer_to_data_member_bytes_round_trip_HasTwoInts {
-            first: 3,
-            second: 4,
-        },
+        <p2_pointer_to_data_member_bytes_round_trip_HasTwoInts>::uninit(),
     ));
+    {
+        let __d = obj.as_pointer();
+        field!(__d, first).write(3);
+        field!(__d, second).write(4);
+    };
     assert!(({ (((obj.as_pointer()).member::<i32>((*pm.borrow())).read()) == 4) }));
     let null_pm: Value<isize> = Rc::new(RefCell::new(-1_isize));
     {
@@ -77,6 +88,15 @@ pub struct p3_pointer_to_data_member_bytes_copied_to_other_object_HasTwoInts {
     #[offset(4)]
     pub second: i32,
 }
+impl p3_pointer_to_data_member_bytes_copied_to_other_object_HasTwoInts {
+    pub fn copy_from(
+        this: Ptr<p3_pointer_to_data_member_bytes_copied_to_other_object_HasTwoInts>,
+        _a0: Ptr<p3_pointer_to_data_member_bytes_copied_to_other_object_HasTwoInts>,
+    ) {
+        field!(this, first).write(_a0.with(|__s| __s.first));
+        field!(this, second).write(_a0.with(|__s| __s.second));
+    }
+}
 pub fn test_1() {
     let source: Value<isize> = Rc::new(RefCell::new(
         (offset_of_field!(
@@ -99,13 +119,14 @@ pub fn test_1() {
         (__tmp_4).clone()
     };
     assert!(({ ((*destination.borrow()) == (*source.borrow())) }));
-    let obj: Value<p3_pointer_to_data_member_bytes_copied_to_other_object_HasTwoInts> =
-        Rc::new(RefCell::new(
-            p3_pointer_to_data_member_bytes_copied_to_other_object_HasTwoInts {
-                first: 3,
-                second: 4,
-            },
-        ));
+    let obj: Value<p3_pointer_to_data_member_bytes_copied_to_other_object_HasTwoInts> = Rc::new(
+        RefCell::new(<p3_pointer_to_data_member_bytes_copied_to_other_object_HasTwoInts>::uninit()),
+    );
+    {
+        let __d = obj.as_pointer();
+        field!(__d, first).write(3);
+        field!(__d, second).write(4);
+    };
     assert!(
         ({
             (((obj.as_pointer())

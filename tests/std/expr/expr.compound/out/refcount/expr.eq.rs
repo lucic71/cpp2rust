@@ -14,6 +14,12 @@ pub struct p4_1_both_null_HasTwoInts {
     #[offset(4)]
     pub second: i32,
 }
+impl p4_1_both_null_HasTwoInts {
+    pub fn copy_from(this: Ptr<p4_1_both_null_HasTwoInts>, _a0: Ptr<p4_1_both_null_HasTwoInts>) {
+        field!(this, first).write(_a0.with(|__s| __s.first));
+        field!(this, second).write(_a0.with(|__s| __s.second));
+    }
+}
 pub fn test_0() {
     let mut first_null: isize = -1_isize;
     let mut second_null: isize = -1_isize;
@@ -27,6 +33,12 @@ pub struct p4_2_one_null_HasTwoInts {
     pub first: i32,
     #[offset(4)]
     pub second: i32,
+}
+impl p4_2_one_null_HasTwoInts {
+    pub fn copy_from(this: Ptr<p4_2_one_null_HasTwoInts>, _a0: Ptr<p4_2_one_null_HasTwoInts>) {
+        field!(this, first).write(_a0.with(|__s| __s.first));
+        field!(this, second).write(_a0.with(|__s| __s.second));
+    }
 }
 pub fn test_1() {
     let mut null_pm: isize = -1_isize;
@@ -72,6 +84,15 @@ pub struct p4_6_data_members_HasTwoInts {
     pub first: i32,
     #[offset(4)]
     pub second: i32,
+}
+impl p4_6_data_members_HasTwoInts {
+    pub fn copy_from(
+        this: Ptr<p4_6_data_members_HasTwoInts>,
+        _a0: Ptr<p4_6_data_members_HasTwoInts>,
+    ) {
+        field!(this, first).write(_a0.with(|__s| __s.first));
+        field!(this, second).write(_a0.with(|__s| __s.second));
+    }
 }
 pub fn test_3() {
     let mut first_pm: isize = (offset_of_field!(p4_6_data_members_HasTwoInts, first) as isize);

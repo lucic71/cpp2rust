@@ -11,10 +11,17 @@ use std::rc::Rc;
 pub struct S {
     pub v: i32,
 }
-pub unsafe fn operator_comma_0(a: *const S, b: *const S) -> S {
-    return S {
-        v: ((((*a).v) * (10)) + ((*b).v)),
+impl S {
+    pub unsafe fn copy_from(this: *mut S, _a0: *const S) {
+        (&raw mut (*this).v).write((*_a0).v);
+    }
+}
+pub unsafe fn operator_comma_0(__ret: *mut S, a: *const S, b: *const S) {
+    {
+        let __d = __ret.clone();
+        (&raw mut (*__d).v).write(((((*a).v) * (10)) + ((*b).v)));
     };
+    return;
 }
 pub unsafe fn operator_literal__k_1(mut v: u64) -> i64 {
     return (((v).wrapping_mul(1000_u64)) as i64);
@@ -29,23 +36,40 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    let mut s: S = S { v: 3 };
-    let mut t: S = S { v: 4 };
+    let mut s: S = ::std::mem::MaybeUninit::uninit().assume_init();
+    {
+        let __d = &raw mut s;
+        (&raw mut (*__d).v).write(3);
+    };
+    let mut t: S = ::std::mem::MaybeUninit::uninit().assume_init();
+    {
+        let __d = &raw mut t;
+        (&raw mut (*__d).v).write(4);
+    };
     assert!(
-        (((unsafe {
-            let _a: *const S = &s;
-            operator_comma_0(_a, &t)
+        ((({
+            let mut __v: S = ::std::mem::MaybeUninit::uninit().assume_init();
+            (unsafe {
+                let _a: *const S = &s;
+                operator_comma_0(&raw mut __v, _a, &t)
+            });
+            __v
         })
         .v) == (34))
     );
     assert!(
-        (((unsafe {
-            let mut _a: S = (unsafe {
-                let _a: *const S = &s;
-                operator_comma_0(_a, &t)
+        ((({
+            let mut __v: S = ::std::mem::MaybeUninit::uninit().assume_init();
+            (unsafe {
+                let mut _a: S = ::std::mem::MaybeUninit::uninit().assume_init();
+                (unsafe {
+                    let _a: *const S = &s;
+                    operator_comma_0(&raw mut _a, _a, &t)
+                });
+                let _b: *const S = &s;
+                operator_comma_0(&raw mut __v, &mut _a, _b)
             });
-            let _b: *const S = &s;
-            operator_comma_0(&mut _a, _b)
+            __v
         })
         .v) == (343))
     );

@@ -14,6 +14,11 @@ pub struct S {
     #[offset(0)]
     pub v: i32,
 }
+impl S {
+    pub fn copy_from(this: Ptr<S>, _a0: Ptr<S>) {
+        field!(this, v).write(_a0.with(|__s| __s.v));
+    }
+}
 #[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, CppFrom, Default)]
 #[cpp_into(i64, to_i64_1)]
 #[byte_size(4)]
@@ -21,12 +26,21 @@ pub struct T {
     #[offset(0)]
     pub v: i32,
 }
+impl T {
+    pub fn copy_from(this: Ptr<T>, _a0: Ptr<T>) {
+        field!(this, v).write(_a0.with(|__s| __s.v));
+    }
+}
 pub fn main() {
     __cpp2rust_init_globals();
     libcc2rs::cpp2rust_exit(main_0());
 }
 fn main_0() -> i32 {
-    let s: Value<S> = Rc::new(RefCell::new(S { v: 65 }));
+    let s: Value<S> = Rc::new(RefCell::new(<S>::uninit()));
+    {
+        let __d = s.as_pointer();
+        field!(__d, v).write(65);
+    };
     let mut a: i8 = ({ SImpl::to_i8(&s.as_pointer()) });
     let mut b: u8 = ({ SImpl::to_u8(&s.as_pointer()) });
     assert!(((a as i32) == (('A' as i8) as i32)));
@@ -36,7 +50,11 @@ fn main_0() -> i32 {
             + (({ SImpl::to_u8(&s.as_pointer(),) }) as i32))
             == 131)
     );
-    let t: Value<T> = Rc::new(RefCell::new(T { v: 3 }));
+    let t: Value<T> = Rc::new(RefCell::new(<T>::uninit()));
+    {
+        let __d = t.as_pointer();
+        field!(__d, v).write(3);
+    };
     let mut c: i64 = ({ TImpl::to_i64_1(&t.as_pointer()) });
     let mut d: i64 = ({ TImpl::to_i64_2(&t.as_pointer()) });
     assert!((c == 3_i64));

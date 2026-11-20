@@ -8,7 +8,6 @@ use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, CppFromUnsafe, Default)]
-#[placement]
 #[cpp_from(i32, new, value)]
 pub struct Celsius {
     pub degrees: i32,
@@ -34,10 +33,15 @@ impl Meters {
     pub unsafe fn to_i32(&self) -> i32 {
         return self.value;
     }
+    pub unsafe fn copy_from(this: *mut Meters, _a0: *const Meters) {
+        (&raw mut (*this).value).write((*_a0).value);
+    }
+    pub unsafe fn move_from(this: *mut Meters, _a0: *mut Meters) {
+        (&raw mut (*this).value).write((*_a0).value);
+    }
 }
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, CppFromUnsafe, Default)]
-#[placement]
 #[cpp_from(Celsius, new, ptr)]
 pub struct Label {
     pub id: i32,
@@ -52,7 +56,6 @@ impl Label {
 }
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, CppFromUnsafe, Default)]
-#[placement]
 #[cpp_from(Celsius, new_1, ptr)]
 #[cpp_from_move(Celsius, new_2, ptr)]
 pub struct Owner {
@@ -75,7 +78,6 @@ impl Owner {
 }
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, CppFromUnsafe, Default)]
-#[placement]
 #[cpp_from(Celsius, new, storage)]
 pub struct Holder {
     pub value: i32,
@@ -90,7 +92,6 @@ impl Holder {
 }
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, CppFromUnsafe)]
-#[placement]
 #[cpp_from(i32, new, value)]
 pub struct Fallback {
     pub value: i32,
@@ -119,9 +120,13 @@ impl Default for Fallback {
 pub struct Counter {
     pub hits: i32,
 }
+impl Counter {
+    pub unsafe fn copy_from(this: *mut Counter, _a0: *const Counter) {
+        (&raw mut (*this).hits).write((*_a0).hits);
+    }
+}
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, CppFromUnsafe, Default)]
-#[placement]
 #[cpp_from(Counter, new, mut_ptr)]
 pub struct Observer {
     pub seen: i32,
@@ -142,7 +147,6 @@ impl Tag {
 }
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, CppFromUnsafe, Default)]
-#[placement]
 #[cpp_from(Celsius, new, ptr)]
 pub struct Tag {
     pub code: i32,
@@ -154,7 +158,6 @@ impl Tag {
 }
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, CppFromUnsafe, Default)]
-#[placement]
 #[cpp_from(*const libc::c_char , new, value)]
 pub struct Name {
     pub len: i32,
@@ -194,7 +197,11 @@ unsafe fn main_0() -> i32 {
     );
     assert!(((from_ints.0.degrees) == (1)));
     assert!(((from_ints.1.degrees) == (2)));
-    let mut m: Meters = Meters { value: 7 };
+    let mut m: Meters = ::std::mem::MaybeUninit::uninit().assume_init();
+    {
+        let __d = &raw mut m;
+        (&raw mut (*__d).value).write(7);
+    };
     let mut from_operators: (i32, i64) = (
         (unsafe { Meters::to_i32(&m) }),
         ((unsafe { Meters::to_i32(&m) }) as i64),
@@ -295,7 +302,11 @@ unsafe fn main_0() -> i32 {
     );
     assert!(((from_defaulted_ctor.0.value) == (5)));
     assert!(((from_defaulted_ctor.1) == (6_i64)));
-    let mut counter: Counter = Counter { hits: 3 };
+    let mut counter: Counter = ::std::mem::MaybeUninit::uninit().assume_init();
+    {
+        let __d = &raw mut counter;
+        (&raw mut (*__d).hits).write(3);
+    };
     let mut forwarded_mutable_ref: (Observer, i32) = (
         {
             let mut __v: Observer = ::std::mem::MaybeUninit::uninit().assume_init();

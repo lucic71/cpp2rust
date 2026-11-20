@@ -8,7 +8,6 @@ use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 #[repr(C)]
 #[derive(VaArg, FnPtrArg, MoveCtorUnsafe)]
-#[placement]
 pub struct Counted {
     pub copies: i32,
     pub moves: i32,
@@ -47,17 +46,17 @@ impl Default for Counted {
         }
     }
 }
-pub static mut drops_0: std::cell::LazyCell<i32> = std::cell::LazyCell::new(|| unsafe { 0 });
+pub static mut drops_0: libcc2rs::LazyStorage<i32> =
+    libcc2rs::LazyStorage::new(|__p| unsafe { __p.write(0) });
 #[repr(C)]
 #[derive(VaArg, FnPtrArg, MoveCtorUnsafe, DestructorUnsafe)]
-#[placement]
 pub struct Dropped {}
 impl Dropped {
     pub unsafe fn new(this: *mut Dropped) {}
     pub unsafe fn copy_from(this: *mut Dropped, _a0: *const Dropped) {}
     pub unsafe fn move_from(this: *mut Dropped, _a0: *mut Dropped) {}
     pub unsafe fn destructor(&mut self) {
-        (*std::cell::LazyCell::force_mut(&mut *&raw mut drops_0)).postfix_inc();
+        (*(*&raw const drops_0).get()).postfix_inc();
     }
 }
 impl Clone for Dropped {
@@ -168,7 +167,7 @@ unsafe fn main_0() -> i32 {
         let mut m2: FnPtr<fn()> = m.move_from();
         let _dtor_m2 = std::mem::DropGuard::new(&raw mut m2, |__p| unsafe { (*__p).destroy() });
     }
-    assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut drops_0)) == (2)));
+    assert!(((*(*&raw const drops_0).get()) == (2)));
     {
         let mut k: FnPtr<fn()> = lambda_unsafe!(
             {
@@ -184,7 +183,7 @@ unsafe fn main_0() -> i32 {
         let mut k2: FnPtr<fn()> = k.copy_from();
         let _dtor_k2 = std::mem::DropGuard::new(&raw mut k2, |__p| unsafe { (*__p).destroy() });
     }
-    assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut drops_0)) == (4)));
+    assert!(((*(*&raw const drops_0).get()) == (4)));
     {
         let mut inner: FnPtr<fn()> = lambda_unsafe!(
             {
@@ -207,9 +206,9 @@ unsafe fn main_0() -> i32 {
         let _dtor_outer =
             std::mem::DropGuard::new(&raw mut outer, |__p| unsafe { (*__p).destroy() });
     }
-    assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut drops_0)) == (6)));
+    assert!(((*(*&raw const drops_0).get()) == (6)));
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {
-    std::cell::LazyCell::force(&*&raw const drops_0);
+    (*&raw const drops_0).get();
 }

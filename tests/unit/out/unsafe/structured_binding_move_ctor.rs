@@ -6,11 +6,12 @@ use std::collections::BTreeMap;
 use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
-pub static mut copies_0: std::cell::LazyCell<i32> = std::cell::LazyCell::new(|| unsafe { 0 });
-pub static mut moves_1: std::cell::LazyCell<i32> = std::cell::LazyCell::new(|| unsafe { 0 });
+pub static mut copies_0: libcc2rs::LazyStorage<i32> =
+    libcc2rs::LazyStorage::new(|__p| unsafe { __p.write(0) });
+pub static mut moves_1: libcc2rs::LazyStorage<i32> =
+    libcc2rs::LazyStorage::new(|__p| unsafe { __p.write(0) });
 #[repr(C)]
 #[derive(VaArg, FnPtrArg, MoveCtorUnsafe, Default)]
-#[placement]
 pub struct Movable {
     pub x: i32,
     pub y: i32,
@@ -23,14 +24,14 @@ impl Movable {
     pub unsafe fn copy_from(this: *mut Movable, other: *const Movable) {
         (&raw mut (*this).x).write((*other).x);
         (&raw mut (*this).y).write((*other).y);
-        (*std::cell::LazyCell::force_mut(&mut *&raw mut copies_0)).prefix_inc();
+        (*(*&raw const copies_0).get()).prefix_inc();
     }
     pub unsafe fn move_from(this: *mut Movable, other: *mut Movable) {
         (&raw mut (*this).x).write((*other).x);
         (&raw mut (*this).y).write((*other).y);
         (*other).x = 0;
         (*other).y = 0;
-        (*std::cell::LazyCell::force_mut(&mut *&raw mut moves_1)).prefix_inc();
+        (*(*&raw const moves_1).get()).prefix_inc();
     }
 }
 impl Clone for Movable {
@@ -49,18 +50,21 @@ pub struct Holder {
     pub ys: Vec<i32>,
 }
 impl Holder {
-    pub unsafe fn extract(&mut self) -> Holder {
-        return Holder {
-            xs: std::mem::take(&mut self.xs),
-            ys: std::mem::take(&mut self.ys),
+    pub unsafe fn extract(&mut self, __ret: *mut Holder) {
+        {
+            let __d = __ret.clone();
+            (&raw mut (*__d).xs).write(std::mem::take(&mut self.xs));
+            (&raw mut (*__d).ys).write(std::mem::take(&mut self.ys));
         };
+        return;
     }
-    pub unsafe fn move_from(_a0: *mut Holder) -> Self {
-        let mut this = Self {
-            xs: std::mem::take(&mut (*_a0).xs),
-            ys: std::mem::take(&mut (*_a0).ys),
-        };
-        this
+    pub unsafe fn copy_from(this: *mut Holder, _a0: *const Holder) {
+        (&raw mut (*this).xs).write((*_a0).xs.clone());
+        (&raw mut (*this).ys).write((*_a0).ys.clone());
+    }
+    pub unsafe fn move_from(this: *mut Holder, _a0: *mut Holder) {
+        (&raw mut (*this).xs).write(std::mem::take(&mut (*_a0).xs));
+        (&raw mut (*this).ys).write(std::mem::take(&mut (*_a0).ys));
     }
     pub unsafe fn move_assign(&mut self, _a0: *mut Holder) -> *mut Holder {
         {
@@ -83,17 +87,20 @@ unsafe fn main_0() -> i32 {
     Movable::new(&raw mut m, { 3 }, { 4 });
     let mut __decomp_2: Movable = ::std::mem::MaybeUninit::uninit().assume_init();
     Movable::move_from(&raw mut __decomp_2, { &mut m });
-    assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut moves_1)) == (1)));
-    assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut copies_0)) == (0)));
+    assert!(((*(*&raw const moves_1).get()) == (1)));
+    assert!(((*(*&raw const copies_0).get()) == (0)));
     assert!(((__decomp_2.x) == (3)));
     assert!(((__decomp_2.y) == (4)));
     assert!(((m.x) == (0)));
     assert!(((m.y) == (0)));
-    let mut h: Holder = Holder {
-        xs: Vec::from([1, 2, 3]),
-        ys: Vec::from([4, 5]),
+    let mut h: Holder = ::std::mem::MaybeUninit::uninit().assume_init();
+    {
+        let __d = &raw mut h;
+        (&raw mut (*__d).xs).write(Vec::from([1, 2, 3]));
+        (&raw mut (*__d).ys).write(Vec::from([4, 5]));
     };
-    let mut __decomp_3: Holder = (unsafe { Holder::extract(&mut h) });
+    let mut __decomp_3: Holder = ::std::mem::MaybeUninit::uninit().assume_init();
+    (unsafe { Holder::extract(&mut h, &raw mut __decomp_3) });
     assert!(((__decomp_3.xs.len()) == (3_usize)));
     assert!(((__decomp_3.ys.len()) == (2_usize)));
     assert!(((__decomp_3.xs[(2_usize)]) == (3)));
@@ -103,6 +110,6 @@ unsafe fn main_0() -> i32 {
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {
-    std::cell::LazyCell::force(&*&raw const copies_0);
-    std::cell::LazyCell::force(&*&raw const moves_1);
+    (*&raw const copies_0).get();
+    (*&raw const moves_1).get();
 }

@@ -10,7 +10,6 @@ thread_local!(
     pub static copyCount_0: Value<i32> = Rc::new(RefCell::new(0));
 );
 #[derive(Record, ByteRepr, Uninit, VaArg, FnPtrArg, CppFrom, CopyAssign, Default)]
-#[placement]
 #[cpp_from(i32, new, value)]
 #[byte_size(4)]
 pub struct HasConstexprCtor {
@@ -51,7 +50,6 @@ thread_local!(
     pub static useCount_4: Value<i32> = Rc::new(RefCell::new(0));
 );
 #[derive(Record, ByteRepr, Uninit, VaArg, FnPtrArg, CopyAssign, Destructor)]
-#[placement]
 #[byte_size(4)]
 pub struct LifetimeTracked {
     #[offset(0)]
@@ -259,10 +257,19 @@ pub trait p4_1_pure_virtual_without_definition_HasPureVirtual {
 #[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
 #[byte_size(8)]
 pub struct p4_1_pure_virtual_without_definition_OverridesPureVirtual {}
+impl p4_1_pure_virtual_without_definition_OverridesPureVirtual {
+    pub fn new_1(this: Ptr<p4_1_pure_virtual_without_definition_OverridesPureVirtual>) {}
+    pub fn copy_from(
+        this: Ptr<p4_1_pure_virtual_without_definition_OverridesPureVirtual>,
+        _a0: Ptr<p4_1_pure_virtual_without_definition_OverridesPureVirtual>,
+    ) {
+    }
+}
 pub fn test_11() {
     let d: Value<p4_1_pure_virtual_without_definition_OverridesPureVirtual> = Rc::new(
-        RefCell::new(<p4_1_pure_virtual_without_definition_OverridesPureVirtual>::default()),
+        RefCell::new(<p4_1_pure_virtual_without_definition_OverridesPureVirtual>::uninit()),
     );
+    p4_1_pure_virtual_without_definition_OverridesPureVirtual::new_1(d.as_pointer());
     let mut p: PtrDyn<dyn p4_1_pure_virtual_without_definition_HasPureVirtual> =
         (d.as_pointer()).to_dyn::<dyn p4_1_pure_virtual_without_definition_HasPureVirtual>(|w| w);
     ({ (*p.upgrade().deref_mut()).f() });
@@ -370,7 +377,6 @@ thread_local!(
     pub static copies_18: Value<i32> = Rc::new(RefCell::new(0_i32));
 );
 #[derive(Record, ByteRepr, Uninit, VaArg, FnPtrArg, CppFrom, CopyAssign, Default)]
-#[placement]
 #[cpp_from(i32, new, value)]
 #[byte_size(8)]
 pub struct p5_2_mutable_subobject_is_odr_used_HasMutableMember {
@@ -437,7 +443,6 @@ pub fn test_19() {
     assert!((copies_18.with(|rc| *rc.borrow()) == 1));
 }
 #[derive(Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, CopyAssign, Destructor, Default)]
-#[placement]
 #[byte_size(8)]
 pub struct p6_unevaluated_binding_needs_no_capture_HasTwoMembers {
     #[offset(0)]
@@ -480,7 +485,6 @@ pub fn test_20() {
     assert!((useCount_4.with(|rc| *rc.borrow()) == 0));
 }
 #[derive(Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, CopyAssign, Destructor)]
-#[placement]
 #[byte_size(8)]
 pub struct p7_member_access_captures_this_HasMemberUsedInLambda {
     #[offset(0)]
@@ -531,7 +535,6 @@ pub fn test_22() {
     assert!((copyCount_2.with(|rc| *rc.borrow()) == 0));
 }
 #[derive(Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, CopyAssign, Destructor, Default)]
-#[placement]
 #[byte_size(4)]
 pub struct p7_unevaluated_this_needs_no_capture_HasMemberUsedInLambda {
     #[offset(0)]
@@ -589,7 +592,6 @@ thread_local!(
     pub static t_ctors_27: Value<i32> = Rc::new(RefCell::new(0_i32));
 );
 #[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg)]
-#[placement]
 #[byte_size(1)]
 pub struct p9_destructor_not_potentially_invoked_HasUndefinedDestructor {}
 impl p9_destructor_not_potentially_invoked_HasUndefinedDestructor {
@@ -631,7 +633,6 @@ thread_local!(
     pub static ctor_calls_29: Value<i32> = Rc::new(RefCell::new(0_i32));
 );
 #[derive(Record, ByteRepr, Uninit, FnPtrArg)]
-#[placement]
 #[byte_size(4)]
 pub struct p9_unused_copy_constructor_HasUndefinedCopyCtor {
     #[offset(0)]
@@ -672,7 +673,6 @@ thread_local!(
     pub static m_ctors_32: Value<i32> = Rc::new(RefCell::new(0_i32));
 );
 #[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg)]
-#[placement]
 #[byte_size(1)]
 pub struct p9_unused_implicit_assignment_HasUndefinedCopyAssignment {}
 impl p9_unused_implicit_assignment_HasUndefinedCopyAssignment {
@@ -700,7 +700,6 @@ impl Default for p9_unused_implicit_assignment_HasUndefinedCopyAssignment {
     }
 }
 #[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
-#[placement]
 #[byte_size(1)]
 pub struct p9_unused_implicit_assignment_HasMemberWithUndefinedCopyAssignment {
     #[offset(0)]

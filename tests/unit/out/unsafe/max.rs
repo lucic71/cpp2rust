@@ -6,19 +6,20 @@ use std::collections::BTreeMap;
 use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
-pub static mut calls_0: std::cell::LazyCell<i32> = std::cell::LazyCell::new(|| unsafe { 0 });
-pub static mut xs_1: std::cell::LazyCell<[i32; 2]> = std::cell::LazyCell::new(|| unsafe { [1, 2] });
+pub static mut calls_0: libcc2rs::LazyStorage<i32> =
+    libcc2rs::LazyStorage::new(|__p| unsafe { __p.write(0) });
+pub static mut xs_1: libcc2rs::LazyStorage<[i32; 2]> =
+    libcc2rs::LazyStorage::new(|__p| unsafe { __p.write([1, 2]) });
 pub unsafe fn size_of_2(mut i: i32) -> usize {
-    (*std::cell::LazyCell::force_mut(&mut *&raw mut calls_0)).prefix_inc();
+    (*(*&raw const calls_0).get()).prefix_inc();
     return (((i) * (3)) as usize);
 }
 pub unsafe fn pick_3(mut i: i32) -> *mut i32 {
-    (*std::cell::LazyCell::force_mut(&mut *&raw mut calls_0)).prefix_inc();
-    return &mut (*std::cell::LazyCell::force_mut(&mut *&raw mut xs_1))[(i) as usize];
+    (*(*&raw const calls_0).get()).prefix_inc();
+    return &mut (*(*&raw const xs_1).get())[(i) as usize];
 }
 #[repr(C)]
 #[derive(VaArg, FnPtrArg, CppFromUnsafe, CopyAssignUnsafe, Default)]
-#[placement]
 #[cpp_from(i32, new, value)]
 pub struct Bag {
     pub n: i32,
@@ -29,7 +30,7 @@ impl Bag {
     }
     pub unsafe fn copy_from(this: *mut Bag, o: *const Bag) {
         (&raw mut (*this).n).write((*o).n);
-        (*std::cell::LazyCell::force_mut(&mut *&raw mut calls_0)).prefix_inc();
+        (*(*&raw const calls_0).get()).prefix_inc();
     }
     pub unsafe fn copy_assign(&mut self, _a0: *const Bag) -> *mut Bag {
         self.n = (*_a0).n;
@@ -146,7 +147,7 @@ unsafe fn main_0() -> i32 {
             let __b: *const _ = (unsafe { pick_3(1) });
             if *__a < *__b { __b } else { __a }
         }) == (2))
-            && ((*std::cell::LazyCell::force_mut(&mut *&raw mut calls_0)) == (2))
+            && ((*(*&raw const calls_0).get()) == (2))
     );
     assert!(
         ((*{
@@ -154,9 +155,9 @@ unsafe fn main_0() -> i32 {
             let __b: *const _ = (unsafe { pick_3(0) });
             if *__b < *__a { __b } else { __a }
         }) == (1))
-            && ((*std::cell::LazyCell::force_mut(&mut *&raw mut calls_0)) == (4))
+            && ((*(*&raw const calls_0).get()) == (4))
     );
-    (*std::cell::LazyCell::force_mut(&mut *&raw mut calls_0)) = 0;
+    (*(*&raw const calls_0).get()) = 0;
     assert!(
         (((*match (
             (&mut *(|__p: *mut Bag| {
@@ -203,7 +204,7 @@ unsafe fn main_0() -> i32 {
             })
             .n) == (1))
     );
-    assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut calls_0)) == (0)));
+    assert!(((*(*&raw const calls_0).get()) == (0)));
     let mut largest: usize = 0_usize;
     {
         let mut i: i32 = 0;
@@ -221,13 +222,10 @@ unsafe fn main_0() -> i32 {
             i.prefix_inc();
         }
     }
-    assert!(
-        ((largest) == (6_usize))
-            && ((*std::cell::LazyCell::force_mut(&mut *&raw mut calls_0)) == (3))
-    );
+    assert!(((largest) == (6_usize)) && ((*(*&raw const calls_0).get()) == (3)));
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {
-    std::cell::LazyCell::force(&*&raw const calls_0);
-    std::cell::LazyCell::force(&*&raw const xs_1);
+    (*&raw const calls_0).get();
+    (*&raw const xs_1).get();
 }

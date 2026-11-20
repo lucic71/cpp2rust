@@ -13,12 +13,13 @@ pub struct Holder {
     pub vec_: Vec<i32>,
 }
 impl Holder {
-    pub unsafe fn move_from(_a0: *mut Holder) -> Self {
-        let mut this = Self {
-            ref_: (*_a0).ref_,
-            vec_: std::mem::take(&mut (*_a0).vec_),
-        };
-        this
+    pub unsafe fn copy_from(this: *mut Holder, _a0: *const Holder) {
+        (&raw mut (*this).ref_).write((*_a0).ref_);
+        (&raw mut (*this).vec_).write((*_a0).vec_.clone());
+    }
+    pub unsafe fn move_from(this: *mut Holder, _a0: *mut Holder) {
+        (&raw mut (*this).ref_).write((*_a0).ref_);
+        (&raw mut (*this).vec_).write(std::mem::take(&mut (*_a0).vec_));
     }
 }
 pub unsafe fn pick_0(a: *mut Vec<i32>, b: *mut Vec<i32>, mut first: bool) -> *mut Vec<i32> {
@@ -45,9 +46,11 @@ pub fn main() {
 }
 unsafe fn main_0() -> i32 {
     let mut v: Vec<i32> = Vec::from([1, 2, 3]);
-    let mut h: Holder = Holder {
-        ref_: &mut v,
-        vec_: Vec::from([4, 5]),
+    let mut h: Holder = ::std::mem::MaybeUninit::uninit().assume_init();
+    {
+        let __d = &raw mut h;
+        (&raw mut (*__d).ref_).write(&mut v);
+        (&raw mut (*__d).vec_).write(Vec::from([4, 5]));
     };
     assert!(((*(*h.ref_).as_mut_ptr()) == (1)));
     (&mut (*h.ref_))[0] = 9;

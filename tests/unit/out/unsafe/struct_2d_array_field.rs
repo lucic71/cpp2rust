@@ -12,21 +12,21 @@ pub struct table {
     pub rows: [[libc::c_char; 10]; 3],
     pub count: usize,
 }
-pub static mut T1_0: std::cell::LazyCell<table> = std::cell::LazyCell::new(|| unsafe {
-    table {
+pub static mut T1_0: libcc2rs::LazyStorage<table> = libcc2rs::LazyStorage::new(|__p| unsafe {
+    __p.write(table {
         rows: [std::mem::transmute(*b"alpha\0\0\0\0\0"), [0; 10], [0; 10]],
         count: 1_usize,
-    }
+    })
 });
-pub static mut T2_1: std::cell::LazyCell<table> = std::cell::LazyCell::new(|| unsafe {
-    table {
+pub static mut T2_1: libcc2rs::LazyStorage<table> = libcc2rs::LazyStorage::new(|__p| unsafe {
+    __p.write(table {
         rows: [
             std::mem::transmute(*b"alpha\0\0\0\0\0"),
             std::mem::transmute(*b"beta\0\0\0\0\0\0"),
             [0; 10],
         ],
         count: 2_usize,
-    }
+    })
 });
 pub fn main() {
     unsafe {
@@ -35,35 +35,31 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    assert!((((*std::cell::LazyCell::force_mut(&mut *&raw mut T1_0)).count) == (1_usize)));
+    assert!((((*(*&raw const T1_0).get()).count) == (1_usize)));
     assert!(
         ((libc::strcmp(
-            (*std::cell::LazyCell::force_mut(&mut *&raw mut T1_0)).rows[(0) as usize].as_ptr(),
+            (*(*&raw const T1_0).get()).rows[(0) as usize].as_ptr(),
             (c"alpha".as_ptr().cast_mut()).cast_const()
         )) == (0))
     );
     assert!(
-        (((*std::cell::LazyCell::force_mut(&mut *&raw mut T1_0)).rows[(1) as usize][(0) as usize]
-            as i32)
-            == ('\0' as i32))
+        (((*(*&raw const T1_0).get()).rows[(1) as usize][(0) as usize] as i32) == ('\0' as i32))
     );
-    assert!((((*std::cell::LazyCell::force_mut(&mut *&raw mut T2_1)).count) == (2_usize)));
+    assert!((((*(*&raw const T2_1).get()).count) == (2_usize)));
     assert!(
         ((libc::strcmp(
-            (*std::cell::LazyCell::force_mut(&mut *&raw mut T2_1)).rows[(0) as usize].as_ptr(),
+            (*(*&raw const T2_1).get()).rows[(0) as usize].as_ptr(),
             (c"alpha".as_ptr().cast_mut()).cast_const()
         )) == (0))
     );
     assert!(
         ((libc::strcmp(
-            (*std::cell::LazyCell::force_mut(&mut *&raw mut T2_1)).rows[(1) as usize].as_ptr(),
+            (*(*&raw const T2_1).get()).rows[(1) as usize].as_ptr(),
             (c"beta".as_ptr().cast_mut()).cast_const()
         )) == (0))
     );
     assert!(
-        (((*std::cell::LazyCell::force_mut(&mut *&raw mut T2_1)).rows[(2) as usize][(0) as usize]
-            as i32)
-            == ('\0' as i32))
+        (((*(*&raw const T2_1).get()).rows[(2) as usize][(0) as usize] as i32) == ('\0' as i32))
     );
     let mut local: table = table {
         rows: [
@@ -152,6 +148,6 @@ unsafe fn main_0() -> i32 {
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {
-    std::cell::LazyCell::force(&*&raw const T1_0);
-    std::cell::LazyCell::force(&*&raw const T2_1);
+    (*&raw const T1_0).get();
+    (*&raw const T2_1).get();
 }

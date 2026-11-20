@@ -14,14 +14,35 @@ pub struct S {
     #[offset(4)]
     pub b: i32,
 }
+impl S {
+    pub fn copy_from(this: Ptr<S>, _a0: Ptr<S>) {
+        field!(this, a).write(_a0.with(|__s| __s.a));
+        field!(this, b).write(_a0.with(|__s| __s.b));
+    }
+}
 pub fn main() {
     __cpp2rust_init_globals();
     libcc2rs::cpp2rust_exit(main_0());
 }
 fn main_0() -> i32 {
-    let s1: Value<S> = Rc::new(RefCell::new(S { a: 1, b: 2 }));
-    let s2: Value<S> = Rc::new(RefCell::new(S { a: 1, b: 2 }));
-    let s3: Value<S> = Rc::new(RefCell::new(S { a: 1, b: 3 }));
+    let s1: Value<S> = Rc::new(RefCell::new(<S>::uninit()));
+    {
+        let __d = s1.as_pointer();
+        field!(__d, a).write(1);
+        field!(__d, b).write(2);
+    };
+    let s2: Value<S> = Rc::new(RefCell::new(<S>::uninit()));
+    {
+        let __d = s2.as_pointer();
+        field!(__d, a).write(1);
+        field!(__d, b).write(2);
+    };
+    let s3: Value<S> = Rc::new(RefCell::new(<S>::uninit()));
+    {
+        let __d = s3.as_pointer();
+        field!(__d, a).write(1);
+        field!(__d, b).write(3);
+    };
     assert!(
         ({
             let _x: Ptr<S> = s1.as_pointer();

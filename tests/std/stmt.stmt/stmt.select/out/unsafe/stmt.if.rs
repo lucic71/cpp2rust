@@ -6,43 +6,46 @@ use std::collections::BTreeMap;
 use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
-pub static mut ctorCount_0: std::cell::LazyCell<i32> = std::cell::LazyCell::new(|| unsafe { 0 });
-pub static mut copyCount_1: std::cell::LazyCell<i32> = std::cell::LazyCell::new(|| unsafe { 0 });
-pub static mut dtorCount_2: std::cell::LazyCell<i32> = std::cell::LazyCell::new(|| unsafe { 0 });
-pub static mut useCount_3: std::cell::LazyCell<i32> = std::cell::LazyCell::new(|| unsafe { 0 });
+pub static mut ctorCount_0: libcc2rs::LazyStorage<i32> =
+    libcc2rs::LazyStorage::new(|__p| unsafe { __p.write(0) });
+pub static mut copyCount_1: libcc2rs::LazyStorage<i32> =
+    libcc2rs::LazyStorage::new(|__p| unsafe { __p.write(0) });
+pub static mut dtorCount_2: libcc2rs::LazyStorage<i32> =
+    libcc2rs::LazyStorage::new(|__p| unsafe { __p.write(0) });
+pub static mut useCount_3: libcc2rs::LazyStorage<i32> =
+    libcc2rs::LazyStorage::new(|__p| unsafe { __p.write(0) });
 #[repr(C)]
 #[derive(VaArg, FnPtrArg, CopyAssignUnsafe, DestructorUnsafe)]
-#[placement]
 pub struct LifetimeTracked {
     pub uses: i32,
 }
 impl LifetimeTracked {
     pub unsafe fn reset() {
-        (*std::cell::LazyCell::force_mut(&mut *&raw mut ctorCount_0)) = {
-            (*std::cell::LazyCell::force_mut(&mut *&raw mut copyCount_1)) = {
-                (*std::cell::LazyCell::force_mut(&mut *&raw mut dtorCount_2)) = {
-                    (*std::cell::LazyCell::force_mut(&mut *&raw mut useCount_3)) = 0;
-                    (*std::cell::LazyCell::force_mut(&mut *&raw mut useCount_3))
+        (*(*&raw const ctorCount_0).get()) = {
+            (*(*&raw const copyCount_1).get()) = {
+                (*(*&raw const dtorCount_2).get()) = {
+                    (*(*&raw const useCount_3).get()) = 0;
+                    (*(*&raw const useCount_3).get())
                 };
-                (*std::cell::LazyCell::force_mut(&mut *&raw mut dtorCount_2))
+                (*(*&raw const dtorCount_2).get())
             };
-            (*std::cell::LazyCell::force_mut(&mut *&raw mut copyCount_1))
+            (*(*&raw const copyCount_1).get())
         };
     }
     pub unsafe fn new(this: *mut LifetimeTracked) {
         (&raw mut (*this).uses).write(0);
-        (*std::cell::LazyCell::force_mut(&mut *&raw mut ctorCount_0)).prefix_inc();
+        (*(*&raw const ctorCount_0).get()).prefix_inc();
     }
     pub unsafe fn copy_from(this: *mut LifetimeTracked, _a0: *const LifetimeTracked) {
         (&raw mut (*this).uses).write(0);
-        (*std::cell::LazyCell::force_mut(&mut *&raw mut copyCount_1)).prefix_inc();
+        (*(*&raw const copyCount_1).get()).prefix_inc();
     }
     pub unsafe fn destructor(&mut self) {
-        (*std::cell::LazyCell::force_mut(&mut *&raw mut dtorCount_2)).prefix_inc();
+        (*(*&raw const dtorCount_2).get()).prefix_inc();
     }
     pub unsafe fn use_(&self) {
         (*(&raw const self.uses).cast_mut()).prefix_inc();
-        (*std::cell::LazyCell::force_mut(&mut *&raw mut useCount_3)).prefix_inc();
+        (*(*&raw const useCount_3).get()).prefix_inc();
     }
     pub unsafe fn copy_assign(&mut self, _a0: *const LifetimeTracked) -> *mut LifetimeTracked {
         self.uses = (*_a0).uses;
@@ -69,10 +72,10 @@ impl Default for LifetimeTracked {
         }
     }
 }
-pub static mut then_runs_4: std::cell::LazyCell<i32> =
-    std::cell::LazyCell::new(|| unsafe { 0_i32 });
-pub static mut else_runs_5: std::cell::LazyCell<i32> =
-    std::cell::LazyCell::new(|| unsafe { 0_i32 });
+pub static mut then_runs_4: libcc2rs::LazyStorage<i32> =
+    libcc2rs::LazyStorage::new(|__p| unsafe { __p.write(0_i32) });
+pub static mut else_runs_5: libcc2rs::LazyStorage<i32> =
+    libcc2rs::LazyStorage::new(|__p| unsafe { __p.write(0_i32) });
 pub unsafe fn test_6() {
     (unsafe { LifetimeTracked::reset() });
     let mut choice: i32 = 9;
@@ -83,18 +86,18 @@ pub unsafe fn test_6() {
             std::mem::DropGuard::new(&raw mut guard, |__p| unsafe { (*__p).destructor() });
         let mut choice: i32 = 0;
         if (choice != 0) {
-            (*std::cell::LazyCell::force_mut(&mut *&raw mut then_runs_4)).prefix_inc();
+            (*(*&raw const then_runs_4).get()).prefix_inc();
         } else {
-            (*std::cell::LazyCell::force_mut(&mut *&raw mut else_runs_5)).prefix_inc();
+            (*(*&raw const else_runs_5).get()).prefix_inc();
             (unsafe { LifetimeTracked::use_(&guard) });
             assert!(((guard.uses) == (1)));
             assert!(((choice) == (0)));
-            assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut dtorCount_2)) == (0)));
+            assert!(((*(*&raw const dtorCount_2).get()) == (0)));
         }
     }
-    assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut then_runs_4)) == (0)));
-    assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut else_runs_5)) == (1)));
-    assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut dtorCount_2)) == (1)));
+    assert!(((*(*&raw const then_runs_4).get()) == (0)));
+    assert!(((*(*&raw const else_runs_5).get()) == (1)));
+    assert!(((*(*&raw const dtorCount_2).get()) == (1)));
     {
         let mut guard: LifetimeTracked = ::std::mem::MaybeUninit::uninit().assume_init();
         LifetimeTracked::new(&raw mut guard);
@@ -102,16 +105,16 @@ pub unsafe fn test_6() {
             std::mem::DropGuard::new(&raw mut guard, |__p| unsafe { (*__p).destructor() });
         let mut choice: i32 = 4;
         if (choice != 0) {
-            (*std::cell::LazyCell::force_mut(&mut *&raw mut then_runs_4)).prefix_inc();
+            (*(*&raw const then_runs_4).get()).prefix_inc();
             (unsafe { LifetimeTracked::use_(&guard) });
             assert!(((guard.uses) == (1)));
             assert!(((choice) == (4)));
-            assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut dtorCount_2)) == (1)));
+            assert!(((*(*&raw const dtorCount_2).get()) == (1)));
         }
     }
-    assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut then_runs_4)) == (1)));
-    assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut ctorCount_0)) == (2)));
-    assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut dtorCount_2)) == (2)));
+    assert!(((*(*&raw const then_runs_4).get()) == (1)));
+    assert!(((*(*&raw const ctorCount_0).get()) == (2)));
+    assert!(((*(*&raw const dtorCount_2).get()) == (2)));
     assert!(((choice) == (9)));
 }
 pub unsafe fn pick_7() -> i32 {
@@ -196,10 +199,10 @@ unsafe fn main_0() -> i32 {
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {
-    std::cell::LazyCell::force(&*&raw const ctorCount_0);
-    std::cell::LazyCell::force(&*&raw const copyCount_1);
-    std::cell::LazyCell::force(&*&raw const dtorCount_2);
-    std::cell::LazyCell::force(&*&raw const useCount_3);
-    std::cell::LazyCell::force(&*&raw const then_runs_4);
-    std::cell::LazyCell::force(&*&raw const else_runs_5);
+    (*&raw const ctorCount_0).get();
+    (*&raw const copyCount_1).get();
+    (*&raw const dtorCount_2).get();
+    (*&raw const useCount_3).get();
+    (*&raw const then_runs_4).get();
+    (*&raw const else_runs_5).get();
 }

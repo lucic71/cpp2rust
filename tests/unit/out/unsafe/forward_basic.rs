@@ -11,7 +11,6 @@ pub const Overload_kLvalueOverload: Overload = 1;
 pub const Overload_kRvalueOverload: Overload = 2;
 #[repr(C)]
 #[derive(VaArg, FnPtrArg, MoveCtorUnsafe, CppFromUnsafe, Default)]
-#[placement]
 #[cpp_from(i32, new, value)]
 pub struct Tracked {
     pub v: i32,
@@ -63,7 +62,6 @@ impl Holder {
 }
 #[repr(C)]
 #[derive(Clone, VaArg, FnPtrArg, MoveCtorUnsafe, CppFromUnsafe, Default)]
-#[placement]
 #[cpp_from(Tracked, new_1, mut_ptr)]
 #[cpp_from_move(Tracked, new_2, ptr)]
 pub struct Holder {

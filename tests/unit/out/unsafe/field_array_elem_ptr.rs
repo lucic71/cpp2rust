@@ -12,6 +12,12 @@ pub struct Point {
     pub x: i32,
     pub y: i32,
 }
+impl Point {
+    pub unsafe fn copy_from(this: *mut Point, _a0: *const Point) {
+        (&raw mut (*this).x).write((*_a0).x);
+        (&raw mut (*this).y).write((*_a0).y);
+    }
+}
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct Shape {
@@ -19,6 +25,21 @@ pub struct Shape {
     pub coords: [i32; 4],
     pub points: [Point; 3],
     pub tail: i32,
+}
+impl Shape {
+    pub unsafe fn copy_from(this: *mut Shape, _a0: *const Shape) {
+        (&raw mut (*this).id).write((*_a0).id);
+        (&raw mut (*this).coords).write(std::array::from_fn::<_, 4, _>(|__i: usize| {
+            (*_a0).coords[(__i)]
+        }));
+        {
+            let __d = (&raw mut (*this).points).cast::<Point>();
+            for __i in 0..3_usize {
+                Point::copy_from(__d.offset(__i as isize), { &(*_a0).points[(__i)] });
+            }
+        };
+        (&raw mut (*this).tail).write((*_a0).tail);
+    }
 }
 pub unsafe fn sum_0(mut p: *const i32, mut n: i32) -> i32 {
     let mut s: i32 = 0;
@@ -41,15 +62,30 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    let mut s: Shape = Shape {
-        id: 1,
-        coords: [10, 20, 30, 40],
-        points: [
-            Point { x: 1, y: 2 },
-            Point { x: 3, y: 4 },
-            Point { x: 5, y: 6 },
-        ],
-        tail: 99,
+    let mut s: Shape = ::std::mem::MaybeUninit::uninit().assume_init();
+    {
+        let __d = &raw mut s;
+        (&raw mut (*__d).id).write(1);
+        (&raw mut (*__d).coords).write([10, 20, 30, 40]);
+        {
+            let __d = (&raw mut (*__d).points).cast::<Point>();
+            {
+                let __d = __d.offset(0);
+                (&raw mut (*__d).x).write(1);
+                (&raw mut (*__d).y).write(2);
+            };
+            {
+                let __d = __d.offset(1);
+                (&raw mut (*__d).x).write(3);
+                (&raw mut (*__d).y).write(4);
+            };
+            {
+                let __d = __d.offset(2);
+                (&raw mut (*__d).x).write(5);
+                (&raw mut (*__d).y).write(6);
+            };
+        };
+        (&raw mut (*__d).tail).write(99);
     };
     let mut c: *mut i32 = (&mut s.coords[(1) as usize] as *mut i32);
     assert!(((*c) == (20)));
@@ -86,7 +122,8 @@ unsafe fn main_0() -> i32 {
     let mut q: *mut Point = (*sp).points.as_mut_ptr();
     (*q.offset((2) as isize)).x = 8;
     assert!((((*sp).points[(2) as usize].x) == (8)));
-    let mut t: Shape = s;
+    let mut t: Shape = ::std::mem::MaybeUninit::uninit().assume_init();
+    Shape::copy_from(&raw mut t, { &s });
     t.coords[(0) as usize] = 0;
     t.points[(0) as usize].x = 0;
     assert!(((s.coords[(0) as usize]) == (10)) && ((s.points[(0) as usize].x) == (1)));

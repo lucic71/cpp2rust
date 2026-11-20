@@ -7,7 +7,6 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
 #[derive(Record, ByteRepr, Uninit, VaArg, FnPtrArg, MoveCtor, CppFrom)]
-#[placement]
 #[cpp_from(i32, new_1, value)]
 #[byte_size(16)]
 pub struct Tracker {
@@ -72,7 +71,40 @@ pub fn test_0() {
         })
     );
 }
-pub fn test_1() {
+pub fn get_1() -> Ptr<Tracker> {
+    return (once_2.with(|v| v.as_pointer()));
+}
+pub fn test_3() {
+    let mut p: Ptr<Tracker> = ({ get_1() });
+    assert!(
+        ({ p.with(|__s| __s.self_.clone()) } == { (p).clone() }) && (p.with(|__s| __s.value) == 2)
+    );
+    assert!(({ ({ get_1() }) } == { (p).clone() }));
+}
+thread_local!(
+    static once_2: Value<Tracker> = {
+        let __v: Value<Tracker> = Rc::new(RefCell::new(<Tracker>::uninit()));
+        Tracker::new_1(__v.as_pointer(), { 2 });
+        __v
+    };
+);
+thread_local!(
+    pub static global_4: Value<Tracker> = {
+        let __v: Value<Tracker> = Rc::new(RefCell::new(<Tracker>::uninit()));
+        Tracker::new_1(__v.as_pointer(), { 3 });
+        __v
+    };
+);
+pub fn test_5() {
+    assert!(
+        ({
+            ({ { (*global_4.with(Value::clone).borrow()).self_.clone() } } == {
+                (global_4.with(|v| v.as_pointer()))
+            }) && ({ (*global_4.with(Value::clone).borrow()).value } == 3)
+        })
+    );
+}
+pub fn test_6() {
     let a: Value<Tracker> = Rc::new(RefCell::new(<Tracker>::uninit()));
     Tracker::new_2(a.as_pointer());
     assert!(
@@ -98,7 +130,7 @@ pub fn test_1() {
         })
     );
 }
-pub fn test_2() {
+pub fn test_7() {
     let a: Value<Tracker> = Rc::new(RefCell::new(<Tracker>::uninit()));
     Tracker::new_3(a.as_pointer(), { 1 }, { 2 });
     assert!(
@@ -108,7 +140,7 @@ pub fn test_2() {
         })
     );
 }
-pub fn test_3() {
+pub fn test_8() {
     let a: Value<Tracker> = Rc::new(RefCell::new(<Tracker>::uninit()));
     Tracker::new_1(a.as_pointer(), { 1 });
     let b: Value<Tracker> = Rc::new(RefCell::new(<Tracker>::uninit()));
@@ -122,7 +154,7 @@ pub fn test_3() {
         })
     );
 }
-pub fn test_4() {
+pub fn test_9() {
     let a: Value<Tracker> = Rc::new(RefCell::new(<Tracker>::uninit()));
     Tracker::new_1(a.as_pointer(), { 1 });
     let b: Value<Tracker> = Rc::new(RefCell::new(<Tracker>::uninit()));
@@ -137,7 +169,6 @@ pub fn test_4() {
     );
 }
 #[derive(Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, MoveCtor, Default)]
-#[placement]
 #[byte_size(32)]
 pub struct implicit_constructors_Pair {
     #[offset(0)]
@@ -161,7 +192,7 @@ impl implicit_constructors_Pair {
         Tracker::new_2(field_ptr!(this, second));
     }
 }
-pub fn test_5() {
+pub fn test_10() {
     let a: Value<implicit_constructors_Pair> =
         Rc::new(RefCell::new(<implicit_constructors_Pair>::uninit()));
     implicit_constructors_Pair::new_1(a.as_pointer());
@@ -197,7 +228,7 @@ pub fn test_5() {
     );
     assert!(({ ({ (*a.borrow()).second.value } == -2_i32) }));
 }
-pub fn test_6() {
+pub fn test_11() {
     let mut p: Ptr<Tracker> = {
         let __p = Ptr::alloc(<Tracker>::uninit());
         Tracker::new_1(__p.clone(), { 4 });
@@ -209,7 +240,6 @@ pub fn test_6() {
     p.delete();
 }
 #[derive(Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, MoveCtor, CppFrom, Default)]
-#[placement]
 #[cpp_from(i32, new, value)]
 #[byte_size(24)]
 pub struct member_Holder {
@@ -235,7 +265,7 @@ impl member_Holder {
         Tracker::move_from(field_ptr!(this, tracker), { field_ptr!(_a0, tracker) });
     }
 }
-pub fn test_7() {
+pub fn test_12() {
     let h: Value<member_Holder> = Rc::new(RefCell::new(<member_Holder>::uninit()));
     member_Holder::new(h.as_pointer(), { 5 });
     assert!(
@@ -246,7 +276,7 @@ pub fn test_7() {
         })
     );
 }
-pub fn test_8() {
+pub fn test_13() {
     let elements: Value<Box<[Tracker]>> = Rc::new(RefCell::new(
         (0..2).map(|_| <Tracker>::uninit()).collect::<Box<[_]>>(),
     ));
@@ -270,13 +300,13 @@ pub fn test_8() {
         })
     );
 }
-pub fn is_self_9(tracker: Value<Tracker>) -> bool {
+pub fn is_self_14(tracker: Value<Tracker>) -> bool {
     return ({ { (*tracker.borrow()).self_.clone() } } == { (tracker.as_pointer()) });
 }
-pub fn test_10() {
+pub fn test_15() {
     assert!(
         ({
-            is_self_9({
+            is_self_14({
                 let __v: Value<Tracker> = Rc::new(RefCell::new(<Tracker>::uninit()));
                 Tracker::new_1(__v.as_pointer(), { 8 });
                 __v
@@ -284,12 +314,11 @@ pub fn test_10() {
         })
     );
 }
-pub fn make_11(__ret: Ptr<Tracker>, mut value: i32) {
+pub fn make_16(__ret: Ptr<Tracker>, mut value: i32) {
     Tracker::new_1(__ret.clone(), { value });
     return;
 }
 #[derive(Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, MoveCtor, Default)]
-#[placement]
 #[byte_size(16)]
 pub struct returned_object_Aggregate {
     #[offset(0)]
@@ -304,9 +333,9 @@ impl returned_object_Aggregate {
         Tracker::move_from(field_ptr!(this, tracker), { field_ptr!(_a0, tracker) });
     }
 }
-pub fn test_12() {
+pub fn test_17() {
     let r: Value<Tracker> = Rc::new(RefCell::new(<Tracker>::uninit()));
-    ({ make_11(r.as_pointer(), 9) });
+    ({ make_16(r.as_pointer(), 9) });
     assert!(
         ({
             ({ { (*r.borrow()).self_.clone() } } == { (r.as_pointer()) })
@@ -317,7 +346,7 @@ pub fn test_12() {
         Rc::new(RefCell::new(<returned_object_Aggregate>::uninit()));
     {
         let __d = aggregate.as_pointer();
-        ({ make_11(field_ptr!(__d, tracker), 10) });
+        ({ make_16(field_ptr!(__d, tracker), 10) });
     };
     assert!(
         ({
@@ -327,7 +356,7 @@ pub fn test_12() {
         })
     );
 }
-pub fn test_13() {
+pub fn test_18() {
     assert!(
         ({
             TrackerImpl::is_self(
@@ -351,7 +380,7 @@ pub fn test_13() {
             && (bound.with(|__s| __s.value) == 12)
     );
 }
-pub fn test_14() {
+pub fn test_19() {
     {
         let mut i: i32 = 0;
         'loop_: while (i < 2) {
@@ -375,7 +404,6 @@ pub fn test_14() {
     }
 }
 #[derive(Record, ByteRepr, Uninit, VaArg, FnPtrArg, CppFrom, CopyAssign, Destructor, Default)]
-#[placement]
 #[cpp_from(i32, new, value)]
 #[byte_size(4)]
 pub struct lifetime_Logged {
@@ -402,11 +430,11 @@ impl Clone for lifetime_Logged {
         Rc::try_unwrap(__dst).ok().unwrap().into_inner()
     }
 }
-pub fn make_15(__ret: Ptr<lifetime_Logged>, mut id: i32) {
+pub fn make_20(__ret: Ptr<lifetime_Logged>, mut id: i32) {
     lifetime_Logged::new(__ret.clone(), { id });
     return;
 }
-pub fn test_16() {
+pub fn test_21() {
     let local: Value<lifetime_Logged> = Rc::new(RefCell::new(<lifetime_Logged>::uninit()));
     lifetime_Logged::new(local.as_pointer(), { 1 });
     let _dtor_local = std::mem::DropGuard::new(local.clone(), |__p| __p.as_pointer().destructor());
@@ -414,7 +442,7 @@ pub fn test_16() {
     lifetime_Logged::copy_from(copy.as_pointer(), { local.as_pointer() });
     let _dtor_copy = std::mem::DropGuard::new(copy.clone(), |__p| __p.as_pointer().destructor());
     let returned: Value<lifetime_Logged> = Rc::new(RefCell::new(<lifetime_Logged>::uninit()));
-    ({ make_15(returned.as_pointer(), 3) });
+    ({ make_20(returned.as_pointer(), 3) });
     let _dtor_returned =
         std::mem::DropGuard::new(returned.clone(), |__p| __p.as_pointer().destructor());
     printf!(b"end\n");
@@ -424,20 +452,22 @@ pub fn main() {
     libcc2rs::cpp2rust_exit(main_0());
 }
 fn main_0() -> i32 {
-    ({ test_16() });
+    ({ test_21() });
     ({ test_0() });
-    ({ test_1() });
-    ({ test_2() });
     ({ test_3() });
-    ({ test_4() });
     ({ test_5() });
     ({ test_6() });
     ({ test_7() });
     ({ test_8() });
+    ({ test_9() });
     ({ test_10() });
+    ({ test_11() });
     ({ test_12() });
     ({ test_13() });
-    ({ test_14() });
+    ({ test_15() });
+    ({ test_17() });
+    ({ test_18() });
+    ({ test_19() });
     return 0;
 }
 pub trait TrackerImpl {
@@ -461,4 +491,6 @@ impl lifetime_LoggedImpl for Ptr<lifetime_Logged> {
         return (*self).clone();
     }
 }
-pub fn __cpp2rust_init_globals() {}
+pub fn __cpp2rust_init_globals() {
+    let _ = global_4.with(|_| ());
+}

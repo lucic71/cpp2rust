@@ -15,6 +15,12 @@ pub struct GraphNode {
     #[byte_size(8)]
     pub next: Ptr<GraphNode>,
 }
+impl GraphNode {
+    pub fn copy_from(this: Ptr<GraphNode>, _a0: Ptr<GraphNode>) {
+        field!(this, dst).write(_a0.with(|__s| __s.dst));
+        field!(this, next).write(_a0.with(|__s| __s.next.clone()));
+    }
+}
 #[derive(Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
 #[byte_size(16)]
 pub struct Graph {
@@ -24,8 +30,13 @@ pub struct Graph {
     #[byte_size(8)]
     pub adj: Ptr<Ptr<GraphNode>>,
 }
+impl Graph {
+    pub fn copy_from(this: Ptr<Graph>, _a0: Ptr<Graph>) {
+        field!(this, V).write(_a0.with(|__s| __s.V));
+        field!(this, adj).write(_a0.with(|__s| __s.adj.clone()));
+    }
+}
 #[derive(Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg)]
-#[placement]
 #[byte_size(8)]
 pub struct Partial {
     #[offset(0)]
@@ -53,7 +64,6 @@ impl Default for Partial {
     }
 }
 #[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
-#[placement]
 #[byte_size(1)]
 pub struct Declared {}
 impl Declared {
@@ -68,14 +78,22 @@ pub struct S {
     #[byte_size(8)]
     pub d: Ptr<Declared>,
 }
+impl S {
+    pub fn copy_from(this: Ptr<S>, _a0: Ptr<S>) {
+        field!(this, i).write(_a0.with(|__s| __s.i));
+        field!(this, d).write(_a0.with(|__s| __s.d.clone()));
+    }
+}
 pub fn main() {
     __cpp2rust_init_globals();
     libcc2rs::cpp2rust_exit(main_0());
 }
 fn main_0() -> i32 {
-    let mut g: Graph = Graph {
-        V: 5_u32,
-        adj: Ptr::<Ptr<GraphNode>>::null(),
+    let g: Value<Graph> = Rc::new(RefCell::new(<Graph>::uninit()));
+    {
+        let __d = g.as_pointer();
+        field!(__d, V).write(5_u32);
+        field!(__d, adj).write(Ptr::<Ptr<GraphNode>>::null());
     };
     let arr: Value<Box<[i32]>> = Rc::new(RefCell::new(Box::new([3, 1, 4])));
     let it: Value<Partial> = Rc::new(RefCell::new(<Partial>::uninit()));
@@ -88,11 +106,13 @@ fn main_0() -> i32 {
     if !(({ (*def.borrow()).p.clone() }).is_null()) {
         return 1;
     }
-    let mut s: S = S {
-        i: 7,
-        d: Ptr::<Declared>::null(),
+    let s: Value<S> = Rc::new(RefCell::new(<S>::uninit()));
+    {
+        let __d = s.as_pointer();
+        field!(__d, i).write(7);
+        field!(__d, d).write(Ptr::<Declared>::null());
     };
-    if (s.i != 7) || (!((s.d).is_null())) {
+    if ({ (*s.borrow()).i } != 7) || (!(({ (*s.borrow()).d.clone() }).is_null())) {
         return 1;
     }
     return 0;
@@ -102,15 +122,25 @@ pub trait GraphImpl {
 }
 impl GraphImpl for Ptr<Graph> {
     fn push(&self, mut src: u32, mut dst: u32) {
-        let __rhs = Ptr::alloc(GraphNode {
-            dst: dst,
-            next: (elem!((*self).with(|__s| __s.adj.clone()), src).read()),
-        });
+        let __rhs = {
+            let __p = Ptr::alloc(<GraphNode>::uninit());
+            {
+                let __d = __p.clone();
+                field!(__d, dst).write(dst);
+                field!(__d, next).write((elem!((*self).with(|__s| __s.adj.clone()), src).read()));
+            };
+            __p
+        };
         elem!((*self).with(|__s| __s.adj.clone()), src).write(__rhs);
-        let __rhs = Ptr::alloc(GraphNode {
-            dst: src,
-            next: (elem!((*self).with(|__s| __s.adj.clone()), dst).read()),
-        });
+        let __rhs = {
+            let __p = Ptr::alloc(<GraphNode>::uninit());
+            {
+                let __d = __p.clone();
+                field!(__d, dst).write(src);
+                field!(__d, next).write((elem!((*self).with(|__s| __s.adj.clone()), dst).read()));
+            };
+            __p
+        };
         elem!((*self).with(|__s| __s.adj.clone()), dst).write(__rhs);
     }
 }

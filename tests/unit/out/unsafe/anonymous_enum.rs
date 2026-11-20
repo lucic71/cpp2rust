@@ -17,6 +17,11 @@ pub const anon_1_SECOND_B: anon_1 = 1;
 pub struct S {
     pub a: i32,
 }
+impl S {
+    pub unsafe fn copy_from(this: *mut S, _a0: *const S) {
+        (&raw mut (*this).a).write((*_a0).a);
+    }
+}
 pub type TdEnum = u32;
 pub const TdEnum_TD_A: TdEnum = 0;
 pub const TdEnum_TD_B: TdEnum = 1;
@@ -28,6 +33,13 @@ pub const anon_2_FIELD_B: anon_2 = 1;
 pub struct WithAnonField {
     pub a: i32,
     pub field: anon_2,
+}
+impl WithAnonField {
+    pub unsafe fn new_1(this: *mut WithAnonField) {}
+    pub unsafe fn copy_from(this: *mut WithAnonField, _a0: *const WithAnonField) {
+        (&raw mut (*this).a).write((*_a0).a);
+        (&raw mut (*this).field).write((*_a0).field);
+    }
 }
 pub fn main() {
     unsafe {
@@ -43,7 +55,8 @@ unsafe fn main_0() -> i32 {
     assert!(((td as i32) == (TdEnum_TD_A as i32)));
     td = TdEnum_TD_B;
     assert!(((td as i32) == (TdEnum_TD_B as i32)));
-    let mut w: WithAnonField = <WithAnonField>::default();
+    let mut w: WithAnonField = ::std::mem::MaybeUninit::uninit().assume_init();
+    WithAnonField::new_1(&raw mut w);
     w.field = anon_2_FIELD_A;
     assert!(((w.field as i32) == (anon_2_FIELD_A as i32)));
     w.field = anon_2_FIELD_B;

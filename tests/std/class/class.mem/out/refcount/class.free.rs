@@ -21,6 +21,11 @@ impl p1_allocation_function_is_static_Allocates {
         allocations_0.with(|rc| *rc.borrow_mut() += 10);
         return libcc2rs::malloc_refcount(size);
     }
+    pub fn copy_from(
+        this: Ptr<p1_allocation_function_is_static_Allocates>,
+        _a0: Ptr<p1_allocation_function_is_static_Allocates>,
+    ) {
+    }
 }
 pub fn test_1() {
     let mut one: Ptr<i32> = ({
@@ -57,6 +62,11 @@ impl p3_deallocation_function_is_static_Deallocates {
     pub fn operator_delete_arr(mut ptr: AnyPtr) {
         deallocations_2.with(|rc| *rc.borrow_mut() += 10);
         libcc2rs::free_refcount((ptr).clone());
+    }
+    pub fn copy_from(
+        this: Ptr<p3_deallocation_function_is_static_Deallocates>,
+        _a0: Ptr<p3_deallocation_function_is_static_Deallocates>,
+    ) {
     }
 }
 pub fn test_3() {

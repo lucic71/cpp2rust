@@ -21,12 +21,22 @@ pub struct X1 {
     #[offset(0)]
     pub v: i32,
 }
+impl X1 {
+    pub fn copy_from(this: Ptr<X1>, _a0: Ptr<X1>) {
+        field!(this, v).write(_a0.with(|__s| __s.v));
+    }
+}
 #[derive(Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
 #[byte_size(8)]
 pub struct X2 {
     #[offset(0)]
     #[byte_size(8)]
     pub v: Ptr<X1>,
+}
+impl X2 {
+    pub fn copy_from(this: Ptr<X2>, _a0: Ptr<X2>) {
+        field!(this, v).write((_a0.with(|__s| __s.v.clone())).clone());
+    }
 }
 #[derive(Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
 #[byte_size(8)]
@@ -35,12 +45,22 @@ pub struct X3 {
     #[byte_size(8)]
     pub v: Ptr<X2>,
 }
+impl X3 {
+    pub fn copy_from(this: Ptr<X3>, _a0: Ptr<X3>) {
+        field!(this, v).write(_a0.with(|__s| __s.v.clone()));
+    }
+}
 #[derive(Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
 #[byte_size(8)]
 pub struct X4 {
     #[offset(0)]
     #[byte_size(8)]
     pub v: X3,
+}
+impl X4 {
+    pub fn copy_from(this: Ptr<X4>, _a0: Ptr<X4>) {
+        X3::copy_from(field_ptr!(this, v), { field_ptr!(_a0, v) });
+    }
 }
 pub fn main() {
     __cpp2rust_init_globals();
@@ -73,12 +93,26 @@ fn main_0() -> i32 {
     };
     let mut x4: i32 = ((({ foo_0((*x3.borrow())) }) + (({ ptr_1((x3.as_pointer())) }).read()))
         + (({ bar_2(x2.as_pointer()) }).read()));
-    let a: Value<X1> = Rc::new(RefCell::new(X1 { v: 0 }));
-    let b: Value<X2> = Rc::new(RefCell::new(X2 { v: a.as_pointer() }));
-    let mut c: X3 = X3 {
-        v: (b.as_pointer()),
+    let a: Value<X1> = Rc::new(RefCell::new(<X1>::uninit()));
+    {
+        let __d = a.as_pointer();
+        field!(__d, v).write(0);
     };
-    let d: Value<X4> = Rc::new(RefCell::new(X4 { v: (c).clone() }));
+    let b: Value<X2> = Rc::new(RefCell::new(<X2>::uninit()));
+    {
+        let __d = b.as_pointer();
+        field!(__d, v).write(a.as_pointer());
+    };
+    let c: Value<X3> = Rc::new(RefCell::new(<X3>::uninit()));
+    {
+        let __d = c.as_pointer();
+        field!(__d, v).write((b.as_pointer()));
+    };
+    let d: Value<X4> = Rc::new(RefCell::new(<X4>::uninit()));
+    {
+        let __d = d.as_pointer();
+        X3::copy_from(field_ptr!(__d, v), { c.as_pointer() });
+    };
     field!({ (*d.borrow()).v.v.clone() }.with(|__s| __s.v.clone()), v).write(0);
     field!(
         ({ X2Impl::get(&({ X3Impl::get(&({ X4Impl::get(&d.as_pointer(),) }),) }),) }),

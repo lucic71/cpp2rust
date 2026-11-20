@@ -16,6 +16,13 @@ pub struct Edge {
     #[offset(8)]
     pub weight: f64,
 }
+impl Edge {
+    pub fn copy_from(this: Ptr<Edge>, _a0: Ptr<Edge>) {
+        field!(this, u).write(_a0.with(|__s| __s.u));
+        field!(this, v).write(_a0.with(|__s| __s.v));
+        field!(this, weight).write(_a0.with(|__s| __s.weight));
+    }
+}
 pub fn partition_0(arr: Ptr<Option<Value<Box<[Edge]>>>>, mut start: i32, mut end: i32) -> i32 {
     let pivot: Ptr<Edge> = ({ (*arr.upgrade().deref()).decay().offset((start as usize)) });
     let mut count: i32 = 0;
@@ -32,11 +39,18 @@ pub fn partition_0(arr: Ptr<Option<Value<Box<[Edge]>>>>, mut start: i32, mut end
         }
     }
     let mut pidx: i32 = (start + count);
-    let mut tmp: Edge = Edge {
-        u: ({ (*arr.upgrade().deref()).decay().offset((pidx as usize)) }).with(|__s| __s.u),
-        v: ({ (*arr.upgrade().deref()).decay().offset((pidx as usize)) }).with(|__s| __s.v),
-        weight: ({ (*arr.upgrade().deref()).decay().offset((pidx as usize)) })
-            .with(|__s| __s.weight),
+    let tmp: Value<Edge> = Rc::new(RefCell::new(<Edge>::uninit()));
+    {
+        let __d = tmp.as_pointer();
+        field!(__d, u).write(
+            ({ (*arr.upgrade().deref()).decay().offset((pidx as usize)) }).with(|__s| __s.u),
+        );
+        field!(__d, v).write(
+            ({ (*arr.upgrade().deref()).decay().offset((pidx as usize)) }).with(|__s| __s.v),
+        );
+        field!(__d, weight).write(
+            ({ (*arr.upgrade().deref()).decay().offset((pidx as usize)) }).with(|__s| __s.weight),
+        );
     };
     let __rhs = Edge {
         u: ({ (*arr.upgrade().deref()).decay().offset((start as usize)) }).with(|__s| __s.u),
@@ -46,9 +60,9 @@ pub fn partition_0(arr: Ptr<Option<Value<Box<[Edge]>>>>, mut start: i32, mut end
     };
     ({ (*arr.upgrade().deref()).decay().offset((pidx as usize)) }).write(__rhs);
     ({ (*arr.upgrade().deref()).decay().offset((start as usize)) }).write(Edge {
-        u: tmp.u,
-        v: tmp.v,
-        weight: tmp.weight,
+        u: { (*tmp.borrow()).u },
+        v: { (*tmp.borrow()).v },
+        weight: { (*tmp.borrow()).weight },
     });
     let mut i: i32 = start;
     let mut j: i32 = end;
@@ -66,7 +80,7 @@ pub fn partition_0(arr: Ptr<Option<Value<Box<[Edge]>>>>, mut start: i32, mut end
             j.prefix_dec();
         }
         if (i < pidx) && (j > pidx) {
-            tmp = Edge {
+            (*tmp.borrow_mut()) = Edge {
                 u: ({ (*arr.upgrade().deref()).decay().offset((i as usize)) }).with(|__s| __s.u),
                 v: ({ (*arr.upgrade().deref()).decay().offset((i as usize)) }).with(|__s| __s.v),
                 weight: ({ (*arr.upgrade().deref()).decay().offset((i as usize)) })
@@ -80,9 +94,9 @@ pub fn partition_0(arr: Ptr<Option<Value<Box<[Edge]>>>>, mut start: i32, mut end
             };
             ({ (*arr.upgrade().deref()).decay().offset((i as usize)) }).write(__rhs);
             ({ (*arr.upgrade().deref()).decay().offset((j as usize)) }).write(Edge {
-                u: tmp.u,
-                v: tmp.v,
-                weight: tmp.weight,
+                u: { (*tmp.borrow()).u },
+                v: { (*tmp.borrow()).v },
+                weight: { (*tmp.borrow()).weight },
             });
             i.postfix_inc();
             j.postfix_dec();
@@ -126,12 +140,12 @@ pub struct DisjointSet {
     pub n: i32,
 }
 impl DisjointSet {
-    pub fn move_from(_a0: Ptr<DisjointSet>) -> Self {
-        Self {
-            rank: field!(_a0, rank).with_mut(|__v: &mut Option<Value<Box<[i32]>>>| __v.take()),
-            parent: field!(_a0, parent).with_mut(|__v: &mut Option<Value<Box<[i32]>>>| __v.take()),
-            n: { (*_a0.upgrade().deref()).n },
-        }
+    pub fn move_from(this: Ptr<DisjointSet>, _a0: Ptr<DisjointSet>) {
+        field!(this, rank)
+            .write(field!(_a0, rank).with_mut(|__v: &mut Option<Value<Box<[i32]>>>| __v.take()));
+        field!(this, parent)
+            .write(field!(_a0, parent).with_mut(|__v: &mut Option<Value<Box<[i32]>>>| __v.take()));
+        field!(this, n).write({ (*_a0.upgrade().deref()).n });
     }
 }
 #[derive(Record, ByteRepr, Uninit, FnPtrArg, MoveCtor, MoveAssign, Default)]
@@ -146,12 +160,11 @@ pub struct Graph {
     pub E: i32,
 }
 impl Graph {
-    pub fn move_from(_a0: Ptr<Graph>) -> Self {
-        Self {
-            edges: field!(_a0, edges).with_mut(|__v: &mut Option<Value<Box<[Edge]>>>| __v.take()),
-            V: { (*_a0.upgrade().deref()).V },
-            E: { (*_a0.upgrade().deref()).E },
-        }
+    pub fn move_from(this: Ptr<Graph>, _a0: Ptr<Graph>) {
+        field!(this, edges)
+            .write(field!(_a0, edges).with_mut(|__v: &mut Option<Value<Box<[Edge]>>>| __v.take()));
+        field!(this, V).write({ (*_a0.upgrade().deref()).V });
+        field!(this, E).write({ (*_a0.upgrade().deref()).E });
     }
 }
 pub fn MSTKruskal_2(graph: Ptr<Graph>) -> f64 {
@@ -160,19 +173,21 @@ pub fn MSTKruskal_2(graph: Ptr<Graph>) -> f64 {
         let _end: i32 = (graph.with(|__s| __s.E) - 1);
         quicksort_1(_arr, 0, _end)
     });
-    let set: Value<DisjointSet> = Rc::new(RefCell::new(DisjointSet {
-        rank: Some(Rc::new(RefCell::new(
+    let set: Value<DisjointSet> = Rc::new(RefCell::new(<DisjointSet>::uninit()));
+    {
+        let __d = set.as_pointer();
+        field!(__d, rank).write(Some(Rc::new(RefCell::new(
             (0..(graph.with(|__s| __s.V) as usize))
                 .map(|_| 0_i32)
                 .collect::<Box<[_]>>(),
-        ))),
-        parent: Some(Rc::new(RefCell::new(
+        ))));
+        field!(__d, parent).write(Some(Rc::new(RefCell::new(
             (0..(graph.with(|__s| __s.V) as usize))
                 .map(|_| 0_i32)
                 .collect::<Box<[_]>>(),
-        ))),
-        n: graph.with(|__s| __s.V),
-    }));
+        ))));
+        field!(__d, n).write(graph.with(|__s| __s.V));
+    };
     ({ DisjointSetImpl::makeSet(&set.as_pointer()) });
     let mut total_weight: f64 = 0_f64;
     {
@@ -211,15 +226,17 @@ pub fn main() {
 fn main_0() -> i32 {
     let mut V: i32 = 4;
     let mut E: i32 = 5;
-    let graph: Value<Graph> = Rc::new(RefCell::new(Graph {
-        edges: Some(Rc::new(RefCell::new(
+    let graph: Value<Graph> = Rc::new(RefCell::new(<Graph>::uninit()));
+    {
+        let __d = graph.as_pointer();
+        field!(__d, edges).write(Some(Rc::new(RefCell::new(
             (0..(E as usize))
                 .map(|_| <Edge>::default())
                 .collect::<Box<[_]>>(),
-        ))),
-        V: V,
-        E: E,
-    }));
+        ))));
+        field!(__d, V).write(V);
+        field!(__d, E).write(E);
+    };
     ({ { (*graph.borrow()).edges.clone() } })
         .decay()
         .offset(0_usize)

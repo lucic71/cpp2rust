@@ -24,6 +24,9 @@ pub fn bar_4(x: Ptr<i32>) -> i32 {
 #[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
 #[byte_size(1)]
 pub struct Foo {}
+impl Foo {
+    pub fn copy_from(this: Ptr<Foo>, _a0: Ptr<Foo>) {}
+}
 pub fn func_5(mut x: i32) -> i32 {
     return 1;
 }
@@ -53,8 +56,14 @@ fn main_0() -> i32 {
     });
     let mut bar: i32 = 5;
     out += ((bar + ({ foo_0(0) })) + ({ foo_1((x.as_pointer())) }));
-    let foo1: Value<Foo> = Rc::new(RefCell::new(<Foo>::default()));
-    let foo2: Value<Foo> = Rc::new(RefCell::new(<Foo>::default()));
+    let foo1: Value<Foo> = Rc::new(RefCell::new(<Foo>::uninit()));
+    {
+        let __d = foo1.as_pointer();
+    };
+    let foo2: Value<Foo> = Rc::new(RefCell::new(<Foo>::uninit()));
+    {
+        let __d = foo2.as_pointer();
+    };
     ({ FooImpl::foo_2(&foo1.as_pointer()) });
     ({ FooImpl::method_3(&foo1.as_pointer(), 1) });
     ({ FooImpl::foo_1(&foo2.as_pointer()) });

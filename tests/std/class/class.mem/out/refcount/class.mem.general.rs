@@ -20,6 +20,17 @@ pub struct p7_1_function_body_names_later_member_HasLaterMembers {
     #[offset(0)]
     pub stock: i32,
 }
+impl p7_1_function_body_names_later_member_HasLaterMembers {
+    pub fn new_1(this: Ptr<p7_1_function_body_names_later_member_HasLaterMembers>) {
+        field!(this, stock).write(9);
+    }
+    pub fn copy_from(
+        this: Ptr<p7_1_function_body_names_later_member_HasLaterMembers>,
+        _a0: Ptr<p7_1_function_body_names_later_member_HasLaterMembers>,
+    ) {
+        field!(this, stock).write(_a0.with(|__s| __s.stock));
+    }
+}
 impl Default for p7_1_function_body_names_later_member_HasLaterMembers {
     fn default() -> Self {
         { p7_1_function_body_names_later_member_HasLaterMembers { stock: 9 } }
@@ -27,8 +38,9 @@ impl Default for p7_1_function_body_names_later_member_HasLaterMembers {
 }
 pub fn test_3() {
     let object: Value<p7_1_function_body_names_later_member_HasLaterMembers> = Rc::new(
-        RefCell::new(<p7_1_function_body_names_later_member_HasLaterMembers>::default()),
+        RefCell::new(<p7_1_function_body_names_later_member_HasLaterMembers>::uninit()),
     );
+    p7_1_function_body_names_later_member_HasLaterMembers::new_1(object.as_pointer());
     assert!(
         (({
             p7_1_function_body_names_later_member_HasLaterMembersImpl::take(&object.as_pointer(), 3)
@@ -49,6 +61,17 @@ pub struct p7_2_default_argument_names_later_member_HasLaterStaticStep {
     #[offset(0)]
     pub total: i32,
 }
+impl p7_2_default_argument_names_later_member_HasLaterStaticStep {
+    pub fn new_1(this: Ptr<p7_2_default_argument_names_later_member_HasLaterStaticStep>) {
+        field!(this, total).write(1);
+    }
+    pub fn copy_from(
+        this: Ptr<p7_2_default_argument_names_later_member_HasLaterStaticStep>,
+        _a0: Ptr<p7_2_default_argument_names_later_member_HasLaterStaticStep>,
+    ) {
+        field!(this, total).write(_a0.with(|__s| __s.total));
+    }
+}
 impl Default for p7_2_default_argument_names_later_member_HasLaterStaticStep {
     fn default() -> Self {
         { p7_2_default_argument_names_later_member_HasLaterStaticStep { total: 1 } }
@@ -56,8 +79,9 @@ impl Default for p7_2_default_argument_names_later_member_HasLaterStaticStep {
 }
 pub fn test_6() {
     let object: Value<p7_2_default_argument_names_later_member_HasLaterStaticStep> = Rc::new(
-        RefCell::new(<p7_2_default_argument_names_later_member_HasLaterStaticStep>::default()),
+        RefCell::new(<p7_2_default_argument_names_later_member_HasLaterStaticStep>::uninit()),
     );
+    p7_2_default_argument_names_later_member_HasLaterStaticStep::new_1(object.as_pointer());
     assert!(
         (({
             p7_2_default_argument_names_later_member_HasLaterStaticStepImpl::advance(

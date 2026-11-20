@@ -12,6 +12,11 @@ pub struct Inner {
     #[offset(0)]
     pub x: i32,
 }
+impl Inner {
+    pub fn copy_from(this: Ptr<Inner>, _a0: Ptr<Inner>) {
+        field!(this, x).write(_a0.with(|__s| __s.x));
+    }
+}
 #[derive(Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg)]
 #[byte_size(16)]
 pub struct S {
@@ -22,6 +27,14 @@ pub struct S {
     #[offset(12)]
     #[byte_size(4)]
     pub inner: Inner,
+}
+impl S {
+    pub fn copy_from(this: Ptr<S>, _a0: Ptr<S>) {
+        field!(this, data).write(Box::new(std::array::from_fn::<_, 3, _>(|__i: usize| {
+            (*_a0.upgrade().deref()).data[(__i) as usize]
+        })));
+        Inner::copy_from(field_ptr!(this, inner), { field_ptr!(_a0, inner) });
+    }
 }
 impl Default for S {
     fn default() -> Self {
@@ -44,10 +57,15 @@ pub fn main() {
     libcc2rs::cpp2rust_exit(main_0());
 }
 fn main_0() -> i32 {
-    let s: Value<S> = Rc::new(RefCell::new(S {
-        data: Box::new([1, 2, 3]),
-        inner: Inner { x: 9 },
-    }));
+    let s: Value<S> = Rc::new(RefCell::new(<S>::uninit()));
+    {
+        let __d = s.as_pointer();
+        field!(__d, data).write(Box::new([1, 2, 3]));
+        {
+            let __d = field_ptr!(__d, inner);
+            field!(__d, x).write(9);
+        };
+    };
     assert!(
         (({
             let _s: Ptr<S> = s.as_pointer();

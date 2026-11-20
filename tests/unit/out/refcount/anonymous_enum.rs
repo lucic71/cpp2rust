@@ -18,6 +18,11 @@ pub struct S {
     #[offset(0)]
     pub a: i32,
 }
+impl S {
+    pub fn copy_from(this: Ptr<S>, _a0: Ptr<S>) {
+        field!(this, a).write(_a0.with(|__s| __s.a));
+    }
+}
 pub type TdEnum = u32;
 pub const TdEnum_TD_A: TdEnum = 0;
 pub const TdEnum_TD_B: TdEnum = 1;
@@ -32,6 +37,13 @@ pub struct WithAnonField {
     #[offset(4)]
     pub field: anon_2,
 }
+impl WithAnonField {
+    pub fn new_1(this: Ptr<WithAnonField>) {}
+    pub fn copy_from(this: Ptr<WithAnonField>, _a0: Ptr<WithAnonField>) {
+        field!(this, a).write(_a0.with(|__s| __s.a));
+        field!(this, field).write(_a0.with(|__s| __s.field));
+    }
+}
 pub fn main() {
     __cpp2rust_init_globals();
     libcc2rs::cpp2rust_exit(main_0());
@@ -44,11 +56,12 @@ fn main_0() -> i32 {
     assert!(((td as i32) == (TdEnum_TD_A as i32)));
     td = TdEnum_TD_B;
     assert!(((td as i32) == (TdEnum_TD_B as i32)));
-    let mut w: WithAnonField = <WithAnonField>::default();
-    w.field = anon_2_FIELD_A;
-    assert!(((w.field as i32) == (anon_2_FIELD_A as i32)));
-    w.field = anon_2_FIELD_B;
-    assert!(((w.field as i32) == (anon_2_FIELD_B as i32)));
+    let w: Value<WithAnonField> = Rc::new(RefCell::new(<WithAnonField>::uninit()));
+    WithAnonField::new_1(w.as_pointer());
+    (*w.borrow_mut()).field = anon_2_FIELD_A;
+    assert!(({ (({ (*w.borrow()).field } as i32) == (anon_2_FIELD_A as i32)) }));
+    (*w.borrow_mut()).field = anon_2_FIELD_B;
+    assert!(({ (({ (*w.borrow()).field } as i32) == (anon_2_FIELD_B as i32)) }));
     return 0;
 }
 pub type anon_3 = u32;

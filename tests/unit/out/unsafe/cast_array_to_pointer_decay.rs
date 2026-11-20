@@ -21,6 +21,11 @@ pub unsafe fn strlen_1(mut s: *mut libc::c_char) -> i32 {
 pub struct Row {
     pub a: [i32; 3],
 }
+impl Row {
+    pub unsafe fn copy_from(this: *mut Row, _a0: *const Row) {
+        (&raw mut (*this).a).write(std::array::from_fn::<_, 3, _>(|__i: usize| (*_a0).a[(__i)]));
+    }
+}
 pub fn main() {
     unsafe {
         __cpp2rust_init_globals();
@@ -39,7 +44,11 @@ unsafe fn main_0() -> i32 {
         (((unsafe { deref_0(a.as_mut_ptr(),) }) + (unsafe { strlen_1(s.as_mut_ptr(),) })) == (4))
     );
     let mut m: [[i32; 3]; 2] = [[1, 2, 3], [4, 5, 6]];
-    let mut r: Row = Row { a: [7, 8, 9] };
+    let mut r: Row = ::std::mem::MaybeUninit::uninit().assume_init();
+    {
+        let __d = &raw mut r;
+        (&raw mut (*__d).a).write([7, 8, 9]);
+    };
     let mut row: *mut [i32; 3] = (&mut m[(1) as usize] as *mut [i32; 3]);
     let mut field: *mut [i32; 3] = (&mut r.a as *mut [i32; 3]);
     let mut whole: *mut [i32; 3] = (&mut m[(0) as usize] as *mut [i32; 3]);

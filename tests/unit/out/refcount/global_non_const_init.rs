@@ -33,7 +33,6 @@ thread_local!(
         Rc::new(RefCell::new((from_call_5.with(|rc| *rc.borrow()) + 1)));
 );
 #[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg)]
-#[placement]
 #[byte_size(4)]
 pub struct Ctor {
     #[offset(0)]
@@ -93,6 +92,9 @@ thread_local!(
 #[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
 #[byte_size(1)]
 pub struct Holder {}
+impl Holder {
+    pub fn copy_from(this: Ptr<Holder>, _a0: Ptr<Holder>) {}
+}
 thread_local!(
     pub static member_10: Value<i32> = Rc::new(RefCell::new(({ next_0() })));
 );
@@ -110,7 +112,6 @@ thread_local!(
     };
 );
 #[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg)]
-#[placement]
 #[byte_size(4)]
 pub struct Singleton {
     #[offset(0)]

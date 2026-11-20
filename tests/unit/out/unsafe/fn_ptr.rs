@@ -33,7 +33,6 @@ pub unsafe fn identity_hash_6(mut v: bool) -> usize {
 }
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, CppFromUnsafe, Default)]
-#[placement]
 #[cpp_from(Option<unsafe fn(bool ,) -> u64 > , new, ptr)]
 pub struct HashHolder_unsigned_long__ptr__bool__ {
     pub h: Option<unsafe fn(bool) -> u64>,
@@ -52,9 +51,10 @@ impl HashHolder_unsigned_long__ptr__bool__ {
         (&raw mut (*this).h).write(((*_a0).h));
     }
 }
-pub static mut total_7: std::cell::LazyCell<i32> = std::cell::LazyCell::new(|| unsafe { 0 });
+pub static mut total_7: libcc2rs::LazyStorage<i32> =
+    libcc2rs::LazyStorage::new(|__p| unsafe { __p.write(0) });
 pub unsafe fn add_to_total_8(mut x: i32) {
-    (*std::cell::LazyCell::force_mut(&mut *&raw mut total_7)) += x;
+    (*(*&raw const total_7).get()) += x;
 }
 pub unsafe fn pair_sum_9(mut p: (i32, i32)) -> i32 {
     return ((p.0) + (p.1));
@@ -107,7 +107,7 @@ unsafe fn main_0() -> i32 {
     let mut handler: Option<unsafe fn(i32)> = Some(add_to_total_8);
     (unsafe { (handler).unwrap()(2) });
     (unsafe { (handler).unwrap()(3) });
-    assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut total_7)) == (5)));
+    assert!(((*(*&raw const total_7).get()) == (5)));
     let mut pf: Option<unsafe fn((i32, i32)) -> i32> = Some(pair_sum_9);
     assert!(((unsafe { (pf).unwrap()((1, 2),) }) == (3)));
     let mut sf: Option<unsafe fn(Vec<libc::c_char>) -> usize> = Some(string_size_10);
@@ -133,5 +133,5 @@ unsafe fn main_0() -> i32 {
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {
-    std::cell::LazyCell::force(&*&raw const total_7);
+    (*&raw const total_7).get();
 }

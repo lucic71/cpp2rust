@@ -28,6 +28,26 @@ impl Sorted__lambda_at_lambda_decltype_type_cpp_22_18__ {
         self.items[(i) as usize] = v;
         self.size.postfix_inc();
     }
+    pub unsafe fn new_1(this: *mut Sorted__lambda_at_lambda_decltype_type_cpp_22_18__) {
+        (&raw mut (*this).size).write(0);
+        (&raw mut (*this).cmp).write(FnPtr::<fn(i32, i32) -> bool>::new(
+            |mut a: i32, mut b: i32| -> bool {
+                unsafe {
+                    return ((a) > (b));
+                }
+            },
+        ));
+    }
+    pub unsafe fn copy_from(
+        this: *mut Sorted__lambda_at_lambda_decltype_type_cpp_22_18__,
+        _a0: *const Sorted__lambda_at_lambda_decltype_type_cpp_22_18__,
+    ) {
+        (&raw mut (*this).items).write(std::array::from_fn::<_, 4, _>(|__i: usize| {
+            (*_a0).items[(__i)]
+        }));
+        (&raw mut (*this).size).write((*_a0).size);
+        (&raw mut (*this).cmp).write((*_a0).cmp.copy_from());
+    }
 }
 impl Default for Sorted__lambda_at_lambda_decltype_type_cpp_22_18__ {
     fn default() -> Self {
@@ -66,6 +86,26 @@ impl Sorted__lambda_at_lambda_decltype_type_cpp_19_23__ {
         self.items[(i) as usize] = v;
         self.size.postfix_inc();
     }
+    pub unsafe fn new_1(this: *mut Sorted__lambda_at_lambda_decltype_type_cpp_19_23__) {
+        (&raw mut (*this).size).write(0);
+        (&raw mut (*this).cmp).write(FnPtr::<fn(i32, i32) -> bool>::new(
+            |mut a: i32, mut b: i32| -> bool {
+                unsafe {
+                    return ((a) < (b));
+                }
+            },
+        ));
+    }
+    pub unsafe fn copy_from(
+        this: *mut Sorted__lambda_at_lambda_decltype_type_cpp_19_23__,
+        _a0: *const Sorted__lambda_at_lambda_decltype_type_cpp_19_23__,
+    ) {
+        (&raw mut (*this).items).write(std::array::from_fn::<_, 4, _>(|__i: usize| {
+            (*_a0).items[(__i)]
+        }));
+        (&raw mut (*this).size).write((*_a0).size);
+        (&raw mut (*this).cmp).write((*_a0).cmp.copy_from());
+    }
 }
 impl Default for Sorted__lambda_at_lambda_decltype_type_cpp_19_23__ {
     fn default() -> Self {
@@ -96,7 +136,8 @@ unsafe fn main_0() -> i32 {
             }
         });
     let mut desc: Sorted__lambda_at_lambda_decltype_type_cpp_22_18__ =
-        <Sorted__lambda_at_lambda_decltype_type_cpp_22_18__>::default();
+        ::std::mem::MaybeUninit::uninit().assume_init();
+    Sorted__lambda_at_lambda_decltype_type_cpp_22_18__::new_1(&raw mut desc);
     (unsafe { Sorted__lambda_at_lambda_decltype_type_cpp_22_18__::insert(&mut desc, 2) });
     (unsafe { Sorted__lambda_at_lambda_decltype_type_cpp_22_18__::insert(&mut desc, 7) });
     (unsafe { Sorted__lambda_at_lambda_decltype_type_cpp_22_18__::insert(&mut desc, 4) });
@@ -104,7 +145,8 @@ unsafe fn main_0() -> i32 {
     assert!(((desc.items[(1) as usize]) == (4)));
     assert!(((desc.items[(2) as usize]) == (2)));
     let mut asc: Sorted__lambda_at_lambda_decltype_type_cpp_19_23__ =
-        <Sorted__lambda_at_lambda_decltype_type_cpp_19_23__>::default();
+        ::std::mem::MaybeUninit::uninit().assume_init();
+    Sorted__lambda_at_lambda_decltype_type_cpp_19_23__::new_1(&raw mut asc);
     (unsafe { Sorted__lambda_at_lambda_decltype_type_cpp_19_23__::insert(&mut asc, 2) });
     (unsafe { Sorted__lambda_at_lambda_decltype_type_cpp_19_23__::insert(&mut asc, 7) });
     (unsafe { Sorted__lambda_at_lambda_decltype_type_cpp_19_23__::insert(&mut asc, 4) });

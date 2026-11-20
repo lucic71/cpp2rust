@@ -12,6 +12,11 @@ pub struct Bar {
     #[offset(0)]
     pub w: i32,
 }
+impl Bar {
+    pub fn copy_from(this: Ptr<Bar>, _a0: Ptr<Bar>) {
+        field!(this, w).write(_a0.with(|__s| __s.w));
+    }
+}
 #[derive(Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg)]
 #[byte_size(40)]
 pub struct Foo {
@@ -30,6 +35,17 @@ pub struct Foo {
     #[offset(36)]
     #[byte_size(4)]
     pub bar: Bar,
+}
+impl Foo {
+    pub fn copy_from(this: Ptr<Foo>, _a0: Ptr<Foo>) {
+        field!(this, x).write(_a0.with(|__s| __s.x));
+        field!(this, y).write((_a0.with(|__s| __s.y.clone())).clone());
+        field!(this, z).write(_a0.with(|__s| __s.z.clone()));
+        field!(this, a).write(Box::new(std::array::from_fn::<_, 3, _>(|__i: usize| {
+            (*_a0.upgrade().deref()).a[(__i) as usize]
+        })));
+        Bar::copy_from(field_ptr!(this, bar), { field_ptr!(_a0, bar) });
+    }
 }
 impl Default for Foo {
     fn default() -> Self {
@@ -53,6 +69,12 @@ pub struct Refs {
     #[offset(8)]
     #[byte_size(8)]
     pub b: Ptr<i32>,
+}
+impl Refs {
+    pub fn copy_from(this: Ptr<Refs>, _a0: Ptr<Refs>) {
+        field!(this, a).write((_a0.with(|__s| __s.a.clone())).clone());
+        field!(this, b).write((_a0.with(|__s| __s.b.clone())).clone());
+    }
 }
 pub fn main() {
     __cpp2rust_init_globals();
@@ -85,47 +107,59 @@ fn main_0() -> i32 {
         __v.prefix_inc();
     });
     assert!(({ (other_pointer.read()) } == { (pointer.read()) }));
-    let mut f1: Foo = Foo {
-        x: 1,
-        y: x1.as_pointer(),
-        z: (x1.as_pointer()),
-        a: Box::new([0, 1, 2]),
-        bar: Bar { w: 10 },
+    let f1: Value<Foo> = Rc::new(RefCell::new(<Foo>::uninit()));
+    {
+        let __d = f1.as_pointer();
+        field!(__d, x).write(1);
+        field!(__d, y).write(x1.as_pointer());
+        field!(__d, z).write((x1.as_pointer()));
+        field!(__d, a).write(Box::new([0, 1, 2]));
+        {
+            let __d = field_ptr!(__d, bar);
+            field!(__d, w).write(10);
+        };
     };
-    assert!((f1.x == 1));
-    assert!(((f1.y.read()) == 2));
-    assert!(({ (f1.z).clone() } == { (x1.as_pointer()) }));
-    assert!(((f1.z.read()) == 2));
-    let mut f2: Foo = (f1).clone();
-    f2.x.prefix_inc();
-    f2.y.with_mut(|__v| {
+    assert!(({ ({ (*f1.borrow()).x } == 1) }));
+    assert!(({ (({ (*f1.borrow()).y.clone() }.read()) == 2) }));
+    assert!(({ ({ { (*f1.borrow()).z.clone() } } == { (x1.as_pointer()) }) }));
+    assert!(({ (({ (*f1.borrow()).z.clone() }.read()) == 2) }));
+    let f2: Value<Foo> = Rc::new(RefCell::new(<Foo>::uninit()));
+    Foo::copy_from(f2.as_pointer(), { f1.as_pointer() });
+    (*f2.borrow_mut()).x.prefix_inc();
+    { (*f2.borrow()).y.clone() }.with_mut(|__v| {
         __v.prefix_inc();
     });
-    assert!((f2.x == 2));
-    assert!(((f2.y.read()) == 3));
-    assert!((f1.x == 1));
-    assert!(((f1.y.read()) == 3));
-    f2.z.with_mut(|__v| {
+    assert!(({ ({ (*f2.borrow()).x } == 2) }));
+    assert!(({ (({ (*f2.borrow()).y.clone() }.read()) == 3) }));
+    assert!(({ ({ (*f1.borrow()).x } == 1) }));
+    assert!(({ (({ (*f1.borrow()).y.clone() }.read()) == 3) }));
+    { (*f2.borrow()).z.clone() }.with_mut(|__v| {
         __v.prefix_inc();
     });
-    assert!(((f2.y.read()) == 4));
-    assert!(({ (f2.z).clone() } == { (x1.as_pointer()) }));
-    assert!(((f2.z.read()) == 4));
-    assert!(((f1.y.read()) == 4));
-    assert!(({ (f1.z).clone() } == { (x1.as_pointer()) }));
-    assert!(((f1.z.read()) == 4));
-    f2.a[(0) as usize].prefix_inc();
-    f2.a[(1) as usize].prefix_inc();
-    f2.a[(2) as usize].prefix_inc();
-    assert!((f2.a[(0) as usize] == 1));
-    assert!((f2.a[(1) as usize] == 2));
-    assert!((f2.a[(2) as usize] == 3));
-    assert!((f1.a[(0) as usize] == 0));
-    assert!((f1.a[(1) as usize] == 1));
-    assert!((f1.a[(2) as usize] == 2));
-    f2.bar.w = 20;
-    assert!((f2.bar.w == 20));
-    assert!((f1.bar.w == 10));
+    assert!(({ (({ (*f2.borrow()).y.clone() }.read()) == 4) }));
+    assert!(({ ({ { (*f2.borrow()).z.clone() } } == { (x1.as_pointer()) }) }));
+    assert!(({ (({ (*f2.borrow()).z.clone() }.read()) == 4) }));
+    assert!(({ (({ (*f1.borrow()).y.clone() }.read()) == 4) }));
+    assert!(({ ({ { (*f1.borrow()).z.clone() } } == { (x1.as_pointer()) }) }));
+    assert!(({ (({ (*f1.borrow()).z.clone() }.read()) == 4) }));
+    array_elem!(f2.as_pointer(), a, 0).with_mut(|__v| {
+        __v.prefix_inc();
+    });
+    array_elem!(f2.as_pointer(), a, 1).with_mut(|__v| {
+        __v.prefix_inc();
+    });
+    array_elem!(f2.as_pointer(), a, 2).with_mut(|__v| {
+        __v.prefix_inc();
+    });
+    assert!(((array_elem!(f2.as_pointer(), a, 0).read()) == 1));
+    assert!(((array_elem!(f2.as_pointer(), a, 1).read()) == 2));
+    assert!(((array_elem!(f2.as_pointer(), a, 2).read()) == 3));
+    assert!(((array_elem!(f1.as_pointer(), a, 0).read()) == 0));
+    assert!(((array_elem!(f1.as_pointer(), a, 1).read()) == 1));
+    assert!(((array_elem!(f1.as_pointer(), a, 2).read()) == 2));
+    (*f2.borrow_mut()).bar.w = 20;
+    assert!(({ ({ (*f2.borrow()).bar.w } == 20) }));
+    assert!(({ ({ (*f1.borrow()).bar.w } == 10) }));
     let mut N: i32 = 5;
     let mut v1: Vec<i32> = Vec::new();
     {
@@ -309,12 +343,20 @@ fn main_0() -> i32 {
     assert!(((s1[0_usize] as i32) == (('a' as i8) as i32)));
     assert!(((s1[1_usize] as i32) == (('a' as i8) as i32)));
     assert!(((s1[2_usize] as i32) == (('a' as i8) as i32)));
-    let mut b1: Bar = Bar { w: 1 };
-    let mut b2: Bar = Bar { w: 2 };
-    b2 = b1;
-    b2.w.postfix_inc();
-    assert!((b1.w == 1));
-    assert!((b2.w == 2));
+    let b1: Value<Bar> = Rc::new(RefCell::new(<Bar>::uninit()));
+    {
+        let __d = b1.as_pointer();
+        field!(__d, w).write(1);
+    };
+    let b2: Value<Bar> = Rc::new(RefCell::new(<Bar>::uninit()));
+    {
+        let __d = b2.as_pointer();
+        field!(__d, w).write(2);
+    };
+    (*b2.borrow_mut()) = (*b1.borrow());
+    (*b2.borrow_mut()).w.postfix_inc();
+    assert!(({ ({ (*b1.borrow()).w } == 1) }));
+    assert!(({ ({ (*b2.borrow()).w } == 2) }));
     let mut v4: Vec<i32> = Vec::new();
     {
         v4 = (v2).clone();
@@ -337,19 +379,22 @@ fn main_0() -> i32 {
     }
     let ra: Value<i32> = Rc::new(RefCell::new(1));
     let rb: Value<i32> = Rc::new(RefCell::new(2));
-    let mut r1: Refs = Refs {
-        a: ra.as_pointer(),
-        b: rb.as_pointer(),
+    let r1: Value<Refs> = Rc::new(RefCell::new(<Refs>::uninit()));
+    {
+        let __d = r1.as_pointer();
+        field!(__d, a).write(ra.as_pointer());
+        field!(__d, b).write(rb.as_pointer());
     };
-    let mut r2: Refs = (r1).clone();
-    r2.a.write(10);
-    r2.b.with_mut(|__v| {
+    let r2: Value<Refs> = Rc::new(RefCell::new(<Refs>::uninit()));
+    Refs::copy_from(r2.as_pointer(), { r1.as_pointer() });
+    { (*r2.borrow()).a.clone() }.write(10);
+    { (*r2.borrow()).b.clone() }.with_mut(|__v| {
         __v.prefix_inc();
     });
     assert!(({ ((*ra.borrow()) == 10) }));
     assert!(({ ((*rb.borrow()) == 3) }));
-    assert!(((r1.a.read()) == 10));
-    assert!(((r1.b.read()) == 3));
+    assert!(({ (({ (*r1.borrow()).a.clone() }.read()) == 10) }));
+    assert!(({ (({ (*r1.borrow()).b.clone() }.read()) == 3) }));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

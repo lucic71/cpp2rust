@@ -11,6 +11,11 @@ use std::rc::Rc;
 pub struct Data {
     pub v: i32,
 }
+impl Data {
+    pub unsafe fn copy_from(this: *mut Data, _a0: *const Data) {
+        (&raw mut (*this).v).write((*_a0).v);
+    }
+}
 #[repr(C)]
 #[derive(FnPtrArg, MoveCtorUnsafe, MoveAssignUnsafe, Default)]
 pub struct Holder {
@@ -28,12 +33,9 @@ impl Holder {
             }
         };
     }
-    pub unsafe fn move_from(_a0: *mut Holder) -> Self {
-        let mut this = Self {
-            data: (*_a0).data.take(),
-            n: (*_a0).n,
-        };
-        this
+    pub unsafe fn move_from(this: *mut Holder, _a0: *mut Holder) {
+        (&raw mut (*this).data).write((*_a0).data.take());
+        (&raw mut (*this).n).write((*_a0).n);
     }
     pub unsafe fn move_assign(&mut self, _a0: *mut Holder) -> *mut Holder {
         {
@@ -41,6 +43,9 @@ impl Holder {
         };
         self.n = (*_a0).n;
         return &mut (*(self as *mut Holder));
+    }
+    pub unsafe fn new_1(this: *mut Holder) {
+        (&raw mut (*this).data).write(None);
     }
 }
 pub fn main() {
@@ -50,11 +55,19 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    let mut h: Holder = <Holder>::default();
+    let mut h: Holder = ::std::mem::MaybeUninit::uninit().assume_init();
+    Holder::new_1(&raw mut h);
     h.n = 1;
     let mut hp: *mut Holder = (&mut h as *mut Holder);
     {
-        let _a0: *mut Data = (Box::leak(Box::new(Data { v: 3 })) as *mut Data);
+        let _a0: *mut Data = {
+            let __p = Box::into_raw(Box::<Data>::new_uninit()) as *mut Data;
+            {
+                let __d = __p;
+                (&raw mut (*__d).v).write(3);
+            };
+            __p
+        };
         (*hp).data = if _a0.is_null() {
             None
         } else {
@@ -68,7 +81,16 @@ unsafe fn main_0() -> i32 {
             .map_or(::std::ptr::null_mut(), |v| v as *const Data as *mut Data))
         .v) == (3))
     );
-    (unsafe { Holder::set(&mut h, (Box::leak(Box::new(Data { v: 4 })) as *mut Data)) });
+    (unsafe {
+        Holder::set(&mut h, {
+            let __p = Box::into_raw(Box::<Data>::new_uninit()) as *mut Data;
+            {
+                let __d = __p;
+                (&raw mut (*__d).v).write(4);
+            };
+            __p
+        })
+    });
     assert!(
         (((*(*hp)
             .data

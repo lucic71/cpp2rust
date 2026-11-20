@@ -7,7 +7,6 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
 #[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg)]
-#[placement]
 #[byte_size(8)]
 pub struct S {
     #[offset(0)]
@@ -38,7 +37,6 @@ impl Default for S {
     }
 }
 #[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
-#[placement]
 #[byte_size(4)]
 pub struct Declared {
     #[offset(0)]
@@ -50,7 +48,6 @@ impl Declared {
     }
 }
 #[derive(Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg)]
-#[placement]
 #[byte_size(16)]
 pub struct Holder {
     #[offset(0)]
@@ -95,6 +92,14 @@ thread_local!(
 pub struct FromStatic {
     #[offset(0)]
     pub v: i32,
+}
+impl FromStatic {
+    pub fn new_1(this: Ptr<FromStatic>) {
+        field!(this, v).write(kInit_0.with(|rc| *rc.borrow()));
+    }
+    pub fn copy_from(this: Ptr<FromStatic>, _a0: Ptr<FromStatic>) {
+        field!(this, v).write(_a0.with(|__s| __s.v));
+    }
 }
 impl Default for FromStatic {
     fn default() -> Self {

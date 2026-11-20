@@ -11,6 +11,11 @@ use std::rc::Rc;
 pub struct Bar {
     pub w: i32,
 }
+impl Bar {
+    pub unsafe fn copy_from(this: *mut Bar, _a0: *const Bar) {
+        (&raw mut (*this).w).write((*_a0).w);
+    }
+}
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct Foo {
@@ -20,11 +25,26 @@ pub struct Foo {
     pub a: [i32; 3],
     pub bar: Bar,
 }
+impl Foo {
+    pub unsafe fn copy_from(this: *mut Foo, _a0: *const Foo) {
+        (&raw mut (*this).x).write((*_a0).x);
+        (&raw mut (*this).y).write((*_a0).y);
+        (&raw mut (*this).z).write((*_a0).z);
+        (&raw mut (*this).a).write(std::array::from_fn::<_, 3, _>(|__i: usize| (*_a0).a[(__i)]));
+        Bar::copy_from((&raw mut (*this).bar), { &(*_a0).bar });
+    }
+}
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct Refs {
     pub a: *mut i32,
     pub b: *mut i32,
+}
+impl Refs {
+    pub unsafe fn copy_from(this: *mut Refs, _a0: *const Refs) {
+        (&raw mut (*this).a).write((*_a0).a);
+        (&raw mut (*this).b).write((*_a0).b);
+    }
 }
 pub fn main() {
     unsafe {
@@ -57,18 +77,24 @@ unsafe fn main_0() -> i32 {
     assert!(((other_pointer) == (pointer)));
     (*other_pointer).prefix_inc();
     assert!(((*other_pointer) == (*pointer)));
-    let mut f1: Foo = Foo {
-        x: 1,
-        y: &mut x1,
-        z: (&mut x1 as *mut i32),
-        a: [0, 1, 2],
-        bar: Bar { w: 10 },
+    let mut f1: Foo = ::std::mem::MaybeUninit::uninit().assume_init();
+    {
+        let __d = &raw mut f1;
+        (&raw mut (*__d).x).write(1);
+        (&raw mut (*__d).y).write(&mut x1);
+        (&raw mut (*__d).z).write((&mut x1 as *mut i32));
+        (&raw mut (*__d).a).write([0, 1, 2]);
+        {
+            let __d = (&raw mut (*__d).bar);
+            (&raw mut (*__d).w).write(10);
+        };
     };
     assert!(((f1.x) == (1)));
     assert!(((*f1.y) == (2)));
     assert!(((f1.z) == (&mut x1 as *mut i32)));
     assert!(((*f1.z) == (2)));
-    let mut f2: Foo = f1;
+    let mut f2: Foo = ::std::mem::MaybeUninit::uninit().assume_init();
+    Foo::copy_from(&raw mut f2, { &f1 });
     f2.x.prefix_inc();
     (*f2.y).prefix_inc();
     assert!(((f2.x) == (2)));
@@ -245,8 +271,16 @@ unsafe fn main_0() -> i32 {
     assert!(((s1[(0_usize)] as i32) == (('a' as libc::c_char) as i32)));
     assert!(((s1[(1_usize)] as i32) == (('a' as libc::c_char) as i32)));
     assert!(((s1[(2_usize)] as i32) == (('a' as libc::c_char) as i32)));
-    let mut b1: Bar = Bar { w: 1 };
-    let mut b2: Bar = Bar { w: 2 };
+    let mut b1: Bar = ::std::mem::MaybeUninit::uninit().assume_init();
+    {
+        let __d = &raw mut b1;
+        (&raw mut (*__d).w).write(1);
+    };
+    let mut b2: Bar = ::std::mem::MaybeUninit::uninit().assume_init();
+    {
+        let __d = &raw mut b2;
+        (&raw mut (*__d).w).write(2);
+    };
     b2 = b1;
     b2.w.postfix_inc();
     assert!(((b1.w) == (1)));
@@ -273,11 +307,14 @@ unsafe fn main_0() -> i32 {
     }
     let mut ra: i32 = 1;
     let mut rb: i32 = 2;
-    let mut r1: Refs = Refs {
-        a: &mut ra,
-        b: &mut rb,
+    let mut r1: Refs = ::std::mem::MaybeUninit::uninit().assume_init();
+    {
+        let __d = &raw mut r1;
+        (&raw mut (*__d).a).write(&mut ra);
+        (&raw mut (*__d).b).write(&mut rb);
     };
-    let mut r2: Refs = r1;
+    let mut r2: Refs = ::std::mem::MaybeUninit::uninit().assume_init();
+    Refs::copy_from(&raw mut r2, { &r1 });
     (*r2.a) = 10;
     (*r2.b).prefix_inc();
     assert!(((ra) == (10)));

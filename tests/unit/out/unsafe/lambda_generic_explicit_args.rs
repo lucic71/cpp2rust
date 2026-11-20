@@ -11,8 +11,16 @@ use std::rc::Rc;
 pub struct Val {
     pub x: i32,
 }
-pub unsafe fn sum_0(mut a: Val, mut b: Val) -> i32 {
-    return ((a.x) + (b.x));
+impl Val {
+    pub unsafe fn copy_from(this: *mut Val, _a0: *const Val) {
+        (&raw mut (*this).x).write((*_a0).x);
+    }
+    pub unsafe fn move_from(this: *mut Val, _a0: *mut Val) {
+        (&raw mut (*this).x).write((*_a0).x);
+    }
+}
+pub unsafe fn sum_0(a: *mut Val, b: *mut Val) -> i32 {
+    return (((*a).x) + ((*b).x));
 }
 pub fn main() {
     unsafe {
@@ -45,7 +53,11 @@ unsafe fn main_0() -> i32 {
     (unsafe { tally.spec::<fn()>(0).call() });
     (unsafe { tally.spec::<fn()>(1).call() });
     assert!(((total) == (7)));
-    let mut v: Val = Val { x: 5 };
+    let mut v: Val = ::std::mem::MaybeUninit::uninit().assume_init();
+    {
+        let __d = &raw mut v;
+        (&raw mut (*__d).x).write(5);
+    };
     let mut acc: i32 = 0;
     let mut pick: FnPtr<Generic> = lambda_unsafe!(
         Generic,
@@ -55,22 +67,52 @@ unsafe fn main_0() -> i32 {
         },
         || {
             (*acc) += (unsafe {
-                let _a: Val = (*v);
-                let _b: Val = (*v);
+                let _a: Val = (|__p: *mut Val| {
+                    Val::copy_from(__p, { v });
+                    __p
+                })(
+                    (&mut ::std::mem::MaybeUninit::<Val>::uninit()).as_mut_ptr()
+                );
+                let _b: Val = (|__p: *mut Val| {
+                    Val::copy_from(__p, { v });
+                    __p
+                })(
+                    (&mut ::std::mem::MaybeUninit::<Val>::uninit()).as_mut_ptr()
+                );
                 sum_0(_a, _b)
             });
         },
         || {
             (*acc) += (unsafe {
-                let _a: Val = (*v);
-                let _b: Val = (*v);
+                let _a: Val = (|__p: *mut Val| {
+                    Val::copy_from(__p, { v });
+                    __p
+                })(
+                    (&mut ::std::mem::MaybeUninit::<Val>::uninit()).as_mut_ptr()
+                );
+                let _b: Val = (|__p: *mut Val| {
+                    Val::copy_from(__p, { v });
+                    __p
+                })(
+                    (&mut ::std::mem::MaybeUninit::<Val>::uninit()).as_mut_ptr()
+                );
                 sum_0(_a, _b)
             });
         },
         || {
             (*acc) += (unsafe {
-                let _a: Val = (*v);
-                let _b: Val = (*v);
+                let _a: Val = (|__p: *mut Val| {
+                    Val::move_from(__p, { v });
+                    __p
+                })(
+                    (&mut ::std::mem::MaybeUninit::<Val>::uninit()).as_mut_ptr()
+                );
+                let _b: Val = (|__p: *mut Val| {
+                    Val::copy_from(__p, { v });
+                    __p
+                })(
+                    (&mut ::std::mem::MaybeUninit::<Val>::uninit()).as_mut_ptr()
+                );
                 sum_0(_a, _b)
             });
         }

@@ -12,6 +12,13 @@ pub struct Pair {
     pub x: i32,
     pub y: i32,
 }
+impl Pair {
+    pub unsafe fn new_1(this: *mut Pair) {}
+    pub unsafe fn copy_from(this: *mut Pair, _a0: *const Pair) {
+        (&raw mut (*this).x).write((*_a0).x);
+        (&raw mut (*this).y).write((*_a0).y);
+    }
+}
 pub fn main() {
     unsafe {
         __cpp2rust_init_globals();
@@ -37,7 +44,11 @@ unsafe fn main_0() -> i32 {
             ::std::mem::drop(Box::from_raw(__p))
         }
     };
-    let mut p: *mut Pair = (Box::leak(Box::new(<Pair>::default())) as *mut Pair);
+    let mut p: *mut Pair = {
+        let __p = Box::into_raw(Box::<Pair>::new_uninit()) as *mut Pair;
+        Pair::new_1(__p);
+        __p
+    };
     (*p).x = 1;
     (*p).y = 2;
     assert!(((((*p).x) + ((*p).y)) == (3)));

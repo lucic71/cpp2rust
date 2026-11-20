@@ -7,7 +7,6 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
 #[derive(Record, ByteRepr, Uninit, FnPtrArg, MoveCtor, CppFrom, MoveAssign)]
-#[placement]
 #[cpp_from(i32, new, value)]
 #[byte_size(32)]
 pub struct S {
@@ -49,10 +48,11 @@ pub struct T {
     pub v: Vec<i32>,
 }
 impl T {
-    pub fn move_from(_a0: Ptr<T>) -> Self {
-        Self {
-            v: field!(_a0, v).with_mut(std::mem::take),
-        }
+    pub fn copy_from(this: Ptr<T>, _a0: Ptr<T>) {
+        field!(this, v).write((*_a0.upgrade().deref()).v.clone());
+    }
+    pub fn move_from(this: Ptr<T>, _a0: Ptr<T>) {
+        field!(this, v).write(field!(_a0, v).with_mut(std::mem::take));
     }
 }
 pub fn sum_0(s: Ptr<S>) -> i32 {
@@ -69,9 +69,11 @@ fn main_0() -> i32 {
     S::new(s.as_pointer(), { 2 });
     assert!((({ sum_0(s.as_pointer(),) }) == 7));
     assert!((({ shuffle_1(3,) }) == 10));
-    let t: Value<T> = Rc::new(RefCell::new(T {
-        v: Vec::from([1, 2]),
-    }));
+    let t: Value<T> = Rc::new(RefCell::new(<T>::uninit()));
+    {
+        let __d = t.as_pointer();
+        field!(__d, v).write(Vec::from([1, 2]));
+    };
     assert!((({ TImpl::size(&t.as_pointer(),) }) == 2));
     return 0;
 }
@@ -85,9 +87,15 @@ pub fn shuffle_1(mut x: i32) -> i32 {
     S::new(c.as_pointer(), { 1 });
     ({ SImpl::move_assign(&c.as_pointer(), b.as_pointer()) });
     assert!(({ (*b.borrow()).v.is_empty() }));
-    let t: Value<T> = Rc::new(RefCell::new(T { v: Vec::from([1]) }));
-    let u: Value<T> = Rc::new(RefCell::new(T::move_from({ t.as_pointer() })));
-    let w: Value<T> = Rc::new(RefCell::new(<T>::default()));
+    let t: Value<T> = Rc::new(RefCell::new(<T>::uninit()));
+    {
+        let __d = t.as_pointer();
+        field!(__d, v).write(Vec::from([1]));
+    };
+    let u: Value<T> = Rc::new(RefCell::new(<T>::uninit()));
+    T::move_from(u.as_pointer(), { t.as_pointer() });
+    let w: Value<T> = Rc::new(RefCell::new(<T>::uninit()));
+    T::new_1(w.as_pointer());
     ({ TImpl::move_assign(&w.as_pointer(), u.as_pointer()) });
     assert!(
         ((({ TImpl::size(&t.as_pointer(),) }) == 0) && (({ TImpl::size(&u.as_pointer(),) }) == 0))

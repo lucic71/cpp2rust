@@ -9,6 +9,10 @@ use std::rc::Rc;
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct A {}
+impl A {
+    pub unsafe fn new_1(this: *mut A) {}
+    pub unsafe fn copy_from(this: *mut A, _a0: *const A) {}
+}
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct D {}
@@ -21,6 +25,7 @@ impl D {
             }
         };
     }
+    pub unsafe fn copy_from(this: *mut D, _a0: *const D) {}
 }
 pub fn main() {
     unsafe {
@@ -46,8 +51,18 @@ unsafe fn main_0() -> i32 {
     };
     (unsafe {
         D::operator_call(
-            &<D>::default(),
-            (Box::leak(Box::new(<A>::default())) as *mut A).cast_const(),
+            &mut *(|__p: *mut D| {
+                {
+                    let __d = __p;
+                };
+                __p
+            })((&mut ::std::mem::MaybeUninit::<D>::uninit()).as_mut_ptr()),
+            ({
+                let __p = Box::into_raw(Box::<A>::new_uninit()) as *mut A;
+                A::new_1(__p);
+                __p
+            })
+            .cast_const(),
         )
     });
     return 0;

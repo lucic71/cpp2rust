@@ -12,6 +12,11 @@ pub struct S {
     #[offset(0)]
     pub v: i32,
 }
+impl S {
+    pub fn copy_from(this: Ptr<S>, _a0: Ptr<S>) {
+        field!(this, v).write(_a0.with(|__s| __s.v));
+    }
+}
 pub fn operator_eq_0(mut a: i32, b: Ptr<S>) -> bool {
     return ({ a } == { b.with(|__s| __s.v) });
 }
@@ -38,7 +43,11 @@ pub fn main() {
     libcc2rs::cpp2rust_exit(main_0());
 }
 fn main_0() -> i32 {
-    let s: Value<S> = Rc::new(RefCell::new(S { v: 5 }));
+    let s: Value<S> = Rc::new(RefCell::new(<S>::uninit()));
+    {
+        let __d = s.as_pointer();
+        field!(__d, v).write(5);
+    };
     let cs: Ptr<S> = s.as_pointer();
     assert!(({ SImpl::operator_eq(&cs, 5,) }));
     assert!(({ SImpl::operator_ne(&cs, 4,) }));

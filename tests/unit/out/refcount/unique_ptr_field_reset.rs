@@ -12,6 +12,11 @@ pub struct Data {
     #[offset(0)]
     pub v: i32,
 }
+impl Data {
+    pub fn copy_from(this: Ptr<Data>, _a0: Ptr<Data>) {
+        field!(this, v).write(_a0.with(|__s| __s.v));
+    }
+}
 #[derive(Record, ByteRepr, Uninit, FnPtrArg, MoveCtor, MoveAssign, Default)]
 #[byte_size(16)]
 pub struct Holder {
@@ -22,11 +27,13 @@ pub struct Holder {
     pub n: i32,
 }
 impl Holder {
-    pub fn move_from(_a0: Ptr<Holder>) -> Self {
-        Self {
-            data: field!(_a0, data).with_mut(|__v: &mut Option<Value<Data>>| __v.take()),
-            n: { (*_a0.upgrade().deref()).n },
-        }
+    pub fn move_from(this: Ptr<Holder>, _a0: Ptr<Holder>) {
+        field!(this, data)
+            .write(field!(_a0, data).with_mut(|__v: &mut Option<Value<Data>>| __v.take()));
+        field!(this, n).write({ (*_a0.upgrade().deref()).n });
+    }
+    pub fn new_1(this: Ptr<Holder>) {
+        field!(this, data).write(None);
     }
 }
 pub fn main() {
@@ -34,11 +41,19 @@ pub fn main() {
     libcc2rs::cpp2rust_exit(main_0());
 }
 fn main_0() -> i32 {
-    let h: Value<Holder> = Rc::new(RefCell::new(<Holder>::default()));
+    let h: Value<Holder> = Rc::new(RefCell::new(<Holder>::uninit()));
+    Holder::new_1(h.as_pointer());
     (*h.borrow_mut()).n = 1;
     let mut hp: Ptr<Holder> = (h.as_pointer());
     {
-        let _p: Ptr<_> = Ptr::alloc(Data { v: 3 });
+        let _p: Ptr<_> = {
+            let __p = Ptr::alloc(<Data>::uninit());
+            {
+                let __d = __p.clone();
+                field!(__d, v).write(3);
+            };
+            __p
+        };
         field_ptr!(hp, data).write(_p.to_owned_opt())
     };
     assert!(
@@ -47,7 +62,16 @@ fn main_0() -> i32 {
             .with(|__s| __s.v)
             == 3)
     );
-    ({ HolderImpl::set(&h.as_pointer(), Ptr::alloc(Data { v: 4 })) });
+    ({
+        HolderImpl::set(&h.as_pointer(), {
+            let __p = Ptr::alloc(<Data>::uninit());
+            {
+                let __d = __p.clone();
+                field!(__d, v).write(4);
+            };
+            __p
+        })
+    });
     assert!(
         (hp.with(|__s| __s.data.clone())
             .as_pointer()

@@ -14,12 +14,23 @@ pub struct S {
     #[offset(4)]
     pub step: i32,
 }
+impl S {
+    pub fn copy_from(this: Ptr<S>, _a0: Ptr<S>) {
+        field!(this, n).write(_a0.with(|__s| __s.n));
+        field!(this, step).write(_a0.with(|__s| __s.step));
+    }
+}
 pub fn main() {
     __cpp2rust_init_globals();
     libcc2rs::cpp2rust_exit(main_0());
 }
 fn main_0() -> i32 {
-    let s: Value<S> = Rc::new(RefCell::new(S { n: 0, step: 2 }));
+    let s: Value<S> = Rc::new(RefCell::new(<S>::uninit()));
+    {
+        let __d = s.as_pointer();
+        field!(__d, n).write(0);
+        field!(__d, step).write(2);
+    };
     ({ SImpl::bump(&s.as_pointer(), 3) });
     assert!(({ ({ (*s.borrow()).n } == 6) }));
     ({ SImpl::bump_via_method(&s.as_pointer(), 4) });

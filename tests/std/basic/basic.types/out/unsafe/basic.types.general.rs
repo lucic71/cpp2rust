@@ -12,6 +12,15 @@ pub struct p2_pointer_to_data_member_bytes_round_trip_HasTwoInts {
     pub first: i32,
     pub second: i32,
 }
+impl p2_pointer_to_data_member_bytes_round_trip_HasTwoInts {
+    pub unsafe fn copy_from(
+        this: *mut p2_pointer_to_data_member_bytes_round_trip_HasTwoInts,
+        _a0: *const p2_pointer_to_data_member_bytes_round_trip_HasTwoInts,
+    ) {
+        (&raw mut (*this).first).write((*_a0).first);
+        (&raw mut (*this).second).write((*_a0).second);
+    }
+}
 pub unsafe fn test_0() {
     let mut pm: isize = (::std::mem::offset_of!(
         p2_pointer_to_data_member_bytes_round_trip_HasTwoInts,
@@ -44,10 +53,12 @@ pub unsafe fn test_0() {
             ) as isize))
     );
     let mut obj: p2_pointer_to_data_member_bytes_round_trip_HasTwoInts =
-        p2_pointer_to_data_member_bytes_round_trip_HasTwoInts {
-            first: 3,
-            second: 4,
-        };
+        ::std::mem::MaybeUninit::uninit().assume_init();
+    {
+        let __d = &raw mut obj;
+        (&raw mut (*__d).first).write(3);
+        (&raw mut (*__d).second).write(4);
+    };
     assert!(
         ((*(&mut obj as *mut p2_pointer_to_data_member_bytes_round_trip_HasTwoInts)
             .wrapping_byte_offset(pm)
@@ -81,6 +92,15 @@ pub struct p3_pointer_to_data_member_bytes_copied_to_other_object_HasTwoInts {
     pub first: i32,
     pub second: i32,
 }
+impl p3_pointer_to_data_member_bytes_copied_to_other_object_HasTwoInts {
+    pub unsafe fn copy_from(
+        this: *mut p3_pointer_to_data_member_bytes_copied_to_other_object_HasTwoInts,
+        _a0: *const p3_pointer_to_data_member_bytes_copied_to_other_object_HasTwoInts,
+    ) {
+        (&raw mut (*this).first).write((*_a0).first);
+        (&raw mut (*this).second).write((*_a0).second);
+    }
+}
 pub unsafe fn test_1() {
     let mut source: isize = (::std::mem::offset_of!(
         p3_pointer_to_data_member_bytes_copied_to_other_object_HasTwoInts,
@@ -100,10 +120,12 @@ pub unsafe fn test_1() {
     };
     assert!(((destination) == (source)));
     let mut obj: p3_pointer_to_data_member_bytes_copied_to_other_object_HasTwoInts =
-        p3_pointer_to_data_member_bytes_copied_to_other_object_HasTwoInts {
-            first: 3,
-            second: 4,
-        };
+        ::std::mem::MaybeUninit::uninit().assume_init();
+    {
+        let __d = &raw mut obj;
+        (&raw mut (*__d).first).write(3);
+        (&raw mut (*__d).second).write(4);
+    };
     assert!(
         ((*(&mut obj as *mut p3_pointer_to_data_member_bytes_copied_to_other_object_HasTwoInts)
             .wrapping_byte_offset(destination)

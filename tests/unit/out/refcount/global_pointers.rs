@@ -16,23 +16,43 @@ pub struct Entry {
     #[byte_size(8)]
     pub p: Ptr<i32>,
 }
+impl Entry {
+    pub fn copy_from(this: Ptr<Entry>, _a0: Ptr<Entry>) {
+        field!(this, name).write(_a0.with(|__s| __s.name.clone()));
+        field!(this, p).write(_a0.with(|__s| __s.p.clone()));
+    }
+}
 thread_local!(
-    pub static single_entry_0: Value<Entry> = Rc::new(RefCell::new(Entry {
-        name: Ptr::<i8>::from_string_literal(b"alone"),
-        p: Ptr::<i32>::null(),
-    }));
+    pub static single_entry_0: Value<Entry> = {
+        let __v: Value<Entry> = Rc::new(RefCell::new(<Entry>::uninit()));
+        {
+            let __d = __v.as_pointer();
+            field!(__d, name).write(Ptr::<i8>::from_string_literal(b"alone"));
+            field!(__d, p).write(Ptr::<i32>::null());
+        };
+        __v
+    };
 );
 thread_local!(
-    pub static entries_1: Value<Box<[Entry]>> = Rc::new(RefCell::new(Box::new([
-        Entry {
-            name: Ptr::<i8>::from_string_literal(b"first"),
-            p: Ptr::<i32>::null(),
-        },
-        Entry {
-            name: Ptr::<i8>::from_string_literal(b"second"),
-            p: Ptr::<i32>::null(),
-        },
-    ])));
+    pub static entries_1: Value<Box<[Entry]>> = {
+        let __v: Value<Box<[Entry]>> = Rc::new(RefCell::new(
+            (0..2).map(|_| <Entry>::uninit()).collect::<Box<[_]>>(),
+        ));
+        {
+            let __d = __v.decay();
+            {
+                let __d = __d.offset(0);
+                field!(__d, name).write(Ptr::<i8>::from_string_literal(b"first"));
+                field!(__d, p).write(Ptr::<i32>::null());
+            };
+            {
+                let __d = __d.offset(1);
+                field!(__d, name).write(Ptr::<i8>::from_string_literal(b"second"));
+                field!(__d, p).write(Ptr::<i32>::null());
+            };
+        };
+        __v
+    };
 );
 thread_local!(
     pub static arr_of_pointers_2: Value<Box<[Ptr<i8>]>> = Rc::new(RefCell::new(Box::new([

@@ -8,7 +8,6 @@ use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
-#[placement]
 pub struct S {
     pub v: i32,
 }
@@ -25,7 +24,6 @@ pub unsafe trait Base {
 }
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
-#[placement]
 pub struct Derived {
     pub factor: i32,
 }
@@ -39,6 +37,12 @@ impl Derived {
 pub struct Pair {
     pub first: i32,
     pub second: i32,
+}
+impl Pair {
+    pub unsafe fn copy_from(this: *mut Pair, _a0: *const Pair) {
+        (&raw mut (*this).first).write((*_a0).first);
+        (&raw mut (*this).second).write((*_a0).second);
+    }
 }
 pub unsafe fn pair_diff_0(mut p: *const Pair) -> i32 {
     return (((*p).first) - ((*p).second));
@@ -60,9 +64,11 @@ unsafe fn main_0() -> i32 {
     Derived::new(&raw mut derived, { 3 });
     let mut base: *mut dyn Base = (&mut derived as *mut Derived);
     assert!(((unsafe { (*base).apply(5,) }) == (15)));
-    let mut pair: Pair = Pair {
-        first: 7,
-        second: 3,
+    let mut pair: Pair = ::std::mem::MaybeUninit::uninit().assume_init();
+    {
+        let __d = &raw mut pair;
+        (&raw mut (*__d).first).write(7);
+        (&raw mut (*__d).second).write(3);
     };
     assert!(((unsafe { pair_sum_1((&mut pair as *mut Pair).cast_const(),) }) == (10)));
     assert!(((unsafe { pair_diff_0((&mut pair as *mut Pair).cast_const(),) }) == (4)));

@@ -13,6 +13,18 @@ pub struct node_t {
     pub right: *mut node_t,
     pub value: i32,
 }
+impl node_t {
+    pub unsafe fn copy_from(this: *mut node_t, _a0: *const node_t) {
+        (&raw mut (*this).left).write((*_a0).left);
+        (&raw mut (*this).right).write((*_a0).right);
+        (&raw mut (*this).value).write((*_a0).value);
+    }
+    pub unsafe fn move_from(this: *mut node_t, _a0: *mut node_t) {
+        (&raw mut (*this).left).write((*_a0).left);
+        (&raw mut (*this).right).write((*_a0).right);
+        (&raw mut (*this).value).write((*_a0).value);
+    }
+}
 pub unsafe fn find_0(mut node: *mut node_t, mut value: i32) -> *mut node_t {
     if ((value) < ((*node).value)) && (!(((*node).left).is_null())) {
         return (unsafe { find_0((*node).left, value) });

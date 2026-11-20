@@ -14,6 +14,12 @@ pub struct Pair {
     #[offset(4)]
     pub second: i32,
 }
+impl Pair {
+    pub fn copy_from(this: Ptr<Pair>, _a0: Ptr<Pair>) {
+        field!(this, first).write(_a0.with(|__s| __s.first));
+        field!(this, second).write(_a0.with(|__s| __s.second));
+    }
+}
 pub fn twice_0(v: Ptr<i64>) -> i64 {
     return ((v.read()) * 2_i64);
 }
@@ -77,17 +83,22 @@ fn main_0() -> i32 {
     assert!((a == 5));
     assert!(({ ((*v1.borrow()).len() == 2_usize) }));
     assert!((v2.len() == 3_usize));
-    let p1: Value<Pair> = Rc::new(RefCell::new(Pair {
-        first: 1,
-        second: 2,
-    }));
-    let mut p2: Pair = {
-        b = 6;
-        (*p1.borrow())
+    let p1: Value<Pair> = Rc::new(RefCell::new(<Pair>::uninit()));
+    {
+        let __d = p1.as_pointer();
+        field!(__d, first).write(1);
+        field!(__d, second).write(2);
     };
-    p2.first = 10;
+    let p2: Value<Pair> = Rc::new(RefCell::new(<Pair>::uninit()));
+    Pair::copy_from(p2.as_pointer(), {
+        {
+            b = 6;
+            p1.as_pointer()
+        }
+    });
+    (*p2.borrow_mut()).first = 10;
     assert!(({ ({ (*p1.borrow()).first } == 1) }));
-    assert!((p2.first == 10));
+    assert!(({ ({ (*p2.borrow()).first } == 10) }));
     assert!(
         (({
             let _v: Value<i64> = Rc::new(RefCell::new((a as i64)));

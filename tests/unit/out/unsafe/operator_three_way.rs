@@ -24,6 +24,9 @@ impl S {
     pub unsafe fn operator_eq(&self, o: *const S) -> bool {
         return ((self.v) == ((*o).v));
     }
+    pub unsafe fn copy_from(this: *mut S, _a0: *const S) {
+        (&raw mut (*this).v).write((*_a0).v);
+    }
 }
 impl std::cmp::Ord for S {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering {
@@ -48,8 +51,16 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    let mut a: S = S { v: 1 };
-    let mut b: S = S { v: 2 };
+    let mut a: S = ::std::mem::MaybeUninit::uninit().assume_init();
+    {
+        let __d = &raw mut a;
+        (&raw mut (*__d).v).write(1);
+    };
+    let mut b: S = ::std::mem::MaybeUninit::uninit().assume_init();
+    {
+        let __d = &raw mut b;
+        (&raw mut (*__d).v).write(2);
+    };
     assert!((unsafe { S::operator_cmp(&a, &b,) }) == std::cmp::Ordering::Less);
     assert!((unsafe { S::operator_cmp(&b, &a,) }) == std::cmp::Ordering::Greater);
     assert!((unsafe { S::operator_cmp(&a, &b,) }) != std::cmp::Ordering::Greater);

@@ -10,7 +10,6 @@ thread_local!(
     pub static copies_0: Value<i32> = Rc::new(RefCell::new(0));
 );
 #[derive(Record, ByteRepr, Uninit, VaArg, FnPtrArg, CppFrom, CopyAssign, Default)]
-#[placement]
 #[cpp_from(i32, new, value)]
 #[byte_size(4)]
 pub struct Counted {
@@ -35,7 +34,6 @@ impl Clone for Counted {
     }
 }
 #[derive(Record, ByteRepr, Uninit, VaArg, FnPtrArg, CopyAssign)]
-#[placement]
 #[byte_size(4)]
 pub struct NonConst {
     #[offset(0)]
@@ -75,7 +73,6 @@ impl Default for NonConst {
     }
 }
 #[derive(Record, ByteRepr, Uninit, VaArg, FnPtrArg, CppFrom, CopyAssign, Default)]
-#[placement]
 #[cpp_from(i32, new, value)]
 #[byte_size(4)]
 pub struct Ignored {
@@ -100,7 +97,6 @@ impl Clone for Ignored {
     }
 }
 #[derive(Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, CopyAssign)]
-#[placement]
 #[byte_size(12)]
 pub struct Holder {
     #[offset(0)]
@@ -137,7 +133,6 @@ impl Default for Holder {
     }
 }
 #[derive(Record, ByteRepr, Uninit, VaArg, FnPtrArg, MoveCtor, CppFrom, Default)]
-#[placement]
 #[cpp_from(i32, new, value)]
 #[byte_size(4)]
 pub struct Box_int_ {
@@ -166,7 +161,6 @@ impl Clone for Box_int_ {
     }
 }
 #[derive(Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, MoveCtor, Default)]
-#[placement]
 #[byte_size(4)]
 pub struct Owner {
     #[offset(0)]
@@ -182,7 +176,6 @@ impl Owner {
     }
 }
 #[derive(Record, ByteRepr, Uninit, VaArg, FnPtrArg, CppFrom, CopyAssign, Default)]
-#[placement]
 #[cpp_from(i32, new, value)]
 #[byte_size(4)]
 pub struct OutOfLine {
@@ -208,7 +201,6 @@ impl Clone for OutOfLine {
 }
 impl OutOfLine {}
 #[derive(Record, ByteRepr, Uninit, VaArg, FnPtrArg, CopyAssign)]
-#[placement]
 #[byte_size(4)]
 pub struct Tracked {
     #[offset(0)]

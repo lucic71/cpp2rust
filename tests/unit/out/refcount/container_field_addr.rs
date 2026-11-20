@@ -16,11 +16,16 @@ pub struct S {
     pub v: Vec<i32>,
 }
 impl S {
-    pub fn move_from(_a0: Ptr<S>) -> Self {
-        Self {
-            tag: { (*_a0.upgrade().deref()).tag },
-            v: field!(_a0, v).with_mut(std::mem::take),
-        }
+    pub fn copy_from(this: Ptr<S>, _a0: Ptr<S>) {
+        field!(this, tag).write(_a0.with(|__s| __s.tag));
+        field!(this, v).write((*_a0.upgrade().deref()).v.clone());
+    }
+    pub fn move_from(this: Ptr<S>, _a0: Ptr<S>) {
+        field!(this, tag).write({ (*_a0.upgrade().deref()).tag });
+        field!(this, v).write(field!(_a0, v).with_mut(std::mem::take));
+    }
+    pub fn new_1(this: Ptr<S>) {
+        field!(this, v).write(Vec::new());
     }
 }
 pub fn add_0(mut v: Ptr<Vec<i32>>, mut k: i32) {
@@ -54,10 +59,15 @@ pub fn main() {
     libcc2rs::cpp2rust_exit(main_0());
 }
 fn main_0() -> i32 {
-    let local: Value<S> = Rc::new(RefCell::new(<S>::default()));
+    let local: Value<S> = Rc::new(RefCell::new(<S>::uninit()));
+    S::new_1(local.as_pointer());
     (*local.borrow_mut()).tag = 7;
     ({ run_1((local.as_pointer())) });
-    let mut heap: Ptr<S> = Ptr::alloc(<S>::default());
+    let mut heap: Ptr<S> = {
+        let __p = Ptr::alloc(<S>::uninit());
+        S::new_1(__p.clone());
+        __p
+    };
     field!(heap, tag).write(7);
     ({ run_1((heap).clone()) });
     heap.delete();

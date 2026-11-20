@@ -10,7 +10,6 @@ pub type Overload = u32;
 pub const Overload_kLvalueOverload: Overload = 1;
 pub const Overload_kRvalueOverload: Overload = 2;
 #[derive(Record, ByteRepr, Uninit, VaArg, FnPtrArg, MoveCtor, CppFrom, Default)]
-#[placement]
 #[cpp_from(i32, new, value)]
 #[byte_size(12)]
 pub struct Tracked {

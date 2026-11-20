@@ -12,23 +12,33 @@ pub struct Outer_RunInfo {
     pub block_idx: i32,
     pub num_extra_zero_runs: i32,
 }
+impl Outer_RunInfo {
+    pub unsafe fn new_1(this: *mut Outer_RunInfo) {}
+    pub unsafe fn copy_from(this: *mut Outer_RunInfo, _a0: *const Outer_RunInfo) {
+        (&raw mut (*this).block_idx).write((*_a0).block_idx);
+        (&raw mut (*this).num_extra_zero_runs).write((*_a0).num_extra_zero_runs);
+    }
+}
 #[repr(C)]
 #[derive(Clone, VaArg, FnPtrArg, MoveCtorUnsafe, MoveAssignUnsafe, Default)]
 pub struct Outer {
     pub runs: Vec<Outer_RunInfo>,
 }
 impl Outer {
-    pub unsafe fn move_from(_a0: *mut Outer) -> Self {
-        let mut this = Self {
-            runs: std::mem::take(&mut (*_a0).runs),
-        };
-        this
+    pub unsafe fn copy_from(this: *mut Outer, _a0: *const Outer) {
+        (&raw mut (*this).runs).write((*_a0).runs.clone());
+    }
+    pub unsafe fn move_from(this: *mut Outer, _a0: *mut Outer) {
+        (&raw mut (*this).runs).write(std::mem::take(&mut (*_a0).runs));
     }
     pub unsafe fn move_assign(&mut self, _a0: *mut Outer) -> *mut Outer {
         {
             self.runs = std::mem::take(&mut (*_a0).runs);
         };
         return &mut (*(self as *mut Outer));
+    }
+    pub unsafe fn new_1(this: *mut Outer) {
+        (&raw mut (*this).runs).write(Vec::new());
     }
 }
 pub fn main() {
@@ -38,8 +48,10 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    let mut o: Outer = <Outer>::default();
-    let mut info: Outer_RunInfo = <Outer_RunInfo>::default();
+    let mut o: Outer = ::std::mem::MaybeUninit::uninit().assume_init();
+    Outer::new_1(&raw mut o);
+    let mut info: Outer_RunInfo = ::std::mem::MaybeUninit::uninit().assume_init();
+    Outer_RunInfo::new_1(&raw mut info);
     info.block_idx = 1;
     info.num_extra_zero_runs = 2;
     {

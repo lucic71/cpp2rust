@@ -19,7 +19,6 @@ thread_local!(
     pub static useCount_3: Value<i32> = Rc::new(RefCell::new(0));
 );
 #[derive(Record, ByteRepr, Uninit, VaArg, FnPtrArg, CopyAssign, Destructor)]
-#[placement]
 #[byte_size(4)]
 pub struct LifetimeTracked {
     #[offset(0)]
@@ -91,6 +90,9 @@ thread_local!(
 #[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
 #[byte_size(1)]
 pub struct HasStaticMember_int_ {}
+impl HasStaticMember_int_ {
+    pub fn copy_from(this: Ptr<HasStaticMember_int_>, _a0: Ptr<HasStaticMember_int_>) {}
+}
 thread_local!(
     pub static member_5: Value<LifetimeTracked> = {
         let __static = {
@@ -107,6 +109,9 @@ thread_local!(
 #[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
 #[byte_size(1)]
 pub struct HasStaticMember_long_ {}
+impl HasStaticMember_long_ {
+    pub fn copy_from(this: Ptr<HasStaticMember_long_>, _a0: Ptr<HasStaticMember_long_>) {}
+}
 pub fn main() {
     __cpp2rust_init_globals();
     libcc2rs::cpp2rust_exit(main_0());

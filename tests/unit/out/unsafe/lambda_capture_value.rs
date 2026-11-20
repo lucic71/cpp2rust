@@ -12,6 +12,12 @@ pub struct S {
     pub x: i32,
     pub y: i32,
 }
+impl S {
+    pub unsafe fn copy_from(this: *mut S, _a0: *const S) {
+        (&raw mut (*this).x).write((*_a0).x);
+        (&raw mut (*this).y).write((*_a0).y);
+    }
+}
 pub unsafe fn read_0(v: *const i32) -> i32 {
     return (*v);
 }
@@ -46,10 +52,19 @@ unsafe fn main_0() -> i32 {
     );
     slot = 8;
     assert!(((unsafe { read_ptr.call() }) == (8)));
-    let mut s: S = S { x: 1, y: 2 };
+    let mut s: S = ::std::mem::MaybeUninit::uninit().assume_init();
+    {
+        let __d = &raw mut s;
+        (&raw mut (*__d).x).write(1);
+        (&raw mut (*__d).y).write(2);
+    };
     let mut sum: FnPtr<fn() -> i32> = lambda_unsafe!(
         {
-            let s: S = s;
+            let s: S = {
+                let mut __v: S = ::std::mem::MaybeUninit::uninit().assume_init();
+                S::copy_from(&raw mut __v, { &s });
+                __v
+            };
         },
         || -> i32 {
             return ((s.x) + (s.y));

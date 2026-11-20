@@ -8,7 +8,6 @@ use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg)]
-#[placement]
 pub struct S {
     pub a: i32,
     pub b: bool,
@@ -36,7 +35,6 @@ impl Default for S {
 }
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
-#[placement]
 pub struct Declared {
     pub v: i32,
 }
@@ -47,7 +45,6 @@ impl Declared {
 }
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
-#[placement]
 pub struct Holder {
     pub items: [S; 2],
 }
@@ -69,17 +66,26 @@ impl Holder {
         };
     }
 }
-pub static mut kInit_0: std::cell::LazyCell<i32> = std::cell::LazyCell::new(|| unsafe { 3 });
+pub static mut kInit_0: libcc2rs::LazyStorage<i32> =
+    libcc2rs::LazyStorage::new(|__p| unsafe { __p.write(3) });
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg)]
 pub struct FromStatic {
     pub v: i32,
 }
+impl FromStatic {
+    pub unsafe fn new_1(this: *mut FromStatic) {
+        (&raw mut (*this).v).write((*(*&raw const kInit_0).get()));
+    }
+    pub unsafe fn copy_from(this: *mut FromStatic, _a0: *const FromStatic) {
+        (&raw mut (*this).v).write((*_a0).v);
+    }
+}
 impl Default for FromStatic {
     fn default() -> Self {
         unsafe {
             FromStatic {
-                v: (*std::cell::LazyCell::force_mut(&mut *&raw mut kInit_0)),
+                v: (*(*&raw const kInit_0).get()),
             }
         }
     }
@@ -134,5 +140,5 @@ unsafe fn main_0() -> i32 {
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {
-    std::cell::LazyCell::force(&*&raw const kInit_0);
+    (*&raw const kInit_0).get();
 }

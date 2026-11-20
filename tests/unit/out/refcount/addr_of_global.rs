@@ -12,6 +12,11 @@ pub struct Inner {
     #[offset(0)]
     pub value: i32,
 }
+impl Inner {
+    pub fn copy_from(this: Ptr<Inner>, _a0: Ptr<Inner>) {
+        field!(this, value).write(_a0.with(|__s| __s.value));
+    }
+}
 #[derive(Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
 #[byte_size(8)]
 pub struct Outer {
@@ -19,14 +24,40 @@ pub struct Outer {
     #[byte_size(8)]
     pub p: Ptr<Inner>,
 }
+impl Outer {
+    pub fn copy_from(this: Ptr<Outer>, _a0: Ptr<Outer>) {
+        field!(this, p).write(_a0.with(|__s| __s.p.clone()));
+    }
+}
 thread_local!(
-    pub static alpha_0: Value<Inner> = Rc::new(RefCell::new(Inner { value: 1 }));
+    pub static alpha_0: Value<Inner> = {
+        let __v: Value<Inner> = Rc::new(RefCell::new(<Inner>::uninit()));
+        {
+            let __d = __v.as_pointer();
+            field!(__d, value).write(1);
+        };
+        __v
+    };
 );
 thread_local!(
-    pub static beta_1: Value<Inner> = Rc::new(RefCell::new(Inner { value: 2 }));
+    pub static beta_1: Value<Inner> = {
+        let __v: Value<Inner> = Rc::new(RefCell::new(<Inner>::uninit()));
+        {
+            let __d = __v.as_pointer();
+            field!(__d, value).write(2);
+        };
+        __v
+    };
 );
 thread_local!(
-    pub static shared_2: Value<Inner> = Rc::new(RefCell::new(Inner { value: 42 }));
+    pub static shared_2: Value<Inner> = {
+        let __v: Value<Inner> = Rc::new(RefCell::new(<Inner>::uninit()));
+        {
+            let __d = __v.as_pointer();
+            field!(__d, value).write(42);
+        };
+        __v
+    };
 );
 thread_local!(
     pub static items_3: Value<Box<[Ptr<Inner>]>> = Rc::new(RefCell::new(Box::new([
@@ -35,9 +66,14 @@ thread_local!(
     ])));
 );
 thread_local!(
-    pub static obj_4: Value<Outer> = Rc::new(RefCell::new(Outer {
-        p: (shared_2.with(|v| v.as_pointer())),
-    }));
+    pub static obj_4: Value<Outer> = {
+        let __v: Value<Outer> = Rc::new(RefCell::new(<Outer>::uninit()));
+        {
+            let __d = __v.as_pointer();
+            field!(__d, p).write((shared_2.with(|v| v.as_pointer())));
+        };
+        __v
+    };
 );
 pub fn main() {
     __cpp2rust_init_globals();

@@ -13,6 +13,16 @@ pub struct p6_array_of_pointers_to_data_members_HasThreeInts {
     pub second: i32,
     pub third: i32,
 }
+impl p6_array_of_pointers_to_data_members_HasThreeInts {
+    pub unsafe fn copy_from(
+        this: *mut p6_array_of_pointers_to_data_members_HasThreeInts,
+        _a0: *const p6_array_of_pointers_to_data_members_HasThreeInts,
+    ) {
+        (&raw mut (*this).first).write((*_a0).first);
+        (&raw mut (*this).second).write((*_a0).second);
+        (&raw mut (*this).third).write((*_a0).third);
+    }
+}
 pub unsafe fn test_0() {
     let mut members: [isize; 3] = [
         (::std::mem::offset_of!(p6_array_of_pointers_to_data_members_HasThreeInts, third) as isize),
@@ -21,11 +31,13 @@ pub unsafe fn test_0() {
             as isize),
     ];
     let mut obj: p6_array_of_pointers_to_data_members_HasThreeInts =
-        p6_array_of_pointers_to_data_members_HasThreeInts {
-            first: 4,
-            second: 5,
-            third: 6,
-        };
+        ::std::mem::MaybeUninit::uninit().assume_init();
+    {
+        let __d = &raw mut obj;
+        (&raw mut (*__d).first).write(4);
+        (&raw mut (*__d).second).write(5);
+        (&raw mut (*__d).third).write(6);
+    };
     assert!(
         ((*(&mut obj as *mut p6_array_of_pointers_to_data_members_HasThreeInts)
             .wrapping_byte_offset(members[(0) as usize])

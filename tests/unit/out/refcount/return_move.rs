@@ -15,6 +15,12 @@ pub struct node {
     #[byte_size(8)]
     pub next: Ptr<node>,
 }
+impl node {
+    pub fn copy_from(this: Ptr<node>, _a0: Ptr<node>) {
+        field!(this, value).write(_a0.with(|__s| __s.value));
+        field!(this, next).write(_a0.with(|__s| __s.next.clone()));
+    }
+}
 #[derive(Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
 #[byte_size(16)]
 pub struct pair_t {
@@ -23,6 +29,17 @@ pub struct pair_t {
     #[offset(8)]
     #[byte_size(8)]
     pub n: Ptr<node>,
+}
+impl pair_t {
+    pub fn new_1(this: Ptr<pair_t>) {}
+    pub fn copy_from(this: Ptr<pair_t>, _a0: Ptr<pair_t>) {
+        field!(this, a).write(_a0.with(|__s| __s.a));
+        field!(this, n).write(_a0.with(|__s| __s.n.clone()));
+    }
+    pub fn move_from(this: Ptr<pair_t>, _a0: Ptr<pair_t>) {
+        field!(this, a).write({ (*_a0.upgrade().deref()).a });
+        field!(this, n).write({ (*_a0.upgrade().deref()).n.clone() });
+    }
 }
 thread_local!(
     pub static global_node_0: Value<Ptr<node>> = Rc::new(RefCell::new(Ptr::<node>::null()));
@@ -66,17 +83,21 @@ pub fn address_taken_8(n: Ptr<node>) -> Ptr<node> {
         Ptr::<node>::null()
     };
 }
-pub fn ret_struct_9(mut a: i32, mut n: Ptr<node>) -> pair_t {
-    let mut p: pair_t = <pair_t>::default();
-    p.a = a;
-    p.n = (n).clone();
-    return p;
+pub fn ret_struct_9(__ret: Ptr<pair_t>, mut a: i32, mut n: Ptr<node>) {
+    let p: Value<pair_t> = Rc::new(RefCell::new(<pair_t>::uninit()));
+    pair_t::new_1(p.as_pointer());
+    (*p.borrow_mut()).a = a;
+    (*p.borrow_mut()).n = (n).clone();
+    pair_t::move_from(__ret.clone(), { p.as_pointer() });
+    return;
 }
-pub fn ret_struct_param_10(mut p: pair_t) -> pair_t {
-    return p;
+pub fn ret_struct_param_10(__ret: Ptr<pair_t>, p: Value<pair_t>) {
+    pair_t::move_from(__ret.clone(), { p.as_pointer() });
+    return;
 }
-pub fn ret_struct_ref_11(p: Ptr<pair_t>) -> pair_t {
-    return (*p.upgrade().deref()).clone();
+pub fn ret_struct_ref_11(__ret: Ptr<pair_t>, p: Ptr<pair_t>) {
+    pair_t::copy_from(__ret.clone(), { (p).clone() });
+    return;
 }
 pub fn ret_vec_12(mut v: Vec<i32>) -> Vec<i32> {
     return std::mem::take(&mut v);
@@ -103,18 +124,24 @@ pub fn main() {
     libcc2rs::cpp2rust_exit(main_0());
 }
 fn main_0() -> i32 {
-    let c: Value<node> = Rc::new(RefCell::new(node {
-        value: 3,
-        next: Ptr::<node>::null(),
-    }));
-    let b: Value<node> = Rc::new(RefCell::new(node {
-        value: 2,
-        next: (c.as_pointer()),
-    }));
-    let a: Value<node> = Rc::new(RefCell::new(node {
-        value: 1,
-        next: (b.as_pointer()),
-    }));
+    let c: Value<node> = Rc::new(RefCell::new(<node>::uninit()));
+    {
+        let __d = c.as_pointer();
+        field!(__d, value).write(3);
+        field!(__d, next).write(Ptr::<node>::null());
+    };
+    let b: Value<node> = Rc::new(RefCell::new(<node>::uninit()));
+    {
+        let __d = b.as_pointer();
+        field!(__d, value).write(2);
+        field!(__d, next).write((c.as_pointer()));
+    };
+    let a: Value<node> = Rc::new(RefCell::new(<node>::uninit()));
+    {
+        let __d = a.as_pointer();
+        field!(__d, value).write(1);
+        field!(__d, next).write((b.as_pointer()));
+    };
     global_node_0.with(|rc| *rc.borrow_mut() = (a.as_pointer()));
     assert!((({ id_1((a.as_pointer()),) }) == (a.as_pointer())));
     assert!((({ local_ptr_3((a.as_pointer()),) }) == (b.as_pointer())));
@@ -123,16 +150,33 @@ fn main_0() -> i32 {
     assert!((({ next_of_6((b.as_pointer()),) }) == (c.as_pointer())));
     assert!((({ ret_global_7() }) == (a.as_pointer())));
     assert!((({ address_taken_8((a.as_pointer()),) }) == (a.as_pointer())));
-    let mut p: pair_t = ({ ret_struct_9(4, (a.as_pointer())) });
-    assert!((p.a == 4) && ({ (p.n).clone() } == { (a.as_pointer()) }));
-    let q: Value<pair_t> = Rc::new(RefCell::new(({ ret_struct_param_10((p).clone()) })));
+    let p: Value<pair_t> = Rc::new(RefCell::new(<pair_t>::uninit()));
+    ({ ret_struct_9(p.as_pointer(), 4, (a.as_pointer())) });
+    assert!(
+        ({
+            ({ (*p.borrow()).a } == 4) && ({ { (*p.borrow()).n.clone() } } == { (a.as_pointer()) })
+        })
+    );
+    let q: Value<pair_t> = Rc::new(RefCell::new(<pair_t>::uninit()));
+    ({
+        ret_struct_param_10(q.as_pointer(), {
+            let __v: Value<pair_t> = Rc::new(RefCell::new(<pair_t>::uninit()));
+            pair_t::copy_from(__v.as_pointer(), { p.as_pointer() });
+            __v
+        })
+    });
     assert!(
         ({
             ({ (*q.borrow()).a } == 4) && ({ { (*q.borrow()).n.clone() } } == { (a.as_pointer()) })
         })
     );
-    let mut r: pair_t = ({ ret_struct_ref_11(q.as_pointer()) });
-    assert!((r.a == 4) && ({ (r.n).clone() } == { (a.as_pointer()) }));
+    let r: Value<pair_t> = Rc::new(RefCell::new(<pair_t>::uninit()));
+    ({ ret_struct_ref_11(r.as_pointer(), q.as_pointer()) });
+    assert!(
+        ({
+            ({ (*r.borrow()).a } == 4) && ({ { (*r.borrow()).n.clone() } } == { (a.as_pointer()) })
+        })
+    );
     assert!((({ ret_vec_12(({ ret_vec_local_13() }),) }).len() == 1_usize));
     assert!((({ ret_loop_14((a.as_pointer()),) }) == (b.as_pointer())));
     return 0;

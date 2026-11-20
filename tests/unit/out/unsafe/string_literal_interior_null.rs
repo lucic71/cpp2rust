@@ -17,14 +17,16 @@ pub unsafe fn sum_bytes_0(mut buf: *const libc::c_char, mut len: u32) -> i32 {
     }
     return sum;
 }
-pub static mut g_packet_1: std::cell::LazyCell<*const libc::c_char> =
-    std::cell::LazyCell::new(|| unsafe {
-        (&[
-            (1 as libc::c_char),
-            (0 as libc::c_char),
-            (0 as libc::c_char),
-        ])
-            .as_ptr()
+pub static mut g_packet_1: libcc2rs::LazyStorage<*const libc::c_char> =
+    libcc2rs::LazyStorage::new(|__p| unsafe {
+        __p.write(
+            (&[
+                (1 as libc::c_char),
+                (0 as libc::c_char),
+                (0 as libc::c_char),
+            ])
+                .as_ptr(),
+        )
     });
 pub fn main() {
     unsafe {
@@ -44,12 +46,7 @@ unsafe fn main_0() -> i32 {
             2_u32,
         )
     });
-    let mut b: i32 = (unsafe {
-        sum_bytes_0(
-            (*std::cell::LazyCell::force_mut(&mut *&raw mut g_packet_1)),
-            2_u32,
-        )
-    });
+    let mut b: i32 = (unsafe { sum_bytes_0((*(*&raw const g_packet_1).get()), 2_u32) });
     assert!(((a) == (b)));
     assert!(((a) == (1)));
     let mut high: i32 = (unsafe {
@@ -74,5 +71,5 @@ unsafe fn main_0() -> i32 {
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {
-    std::cell::LazyCell::force(&*&raw const g_packet_1);
+    (*&raw const g_packet_1).get();
 }

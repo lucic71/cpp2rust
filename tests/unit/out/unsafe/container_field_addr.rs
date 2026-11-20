@@ -13,12 +13,13 @@ pub struct S {
     pub v: Vec<i32>,
 }
 impl S {
-    pub unsafe fn move_from(_a0: *mut S) -> Self {
-        let mut this = Self {
-            tag: (*_a0).tag,
-            v: std::mem::take(&mut (*_a0).v),
-        };
-        this
+    pub unsafe fn copy_from(this: *mut S, _a0: *const S) {
+        (&raw mut (*this).tag).write((*_a0).tag);
+        (&raw mut (*this).v).write((*_a0).v.clone());
+    }
+    pub unsafe fn move_from(this: *mut S, _a0: *mut S) {
+        (&raw mut (*this).tag).write((*_a0).tag);
+        (&raw mut (*this).v).write(std::mem::take(&mut (*_a0).v));
     }
     pub unsafe fn move_assign(&mut self, _a0: *mut S) -> *mut S {
         self.tag = (*_a0).tag;
@@ -26,6 +27,9 @@ impl S {
             self.v = std::mem::take(&mut (*_a0).v);
         };
         return &mut (*(self as *mut S));
+    }
+    pub unsafe fn new_1(this: *mut S) {
+        (&raw mut (*this).v).write(Vec::new());
     }
 }
 pub unsafe fn add_0(mut v: *mut Vec<i32>, mut k: i32) {
@@ -58,10 +62,15 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    let mut local: S = <S>::default();
+    let mut local: S = ::std::mem::MaybeUninit::uninit().assume_init();
+    S::new_1(&raw mut local);
     local.tag = 7;
     (unsafe { run_1((&mut local as *mut S)) });
-    let mut heap: *mut S = (Box::leak(Box::new(<S>::default())) as *mut S);
+    let mut heap: *mut S = {
+        let __p = Box::into_raw(Box::<S>::new_uninit()) as *mut S;
+        S::new_1(__p);
+        __p
+    };
     (*heap).tag = 7;
     (unsafe { run_1(heap) });
     {

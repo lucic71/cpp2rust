@@ -6,13 +6,19 @@ use std::collections::BTreeMap;
 use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
-pub static mut default_constructions_0: std::cell::LazyCell<i32> =
-    std::cell::LazyCell::new(|| unsafe { 0 });
+pub static mut default_constructions_0: libcc2rs::LazyStorage<i32> =
+    libcc2rs::LazyStorage::new(|__p| unsafe { __p.write(0) });
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct Key {
     pub order: i32,
     pub identity: i32,
+}
+impl Key {
+    pub unsafe fn copy_from(this: *mut Key, _a0: *const Key) {
+        (&raw mut (*this).order).write((*_a0).order);
+        (&raw mut (*this).identity).write((*_a0).identity);
+    }
 }
 impl std::cmp::Ord for Key {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering {
@@ -46,14 +52,13 @@ pub unsafe fn operator_eq_2(a: *const Key, b: *const Key) -> bool {
 }
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg)]
-#[placement]
 pub struct Mapped {
     pub value: i32,
 }
 impl Mapped {
     pub unsafe fn new(this: *mut Mapped) {
         (&raw mut (*this).value).write(0);
-        (*std::cell::LazyCell::force_mut(&mut *&raw mut default_constructions_0)).prefix_inc();
+        (*(*&raw const default_constructions_0).get()).prefix_inc();
     }
     pub unsafe fn copy_from(this: *mut Mapped, _a0: *const Mapped) {
         (&raw mut (*this).value).write((*_a0).value);
@@ -78,13 +83,17 @@ pub fn main() {
 }
 unsafe fn main_0() -> i32 {
     let mut ok: bool = true;
-    let distinct_a: Key = Key {
-        order: 1,
-        identity: 7,
+    let mut distinct_a: Key = ::std::mem::MaybeUninit::uninit().assume_init();
+    {
+        let __d = &raw mut distinct_a;
+        (&raw mut (*__d).order).write(1);
+        (&raw mut (*__d).identity).write(7);
     };
-    let distinct_b: Key = Key {
-        order: 2,
-        identity: 7,
+    let mut distinct_b: Key = ::std::mem::MaybeUninit::uninit().assume_init();
+    {
+        let __d = &raw mut distinct_b;
+        (&raw mut (*__d).order).write(2);
+        (&raw mut (*__d).identity).write(7);
     };
     ok = ((ok as i32)
         & ((unsafe {
@@ -97,17 +106,11 @@ unsafe fn main_0() -> i32 {
     (*a).value = 11;
     let mut a_it: UnsafeBidirectionalIterator<(Key, Mapped)> = distinct.find(&distinct_a);
     let mut a_value: *mut Mapped = (&mut (*a_it.iter_deref()).1 as *mut Mapped);
-    ok = ((ok as i32)
-        & (((*std::cell::LazyCell::force_mut(&mut *&raw mut default_constructions_0)) == (1))
-            as i32))
-        != 0;
+    ok = ((ok as i32) & (((*(*&raw const default_constructions_0).get()) == (1)) as i32)) != 0;
     let b: *mut Mapped = &mut (*distinct.subscript(&distinct_b, || <Mapped>::default()));
     (*b).value = 22;
     let mut b_it: UnsafeBidirectionalIterator<(Key, Mapped)> = distinct.find(&distinct_b);
-    ok = ((ok as i32)
-        & (((*std::cell::LazyCell::force_mut(&mut *&raw mut default_constructions_0)) == (2))
-            as i32))
-        != 0;
+    ok = ((ok as i32) & (((*(*&raw const default_constructions_0).get()) == (2)) as i32)) != 0;
     ok = ((ok as i32) & (((distinct.len()) == (2_usize)) as i32)) != 0;
     ok = ((ok as i32) & (((a) != (b)) as i32)) != 0;
     ok = ((ok as i32) & (((((*a).value) == (11)) && (((*b).value) == (22))) as i32)) != 0;
@@ -137,13 +140,17 @@ unsafe fn main_0() -> i32 {
         distinct_count.prefix_inc();
     }
     ok = ((ok as i32) & (((distinct_count) == (2_usize)) as i32)) != 0;
-    let equivalent_a: Key = Key {
-        order: 3,
-        identity: 8,
+    let mut equivalent_a: Key = ::std::mem::MaybeUninit::uninit().assume_init();
+    {
+        let __d = &raw mut equivalent_a;
+        (&raw mut (*__d).order).write(3);
+        (&raw mut (*__d).identity).write(8);
     };
-    let equivalent_b: Key = Key {
-        order: 3,
-        identity: 9,
+    let mut equivalent_b: Key = ::std::mem::MaybeUninit::uninit().assume_init();
+    {
+        let __d = &raw mut equivalent_b;
+        (&raw mut (*__d).order).write(3);
+        (&raw mut (*__d).identity).write(9);
     };
     ok = ((ok as i32)
         & (!(unsafe {
@@ -152,19 +159,17 @@ unsafe fn main_0() -> i32 {
         }) as i32))
         != 0;
     let mut equivalent: UnsafeMap<Key, (Key, Mapped)> = UnsafeMap::new();
-    let before_equivalent: i32 =
-        (*std::cell::LazyCell::force_mut(&mut *&raw mut default_constructions_0));
+    let before_equivalent: i32 = (*(*&raw const default_constructions_0).get());
     let first: *mut Mapped = &mut (*equivalent.subscript(&equivalent_a, || <Mapped>::default()));
     (*first).value = 31;
     let mut first_it: UnsafeBidirectionalIterator<(Key, Mapped)> = equivalent.find(&equivalent_a);
     let mut first_value: *mut Mapped = (&mut (*first_it.iter_deref()).1 as *mut Mapped);
     ok = ((ok as i32)
-        & (((*std::cell::LazyCell::force_mut(&mut *&raw mut default_constructions_0))
-            == ((before_equivalent) + (1))) as i32))
+        & (((*(*&raw const default_constructions_0).get()) == ((before_equivalent) + (1))) as i32))
         != 0;
     let second: *mut Mapped = &mut (*equivalent.subscript(&equivalent_b, || <Mapped>::default()));
-    let reused: bool = ((*std::cell::LazyCell::force_mut(&mut *&raw mut default_constructions_0))
-        == ((before_equivalent) + (1)));
+    let reused: bool =
+        ((*(*&raw const default_constructions_0).get()) == ((before_equivalent) + (1)));
     ok = ((ok as i32) & (reused as i32)) != 0;
     ok = ((ok as i32) & (((equivalent.len()) == (1_usize)) as i32)) != 0;
     if reused {
@@ -195,15 +200,16 @@ unsafe fn main_0() -> i32 {
             operator_eq_2(_a, &equivalent_b)
         }) as i32))
         != 0;
-    let later_key: Key = Key {
-        order: 4,
-        identity: 10,
+    let mut later_key: Key = ::std::mem::MaybeUninit::uninit().assume_init();
+    {
+        let __d = &raw mut later_key;
+        (&raw mut (*__d).order).write(4);
+        (&raw mut (*__d).identity).write(10);
     };
     let later: *mut Mapped = &mut (*equivalent.subscript(&later_key, || <Mapped>::default()));
     (*later).value = 41;
     ok = ((ok as i32)
-        & (((*std::cell::LazyCell::force_mut(&mut *&raw mut default_constructions_0))
-            == ((before_equivalent) + (2))) as i32))
+        & (((*(*&raw const default_constructions_0).get()) == ((before_equivalent) + (2))) as i32))
         != 0;
     ok = ((ok as i32) & (((equivalent.len()) == (2_usize)) as i32)) != 0;
     if reused {
@@ -213,34 +219,37 @@ unsafe fn main_0() -> i32 {
             != 0;
         ok = ((ok as i32) & ((((*first_it.iter_deref()).1.value) == (31)) as i32)) != 0;
     }
-    let matching_a: Key = Key {
-        order: 5,
-        identity: 5,
+    let mut matching_a: Key = ::std::mem::MaybeUninit::uninit().assume_init();
+    {
+        let __d = &raw mut matching_a;
+        (&raw mut (*__d).order).write(5);
+        (&raw mut (*__d).identity).write(5);
     };
-    let matching_b: Key = Key {
-        order: 5,
-        identity: 5,
+    let mut matching_b: Key = ::std::mem::MaybeUninit::uninit().assume_init();
+    {
+        let __d = &raw mut matching_b;
+        (&raw mut (*__d).order).write(5);
+        (&raw mut (*__d).identity).write(5);
     };
-    let matching_c: Key = Key {
-        order: 6,
-        identity: 6,
+    let mut matching_c: Key = ::std::mem::MaybeUninit::uninit().assume_init();
+    {
+        let __d = &raw mut matching_c;
+        (&raw mut (*__d).order).write(6);
+        (&raw mut (*__d).identity).write(6);
     };
-    let before_matching: i32 =
-        (*std::cell::LazyCell::force_mut(&mut *&raw mut default_constructions_0));
+    let before_matching: i32 = (*(*&raw const default_constructions_0).get());
     let mut matching: UnsafeMap<Key, (Key, Mapped)> = UnsafeMap::new();
     let matched: *mut Mapped = &mut (*matching.subscript(&matching_a, || <Mapped>::default()));
     (*matched).value = 51;
     let mut matched_it: UnsafeBidirectionalIterator<(Key, Mapped)> = matching.find(&matching_a);
     let mut matched_value: *mut Mapped = (&mut (*matched_it.iter_deref()).1 as *mut Mapped);
     ok = ((ok as i32)
-        & (((*std::cell::LazyCell::force_mut(&mut *&raw mut default_constructions_0))
-            == ((before_matching) + (1))) as i32))
+        & (((*(*&raw const default_constructions_0).get()) == ((before_matching) + (1))) as i32))
         != 0;
     let matched_again: *mut Mapped =
         &mut (*matching.subscript(&matching_b, || <Mapped>::default()));
     ok = ((ok as i32)
-        & (((*std::cell::LazyCell::force_mut(&mut *&raw mut default_constructions_0))
-            == ((before_matching) + (1))) as i32))
+        & (((*(*&raw const default_constructions_0).get()) == ((before_matching) + (1))) as i32))
         != 0;
     ok = ((ok as i32) & (((matching.len()) == (1_usize)) as i32)) != 0;
     ok = ((ok as i32) & (((matched) == (matched_again)) as i32)) != 0;
@@ -252,8 +261,7 @@ unsafe fn main_0() -> i32 {
     let other: *mut Mapped = &mut (*matching.subscript(&matching_c, || <Mapped>::default()));
     (*other).value = 61;
     ok = ((ok as i32)
-        & (((*std::cell::LazyCell::force_mut(&mut *&raw mut default_constructions_0))
-            == ((before_matching) + (2))) as i32))
+        & (((*(*&raw const default_constructions_0).get()) == ((before_matching) + (2))) as i32))
         != 0;
     ok = ((ok as i32) & (((matching.len()) == (2_usize)) as i32)) != 0;
     ok = ((ok as i32) & ((matched_it == matching.find(&matching_a)) as i32)) != 0;
@@ -264,5 +272,5 @@ unsafe fn main_0() -> i32 {
     return if ok { 0 } else { 1 };
 }
 pub unsafe fn __cpp2rust_init_globals() {
-    std::cell::LazyCell::force(&*&raw const default_constructions_0);
+    (*&raw const default_constructions_0).get();
 }

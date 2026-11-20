@@ -12,11 +12,11 @@ pub struct Inner {
     pub values: Vec<i32>,
 }
 impl Inner {
-    pub unsafe fn move_from(_a0: *mut Inner) -> Self {
-        let mut this = Self {
-            values: std::mem::take(&mut (*_a0).values),
-        };
-        this
+    pub unsafe fn copy_from(this: *mut Inner, _a0: *const Inner) {
+        (&raw mut (*this).values).write((*_a0).values.clone());
+    }
+    pub unsafe fn move_from(this: *mut Inner, _a0: *mut Inner) {
+        (&raw mut (*this).values).write(std::mem::take(&mut (*_a0).values));
     }
     pub unsafe fn move_assign(&mut self, _a0: *mut Inner) -> *mut Inner {
         {
@@ -32,12 +32,13 @@ pub struct Outer {
     pub inner: Inner,
 }
 impl Outer {
-    pub unsafe fn move_from(_a0: *mut Outer) -> Self {
-        let mut this = Self {
-            values: std::mem::take(&mut (*_a0).values),
-            inner: Inner::move_from({ &mut (*_a0).inner }),
-        };
-        this
+    pub unsafe fn copy_from(this: *mut Outer, _a0: *const Outer) {
+        (&raw mut (*this).values).write((*_a0).values.clone());
+        Inner::copy_from((&raw mut (*this).inner), { &(*_a0).inner });
+    }
+    pub unsafe fn move_from(this: *mut Outer, _a0: *mut Outer) {
+        (&raw mut (*this).values).write(std::mem::take(&mut (*_a0).values));
+        Inner::move_from((&raw mut (*this).inner), { &mut (*_a0).inner });
     }
     pub unsafe fn move_assign(&mut self, _a0: *mut Outer) -> *mut Outer {
         {
@@ -50,13 +51,16 @@ impl Outer {
         return &mut (*(self as *mut Outer));
     }
 }
-pub unsafe fn make_0() -> Outer {
-    return Outer {
-        values: Vec::from([1, 2, 3]),
-        inner: Inner {
-            values: Vec::from([4, 5, 6]),
-        },
+pub unsafe fn make_0(__ret: *mut Outer) {
+    {
+        let __d = __ret.clone();
+        (&raw mut (*__d).values).write(Vec::from([1, 2, 3]));
+        {
+            let __d = (&raw mut (*__d).inner);
+            (&raw mut (*__d).values).write(Vec::from([4, 5, 6]));
+        };
     };
+    return;
 }
 pub unsafe fn two_1(a: *const Vec<i32>, b: *const Vec<i32>) -> i32 {
     return (((&(*a))[(0_usize)]) + ((&(*b))[(2_usize)]));
@@ -72,8 +76,19 @@ unsafe fn main_0() -> i32 {
         libc::printf(
             c"%d\n".as_ptr() as *const libc::c_char,
             (unsafe {
-                let _a: *const Vec<i32> = &(unsafe { make_0() }).values;
-                let _b: *const Vec<i32> = &(unsafe { make_0() }).inner.values;
+                let _a: *const Vec<i32> = &{
+                    let mut __v: Outer = ::std::mem::MaybeUninit::uninit().assume_init();
+                    (unsafe { make_0(&raw mut __v) });
+                    __v
+                }
+                .values;
+                let _b: *const Vec<i32> = &{
+                    let mut __v: Outer = ::std::mem::MaybeUninit::uninit().assume_init();
+                    (unsafe { make_0(&raw mut __v) });
+                    __v
+                }
+                .inner
+                .values;
                 two_1(_a, _b)
             }),
         )

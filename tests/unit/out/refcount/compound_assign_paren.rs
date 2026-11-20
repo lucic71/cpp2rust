@@ -12,12 +12,21 @@ pub struct Item {
     #[offset(0)]
     pub flags: u8,
 }
+impl Item {
+    pub fn copy_from(this: Ptr<Item>, _a0: Ptr<Item>) {
+        field!(this, flags).write(_a0.with(|__s| __s.flags));
+    }
+}
 pub fn main() {
     __cpp2rust_init_globals();
     libcc2rs::cpp2rust_exit(main_0());
 }
 fn main_0() -> i32 {
-    let item: Value<Item> = Rc::new(RefCell::new(Item { flags: 0_u8 }));
+    let item: Value<Item> = Rc::new(RefCell::new(<Item>::uninit()));
+    {
+        let __d = item.as_pointer();
+        field!(__d, flags).write(0_u8);
+    };
     let mut ptr: Ptr<Item> = (item.as_pointer());
     field!((ptr), flags).write({ (((ptr).with(|__s| __s.flags) as i32) | (1 << 0)) as u8 });
     field!((ptr), flags).write({ (((ptr).with(|__s| __s.flags) as i32) | (1 << 1)) as u8 });

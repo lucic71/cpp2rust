@@ -15,6 +15,12 @@ pub struct Handler {
     #[byte_size(8)]
     pub cb: FnPtr<fn(i32) -> i32>,
 }
+impl Handler {
+    pub fn copy_from(this: Ptr<Handler>, _a0: Ptr<Handler>) {
+        field!(this, tag).write(_a0.with(|__s| __s.tag));
+        field!(this, cb).write(_a0.with(|__s| __s.cb.clone()));
+    }
+}
 pub fn double_it_0(mut x: i32) -> i32 {
     return (x * 2);
 }
@@ -34,9 +40,9 @@ impl S {
     pub fn solo(mut x: i32) -> i32 {
         return (x + 3);
     }
+    pub fn copy_from(this: Ptr<S>, _a0: Ptr<S>) {}
 }
 #[derive(Record, ByteRepr, Uninit, FnPtrArg, MoveCtor, CppFrom, Default)]
-#[placement]
 #[cpp_from(i32, new, value)]
 #[byte_size(4)]
 pub struct MoveOnly {
@@ -72,25 +78,31 @@ fn main_0() -> i32 {
     assert!((({ p1.call(5,) }) == 6));
     assert!((({ p2.call(5,) }) == 8));
     assert!((({ S::pick_2(5_i64,) }) == 7));
-    let mut h3: Handler = Handler {
-        tag: 3,
-        cb: (FnPtr::<fn(i32) -> i32>::new(S::pick_1)),
+    let h3: Value<Handler> = Rc::new(RefCell::new(<Handler>::uninit()));
+    {
+        let __d = h3.as_pointer();
+        field!(__d, tag).write(3);
+        field!(__d, cb).write((FnPtr::<fn(i32) -> i32>::new(S::pick_1)));
     };
-    assert!((({ h3.cb.call(1,) }) == 2));
-    let mut h1: Handler = Handler {
-        tag: 1,
-        cb: FnPtr::<fn(i32) -> i32>::new(double_it_0),
+    assert!(({ (({ { (*h3.borrow()).cb.clone() }.call(1,) }) == 2) }));
+    let h1: Value<Handler> = Rc::new(RefCell::new(<Handler>::uninit()));
+    {
+        let __d = h1.as_pointer();
+        field!(__d, tag).write(1);
+        field!(__d, cb).write(FnPtr::<fn(i32) -> i32>::new(double_it_0));
     };
-    let mut h2: Handler = Handler {
-        tag: 2,
-        cb: FnPtr::<fn(i32) -> i32>::new(negate_1),
+    let h2: Value<Handler> = Rc::new(RefCell::new(<Handler>::uninit()));
+    {
+        let __d = h2.as_pointer();
+        field!(__d, tag).write(2);
+        field!(__d, cb).write(FnPtr::<fn(i32) -> i32>::new(negate_1));
     };
-    assert!(!((h1.cb).is_null()));
-    assert!((({ h1.cb.call(5,) }) == 10));
-    assert!((({ h2.cb.call(7,) }) == -7_i32));
-    h1.cb = FnPtr::<fn(i32) -> i32>::new(negate_1);
-    assert!((({ h1.cb.call(3,) }) == -3_i32));
-    assert!(({ (h1.cb).clone() } == { (h2.cb).clone() }));
+    assert!(({ !(({ (*h1.borrow()).cb.clone() }).is_null()) }));
+    assert!(({ (({ { (*h1.borrow()).cb.clone() }.call(5,) }) == 10) }));
+    assert!(({ (({ { (*h2.borrow()).cb.clone() }.call(7,) }) == -7_i32) }));
+    (*h1.borrow_mut()).cb = FnPtr::<fn(i32) -> i32>::new(negate_1);
+    assert!(({ (({ { (*h1.borrow()).cb.clone() }.call(3,) }) == -3_i32) }));
+    assert!(({ ({ { (*h1.borrow()).cb.clone() } } == { { (*h2.borrow()).cb.clone() } }) }));
     let mut mk: FnPtr<fn(Ptr<MoveOnly>)> = FnPtr::<fn(Ptr<MoveOnly>)>::new(make_move_only_2);
     let m: Value<MoveOnly> = Rc::new(RefCell::new(<MoveOnly>::uninit()));
     ({ mk.call(m.as_pointer()) });

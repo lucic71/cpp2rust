@@ -11,6 +11,12 @@ use std::rc::Rc;
 pub struct XX {
     pub x: i32,
 }
+impl XX {
+    pub unsafe fn new_1(this: *mut XX) {}
+    pub unsafe fn copy_from(this: *mut XX, _a0: *const XX) {
+        (&raw mut (*this).x).write((*_a0).x);
+    }
+}
 pub fn main() {
     unsafe {
         __cpp2rust_init_globals();
@@ -18,7 +24,8 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    let mut obj: XX = <XX>::default();
+    let mut obj: XX = ::std::mem::MaybeUninit::uninit().assume_init();
+    XX::new_1(&raw mut obj);
     let mut ptr: *mut XX = (&mut obj as *mut XX);
     (*ptr).x = 2;
     let mut c: bool = false;

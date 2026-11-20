@@ -14,7 +14,6 @@ pub unsafe fn operator_lt_1(x: *const S, y: *const S) -> bool {
 }
 #[repr(C)]
 #[derive(FnPtrArg, MoveCtorUnsafe, CppFromUnsafe, Default)]
-#[placement]
 #[cpp_from(i32, new, value)]
 pub struct S {
     data_: i32,

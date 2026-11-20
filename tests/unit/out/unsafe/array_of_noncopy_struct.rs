@@ -13,12 +13,13 @@ pub struct NonCopy {
     pub tag: i32,
 }
 impl NonCopy {
-    pub unsafe fn move_from(_a0: *mut NonCopy) -> Self {
-        let mut this = Self {
-            data: std::mem::take(&mut (*_a0).data),
-            tag: (*_a0).tag,
-        };
-        this
+    pub unsafe fn copy_from(this: *mut NonCopy, _a0: *const NonCopy) {
+        (&raw mut (*this).data).write((*_a0).data.clone());
+        (&raw mut (*this).tag).write((*_a0).tag);
+    }
+    pub unsafe fn move_from(this: *mut NonCopy, _a0: *mut NonCopy) {
+        (&raw mut (*this).data).write(std::mem::take(&mut (*_a0).data));
+        (&raw mut (*this).tag).write((*_a0).tag);
     }
     pub unsafe fn move_assign(&mut self, _a0: *mut NonCopy) -> *mut NonCopy {
         {
@@ -26,6 +27,10 @@ impl NonCopy {
         };
         self.tag = (*_a0).tag;
         return &mut (*(self as *mut NonCopy));
+    }
+    pub unsafe fn new_1(this: *mut NonCopy) {
+        (&raw mut (*this).data).write(Vec::new());
+        (&raw mut (*this).tag).write(0);
     }
 }
 impl Default for NonCopy {
@@ -45,7 +50,13 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    let mut arr: [NonCopy; 3] = std::array::from_fn::<_, 3, _>(|_| <NonCopy>::default());
+    let mut arr: [NonCopy; 3] = ::std::mem::MaybeUninit::uninit().assume_init();
+    {
+        let __d = (&raw mut arr).cast::<NonCopy>();
+        for __i in 0..3_isize {
+            NonCopy::new_1(__d.offset(__i));
+        }
+    };
     arr[(0) as usize].tag = 7;
     {
         let __a1 = 42;

@@ -12,17 +12,17 @@ pub struct Holder {
     pub val: Option<Box<i32>>,
 }
 impl Holder {
-    pub unsafe fn move_from(_a0: *mut Holder) -> Self {
-        let mut this = Self {
-            val: (*_a0).val.take(),
-        };
-        this
+    pub unsafe fn move_from(this: *mut Holder, _a0: *mut Holder) {
+        (&raw mut (*this).val).write((*_a0).val.take());
     }
     pub unsafe fn move_assign(&mut self, _a0: *mut Holder) -> *mut Holder {
         {
             self.val = (*_a0).val.take();
         };
         return &mut (*(self as *mut Holder));
+    }
+    pub unsafe fn new_1(this: *mut Holder) {
+        (&raw mut (*this).val).write(None);
     }
 }
 pub unsafe fn read_val_0(mut h: *const Holder) -> i32 {
@@ -44,7 +44,8 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    let mut h: Holder = <Holder>::default();
+    let mut h: Holder = ::std::mem::MaybeUninit::uninit().assume_init();
+    Holder::new_1(&raw mut h);
     {
         h.val = Some(Box::new(10)).take();
     };

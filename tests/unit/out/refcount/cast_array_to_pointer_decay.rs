@@ -24,6 +24,13 @@ pub struct Row {
     #[array_len(3)]
     pub a: Box<[i32]>,
 }
+impl Row {
+    pub fn copy_from(this: Ptr<Row>, _a0: Ptr<Row>) {
+        field!(this, a).write(Box::new(std::array::from_fn::<_, 3, _>(|__i: usize| {
+            (*_a0.upgrade().deref()).a[(__i) as usize]
+        })));
+    }
+}
 impl Default for Row {
     fn default() -> Self {
         {
@@ -50,9 +57,11 @@ fn main_0() -> i32 {
         Box::new([1, 2, 3]),
         Box::new([4, 5, 6]),
     ])));
-    let r: Value<Row> = Rc::new(RefCell::new(Row {
-        a: Box::new([7, 8, 9]),
-    }));
+    let r: Value<Row> = Rc::new(RefCell::new(<Row>::uninit()));
+    {
+        let __d = r.as_pointer();
+        field!(__d, a).write(Box::new([7, 8, 9]));
+    };
     let mut row: Ptr<Box<[i32]>> = (m.decay().offset(1));
     let mut field: Ptr<Box<[i32]>> = (field_ptr!(r.as_pointer(), a));
     let mut whole: Ptr<Box<[i32]>> = (m.decay().offset(0));

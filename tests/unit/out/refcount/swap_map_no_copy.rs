@@ -10,7 +10,6 @@ thread_local!(
     pub static copies_0: Value<i32> = Rc::new(RefCell::new(0));
 );
 #[derive(Record, ByteRepr, Uninit, VaArg, FnPtrArg, MoveCtor, CppFrom, CopyAssign, MoveAssign)]
-#[placement]
 #[cpp_from(i32, new_1, value)]
 #[byte_size(4)]
 pub struct Tracked {
@@ -55,7 +54,6 @@ impl Default for Tracked {
 #[derive(
     Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, MoveCtor, CopyAssign, MoveAssign, Default,
 )]
-#[placement]
 #[byte_size(8)]
 pub struct Pair {
     #[offset(0)]
@@ -76,7 +74,6 @@ impl Pair {
     }
 }
 #[derive(Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, MoveCtor, CopyAssign, MoveAssign)]
-#[placement]
 #[byte_size(16)]
 pub struct Arrays {
     #[offset(0)]
@@ -161,7 +158,6 @@ thread_local!(
     pub static copy_only_dtors_2: Value<i32> = Rc::new(RefCell::new(0));
 );
 #[derive(Record, ByteRepr, Uninit, VaArg, FnPtrArg, CppFrom, CopyAssign, Destructor, Default)]
-#[placement]
 #[cpp_from(i32, new, value)]
 #[byte_size(4)]
 pub struct CopyOnly {
@@ -186,7 +182,6 @@ impl Clone for CopyOnly {
     }
 }
 #[derive(Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, CopyAssign, Destructor, Default)]
-#[placement]
 #[byte_size(8)]
 pub struct CopyOnlyPair {
     #[offset(0)]
@@ -224,7 +219,6 @@ thread_local!(
     Destructor,
     Default,
 )]
-#[placement]
 #[cpp_from(i32, new, value)]
 #[byte_size(4)]
 pub struct Moved {
@@ -266,7 +260,6 @@ impl Clone for Moved {
     Destructor,
     Default,
 )]
-#[placement]
 #[byte_size(8)]
 pub struct MovedPair {
     #[offset(0)]
@@ -311,10 +304,8 @@ pub struct Owner {
     pub p: Option<Value<i32>>,
 }
 impl Owner {
-    pub fn move_from(_a0: Ptr<Owner>) -> Self {
-        Self {
-            p: field!(_a0, p).with_mut(|__v: &mut Option<Value<i32>>| __v.take()),
-        }
+    pub fn move_from(this: Ptr<Owner>, _a0: Ptr<Owner>) {
+        field!(this, p).write(field!(_a0, p).with_mut(|__v: &mut Option<Value<i32>>| __v.take()));
     }
 }
 pub fn main() {
@@ -842,12 +833,16 @@ fn main_0() -> i32 {
     assert!(({ ({ (*mv1.borrow()).v } == 2) }));
     assert!(({ swapped_once_6() }));
     assert!((copies_0.with(|rc| *rc.borrow()) == 0));
-    let o1: Value<Owner> = Rc::new(RefCell::new(Owner {
-        p: Some(Rc::new(RefCell::new(1))),
-    }));
-    let o2: Value<Owner> = Rc::new(RefCell::new(Owner {
-        p: Some(Rc::new(RefCell::new(2))),
-    }));
+    let o1: Value<Owner> = Rc::new(RefCell::new(<Owner>::uninit()));
+    {
+        let __d = o1.as_pointer();
+        field!(__d, p).write(Some(Rc::new(RefCell::new(1))));
+    };
+    let o2: Value<Owner> = Rc::new(RefCell::new(<Owner>::uninit()));
+    {
+        let __d = o2.as_pointer();
+        field!(__d, p).write(Some(Rc::new(RefCell::new(2))));
+    };
     cpp_swap!(o1.as_pointer(), o2.as_pointer());
     assert!(
         ((({ { (*o1.borrow()).p.clone() } }).as_pointer().read()) == 2)

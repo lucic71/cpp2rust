@@ -7,7 +7,6 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
 #[derive(Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Destructor, Default)]
-#[placement]
 #[byte_size(4)]
 pub struct Tracker {
     #[offset(0)]
@@ -23,7 +22,6 @@ impl Tracker {
     }
 }
 #[derive(Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Destructor, Default)]
-#[placement]
 #[byte_size(4)]
 pub struct HoldsTracker {
     #[offset(0)]
@@ -40,6 +38,11 @@ impl HoldsTracker {
 pub struct TriviallyDestructible {
     #[offset(0)]
     pub value: i32,
+}
+impl TriviallyDestructible {
+    pub fn copy_from(this: Ptr<TriviallyDestructible>, _a0: Ptr<TriviallyDestructible>) {
+        field!(this, value).write(_a0.with(|__s| __s.value));
+    }
 }
 thread_local!(
     pub static global_0: Value<Tracker> = {
@@ -124,12 +127,26 @@ thread_local!(
     };
 );
 thread_local!(
-    pub static trivial_9: Value<TriviallyDestructible> =
-        Rc::new(RefCell::new(TriviallyDestructible { value: 6 }));
+    pub static trivial_9: Value<TriviallyDestructible> = {
+        let __v: Value<TriviallyDestructible> =
+            Rc::new(RefCell::new(<TriviallyDestructible>::uninit()));
+        {
+            let __d = __v.as_pointer();
+            field!(__d, value).write(6);
+        };
+        __v
+    };
 );
 #[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
 #[byte_size(1)]
 pub struct p3_reverse_completion_order_WithStaticMember {}
+impl p3_reverse_completion_order_WithStaticMember {
+    pub fn copy_from(
+        this: Ptr<p3_reverse_completion_order_WithStaticMember>,
+        _a0: Ptr<p3_reverse_completion_order_WithStaticMember>,
+    ) {
+    }
+}
 thread_local!(
     pub static member_10: Value<Tracker> = {
         let __static = {

@@ -12,6 +12,12 @@ pub struct Item {
     #[offset(0)]
     pub value: i32,
 }
+impl Item {
+    pub fn new_1(this: Ptr<Item>) {}
+    pub fn copy_from(this: Ptr<Item>, _a0: Ptr<Item>) {
+        field!(this, value).write(_a0.with(|__s| __s.value));
+    }
+}
 pub fn main() {
     __cpp2rust_init_globals();
     libcc2rs::cpp2rust_exit(main_0());

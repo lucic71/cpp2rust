@@ -7,7 +7,6 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
 #[derive(Record, ByteRepr, Uninit, FnPtrArg, MoveCtor, CppFrom, MoveAssign, Default)]
-#[placement]
 #[cpp_from(i32, new, value)]
 #[byte_size(4)]
 pub struct NoCopy {
@@ -24,7 +23,6 @@ impl NoCopy {
     }
 }
 #[derive(Record, ByteRepr, Uninit, FnPtrArg, MoveCtor, MoveAssign)]
-#[placement]
 #[byte_size(4)]
 pub struct PrivateCopy {
     #[offset(0)]
@@ -52,7 +50,6 @@ impl Default for PrivateCopy {
     }
 }
 #[derive(Record, ByteRepr, Uninit, FnPtrArg)]
-#[placement]
 #[byte_size(4)]
 pub struct Immovable {
     #[offset(0)]
@@ -76,7 +73,6 @@ impl Default for Immovable {
     }
 }
 #[derive(Record, ByteRepr, Uninit, FnPtrArg, MoveCtor, MoveAssign, Default)]
-#[placement]
 #[byte_size(8)]
 pub struct Container {
     #[offset(0)]
@@ -99,10 +95,11 @@ pub struct VecHolder {
     pub items: Vec<NoCopy>,
 }
 impl VecHolder {
-    pub fn move_from(_a0: Ptr<VecHolder>) -> Self {
-        Self {
-            items: field!(_a0, items).with_mut(std::mem::take),
-        }
+    pub fn move_from(this: Ptr<VecHolder>, _a0: Ptr<VecHolder>) {
+        field!(this, items).write(field!(_a0, items).with_mut(std::mem::take));
+    }
+    pub fn new_1(this: Ptr<VecHolder>) {
+        field!(this, items).write(Vec::new());
     }
 }
 pub fn bump_0(mut p: Ptr<NoCopy>) {
@@ -153,9 +150,11 @@ fn main_0() -> i32 {
                 && ({ (*c.borrow()).inner.v } == 0)
         })
     );
-    let h: Value<VecHolder> = Rc::new(RefCell::new(<VecHolder>::default()));
-    let mut h2: VecHolder = VecHolder::move_from({ h.as_pointer() });
-    assert!((h2.items.len() == 0_usize));
+    let h: Value<VecHolder> = Rc::new(RefCell::new(<VecHolder>::uninit()));
+    VecHolder::new_1(h.as_pointer());
+    let h2: Value<VecHolder> = Rc::new(RefCell::new(<VecHolder>::uninit()));
+    VecHolder::move_from(h2.as_pointer(), { h.as_pointer() });
+    assert!(({ ((*h2.borrow()).items.len() == 0_usize) }));
     return 0;
 }
 pub trait ContainerImpl {

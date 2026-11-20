@@ -8,7 +8,6 @@ use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 #[repr(C)]
 #[derive(VaArg, FnPtrArg, MoveCtorUnsafe, CppFromUnsafe)]
-#[placement]
 #[cpp_from(i32, new_1, value)]
 pub struct Tracker {
     pub self_: *mut Tracker,
@@ -64,7 +63,26 @@ pub unsafe fn test_0() {
     Tracker::new_1(&raw mut a, { 1 });
     assert!(((a.self_) == (&mut a as *mut Tracker)) && ((a.value) == (1)));
 }
-pub unsafe fn test_1() {
+pub unsafe fn get_1() -> *mut Tracker {
+    return (&raw mut (*(*&raw const once_2).get()) as *mut Tracker);
+}
+pub unsafe fn test_3() {
+    let mut p: *mut Tracker = (unsafe { get_1() });
+    assert!((((*p).self_) == (p)) && (((*p).value) == (2)));
+    assert!(((unsafe { get_1() }) == (p)));
+}
+static mut once_2: libcc2rs::LazyStorage<Tracker> =
+    libcc2rs::LazyStorage::new(|__p| unsafe { Tracker::new_1(__p, { 2 }) });
+pub static mut global_4: libcc2rs::LazyStorage<Tracker> =
+    libcc2rs::LazyStorage::new(|__p| unsafe { Tracker::new_1(__p, { 3 }) });
+pub unsafe fn test_5() {
+    assert!(
+        (((*(*&raw const global_4).get()).self_)
+            == (&raw mut (*(*&raw const global_4).get()) as *mut Tracker))
+            && (((*(*&raw const global_4).get()).value) == (3))
+    );
+}
+pub unsafe fn test_6() {
     let mut a: Tracker = ::std::mem::MaybeUninit::uninit().assume_init();
     Tracker::new_2(&raw mut a);
     assert!(((a.self_) == (&mut a as *mut Tracker)) && ((a.value) == (-1_i32)));
@@ -80,12 +98,12 @@ pub unsafe fn test_1() {
             && ((elements[(1) as usize].value) == (-1_i32))
     );
 }
-pub unsafe fn test_2() {
+pub unsafe fn test_7() {
     let mut a: Tracker = ::std::mem::MaybeUninit::uninit().assume_init();
     Tracker::new_3(&raw mut a, { 1 }, { 2 });
     assert!(((a.self_) == (&mut a as *mut Tracker)) && ((a.value) == (3)));
 }
-pub unsafe fn test_3() {
+pub unsafe fn test_8() {
     let mut a: Tracker = ::std::mem::MaybeUninit::uninit().assume_init();
     Tracker::new_1(&raw mut a, { 1 });
     let mut b: Tracker = ::std::mem::MaybeUninit::uninit().assume_init();
@@ -96,7 +114,7 @@ pub unsafe fn test_3() {
             && ((a.value) == (1))
     );
 }
-pub unsafe fn test_4() {
+pub unsafe fn test_9() {
     let mut a: Tracker = ::std::mem::MaybeUninit::uninit().assume_init();
     Tracker::new_1(&raw mut a, { 1 });
     let mut b: Tracker = ::std::mem::MaybeUninit::uninit().assume_init();
@@ -109,7 +127,6 @@ pub unsafe fn test_4() {
 }
 #[repr(C)]
 #[derive(Clone, VaArg, FnPtrArg, MoveCtorUnsafe, Default)]
-#[placement]
 pub struct implicit_constructors_Pair {
     pub first: Tracker,
     pub second: Tracker,
@@ -134,7 +151,7 @@ impl implicit_constructors_Pair {
         Tracker::new_2((&raw mut (*this).second));
     }
 }
-pub unsafe fn test_5() {
+pub unsafe fn test_10() {
     let mut a: implicit_constructors_Pair = ::std::mem::MaybeUninit::uninit().assume_init();
     implicit_constructors_Pair::new_1(&raw mut a);
     assert!(
@@ -154,7 +171,7 @@ pub unsafe fn test_5() {
     assert!(((c.second.self_) == (&mut c.second as *mut Tracker)) && ((c.second.value) == (5)));
     assert!(((a.second.value) == (-2_i32)));
 }
-pub unsafe fn test_6() {
+pub unsafe fn test_11() {
     let mut p: *mut Tracker = {
         let __p = Box::into_raw(Box::<Tracker>::new_uninit()) as *mut Tracker;
         Tracker::new_1(__p, { 4 });
@@ -170,7 +187,6 @@ pub unsafe fn test_6() {
 }
 #[repr(C)]
 #[derive(Clone, VaArg, FnPtrArg, MoveCtorUnsafe, CppFromUnsafe, Default)]
-#[placement]
 #[cpp_from(i32, new, value)]
 pub struct member_Holder {
     pub before: i32,
@@ -190,12 +206,12 @@ impl member_Holder {
         Tracker::move_from((&raw mut (*this).tracker), { &mut (*_a0).tracker });
     }
 }
-pub unsafe fn test_7() {
+pub unsafe fn test_12() {
     let mut h: member_Holder = ::std::mem::MaybeUninit::uninit().assume_init();
     member_Holder::new(&raw mut h, { 5 });
     assert!(((h.tracker.self_) == (&mut h.tracker as *mut Tracker)) && ((h.tracker.value) == (6)));
 }
-pub unsafe fn test_8() {
+pub unsafe fn test_13() {
     let mut elements: [Tracker; 2] = ::std::mem::MaybeUninit::uninit().assume_init();
     {
         let __d = (&raw mut elements).cast::<Tracker>();
@@ -211,13 +227,13 @@ pub unsafe fn test_8() {
             && ((elements[(1) as usize].value) == (7))
     );
 }
-pub unsafe fn is_self_9(tracker: *mut Tracker) -> bool {
+pub unsafe fn is_self_14(tracker: *mut Tracker) -> bool {
     return (((*tracker).self_) == (&mut (*tracker) as *mut Tracker));
 }
-pub unsafe fn test_10() {
+pub unsafe fn test_15() {
     assert!(
         (unsafe {
-            is_self_9((|__p: *mut Tracker| {
+            is_self_14((|__p: *mut Tracker| {
                 Tracker::new_1(__p, { 8 });
                 __p
             })(
@@ -226,13 +242,12 @@ pub unsafe fn test_10() {
         })
     );
 }
-pub unsafe fn make_11(__ret: *mut Tracker, mut value: i32) {
+pub unsafe fn make_16(__ret: *mut Tracker, mut value: i32) {
     Tracker::new_1(__ret.clone(), { value });
     return;
 }
 #[repr(C)]
 #[derive(Clone, VaArg, FnPtrArg, MoveCtorUnsafe, Default)]
-#[placement]
 pub struct returned_object_Aggregate {
     pub tracker: Tracker,
 }
@@ -250,18 +265,18 @@ impl returned_object_Aggregate {
         Tracker::move_from((&raw mut (*this).tracker), { &mut (*_a0).tracker });
     }
 }
-pub unsafe fn test_12() {
+pub unsafe fn test_17() {
     let mut r: Tracker = ::std::mem::MaybeUninit::uninit().assume_init();
-    (unsafe { make_11(&raw mut r, 9) });
+    (unsafe { make_16(&raw mut r, 9) });
     assert!(((r.self_) == (&mut r as *mut Tracker)) && ((r.value) == (9)));
     let mut aggregate: returned_object_Aggregate = ::std::mem::MaybeUninit::uninit().assume_init();
     {
         let __d = &raw mut aggregate;
-        (unsafe { make_11((&raw mut (*__d).tracker), 10) });
+        (unsafe { make_16((&raw mut (*__d).tracker), 10) });
     };
     assert!(((aggregate.tracker.self_) == (&mut aggregate.tracker as *mut Tracker)));
 }
-pub unsafe fn test_13() {
+pub unsafe fn test_18() {
     assert!(
         (unsafe {
             Tracker::is_self(&mut *(|__p: *mut Tracker| {
@@ -277,7 +292,7 @@ pub unsafe fn test_13() {
     let bound: *const Tracker = &mut __tmp_0;
     assert!(((((*bound).self_).cast_const()) == (bound)) && (((*bound).value) == (12)));
 }
-pub unsafe fn test_14() {
+pub unsafe fn test_19() {
     {
         let mut i: i32 = 0;
         'loop_: while ((i) < (2)) {
@@ -300,7 +315,6 @@ pub unsafe fn test_14() {
 }
 #[repr(C)]
 #[derive(VaArg, FnPtrArg, CppFromUnsafe, CopyAssignUnsafe, DestructorUnsafe, Default)]
-#[placement]
 #[cpp_from(i32, new, value)]
 pub struct lifetime_Logged {
     pub id: i32,
@@ -331,11 +345,11 @@ impl Clone for lifetime_Logged {
         }
     }
 }
-pub unsafe fn make_15(__ret: *mut lifetime_Logged, mut id: i32) {
+pub unsafe fn make_20(__ret: *mut lifetime_Logged, mut id: i32) {
     lifetime_Logged::new(__ret.clone(), { id });
     return;
 }
-pub unsafe fn test_16() {
+pub unsafe fn test_21() {
     let mut local: lifetime_Logged = ::std::mem::MaybeUninit::uninit().assume_init();
     lifetime_Logged::new(&raw mut local, { 1 });
     let _dtor_local =
@@ -344,7 +358,7 @@ pub unsafe fn test_16() {
     lifetime_Logged::copy_from(&raw mut copy, { &local });
     let _dtor_copy = std::mem::DropGuard::new(&raw mut copy, |__p| unsafe { (*__p).destructor() });
     let mut returned: lifetime_Logged = ::std::mem::MaybeUninit::uninit().assume_init();
-    (unsafe { make_15(&raw mut returned, 3) });
+    (unsafe { make_20(&raw mut returned, 3) });
     let _dtor_returned =
         std::mem::DropGuard::new(&raw mut returned, |__p| unsafe { (*__p).destructor() });
     (unsafe { libc::printf(c"end\n".as_ptr() as *const libc::c_char) });
@@ -356,20 +370,24 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    (unsafe { test_16() });
+    (unsafe { test_21() });
     (unsafe { test_0() });
-    (unsafe { test_1() });
-    (unsafe { test_2() });
     (unsafe { test_3() });
-    (unsafe { test_4() });
     (unsafe { test_5() });
     (unsafe { test_6() });
     (unsafe { test_7() });
     (unsafe { test_8() });
+    (unsafe { test_9() });
     (unsafe { test_10() });
+    (unsafe { test_11() });
     (unsafe { test_12() });
     (unsafe { test_13() });
-    (unsafe { test_14() });
+    (unsafe { test_15() });
+    (unsafe { test_17() });
+    (unsafe { test_18() });
+    (unsafe { test_19() });
     return 0;
 }
-pub unsafe fn __cpp2rust_init_globals() {}
+pub unsafe fn __cpp2rust_init_globals() {
+    (*&raw const global_4).get();
+}

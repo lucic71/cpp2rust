@@ -6,9 +6,12 @@ use std::collections::BTreeMap;
 use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
-pub static mut alive_0: std::cell::LazyCell<i32> = std::cell::LazyCell::new(|| unsafe { 0 });
-pub static mut copies_1: std::cell::LazyCell<i32> = std::cell::LazyCell::new(|| unsafe { 0 });
-pub static mut moves_2: std::cell::LazyCell<i32> = std::cell::LazyCell::new(|| unsafe { 0 });
+pub static mut alive_0: libcc2rs::LazyStorage<i32> =
+    libcc2rs::LazyStorage::new(|__p| unsafe { __p.write(0) });
+pub static mut copies_1: libcc2rs::LazyStorage<i32> =
+    libcc2rs::LazyStorage::new(|__p| unsafe { __p.write(0) });
+pub static mut moves_2: libcc2rs::LazyStorage<i32> =
+    libcc2rs::LazyStorage::new(|__p| unsafe { __p.write(0) });
 #[repr(C)]
 #[derive(
     VaArg,
@@ -20,7 +23,6 @@ pub static mut moves_2: std::cell::LazyCell<i32> = std::cell::LazyCell::new(|| u
     DestructorUnsafe,
     Default,
 )]
-#[placement]
 #[cpp_from(i32, new, value)]
 pub struct Buffer {
     pub data: [i32; 4],
@@ -36,10 +38,10 @@ impl Buffer {
                 i.prefix_inc();
             }
         }
-        (*std::cell::LazyCell::force_mut(&mut *&raw mut alive_0)).prefix_inc();
+        (*(*&raw const alive_0).get()).prefix_inc();
     }
     pub unsafe fn destructor(&mut self) {
-        (*std::cell::LazyCell::force_mut(&mut *&raw mut alive_0)).prefix_dec();
+        (*(*&raw const alive_0).get()).prefix_dec();
     }
     pub unsafe fn copy_from(this: *mut Buffer, o: *const Buffer) {
         (&raw mut (*this).size).write((*o).size);
@@ -50,8 +52,8 @@ impl Buffer {
                 i.prefix_inc();
             }
         }
-        (*std::cell::LazyCell::force_mut(&mut *&raw mut alive_0)).prefix_inc();
-        (*std::cell::LazyCell::force_mut(&mut *&raw mut copies_1)).prefix_inc();
+        (*(*&raw const alive_0).get()).prefix_inc();
+        (*(*&raw const copies_1).get()).prefix_inc();
     }
     pub unsafe fn move_from(this: *mut Buffer, o: *mut Buffer) {
         (&raw mut (*this).size).write((*o).size);
@@ -64,8 +66,8 @@ impl Buffer {
             }
         }
         (*o).size = 0;
-        (*std::cell::LazyCell::force_mut(&mut *&raw mut alive_0)).prefix_inc();
-        (*std::cell::LazyCell::force_mut(&mut *&raw mut moves_2)).prefix_inc();
+        (*(*&raw const alive_0).get()).prefix_inc();
+        (*(*&raw const moves_2).get()).prefix_inc();
     }
     pub unsafe fn copy_assign(&mut self, o: *const Buffer) -> *mut Buffer {
         if (((self as *mut Buffer).cast_const()) == (o)) {
@@ -79,7 +81,7 @@ impl Buffer {
                 i.prefix_inc();
             }
         }
-        (*std::cell::LazyCell::force_mut(&mut *&raw mut copies_1)).prefix_inc();
+        (*(*&raw const copies_1).get()).prefix_inc();
         return &mut (*(self as *mut Buffer));
     }
     pub unsafe fn move_assign(&mut self, o: *mut Buffer) -> *mut Buffer {
@@ -96,7 +98,7 @@ impl Buffer {
             }
         }
         (*o).size = 0;
-        (*std::cell::LazyCell::force_mut(&mut *&raw mut moves_2)).prefix_inc();
+        (*(*&raw const moves_2).get()).prefix_inc();
         return &mut (*(self as *mut Buffer));
     }
 }
@@ -131,50 +133,42 @@ unsafe fn main_0() -> i32 {
         Buffer::copy_from(&raw mut b, { &a });
         let _dtor_b = std::mem::DropGuard::new(&raw mut b, |__p| unsafe { (*__p).destructor() });
         assert!(
-            (((*std::cell::LazyCell::force_mut(&mut *&raw mut alive_0)) == (2))
-                && ((*std::cell::LazyCell::force_mut(&mut *&raw mut copies_1)) == (1)))
-                && ((*std::cell::LazyCell::force_mut(&mut *&raw mut moves_2)) == (0))
+            (((*(*&raw const alive_0).get()) == (2)) && ((*(*&raw const copies_1).get()) == (1)))
+                && ((*(*&raw const moves_2).get()) == (0))
         );
         b.data[(0) as usize] = 100;
         assert!(((a.data[(0) as usize]) == (0)));
         let mut c: Buffer = ::std::mem::MaybeUninit::uninit().assume_init();
         Buffer::move_from(&raw mut c, { &mut a });
         let _dtor_c = std::mem::DropGuard::new(&raw mut c, |__p| unsafe { (*__p).destructor() });
-        assert!(
-            ((*std::cell::LazyCell::force_mut(&mut *&raw mut alive_0)) == (3))
-                && ((*std::cell::LazyCell::force_mut(&mut *&raw mut moves_2)) == (1))
-        );
+        assert!(((*(*&raw const alive_0).get()) == (3)) && ((*(*&raw const moves_2).get()) == (1)));
         assert!(((a.size) == (0)) && ((a.data[(0) as usize]) == (-1_i32)));
         assert!(((c.size) == (4)) && ((c.data[(3) as usize]) == (3)));
         let mut d: Buffer = ::std::mem::MaybeUninit::uninit().assume_init();
         (unsafe { make_3(&raw mut d, 2) });
         let _dtor_d = std::mem::DropGuard::new(&raw mut d, |__p| unsafe { (*__p).destructor() });
-        assert!(
-            ((d.size) == (2)) && ((*std::cell::LazyCell::force_mut(&mut *&raw mut moves_2)) == (2))
-        );
+        assert!(((d.size) == (2)) && ((*(*&raw const moves_2).get()) == (2)));
         (unsafe { Buffer::copy_assign(&mut d, &b) });
         assert!(
             (((d.size) == (4)) && ((d.data[(0) as usize]) == (100)))
-                && ((*std::cell::LazyCell::force_mut(&mut *&raw mut copies_1)) == (2))
+                && ((*(*&raw const copies_1).get()) == (2))
         );
         (unsafe { Buffer::move_assign(&mut d, &mut c) });
         assert!(
             (((d.data[(0) as usize]) == (0)) && ((c.size) == (0)))
-                && ((*std::cell::LazyCell::force_mut(&mut *&raw mut moves_2)) == (3))
+                && ((*(*&raw const moves_2).get()) == (3))
         );
         (unsafe {
             let _o: *mut Buffer = &mut d;
             Buffer::move_assign(&mut d, _o)
         });
-        assert!(
-            ((d.size) == (4)) && ((*std::cell::LazyCell::force_mut(&mut *&raw mut moves_2)) == (3))
-        );
+        assert!(((d.size) == (4)) && ((*(*&raw const moves_2).get()) == (3)));
     }
-    assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut alive_0)) == (0)));
+    assert!(((*(*&raw const alive_0).get()) == (0)));
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {
-    std::cell::LazyCell::force(&*&raw const alive_0);
-    std::cell::LazyCell::force(&*&raw const copies_1);
-    std::cell::LazyCell::force(&*&raw const moves_2);
+    (*&raw const alive_0).get();
+    (*&raw const copies_1).get();
+    (*&raw const moves_2).get();
 }

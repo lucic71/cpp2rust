@@ -10,7 +10,6 @@ thread_local!(
     pub static copies_0: Value<i32> = Rc::new(RefCell::new(0));
 );
 #[derive(Record, ByteRepr, Uninit, VaArg, FnPtrArg, MoveCtor, CppFrom, CopyAssign, MoveAssign)]
-#[placement]
 #[cpp_from(i32, new_1, value)]
 #[byte_size(4)]
 pub struct Tracked {
@@ -70,7 +69,6 @@ pub fn greater_2(a: Ptr<Tracked>, b: Ptr<Tracked>) -> bool {
     return ({ a.with(|__s| __s.v) } > { b.with(|__s| __s.v) });
 }
 #[derive(Record, ByteRepr, Uninit, FnPtrArg, MoveCtor, CppFrom, MoveAssign, Default)]
-#[placement]
 #[cpp_from(i32, new, value)]
 #[byte_size(4)]
 pub struct MoveOnly {
@@ -107,10 +105,14 @@ pub struct Bag {
     pub items: Vec<Tracked>,
 }
 impl Bag {
-    pub fn move_from(_a0: Ptr<Bag>) -> Self {
-        Self {
-            items: field!(_a0, items).with_mut(std::mem::take),
-        }
+    pub fn copy_from(this: Ptr<Bag>, _a0: Ptr<Bag>) {
+        field!(this, items).write((*_a0.upgrade().deref()).items.clone());
+    }
+    pub fn move_from(this: Ptr<Bag>, _a0: Ptr<Bag>) {
+        field!(this, items).write(field!(_a0, items).with_mut(std::mem::take));
+    }
+    pub fn new_1(this: Ptr<Bag>) {
+        field!(this, items).write(Vec::new());
     }
 }
 impl CppLess for Bag {
@@ -315,8 +317,14 @@ fn main_0() -> i32 {
     );
     assert!((copies_0.with(|rc| *rc.borrow()) == 0));
     let bags: Value<Box<[Bag]>> = Rc::new(RefCell::new(
-        (0..3).map(|_| <Bag>::default()).collect::<Box<[Bag]>>(),
+        (0..3).map(|_| <Bag>::uninit()).collect::<Box<[_]>>(),
     ));
+    {
+        let __d = bags.decay();
+        for __i in 0..3_isize {
+            Bag::new_1(__d.offset(__i));
+        }
+    };
     {
         let mut __tmp_9 = {
             Rc::try_unwrap({

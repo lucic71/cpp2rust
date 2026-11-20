@@ -6,10 +6,10 @@ use std::collections::BTreeMap;
 use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
-pub static mut copies_0: std::cell::LazyCell<i32> = std::cell::LazyCell::new(|| unsafe { 0 });
+pub static mut copies_0: libcc2rs::LazyStorage<i32> =
+    libcc2rs::LazyStorage::new(|__p| unsafe { __p.write(0) });
 #[repr(C)]
 #[derive(VaArg, FnPtrArg, MoveCtorUnsafe, CppFromUnsafe, CopyAssignUnsafe, MoveAssignUnsafe)]
-#[placement]
 #[cpp_from(i32, new_1, value)]
 pub struct Tracked {
     pub v: i32,
@@ -23,14 +23,14 @@ impl Tracked {
     }
     pub unsafe fn copy_from(this: *mut Tracked, o: *const Tracked) {
         (&raw mut (*this).v).write((*o).v);
-        (*std::cell::LazyCell::force_mut(&mut *&raw mut copies_0)).prefix_inc();
+        (*(*&raw const copies_0).get()).prefix_inc();
     }
     pub unsafe fn move_from(this: *mut Tracked, o: *mut Tracked) {
         (&raw mut (*this).v).write((*o).v);
     }
     pub unsafe fn copy_assign(&mut self, o: *const Tracked) -> *mut Tracked {
         self.v = (*o).v;
-        (*std::cell::LazyCell::force_mut(&mut *&raw mut copies_0)).prefix_inc();
+        (*(*&raw const copies_0).get()).prefix_inc();
         return &mut (*(self as *mut Tracked));
     }
     pub unsafe fn move_assign(&mut self, o: *mut Tracked) -> *mut Tracked {
@@ -60,7 +60,6 @@ impl Default for Tracked {
 }
 #[repr(C)]
 #[derive(Clone, VaArg, FnPtrArg, MoveCtorUnsafe, CopyAssignUnsafe, MoveAssignUnsafe, Default)]
-#[placement]
 pub struct Pair {
     pub x: Tracked,
     pub y: Tracked,
@@ -99,7 +98,6 @@ impl Pair {
 }
 #[repr(C)]
 #[derive(Clone, VaArg, FnPtrArg, MoveCtorUnsafe, CopyAssignUnsafe, MoveAssignUnsafe, Default)]
-#[placement]
 pub struct Arrays {
     pub a: [Tracked; 2],
     pub b: [Tracked; 2],
@@ -194,13 +192,12 @@ impl Arrays {
         };
     }
 }
-pub static mut copy_only_copies_1: std::cell::LazyCell<i32> =
-    std::cell::LazyCell::new(|| unsafe { 0 });
-pub static mut copy_only_dtors_2: std::cell::LazyCell<i32> =
-    std::cell::LazyCell::new(|| unsafe { 0 });
+pub static mut copy_only_copies_1: libcc2rs::LazyStorage<i32> =
+    libcc2rs::LazyStorage::new(|__p| unsafe { __p.write(0) });
+pub static mut copy_only_dtors_2: libcc2rs::LazyStorage<i32> =
+    libcc2rs::LazyStorage::new(|__p| unsafe { __p.write(0) });
 #[repr(C)]
 #[derive(VaArg, FnPtrArg, CppFromUnsafe, CopyAssignUnsafe, DestructorUnsafe, Default)]
-#[placement]
 #[cpp_from(i32, new, value)]
 pub struct CopyOnly {
     pub v: i32,
@@ -211,14 +208,14 @@ impl CopyOnly {
     }
     pub unsafe fn copy_from(this: *mut CopyOnly, o: *const CopyOnly) {
         (&raw mut (*this).v).write((*o).v);
-        (*std::cell::LazyCell::force_mut(&mut *&raw mut copy_only_copies_1)).prefix_inc();
+        (*(*&raw const copy_only_copies_1).get()).prefix_inc();
     }
     pub unsafe fn destructor(&mut self) {
-        (*std::cell::LazyCell::force_mut(&mut *&raw mut copy_only_dtors_2)).prefix_inc();
+        (*(*&raw const copy_only_dtors_2).get()).prefix_inc();
     }
     pub unsafe fn copy_assign(&mut self, o: *const CopyOnly) -> *mut CopyOnly {
         self.v = (*o).v;
-        (*std::cell::LazyCell::force_mut(&mut *&raw mut copy_only_copies_1)).prefix_inc();
+        (*(*&raw const copy_only_copies_1).get()).prefix_inc();
         return &mut (*(self as *mut CopyOnly));
     }
 }
@@ -233,7 +230,6 @@ impl Clone for CopyOnly {
 }
 #[repr(C)]
 #[derive(Clone, VaArg, FnPtrArg, CopyAssignUnsafe, DestructorUnsafe, Default)]
-#[placement]
 pub struct CopyOnlyPair {
     pub x: CopyOnly,
     pub y: CopyOnly,
@@ -261,9 +257,12 @@ impl CopyOnlyPair {
         CopyOnly::destructor(&mut self.x);
     }
 }
-pub static mut moves_3: std::cell::LazyCell<i32> = std::cell::LazyCell::new(|| unsafe { 0 });
-pub static mut move_assigns_4: std::cell::LazyCell<i32> = std::cell::LazyCell::new(|| unsafe { 0 });
-pub static mut moved_dtors_5: std::cell::LazyCell<i32> = std::cell::LazyCell::new(|| unsafe { 0 });
+pub static mut moves_3: libcc2rs::LazyStorage<i32> =
+    libcc2rs::LazyStorage::new(|__p| unsafe { __p.write(0) });
+pub static mut move_assigns_4: libcc2rs::LazyStorage<i32> =
+    libcc2rs::LazyStorage::new(|__p| unsafe { __p.write(0) });
+pub static mut moved_dtors_5: libcc2rs::LazyStorage<i32> =
+    libcc2rs::LazyStorage::new(|__p| unsafe { __p.write(0) });
 #[repr(C)]
 #[derive(
     VaArg,
@@ -275,7 +274,6 @@ pub static mut moved_dtors_5: std::cell::LazyCell<i32> = std::cell::LazyCell::ne
     DestructorUnsafe,
     Default,
 )]
-#[placement]
 #[cpp_from(i32, new, value)]
 pub struct Moved {
     pub v: i32,
@@ -286,26 +284,26 @@ impl Moved {
     }
     pub unsafe fn copy_from(this: *mut Moved, o: *const Moved) {
         (&raw mut (*this).v).write((*o).v);
-        (*std::cell::LazyCell::force_mut(&mut *&raw mut copies_0)).prefix_inc();
+        (*(*&raw const copies_0).get()).prefix_inc();
     }
     pub unsafe fn move_from(this: *mut Moved, o: *mut Moved) {
         (&raw mut (*this).v).write((*o).v);
         (*o).v = -1_i32;
-        (*std::cell::LazyCell::force_mut(&mut *&raw mut moves_3)).prefix_inc();
+        (*(*&raw const moves_3).get()).prefix_inc();
     }
     pub unsafe fn copy_assign(&mut self, o: *const Moved) -> *mut Moved {
         self.v = (*o).v;
-        (*std::cell::LazyCell::force_mut(&mut *&raw mut copies_0)).prefix_inc();
+        (*(*&raw const copies_0).get()).prefix_inc();
         return &mut (*(self as *mut Moved));
     }
     pub unsafe fn move_assign(&mut self, o: *mut Moved) -> *mut Moved {
         self.v = (*o).v;
         (*o).v = -1_i32;
-        (*std::cell::LazyCell::force_mut(&mut *&raw mut move_assigns_4)).prefix_inc();
+        (*(*&raw const move_assigns_4).get()).prefix_inc();
         return &mut (*(self as *mut Moved));
     }
     pub unsafe fn destructor(&mut self) {
-        (*std::cell::LazyCell::force_mut(&mut *&raw mut moved_dtors_5)).prefix_inc();
+        (*(*&raw const moved_dtors_5).get()).prefix_inc();
     }
 }
 impl Clone for Moved {
@@ -328,7 +326,6 @@ impl Clone for Moved {
     DestructorUnsafe,
     Default,
 )]
-#[placement]
 pub struct MovedPair {
     pub x: Moved,
     pub y: Moved,
@@ -372,15 +369,15 @@ impl MovedPair {
     }
 }
 pub unsafe fn swapped_once_6() -> bool {
-    let mut ok: bool = (((*std::cell::LazyCell::force_mut(&mut *&raw mut moves_3)) == (1))
-        && ((*std::cell::LazyCell::force_mut(&mut *&raw mut move_assigns_4)) == (2)))
-        && ((*std::cell::LazyCell::force_mut(&mut *&raw mut moved_dtors_5)) == (1));
-    (*std::cell::LazyCell::force_mut(&mut *&raw mut moves_3)) = {
-        (*std::cell::LazyCell::force_mut(&mut *&raw mut move_assigns_4)) = {
-            (*std::cell::LazyCell::force_mut(&mut *&raw mut moved_dtors_5)) = 0;
-            (*std::cell::LazyCell::force_mut(&mut *&raw mut moved_dtors_5))
+    let mut ok: bool = (((*(*&raw const moves_3).get()) == (1))
+        && ((*(*&raw const move_assigns_4).get()) == (2)))
+        && ((*(*&raw const moved_dtors_5).get()) == (1));
+    (*(*&raw const moves_3).get()) = {
+        (*(*&raw const move_assigns_4).get()) = {
+            (*(*&raw const moved_dtors_5).get()) = 0;
+            (*(*&raw const moved_dtors_5).get())
         };
-        (*std::cell::LazyCell::force_mut(&mut *&raw mut move_assigns_4))
+        (*(*&raw const move_assigns_4).get())
     };
     return ok;
 }
@@ -390,9 +387,8 @@ pub struct Owner {
     pub p: Option<Box<i32>>,
 }
 impl Owner {
-    pub unsafe fn move_from(_a0: *mut Owner) -> Self {
-        let mut this = Self { p: (*_a0).p.take() };
-        this
+    pub unsafe fn move_from(this: *mut Owner, _a0: *mut Owner) {
+        (&raw mut (*this).p).write((*_a0).p.take());
     }
     pub unsafe fn move_assign(&mut self, _a0: *mut Owner) -> *mut Owner {
         {
@@ -414,7 +410,7 @@ unsafe fn main_0() -> i32 {
     Tracked::new_1(&raw mut b, { 2 });
     cpp_swap_unsafe!(&mut a, &mut b);
     assert!(((a.v) == (2)) && ((b.v) == (1)));
-    assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut copies_0)) == (0)));
+    assert!(((*(*&raw const copies_0).get()) == (0)));
     let mut m1: UnsafeMap<i32, (i32, Tracked)> = UnsafeMap::new();
     (unsafe {
         let mut _o: Tracked = ::std::mem::MaybeUninit::uninit().assume_init();
@@ -441,7 +437,7 @@ unsafe fn main_0() -> i32 {
             &mut _o,
         )
     });
-    assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut copies_0)) == (0)));
+    assert!(((*(*&raw const copies_0).get()) == (0)));
     cpp_swap_unsafe!(
         &mut (*m1.subscript_move(&mut 1, |__k| cpp_move_unsafe!(__k), || <Tracked>::default())),
         &mut (*m1.subscript_move(&mut 2, |__k| cpp_move_unsafe!(__k), || <Tracked>::default()))
@@ -456,7 +452,7 @@ unsafe fn main_0() -> i32 {
             ))
             .v) == (10))
     );
-    assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut copies_0)) == (0)));
+    assert!(((*(*&raw const copies_0).get()) == (0)));
     cpp_swap_unsafe!(&mut m1, &mut m2);
     assert!(
         ((m1.len()) == (1_usize))
@@ -482,7 +478,7 @@ unsafe fn main_0() -> i32 {
             ))
             .v) == (10))
     );
-    assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut copies_0)) == (0)));
+    assert!(((*(*&raw const copies_0).get()) == (0)));
     let mut arr: [Tracked; 3] = ::std::mem::MaybeUninit::uninit().assume_init();
     {
         let __d = (&raw mut arr).cast::<Tracked>();
@@ -494,7 +490,7 @@ unsafe fn main_0() -> i32 {
     assert!(((arr[(0) as usize].v) == (3)) && ((arr[(2) as usize].v) == (1)));
     cpp_swap_unsafe!(&mut arr[(1) as usize], &mut arr[(1) as usize]);
     assert!(((arr[(1) as usize].v) == (2)));
-    assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut copies_0)) == (0)));
+    assert!(((*(*&raw const copies_0).get()) == (0)));
     let mut vec_: Vec<Tracked> = Vec::new();
     vec_.push_mut({
         let mut __v: Tracked = ::std::mem::MaybeUninit::uninit().assume_init();
@@ -508,7 +504,7 @@ unsafe fn main_0() -> i32 {
     });
     cpp_swap_unsafe!(&mut vec_[(0_usize)], &mut vec_[(1_usize)]);
     assert!(((vec_[(0_usize)].v) == (5)) && ((vec_[(1_usize)].v) == (4)));
-    assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut copies_0)) == (0)));
+    assert!(((*(*&raw const copies_0).get()) == (0)));
     let mut pairs: [Pair; 2] = ::std::mem::MaybeUninit::uninit().assume_init();
     {
         let __d = (&raw mut pairs).cast::<Pair>();
@@ -533,12 +529,12 @@ unsafe fn main_0() -> i32 {
     assert!(((pairs[(0) as usize].x.v) == (11)) && ((p.y.v) == (6)));
     cpp_swap_unsafe!(&mut pairs[(0) as usize], &mut pairs[(1) as usize]);
     assert!(((pairs[(0) as usize].x.v) == (8)) && ((pairs[(1) as usize].x.v) == (11)));
-    assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut copies_0)) == (0)));
+    assert!(((*(*&raw const copies_0).get()) == (0)));
     cpp_swap_unsafe!(&mut p.x, &mut p.y);
     assert!(((p.x.v) == (6)) && ((p.y.v) == (10)));
     cpp_swap_unsafe!(&mut pairs[(0) as usize].x, &mut pairs[(1) as usize].y);
     assert!(((pairs[(0) as usize].x.v) == (7)) && ((pairs[(1) as usize].y.v) == (8)));
-    assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut copies_0)) == (0)));
+    assert!(((*(*&raw const copies_0).get()) == (0)));
     let mut arrays: Arrays = ::std::mem::MaybeUninit::uninit().assume_init();
     Arrays::new_1(&raw mut arrays);
     arrays.a[(0) as usize].v = 1;
@@ -547,7 +543,7 @@ unsafe fn main_0() -> i32 {
     assert!(((arrays.a[(0) as usize].v) == (2)) && ((arrays.b[(1) as usize].v) == (1)));
     cpp_swap_unsafe!(&mut arrays.a[(0) as usize], &mut arrays.a[(1) as usize]);
     assert!(((arrays.a[(0) as usize].v) == (0)) && ((arrays.a[(1) as usize].v) == (2)));
-    assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut copies_0)) == (0)));
+    assert!(((*(*&raw const copies_0).get()) == (0)));
     let mut grid: Vec<Vec<Tracked>> = Vec::from_fn(2_usize, |_| Default::default());
     grid[(0_usize)].push_mut({
         let mut __v: Tracked = ::std::mem::MaybeUninit::uninit().assume_init();
@@ -571,7 +567,7 @@ unsafe fn main_0() -> i32 {
     assert!(((grid[(0_usize)][(1_usize)].v) == (3)) && ((grid[(1_usize)][(0_usize)].v) == (2)));
     cpp_swap_unsafe!(&mut grid[(0_usize)], &mut grid[(1_usize)]);
     assert!(((grid[(0_usize)].len()) == (1_usize)) && ((grid[(0_usize)][(0_usize)].v) == (2)));
-    assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut copies_0)) == (0)));
+    assert!(((*(*&raw const copies_0).get()) == (0)));
     let mut maps: [UnsafeMap<i32, (i32, Tracked)>; 2] =
         std::array::from_fn::<_, 2, _>(|_| UnsafeMap::new());
     (unsafe {
@@ -617,7 +613,7 @@ unsafe fn main_0() -> i32 {
             ))
             .v) == (1))
     );
-    assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut copies_0)) == (0)));
+    assert!(((*(*&raw const copies_0).get()) == (0)));
     let mut c1: CopyOnly = ::std::mem::MaybeUninit::uninit().assume_init();
     CopyOnly::new(&raw mut c1, { 1 });
     let _dtor_c1 = std::mem::DropGuard::new(&raw mut c1, |__p| unsafe { (*__p).destructor() });
@@ -627,8 +623,8 @@ unsafe fn main_0() -> i32 {
     cpp_swap_unsafe!(&mut c1, &mut c2);
     assert!(((c1.v) == (2)) && ((c2.v) == (1)));
     assert!(
-        ((*std::cell::LazyCell::force_mut(&mut *&raw mut copy_only_copies_1)) == (3))
-            && ((*std::cell::LazyCell::force_mut(&mut *&raw mut copy_only_dtors_2)) == (1))
+        ((*(*&raw const copy_only_copies_1).get()) == (3))
+            && ((*(*&raw const copy_only_dtors_2).get()) == (1))
     );
     let mut cp: CopyOnlyPair = ::std::mem::MaybeUninit::uninit().assume_init();
     {
@@ -640,8 +636,8 @@ unsafe fn main_0() -> i32 {
     cpp_swap_unsafe!(&mut cp.x, &mut cp.y);
     assert!(((cp.x.v) == (4)) && ((cp.y.v) == (3)));
     assert!(
-        ((*std::cell::LazyCell::force_mut(&mut *&raw mut copy_only_copies_1)) == (6))
-            && ((*std::cell::LazyCell::force_mut(&mut *&raw mut copy_only_dtors_2)) == (2))
+        ((*(*&raw const copy_only_copies_1).get()) == (6))
+            && ((*(*&raw const copy_only_dtors_2).get()) == (2))
     );
     let mut carr: [CopyOnly; 2] = ::std::mem::MaybeUninit::uninit().assume_init();
     {
@@ -652,8 +648,8 @@ unsafe fn main_0() -> i32 {
     cpp_swap_unsafe!(&mut carr[(0) as usize], &mut carr[(1) as usize]);
     assert!(((carr[(0) as usize].v) == (6)) && ((carr[(1) as usize].v) == (5)));
     assert!(
-        ((*std::cell::LazyCell::force_mut(&mut *&raw mut copy_only_copies_1)) == (9))
-            && ((*std::cell::LazyCell::force_mut(&mut *&raw mut copy_only_dtors_2)) == (3))
+        ((*(*&raw const copy_only_copies_1).get()) == (9))
+            && ((*(*&raw const copy_only_dtors_2).get()) == (3))
     );
     let mut mv1: Moved = ::std::mem::MaybeUninit::uninit().assume_init();
     Moved::new(&raw mut mv1, { 1 });
@@ -686,12 +682,16 @@ unsafe fn main_0() -> i32 {
     cpp_swap_unsafe!(&mut mv1, &mut mv1);
     assert!(((mv1.v) == (2)));
     assert!((unsafe { swapped_once_6() }));
-    assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut copies_0)) == (0)));
-    let mut o1: Owner = Owner {
-        p: Some(Box::new(1)),
+    assert!(((*(*&raw const copies_0).get()) == (0)));
+    let mut o1: Owner = ::std::mem::MaybeUninit::uninit().assume_init();
+    {
+        let __d = &raw mut o1;
+        (&raw mut (*__d).p).write(Some(Box::new(1)));
     };
-    let mut o2: Owner = Owner {
-        p: Some(Box::new(2)),
+    let mut o2: Owner = ::std::mem::MaybeUninit::uninit().assume_init();
+    {
+        let __d = &raw mut o2;
+        (&raw mut (*__d).p).write(Some(Box::new(2)));
     };
     cpp_swap_unsafe!(&mut o1, &mut o2);
     assert!(
@@ -706,13 +706,13 @@ unsafe fn main_0() -> i32 {
                 .map_or(::std::ptr::null_mut(), |v| v as *const i32 as *mut i32))
                 == (1))
     );
-    return (*std::cell::LazyCell::force_mut(&mut *&raw mut copies_0));
+    return (*(*&raw const copies_0).get());
 }
 pub unsafe fn __cpp2rust_init_globals() {
-    std::cell::LazyCell::force(&*&raw const copies_0);
-    std::cell::LazyCell::force(&*&raw const copy_only_copies_1);
-    std::cell::LazyCell::force(&*&raw const copy_only_dtors_2);
-    std::cell::LazyCell::force(&*&raw const moves_3);
-    std::cell::LazyCell::force(&*&raw const move_assigns_4);
-    std::cell::LazyCell::force(&*&raw const moved_dtors_5);
+    (*&raw const copies_0).get();
+    (*&raw const copy_only_copies_1).get();
+    (*&raw const copy_only_dtors_2).get();
+    (*&raw const moves_3).get();
+    (*&raw const move_assigns_4).get();
+    (*&raw const moved_dtors_5).get();
 }

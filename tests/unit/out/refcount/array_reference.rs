@@ -69,6 +69,12 @@ pub struct Point {
     #[offset(4)]
     pub y: i32,
 }
+impl Point {
+    pub fn copy_from(this: Ptr<Point>, _a0: Ptr<Point>) {
+        field!(this, x).write(_a0.with(|__s| __s.x));
+        field!(this, y).write(_a0.with(|__s| __s.y));
+    }
+}
 pub fn sum_points_11(p: Ptr<Point>) -> i32 {
     return ({
         ({ ({ elem!(p, 0).with(|__s| __s.x) } + { elem!(p, 0).with(|__s| __s.y) }) } + {
@@ -125,10 +131,22 @@ fn main_0() -> i32 {
             == (('b' as i8) as i32))
     );
     assert!((({ len_0(({ pick_10(buf.decay(),) }),) }) == 4));
-    let pts: Value<Box<[Point]>> = Rc::new(RefCell::new(Box::new([
-        Point { x: 1, y: 2 },
-        Point { x: 3, y: 4 },
-    ])));
+    let pts: Value<Box<[Point]>> = Rc::new(RefCell::new(
+        (0..2).map(|_| <Point>::uninit()).collect::<Box<[_]>>(),
+    ));
+    {
+        let __d = pts.decay();
+        {
+            let __d = __d.offset(0);
+            field!(__d, x).write(1);
+            field!(__d, y).write(2);
+        };
+        {
+            let __d = __d.offset(1);
+            field!(__d, x).write(3);
+            field!(__d, y).write(4);
+        };
+    };
     assert!((({ sum_points_11(pts.decay(),) }) == 10));
     ({ shift_points_12(pts.decay(), 10) });
     assert!(({ ({ (*pts.borrow())[(0) as usize].x } == 11) }));

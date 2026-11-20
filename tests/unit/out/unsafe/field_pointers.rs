@@ -12,11 +12,31 @@ pub struct Inner {
     pub a: i32,
     pub name: [libc::c_char; 8],
 }
+impl Inner {
+    pub unsafe fn copy_from(this: *mut Inner, _a0: *const Inner) {
+        (&raw mut (*this).a).write((*_a0).a);
+        (&raw mut (*this).name).write(std::array::from_fn::<_, 8, _>(|__i: usize| {
+            (*_a0).name[(__i)]
+        }));
+    }
+    pub unsafe fn move_from(this: *mut Inner, _a0: *mut Inner) {
+        (&raw mut (*this).a).write((*_a0).a);
+        (&raw mut (*this).name).write(std::array::from_fn::<_, 8, _>(|__i: usize| {
+            (*_a0).name[(__i)]
+        }));
+    }
+}
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct Header {
     pub tag: i32,
     pub size: i16,
+}
+impl Header {
+    pub unsafe fn copy_from(this: *mut Header, _a0: *const Header) {
+        (&raw mut (*this).tag).write((*_a0).tag);
+        (&raw mut (*this).size).write((*_a0).size);
+    }
 }
 #[repr(C)]
 #[derive(Clone, VaArg, FnPtrArg, MoveCtorUnsafe, MoveAssignUnsafe, Default)]
@@ -41,16 +61,35 @@ impl Outer {
             self.v.push(__a1)
         };
     }
-    pub unsafe fn move_from(_a0: *mut Outer) -> Self {
-        let mut this = Self {
-            x: (*_a0).x,
-            inner: (*_a0).inner,
-            items: std::array::from_fn::<_, 3, _>(|__i: usize| (*_a0).items[(__i)]),
-            v: std::mem::take(&mut (*_a0).v),
-            cursor: (*_a0).cursor,
-            buf: std::array::from_fn::<_, 4, _>(|__i: usize| (*_a0).buf[(__i)]),
+    pub unsafe fn copy_from(this: *mut Outer, _a0: *const Outer) {
+        (&raw mut (*this).x).write((*_a0).x);
+        Inner::copy_from((&raw mut (*this).inner), { &(*_a0).inner });
+        {
+            let __d = (&raw mut (*this).items).cast::<Inner>();
+            for __i in 0..3_usize {
+                Inner::copy_from(__d.offset(__i as isize), { &(*_a0).items[(__i)] });
+            }
         };
-        this
+        (&raw mut (*this).v).write((*_a0).v.clone());
+        (&raw mut (*this).cursor).write((*_a0).cursor);
+        (&raw mut (*this).buf).write(std::array::from_fn::<_, 4, _>(|__i: usize| {
+            (*_a0).buf[(__i)]
+        }));
+    }
+    pub unsafe fn move_from(this: *mut Outer, _a0: *mut Outer) {
+        (&raw mut (*this).x).write((*_a0).x);
+        Inner::move_from((&raw mut (*this).inner), { &mut (*_a0).inner });
+        {
+            let __d = (&raw mut (*this).items).cast::<Inner>();
+            for __i in 0..3_usize {
+                Inner::move_from(__d.offset(__i as isize), { &mut (*_a0).items[(__i)] });
+            }
+        };
+        (&raw mut (*this).v).write(std::mem::take(&mut (*_a0).v));
+        (&raw mut (*this).cursor).write((*_a0).cursor);
+        (&raw mut (*this).buf).write(std::array::from_fn::<_, 4, _>(|__i: usize| {
+            (*_a0).buf[(__i)]
+        }));
     }
     pub unsafe fn move_assign(&mut self, _a0: *mut Outer) -> *mut Outer {
         self.x = (*_a0).x;
@@ -92,7 +131,37 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    let mut o: Outer = <Outer>::default();
+    let mut o: Outer = ::std::mem::MaybeUninit::uninit().assume_init();
+    {
+        let __d = &raw mut o;
+        (&raw mut (*__d).x).write(0_i32);
+        {
+            let __d = (&raw mut (*__d).inner);
+            (&raw mut (*__d).a).write(0_i32);
+            (&raw mut (*__d).name).write([0; 8]);
+        };
+        {
+            let __d = (&raw mut (*__d).items).cast::<Inner>();
+            {
+                let __d = __d.offset(0);
+                (&raw mut (*__d).a).write(0_i32);
+                (&raw mut (*__d).name).write([0; 8]);
+            };
+            {
+                let __d = __d.offset(1);
+                (&raw mut (*__d).a).write(0_i32);
+                (&raw mut (*__d).name).write([0; 8]);
+            };
+            {
+                let __d = __d.offset(2);
+                (&raw mut (*__d).a).write(0_i32);
+                (&raw mut (*__d).name).write([0; 8]);
+            };
+        };
+        (&raw mut (*__d).v).write(Vec::new());
+        (&raw mut (*__d).cursor).write(std::ptr::null_mut());
+        (&raw mut (*__d).buf).write([0; 4]);
+    };
     o.x = 1;
     let mut px: *mut i32 = (&mut o.x as *mut i32);
     (*px) = 2;

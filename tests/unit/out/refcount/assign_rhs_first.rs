@@ -22,6 +22,11 @@ pub struct S {
     #[byte_size(8)]
     pub ptr: Ptr<i32>,
 }
+impl S {
+    pub fn copy_from(this: Ptr<S>, _a0: Ptr<S>) {
+        field!(this, ptr).write(_a0.with(|__s| __s.ptr.clone()));
+    }
+}
 pub fn by_ref_2(r: Ptr<Ptr<i32>>) {
     let __rhs = ({ advance_1() });
     {
@@ -80,7 +85,11 @@ fn main_0() -> i32 {
                 && ((*a.borrow())[(6) as usize] == 17)
         })
     );
-    let s: Value<S> = Rc::new(RefCell::new(S { ptr: a.decay() }));
+    let s: Value<S> = Rc::new(RefCell::new(<S>::uninit()));
+    {
+        let __d = s.as_pointer();
+        field!(__d, ptr).write(a.decay());
+    };
     g_cursor_0.with(|rc| *rc.borrow_mut() = (field_ptr!(s.as_pointer(), ptr)));
     let __rhs = ({ advance_1() });
     {

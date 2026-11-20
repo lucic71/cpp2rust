@@ -10,9 +10,10 @@ pub type Code = u32;
 pub const Code_CODE_OK: Code = 0;
 pub const Code_CODE_ERR: Code = 1;
 pub const Code_CODE_FATAL: Code = 2;
-pub static mut side_effect_0: std::cell::LazyCell<i32> = std::cell::LazyCell::new(|| unsafe { 0 });
+pub static mut side_effect_0: libcc2rs::LazyStorage<i32> =
+    libcc2rs::LazyStorage::new(|__p| unsafe { __p.write(0) });
 pub unsafe fn observe_1(mut v: i32) -> i32 {
-    (*std::cell::LazyCell::force_mut(&mut *&raw mut side_effect_0)).prefix_inc();
+    (*(*&raw const side_effect_0).get()).prefix_inc();
     return v;
 }
 pub unsafe fn returns_one_2() -> i32 {
@@ -50,15 +51,15 @@ unsafe fn main_0() -> i32 {
     if (((n != 0) && (u != 0)) && (!(p).is_null())) && ((code as i32) == (Code_CODE_OK as i32)) {
         assert!(true);
     }
-    (*std::cell::LazyCell::force_mut(&mut *&raw mut side_effect_0)) = 0;
+    (*(*&raw const side_effect_0).get()) = 0;
     if (zero != 0) && ((unsafe { observe_1(1) }) != 0) {
         assert!(false);
     }
-    assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut side_effect_0)) == (0)));
+    assert!(((*(*&raw const side_effect_0).get()) == (0)));
     if (n != 0) || ((unsafe { observe_1(1) }) != 0) {
         assert!(true);
     }
-    assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut side_effect_0)) == (0)));
+    assert!(((*(*&raw const side_effect_0).get()) == (0)));
     let mut x: i32 = 5;
     let mut y: i32 = 3;
     let mut flags: u32 = 2_u32;
@@ -130,5 +131,5 @@ unsafe fn main_0() -> i32 {
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {
-    std::cell::LazyCell::force(&*&raw const side_effect_0);
+    (*&raw const side_effect_0).get();
 }

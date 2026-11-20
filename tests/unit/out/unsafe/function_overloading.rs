@@ -31,6 +31,7 @@ impl Foo {
     pub unsafe fn method_4(&self, mut x: i32) {}
     pub unsafe fn method2_5(&self, mut x: i32, mut y: i32) {}
     pub unsafe fn method2_6(&self, mut x: f64, mut y: f64) {}
+    pub unsafe fn copy_from(this: *mut Foo, _a0: *const Foo) {}
 }
 pub unsafe fn func_5(mut x: i32) -> i32 {
     return 1;
@@ -63,8 +64,14 @@ unsafe fn main_0() -> i32 {
     });
     let mut bar: i32 = 5;
     out += (((bar) + (unsafe { foo_0(0) })) + (unsafe { foo_1((&mut x as *mut i32)) }));
-    let mut foo1: Foo = <Foo>::default();
-    let foo2: Foo = <Foo>::default();
+    let mut foo1: Foo = ::std::mem::MaybeUninit::uninit().assume_init();
+    {
+        let __d = &raw mut foo1;
+    };
+    let mut foo2: Foo = ::std::mem::MaybeUninit::uninit().assume_init();
+    {
+        let __d = &raw mut foo2;
+    };
     (unsafe { Foo::foo_2(&mut foo1) });
     (unsafe { Foo::method_3(&mut foo1, 1) });
     (unsafe { Foo::foo_1(&foo2) });

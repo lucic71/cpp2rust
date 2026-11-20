@@ -37,8 +37,16 @@ pub struct Val {
     #[offset(0)]
     pub x: i32,
 }
-pub fn sum_1(mut a: Val, mut b: Val) -> i32 {
-    return (a.x + b.x);
+impl Val {
+    pub fn copy_from(this: Ptr<Val>, _a0: Ptr<Val>) {
+        field!(this, x).write(_a0.with(|__s| __s.x));
+    }
+    pub fn move_from(this: Ptr<Val>, _a0: Ptr<Val>) {
+        field!(this, x).write({ (*_a0.upgrade().deref()).x });
+    }
+}
+pub fn sum_1(a: Value<Val>, b: Value<Val>) -> i32 {
+    return ({ (*a.borrow()).x } + { (*b.borrow()).x });
 }
 pub fn main() {
     __cpp2rust_init_globals();
@@ -49,25 +57,61 @@ fn main_0() -> i32 {
     let x2: Value<i32> = Rc::new(RefCell::new(2));
     ({ more_refs_0(3, 4, x1.as_pointer(), x2.as_pointer()) });
     assert!(({ (((*x1.borrow()) + (*x2.borrow())) == 21) }));
-    let v: Value<Val> = Rc::new(RefCell::new(Val { x: 5 }));
+    let v: Value<Val> = Rc::new(RefCell::new(<Val>::uninit()));
+    {
+        let __d = v.as_pointer();
+        field!(__d, x).write(5);
+    };
     let mut acc: i32 = ({
-        let _a: Val = (*v.borrow());
-        let _b: Val = (*v.borrow());
+        let _a: Val = {
+            let __v: Value<Val> = Rc::new(RefCell::new(<Val>::uninit()));
+            Val::copy_from(__v.as_pointer(), { v.as_pointer() });
+            __v
+        };
+        let _b: Val = {
+            let __v: Value<Val> = Rc::new(RefCell::new(<Val>::uninit()));
+            Val::copy_from(__v.as_pointer(), { v.as_pointer() });
+            __v
+        };
         sum_1(_a, _b)
     });
     acc += ({
-        let _a: Val = (*v.borrow());
-        let _b: Val = (*v.borrow());
+        let _a: Val = {
+            let __v: Value<Val> = Rc::new(RefCell::new(<Val>::uninit()));
+            Val::copy_from(__v.as_pointer(), { v.as_pointer() });
+            __v
+        };
+        let _b: Val = {
+            let __v: Value<Val> = Rc::new(RefCell::new(<Val>::uninit()));
+            Val::copy_from(__v.as_pointer(), { v.as_pointer() });
+            __v
+        };
         sum_1(_a, _b)
     });
     acc += ({
-        let _a: Val = (*v.borrow());
-        let _b: Val = (*v.borrow());
+        let _a: Val = {
+            let __v: Value<Val> = Rc::new(RefCell::new(<Val>::uninit()));
+            Val::move_from(__v.as_pointer(), { v.as_pointer() });
+            __v
+        };
+        let _b: Val = {
+            let __v: Value<Val> = Rc::new(RefCell::new(<Val>::uninit()));
+            Val::copy_from(__v.as_pointer(), { v.as_pointer() });
+            __v
+        };
         sum_1(_a, _b)
     });
     acc += ({
-        let _a: Val = (*v.borrow());
-        let _b: Val = (*v.borrow());
+        let _a: Val = {
+            let __v: Value<Val> = Rc::new(RefCell::new(<Val>::uninit()));
+            Val::copy_from(__v.as_pointer(), { v.as_pointer() });
+            __v
+        };
+        let _b: Val = {
+            let __v: Value<Val> = Rc::new(RefCell::new(<Val>::uninit()));
+            Val::copy_from(__v.as_pointer(), { v.as_pointer() });
+            __v
+        };
         sum_1(_a, _b)
     });
     assert!((acc == 40));

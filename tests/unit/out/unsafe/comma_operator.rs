@@ -12,6 +12,12 @@ pub struct Pair {
     pub first: i32,
     pub second: i32,
 }
+impl Pair {
+    pub unsafe fn copy_from(this: *mut Pair, _a0: *const Pair) {
+        (&raw mut (*this).first).write((*_a0).first);
+        (&raw mut (*this).second).write((*_a0).second);
+    }
+}
 pub unsafe fn twice_0(v: *const i64) -> i64 {
     return ((*v) * (2_i64));
 }
@@ -75,14 +81,19 @@ unsafe fn main_0() -> i32 {
     assert!(((a) == (5)));
     assert!(((v1.len()) == (2_usize)));
     assert!(((v2.len()) == (3_usize)));
-    let mut p1: Pair = Pair {
-        first: 1,
-        second: 2,
+    let mut p1: Pair = ::std::mem::MaybeUninit::uninit().assume_init();
+    {
+        let __d = &raw mut p1;
+        (&raw mut (*__d).first).write(1);
+        (&raw mut (*__d).second).write(2);
     };
-    let mut p2: Pair = {
-        b = 6;
-        p1
-    };
+    let mut p2: Pair = ::std::mem::MaybeUninit::uninit().assume_init();
+    Pair::copy_from(&raw mut p2, {
+        &{
+            b = 6;
+            p1
+        }
+    });
     p2.first = 10;
     assert!(((p1.first) == (1)));
     assert!(((p2.first) == (10)));

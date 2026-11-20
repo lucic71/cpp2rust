@@ -9,11 +9,20 @@ use std::rc::Rc;
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct Probe {}
+impl Probe {
+    pub unsafe fn copy_from(this: *mut Probe, _a0: *const Probe) {}
+}
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct Wrapper_Probe_ {
     pub base_: Probe,
     pub tag: i32,
+}
+impl Wrapper_Probe_ {
+    pub unsafe fn copy_from(this: *mut Wrapper_Probe_, _a0: *const Wrapper_Probe_) {
+        Probe::copy_from((&raw mut (*this).base_), { &(*_a0).base_ });
+        (&raw mut (*this).tag).write((*_a0).tag);
+    }
 }
 pub fn main() {
     unsafe {
@@ -22,9 +31,17 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    let mut a: Wrapper_Probe_ = <Wrapper_Probe_>::default();
+    let mut a: Wrapper_Probe_ = ::std::mem::MaybeUninit::uninit().assume_init();
+    {
+        let __d = &raw mut a;
+        {
+            let __d = (&raw mut (*__d).base_);
+        };
+        (&raw mut (*__d).tag).write(0_i32);
+    };
     a.tag = 3;
-    let mut b: Wrapper_Probe_ = a;
+    let mut b: Wrapper_Probe_ = ::std::mem::MaybeUninit::uninit().assume_init();
+    Wrapper_Probe_::copy_from(&raw mut b, { &a });
     assert!(((b.tag) == (3)));
     return 0;
 }

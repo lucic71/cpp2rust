@@ -13,7 +13,6 @@ thread_local!(
     pub static visits_1: Value<i32> = Rc::new(RefCell::new(0));
 );
 #[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg)]
-#[placement]
 #[byte_size(4)]
 pub struct Item {
     #[offset(0)]
@@ -63,7 +62,6 @@ thread_local!(
     pub static temporary_calls_4: Value<i32> = Rc::new(RefCell::new(0));
 );
 #[derive(Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg)]
-#[placement]
 #[byte_size(12)]
 pub struct Temporary {
     #[offset(0)]
@@ -99,7 +97,6 @@ impl Default for Temporary {
     }
 }
 #[derive(Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
-#[placement]
 #[byte_size(12)]
 pub struct Nested {
     #[offset(0)]
@@ -123,7 +120,6 @@ pub fn make_nested_6(__ret: Ptr<Nested>) {
     return;
 }
 #[derive(Record, ByteRepr, Uninit, FnPtrArg, MoveCtor, MoveAssign)]
-#[placement]
 #[byte_size(8)]
 pub struct Owner {
     #[offset(0)]
@@ -166,13 +162,17 @@ pub struct Noncopy {
     #[offset(0)]
     pub n: i32,
 }
+impl Noncopy {
+    pub fn new(this: Ptr<Noncopy>) {
+        field!(this, n).write(5);
+    }
+}
 impl Default for Noncopy {
     fn default() -> Self {
         { Noncopy { n: 5 } }
     }
 }
 #[derive(Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, CppFrom)]
-#[placement]
 #[cpp_from(i32, new_1, ptr)]
 #[byte_size(8)]
 pub struct Held {
@@ -2404,7 +2404,14 @@ fn main_0() -> i32 {
         let __tmp_111: Value<Option<Value<Noncopy>>>;
         match ({
             __tmp_111 = Rc::new(RefCell::new(Some(Rc::new(RefCell::new(
-                <Noncopy>::default(),
+                Rc::try_unwrap({
+                    let __v: Value<Noncopy> = Rc::new(RefCell::new(<Noncopy>::uninit()));
+                    Noncopy::new(__v.as_pointer());
+                    __v
+                })
+                .ok()
+                .unwrap()
+                .into_inner(),
             )))));
             __tmp_111.as_pointer()
         },)
@@ -2442,7 +2449,14 @@ fn main_0() -> i32 {
         let __tmp_113: Value<Option<Value<Noncopy>>>;
         match ({
             __tmp_113 = Rc::new(RefCell::new(Some(Rc::new(RefCell::new(
-                <Noncopy>::default(),
+                Rc::try_unwrap({
+                    let __v: Value<Noncopy> = Rc::new(RefCell::new(<Noncopy>::uninit()));
+                    Noncopy::new(__v.as_pointer());
+                    __v
+                })
+                .ok()
+                .unwrap()
+                .into_inner(),
             )))));
             __tmp_113.as_pointer()
         },)

@@ -19,7 +19,6 @@ thread_local!(
     pub static useCount_3: Value<i32> = Rc::new(RefCell::new(0));
 );
 #[derive(Record, ByteRepr, Uninit, VaArg, FnPtrArg, CopyAssign, Destructor)]
-#[placement]
 #[byte_size(4)]
 pub struct LifetimeTracked {
     #[offset(0)]

@@ -13,12 +13,12 @@ pub struct S {
     pub tail: [i32; 3],
     pub buf: [libc::c_char; 4],
 }
-pub static mut s_0: std::cell::LazyCell<S> = std::cell::LazyCell::new(|| unsafe {
-    S {
+pub static mut s_0: libcc2rs::LazyStorage<S> = libcc2rs::LazyStorage::new(|__p| unsafe {
+    __p.write(S {
         head: 5,
         tail: [0; 3],
         buf: [0; 4],
-    }
+    })
 });
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
@@ -26,13 +26,15 @@ pub struct P {
     pub x: i32,
     pub y: i32,
 }
-pub static mut g_1: std::cell::LazyCell<[i32; 5]> =
-    std::cell::LazyCell::new(|| unsafe { [0_i32; 5] });
-pub static mut k_2: std::cell::LazyCell<[i32; 8]> =
-    std::cell::LazyCell::new(|| unsafe { [3, 0, 4, 0_i32, 0_i32, 0_i32, 0_i32, 0_i32] });
-pub static mut counter_3: std::cell::LazyCell<i32> = std::cell::LazyCell::new(|| unsafe { 0 });
+pub static mut g_1: libcc2rs::LazyStorage<[i32; 5]> =
+    libcc2rs::LazyStorage::new(|__p| unsafe { __p.write([0_i32; 5]) });
+pub static mut k_2: libcc2rs::LazyStorage<[i32; 8]> = libcc2rs::LazyStorage::new(|__p| unsafe {
+    __p.write([3, 0, 4, 0_i32, 0_i32, 0_i32, 0_i32, 0_i32])
+});
+pub static mut counter_3: libcc2rs::LazyStorage<i32> =
+    libcc2rs::LazyStorage::new(|__p| unsafe { __p.write(0) });
 pub unsafe fn next_counter_4() -> i32 {
-    return (*(*std::cell::LazyCell::force_mut(&mut *&raw mut counter_3)).prefix_inc());
+    return (*(*(*&raw const counter_3).get()).prefix_inc());
 }
 pub fn main() {
     unsafe {
@@ -41,23 +43,18 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    assert!((((*std::cell::LazyCell::force_mut(&mut *&raw mut s_0)).head) == (5)));
+    assert!((((*(*&raw const s_0).get()).head) == (5)));
     {
         let mut i: i32 = 0;
         'loop_: while ((i) < (3)) {
-            assert!(
-                (((*std::cell::LazyCell::force_mut(&mut *&raw mut s_0)).tail[(i) as usize]) == (0))
-            );
+            assert!((((*(*&raw const s_0).get()).tail[(i) as usize]) == (0)));
             i.postfix_inc();
         }
     }
     {
         let mut i: i32 = 0;
         'loop_: while ((i) < (4)) {
-            assert!(
-                (((*std::cell::LazyCell::force_mut(&mut *&raw mut s_0)).buf[(i) as usize] as i32)
-                    == (0))
-            );
+            assert!((((*(*&raw const s_0).get()).buf[(i) as usize] as i32) == (0)));
             i.postfix_inc();
         }
     }
@@ -113,18 +110,18 @@ unsafe fn main_0() -> i32 {
     assert!(
         ((((u[(0) as usize]) == (5)) && ((u[(1) as usize]) == (6))) && ((u[(2) as usize]) == (0)))
     );
-    assert!((((*std::cell::LazyCell::force_mut(&mut *&raw mut g_1))[(4) as usize]) == (0)));
+    assert!((((*(*&raw const g_1).get())[(4) as usize]) == (0)));
     assert!(
-        ((((((*std::cell::LazyCell::force_mut(&mut *&raw mut k_2))[(0) as usize]) == (3))
-            && (((*std::cell::LazyCell::force_mut(&mut *&raw mut k_2))[(1) as usize]) == (0)))
-            && (((*std::cell::LazyCell::force_mut(&mut *&raw mut k_2))[(2) as usize]) == (4)))
-            && (((*std::cell::LazyCell::force_mut(&mut *&raw mut k_2))[(7) as usize]) == (0)))
+        ((((((*(*&raw const k_2).get())[(0) as usize]) == (3))
+            && (((*(*&raw const k_2).get())[(1) as usize]) == (0)))
+            && (((*(*&raw const k_2).get())[(2) as usize]) == (4)))
+            && (((*(*&raw const k_2).get())[(7) as usize]) == (0)))
     );
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {
-    std::cell::LazyCell::force(&*&raw const s_0);
-    std::cell::LazyCell::force(&*&raw const g_1);
-    std::cell::LazyCell::force(&*&raw const k_2);
-    std::cell::LazyCell::force(&*&raw const counter_3);
+    (*&raw const s_0).get();
+    (*&raw const g_1).get();
+    (*&raw const k_2).get();
+    (*&raw const counter_3).get();
 }

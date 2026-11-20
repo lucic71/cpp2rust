@@ -8,7 +8,6 @@ use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 #[repr(C)]
 #[derive(FnPtrArg, MoveCtorUnsafe, CppFromUnsafe, MoveAssignUnsafe, Default)]
-#[placement]
 #[cpp_from(i32, new, value)]
 pub struct NoCopy {
     pub v: i32,
@@ -29,7 +28,6 @@ impl NoCopy {
 }
 #[repr(C)]
 #[derive(FnPtrArg, MoveCtorUnsafe, MoveAssignUnsafe)]
-#[placement]
 pub struct PrivateCopy {
     pub v: i32,
 }
@@ -60,7 +58,6 @@ impl Default for PrivateCopy {
 }
 #[repr(C)]
 #[derive(FnPtrArg)]
-#[placement]
 pub struct Immovable {
     pub v: i32,
 }
@@ -82,7 +79,6 @@ impl Default for Immovable {
 }
 #[repr(C)]
 #[derive(FnPtrArg, MoveCtorUnsafe, MoveAssignUnsafe, Default)]
-#[placement]
 pub struct Container {
     pub inner: NoCopy,
     pub tag: i32,
@@ -107,17 +103,17 @@ pub struct VecHolder {
     pub items: Vec<NoCopy>,
 }
 impl VecHolder {
-    pub unsafe fn move_from(_a0: *mut VecHolder) -> Self {
-        let mut this = Self {
-            items: std::mem::take(&mut (*_a0).items),
-        };
-        this
+    pub unsafe fn move_from(this: *mut VecHolder, _a0: *mut VecHolder) {
+        (&raw mut (*this).items).write(std::mem::take(&mut (*_a0).items));
     }
     pub unsafe fn move_assign(&mut self, _a0: *mut VecHolder) -> *mut VecHolder {
         {
             self.items = std::mem::take(&mut (*_a0).items);
         };
         return &mut (*(self as *mut VecHolder));
+    }
+    pub unsafe fn new_1(this: *mut VecHolder) {
+        (&raw mut (*this).items).write(Vec::new());
     }
 }
 pub unsafe fn bump_0(mut p: *mut NoCopy) {
@@ -165,8 +161,10 @@ unsafe fn main_0() -> i32 {
     let mut d: Container = ::std::mem::MaybeUninit::uninit().assume_init();
     Container::move_from(&raw mut d, { &mut c });
     assert!((((d.inner.v) == (6)) && ((d.tag) == (7))) && ((c.inner.v) == (0)));
-    let mut h: VecHolder = <VecHolder>::default();
-    let mut h2: VecHolder = VecHolder::move_from({ &mut h });
+    let mut h: VecHolder = ::std::mem::MaybeUninit::uninit().assume_init();
+    VecHolder::new_1(&raw mut h);
+    let mut h2: VecHolder = ::std::mem::MaybeUninit::uninit().assume_init();
+    VecHolder::move_from(&raw mut h2, { &mut h });
     assert!(((h2.items.len()) == (0_usize)));
     return 0;
 }

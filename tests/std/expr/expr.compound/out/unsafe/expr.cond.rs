@@ -12,6 +12,15 @@ pub struct p7_4_pointer_to_member_and_null_HasTwoInts {
     pub first: i32,
     pub second: i32,
 }
+impl p7_4_pointer_to_member_and_null_HasTwoInts {
+    pub unsafe fn copy_from(
+        this: *mut p7_4_pointer_to_member_and_null_HasTwoInts,
+        _a0: *const p7_4_pointer_to_member_and_null_HasTwoInts,
+    ) {
+        (&raw mut (*this).first).write((*_a0).first);
+        (&raw mut (*this).second).write((*_a0).second);
+    }
+}
 pub unsafe fn second_or_null_0(mut choose_second: bool) -> isize {
     return if choose_second {
         (::std::mem::offset_of!(p7_4_pointer_to_member_and_null_HasTwoInts, second) as isize)
@@ -21,10 +30,12 @@ pub unsafe fn second_or_null_0(mut choose_second: bool) -> isize {
 }
 pub unsafe fn test_1() {
     let mut obj: p7_4_pointer_to_member_and_null_HasTwoInts =
-        p7_4_pointer_to_member_and_null_HasTwoInts {
-            first: 3,
-            second: 4,
-        };
+        ::std::mem::MaybeUninit::uninit().assume_init();
+    {
+        let __d = &raw mut obj;
+        (&raw mut (*__d).first).write(3);
+        (&raw mut (*__d).second).write(4);
+    };
     assert!(((unsafe { second_or_null_0(false,) }) == -1_isize));
     assert!(
         ((unsafe { second_or_null_0(true,) })

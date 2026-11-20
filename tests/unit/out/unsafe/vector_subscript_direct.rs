@@ -16,6 +16,14 @@ impl Point {
     pub unsafe fn sum(&self) -> i32 {
         return ((self.x) + (self.y));
     }
+    pub unsafe fn copy_from(this: *mut Point, _a0: *const Point) {
+        (&raw mut (*this).x).write((*_a0).x);
+        (&raw mut (*this).y).write((*_a0).y);
+    }
+    pub unsafe fn move_from(this: *mut Point, _a0: *mut Point) {
+        (&raw mut (*this).x).write((*_a0).x);
+        (&raw mut (*this).y).write((*_a0).y);
+    }
 }
 #[repr(C)]
 #[derive(Clone, VaArg, FnPtrArg, MoveCtorUnsafe, MoveAssignUnsafe, Default)]
@@ -24,12 +32,13 @@ pub struct Holder {
     pub points: Vec<Point>,
 }
 impl Holder {
-    pub unsafe fn move_from(_a0: *mut Holder) -> Self {
-        let mut this = Self {
-            values: std::mem::take(&mut (*_a0).values),
-            points: std::mem::take(&mut (*_a0).points),
-        };
-        this
+    pub unsafe fn copy_from(this: *mut Holder, _a0: *const Holder) {
+        (&raw mut (*this).values).write((*_a0).values.clone());
+        (&raw mut (*this).points).write((*_a0).points.clone());
+    }
+    pub unsafe fn move_from(this: *mut Holder, _a0: *mut Holder) {
+        (&raw mut (*this).values).write(std::mem::take(&mut (*_a0).values));
+        (&raw mut (*this).points).write(std::mem::take(&mut (*_a0).points));
     }
     pub unsafe fn move_assign(&mut self, _a0: *mut Holder) -> *mut Holder {
         {
@@ -39,6 +48,10 @@ impl Holder {
             self.points = std::mem::take(&mut (*_a0).points);
         };
         return &mut (*(self as *mut Holder));
+    }
+    pub unsafe fn new_1(this: *mut Holder) {
+        (&raw mut (*this).values).write(Vec::new());
+        (&raw mut (*this).points).write(Vec::new());
     }
 }
 pub unsafe fn push_and_index_0(v: *mut Vec<i32>) -> i32 {
@@ -99,7 +112,8 @@ unsafe fn main_0() -> i32 {
     (*p) = 9;
     assert!(((v[(2_usize)]) == (9)));
     assert!(((unsafe { sum_ref_1(&v,) }) == (((((3) + (0)) + (9)) + (42)) + (5))));
-    let mut h: Holder = <Holder>::default();
+    let mut h: Holder = ::std::mem::MaybeUninit::uninit().assume_init();
+    Holder::new_1(&raw mut h);
     h.values.resize_with(2_usize, || 0_i32);
     h.values[(1_usize)] = 6;
     {
@@ -113,7 +127,8 @@ unsafe fn main_0() -> i32 {
     (&mut (*hp)).values[(0_usize)] = (((&mut (*hp)).values[(1_usize)]) + (1));
     (&mut (*hp)).points[(0_usize)].x = (&mut (*hp)).values[(0_usize)];
     assert!(((h.values[(0_usize)]) == (7)) && ((h.points[(0_usize)].x) == (7)));
-    let mut q: Point = h.points[(0_usize)];
+    let mut q: Point = ::std::mem::MaybeUninit::uninit().assume_init();
+    Point::copy_from(&raw mut q, { &h.points[(0_usize)] });
     q.x = 0;
     assert!(((h.points[(0_usize)].x) == (7)));
     let mut grid: Vec<Vec<i32>> = Vec::new();

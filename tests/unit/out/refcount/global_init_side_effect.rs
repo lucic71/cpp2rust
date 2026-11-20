@@ -10,7 +10,6 @@ thread_local!(
     pub static total_0: Value<i32> = Rc::new(RefCell::new(0));
 );
 #[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, CppFrom, Default)]
-#[placement]
 #[cpp_from(i32, new, value)]
 #[byte_size(1)]
 pub struct S {}

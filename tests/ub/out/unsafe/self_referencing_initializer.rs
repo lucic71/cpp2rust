@@ -12,6 +12,12 @@ pub struct pair {
     pub a: i32,
     pub b: i32,
 }
+impl pair {
+    pub unsafe fn copy_from(this: *mut pair, _a0: *const pair) {
+        (&raw mut (*this).a).write((*_a0).a);
+        (&raw mut (*this).b).write((*_a0).b);
+    }
+}
 pub fn main() {
     unsafe {
         __cpp2rust_init_globals();
@@ -21,10 +27,11 @@ pub fn main() {
 unsafe fn main_0() -> i32 {
     let mut x: i32 = 0_i32;
     x = ((x) + (1));
-    let mut p: pair = <pair>::default();
-    p = pair {
-        a: 1,
-        b: ((p.a) + (1)),
+    let mut p: pair = ::std::mem::MaybeUninit::uninit().assume_init();
+    {
+        let __d = &raw mut p;
+        (&raw mut (*__d).a).write(1);
+        (&raw mut (*__d).b).write(((p.a) + (1)));
     };
     return ((x) + (p.b));
 }

@@ -19,7 +19,6 @@ thread_local!(
     pub static useCount_3: Value<i32> = Rc::new(RefCell::new(0));
 );
 #[derive(Record, ByteRepr, Uninit, VaArg, FnPtrArg, CopyAssign, Destructor)]
-#[placement]
 #[byte_size(4)]
 pub struct LifetimeTracked {
     #[offset(0)]
@@ -81,6 +80,11 @@ pub struct AssertsDtorCountAtExit {
     #[offset(0)]
     pub expected: i32,
 }
+impl AssertsDtorCountAtExit {
+    pub fn copy_from(this: Ptr<AssertsDtorCountAtExit>, _a0: Ptr<AssertsDtorCountAtExit>) {
+        field!(this, expected).write(_a0.with(|__s| __s.expected));
+    }
+}
 pub fn instance_4() -> Ptr<LifetimeTracked> {
     return t_5.with(|v| v.as_pointer());
 }
@@ -97,7 +101,15 @@ thread_local!(
 );
 thread_local!(
     pub static check_6: Value<AssertsDtorCountAtExit> = {
-        let __static = Rc::new(RefCell::new(AssertsDtorCountAtExit { expected: 1 }));
+        let __static = {
+            let __v: Value<AssertsDtorCountAtExit> =
+                Rc::new(RefCell::new(<AssertsDtorCountAtExit>::uninit()));
+            {
+                let __d = __v.as_pointer();
+                field!(__d, expected).write(1);
+            };
+            __v
+        };
         libcc2rs::register_static_destructor(|| {
             check_6.with(Value::clone).as_pointer().destructor()
         });

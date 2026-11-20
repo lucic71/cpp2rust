@@ -14,6 +14,12 @@ pub struct Point {
     #[offset(4)]
     pub y: u32,
 }
+impl Point {
+    pub fn copy_from(this: Ptr<Point>, _a0: Ptr<Point>) {
+        field!(this, x).write(_a0.with(|__s| __s.x));
+        field!(this, y).write(_a0.with(|__s| __s.y));
+    }
+}
 #[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
 #[byte_size(8)]
 pub struct Pair {
@@ -22,15 +28,23 @@ pub struct Pair {
     #[offset(4)]
     pub second: u32,
 }
+impl Pair {
+    pub fn copy_from(this: Ptr<Pair>, _a0: Ptr<Pair>) {
+        field!(this, first).write(_a0.with(|__s| __s.first));
+        field!(this, second).write(_a0.with(|__s| __s.second));
+    }
+}
 pub fn main() {
     __cpp2rust_init_globals();
     libcc2rs::cpp2rust_exit(main_0());
 }
 fn main_0() -> i32 {
-    let pt: Value<Point> = Rc::new(RefCell::new(Point {
-        x: 10_u32,
-        y: 20_u32,
-    }));
+    let pt: Value<Point> = Rc::new(RefCell::new(<Point>::uninit()));
+    {
+        let __d = pt.as_pointer();
+        field!(__d, x).write(10_u32);
+        field!(__d, y).write(20_u32);
+    };
     let mut pair: Ptr<Pair> = (pt.as_pointer()).reinterpret_cast::<Pair>();
     assert!((pair.with(|__s| __s.first) == 10_u32));
     assert!((pair.with(|__s| __s.second) == 20_u32));

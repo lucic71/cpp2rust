@@ -15,6 +15,12 @@ impl Lt {
     pub unsafe fn operator_lt(&self, o: *const Lt) -> bool {
         return ((self.v) < ((*o).v));
     }
+    pub unsafe fn copy_from(this: *mut Lt, _a0: *const Lt) {
+        (&raw mut (*this).v).write((*_a0).v);
+    }
+    pub unsafe fn move_from(this: *mut Lt, _a0: *mut Lt) {
+        (&raw mut (*this).v).write((*_a0).v);
+    }
 }
 impl std::cmp::Ord for Lt {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering {
@@ -52,6 +58,9 @@ impl Eq {
     pub unsafe fn operator_eq(&self, o: *const Eq) -> bool {
         return ((self.v) == ((*o).v));
     }
+    pub unsafe fn copy_from(this: *mut Eq, _a0: *const Eq) {
+        (&raw mut (*this).v).write((*_a0).v);
+    }
 }
 impl std::cmp::PartialEq for Eq {
     fn eq(&self, other: &Self) -> bool {
@@ -70,6 +79,12 @@ impl Cmp {
     }
     pub unsafe fn operator_eq(&self, o: *const Cmp) -> bool {
         return ((self.v) == ((*o).v));
+    }
+    pub unsafe fn copy_from(this: *mut Cmp, _a0: *const Cmp) {
+        (&raw mut (*this).v).write((*_a0).v);
+    }
+    pub unsafe fn move_from(this: *mut Cmp, _a0: *mut Cmp) {
+        (&raw mut (*this).v).write((*_a0).v);
     }
 }
 impl std::cmp::Ord for Cmp {
@@ -92,6 +107,14 @@ impl std::cmp::Eq for Cmp {}
 #[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct Free {
     pub v: i32,
+}
+impl Free {
+    pub unsafe fn copy_from(this: *mut Free, _a0: *const Free) {
+        (&raw mut (*this).v).write((*_a0).v);
+    }
+    pub unsafe fn move_from(this: *mut Free, _a0: *mut Free) {
+        (&raw mut (*this).v).write((*_a0).v);
+    }
 }
 impl std::cmp::Ord for Free {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering {
@@ -128,6 +151,11 @@ pub unsafe fn operator_eq_1(a: *const Free, b: *const Free) -> bool {
 pub struct Wrapped_int_ {
     pub v: i32,
 }
+impl Wrapped_int_ {
+    pub unsafe fn copy_from(this: *mut Wrapped_int_, _a0: *const Wrapped_int_) {
+        (&raw mut (*this).v).write((*_a0).v);
+    }
+}
 pub fn main() {
     unsafe {
         __cpp2rust_init_globals();
@@ -135,7 +163,11 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    let mut w: Wrapped_int_ = Wrapped_int_ { v: 2 };
+    let mut w: Wrapped_int_ = ::std::mem::MaybeUninit::uninit().assume_init();
+    {
+        let __d = &raw mut w;
+        (&raw mut (*__d).v).write(2);
+    };
     assert!(((w.v) == (2)));
     let mut lts: Vec<Lt> = Vec::from([Lt { v: 3 }, Lt { v: 1 }, Lt { v: 2 }]);
     {
@@ -155,8 +187,16 @@ unsafe fn main_0() -> i32 {
         (((lts[(0_usize)].v) == (1)) && ((lts[(1_usize)].v) == (2))) && ((lts[(2_usize)].v) == (3))
     );
     let mut eqs: Vec<Eq> = Vec::from([Eq { v: 1 }, Eq { v: 2 }, Eq { v: 3 }]);
-    let mut two: Eq = Eq { v: 2 };
-    let mut nine: Eq = Eq { v: 9 };
+    let mut two: Eq = ::std::mem::MaybeUninit::uninit().assume_init();
+    {
+        let __d = &raw mut two;
+        (&raw mut (*__d).v).write(2);
+    };
+    let mut nine: Eq = ::std::mem::MaybeUninit::uninit().assume_init();
+    {
+        let __d = &raw mut nine;
+        (&raw mut (*__d).v).write(9);
+    };
     assert!(
         (((*{
             let mut __tmp_1 = { eqs.begin() };
@@ -196,7 +236,11 @@ unsafe fn main_0() -> i32 {
         }
     };
     assert!(((cmps[(0_usize)].v) == (1)) && ((cmps[(2_usize)].v) == (3)));
-    let mut three: Cmp = Cmp { v: 3 };
+    let mut three: Cmp = ::std::mem::MaybeUninit::uninit().assume_init();
+    {
+        let __d = &raw mut three;
+        (&raw mut (*__d).v).write(3);
+    };
     assert!(
         (((*{
             let mut __tmp_6 = { cmps.begin() };
@@ -225,7 +269,11 @@ unsafe fn main_0() -> i32 {
         }
     };
     assert!(((frees[(0_usize)].v) == (1)));
-    let mut ftwo: Free = Free { v: 2 };
+    let mut ftwo: Free = ::std::mem::MaybeUninit::uninit().assume_init();
+    {
+        let __d = &raw mut ftwo;
+        (&raw mut (*__d).v).write(2);
+    };
     assert!(
         (((*{
             let mut __tmp_9 = { frees.begin() };
@@ -240,11 +288,41 @@ unsafe fn main_0() -> i32 {
         .v) == (2))
     );
     let mut m: UnsafeMap<Lt, (Lt, i32)> = UnsafeMap::new();
-    (*m.subscript_move((&mut Lt { v: 2 }), |__k| cpp_move_unsafe!(__k), || 0_i32)) = 20;
-    (*m.subscript_move((&mut Lt { v: 1 }), |__k| cpp_move_unsafe!(__k), || 0_i32)) = 10;
+    (*m.subscript_move(
+        (&mut *(|__p: *mut Lt| {
+            {
+                let __d = __p;
+                (&raw mut (*__d).v).write(2);
+            };
+            __p
+        })((&mut ::std::mem::MaybeUninit::<Lt>::uninit()).as_mut_ptr())),
+        |__k| cpp_move_unsafe!(__k),
+        || 0_i32,
+    )) = 20;
+    (*m.subscript_move(
+        (&mut *(|__p: *mut Lt| {
+            {
+                let __d = __p;
+                (&raw mut (*__d).v).write(1);
+            };
+            __p
+        })((&mut ::std::mem::MaybeUninit::<Lt>::uninit()).as_mut_ptr())),
+        |__k| cpp_move_unsafe!(__k),
+        || 0_i32,
+    )) = 10;
     assert!((((*m.begin().iter_deref()).1) == (10)));
     assert!(
-        ((*m.subscript_move((&mut Lt { v: 2 }), |__k| cpp_move_unsafe!(__k), || 0_i32)) == (20))
+        ((*m.subscript_move(
+            (&mut *(|__p: *mut Lt| {
+                {
+                    let __d = __p;
+                    (&raw mut (*__d).v).write(2);
+                };
+                __p
+            })((&mut ::std::mem::MaybeUninit::<Lt>::uninit()).as_mut_ptr())),
+            |__k| cpp_move_unsafe!(__k),
+            || 0_i32
+        )) == (20))
     );
     return 0;
 }

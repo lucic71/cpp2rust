@@ -14,6 +14,12 @@ pub struct S {
     #[offset(8)]
     pub x: i64,
 }
+impl S {
+    pub fn copy_from(this: Ptr<S>, _a0: Ptr<S>) {
+        field!(this, c).write(_a0.with(|__s| __s.c));
+        field!(this, x).write(_a0.with(|__s| __s.x));
+    }
+}
 pub fn pack_size_0() -> u64 {
     return ((0 as usize).wrapping_add((0 as usize)) as u64);
 }
@@ -28,7 +34,12 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     let mut arr: [i64; 4] = [0_i64; 4];
-    let mut s: S = <S>::default();
+    let s: Value<S> = Rc::new(RefCell::new(<S>::uninit()));
+    {
+        let __d = s.as_pointer();
+        field!(__d, c).write(0_i8);
+        field!(__d, x).write(0_i64);
+    };
     assert!((::std::mem::size_of::<i32>() == 4_usize));
     assert!((::std::mem::size_of::<[i64; 4]>() == 32_usize));
     assert!((16usize == 16_usize));

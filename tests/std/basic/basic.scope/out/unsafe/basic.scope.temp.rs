@@ -6,7 +6,8 @@ use std::collections::BTreeMap;
 use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
-pub static mut width_0: std::cell::LazyCell<i32> = std::cell::LazyCell::new(|| unsafe { 3 });
+pub static mut width_0: libcc2rs::LazyStorage<i32> =
+    libcc2rs::LazyStorage::new(|__p| unsafe { __p.write(3) });
 pub unsafe fn area_1(mut height: i32) -> i32 {
     return ((5) * (height));
 }
@@ -14,7 +15,7 @@ pub unsafe fn area_2(mut height: i32) -> i32 {
     return ((7) * (height));
 }
 pub unsafe fn plain_area_3(mut height: i32) -> i32 {
-    return ((*std::cell::LazyCell::force_mut(&mut *&raw mut width_0)) * (height));
+    return ((*(*&raw const width_0).get()) * (height));
 }
 pub unsafe fn test_4() {
     assert!(((unsafe { area_1(2,) }) == (10)));
@@ -32,5 +33,5 @@ unsafe fn main_0() -> i32 {
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {
-    std::cell::LazyCell::force(&*&raw const width_0);
+    (*&raw const width_0).get();
 }

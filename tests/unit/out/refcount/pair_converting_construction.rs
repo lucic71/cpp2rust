@@ -7,7 +7,6 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
 #[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, CppFrom, Default)]
-#[placement]
 #[cpp_from(i32, new, value)]
 #[byte_size(4)]
 pub struct Celsius {
@@ -32,8 +31,15 @@ pub struct Meters {
     #[offset(0)]
     pub value: i32,
 }
+impl Meters {
+    pub fn copy_from(this: Ptr<Meters>, _a0: Ptr<Meters>) {
+        field!(this, value).write(_a0.with(|__s| __s.value));
+    }
+    pub fn move_from(this: Ptr<Meters>, _a0: Ptr<Meters>) {
+        field!(this, value).write({ (*_a0.upgrade().deref()).value });
+    }
+}
 #[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, CppFrom, Default)]
-#[placement]
 #[cpp_from(Celsius, new, ptr)]
 #[byte_size(4)]
 pub struct Label {
@@ -49,7 +55,6 @@ impl Label {
     }
 }
 #[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, CppFrom, Default)]
-#[placement]
 #[cpp_from(Celsius, new_1, ptr)]
 #[cpp_from_move(Celsius, new_2, ptr)]
 #[byte_size(8)]
@@ -74,7 +79,6 @@ impl Owner {
     }
 }
 #[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, CppFrom, Default)]
-#[placement]
 #[cpp_from(Celsius, new, storage)]
 #[byte_size(4)]
 pub struct Holder {
@@ -90,7 +94,6 @@ impl Holder {
     }
 }
 #[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, CppFrom)]
-#[placement]
 #[cpp_from(i32, new, value)]
 #[byte_size(4)]
 pub struct Fallback {
@@ -123,8 +126,12 @@ pub struct Counter {
     #[offset(0)]
     pub hits: i32,
 }
+impl Counter {
+    pub fn copy_from(this: Ptr<Counter>, _a0: Ptr<Counter>) {
+        field!(this, hits).write(_a0.with(|__s| __s.hits));
+    }
+}
 #[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, CppFrom, Default)]
-#[placement]
 #[cpp_from(Counter, new, mut_ptr)]
 #[byte_size(4)]
 pub struct Observer {
@@ -146,7 +153,6 @@ impl Tag {
     }
 }
 #[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, CppFrom, Default)]
-#[placement]
 #[cpp_from(Celsius, new, ptr)]
 #[byte_size(4)]
 pub struct Tag {
@@ -159,7 +165,6 @@ impl Tag {
     }
 }
 #[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, CppFrom, Default)]
-#[placement]
 #[cpp_from(Ptr< i8  >  , new, value)]
 #[byte_size(4)]
 pub struct Name {
@@ -214,7 +219,11 @@ fn main_0() -> i32 {
     )));
     assert!(({ ({ (*(*from_ints.borrow()).0.borrow()).degrees } == 1) }));
     assert!(({ ({ (*(*from_ints.borrow()).1.borrow()).degrees } == 2) }));
-    let m: Value<Meters> = Rc::new(RefCell::new(Meters { value: 7 }));
+    let m: Value<Meters> = Rc::new(RefCell::new(<Meters>::uninit()));
+    {
+        let __d = m.as_pointer();
+        field!(__d, value).write(7);
+    };
     let from_operators: Value<(Value<i32>, Value<i64>)> = Rc::new(RefCell::new((
         Rc::new(RefCell::new(({ MetersImpl::to_i32(&m.as_pointer()) }))),
         Rc::new(RefCell::new(
@@ -401,7 +410,11 @@ fn main_0() -> i32 {
     )));
     assert!(({ ({ (*(*from_defaulted_ctor.borrow()).0.borrow()).value } == 5) }));
     assert!(({ ((*(*from_defaulted_ctor.borrow()).1.borrow()) == 6_i64) }));
-    let counter: Value<Counter> = Rc::new(RefCell::new(Counter { hits: 3 }));
+    let counter: Value<Counter> = Rc::new(RefCell::new(<Counter>::uninit()));
+    {
+        let __d = counter.as_pointer();
+        field!(__d, hits).write(3);
+    };
     let forwarded_mutable_ref: Value<(Value<Observer>, Value<i32>)> = Rc::new(RefCell::new((
         Rc::new(RefCell::new(
             Rc::try_unwrap({

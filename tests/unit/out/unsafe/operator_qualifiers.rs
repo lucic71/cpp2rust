@@ -39,6 +39,9 @@ impl S {
     pub unsafe fn operator_index_9(&self, mut i: i32) -> i32 {
         return (((self.v) + (i)) + (100));
     }
+    pub unsafe fn copy_from(this: *mut S, _a0: *const S) {
+        (&raw mut (*this).v).write((*_a0).v);
+    }
 }
 pub fn main() {
     unsafe {
@@ -47,17 +50,55 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    let mut s: S = S { v: 10 };
-    let cs: S = S { v: 10 };
-    let mut vs: S = S { v: 10 };
+    let mut s: S = ::std::mem::MaybeUninit::uninit().assume_init();
+    {
+        let __d = &raw mut s;
+        (&raw mut (*__d).v).write(10);
+    };
+    let mut cs: S = ::std::mem::MaybeUninit::uninit().assume_init();
+    {
+        let __d = &raw mut cs;
+        (&raw mut (*__d).v).write(10);
+    };
+    let mut vs: S = ::std::mem::MaybeUninit::uninit().assume_init();
+    {
+        let __d = &raw mut vs;
+        (&raw mut (*__d).v).write(10);
+    };
     assert!(((unsafe { S::operator_add_1(&mut s, 1,) }) == (11)));
     assert!(((unsafe { S::operator_add_2(&cs, 1,) }) == (12)));
     assert!(((unsafe { S::operator_add_3(&mut vs, 1,) }) == (13)));
     assert!(((unsafe { S::operator_sub_4(&mut s, 1,) }) == (9)));
-    assert!(((unsafe { S::operator_sub_5(&mut S { v: 10 }, 1,) }) == (8)));
+    assert!(
+        ((unsafe {
+            S::operator_sub_5(
+                &mut *(|__p: *mut S| {
+                    {
+                        let __d = __p;
+                        (&raw mut (*__d).v).write(10);
+                    };
+                    __p
+                })((&mut ::std::mem::MaybeUninit::<S>::uninit()).as_mut_ptr()),
+                1,
+            )
+        }) == (8))
+    );
     assert!(((unsafe { S::operator_mul_6(&s, 3,) }) == (30)));
     assert!(((unsafe { S::operator_mul_6(&cs, 3,) }) == (30)));
-    assert!(((unsafe { S::operator_mul_7(&S { v: 10 }, 3,) }) == (60)));
+    assert!(
+        ((unsafe {
+            S::operator_mul_7(
+                &mut *(|__p: *mut S| {
+                    {
+                        let __d = __p;
+                        (&raw mut (*__d).v).write(10);
+                    };
+                    __p
+                })((&mut ::std::mem::MaybeUninit::<S>::uninit()).as_mut_ptr()),
+                3,
+            )
+        }) == (60))
+    );
     assert!(((unsafe { S::operator_index_8(&mut s, 2,) }) == (12)));
     assert!(((unsafe { S::operator_index_9(&cs, 2,) }) == (112)));
     return 0;

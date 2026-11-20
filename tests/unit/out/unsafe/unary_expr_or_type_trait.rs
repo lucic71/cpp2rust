@@ -12,6 +12,12 @@ pub struct S {
     pub c: libc::c_char,
     pub x: i64,
 }
+impl S {
+    pub unsafe fn copy_from(this: *mut S, _a0: *const S) {
+        (&raw mut (*this).c).write((*_a0).c);
+        (&raw mut (*this).x).write((*_a0).x);
+    }
+}
 pub unsafe fn pack_size_0() -> u64 {
     return ((0 as usize).wrapping_add((0 as usize)) as u64);
 }
@@ -28,7 +34,12 @@ pub fn main() {
 }
 unsafe fn main_0() -> i32 {
     let mut arr: [i64; 4] = [0_i64; 4];
-    let mut s: S = <S>::default();
+    let mut s: S = ::std::mem::MaybeUninit::uninit().assume_init();
+    {
+        let __d = &raw mut s;
+        (&raw mut (*__d).c).write((0 as libc::c_char));
+        (&raw mut (*__d).x).write(0_i64);
+    };
     assert!(((::std::mem::size_of::<i32>()) == (4_usize)));
     assert!(((::std::mem::size_of::<[i64; 4]>()) == (32_usize)));
     assert!(((::std::mem::size_of::<S>()) == (16_usize)));

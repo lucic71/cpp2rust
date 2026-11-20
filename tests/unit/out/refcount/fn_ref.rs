@@ -28,6 +28,11 @@ pub struct Holder {
     #[byte_size(8)]
     pub f: FnPtr<fn(i32) -> i32>,
 }
+impl Holder {
+    pub fn copy_from(this: Ptr<Holder>, _a0: Ptr<Holder>) {
+        field!(this, f).write((_a0.with(|__s| __s.f.clone())).clone());
+    }
+}
 pub fn main() {
     __cpp2rust_init_globals();
     libcc2rs::cpp2rust_exit(main_0());
@@ -40,9 +45,11 @@ fn main_0() -> i32 {
     assert!((({ call_ref_2((r).clone(), 5,) }) == 25));
     assert!((({ call_deduced_3(FnPtr::<fn(i32) -> i32>::new(twice_1), 7,) }) == 14));
     assert!((({ call_forwarded_4(FnPtr::<fn(i32) -> i32>::new(square_0), 6,) }) == 36));
-    let h: Value<Holder> = Rc::new(RefCell::new(Holder {
-        f: FnPtr::<fn(i32) -> i32>::new(twice_1),
-    }));
+    let h: Value<Holder> = Rc::new(RefCell::new(<Holder>::uninit()));
+    {
+        let __d = h.as_pointer();
+        field!(__d, f).write(FnPtr::<fn(i32) -> i32>::new(twice_1));
+    };
     assert!((({ HolderImpl::run(&h.as_pointer(), 8,) }) == 16));
     return 0;
 }

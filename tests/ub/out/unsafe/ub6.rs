@@ -12,15 +12,27 @@ pub struct Pair {
     pub x1: *mut i32,
     pub x2: *mut i32,
 }
-pub unsafe fn mkPair_0(x1: *mut i32, x2: *mut i32) -> Pair {
-    return Pair { x1: x1, x2: x2 };
+impl Pair {
+    pub unsafe fn copy_from(this: *mut Pair, _a0: *const Pair) {
+        (&raw mut (*this).x1).write((*_a0).x1);
+        (&raw mut (*this).x2).write((*_a0).x2);
+    }
+}
+pub unsafe fn mkPair_0(__ret: *mut Pair, x1: *mut i32, x2: *mut i32) {
+    {
+        let __d = __ret.clone();
+        (&raw mut (*__d).x1).write(x1);
+        (&raw mut (*__d).x2).write(x2);
+    };
+    return;
 }
 pub unsafe fn fill_1(arr: *mut Option<Box<[*mut i32]>>, n1: *mut i32) {
     let mut n2: i32 = (*n1);
-    let mut pair: Pair = (unsafe {
+    let mut pair: Pair = ::std::mem::MaybeUninit::uninit().assume_init();
+    (unsafe {
         let _x1: *mut i32 = n1;
         let _x2: *mut i32 = &mut n2;
-        mkPair_0(_x1, _x2)
+        mkPair_0(&raw mut pair, _x1, _x2)
     });
     (*(*arr)
         .as_deref()

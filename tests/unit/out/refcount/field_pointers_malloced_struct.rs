@@ -16,6 +16,13 @@ pub struct S {
     #[offset(8)]
     pub c: i32,
 }
+impl S {
+    pub fn copy_from(this: Ptr<S>, _a0: Ptr<S>) {
+        field!(this, a).write(_a0.with(|__s| __s.a));
+        field!(this, b).write(_a0.with(|__s| __s.b));
+        field!(this, c).write(_a0.with(|__s| __s.c));
+    }
+}
 pub fn bump_0(mut s: Ptr<S>) -> i32 {
     {
         field!(s, b).with_mut(|__v| *__v = *__v + 10)

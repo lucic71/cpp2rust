@@ -18,13 +18,21 @@ impl MinHeapNode {
     pub unsafe fn IsLeaf(&self) -> bool {
         return ((self.left).is_null()) && ((self.right).is_null());
     }
+    pub unsafe fn copy_from(this: *mut MinHeapNode, _a0: *const MinHeapNode) {
+        (&raw mut (*this).data).write((*_a0).data);
+        (&raw mut (*this).freq).write((*_a0).freq);
+        (&raw mut (*this).left).write((*_a0).left);
+        (&raw mut (*this).right).write((*_a0).right);
+    }
 }
 pub unsafe fn Swap_0(a: *mut MinHeapNode, b: *mut MinHeapNode) {
-    let mut t: MinHeapNode = MinHeapNode {
-        data: (*a).data,
-        freq: (*a).freq,
-        left: (*a).left,
-        right: (*a).right,
+    let mut t: MinHeapNode = ::std::mem::MaybeUninit::uninit().assume_init();
+    {
+        let __d = &raw mut t;
+        (&raw mut (*__d).data).write((*a).data);
+        (&raw mut (*__d).freq).write((*a).freq);
+        (&raw mut (*__d).left).write((*a).left);
+        (&raw mut (*__d).right).write((*a).right);
     };
     (*a) = MinHeapNode {
         data: (*b).data,
@@ -230,15 +238,12 @@ impl MinHeap {
             }
         }
     }
-    pub unsafe fn move_from(_a0: *mut MinHeap) -> Self {
-        let mut this = Self {
-            size: (*_a0).size,
-            capacity: (*_a0).capacity,
-            arr: (*_a0).arr.take(),
-            next: (*_a0).next,
-            alloc: (*_a0).alloc.take(),
-        };
-        this
+    pub unsafe fn move_from(this: *mut MinHeap, _a0: *mut MinHeap) {
+        (&raw mut (*this).size).write((*_a0).size);
+        (&raw mut (*this).capacity).write((*_a0).capacity);
+        (&raw mut (*this).arr).write((*_a0).arr.take());
+        (&raw mut (*this).next).write((*_a0).next);
+        (&raw mut (*this).alloc).write((*_a0).alloc.take());
     }
     pub unsafe fn move_assign(&mut self, _a0: *mut MinHeap) -> *mut MinHeap {
         self.size = (*_a0).size;

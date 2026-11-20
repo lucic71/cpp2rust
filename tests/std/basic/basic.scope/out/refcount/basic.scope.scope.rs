@@ -47,6 +47,14 @@ pub const p2_11_unscoped_enumerator_in_both_scopes_HasUnscopedEnum_Size_large:
 #[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
 #[byte_size(1)]
 pub struct p2_11_unscoped_enumerator_in_both_scopes_HasUnscopedEnum {}
+impl p2_11_unscoped_enumerator_in_both_scopes_HasUnscopedEnum {
+    pub fn new_1(this: Ptr<p2_11_unscoped_enumerator_in_both_scopes_HasUnscopedEnum>) {}
+    pub fn copy_from(
+        this: Ptr<p2_11_unscoped_enumerator_in_both_scopes_HasUnscopedEnum>,
+        _a0: Ptr<p2_11_unscoped_enumerator_in_both_scopes_HasUnscopedEnum>,
+    ) {
+    }
+}
 pub fn test_5() {
     assert!(((p2_11_unscoped_enumerator_in_both_scopes_Direction_north as i32) == 4));
     assert!(((p2_11_unscoped_enumerator_in_both_scopes_Direction_north as i32) == 4));
@@ -57,8 +65,9 @@ pub fn test_5() {
     assert!(((p2_11_unscoped_enumerator_in_both_scopes_HasUnscopedEnum_Size_large as i32) == 8));
     assert!(((p2_11_unscoped_enumerator_in_both_scopes_HasUnscopedEnum_Size_large as i32) == 8));
     let object: Value<p2_11_unscoped_enumerator_in_both_scopes_HasUnscopedEnum> = Rc::new(
-        RefCell::new(<p2_11_unscoped_enumerator_in_both_scopes_HasUnscopedEnum>::default()),
+        RefCell::new(<p2_11_unscoped_enumerator_in_both_scopes_HasUnscopedEnum>::uninit()),
     );
+    p2_11_unscoped_enumerator_in_both_scopes_HasUnscopedEnum::new_1(object.as_pointer());
     assert!(
         (({
             p2_11_unscoped_enumerator_in_both_scopes_HasUnscopedEnumImpl::scale(
@@ -78,6 +87,11 @@ pub struct p2_12_class_name_in_own_scope_HasStaticCounter {}
 impl p2_12_class_name_in_own_scope_HasStaticCounter {
     pub fn bump() {
         (*count_6.with(Value::clone).borrow_mut()).prefix_inc();
+    }
+    pub fn copy_from(
+        this: Ptr<p2_12_class_name_in_own_scope_HasStaticCounter>,
+        _a0: Ptr<p2_12_class_name_in_own_scope_HasStaticCounter>,
+    ) {
     }
 }
 pub fn test_7() {
@@ -146,14 +160,27 @@ pub struct p2_13_anonymous_union_members_in_parent_scope_HasAnonymousUnion {
     #[byte_size(8)]
     pub anon_9: anon_9,
 }
+impl p2_13_anonymous_union_members_in_parent_scope_HasAnonymousUnion {
+    pub fn new_1(this: Ptr<p2_13_anonymous_union_members_in_parent_scope_HasAnonymousUnion>) {
+        field!(this, anon_9).write(<anon_9>::default());
+    }
+    pub fn copy_from(
+        this: Ptr<p2_13_anonymous_union_members_in_parent_scope_HasAnonymousUnion>,
+        _a0: Ptr<p2_13_anonymous_union_members_in_parent_scope_HasAnonymousUnion>,
+    ) {
+        field!(this, tag).write(_a0.with(|__s| __s.tag));
+        field!(this, anon_9).write(_a0.with(|__s| __s.anon_9.clone()));
+    }
+}
 pub fn test_10() {
     anon_8::namespace_count(anon_8.with(|v| v.as_pointer())).write(4);
     assert!(((anon_8::namespace_count(anon_8.with(|v| v.as_pointer())).read()) == 4));
     anon_8::namespace_ratio(anon_8.with(|v| v.as_pointer())).write(0.25_f64);
     assert!(((anon_8::namespace_ratio(anon_8.with(|v| v.as_pointer())).read()) == 0.25_f64));
     let object: Value<p2_13_anonymous_union_members_in_parent_scope_HasAnonymousUnion> = Rc::new(
-        RefCell::new(<p2_13_anonymous_union_members_in_parent_scope_HasAnonymousUnion>::default()),
+        RefCell::new(<p2_13_anonymous_union_members_in_parent_scope_HasAnonymousUnion>::uninit()),
     );
+    p2_13_anonymous_union_members_in_parent_scope_HasAnonymousUnion::new_1(object.as_pointer());
     (*object.borrow_mut()).tag = 1;
     anon_9::member_count(field_ptr!(object.as_pointer(), anon_9)).write(6);
     assert!(((anon_9::member_count(field_ptr!(object.as_pointer(), anon_9)).read()) == 6));
@@ -204,6 +231,19 @@ pub struct p3_2_const_qualified_member_is_distinct_HasConstOverload {
     #[offset(4)]
     pub const_calls: i32,
 }
+impl p3_2_const_qualified_member_is_distinct_HasConstOverload {
+    pub fn new_1(this: Ptr<p3_2_const_qualified_member_is_distinct_HasConstOverload>) {
+        field!(this, plain_calls).write(0);
+        field!(this, const_calls).write(0);
+    }
+    pub fn copy_from(
+        this: Ptr<p3_2_const_qualified_member_is_distinct_HasConstOverload>,
+        _a0: Ptr<p3_2_const_qualified_member_is_distinct_HasConstOverload>,
+    ) {
+        field!(this, plain_calls).write(_a0.with(|__s| __s.plain_calls));
+        field!(this, const_calls).write(_a0.with(|__s| __s.const_calls));
+    }
+}
 impl Default for p3_2_const_qualified_member_is_distinct_HasConstOverload {
     fn default() -> Self {
         {
@@ -216,8 +256,9 @@ impl Default for p3_2_const_qualified_member_is_distinct_HasConstOverload {
 }
 pub fn test_12() {
     let object: Value<p3_2_const_qualified_member_is_distinct_HasConstOverload> = Rc::new(
-        RefCell::new(<p3_2_const_qualified_member_is_distinct_HasConstOverload>::default()),
+        RefCell::new(<p3_2_const_qualified_member_is_distinct_HasConstOverload>::uninit()),
     );
+    p3_2_const_qualified_member_is_distinct_HasConstOverload::new_1(object.as_pointer());
     let view: Ptr<p3_2_const_qualified_member_is_distinct_HasConstOverload> = object.as_pointer();
     assert!(
         (({
@@ -246,6 +287,19 @@ pub struct p3_2_explicit_object_and_rvalue_members_are_distinct_HasExplicitObjec
     #[offset(0)]
     pub base: i32,
 }
+impl p3_2_explicit_object_and_rvalue_members_are_distinct_HasExplicitObjectOverload {
+    pub fn new_1(
+        this: Ptr<p3_2_explicit_object_and_rvalue_members_are_distinct_HasExplicitObjectOverload>,
+    ) {
+        field!(this, base).write(10);
+    }
+    pub fn copy_from(
+        this: Ptr<p3_2_explicit_object_and_rvalue_members_are_distinct_HasExplicitObjectOverload>,
+        _a0: Ptr<p3_2_explicit_object_and_rvalue_members_are_distinct_HasExplicitObjectOverload>,
+    ) {
+        field!(this, base).write(_a0.with(|__s| __s.base));
+    }
+}
 impl Default for p3_2_explicit_object_and_rvalue_members_are_distinct_HasExplicitObjectOverload {
     fn default() -> Self {
         {
@@ -259,8 +313,11 @@ pub fn test_15() {
     let object: Value<
         p3_2_explicit_object_and_rvalue_members_are_distinct_HasExplicitObjectOverload,
     > = Rc::new(RefCell::new(
-        <p3_2_explicit_object_and_rvalue_members_are_distinct_HasExplicitObjectOverload>::default(),
+        <p3_2_explicit_object_and_rvalue_members_are_distinct_HasExplicitObjectOverload>::uninit(),
     ));
+    p3_2_explicit_object_and_rvalue_members_are_distinct_HasExplicitObjectOverload::new_1(
+        object.as_pointer(),
+    );
     assert!(
         (({
             <Ptr<p3_2_explicit_object_and_rvalue_members_are_distinct_HasExplicitObjectOverload> as p3_2_explicit_object_and_rvalue_members_are_distinct_HasExplicitObjectOverloadImpl>::pick_1 ( object .as_pointer()  , 1  , )
@@ -270,7 +327,9 @@ pub fn test_15() {
     assert!((rvalue_calls_14.with(|rc| *rc.borrow()) == 0));
     assert!(
         (({
-            p3_2_explicit_object_and_rvalue_members_are_distinct_HasExplicitObjectOverloadImpl :: pick_2 ( &Rc::new(RefCell::new(<p3_2_explicit_object_and_rvalue_members_are_distinct_HasExplicitObjectOverload  >::default() )).as_pointer() , 2  , )
+            p3_2_explicit_object_and_rvalue_members_are_distinct_HasExplicitObjectOverloadImpl :: pick_2 ( &{ let __v : Value<p3_2_explicit_object_and_rvalue_members_are_distinct_HasExplicitObjectOverload >  = Rc::new(RefCell::new(<p3_2_explicit_object_and_rvalue_members_are_distinct_HasExplicitObjectOverload  >::uninit())) ;
+ p3_2_explicit_object_and_rvalue_members_are_distinct_HasExplicitObjectOverload :: new_1 ( __v.as_pointer() , )  ;
+ __v } .as_pointer() , 2  , )
         }) == 112)
     );
     assert!((explicit_calls_13.with(|rc| *rc.borrow()) == 1));
@@ -285,10 +344,19 @@ thread_local!(
 #[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
 #[byte_size(1)]
 pub struct p3_2_ref_qualified_members_are_distinct_HasRefQualifiedOverloads {}
+impl p3_2_ref_qualified_members_are_distinct_HasRefQualifiedOverloads {
+    pub fn new_1(this: Ptr<p3_2_ref_qualified_members_are_distinct_HasRefQualifiedOverloads>) {}
+    pub fn copy_from(
+        this: Ptr<p3_2_ref_qualified_members_are_distinct_HasRefQualifiedOverloads>,
+        _a0: Ptr<p3_2_ref_qualified_members_are_distinct_HasRefQualifiedOverloads>,
+    ) {
+    }
+}
 pub fn test_18() {
     let object: Value<p3_2_ref_qualified_members_are_distinct_HasRefQualifiedOverloads> = Rc::new(
-        RefCell::new(<p3_2_ref_qualified_members_are_distinct_HasRefQualifiedOverloads>::default()),
+        RefCell::new(<p3_2_ref_qualified_members_are_distinct_HasRefQualifiedOverloads>::uninit()),
     );
+    p3_2_ref_qualified_members_are_distinct_HasRefQualifiedOverloads::new_1(object.as_pointer());
     assert!(
         (({
             p3_2_ref_qualified_members_are_distinct_HasRefQualifiedOverloadsImpl::get_1(
@@ -301,9 +369,18 @@ pub fn test_18() {
     assert!(
         (({
             p3_2_ref_qualified_members_are_distinct_HasRefQualifiedOverloadsImpl::get_2(
-                &Rc::new(RefCell::new(
-                    <p3_2_ref_qualified_members_are_distinct_HasRefQualifiedOverloads>::default(),
-                ))
+                &{
+                    let __v: Value<
+                        p3_2_ref_qualified_members_are_distinct_HasRefQualifiedOverloads,
+                    > = Rc::new(RefCell::new(
+                        <p3_2_ref_qualified_members_are_distinct_HasRefQualifiedOverloads>::uninit(
+                        ),
+                    ));
+                    p3_2_ref_qualified_members_are_distinct_HasRefQualifiedOverloads::new_1(
+                        __v.as_pointer(),
+                    );
+                    __v
+                }
                 .as_pointer(),
             )
         }) == 4)
@@ -328,6 +405,21 @@ pub struct p3_4_const_qualified_member_templates_are_distinct_HasConstTemplateOv
     #[offset(4)]
     pub const_calls: i32,
 }
+impl p3_4_const_qualified_member_templates_are_distinct_HasConstTemplateOverload {
+    pub fn new_1(
+        this: Ptr<p3_4_const_qualified_member_templates_are_distinct_HasConstTemplateOverload>,
+    ) {
+        field!(this, plain_calls).write(0);
+        field!(this, const_calls).write(0);
+    }
+    pub fn copy_from(
+        this: Ptr<p3_4_const_qualified_member_templates_are_distinct_HasConstTemplateOverload>,
+        _a0: Ptr<p3_4_const_qualified_member_templates_are_distinct_HasConstTemplateOverload>,
+    ) {
+        field!(this, plain_calls).write(_a0.with(|__s| __s.plain_calls));
+        field!(this, const_calls).write(_a0.with(|__s| __s.const_calls));
+    }
+}
 impl Default for p3_4_const_qualified_member_templates_are_distinct_HasConstTemplateOverload {
     fn default() -> Self {
         {
@@ -341,9 +433,11 @@ impl Default for p3_4_const_qualified_member_templates_are_distinct_HasConstTemp
 pub fn test_19() {
     let object: Value<p3_4_const_qualified_member_templates_are_distinct_HasConstTemplateOverload> =
         Rc::new(RefCell::new(
-            <p3_4_const_qualified_member_templates_are_distinct_HasConstTemplateOverload>::default(
-            ),
+            <p3_4_const_qualified_member_templates_are_distinct_HasConstTemplateOverload>::uninit(),
         ));
+    p3_4_const_qualified_member_templates_are_distinct_HasConstTemplateOverload::new_1(
+        object.as_pointer(),
+    );
     let view: Ptr<p3_4_const_qualified_member_templates_are_distinct_HasConstTemplateOverload> =
         object.as_pointer();
     assert!(
@@ -370,8 +464,31 @@ thread_local!(
 #[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
 #[byte_size(1)]
 pub struct p3_4_ref_qualified_member_templates_are_distinct_HasRefQualifiedTemplateOverloads {}
+impl p3_4_ref_qualified_member_templates_are_distinct_HasRefQualifiedTemplateOverloads {
+    pub fn new_1(
+        this: Ptr<
+            p3_4_ref_qualified_member_templates_are_distinct_HasRefQualifiedTemplateOverloads,
+        >,
+    ) {
+    }
+    pub fn copy_from(
+        this: Ptr<
+            p3_4_ref_qualified_member_templates_are_distinct_HasRefQualifiedTemplateOverloads,
+        >,
+        _a0: Ptr<p3_4_ref_qualified_member_templates_are_distinct_HasRefQualifiedTemplateOverloads>,
+    ) {
+    }
+}
 pub fn test_22() {
-    let object : Value<p3_4_ref_qualified_member_templates_are_distinct_HasRefQualifiedTemplateOverloads > = Rc::new(RefCell::new(<p3_4_ref_qualified_member_templates_are_distinct_HasRefQualifiedTemplateOverloads  >::default() )) ;
+    let object: Value<
+        p3_4_ref_qualified_member_templates_are_distinct_HasRefQualifiedTemplateOverloads,
+    > = Rc::new(RefCell::new(
+        <p3_4_ref_qualified_member_templates_are_distinct_HasRefQualifiedTemplateOverloads>::uninit(
+        ),
+    ));
+    p3_4_ref_qualified_member_templates_are_distinct_HasRefQualifiedTemplateOverloads::new_1(
+        object.as_pointer(),
+    );
     assert!(
         (({
             p3_4_ref_qualified_member_templates_are_distinct_HasRefQualifiedTemplateOverloadsImpl :: get_1_int ( &object .as_pointer()  , 10  , )
@@ -381,7 +498,9 @@ pub fn test_22() {
     assert!((rvalue_calls_21.with(|rc| *rc.borrow()) == 0));
     assert!(
         (({
-            p3_4_ref_qualified_member_templates_are_distinct_HasRefQualifiedTemplateOverloadsImpl :: get_2_int ( &Rc::new(RefCell::new(<p3_4_ref_qualified_member_templates_are_distinct_HasRefQualifiedTemplateOverloads  >::default() )).as_pointer() , 10  , )
+            p3_4_ref_qualified_member_templates_are_distinct_HasRefQualifiedTemplateOverloadsImpl :: get_2_int ( &{ let __v : Value<p3_4_ref_qualified_member_templates_are_distinct_HasRefQualifiedTemplateOverloads >  = Rc::new(RefCell::new(<p3_4_ref_qualified_member_templates_are_distinct_HasRefQualifiedTemplateOverloads  >::uninit())) ;
+ p3_4_ref_qualified_member_templates_are_distinct_HasRefQualifiedTemplateOverloads :: new_1 ( __v.as_pointer() , )  ;
+ __v } .as_pointer() , 10  , )
         }) == 14)
     );
     assert!((lvalue_calls_20.with(|rc| *rc.borrow()) == 1));
@@ -400,6 +519,13 @@ thread_local!(
 #[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
 #[byte_size(1)]
 pub struct p4_friend_definition_defines_earlier_friend_declaration_DeclaresFriend {}
+impl p4_friend_definition_defines_earlier_friend_declaration_DeclaresFriend {
+    pub fn copy_from(
+        this: Ptr<p4_friend_definition_defines_earlier_friend_declaration_DeclaresFriend>,
+        _a0: Ptr<p4_friend_definition_defines_earlier_friend_declaration_DeclaresFriend>,
+    ) {
+    }
+}
 pub fn shared_friend_24() -> i32 {
     (*friend_calls_23.with(Value::clone).borrow_mut()).prefix_inc();
     return 7;
@@ -407,6 +533,13 @@ pub fn shared_friend_24() -> i32 {
 #[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
 #[byte_size(1)]
 pub struct p4_friend_definition_defines_earlier_friend_declaration_DefinesFriend {}
+impl p4_friend_definition_defines_earlier_friend_declaration_DefinesFriend {
+    pub fn copy_from(
+        this: Ptr<p4_friend_definition_defines_earlier_friend_declaration_DefinesFriend>,
+        _a0: Ptr<p4_friend_definition_defines_earlier_friend_declaration_DefinesFriend>,
+    ) {
+    }
+}
 pub fn test_25() {
     assert!((({ shared_friend_24() }) == 7));
     assert!((friend_calls_23.with(|rc| *rc.borrow()) == 1));
@@ -442,16 +575,29 @@ pub struct p4_2_class_and_function_share_name_Reading {
     #[offset(0)]
     pub value: i32,
 }
+impl p4_2_class_and_function_share_name_Reading {
+    pub fn copy_from(
+        this: Ptr<p4_2_class_and_function_share_name_Reading>,
+        _a0: Ptr<p4_2_class_and_function_share_name_Reading>,
+    ) {
+        field!(this, value).write(_a0.with(|__s| __s.value));
+    }
+}
 pub fn Reading_32(mut raw_: i32) -> i32 {
     (*function_calls_31.with(Value::clone).borrow_mut()).prefix_inc();
     return (raw_ + 1);
 }
 pub fn test_33() {
-    let mut reading: p4_2_class_and_function_share_name_Reading =
-        p4_2_class_and_function_share_name_Reading { value: 4 };
-    assert!((reading.value == 4));
+    let reading: Value<p4_2_class_and_function_share_name_Reading> = Rc::new(RefCell::new(
+        <p4_2_class_and_function_share_name_Reading>::uninit(),
+    ));
+    {
+        let __d = reading.as_pointer();
+        field!(__d, value).write(4);
+    };
+    assert!(({ ({ (*reading.borrow()).value } == 4) }));
     assert!((function_calls_31.with(|rc| *rc.borrow()) == 0));
-    assert!((({ Reading_32(reading.value,) }) == 5));
+    assert!(({ (({ Reading_32({ (*reading.borrow()).value },) }) == 5) }));
     assert!((function_calls_31.with(|rc| *rc.borrow()) == 1));
 }
 #[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
@@ -460,17 +606,30 @@ pub struct p4_2_class_and_variable_share_name_Limit {
     #[offset(0)]
     pub value: i32,
 }
+impl p4_2_class_and_variable_share_name_Limit {
+    pub fn copy_from(
+        this: Ptr<p4_2_class_and_variable_share_name_Limit>,
+        _a0: Ptr<p4_2_class_and_variable_share_name_Limit>,
+    ) {
+        field!(this, value).write(_a0.with(|__s| __s.value));
+    }
+}
 thread_local!(
     pub static Limit_34: Value<i32> = Rc::new(RefCell::new(12));
 );
 pub fn test_35() {
-    let mut limit: p4_2_class_and_variable_share_name_Limit =
-        p4_2_class_and_variable_share_name_Limit { value: 3 };
-    assert!((limit.value == 3));
+    let limit: Value<p4_2_class_and_variable_share_name_Limit> = Rc::new(RefCell::new(
+        <p4_2_class_and_variable_share_name_Limit>::uninit(),
+    ));
+    {
+        let __d = limit.as_pointer();
+        field!(__d, value).write(3);
+    };
+    assert!(({ ({ (*limit.borrow()).value } == 3) }));
     assert!((Limit_34.with(|rc| *rc.borrow()) == 12));
-    Limit_34.with(|rc| *rc.borrow_mut() += limit.value);
+    Limit_34.with(|rc| *rc.borrow_mut() += { (*limit.borrow()).value });
     assert!((Limit_34.with(|rc| *rc.borrow()) == 15));
-    assert!((limit.value == 3));
+    assert!(({ ({ (*limit.borrow()).value } == 3) }));
 }
 thread_local!(
     pub static int_calls_36: Value<i32> = Rc::new(RefCell::new(0_i32));

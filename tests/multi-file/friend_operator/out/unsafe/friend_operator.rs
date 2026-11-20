@@ -12,6 +12,12 @@ pub struct S {
     pub a: i32,
     pub b: i32,
 }
+impl S {
+    pub unsafe fn copy_from(this: *mut S, _a0: *const S) {
+        (&raw mut (*this).a).write((*_a0).a);
+        (&raw mut (*this).b).write((*_a0).b);
+    }
+}
 pub fn main() {
     unsafe {
         __cpp2rust_init_globals();
@@ -19,9 +25,24 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    let mut s1: S = S { a: 1, b: 2 };
-    let mut s2: S = S { a: 1, b: 2 };
-    let mut s3: S = S { a: 1, b: 3 };
+    let mut s1: S = ::std::mem::MaybeUninit::uninit().assume_init();
+    {
+        let __d = &raw mut s1;
+        (&raw mut (*__d).a).write(1);
+        (&raw mut (*__d).b).write(2);
+    };
+    let mut s2: S = ::std::mem::MaybeUninit::uninit().assume_init();
+    {
+        let __d = &raw mut s2;
+        (&raw mut (*__d).a).write(1);
+        (&raw mut (*__d).b).write(2);
+    };
+    let mut s3: S = ::std::mem::MaybeUninit::uninit().assume_init();
+    {
+        let __d = &raw mut s3;
+        (&raw mut (*__d).a).write(1);
+        (&raw mut (*__d).b).write(3);
+    };
     assert!(
         (unsafe {
             let _x: *const S = &s1;

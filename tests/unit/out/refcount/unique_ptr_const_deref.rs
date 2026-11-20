@@ -14,10 +14,12 @@ pub struct Holder {
     pub val: Option<Value<i32>>,
 }
 impl Holder {
-    pub fn move_from(_a0: Ptr<Holder>) -> Self {
-        Self {
-            val: field!(_a0, val).with_mut(|__v: &mut Option<Value<i32>>| __v.take()),
-        }
+    pub fn move_from(this: Ptr<Holder>, _a0: Ptr<Holder>) {
+        field!(this, val)
+            .write(field!(_a0, val).with_mut(|__v: &mut Option<Value<i32>>| __v.take()));
+    }
+    pub fn new_1(this: Ptr<Holder>) {
+        field!(this, val).write(None);
     }
 }
 pub fn read_val_0(mut h: Ptr<Holder>) -> i32 {
@@ -31,7 +33,8 @@ pub fn main() {
     libcc2rs::cpp2rust_exit(main_0());
 }
 fn main_0() -> i32 {
-    let h: Value<Holder> = Rc::new(RefCell::new(<Holder>::default()));
+    let h: Value<Holder> = Rc::new(RefCell::new(<Holder>::uninit()));
+    Holder::new_1(h.as_pointer());
     {
         (*h.borrow_mut()).val = Some(Rc::new(RefCell::new(10))).take();
     };

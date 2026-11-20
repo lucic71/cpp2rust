@@ -20,12 +20,22 @@ pub struct MinHeapNode {
     #[byte_size(8)]
     pub right: Ptr<MinHeapNode>,
 }
+impl MinHeapNode {
+    pub fn copy_from(this: Ptr<MinHeapNode>, _a0: Ptr<MinHeapNode>) {
+        field!(this, data).write(_a0.with(|__s| __s.data));
+        field!(this, freq).write(_a0.with(|__s| __s.freq));
+        field!(this, left).write(_a0.with(|__s| __s.left.clone()));
+        field!(this, right).write(_a0.with(|__s| __s.right.clone()));
+    }
+}
 pub fn Swap_0(a: Ptr<MinHeapNode>, b: Ptr<MinHeapNode>) {
-    let mut t: MinHeapNode = MinHeapNode {
-        data: a.with(|__s| __s.data),
-        freq: a.with(|__s| __s.freq),
-        left: a.with(|__s| __s.left.clone()),
-        right: a.with(|__s| __s.right.clone()),
+    let t: Value<MinHeapNode> = Rc::new(RefCell::new(<MinHeapNode>::uninit()));
+    {
+        let __d = t.as_pointer();
+        field!(__d, data).write(a.with(|__s| __s.data));
+        field!(__d, freq).write(a.with(|__s| __s.freq));
+        field!(__d, left).write(a.with(|__s| __s.left.clone()));
+        field!(__d, right).write(a.with(|__s| __s.right.clone()));
     };
     a.write({
         MinHeapNode {
@@ -37,10 +47,10 @@ pub fn Swap_0(a: Ptr<MinHeapNode>, b: Ptr<MinHeapNode>) {
     });
     b.write({
         MinHeapNode {
-            data: t.data,
-            freq: t.freq,
-            left: (t.left).clone(),
-            right: (t.right).clone(),
+            data: { (*t.borrow()).data },
+            freq: { (*t.borrow()).freq },
+            left: { (*t.borrow()).left.clone() },
+            right: { (*t.borrow()).right.clone() },
         }
     });
 }
@@ -61,34 +71,45 @@ pub struct MinHeap {
     pub alloc: Option<Value<Box<[MinHeapNode]>>>,
 }
 impl MinHeap {
-    pub fn move_from(_a0: Ptr<MinHeap>) -> Self {
-        Self {
-            size: { (*_a0.upgrade().deref()).size },
-            capacity: { (*_a0.upgrade().deref()).capacity },
-            arr: field!(_a0, arr)
+    pub fn move_from(this: Ptr<MinHeap>, _a0: Ptr<MinHeap>) {
+        field!(this, size).write({ (*_a0.upgrade().deref()).size });
+        field!(this, capacity).write({ (*_a0.upgrade().deref()).capacity });
+        field!(this, arr).write(
+            field!(_a0, arr)
                 .with_mut(|__v: &mut Option<Value<Box<[Ptr<MinHeapNode>]>>>| __v.take()),
-            next: { (*_a0.upgrade().deref()).next },
-            alloc: field!(_a0, alloc)
-                .with_mut(|__v: &mut Option<Value<Box<[MinHeapNode]>>>| __v.take()),
-        }
+        );
+        field!(this, next).write({ (*_a0.upgrade().deref()).next });
+        field!(this, alloc).write(
+            field!(_a0, alloc).with_mut(|__v: &mut Option<Value<Box<[MinHeapNode]>>>| __v.take()),
+        );
     }
 }
 pub fn AllocMinHeap_1(mut capacity: i32) -> Option<Value<MinHeap>> {
-    let mut minHeap: Option<Value<MinHeap>> = Some(Rc::new(RefCell::new(MinHeap {
-        size: 0,
-        capacity: capacity,
-        arr: Some(Rc::new(RefCell::new(
-            (0..(capacity as usize))
-                .map(|_| Ptr::<MinHeapNode>::null())
-                .collect::<Box<[_]>>(),
-        ))),
-        next: 0,
-        alloc: Some(Rc::new(RefCell::new(
-            (0..10000_usize)
-                .map(|_| <MinHeapNode>::default())
-                .collect::<Box<[_]>>(),
-        ))),
-    })));
+    let mut minHeap: Option<Value<MinHeap>> = Some(Rc::new(RefCell::new(
+        Rc::try_unwrap({
+            let __v: Value<MinHeap> = Rc::new(RefCell::new(<MinHeap>::uninit()));
+            {
+                let __d = __v.as_pointer();
+                field!(__d, size).write(0);
+                field!(__d, capacity).write(capacity);
+                field!(__d, arr).write(Some(Rc::new(RefCell::new(
+                    (0..(capacity as usize))
+                        .map(|_| Ptr::<MinHeapNode>::null())
+                        .collect::<Box<[_]>>(),
+                ))));
+                field!(__d, next).write(0);
+                field!(__d, alloc).write(Some(Rc::new(RefCell::new(
+                    (0..10000_usize)
+                        .map(|_| <MinHeapNode>::default())
+                        .collect::<Box<[_]>>(),
+                ))));
+            };
+            __v
+        })
+        .ok()
+        .unwrap()
+        .into_inner(),
+    )));
     return minHeap.take();
 }
 pub fn Huffman_2(

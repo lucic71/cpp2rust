@@ -14,7 +14,6 @@ pub unsafe fn bar_1(x: *mut u32) {
 }
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg)]
-#[placement]
 pub struct Point {
     pub x: i32,
     pub y: i32,

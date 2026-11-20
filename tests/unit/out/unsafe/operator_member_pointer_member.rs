@@ -11,16 +11,23 @@ use std::rc::Rc;
 pub struct Inner {
     pub x: i32,
 }
+impl Inner {
+    pub unsafe fn copy_from(this: *mut Inner, _a0: *const Inner) {
+        (&raw mut (*this).x).write((*_a0).x);
+    }
+}
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct Table {}
 impl Table {
     pub unsafe fn operator_index(mut i: i32) -> *mut i32 {
-        return &mut (*std::cell::LazyCell::force_mut(&mut *&raw mut table_0))[(i) as usize];
+        return &mut (*(*&raw const table_0).get())[(i) as usize];
     }
+    pub unsafe fn new_1(this: *mut Table) {}
+    pub unsafe fn copy_from(this: *mut Table, _a0: *const Table) {}
 }
-pub static mut table_0: std::cell::LazyCell<[i32; 3]> =
-    std::cell::LazyCell::new(|| unsafe { [7, 8, 9] });
+pub static mut table_0: libcc2rs::LazyStorage<[i32; 3]> =
+    libcc2rs::LazyStorage::new(|__p| unsafe { __p.write([7, 8, 9]) });
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct S {
@@ -43,6 +50,12 @@ impl S {
     pub unsafe fn operator_addr(&mut self) -> *mut i32 {
         return (&mut self.data[(0) as usize] as *mut i32);
     }
+    pub unsafe fn copy_from(this: *mut S, _a0: *const S) {
+        (&raw mut (*this).data).write(std::array::from_fn::<_, 3, _>(|__i: usize| {
+            (*_a0).data[(__i)]
+        }));
+        Inner::copy_from((&raw mut (*this).inner), { &(*_a0).inner });
+    }
 }
 pub fn main() {
     unsafe {
@@ -51,9 +64,14 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    let mut s: S = S {
-        data: [1, 2, 3],
-        inner: Inner { x: 9 },
+    let mut s: S = ::std::mem::MaybeUninit::uninit().assume_init();
+    {
+        let __d = &raw mut s;
+        (&raw mut (*__d).data).write([1, 2, 3]);
+        {
+            let __d = (&raw mut (*__d).inner);
+            (&raw mut (*__d).x).write(9);
+        };
     };
     assert!(((*(unsafe { S::operator_index_1(&mut s, 1,) })) == (2)));
     (*(unsafe { S::operator_index_1(&mut s, 1) })) = 20;
@@ -69,12 +87,13 @@ unsafe fn main_0() -> i32 {
     assert!(((*p) == (1)));
     (*p) = 5;
     assert!(((s.data[(0) as usize]) == (5)));
-    let mut t: Table = <Table>::default();
+    let mut t: Table = ::std::mem::MaybeUninit::uninit().assume_init();
+    Table::new_1(&raw mut t);
     assert!(((*(unsafe { Table::operator_index(1,) })) == (8)));
     (*(unsafe { Table::operator_index(1) })) = 80;
-    assert!((((*std::cell::LazyCell::force_mut(&mut *&raw mut table_0))[(1) as usize]) == (80)));
+    assert!((((*(*&raw const table_0).get())[(1) as usize]) == (80)));
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {
-    std::cell::LazyCell::force(&*&raw const table_0);
+    (*&raw const table_0).get();
 }

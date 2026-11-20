@@ -12,14 +12,14 @@ pub unsafe fn double_it_0(mut x: i32) -> i32 {
 pub unsafe fn triple_it_1(mut x: i32) -> i32 {
     return ((x) * (3));
 }
-pub static mut g_op_2: std::cell::LazyCell<Option<unsafe fn(i32) -> i32>> =
-    std::cell::LazyCell::new(|| unsafe { None });
+pub static mut g_op_2: libcc2rs::LazyStorage<Option<unsafe fn(i32) -> i32>> =
+    libcc2rs::LazyStorage::new(|__p| unsafe { __p.write(None) });
 pub unsafe fn set_op_3(mut fn_: Option<unsafe fn(i32) -> i32>) {
-    (*std::cell::LazyCell::force_mut(&mut *&raw mut g_op_2)) = fn_;
+    (*(*&raw const g_op_2).get()) = fn_;
 }
 pub unsafe fn call_op_4(mut x: i32) -> i32 {
-    if !(*std::cell::LazyCell::force_mut(&mut *&raw mut g_op_2)).is_none() {
-        return (unsafe { (*std::cell::LazyCell::force_mut(&mut *&raw mut g_op_2)).unwrap()(x) });
+    if !(*(*&raw const g_op_2).get()).is_none() {
+        return (unsafe { (*(*&raw const g_op_2).get()).unwrap()(x) });
     }
     return x;
 }
@@ -32,17 +32,17 @@ pub fn main() {
 unsafe fn main_0() -> i32 {
     assert!(((unsafe { call_op_4(5,) }) == (5)));
     (unsafe { set_op_3(Some(double_it_0)) });
-    assert!(!((*std::cell::LazyCell::force_mut(&mut *&raw mut g_op_2)).is_none()));
-    assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut g_op_2)) == (Some(double_it_0))));
+    assert!(!((*(*&raw const g_op_2).get()).is_none()));
+    assert!(((*(*&raw const g_op_2).get()) == (Some(double_it_0))));
     assert!(((unsafe { call_op_4(5,) }) == (10)));
     (unsafe { set_op_3(Some(triple_it_1)) });
-    assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut g_op_2)) == (Some(triple_it_1))));
+    assert!(((*(*&raw const g_op_2).get()) == (Some(triple_it_1))));
     assert!(((unsafe { call_op_4(5,) }) == (15)));
     (unsafe { set_op_3(None) });
-    assert!((*std::cell::LazyCell::force_mut(&mut *&raw mut g_op_2)).is_none());
+    assert!((*(*&raw const g_op_2).get()).is_none());
     assert!(((unsafe { call_op_4(5,) }) == (5)));
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {
-    std::cell::LazyCell::force(&*&raw const g_op_2);
+    (*&raw const g_op_2).get();
 }

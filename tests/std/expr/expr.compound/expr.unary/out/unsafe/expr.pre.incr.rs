@@ -11,6 +11,14 @@ use std::rc::Rc;
 pub struct p1_result_is_updated_operand_Counter {
     pub n: i32,
 }
+impl p1_result_is_updated_operand_Counter {
+    pub unsafe fn copy_from(
+        this: *mut p1_result_is_updated_operand_Counter,
+        _a0: *const p1_result_is_updated_operand_Counter,
+    ) {
+        (&raw mut (*this).n).write((*_a0).n);
+    }
+}
 pub unsafe fn test_0() {
     let mut x: i32 = 0;
     let r: *mut i32 = &mut (*x.prefix_inc());
@@ -32,7 +40,12 @@ pub unsafe fn test_0() {
     assert!(((q) == (&mut p as *mut *mut i32)));
     assert!(((*(*q)) == (2)));
     assert!(((*(*p.prefix_inc())) == (3)));
-    let mut c: p1_result_is_updated_operand_Counter = p1_result_is_updated_operand_Counter { n: 0 };
+    let mut c: p1_result_is_updated_operand_Counter =
+        ::std::mem::MaybeUninit::uninit().assume_init();
+    {
+        let __d = &raw mut c;
+        (&raw mut (*__d).n).write(0);
+    };
     let mut pc: *mut p1_result_is_updated_operand_Counter =
         (&mut c as *mut p1_result_is_updated_operand_Counter);
     let mut v: i32 = (*c.n.prefix_inc());

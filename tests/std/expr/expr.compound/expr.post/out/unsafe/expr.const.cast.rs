@@ -11,6 +11,14 @@ use std::rc::Rc;
 pub struct p4_reference_const_cast_Pair {
     pub x: i32,
 }
+impl p4_reference_const_cast_Pair {
+    pub unsafe fn copy_from(
+        this: *mut p4_reference_const_cast_Pair,
+        _a0: *const p4_reference_const_cast_Pair,
+    ) {
+        (&raw mut (*this).x).write((*_a0).x);
+    }
+}
 pub unsafe fn take_0(r: *mut i32) {
     (*r) = 8;
 }
@@ -21,7 +29,11 @@ pub unsafe fn test_1() {
     assert!(((v) == (2)));
     (unsafe { take_0((cr).cast_mut()) });
     assert!(((v) == (8)));
-    let mut pair: p4_reference_const_cast_Pair = p4_reference_const_cast_Pair { x: 1 };
+    let mut pair: p4_reference_const_cast_Pair = ::std::mem::MaybeUninit::uninit().assume_init();
+    {
+        let __d = &raw mut pair;
+        (&raw mut (*__d).x).write(1);
+    };
     let cpair: *const p4_reference_const_cast_Pair = &pair;
     (*(&raw const (*cpair)).cast_mut()).x = 2;
     assert!(((pair.x) == (2)));

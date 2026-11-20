@@ -7,7 +7,6 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
 #[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, CppFrom)]
-#[placement]
 #[cpp_from(i32, new_1, value)]
 #[byte_size(4)]
 pub struct A {
@@ -38,7 +37,6 @@ impl Default for A {
     }
 }
 #[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg)]
-#[placement]
 #[byte_size(4)]
 pub struct B {
     #[offset(0)]
@@ -65,7 +63,6 @@ impl Default for B {
     }
 }
 #[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, CppFrom, Default)]
-#[placement]
 #[cpp_from(i32, new, value)]
 #[byte_size(4)]
 pub struct NoDefault {
@@ -93,7 +90,6 @@ pub fn always_given_3(x: Value<NoDefault>) -> i32 {
     return { (*x.borrow()).v };
 }
 #[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, CppFrom, Default)]
-#[placement]
 #[cpp_from(i32, new, value)]
 #[byte_size(4)]
 pub struct S_NoDefault_ {

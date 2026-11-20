@@ -29,7 +29,6 @@ pub fn identity_hash_6(mut v: bool) -> usize {
     return (v as usize);
 }
 #[derive(Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, CppFrom, Default)]
-#[placement]
 #[cpp_from(FnPtr<fn(bool  ,) -> u64  >  , new, ptr)]
 #[byte_size(8)]
 pub struct HashHolder_unsigned_long__ptr__bool__ {

@@ -23,6 +23,11 @@ pub unsafe fn scaled_3(v: *const V, mut k: f64) -> f64 {
 pub struct V {
     pub x: i32,
 }
+impl V {
+    pub unsafe fn copy_from(this: *mut V, _a0: *const V) {
+        (&raw mut (*this).x).write((*_a0).x);
+    }
+}
 impl std::cmp::PartialEq for V {
     fn eq(&self, other: &Self) -> bool {
         unsafe { operator_eq_1(self as *const V, other as *const V) }
@@ -37,6 +42,11 @@ pub unsafe fn get_4(w: *const W_int_) -> i32 {
 pub struct W_int_ {
     pub x: i32,
 }
+impl W_int_ {
+    pub unsafe fn copy_from(this: *mut W_int_, _a0: *const W_int_) {
+        (&raw mut (*this).x).write((*_a0).x);
+    }
+}
 pub unsafe fn get_5(w: *const W_long_) -> i64 {
     return (*w).x;
 }
@@ -45,10 +55,20 @@ pub unsafe fn get_5(w: *const W_long_) -> i64 {
 pub struct W_long_ {
     pub x: i64,
 }
+impl W_long_ {
+    pub unsafe fn copy_from(this: *mut W_long_, _a0: *const W_long_) {
+        (&raw mut (*this).x).write((*_a0).x);
+    }
+}
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct D {
     pub x: i32,
+}
+impl D {
+    pub unsafe fn copy_from(this: *mut D, _a0: *const D) {
+        (&raw mut (*this).x).write((*_a0).x);
+    }
 }
 pub unsafe fn declared_then_defined_6(d: *const D) -> i32 {
     return (((*d).x) + (1));
@@ -60,9 +80,21 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    let mut a: V = V { x: 3 };
-    let mut b: V = V { x: 3 };
-    let mut c: V = V { x: 4 };
+    let mut a: V = ::std::mem::MaybeUninit::uninit().assume_init();
+    {
+        let __d = &raw mut a;
+        (&raw mut (*__d).x).write(3);
+    };
+    let mut b: V = ::std::mem::MaybeUninit::uninit().assume_init();
+    {
+        let __d = &raw mut b;
+        (&raw mut (*__d).x).write(3);
+    };
+    let mut c: V = ::std::mem::MaybeUninit::uninit().assume_init();
+    {
+        let __d = &raw mut c;
+        (&raw mut (*__d).x).write(4);
+    };
     assert!(((unsafe { get_0(&a,) }) == (3)));
     assert!(
         (unsafe {
@@ -78,11 +110,23 @@ unsafe fn main_0() -> i32 {
     );
     assert!(((unsafe { scaled_2(&c, 2,) }) == (8)));
     assert!(((unsafe { scaled_3(&c, 1.5_f64,) }) == (6_f64)));
-    let mut wi: W_int_ = W_int_ { x: 5 };
-    let mut wl: W_long_ = W_long_ { x: 6_i64 };
+    let mut wi: W_int_ = ::std::mem::MaybeUninit::uninit().assume_init();
+    {
+        let __d = &raw mut wi;
+        (&raw mut (*__d).x).write(5);
+    };
+    let mut wl: W_long_ = ::std::mem::MaybeUninit::uninit().assume_init();
+    {
+        let __d = &raw mut wl;
+        (&raw mut (*__d).x).write(6_i64);
+    };
     assert!(((unsafe { get_4(&wi,) }) == (5)));
     assert!(((unsafe { get_5(&wl,) }) == (6_i64)));
-    let mut d: D = D { x: 7 };
+    let mut d: D = ::std::mem::MaybeUninit::uninit().assume_init();
+    {
+        let __d = &raw mut d;
+        (&raw mut (*__d).x).write(7);
+    };
     assert!(((unsafe { declared_then_defined_6(&d,) }) == (8)));
     return 0;
 }

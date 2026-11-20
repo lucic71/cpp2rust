@@ -14,10 +14,14 @@ pub struct Holder {
     pub v: Vec<i32>,
 }
 impl Holder {
-    pub fn move_from(_a0: Ptr<Holder>) -> Self {
-        Self {
-            v: field!(_a0, v).with_mut(std::mem::take),
-        }
+    pub fn copy_from(this: Ptr<Holder>, _a0: Ptr<Holder>) {
+        field!(this, v).write((*_a0.upgrade().deref()).v.clone());
+    }
+    pub fn move_from(this: Ptr<Holder>, _a0: Ptr<Holder>) {
+        field!(this, v).write(field!(_a0, v).with_mut(std::mem::take));
+    }
+    pub fn new_1(this: Ptr<Holder>) {
+        field!(this, v).write(Vec::new());
     }
 }
 pub fn write_through_0(mut p: Ptr<i32>) {
@@ -40,7 +44,8 @@ fn main_0() -> i32 {
     let mut p: Ptr<Vec<i32>> = (v.as_pointer());
     let mut a: i32 = (index!(p, 0_usize).read());
     index!(p, 1_usize).write(30);
-    let h: Value<Holder> = Rc::new(RefCell::new(<Holder>::default()));
+    let h: Value<Holder> = Rc::new(RefCell::new(<Holder>::uninit()));
+    Holder::new_1(h.as_pointer());
     {
         let __a1 = 40;
         (*h.borrow_mut()).v.push(__a1)

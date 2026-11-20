@@ -25,7 +25,6 @@ pub unsafe fn sum_0(mut n: i32, __args: Box<[VaArg]>) -> i32 {
 }
 #[repr(C)]
 #[derive(Clone, VaArg, FnPtrArg, CppFromUnsafe, DestructorUnsafe, Default)]
-#[placement]
 #[cpp_from(*const VaArg , new, mut_ptr)]
 pub struct Guard_1 {
     pub ap: *mut *const VaArg,
@@ -47,8 +46,10 @@ impl Guard_1 {
 pub unsafe fn sum_ptr_2(mut n: i32, __args: Box<[VaArg]>) -> i32 {
     let mut ap: *const VaArg = ::std::ptr::null();
     ap = __args.as_ptr();
-    let mut cursor: Cursor_3 = Cursor_3 {
-        ap: (&mut ap as *mut *const VaArg),
+    let mut cursor: Cursor_3 = ::std::mem::MaybeUninit::uninit().assume_init();
+    {
+        let __d = &raw mut cursor;
+        (&raw mut (*__d).ap).write((&mut ap as *mut *const VaArg));
     };
     let mut total: i32 = 0;
     {
@@ -64,6 +65,11 @@ pub unsafe fn sum_ptr_2(mut n: i32, __args: Box<[VaArg]>) -> i32 {
 #[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct Cursor_3 {
     pub ap: *mut *const VaArg,
+}
+impl Cursor_3 {
+    pub unsafe fn copy_from(this: *mut Cursor_3, _a0: *const Cursor_3) {
+        (&raw mut (*this).ap).write((*_a0).ap);
+    }
 }
 pub fn main() {
     unsafe {

@@ -27,19 +27,33 @@ pub struct p1_own_address_in_initializer_SelfLinked {
     #[offset(8)]
     pub value: i32,
 }
+impl p1_own_address_in_initializer_SelfLinked {
+    pub fn copy_from(
+        this: Ptr<p1_own_address_in_initializer_SelfLinked>,
+        _a0: Ptr<p1_own_address_in_initializer_SelfLinked>,
+    ) {
+        field!(this, next).write(_a0.with(|__s| __s.next.clone()));
+        field!(this, value).write(_a0.with(|__s| __s.value));
+    }
+}
 pub fn test_1() {
-    let node: Value<p1_own_address_in_initializer_SelfLinked> =
-        Rc::new(RefCell::new(p1_own_address_in_initializer_SelfLinked {
-            next: Ptr::<p1_own_address_in_initializer_SelfLinked>::null(),
-            value: 3,
-        }));
+    let node: Value<p1_own_address_in_initializer_SelfLinked> = Rc::new(RefCell::new(
+        <p1_own_address_in_initializer_SelfLinked>::uninit(),
+    ));
+    {
+        let __d = node.as_pointer();
+        field!(__d, next).write(Ptr::<p1_own_address_in_initializer_SelfLinked>::null());
+        field!(__d, value).write(3);
+    };
     let mut outer: Ptr<p1_own_address_in_initializer_SelfLinked> = (node.as_pointer());
     {
-        let node: Value<p1_own_address_in_initializer_SelfLinked> =
-            <Value<p1_own_address_in_initializer_SelfLinked>>::default();
-        *node.borrow_mut() = p1_own_address_in_initializer_SelfLinked {
-            next: (node.as_pointer()),
-            value: 7,
+        let node: Value<p1_own_address_in_initializer_SelfLinked> = Rc::new(RefCell::new(
+            <p1_own_address_in_initializer_SelfLinked>::uninit(),
+        ));
+        {
+            let __d = node.as_pointer();
+            field!(__d, next).write((node.as_pointer()));
+            field!(__d, value).write(7);
         };
         assert!(({ ({ { (*node.borrow()).next.clone() } } == { (node.as_pointer()) }) }));
         assert!(({ ({ { (*node.borrow()).next.clone() } } != { (outer).clone() }) }));
@@ -74,7 +88,6 @@ pub type anon_4 = u32;
 pub const anon_4_limit: anon_4 = 13;
 pub const anon_4_above: anon_4 = 14;
 #[derive(Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg)]
-#[placement]
 #[byte_size(8)]
 pub struct p9_func_declared_before_function_body_RecordsConstructorName {
     #[offset(0)]

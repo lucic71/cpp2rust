@@ -6,10 +6,10 @@ use std::collections::BTreeMap;
 use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
-pub static mut assigns_0: std::cell::LazyCell<i32> = std::cell::LazyCell::new(|| unsafe { 0 });
+pub static mut assigns_0: libcc2rs::LazyStorage<i32> =
+    libcc2rs::LazyStorage::new(|__p| unsafe { __p.write(0) });
 #[repr(C)]
 #[derive(VaArg, FnPtrArg, CopyAssignUnsafe, Default)]
-#[placement]
 pub struct Partial {
     pub v: i32,
     pub keep: i32,
@@ -28,7 +28,7 @@ impl Partial {
             return &mut (*(self as *mut Partial));
         }
         self.v = (*o).v;
-        (*std::cell::LazyCell::force_mut(&mut *&raw mut assigns_0)).prefix_inc();
+        (*(*&raw const assigns_0).get()).prefix_inc();
         return &mut (*(self as *mut Partial));
     }
 }
@@ -43,7 +43,6 @@ impl Clone for Partial {
 }
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg)]
-#[placement]
 pub struct NonConstAssign {
     pub mark: i32,
 }
@@ -76,7 +75,6 @@ impl Default for NonConstAssign {
 }
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, CopyAssignUnsafe)]
-#[placement]
 pub struct RefQualified {
     pub mark: i32,
 }
@@ -105,7 +103,6 @@ impl Default for RefQualified {
 }
 #[repr(C)]
 #[derive(Clone, VaArg, FnPtrArg, CopyAssignUnsafe, Default)]
-#[placement]
 pub struct Holder {
     pub p: Partial,
     pub arr: [Partial; 2],
@@ -138,10 +135,10 @@ impl Holder {
         return &mut (*(self as *mut Holder));
     }
 }
-pub static mut copies_1: std::cell::LazyCell<i32> = std::cell::LazyCell::new(|| unsafe { 0 });
+pub static mut copies_1: libcc2rs::LazyStorage<i32> =
+    libcc2rs::LazyStorage::new(|__p| unsafe { __p.write(0) });
 #[repr(C)]
 #[derive(VaArg, FnPtrArg, CppFromUnsafe, CopyAssignUnsafe, Default)]
-#[placement]
 #[cpp_from(i32, new, value)]
 pub struct CopyCounted {
     pub v: i32,
@@ -152,7 +149,7 @@ impl CopyCounted {
     }
     pub unsafe fn copy_from(this: *mut CopyCounted, o: *const CopyCounted) {
         (&raw mut (*this).v).write((*o).v);
-        (*std::cell::LazyCell::force_mut(&mut *&raw mut copies_1)).prefix_inc();
+        (*(*&raw const copies_1).get()).prefix_inc();
     }
     pub unsafe fn copy_assign(&mut self, _a0: *const CopyCounted) -> *mut CopyCounted {
         self.v = (*_a0).v;
@@ -170,7 +167,6 @@ impl Clone for CopyCounted {
 }
 #[repr(C)]
 #[derive(Clone, VaArg, FnPtrArg, CopyAssignUnsafe, Default)]
-#[placement]
 pub struct HasCopyCounted {
     pub c: CopyCounted,
     pub arr: [CopyCounted; 2],
@@ -217,22 +213,22 @@ unsafe fn main_0() -> i32 {
     Partial::new(&raw mut c, { 3 }, { 300 });
     (unsafe { Partial::copy_assign(&mut a, &b) });
     assert!(((a.v) == (2)) && ((a.keep) == (100)));
-    assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut assigns_0)) == (1)));
+    assert!(((*(*&raw const assigns_0).get()) == (1)));
     (unsafe { Partial::copy_assign(&mut c, &(*(unsafe { Partial::copy_assign(&mut a, &b) }))) });
     assert!(((c.v) == (2)) && ((c.keep) == (300)));
-    assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut assigns_0)) == (3)));
+    assert!(((*(*&raw const assigns_0).get()) == (3)));
     (unsafe {
         let _o: *const Partial = &a;
         Partial::copy_assign(&mut a, _o)
     });
-    assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut assigns_0)) == (3)));
+    assert!(((*(*&raw const assigns_0).get()) == (3)));
     (unsafe {
         let mut _o: Partial = ::std::mem::MaybeUninit::uninit().assume_init();
         Partial::new(&raw mut _o, { 9 }, { 900 });
         Partial::copy_assign(&mut a, &mut _o)
     });
     assert!(((a.v) == (9)) && ((a.keep) == (100)));
-    assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut assigns_0)) == (4)));
+    assert!(((*(*&raw const assigns_0).get()) == (4)));
     let ra: *mut Partial = &mut a;
     (unsafe {
         let _o: *const Partial = &c;
@@ -245,7 +241,7 @@ unsafe fn main_0() -> i32 {
         Partial::copy_assign(&mut (*pa), _o)
     });
     assert!(((a.v) == (2)));
-    assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut assigns_0)) == (6)));
+    assert!(((*(*&raw const assigns_0).get()) == (6)));
     let mut h: Holder = ::std::mem::MaybeUninit::uninit().assume_init();
     {
         let __d = &raw mut h;
@@ -260,7 +256,7 @@ unsafe fn main_0() -> i32 {
     (unsafe { Partial::copy_assign(&mut h.arr[(1) as usize], &c) });
     assert!(((h.p.v) == (2)) && ((h.p.keep) == (40)));
     assert!(((h.arr[(1) as usize].v) == (2)) && ((h.arr[(1) as usize].keep) == (60)));
-    assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut assigns_0)) == (8)));
+    assert!(((*(*&raw const assigns_0).get()) == (8)));
     let mut n: NonConstAssign = ::std::mem::MaybeUninit::uninit().assume_init();
     NonConstAssign::new(&raw mut n);
     let mut n1: NonConstAssign = ::std::mem::MaybeUninit::uninit().assume_init();
@@ -292,7 +288,7 @@ unsafe fn main_0() -> i32 {
     (unsafe { Holder::copy_assign(&mut h2, &h) });
     assert!(((h2.p.v) == (2)) && ((h2.p.keep) == (70)));
     assert!(((h2.arr[(1) as usize].v) == (2)) && ((h2.arr[(1) as usize].keep) == (90)));
-    assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut assigns_0)) == (11)));
+    assert!(((*(*&raw const assigns_0).get()) == (11)));
     let mut cc1: CopyCounted = ::std::mem::MaybeUninit::uninit().assume_init();
     CopyCounted::new(&raw mut cc1, { 1 });
     let mut cc2: CopyCounted = ::std::mem::MaybeUninit::uninit().assume_init();
@@ -324,10 +320,10 @@ unsafe fn main_0() -> i32 {
         (((hc1.c.v) == (4)) && ((hc1.arr[(0) as usize].v) == (5)))
             && ((hc1.arr[(1) as usize].v) == (6))
     );
-    assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut copies_1)) == (0)));
+    assert!(((*(*&raw const copies_1).get()) == (0)));
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {
-    std::cell::LazyCell::force(&*&raw const assigns_0);
-    std::cell::LazyCell::force(&*&raw const copies_1);
+    (*&raw const assigns_0).get();
+    (*&raw const copies_1).get();
 }

@@ -12,6 +12,11 @@ pub struct S {
     #[offset(0)]
     pub x: i32,
 }
+impl S {
+    pub fn copy_from(this: Ptr<S>, _a0: Ptr<S>) {
+        field!(this, x).write(_a0.with(|__s| __s.x));
+    }
+}
 pub fn copy_0(mut copy_vector: Vec<i32>) {}
 #[derive(Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, MoveCtor, MoveAssign, Default)]
 #[byte_size(48)]
@@ -24,11 +29,17 @@ pub struct Foo {
     pub b: Vec<i32>,
 }
 impl Foo {
-    pub fn move_from(_a0: Ptr<Foo>) -> Self {
-        Self {
-            a: field!(_a0, a).with_mut(std::mem::take),
-            b: field!(_a0, b).with_mut(std::mem::take),
-        }
+    pub fn copy_from(this: Ptr<Foo>, _a0: Ptr<Foo>) {
+        field!(this, a).write((*_a0.upgrade().deref()).a.clone());
+        field!(this, b).write((*_a0.upgrade().deref()).b.clone());
+    }
+    pub fn move_from(this: Ptr<Foo>, _a0: Ptr<Foo>) {
+        field!(this, a).write(field!(_a0, a).with_mut(std::mem::take));
+        field!(this, b).write(field!(_a0, b).with_mut(std::mem::take));
+    }
+    pub fn new_1(this: Ptr<Foo>) {
+        field!(this, a).write(Vec::new());
+        field!(this, b).write(Vec::new());
     }
 }
 pub fn exchange_1(x: Ptr<Vec<i32>>, y: Ptr<Vec<i32>>) {
@@ -444,7 +455,11 @@ fn main_0() -> i32 {
             ) == 103_usize)
         })
     );
-    let a: Value<S> = Rc::new(RefCell::new(S { x: 1 }));
+    let a: Value<S> = Rc::new(RefCell::new(<S>::uninit()));
+    {
+        let __d = a.as_pointer();
+        field!(__d, x).write(1);
+    };
     let pa: Value<Ptr<S>> = Rc::new(RefCell::new((a.as_pointer())));
     let mut v8: Vec<Ptr<Ptr<S>>> = Vec::new();
     {
@@ -471,7 +486,8 @@ fn main_0() -> i32 {
                 && ({ (*v11.borrow())[2_usize] } == 3)
         })
     );
-    let foo: Value<Foo> = Rc::new(RefCell::new(<Foo>::default()));
+    let foo: Value<Foo> = Rc::new(RefCell::new(<Foo>::uninit()));
+    Foo::new_1(foo.as_pointer());
     {
         let __a1 = 5;
         (*foo.borrow_mut()).a.push(__a1)

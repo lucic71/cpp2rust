@@ -6,10 +6,10 @@ use std::collections::BTreeMap;
 use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
-pub static mut g_0: std::cell::LazyCell<Vec<u8>> =
-    std::cell::LazyCell::new(|| unsafe { Vec::from_fn(3_usize, |_| 0_u8) });
+pub static mut g_0: libcc2rs::LazyStorage<Vec<u8>> =
+    libcc2rs::LazyStorage::new(|__p| unsafe { __p.write(Vec::from_fn(3_usize, |_| 0_u8)) });
 pub unsafe fn get_1() -> *mut Vec<u8> {
-    return &mut (*std::cell::LazyCell::force_mut(&mut *&raw mut g_0));
+    return &mut (*(*&raw const g_0).get());
 }
 pub fn main() {
     unsafe {
@@ -36,5 +36,5 @@ unsafe fn main_0() -> i32 {
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {
-    std::cell::LazyCell::force(&*&raw const g_0);
+    (*&raw const g_0).get();
 }

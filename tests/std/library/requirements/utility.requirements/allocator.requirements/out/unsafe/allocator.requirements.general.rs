@@ -9,9 +9,15 @@ use std::rc::Rc;
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct p16_rebind_member_Alloc_std_pair_const_int__int___rebind_std_pair_const_int__int__ {}
+impl p16_rebind_member_Alloc_std_pair_const_int__int___rebind_std_pair_const_int__int__ {
+    pub unsafe fn copy_from(
+        this: *mut p16_rebind_member_Alloc_std_pair_const_int__int___rebind_std_pair_const_int__int__,
+        _a0 : *const p16_rebind_member_Alloc_std_pair_const_int__int___rebind_std_pair_const_int__int__,
+    ) {
+    }
+}
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg)]
-#[placement]
 pub struct p16_rebind_member_Alloc_std_pair_const_int__int__ {
     pub id: i32,
 }
@@ -40,7 +46,6 @@ pub unsafe fn test_0() {
 }
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
-#[placement]
 pub struct p18_rebind_to_container_node_Alloc_std_pair_const_int__int__ {}
 impl p18_rebind_to_container_node_Alloc_std_pair_const_int__int__ {
     pub unsafe fn copy_from(

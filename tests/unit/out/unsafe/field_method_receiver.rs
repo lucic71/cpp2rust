@@ -25,6 +25,12 @@ impl Counter {
         self.n += (*other).n;
         (*other).n = 0;
     }
+    pub unsafe fn copy_from(this: *mut Counter, _a0: *const Counter) {
+        (&raw mut (*this).n).write((*_a0).n);
+    }
+    pub unsafe fn move_from(this: *mut Counter, _a0: *mut Counter) {
+        (&raw mut (*this).n).write((*_a0).n);
+    }
 }
 #[repr(C)]
 #[derive(Clone, VaArg, FnPtrArg, MoveCtorUnsafe, MoveAssignUnsafe, Default)]
@@ -41,14 +47,27 @@ impl S {
             Counter::add(&mut self.c, _k)
         });
     }
-    pub unsafe fn move_from(_a0: *mut S) -> Self {
-        let mut this = Self {
-            tag: (*_a0).tag,
-            c: (*_a0).c,
-            arr: std::array::from_fn::<_, 2, _>(|__i: usize| (*_a0).arr[(__i)]),
-            v: std::mem::take(&mut (*_a0).v),
+    pub unsafe fn copy_from(this: *mut S, _a0: *const S) {
+        (&raw mut (*this).tag).write((*_a0).tag);
+        Counter::copy_from((&raw mut (*this).c), { &(*_a0).c });
+        {
+            let __d = (&raw mut (*this).arr).cast::<Counter>();
+            for __i in 0..2_usize {
+                Counter::copy_from(__d.offset(__i as isize), { &(*_a0).arr[(__i)] });
+            }
         };
-        this
+        (&raw mut (*this).v).write((*_a0).v.clone());
+    }
+    pub unsafe fn move_from(this: *mut S, _a0: *mut S) {
+        (&raw mut (*this).tag).write((*_a0).tag);
+        Counter::move_from((&raw mut (*this).c), { &mut (*_a0).c });
+        {
+            let __d = (&raw mut (*this).arr).cast::<Counter>();
+            for __i in 0..2_usize {
+                Counter::move_from(__d.offset(__i as isize), { &mut (*_a0).arr[(__i)] });
+            }
+        };
+        (&raw mut (*this).v).write(std::mem::take(&mut (*_a0).v));
     }
     pub unsafe fn move_assign(&mut self, _a0: *mut S) -> *mut S {
         self.tag = (*_a0).tag;
@@ -104,10 +123,53 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    let mut local: S = <S>::default();
+    let mut local: S = ::std::mem::MaybeUninit::uninit().assume_init();
+    {
+        let __d = &raw mut local;
+        (&raw mut (*__d).tag).write(0_i32);
+        {
+            let __d = (&raw mut (*__d).c);
+            (&raw mut (*__d).n).write(0_i32);
+        };
+        {
+            let __d = (&raw mut (*__d).arr).cast::<Counter>();
+            {
+                let __d = __d.offset(0);
+                (&raw mut (*__d).n).write(0_i32);
+            };
+            {
+                let __d = __d.offset(1);
+                (&raw mut (*__d).n).write(0_i32);
+            };
+        };
+        (&raw mut (*__d).v).write(Vec::new());
+    };
     local.tag = 1;
     (unsafe { run_0((&mut local as *mut S)) });
-    let mut heap: *mut S = (Box::leak(Box::new(<S>::default())) as *mut S);
+    let mut heap: *mut S = {
+        let __p = Box::into_raw(Box::<S>::new_uninit()) as *mut S;
+        {
+            let __d = __p;
+            (&raw mut (*__d).tag).write(0_i32);
+            {
+                let __d = (&raw mut (*__d).c);
+                (&raw mut (*__d).n).write(0_i32);
+            };
+            {
+                let __d = (&raw mut (*__d).arr).cast::<Counter>();
+                {
+                    let __d = __d.offset(0);
+                    (&raw mut (*__d).n).write(0_i32);
+                };
+                {
+                    let __d = __d.offset(1);
+                    (&raw mut (*__d).n).write(0_i32);
+                };
+            };
+            (&raw mut (*__d).v).write(Vec::new());
+        };
+        __p
+    };
     (*heap).tag = 1;
     (unsafe { run_0(heap) });
     {

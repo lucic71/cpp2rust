@@ -12,17 +12,20 @@ pub struct Holder {
     pub v: Vec<i32>,
 }
 impl Holder {
-    pub unsafe fn move_from(_a0: *mut Holder) -> Self {
-        let mut this = Self {
-            v: std::mem::take(&mut (*_a0).v),
-        };
-        this
+    pub unsafe fn copy_from(this: *mut Holder, _a0: *const Holder) {
+        (&raw mut (*this).v).write((*_a0).v.clone());
+    }
+    pub unsafe fn move_from(this: *mut Holder, _a0: *mut Holder) {
+        (&raw mut (*this).v).write(std::mem::take(&mut (*_a0).v));
     }
     pub unsafe fn move_assign(&mut self, _a0: *mut Holder) -> *mut Holder {
         {
             self.v = std::mem::take(&mut (*_a0).v);
         };
         return &mut (*(self as *mut Holder));
+    }
+    pub unsafe fn new_1(this: *mut Holder) {
+        (&raw mut (*this).v).write(Vec::new());
     }
 }
 pub unsafe fn write_through_0(mut p: *mut i32) {
@@ -47,7 +50,8 @@ unsafe fn main_0() -> i32 {
     let mut p: *mut Vec<i32> = (&mut v as *mut Vec<i32>);
     let mut a: i32 = (&mut (*p))[(0_usize)];
     (&mut (*p))[(1_usize)] = 30;
-    let mut h: Holder = <Holder>::default();
+    let mut h: Holder = ::std::mem::MaybeUninit::uninit().assume_init();
+    Holder::new_1(&raw mut h);
     {
         let __a1 = 40;
         h.v.push(__a1)

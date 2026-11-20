@@ -13,7 +13,6 @@ pub fn baz_1(mut a: Ptr<i32>, mut b: Ptr<i32>) -> bool {
     return ({ a } == { b });
 }
 #[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, CppFrom)]
-#[placement]
 #[cpp_from(i32, new, value)]
 #[byte_size(4)]
 pub struct Bar {
@@ -69,7 +68,6 @@ pub fn first_9(r: Ptr<i32>) -> i32 {
     return (elem!(r, 0).read());
 }
 #[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
-#[placement]
 #[byte_size(4)]
 pub struct Holder_int_ {
     #[offset(0)]

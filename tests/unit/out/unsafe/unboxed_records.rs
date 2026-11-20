@@ -12,6 +12,13 @@ pub struct Inner {
     pub a: i32,
     pub b: i32,
 }
+impl Inner {
+    pub unsafe fn new_1(this: *mut Inner) {}
+    pub unsafe fn copy_from(this: *mut Inner, _a0: *const Inner) {
+        (&raw mut (*this).a).write((*_a0).a);
+        (&raw mut (*this).b).write((*_a0).b);
+    }
+}
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct Cookie {
@@ -21,6 +28,20 @@ pub struct Cookie {
     pub inner: Inner,
     pub arr: [i32; 4],
 }
+impl Cookie {
+    pub unsafe fn new_1(this: *mut Cookie) {
+        Inner::new_1((&raw mut (*this).inner));
+    }
+    pub unsafe fn copy_from(this: *mut Cookie, _a0: *const Cookie) {
+        (&raw mut (*this).x).write((*_a0).x);
+        (&raw mut (*this).data).write((*_a0).data);
+        (&raw mut (*this).in_).write((*_a0).in_);
+        Inner::copy_from((&raw mut (*this).inner), { &(*_a0).inner });
+        (&raw mut (*this).arr).write(std::array::from_fn::<_, 4, _>(|__i: usize| {
+            (*_a0).arr[(__i)]
+        }));
+    }
+}
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg)]
 pub struct Counter {
@@ -29,6 +50,12 @@ pub struct Counter {
 impl Counter {
     pub unsafe fn inc(&mut self) {
         self.n.prefix_inc();
+    }
+    pub unsafe fn new_1(this: *mut Counter) {
+        (&raw mut (*this).n).write(0);
+    }
+    pub unsafe fn copy_from(this: *mut Counter, _a0: *const Counter) {
+        (&raw mut (*this).n).write((*_a0).n);
     }
 }
 impl Default for Counter {
@@ -46,7 +73,8 @@ pub unsafe fn first_2(mut p: *const i32) -> i32 {
     return (*p.offset((0) as isize));
 }
 pub unsafe fn consume_3(cookie: *const Cookie) -> i32 {
-    let mut c: Cookie = (*cookie);
+    let mut c: Cookie = ::std::mem::MaybeUninit::uninit().assume_init();
+    Cookie::copy_from(&raw mut c, { cookie });
     let mut sum: i32 = 0;
     {
         let mut i: i32 = 0;
@@ -76,7 +104,8 @@ pub fn main() {
 unsafe fn main_0() -> i32 {
     let mut data: [i32; 4] = [0, 0, 0, 0];
     let mut in_: [i32; 4] = [1, 2, 3, 4];
-    let mut cookie: Cookie = <Cookie>::default();
+    let mut cookie: Cookie = ::std::mem::MaybeUninit::uninit().assume_init();
+    Cookie::new_1(&raw mut cookie);
     cookie.x = 2;
     cookie.data = data.as_mut_ptr();
     cookie.in_ = (in_.as_mut_ptr()).cast_const();
@@ -88,15 +117,22 @@ unsafe fn main_0() -> i32 {
             && ((data[(3) as usize]) == (8))
     );
     assert!(((unsafe { get_1(&cookie,) }) == (2)));
-    let mut local: Inner = <Inner>::default();
+    let mut local: Inner = ::std::mem::MaybeUninit::uninit().assume_init();
+    Inner::new_1(&raw mut local);
     local.a = 4;
     local.b = ((local.a) * (2));
     local.a.postfix_inc();
     assert!((((local.a) + (local.b)) == (13)));
-    let mut field_addr: Inner = Inner { a: 0, b: 0 };
+    let mut field_addr: Inner = ::std::mem::MaybeUninit::uninit().assume_init();
+    {
+        let __d = &raw mut field_addr;
+        (&raw mut (*__d).a).write(0);
+        (&raw mut (*__d).b).write(0);
+    };
     (unsafe { set_0((&mut field_addr.b as *mut i32), 7) });
     assert!(((field_addr.b) == (7)));
-    let mut counter: Counter = <Counter>::default();
+    let mut counter: Counter = ::std::mem::MaybeUninit::uninit().assume_init();
+    Counter::new_1(&raw mut counter);
     (unsafe { Counter::inc(&mut counter) });
     assert!(((counter.n) == (1)));
     return 0;

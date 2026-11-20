@@ -11,6 +11,11 @@ use std::rc::Rc;
 pub struct S {
     pub x: i32,
 }
+impl S {
+    pub unsafe fn copy_from(this: *mut S, _a0: *const S) {
+        (&raw mut (*this).x).write((*_a0).x);
+    }
+}
 pub unsafe fn copy_0(mut copy_vector: Vec<i32>) {}
 #[repr(C)]
 #[derive(Clone, VaArg, FnPtrArg, MoveCtorUnsafe, MoveAssignUnsafe, Default)]
@@ -19,12 +24,13 @@ pub struct Foo {
     pub b: Vec<i32>,
 }
 impl Foo {
-    pub unsafe fn move_from(_a0: *mut Foo) -> Self {
-        let mut this = Self {
-            a: std::mem::take(&mut (*_a0).a),
-            b: std::mem::take(&mut (*_a0).b),
-        };
-        this
+    pub unsafe fn copy_from(this: *mut Foo, _a0: *const Foo) {
+        (&raw mut (*this).a).write((*_a0).a.clone());
+        (&raw mut (*this).b).write((*_a0).b.clone());
+    }
+    pub unsafe fn move_from(this: *mut Foo, _a0: *mut Foo) {
+        (&raw mut (*this).a).write(std::mem::take(&mut (*_a0).a));
+        (&raw mut (*this).b).write(std::mem::take(&mut (*_a0).b));
     }
     pub unsafe fn move_assign(&mut self, _a0: *mut Foo) -> *mut Foo {
         {
@@ -34,6 +40,10 @@ impl Foo {
             self.b = std::mem::take(&mut (*_a0).b);
         };
         return &mut (*(self as *mut Foo));
+    }
+    pub unsafe fn new_1(this: *mut Foo) {
+        (&raw mut (*this).a).write(Vec::new());
+        (&raw mut (*this).b).write(Vec::new());
     }
 }
 pub unsafe fn exchange_1(x: *mut Vec<i32>, y: *mut Vec<i32>) {
@@ -339,7 +349,11 @@ unsafe fn main_0() -> i32 {
     x1 -= 1.5_f64;
     assert!(((v6[(s2).wrapping_sub(1_usize)]) == (6.5_f64)));
     assert!(((((s1).wrapping_add(s2)).wrapping_add(((v2[0_usize]) as usize))) == (103_usize)));
-    let mut a: S = S { x: 1 };
+    let mut a: S = ::std::mem::MaybeUninit::uninit().assume_init();
+    {
+        let __d = &raw mut a;
+        (&raw mut (*__d).x).write(1);
+    };
     let mut pa: *mut S = (&mut a as *mut S);
     let mut v8: Vec<*const *mut S> = Vec::new();
     {
@@ -362,7 +376,8 @@ unsafe fn main_0() -> i32 {
         ((((v10.len()) == (1_usize)) && ((v10[(0_usize)]) == (4))) && ((v11.len()) == (3_usize)))
             && ((v11[(2_usize)]) == (3))
     );
-    let mut foo: Foo = <Foo>::default();
+    let mut foo: Foo = ::std::mem::MaybeUninit::uninit().assume_init();
+    Foo::new_1(&raw mut foo);
     {
         let __a1 = 5;
         foo.a.push(__a1)

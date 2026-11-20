@@ -26,31 +26,32 @@ pub struct Entry {
     pub color: Color,
     pub opt: Option,
 }
-pub static mut global_color_0: std::cell::LazyCell<Color> =
-    std::cell::LazyCell::new(|| unsafe { Color_GREEN });
-pub static mut global_opt_1: std::cell::LazyCell<Option> =
-    std::cell::LazyCell::new(|| unsafe { Option_OPT_B });
-pub static mut global_tag_2: std::cell::LazyCell<Tag_enum> =
-    std::cell::LazyCell::new(|| unsafe { Tag_enum_TAG_TWO });
-pub static mut entries_3: std::cell::LazyCell<[Entry; 3]> = std::cell::LazyCell::new(|| unsafe {
-    [
-        Entry {
-            name: (c"first".as_ptr().cast_mut()).cast_const(),
-            color: Color_RED,
-            opt: Option_OPT_NONE,
-        },
-        Entry {
-            name: (c"second".as_ptr().cast_mut()).cast_const(),
-            color: Color_GREEN,
-            opt: Option_OPT_A,
-        },
-        Entry {
-            name: (c"third".as_ptr().cast_mut()).cast_const(),
-            color: Color_BLUE,
-            opt: Option_OPT_C,
-        },
-    ]
-});
+pub static mut global_color_0: libcc2rs::LazyStorage<Color> =
+    libcc2rs::LazyStorage::new(|__p| unsafe { __p.write(Color_GREEN) });
+pub static mut global_opt_1: libcc2rs::LazyStorage<Option> =
+    libcc2rs::LazyStorage::new(|__p| unsafe { __p.write(Option_OPT_B) });
+pub static mut global_tag_2: libcc2rs::LazyStorage<Tag_enum> =
+    libcc2rs::LazyStorage::new(|__p| unsafe { __p.write(Tag_enum_TAG_TWO) });
+pub static mut entries_3: libcc2rs::LazyStorage<[Entry; 3]> =
+    libcc2rs::LazyStorage::new(|__p| unsafe {
+        __p.write([
+            Entry {
+                name: (c"first".as_ptr().cast_mut()).cast_const(),
+                color: Color_RED,
+                opt: Option_OPT_NONE,
+            },
+            Entry {
+                name: (c"second".as_ptr().cast_mut()).cast_const(),
+                color: Color_GREEN,
+                opt: Option_OPT_A,
+            },
+            Entry {
+                name: (c"third".as_ptr().cast_mut()).cast_const(),
+                color: Color_BLUE,
+                opt: Option_OPT_C,
+            },
+        ])
+    });
 pub unsafe fn as_int_4(mut c: Color) -> i32 {
     return (c as i32);
 }
@@ -156,40 +157,31 @@ unsafe fn main_0() -> i32 {
     };
     let mut extra: i32 = (((Color_RED as i32) + (Color_GREEN as i32)) + (Color_BLUE as i32));
     assert!(((extra) == (((0) + (1)) + (2))));
+    assert!((((*(*&raw const global_color_0).get()) as u32) == ((Color_GREEN as i32) as u32)));
+    assert!((((*(*&raw const global_opt_1).get()) as u32) == ((Option_OPT_B as i32) as u32)));
+    assert!((((*(*&raw const global_tag_2).get()) as u32) == ((Tag_enum_TAG_TWO as i32) as u32)));
     assert!(
-        (((*std::cell::LazyCell::force_mut(&mut *&raw mut global_color_0)) as u32)
-            == ((Color_GREEN as i32) as u32))
-    );
-    assert!(
-        (((*std::cell::LazyCell::force_mut(&mut *&raw mut global_opt_1)) as u32)
-            == ((Option_OPT_B as i32) as u32))
-    );
-    assert!(
-        (((*std::cell::LazyCell::force_mut(&mut *&raw mut global_tag_2)) as u32)
-            == ((Tag_enum_TAG_TWO as i32) as u32))
-    );
-    assert!(
-        (((*std::cell::LazyCell::force_mut(&mut *&raw mut entries_3))[(0) as usize].color as u32)
+        (((*(*&raw const entries_3).get())[(0) as usize].color as u32)
             == ((Color_RED as i32) as u32))
     );
     assert!(
-        (((*std::cell::LazyCell::force_mut(&mut *&raw mut entries_3))[(0) as usize].opt as u32)
+        (((*(*&raw const entries_3).get())[(0) as usize].opt as u32)
             == ((Option_OPT_NONE as i32) as u32))
     );
     assert!(
-        (((*std::cell::LazyCell::force_mut(&mut *&raw mut entries_3))[(1) as usize].color as u32)
+        (((*(*&raw const entries_3).get())[(1) as usize].color as u32)
             == ((Color_GREEN as i32) as u32))
     );
     assert!(
-        (((*std::cell::LazyCell::force_mut(&mut *&raw mut entries_3))[(1) as usize].opt as u32)
+        (((*(*&raw const entries_3).get())[(1) as usize].opt as u32)
             == ((Option_OPT_A as i32) as u32))
     );
     assert!(
-        (((*std::cell::LazyCell::force_mut(&mut *&raw mut entries_3))[(2) as usize].color as u32)
+        (((*(*&raw const entries_3).get())[(2) as usize].color as u32)
             == ((Color_BLUE as i32) as u32))
     );
     assert!(
-        (((*std::cell::LazyCell::force_mut(&mut *&raw mut entries_3))[(2) as usize].opt as u32)
+        (((*(*&raw const entries_3).get())[(2) as usize].opt as u32)
             == ((Option_OPT_C as i32) as u32))
     );
     let mut names: [*const libc::c_char; 3] = [
@@ -200,24 +192,22 @@ unsafe fn main_0() -> i32 {
     let mut idx: Color = Color_GREEN;
     assert!((((*names[(idx) as usize].offset((0) as isize)) as i32) == ('g' as i32)));
     assert!(
-        (((*std::cell::LazyCell::force_mut(&mut *&raw mut entries_3))[(idx) as usize].opt as u32)
+        (((*(*&raw const entries_3).get())[(idx) as usize].opt as u32)
             == ((Option_OPT_A as i32) as u32))
     );
     assert!(
-        (((*names[(*std::cell::LazyCell::force_mut(&mut *&raw mut global_tag_2)) as usize]
-            .offset((0) as isize)) as i32)
+        (((*names[(*(*&raw const global_tag_2).get()) as usize].offset((0) as isize)) as i32)
             == ('b' as i32))
     );
     let mut pp: *mut *const libc::c_char = (&mut names[(idx) as usize] as *mut *const libc::c_char);
     assert!((((*(*pp).offset((0) as isize)) as i32) == ('g' as i32)));
-    let mut pe: *mut Entry = (&mut (*std::cell::LazyCell::force_mut(&mut *&raw mut entries_3))
-        [(idx) as usize] as *mut Entry);
+    let mut pe: *mut Entry = (&mut (*(*&raw const entries_3).get())[(idx) as usize] as *mut Entry);
     assert!((((*pe).opt as u32) == ((Option_OPT_A as i32) as u32)));
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {
-    std::cell::LazyCell::force(&*&raw const global_color_0);
-    std::cell::LazyCell::force(&*&raw const global_opt_1);
-    std::cell::LazyCell::force(&*&raw const global_tag_2);
-    std::cell::LazyCell::force(&*&raw const entries_3);
+    (*&raw const global_color_0).get();
+    (*&raw const global_opt_1).get();
+    (*&raw const global_tag_2).get();
+    (*&raw const entries_3).get();
 }

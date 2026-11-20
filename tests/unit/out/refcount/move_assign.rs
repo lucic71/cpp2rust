@@ -7,7 +7,6 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
 #[derive(Record, ByteRepr, Uninit, FnPtrArg, MoveCtor, CppFrom, MoveAssign, Default)]
-#[placement]
 #[cpp_from(i32, new, value)]
 #[byte_size(4)]
 pub struct MoveOnly {
@@ -24,7 +23,6 @@ impl MoveOnly {
     }
 }
 #[derive(Record, ByteRepr, Uninit, FnPtrArg)]
-#[placement]
 #[byte_size(4)]
 pub struct ConstMoveAssign {
     #[offset(0)]

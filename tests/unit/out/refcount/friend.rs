@@ -24,6 +24,11 @@ pub struct V {
     #[offset(0)]
     pub x: i32,
 }
+impl V {
+    pub fn copy_from(this: Ptr<V>, _a0: Ptr<V>) {
+        field!(this, x).write(_a0.with(|__s| __s.x));
+    }
+}
 impl CppEq for V {
     fn equal(__lhs: &Ptr<Self>, __rhs: &Ptr<Self>) -> bool {
         operator_eq_1(__lhs.clone(), __rhs.clone())
@@ -38,6 +43,11 @@ pub struct W_int_ {
     #[offset(0)]
     pub x: i32,
 }
+impl W_int_ {
+    pub fn copy_from(this: Ptr<W_int_>, _a0: Ptr<W_int_>) {
+        field!(this, x).write(_a0.with(|__s| __s.x));
+    }
+}
 pub fn get_5(w: Ptr<W_long_>) -> i64 {
     return w.with(|__s| __s.x);
 }
@@ -47,11 +57,21 @@ pub struct W_long_ {
     #[offset(0)]
     pub x: i64,
 }
+impl W_long_ {
+    pub fn copy_from(this: Ptr<W_long_>, _a0: Ptr<W_long_>) {
+        field!(this, x).write(_a0.with(|__s| __s.x));
+    }
+}
 #[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
 #[byte_size(4)]
 pub struct D {
     #[offset(0)]
     pub x: i32,
+}
+impl D {
+    pub fn copy_from(this: Ptr<D>, _a0: Ptr<D>) {
+        field!(this, x).write(_a0.with(|__s| __s.x));
+    }
 }
 pub fn declared_then_defined_6(d: Ptr<D>) -> i32 {
     return (d.with(|__s| __s.x) + 1);
@@ -61,9 +81,21 @@ pub fn main() {
     libcc2rs::cpp2rust_exit(main_0());
 }
 fn main_0() -> i32 {
-    let a: Value<V> = Rc::new(RefCell::new(V { x: 3 }));
-    let b: Value<V> = Rc::new(RefCell::new(V { x: 3 }));
-    let c: Value<V> = Rc::new(RefCell::new(V { x: 4 }));
+    let a: Value<V> = Rc::new(RefCell::new(<V>::uninit()));
+    {
+        let __d = a.as_pointer();
+        field!(__d, x).write(3);
+    };
+    let b: Value<V> = Rc::new(RefCell::new(<V>::uninit()));
+    {
+        let __d = b.as_pointer();
+        field!(__d, x).write(3);
+    };
+    let c: Value<V> = Rc::new(RefCell::new(<V>::uninit()));
+    {
+        let __d = c.as_pointer();
+        field!(__d, x).write(4);
+    };
     assert!((({ get_0(a.as_pointer(),) }) == 3));
     assert!(
         ({
@@ -79,11 +111,23 @@ fn main_0() -> i32 {
     );
     assert!((({ scaled_2(c.as_pointer(), 2,) }) == 8));
     assert!((({ scaled_3(c.as_pointer(), 1.5_f64,) }) == 6_f64));
-    let wi: Value<W_int_> = Rc::new(RefCell::new(W_int_ { x: 5 }));
-    let wl: Value<W_long_> = Rc::new(RefCell::new(W_long_ { x: 6_i64 }));
+    let wi: Value<W_int_> = Rc::new(RefCell::new(<W_int_>::uninit()));
+    {
+        let __d = wi.as_pointer();
+        field!(__d, x).write(5);
+    };
+    let wl: Value<W_long_> = Rc::new(RefCell::new(<W_long_>::uninit()));
+    {
+        let __d = wl.as_pointer();
+        field!(__d, x).write(6_i64);
+    };
     assert!((({ get_4(wi.as_pointer(),) }) == 5));
     assert!((({ get_5(wl.as_pointer(),) }) == 6_i64));
-    let d: Value<D> = Rc::new(RefCell::new(D { x: 7 }));
+    let d: Value<D> = Rc::new(RefCell::new(<D>::uninit()));
+    {
+        let __d = d.as_pointer();
+        field!(__d, x).write(7);
+    };
     assert!((({ declared_then_defined_6(d.as_pointer(),) }) == 8));
     return 0;
 }

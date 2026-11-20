@@ -22,6 +22,12 @@ pub struct Pair {
     #[offset(4)]
     pub second: i32,
 }
+impl Pair {
+    pub fn copy_from(this: Ptr<Pair>, _a0: Ptr<Pair>) {
+        field!(this, first).write(_a0.with(|__s| __s.first));
+        field!(this, second).write(_a0.with(|__s| __s.second));
+    }
+}
 pub fn total_2(v: Ptr<Vec<i32>>) -> i32 {
     let mut s: i32 = 0;
     'loop_: for x in IterRange::new(v.decay().begin(), v.decay().end()) {
@@ -57,6 +63,14 @@ pub trait Shape {
 pub struct Square {
     #[offset(8)]
     pub side: i32,
+}
+impl Square {
+    pub fn copy_from(this: Ptr<Square>, _a0: Ptr<Square>) {
+        field!(this, side).write(_a0.with(|__s| __s.side));
+    }
+    pub fn new_1(this: Ptr<Square>) {
+        field!(this, side).write(2);
+    }
 }
 impl Default for Square {
     fn default() -> Self {
@@ -121,15 +135,22 @@ fn main_0() -> i32 {
     assert!((({ countdown_4(10, 1,) }) == 10));
     assert!((({ countdown_4(10, 3,) }) == 4));
     let mut init: i32 = 3;
-    let mut pair: Pair = Pair {
-        first: init,
-        second: (init + 1),
+    let pair: Value<Pair> = Rc::new(RefCell::new(<Pair>::uninit()));
+    {
+        let __d = pair.as_pointer();
+        field!(__d, first).write(init);
+        field!(__d, second).write((init + 1));
     };
-    let mut heap: Ptr<Pair> = Ptr::alloc(Pair {
-        first: init,
-        second: init,
-    });
-    assert!((pair.second == 4) && (heap.with(|__s| __s.first) == 3));
+    let mut heap: Ptr<Pair> = {
+        let __p = Ptr::alloc(<Pair>::uninit());
+        {
+            let __d = __p.clone();
+            field!(__d, first).write(init);
+            field!(__d, second).write(init);
+        };
+        __p
+    };
+    assert!(({ ({ (*pair.borrow()).second } == 4) && (heap.with(|__s| __s.first) == 3) }));
     heap.delete();
     let mut vec_: Vec<i32> = vec![1; 3_usize];
     let mut four: i32 = 4;
@@ -160,7 +181,8 @@ fn main_0() -> i32 {
     let data: Value<Vec<i32>> = Rc::new(RefCell::new(vec![0; 2_usize]));
     ({ set_0(data.decay(), 8) });
     assert!(({ ({ (*data.borrow())[0_usize] } == 8) }));
-    let square: Value<Square> = Rc::new(RefCell::new(<Square>::default()));
+    let square: Value<Square> = Rc::new(RefCell::new(<Square>::uninit()));
+    Square::new_1(square.as_pointer());
     let mut shape: PtrDyn<dyn Shape> = (square.as_pointer()).to_dyn::<dyn Shape>(|w| w);
     assert!((({ (*shape.upgrade().deref_mut()).scale(3,) }) == 6));
     return 0;

@@ -30,6 +30,13 @@ pub struct Entry {
     #[offset(12)]
     pub opt: Option,
 }
+impl Entry {
+    pub fn copy_from(this: Ptr<Entry>, _a0: Ptr<Entry>) {
+        field!(this, name).write(_a0.with(|__s| __s.name.clone()));
+        field!(this, color).write(_a0.with(|__s| __s.color));
+        field!(this, opt).write(_a0.with(|__s| __s.opt));
+    }
+}
 thread_local!(
     pub static global_color_0: Value<Color> = Rc::new(RefCell::new(Color_GREEN));
 );
@@ -40,23 +47,33 @@ thread_local!(
     pub static global_tag_2: Value<Tag> = Rc::new(RefCell::new(Tag_TAG_TWO));
 );
 thread_local!(
-    pub static entries_3: Value<Box<[Entry]>> = Rc::new(RefCell::new(Box::new([
-        Entry {
-            name: Ptr::<i8>::from_string_literal(b"first"),
-            color: Color_RED,
-            opt: Option_OPT_NONE,
-        },
-        Entry {
-            name: Ptr::<i8>::from_string_literal(b"second"),
-            color: Color_GREEN,
-            opt: Option_OPT_A,
-        },
-        Entry {
-            name: Ptr::<i8>::from_string_literal(b"third"),
-            color: Color_BLUE,
-            opt: Option_OPT_C,
-        },
-    ])));
+    pub static entries_3: Value<Box<[Entry]>> = {
+        let __v: Value<Box<[Entry]>> = Rc::new(RefCell::new(
+            (0..3).map(|_| <Entry>::uninit()).collect::<Box<[_]>>(),
+        ));
+        {
+            let __d = __v.decay();
+            {
+                let __d = __d.offset(0);
+                field!(__d, name).write(Ptr::<i8>::from_string_literal(b"first"));
+                field!(__d, color).write(Color_RED);
+                field!(__d, opt).write(Option_OPT_NONE);
+            };
+            {
+                let __d = __d.offset(1);
+                field!(__d, name).write(Ptr::<i8>::from_string_literal(b"second"));
+                field!(__d, color).write(Color_GREEN);
+                field!(__d, opt).write(Option_OPT_A);
+            };
+            {
+                let __d = __d.offset(2);
+                field!(__d, name).write(Ptr::<i8>::from_string_literal(b"third"));
+                field!(__d, color).write(Color_BLUE);
+                field!(__d, opt).write(Option_OPT_C);
+            };
+        };
+        __v
+    };
 );
 pub fn as_int_4(mut c: Color) -> i32 {
     return (c as i32);

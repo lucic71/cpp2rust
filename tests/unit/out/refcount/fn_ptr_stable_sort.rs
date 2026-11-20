@@ -14,6 +14,16 @@ pub struct Item {
     #[offset(4)]
     pub value: i32,
 }
+impl Item {
+    pub fn copy_from(this: Ptr<Item>, _a0: Ptr<Item>) {
+        field!(this, key).write(_a0.with(|__s| __s.key));
+        field!(this, value).write(_a0.with(|__s| __s.value));
+    }
+    pub fn move_from(this: Ptr<Item>, _a0: Ptr<Item>) {
+        field!(this, key).write({ (*_a0.upgrade().deref()).key });
+        field!(this, value).write({ (*_a0.upgrade().deref()).value });
+    }
+}
 pub fn Compare_0(a: Ptr<Item>, b: Ptr<Item>) -> bool {
     return ({ a.with(|__s| __s.key) } < { b.with(|__s| __s.key) });
 }

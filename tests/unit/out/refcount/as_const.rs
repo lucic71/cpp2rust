@@ -15,6 +15,11 @@ pub struct S {
     #[offset(0)]
     pub v: i32,
 }
+impl S {
+    pub fn copy_from(this: Ptr<S>, _a0: Ptr<S>) {
+        field!(this, v).write(_a0.with(|__s| __s.v));
+    }
+}
 pub fn g_0(_a0: Ptr<S>) -> Overload {
     return Overload_kMutableOverload;
 }
@@ -26,7 +31,11 @@ pub fn main() {
     libcc2rs::cpp2rust_exit(main_0());
 }
 fn main_0() -> i32 {
-    let s: Value<S> = Rc::new(RefCell::new(S { v: 7 }));
+    let s: Value<S> = Rc::new(RefCell::new(<S>::uninit()));
+    {
+        let __d = s.as_pointer();
+        field!(__d, v).write(7);
+    };
     assert!(((({ SImpl::f_1(&s.as_pointer(),) }) as i32) == (Overload_kMutableOverload as i32)));
     assert!(((({ SImpl::f_2(&s.as_pointer(),) }) as i32) == (Overload_kConstOverload as i32)));
     assert!(((({ g_0(s.as_pointer(),) }) as i32) == (Overload_kMutableOverload as i32)));

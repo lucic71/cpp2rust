@@ -7,7 +7,6 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
 #[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg)]
-#[placement]
 #[byte_size(4)]
 pub struct p2_reference_does_not_instantiate_Member {
     #[offset(0)]
@@ -42,7 +41,6 @@ impl Default for p2_reference_does_not_instantiate_Member {
     }
 }
 #[derive(Record, ByteRepr, Uninit, FnPtrArg, MoveCtor, Default)]
-#[placement]
 #[byte_size(4)]
 pub struct p2_reference_does_not_instantiate_Holder {
     #[offset(0)]

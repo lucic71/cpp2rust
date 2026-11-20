@@ -8,7 +8,6 @@ use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg)]
-#[placement]
 pub struct p2_reference_does_not_instantiate_Member {
     pub value: i32,
 }
@@ -42,7 +41,6 @@ impl Default for p2_reference_does_not_instantiate_Member {
 }
 #[repr(C)]
 #[derive(FnPtrArg, MoveCtorUnsafe, Default)]
-#[placement]
 pub struct p2_reference_does_not_instantiate_Holder {
     pub member: p2_reference_does_not_instantiate_Member,
 }

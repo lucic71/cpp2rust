@@ -16,7 +16,6 @@ impl p1_template_constructor_from_own_type_Probe {
 }
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, CppFromUnsafe, Default)]
-#[placement]
 #[cpp_from(i32, new_2, value)]
 pub struct p1_template_constructor_from_own_type_Probe {
     pub value: i32,

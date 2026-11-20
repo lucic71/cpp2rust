@@ -11,9 +11,16 @@ use std::rc::Rc;
 pub struct Inner {
     pub x: i32,
 }
+impl Inner {
+    pub unsafe fn copy_from(this: *mut Inner, _a0: *const Inner) {
+        (&raw mut (*this).x).write((*_a0).x);
+    }
+    pub unsafe fn move_from(this: *mut Inner, _a0: *mut Inner) {
+        (&raw mut (*this).x).write((*_a0).x);
+    }
+}
 #[repr(C)]
 #[derive(Clone, VaArg, FnPtrArg, CppFromUnsafe, DestructorUnsafe, Default)]
-#[placement]
 #[cpp_from(i32, new, value)]
 pub struct Explicit {
     pub v: i32,
@@ -23,19 +30,22 @@ pub struct Explicit {
 impl Explicit {
     pub unsafe fn new(this: *mut Explicit, mut v: i32) {
         (&raw mut (*this).v).write(v);
-        (&raw mut (*this).inner).write(Inner { x: ((v) * (10)) });
+        {
+            let __d = (&raw mut (*this).inner);
+            (&raw mut (*__d).x).write(((v) * (10)));
+        };
         (&raw mut (*this).arr).write([v, ((v) + (1))]);
     }
     pub unsafe fn copy_from(this: *mut Explicit, _a0: *const Explicit) {
         (&raw mut (*this).v).write((*_a0).v);
-        (&raw mut (*this).inner).write((*_a0).inner);
+        Inner::copy_from((&raw mut (*this).inner), { &(*_a0).inner });
         (&raw mut (*this).arr).write(std::array::from_fn::<_, 2, _>(|__i: usize| {
             (*_a0).arr[(__i)]
         }));
     }
     pub unsafe fn move_from(this: *mut Explicit, _a0: *mut Explicit) {
         (&raw mut (*this).v).write((*_a0).v);
-        (&raw mut (*this).inner).write((*_a0).inner);
+        Inner::move_from((&raw mut (*this).inner), { &mut (*_a0).inner });
         (&raw mut (*this).arr).write(std::array::from_fn::<_, 2, _>(|__i: usize| {
             (*_a0).arr[(__i)]
         }));
@@ -49,11 +59,26 @@ pub struct Implicit {
     pub inner: Inner,
     pub arr: [i32; 2],
 }
+impl Implicit {
+    pub unsafe fn copy_from(this: *mut Implicit, _a0: *const Implicit) {
+        (&raw mut (*this).v).write((*_a0).v);
+        Inner::copy_from((&raw mut (*this).inner), { &(*_a0).inner });
+        (&raw mut (*this).arr).write(std::array::from_fn::<_, 2, _>(|__i: usize| {
+            (*_a0).arr[(__i)]
+        }));
+    }
+    pub unsafe fn move_from(this: *mut Implicit, _a0: *mut Implicit) {
+        (&raw mut (*this).v).write((*_a0).v);
+        Inner::move_from((&raw mut (*this).inner), { &mut (*_a0).inner });
+        (&raw mut (*this).arr).write(std::array::from_fn::<_, 2, _>(|__i: usize| {
+            (*_a0).arr[(__i)]
+        }));
+    }
+}
 #[repr(C)]
 #[derive(
     Copy, Clone, VaArg, FnPtrArg, MoveCtorUnsafe, CppFromUnsafe, MoveAssignUnsafe, Default,
 )]
-#[placement]
 #[cpp_from(i32, new, value)]
 pub struct DefaultCopyUserMove {
     pub v: i32,
@@ -79,7 +104,6 @@ impl DefaultCopyUserMove {
 #[derive(
     VaArg, FnPtrArg, MoveCtorUnsafe, CppFromUnsafe, CopyAssignUnsafe, MoveAssignUnsafe, Default,
 )]
-#[placement]
 #[cpp_from(i32, new, value)]
 pub struct UserCopyDefaultMove {
     pub v: i32,
@@ -120,7 +144,6 @@ impl Clone for UserCopyDefaultMove {
 }
 #[repr(C)]
 #[derive(FnPtrArg, MoveCtorUnsafe, CppFromUnsafe, MoveAssignUnsafe, Default)]
-#[placement]
 #[cpp_from(i32, new, value)]
 pub struct Buffer {
     pub data: Vec<i32>,
@@ -175,14 +198,13 @@ pub struct Owner {
     pub p: Option<Box<i32>>,
 }
 impl Owner {
-    pub unsafe fn move_from(_a0: *mut Owner) -> Self {
-        let mut this = Self {
-            data: std::mem::take(&mut (*_a0).data),
-            n: (*_a0).n,
-            arr: std::array::from_fn::<_, 2, _>(|__i: usize| (*_a0).arr[(__i)]),
-            p: (*_a0).p.take(),
-        };
-        this
+    pub unsafe fn move_from(this: *mut Owner, _a0: *mut Owner) {
+        (&raw mut (*this).data).write(std::mem::take(&mut (*_a0).data));
+        (&raw mut (*this).n).write((*_a0).n);
+        (&raw mut (*this).arr).write(std::array::from_fn::<_, 2, _>(|__i: usize| {
+            (*_a0).arr[(__i)]
+        }));
+        (&raw mut (*this).p).write((*_a0).p.take());
     }
     pub unsafe fn move_assign(&mut self, _a0: *mut Owner) -> *mut Owner {
         {
@@ -202,6 +224,10 @@ impl Owner {
         };
         return &mut (*(self as *mut Owner));
     }
+    pub unsafe fn new_1(this: *mut Owner) {
+        (&raw mut (*this).data).write(Vec::new());
+        (&raw mut (*this).p).write(None);
+    }
 }
 #[repr(C)]
 #[derive(Clone, VaArg, FnPtrArg, MoveCtorUnsafe, MoveAssignUnsafe, Default)]
@@ -209,11 +235,11 @@ pub struct Copyable {
     pub data: Vec<i32>,
 }
 impl Copyable {
-    pub unsafe fn move_from(_a0: *mut Copyable) -> Self {
-        let mut this = Self {
-            data: std::mem::take(&mut (*_a0).data),
-        };
-        this
+    pub unsafe fn copy_from(this: *mut Copyable, _a0: *const Copyable) {
+        (&raw mut (*this).data).write((*_a0).data.clone());
+    }
+    pub unsafe fn move_from(this: *mut Copyable, _a0: *mut Copyable) {
+        (&raw mut (*this).data).write(std::mem::take(&mut (*_a0).data));
     }
     pub unsafe fn move_assign(&mut self, _a0: *mut Copyable) -> *mut Copyable {
         {
@@ -221,10 +247,12 @@ impl Copyable {
         };
         return &mut (*(self as *mut Copyable));
     }
+    pub unsafe fn new_1(this: *mut Copyable) {
+        (&raw mut (*this).data).write(Vec::new());
+    }
 }
 #[repr(C)]
 #[derive(FnPtrArg, MoveCtorUnsafe, CppFromUnsafe, MoveAssignUnsafe, DestructorUnsafe, Default)]
-#[placement]
 #[cpp_from(i32, new, value)]
 pub struct Holder {
     pub inner: Inner,
@@ -233,12 +261,15 @@ pub struct Holder {
 }
 impl Holder {
     pub unsafe fn new(this: *mut Holder, mut v: i32) {
-        (&raw mut (*this).inner).write(Inner { x: v });
+        {
+            let __d = (&raw mut (*this).inner);
+            (&raw mut (*__d).x).write(v);
+        };
         Explicit::new((&raw mut (*this).e), { v });
         (&raw mut (*this).p).write(None);
     }
     pub unsafe fn move_from(this: *mut Holder, _a0: *mut Holder) {
-        (&raw mut (*this).inner).write((*_a0).inner);
+        Inner::move_from((&raw mut (*this).inner), { &mut (*_a0).inner });
         Explicit::move_from((&raw mut (*this).e), { &mut (*_a0).e });
         (&raw mut (*this).p).write((*_a0).p.take());
     }
@@ -301,19 +332,31 @@ unsafe fn main_0() -> i32 {
         (e).clone()
     };
     assert!((unsafe { same_0(&g, &f,) }) && (unsafe { same_0(&e, &f,) }));
-    let mut i: Implicit = Implicit {
-        v: 5,
-        inner: Inner { x: 50 },
-        arr: [5, 6],
+    let mut i: Implicit = ::std::mem::MaybeUninit::uninit().assume_init();
+    {
+        let __d = &raw mut i;
+        (&raw mut (*__d).v).write(5);
+        {
+            let __d = (&raw mut (*__d).inner);
+            (&raw mut (*__d).x).write(50);
+        };
+        (&raw mut (*__d).arr).write([5, 6]);
     };
-    let mut j: Implicit = i;
-    let mut k: Implicit = i;
+    let mut j: Implicit = ::std::mem::MaybeUninit::uninit().assume_init();
+    Implicit::copy_from(&raw mut j, { &i });
+    let mut k: Implicit = ::std::mem::MaybeUninit::uninit().assume_init();
+    Implicit::move_from(&raw mut k, { &mut i });
     assert!((((j.v) == (5)) && ((j.inner.x) == (50))) && ((j.arr[(1) as usize]) == (6)));
     assert!(((i.v) == (5)) && ((k.v) == (5)));
-    let mut l: Implicit = Implicit {
-        v: 0,
-        inner: Inner { x: 0 },
-        arr: [0, 0],
+    let mut l: Implicit = ::std::mem::MaybeUninit::uninit().assume_init();
+    {
+        let __d = &raw mut l;
+        (&raw mut (*__d).v).write(0);
+        {
+            let __d = (&raw mut (*__d).inner);
+            (&raw mut (*__d).x).write(0);
+        };
+        (&raw mut (*__d).arr).write([0, 0]);
     };
     l = j;
     assert!((((l.v) == (5)) && ((l.inner.x) == (50))) && ((l.arr[(0) as usize]) == (5)));
@@ -401,7 +444,8 @@ unsafe fn main_0() -> i32 {
         (((bufs[(1_usize)].n) == (3)) && ((bufs[(1_usize)].data.len()) == (3_usize)))
             && (bufs[(0_usize)].data.is_empty())
     );
-    let mut o1: Owner = <Owner>::default();
+    let mut o1: Owner = ::std::mem::MaybeUninit::uninit().assume_init();
+    Owner::new_1(&raw mut o1);
     {
         let __a1 = 5;
         o1.data.push(__a1)
@@ -417,7 +461,8 @@ unsafe fn main_0() -> i32 {
             Some(Box::from_raw(_a0))
         }
     };
-    let mut o2: Owner = Owner::move_from({ &mut o1 });
+    let mut o2: Owner = ::std::mem::MaybeUninit::uninit().assume_init();
+    Owner::move_from(&raw mut o2, { &mut o1 });
     assert!(
         ((((o2.n) == (5)) && ((o2.data.len()) == (1_usize))) && ((o2.arr[(1) as usize]) == (6)))
             && ((*o2
@@ -434,7 +479,8 @@ unsafe fn main_0() -> i32 {
                 .map_or(::std::ptr::null_mut(), |v| v as *mut i32))
             .is_null())
     );
-    let mut o3: Owner = <Owner>::default();
+    let mut o3: Owner = ::std::mem::MaybeUninit::uninit().assume_init();
+    Owner::new_1(&raw mut o3);
     (unsafe { Owner::move_assign(&mut o3, &mut o2) });
     assert!(
         ((((o3.n) == (5)) && ((o3.data[(0_usize)]) == (5))) && ((o3.arr[(0) as usize]) == (5)))
@@ -452,14 +498,19 @@ unsafe fn main_0() -> i32 {
                 .map_or(::std::ptr::null_mut(), |v| v as *mut i32))
             .is_null())
     );
-    let mut c1: Copyable = Copyable {
-        data: Vec::from([1, 2]),
+    let mut c1: Copyable = ::std::mem::MaybeUninit::uninit().assume_init();
+    {
+        let __d = &raw mut c1;
+        (&raw mut (*__d).data).write(Vec::from([1, 2]));
     };
-    let mut c2: Copyable = c1.clone();
-    let mut c3: Copyable = Copyable::move_from({ &mut c1 });
+    let mut c2: Copyable = ::std::mem::MaybeUninit::uninit().assume_init();
+    Copyable::copy_from(&raw mut c2, { &c1 });
+    let mut c3: Copyable = ::std::mem::MaybeUninit::uninit().assume_init();
+    Copyable::move_from(&raw mut c3, { &mut c1 });
     assert!(((c2.data.len()) == (2_usize)) && ((c3.data.len()) == (2_usize)));
     assert!(c1.data.is_empty());
-    let mut c4: Copyable = <Copyable>::default();
+    let mut c4: Copyable = ::std::mem::MaybeUninit::uninit().assume_init();
+    Copyable::new_1(&raw mut c4);
     (unsafe { Copyable::move_assign(&mut c4, &mut c3) });
     assert!(((c4.data[(1_usize)]) == (2)) && (c3.data.is_empty()));
     let mut h1: Holder = ::std::mem::MaybeUninit::uninit().assume_init();

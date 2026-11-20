@@ -17,11 +17,13 @@ pub struct Holder {
     pub vec_: Vec<i32>,
 }
 impl Holder {
-    pub fn move_from(_a0: Ptr<Holder>) -> Self {
-        Self {
-            ref_: ({ (*_a0.upgrade().deref()).ref_.clone() }).clone(),
-            vec_: field!(_a0, vec_).with_mut(std::mem::take),
-        }
+    pub fn copy_from(this: Ptr<Holder>, _a0: Ptr<Holder>) {
+        field!(this, ref_).write((_a0.with(|__s| __s.ref_.clone())).clone());
+        field!(this, vec_).write((*_a0.upgrade().deref()).vec_.clone());
+    }
+    pub fn move_from(this: Ptr<Holder>, _a0: Ptr<Holder>) {
+        field!(this, ref_).write(({ (*_a0.upgrade().deref()).ref_.clone() }).clone());
+        field!(this, vec_).write(field!(_a0, vec_).with_mut(std::mem::take));
     }
 }
 pub fn pick_0(a: Ptr<Vec<i32>>, b: Ptr<Vec<i32>>, mut first: bool) -> Ptr<Vec<i32>> {
@@ -54,10 +56,12 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     let v: Value<Vec<i32>> = Rc::new(RefCell::new(Vec::from([1, 2, 3])));
-    let h: Value<Holder> = Rc::new(RefCell::new(Holder {
-        ref_: v.as_pointer(),
-        vec_: Vec::from([4, 5]),
-    }));
+    let h: Value<Holder> = Rc::new(RefCell::new(<Holder>::uninit()));
+    {
+        let __d = h.as_pointer();
+        field!(__d, ref_).write(v.as_pointer());
+        field!(__d, vec_).write(Vec::from([4, 5]));
+    };
     assert!(((({ { (*h.borrow()).ref_.clone() }.decay() }).read()) == 1));
     { (*h.borrow()).ref_.clone() }.decay().write(9);
     assert!(({ ({ (*v.borrow())[0_usize] } == 9) }));

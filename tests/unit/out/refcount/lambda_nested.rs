@@ -12,6 +12,11 @@ pub struct S {
     #[offset(0)]
     pub v: i32,
 }
+impl S {
+    pub fn copy_from(this: Ptr<S>, _a0: Ptr<S>) {
+        field!(this, v).write(_a0.with(|__s| __s.v));
+    }
+}
 pub fn main() {
     __cpp2rust_init_globals();
     libcc2rs::cpp2rust_exit(main_0());
@@ -39,7 +44,11 @@ fn main_0() -> i32 {
     assert!(({ (({ (*outer.borrow()).call(20,) }) == 31) }));
     (*x.borrow_mut()) = 100;
     assert!(({ (({ (*outer.borrow()).call(20,) }) == 121) }));
-    let s: Value<S> = Rc::new(RefCell::new(S { v: 5 }));
+    let s: Value<S> = Rc::new(RefCell::new(<S>::uninit()));
+    {
+        let __d = s.as_pointer();
+        field!(__d, v).write(5);
+    };
     assert!((({ SImpl::nested_this(&s.as_pointer(),) }) == 26));
     return 0;
 }

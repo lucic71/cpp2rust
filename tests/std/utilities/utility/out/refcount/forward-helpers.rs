@@ -15,7 +15,6 @@ pub fn test_0() {
     assert!(({ ((*value.borrow()) == 2) }));
 }
 #[derive(Record, ByteRepr, Uninit, VaArg, FnPtrArg, MoveCtor, CppFrom, Default)]
-#[placement]
 #[cpp_from(i32, new, value)]
 #[byte_size(4)]
 pub struct p6_forward_like_Movable {
@@ -47,7 +46,6 @@ impl Clone for p6_forward_like_Movable {
     }
 }
 #[derive(Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, MoveCtor)]
-#[placement]
 #[byte_size(4)]
 pub struct p6_forward_like_Holder {
     #[offset(0)]
@@ -106,7 +104,6 @@ pub fn test_3() {
     assert!(({ ({ (*moved.borrow()).value } == 1) && ({ (*holder.borrow()).member.value } == 0) }));
 }
 #[derive(Record, ByteRepr, Uninit, FnPtrArg, MoveCtor, CppFrom, Default)]
-#[placement]
 #[cpp_from(i32, new, value)]
 #[byte_size(4)]
 pub struct p9_move_Movable {
@@ -161,7 +158,6 @@ pub fn test_4() {
     );
 }
 #[derive(Record, ByteRepr, Uninit, VaArg, FnPtrArg, MoveCtor, CppFrom)]
-#[placement]
 #[cpp_from(i32, new, value)]
 #[byte_size(12)]
 pub struct p10_forward_in_template_A {
@@ -249,7 +245,6 @@ pub fn test_7() {
     assert!(({ ({ (*a.borrow()).value } == 0) }));
 }
 #[derive(Record, ByteRepr, Uninit, VaArg, FnPtrArg, MoveCtor, CppFrom, Default)]
-#[placement]
 #[cpp_from(i32, new, value)]
 #[byte_size(4)]
 pub struct p11_move_if_noexcept_NoexceptMove {
@@ -287,7 +282,6 @@ impl Clone for p11_move_if_noexcept_NoexceptMove {
     }
 }
 #[derive(Record, ByteRepr, Uninit, VaArg, FnPtrArg, MoveCtor, CppFrom, Default)]
-#[placement]
 #[cpp_from(i32, new, value)]
 #[byte_size(4)]
 pub struct p11_move_if_noexcept_ThrowingMove {

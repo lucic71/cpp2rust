@@ -15,6 +15,12 @@ impl S_int_ {
     pub unsafe fn set(&mut self, mut v: i32) {
         self.x = v;
     }
+    pub unsafe fn new_1(this: *mut S_int_) {
+        (&raw mut (*this).x).write(0);
+    }
+    pub unsafe fn copy_from(this: *mut S_int_, _a0: *const S_int_) {
+        (&raw mut (*this).x).write((*_a0).x);
+    }
 }
 impl Default for S_int_ {
     fn default() -> Self {
@@ -28,7 +34,8 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    let mut p: S_int_ = <S_int_>::default();
+    let mut p: S_int_ = ::std::mem::MaybeUninit::uninit().assume_init();
+    S_int_::new_1(&raw mut p);
     (unsafe { S_int_::set(&mut p, 3) });
     assert!(((unsafe { f_0((&mut p as *mut S_int_),) }) == (3)));
     return 0;

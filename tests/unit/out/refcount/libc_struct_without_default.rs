@@ -18,13 +18,27 @@ pub struct UserDefined {
     pub v: Vec<i32>,
 }
 impl UserDefined {
-    pub fn move_from(_a0: Ptr<UserDefined>) -> Self {
-        Self {
-            a: (0..1)
+    pub fn copy_from(this: Ptr<UserDefined>, _a0: Ptr<UserDefined>) {
+        field!(this, a).write(
+            (0..1)
+                .map(|__i| field_ref!(_a0, a).decay().read_at(__i))
+                .collect(),
+        );
+        field!(this, v).write((*_a0.upgrade().deref()).v.clone());
+    }
+    pub fn move_from(this: Ptr<UserDefined>, _a0: Ptr<UserDefined>) {
+        field!(this, a).write(
+            (0..1)
                 .map(|__i| field_ref!(_a0, a).decay().offset(__i).read())
                 .collect(),
-            v: field!(_a0, v).with_mut(std::mem::take),
-        }
+        );
+        field!(this, v).write(field!(_a0, v).with_mut(std::mem::take));
+    }
+    pub fn new_1(this: Ptr<UserDefined>) {
+        field!(this, a).write(Box::<[i32]>::from(std::array::from_fn::<_, 1, _>(|_| {
+            0_i32
+        })));
+        field!(this, v).write(Vec::new());
     }
 }
 impl Default for UserDefined {
@@ -43,6 +57,14 @@ pub struct FieldIsLibcType {
     #[offset(0)]
     #[byte_size(16)]
     pub addr: libcc2rs::Sockaddr,
+}
+impl FieldIsLibcType {
+    pub fn new_1(this: Ptr<FieldIsLibcType>) {
+        field!(this, addr).write(Default::default());
+    }
+    pub fn copy_from(this: Ptr<FieldIsLibcType>, _a0: Ptr<FieldIsLibcType>) {
+        field!(this, addr).write(_a0.with(|__s| __s.addr.clone()));
+    }
 }
 impl Default for FieldIsLibcType {
     fn default() -> Self {
@@ -78,13 +100,15 @@ fn main_0() -> i32 {
     let st: Value<libcc2rs::Stat> = Rc::new(RefCell::new(Default::default()));
     (*st.borrow_mut()).st_size = (1024 as ::libc::off_t);
     assert!(({ ({ (*st.borrow()).st_size } == (1024 as ::libc::off_t)) }));
-    let ud: Value<UserDefined> = Rc::new(RefCell::new(<UserDefined>::default()));
+    let ud: Value<UserDefined> = Rc::new(RefCell::new(<UserDefined>::uninit()));
+    UserDefined::new_1(ud.as_pointer());
     elem!(field_ref!(ud.as_pointer(), a).decay(), 0_usize).write(3);
     assert!(((elem!(field_ref!(ud.as_pointer(), a).decay(), 0_usize).read()) == 3));
     assert!(({ ((*ud.borrow()).v.len() == 0_usize) }));
-    let mut filt: FieldIsLibcType = <FieldIsLibcType>::default();
-    filt.addr.sa_family = 2_u16;
-    assert!(((filt.addr.sa_family as i32) == 2));
+    let filt: Value<FieldIsLibcType> = Rc::new(RefCell::new(<FieldIsLibcType>::uninit()));
+    FieldIsLibcType::new_1(filt.as_pointer());
+    (*filt.borrow_mut()).addr.sa_family = 2_u16;
+    assert!(({ (({ (*filt.borrow()).addr.sa_family } as i32) == 2) }));
     return 0;
 }
 pub trait UserDefinedImpl {

@@ -7,7 +7,6 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
 #[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, CppFrom, Default)]
-#[placement]
 #[cpp_from(i32, new, value)]
 #[byte_size(4)]
 pub struct Degrees {
@@ -28,6 +27,11 @@ impl Degrees {
 pub struct Reading {
     #[offset(0)]
     pub raw_: i32,
+}
+impl Reading {
+    pub fn copy_from(this: Ptr<Reading>, _a0: Ptr<Reading>) {
+        field!(this, raw_).write(_a0.with(|__s| __s.raw_));
+    }
 }
 pub fn main() {
     __cpp2rust_init_globals();
@@ -202,10 +206,20 @@ fn main_0() -> i32 {
         __v
     };
     assert!((v7[1_usize].value == 5));
-    let readings: Value<Box<[Reading]>> = Rc::new(RefCell::new(Box::new([
-        Reading { raw_: 4 },
-        Reading { raw_: 5 },
-    ])));
+    let readings: Value<Box<[Reading]>> = Rc::new(RefCell::new(
+        (0..2).map(|_| <Reading>::uninit()).collect::<Box<[_]>>(),
+    ));
+    {
+        let __d = readings.decay();
+        {
+            let __d = __d.offset(0);
+            field!(__d, raw_).write(4);
+        };
+        {
+            let __d = __d.offset(1);
+            field!(__d, raw_).write(5);
+        };
+    };
     let mut v8: Vec<i64> = {
         let mut __tmp_14 = { readings.decay().offset((2) as isize) };
         let mut __v = Vec::new();

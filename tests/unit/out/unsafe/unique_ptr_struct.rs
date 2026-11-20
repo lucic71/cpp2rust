@@ -12,8 +12,18 @@ pub struct Point {
     pub x: i32,
     pub y: i32,
 }
-pub unsafe fn sum_0(mut p: Point) -> i32 {
-    return ((p.x) + (p.y));
+impl Point {
+    pub unsafe fn copy_from(this: *mut Point, _a0: *const Point) {
+        (&raw mut (*this).x).write((*_a0).x);
+        (&raw mut (*this).y).write((*_a0).y);
+    }
+    pub unsafe fn move_from(this: *mut Point, _a0: *mut Point) {
+        (&raw mut (*this).x).write((*_a0).x);
+        (&raw mut (*this).y).write((*_a0).y);
+    }
+}
+pub unsafe fn sum_0(p: *mut Point) -> i32 {
+    return (((*p).x) + ((*p).y));
 }
 pub fn main() {
     unsafe {
@@ -36,10 +46,15 @@ unsafe fn main_0() -> i32 {
         .map_or(::std::ptr::null_mut(), |v| v as *const Point as *mut Point))
     .y));
     let mut s: i32 = (unsafe {
-        sum_0(
-            (*p.as_deref()
-                .map_or(::std::ptr::null_mut(), |v| v as *const Point as *mut Point)),
-        )
+        sum_0((|__p: *mut Point| {
+            Point::copy_from(__p, {
+                &(*p.as_deref()
+                    .map_or(::std::ptr::null_mut(), |v| v as *const Point as *mut Point))
+            });
+            __p
+        })(
+            (&mut ::std::mem::MaybeUninit::<Point>::uninit()).as_mut_ptr(),
+        ))
     });
     assert!(((s) == (30)));
     return 0;
