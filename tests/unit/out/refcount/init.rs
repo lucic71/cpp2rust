@@ -12,15 +12,6 @@ pub struct X {
     #[offset(0)]
     pub x: i32,
 }
-impl X {
-    pub fn new_1(this: Ptr<X>) {}
-    pub fn copy_from(this: Ptr<X>, _a0: Ptr<X>) {
-        field!(this, x).write(_a0.with(|__s| __s.x));
-    }
-    pub fn move_from(this: Ptr<X>, _a0: Ptr<X>) {
-        field!(this, x).write({ (*_a0.upgrade().deref()).x });
-    }
-}
 pub fn func_0() -> i32 {
     return 42;
 }
@@ -34,16 +25,14 @@ fn main_0() -> i32 {
     let g: Ptr<i32> = x.as_pointer();
     let mut q: Ptr<i32> = (x.as_pointer());
     let mut z: Ptr<i32> = (p).clone();
-    let xx: Value<X> = Rc::new(RefCell::new(<X>::uninit()));
-    X::new_1(xx.as_pointer());
+    let xx: Value<X> = Rc::new(RefCell::new(<X>::default()));
     let mut zz: Ptr<X> = (xx.as_pointer());
     (*xx.borrow_mut()).x = 1;
     q = (field_ptr!(xx.as_pointer(), x));
     q = (field_ptr!(zz, x));
     field!(zz, x).write(2);
-    let ww: Value<X> = Rc::new(RefCell::new(<X>::uninit()));
-    X::copy_from(ww.as_pointer(), { xx.as_pointer() });
-    (*ww.borrow_mut()) = (*xx.borrow());
+    let mut ww: X = (*xx.borrow());
+    ww = (*xx.borrow());
     let mut aa: i32 = ({ func_0() });
     aa = ({ func_0() });
     return 0;

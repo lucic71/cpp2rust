@@ -14,26 +14,12 @@ pub struct p3_arrow_star_HasTwoInts {
     #[offset(4)]
     pub second: i32,
 }
-impl p3_arrow_star_HasTwoInts {
-    pub fn new_1(this: Ptr<p3_arrow_star_HasTwoInts>) {}
-    pub fn copy_from(this: Ptr<p3_arrow_star_HasTwoInts>, _a0: Ptr<p3_arrow_star_HasTwoInts>) {
-        field!(this, first).write(_a0.with(|__s| __s.first));
-        field!(this, second).write(_a0.with(|__s| __s.second));
-    }
-    pub fn move_from(this: Ptr<p3_arrow_star_HasTwoInts>, _a0: Ptr<p3_arrow_star_HasTwoInts>) {
-        field!(this, first).write({ (*_a0.upgrade().deref()).first });
-        field!(this, second).write({ (*_a0.upgrade().deref()).second });
-    }
-}
 pub fn test_0() {
     let mut pm: isize = (offset_of_field!(p3_arrow_star_HasTwoInts, second) as isize);
-    let obj: Value<p3_arrow_star_HasTwoInts> =
-        Rc::new(RefCell::new(<p3_arrow_star_HasTwoInts>::uninit()));
-    {
-        let __d = obj.as_pointer();
-        field!(__d, first).write(3);
-        field!(__d, second).write(4);
-    };
+    let obj: Value<p3_arrow_star_HasTwoInts> = Rc::new(RefCell::new(p3_arrow_star_HasTwoInts {
+        first: 3,
+        second: 4,
+    }));
     let mut p: Ptr<p3_arrow_star_HasTwoInts> = (obj.as_pointer());
     assert!((((p).member::<i32>(pm).read()) == 4));
     (p).member::<i32>(pm).write(5);
@@ -47,21 +33,6 @@ pub struct p4_object_expression_sequenced_first_HasValue {
     #[offset(0)]
     pub value: i32,
 }
-impl p4_object_expression_sequenced_first_HasValue {
-    pub fn new_1(this: Ptr<p4_object_expression_sequenced_first_HasValue>) {}
-    pub fn copy_from(
-        this: Ptr<p4_object_expression_sequenced_first_HasValue>,
-        _a0: Ptr<p4_object_expression_sequenced_first_HasValue>,
-    ) {
-        field!(this, value).write(_a0.with(|__s| __s.value));
-    }
-    pub fn move_from(
-        this: Ptr<p4_object_expression_sequenced_first_HasValue>,
-        _a0: Ptr<p4_object_expression_sequenced_first_HasValue>,
-    ) {
-        field!(this, value).write({ (*_a0.upgrade().deref()).value });
-    }
-}
 thread_local!(
     pub static sequence_1: Value<i32> = Rc::new(RefCell::new(0_i32));
 );
@@ -72,16 +43,9 @@ thread_local!(
     pub static member_stamp_3: Value<i32> = Rc::new(RefCell::new(0_i32));
 );
 thread_local!(
-    pub static object_4: Value<p4_object_expression_sequenced_first_HasValue> = {
-        let __v: Value<p4_object_expression_sequenced_first_HasValue> = Rc::new(RefCell::new(
-            <p4_object_expression_sequenced_first_HasValue>::uninit(),
-        ));
-        {
-            let __d = __v.as_pointer();
-            field!(__d, value).write(7);
-        };
-        __v
-    };
+    pub static object_4: Value<p4_object_expression_sequenced_first_HasValue> = Rc::new(
+        RefCell::new(p4_object_expression_sequenced_first_HasValue { value: 7 }),
+    );
 );
 pub fn select_object_5() -> Ptr<p4_object_expression_sequenced_first_HasValue> {
     object_stamp_2.with(|rc| {
@@ -113,34 +77,15 @@ pub struct p6_data_member_of_lvalue_is_lvalue_HasTwoInts {
     #[offset(4)]
     pub second: i32,
 }
-impl p6_data_member_of_lvalue_is_lvalue_HasTwoInts {
-    pub fn new_1(this: Ptr<p6_data_member_of_lvalue_is_lvalue_HasTwoInts>) {}
-    pub fn copy_from(
-        this: Ptr<p6_data_member_of_lvalue_is_lvalue_HasTwoInts>,
-        _a0: Ptr<p6_data_member_of_lvalue_is_lvalue_HasTwoInts>,
-    ) {
-        field!(this, first).write(_a0.with(|__s| __s.first));
-        field!(this, second).write(_a0.with(|__s| __s.second));
-    }
-    pub fn move_from(
-        this: Ptr<p6_data_member_of_lvalue_is_lvalue_HasTwoInts>,
-        _a0: Ptr<p6_data_member_of_lvalue_is_lvalue_HasTwoInts>,
-    ) {
-        field!(this, first).write({ (*_a0.upgrade().deref()).first });
-        field!(this, second).write({ (*_a0.upgrade().deref()).second });
-    }
-}
 pub fn test_8() {
     let mut pm: isize =
         (offset_of_field!(p6_data_member_of_lvalue_is_lvalue_HasTwoInts, second) as isize);
     let obj: Value<p6_data_member_of_lvalue_is_lvalue_HasTwoInts> = Rc::new(RefCell::new(
-        <p6_data_member_of_lvalue_is_lvalue_HasTwoInts>::uninit(),
+        p6_data_member_of_lvalue_is_lvalue_HasTwoInts {
+            first: 3,
+            second: 4,
+        },
     ));
-    {
-        let __d = obj.as_pointer();
-        field!(__d, first).write(3);
-        field!(__d, second).write(4);
-    };
     assert!((((obj.as_pointer()).member::<i32>(pm)) == (field_ptr!(obj.as_pointer(), second))));
     let ref_: Ptr<i32> = (obj.as_pointer()).member::<i32>(pm);
     ref_.write(5);
@@ -157,7 +102,6 @@ thread_local!(
 #[byte_size(1)]
 pub struct p6_data_member_of_rvalue_is_xvalue_CountsCopiesAndMoves {}
 impl p6_data_member_of_rvalue_is_xvalue_CountsCopiesAndMoves {
-    pub fn new(this: Ptr<p6_data_member_of_rvalue_is_xvalue_CountsCopiesAndMoves>) {}
     pub fn copy_from(
         this: Ptr<p6_data_member_of_rvalue_is_xvalue_CountsCopiesAndMoves>,
         _a0: Ptr<p6_data_member_of_rvalue_is_xvalue_CountsCopiesAndMoves>,
@@ -212,9 +156,6 @@ impl p6_data_member_of_rvalue_is_xvalue_HoldsCounted {
             { field_ptr!(_a0, member) },
         );
     }
-    pub fn new_1(this: Ptr<p6_data_member_of_rvalue_is_xvalue_HoldsCounted>) {
-        p6_data_member_of_rvalue_is_xvalue_CountsCopiesAndMoves::new(field_ptr!(this, member));
-    }
 }
 pub fn test_11() {
     let mut pm: isize =
@@ -222,7 +163,7 @@ pub fn test_11() {
     let holder: Value<p6_data_member_of_rvalue_is_xvalue_HoldsCounted> = Rc::new(RefCell::new(
         <p6_data_member_of_rvalue_is_xvalue_HoldsCounted>::uninit(),
     ));
-    p6_data_member_of_rvalue_is_xvalue_HoldsCounted::new_1(holder.as_pointer());
+    ();
     let from_lvalue: Value<p6_data_member_of_rvalue_is_xvalue_CountsCopiesAndMoves> = Rc::new(
         RefCell::new(<p6_data_member_of_rvalue_is_xvalue_CountsCopiesAndMoves>::uninit()),
     );

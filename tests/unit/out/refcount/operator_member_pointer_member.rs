@@ -12,15 +12,6 @@ pub struct Inner {
     #[offset(0)]
     pub x: i32,
 }
-impl Inner {
-    pub fn new_1(this: Ptr<Inner>) {}
-    pub fn copy_from(this: Ptr<Inner>, _a0: Ptr<Inner>) {
-        field!(this, x).write(_a0.with(|__s| __s.x));
-    }
-    pub fn move_from(this: Ptr<Inner>, _a0: Ptr<Inner>) {
-        field!(this, x).write({ (*_a0.upgrade().deref()).x });
-    }
-}
 #[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
 #[byte_size(1)]
 pub struct Table {}
@@ -28,9 +19,6 @@ impl Table {
     pub fn operator_index(mut i: i32) -> Ptr<i32> {
         return table_0.with(|v| v.decay()).offset(i);
     }
-    pub fn new_1(this: Ptr<Table>) {}
-    pub fn copy_from(this: Ptr<Table>, _a0: Ptr<Table>) {}
-    pub fn move_from(this: Ptr<Table>, _a0: Ptr<Table>) {}
 }
 thread_local!(
     pub static table_0: Value<Box<[i32]>> = Rc::new(RefCell::new(Box::new([7, 8, 9])));
@@ -45,23 +33,6 @@ pub struct S {
     #[offset(12)]
     #[byte_size(4)]
     pub inner: Inner,
-}
-impl S {
-    pub fn new_1(this: Ptr<S>) {
-        Inner::new_1(field_ptr!(this, inner));
-    }
-    pub fn copy_from(this: Ptr<S>, _a0: Ptr<S>) {
-        field!(this, data).write(Box::new(std::array::from_fn::<_, 3, _>(|__i: usize| {
-            (*_a0.upgrade().deref()).data[(__i) as usize]
-        })));
-        Inner::copy_from(field_ptr!(this, inner), { field_ptr!(_a0, inner) });
-    }
-    pub fn move_from(this: Ptr<S>, _a0: Ptr<S>) {
-        field!(this, data).write(Box::new(std::array::from_fn::<_, 3, _>(|__i: usize| {
-            (*_a0.upgrade().deref()).data[(__i) as usize]
-        })));
-        Inner::move_from(field_ptr!(this, inner), { field_ptr!(_a0, inner) });
-    }
 }
 impl Default for S {
     fn default() -> Self {
@@ -78,15 +49,10 @@ pub fn main() {
     libcc2rs::cpp2rust_exit(main_0());
 }
 fn main_0() -> i32 {
-    let s: Value<S> = Rc::new(RefCell::new(<S>::uninit()));
-    {
-        let __d = s.as_pointer();
-        field!(__d, data).write(Box::new([1, 2, 3]));
-        {
-            let __d = field_ptr!(__d, inner);
-            field!(__d, x).write(9);
-        };
-    };
+    let s: Value<S> = Rc::new(RefCell::new(S {
+        data: Box::new([1, 2, 3]),
+        inner: Inner { x: 9 },
+    }));
     assert!(((({ SImpl::operator_index_1(&s.as_pointer(), 1,) }).read()) == 2));
     ({ SImpl::operator_index_1(&s.as_pointer(), 1) }).write(20);
     assert!(((({ SImpl::operator_index_1(&s.as_pointer(), 1,) }).read()) == 20));
@@ -101,8 +67,7 @@ fn main_0() -> i32 {
     assert!(((p.read()) == 1));
     p.write(5);
     assert!(((array_elem!(s.as_pointer(), data, 0).read()) == 5));
-    let t: Value<Table> = Rc::new(RefCell::new(<Table>::uninit()));
-    Table::new_1(t.as_pointer());
+    let t: Value<Table> = Rc::new(RefCell::new(<Table>::default()));
     assert!(((({ Table::operator_index(1,) }).read()) == 8));
     ({ Table::operator_index(1) }).write(80);
     assert!(

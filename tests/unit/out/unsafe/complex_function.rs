@@ -20,15 +20,6 @@ pub unsafe fn bar_2(x: *mut i32) -> *mut i32 {
 pub struct X1 {
     pub v: i32,
 }
-impl X1 {
-    pub unsafe fn new_1(this: *mut X1) {}
-    pub unsafe fn copy_from(this: *mut X1, _a0: *const X1) {
-        (&raw mut (*this).v).write((*_a0).v);
-    }
-    pub unsafe fn move_from(this: *mut X1, _a0: *mut X1) {
-        (&raw mut (*this).v).write((*_a0).v);
-    }
-}
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct X2 {
@@ -37,12 +28,6 @@ pub struct X2 {
 impl X2 {
     pub unsafe fn get(&mut self) -> *mut X1 {
         return self.v;
-    }
-    pub unsafe fn copy_from(this: *mut X2, _a0: *const X2) {
-        (&raw mut (*this).v).write((*_a0).v);
-    }
-    pub unsafe fn move_from(this: *mut X2, _a0: *mut X2) {
-        (&raw mut (*this).v).write((*_a0).v);
     }
 }
 #[repr(C)]
@@ -54,13 +39,6 @@ impl X3 {
     pub unsafe fn get(&mut self) -> *mut X2 {
         return self.v;
     }
-    pub unsafe fn new_1(this: *mut X3) {}
-    pub unsafe fn copy_from(this: *mut X3, _a0: *const X3) {
-        (&raw mut (*this).v).write((*_a0).v);
-    }
-    pub unsafe fn move_from(this: *mut X3, _a0: *mut X3) {
-        (&raw mut (*this).v).write((*_a0).v);
-    }
 }
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
@@ -70,15 +48,6 @@ pub struct X4 {
 impl X4 {
     pub unsafe fn get(&mut self) -> *mut X3 {
         return &mut self.v;
-    }
-    pub unsafe fn new_1(this: *mut X4) {
-        X3::new_1((&raw mut (*this).v));
-    }
-    pub unsafe fn copy_from(this: *mut X4, _a0: *const X4) {
-        X3::copy_from((&raw mut (*this).v), { &(*_a0).v });
-    }
-    pub unsafe fn move_from(this: *mut X4, _a0: *mut X4) {
-        X3::move_from((&raw mut (*this).v), { &mut (*_a0).v });
     }
 }
 pub fn main() {
@@ -105,26 +74,12 @@ unsafe fn main_0() -> i32 {
     (*r3) += (*r1);
     let mut x4: i32 = (((unsafe { foo_0(x3) }) + (*(unsafe { ptr_1((&mut x3 as *mut i32)) })))
         + (*(unsafe { bar_2(&mut x2) })));
-    let mut a: X1 = ::std::mem::MaybeUninit::uninit().assume_init();
-    {
-        let __d = &raw mut a;
-        (&raw mut (*__d).v).write(0);
+    let mut a: X1 = X1 { v: 0 };
+    let mut b: X2 = X2 { v: &mut a };
+    let mut c: X3 = X3 {
+        v: (&mut b as *mut X2),
     };
-    let mut b: X2 = ::std::mem::MaybeUninit::uninit().assume_init();
-    {
-        let __d = &raw mut b;
-        (&raw mut (*__d).v).write(&mut a);
-    };
-    let mut c: X3 = ::std::mem::MaybeUninit::uninit().assume_init();
-    {
-        let __d = &raw mut c;
-        (&raw mut (*__d).v).write((&mut b as *mut X2));
-    };
-    let mut d: X4 = ::std::mem::MaybeUninit::uninit().assume_init();
-    {
-        let __d = &raw mut d;
-        X3::copy_from((&raw mut (*__d).v), { &c });
-    };
+    let mut d: X4 = X4 { v: c };
     (*(*d.v.v).v).v = 0;
     (*(unsafe { X2::get(&mut (*(unsafe { X3::get(&mut (*(unsafe { X4::get(&mut d) }))) }))) })).v =
         0;

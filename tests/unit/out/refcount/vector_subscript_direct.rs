@@ -14,17 +14,6 @@ pub struct Point {
     #[offset(4)]
     pub y: i32,
 }
-impl Point {
-    pub fn new_1(this: Ptr<Point>) {}
-    pub fn copy_from(this: Ptr<Point>, _a0: Ptr<Point>) {
-        field!(this, x).write(_a0.with(|__s| __s.x));
-        field!(this, y).write(_a0.with(|__s| __s.y));
-    }
-    pub fn move_from(this: Ptr<Point>, _a0: Ptr<Point>) {
-        field!(this, x).write({ (*_a0.upgrade().deref()).x });
-        field!(this, y).write({ (*_a0.upgrade().deref()).y });
-    }
-}
 #[derive(Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, MoveCtor, MoveAssign, Default)]
 #[byte_size(48)]
 pub struct Holder {
@@ -126,11 +115,8 @@ fn main_0() -> i32 {
         ((vec_elem!(h.as_pointer(), values, 0_usize).read()) == 7)
             && (vec_elem!(h.as_pointer(), points, 0_usize).with(|__s| __s.x) == 7)
     );
-    let q: Value<Point> = Rc::new(RefCell::new(<Point>::uninit()));
-    Point::copy_from(q.as_pointer(), {
-        field_ref!(h.as_pointer(), points).decay().offset(0_usize)
-    });
-    (*q.borrow_mut()).x = 0;
+    let mut q: Point = vec_elem!(h.as_pointer(), points, 0_usize).read();
+    q.x = 0;
     assert!((vec_elem!(h.as_pointer(), points, 0_usize).with(|__s| __s.x) == 7));
     let grid: Value<Vec<Vec<i32>>> = Rc::new(RefCell::new(Vec::new()));
     {

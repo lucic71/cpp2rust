@@ -18,12 +18,6 @@ impl Logged {
         field!(this, id).write(id);
         printf!(b"member %d\n", id);
     }
-    pub fn copy_from(this: Ptr<Logged>, _a0: Ptr<Logged>) {
-        field!(this, id).write(_a0.with(|__s| __s.id));
-    }
-    pub fn move_from(this: Ptr<Logged>, _a0: Ptr<Logged>) {
-        field!(this, id).write({ (*_a0.upgrade().deref()).id });
-    }
 }
 #[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, CppFrom)]
 #[cpp_from(i32, new_1, value)]
@@ -46,18 +40,6 @@ impl p6_delegating_constructor_runs_target_first_Delegating {
         {
             field!(this, value).with_mut(|__v| *__v = *__v + 1)
         };
-    }
-    pub fn copy_from(
-        this: Ptr<p6_delegating_constructor_runs_target_first_Delegating>,
-        _a0: Ptr<p6_delegating_constructor_runs_target_first_Delegating>,
-    ) {
-        field!(this, value).write(_a0.with(|__s| __s.value));
-    }
-    pub fn move_from(
-        this: Ptr<p6_delegating_constructor_runs_target_first_Delegating>,
-        _a0: Ptr<p6_delegating_constructor_runs_target_first_Delegating>,
-    ) {
-        field!(this, value).write({ (*_a0.upgrade().deref()).value });
     }
 }
 impl Default for p6_delegating_constructor_runs_target_first_Delegating {
@@ -104,20 +86,6 @@ impl p9_1_default_member_initializer_WithDefaults {
     pub fn new_1(this: Ptr<p9_1_default_member_initializer_WithDefaults>, mut counted: i32) {
         field!(this, fixed).write(5);
         field!(this, counted).write(counted);
-    }
-    pub fn copy_from(
-        this: Ptr<p9_1_default_member_initializer_WithDefaults>,
-        _a0: Ptr<p9_1_default_member_initializer_WithDefaults>,
-    ) {
-        field!(this, fixed).write(_a0.with(|__s| __s.fixed));
-        field!(this, counted).write(_a0.with(|__s| __s.counted));
-    }
-    pub fn move_from(
-        this: Ptr<p9_1_default_member_initializer_WithDefaults>,
-        _a0: Ptr<p9_1_default_member_initializer_WithDefaults>,
-    ) {
-        field!(this, fixed).write({ (*_a0.upgrade().deref()).fixed });
-        field!(this, counted).write({ (*_a0.upgrade().deref()).counted });
     }
 }
 impl Default for p9_1_default_member_initializer_WithDefaults {
@@ -169,18 +137,6 @@ impl p9_3_member_is_default_initialized_Member {
     pub fn new(this: Ptr<p9_3_member_is_default_initialized_Member>) {
         field!(this, id).write((*(*constructed_4.with(Value::clone).borrow_mut()).prefix_inc()));
     }
-    pub fn copy_from(
-        this: Ptr<p9_3_member_is_default_initialized_Member>,
-        _a0: Ptr<p9_3_member_is_default_initialized_Member>,
-    ) {
-        field!(this, id).write(_a0.with(|__s| __s.id));
-    }
-    pub fn move_from(
-        this: Ptr<p9_3_member_is_default_initialized_Member>,
-        _a0: Ptr<p9_3_member_is_default_initialized_Member>,
-    ) {
-        field!(this, id).write({ (*_a0.upgrade().deref()).id });
-    }
 }
 impl Default for p9_3_member_is_default_initialized_Member {
     fn default() -> Self {
@@ -213,30 +169,6 @@ impl p9_3_member_is_default_initialized_Holder {
         p9_3_member_is_default_initialized_Member::new(field_ptr!(this, first));
         p9_3_member_is_default_initialized_Member::new(field_ptr!(this, second));
         field!(this, number).write(3);
-    }
-    pub fn copy_from(
-        this: Ptr<p9_3_member_is_default_initialized_Holder>,
-        _a0: Ptr<p9_3_member_is_default_initialized_Holder>,
-    ) {
-        p9_3_member_is_default_initialized_Member::copy_from(field_ptr!(this, first), {
-            field_ptr!(_a0, first)
-        });
-        p9_3_member_is_default_initialized_Member::copy_from(field_ptr!(this, second), {
-            field_ptr!(_a0, second)
-        });
-        field!(this, number).write(_a0.with(|__s| __s.number));
-    }
-    pub fn move_from(
-        this: Ptr<p9_3_member_is_default_initialized_Holder>,
-        _a0: Ptr<p9_3_member_is_default_initialized_Holder>,
-    ) {
-        p9_3_member_is_default_initialized_Member::move_from(field_ptr!(this, first), {
-            field_ptr!(_a0, first)
-        });
-        p9_3_member_is_default_initialized_Member::move_from(field_ptr!(this, second), {
-            field_ptr!(_a0, second)
-        });
-        field!(this, number).write({ (*_a0.upgrade().deref()).number });
     }
 }
 impl Default for p9_3_member_is_default_initialized_Holder {
@@ -284,22 +216,6 @@ impl p13_members_initialized_in_declaration_order_Ordered {
         Logged::new(field_ptr!(this, second), { 2 });
         field!(this, sum).write((this.with(|__s| __s.first.id) + this.with(|__s| __s.second.id)));
         printf!(b"body %d\n", this.with(|__s| __s.sum));
-    }
-    pub fn copy_from(
-        this: Ptr<p13_members_initialized_in_declaration_order_Ordered>,
-        _a0: Ptr<p13_members_initialized_in_declaration_order_Ordered>,
-    ) {
-        Logged::copy_from(field_ptr!(this, first), { field_ptr!(_a0, first) });
-        Logged::copy_from(field_ptr!(this, second), { field_ptr!(_a0, second) });
-        field!(this, sum).write(_a0.with(|__s| __s.sum));
-    }
-    pub fn move_from(
-        this: Ptr<p13_members_initialized_in_declaration_order_Ordered>,
-        _a0: Ptr<p13_members_initialized_in_declaration_order_Ordered>,
-    ) {
-        Logged::move_from(field_ptr!(this, first), { field_ptr!(_a0, first) });
-        Logged::move_from(field_ptr!(this, second), { field_ptr!(_a0, second) });
-        field!(this, sum).write({ (*_a0.upgrade().deref()).sum });
     }
 }
 impl Default for p13_members_initialized_in_declaration_order_Ordered {

@@ -14,17 +14,6 @@ pub struct Pair {
     #[offset(4)]
     pub y: i32,
 }
-impl Pair {
-    pub fn new_1(this: Ptr<Pair>) {}
-    pub fn copy_from(this: Ptr<Pair>, _a0: Ptr<Pair>) {
-        field!(this, x).write(_a0.with(|__s| __s.x));
-        field!(this, y).write(_a0.with(|__s| __s.y));
-    }
-    pub fn move_from(this: Ptr<Pair>, _a0: Ptr<Pair>) {
-        field!(this, x).write({ (*_a0.upgrade().deref()).x });
-        field!(this, y).write({ (*_a0.upgrade().deref()).y });
-    }
-}
 impl CppLess for Pair {
     fn less(__lhs: &Ptr<Self>, __rhs: &Ptr<Self>) -> bool {
         PairImpl::operator_lt(__lhs, __rhs.clone())
@@ -41,18 +30,8 @@ pub fn main() {
     libcc2rs::cpp2rust_exit(main_0());
 }
 fn main_0() -> i32 {
-    let pair1: Value<Pair> = Rc::new(RefCell::new(<Pair>::uninit()));
-    {
-        let __d = pair1.as_pointer();
-        field!(__d, x).write(1);
-        field!(__d, y).write(2);
-    };
-    let pair2: Value<Pair> = Rc::new(RefCell::new(<Pair>::uninit()));
-    {
-        let __d = pair2.as_pointer();
-        field!(__d, x).write(1);
-        field!(__d, y).write(3);
-    };
+    let pair1: Value<Pair> = Rc::new(RefCell::new(Pair { x: 1, y: 2 }));
+    let pair2: Value<Pair> = Rc::new(RefCell::new(Pair { x: 1, y: 3 }));
     assert!(({ PairImpl::operator_lt(&pair1.as_pointer(), pair2.as_pointer(),) }));
     return 0;
 }

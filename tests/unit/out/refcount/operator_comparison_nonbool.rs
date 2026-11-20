@@ -12,72 +12,33 @@ pub struct X {
     #[offset(0)]
     pub v: i32,
 }
-impl X {
-    pub fn new_1(this: Ptr<X>) {}
-    pub fn copy_from(this: Ptr<X>, _a0: Ptr<X>) {
-        field!(this, v).write(_a0.with(|__s| __s.v));
-    }
-    pub fn move_from(this: Ptr<X>, _a0: Ptr<X>) {
-        field!(this, v).write({ (*_a0.upgrade().deref()).v });
-    }
-}
 impl CppLess for X {
     fn less(__lhs: &Ptr<Self>, __rhs: &Ptr<Self>) -> bool {
-        ((operator_lt_0(
-            Rc::new(RefCell::new(__lhs.read())),
-            Rc::new(RefCell::new(__rhs.read())),
-        )) != 0)
+        ((operator_lt_0(__lhs.read(), __rhs.read())) != 0)
     }
 }
 impl CppEq for X {
     fn equal(__lhs: &Ptr<Self>, __rhs: &Ptr<Self>) -> bool {
-        ((operator_eq_1(
-            Rc::new(RefCell::new(__lhs.read())),
-            Rc::new(RefCell::new(__rhs.read())),
-        )) != 0)
+        ((operator_eq_1(__lhs.read(), __rhs.read())) != 0)
     }
 }
-pub fn operator_eq_1(a: Value<X>, b: Value<X>) -> i32 {
-    return if ({ (*a.borrow()).v } == { (*b.borrow()).v }) {
-        2
-    } else {
-        0
-    };
+pub fn operator_eq_1(mut a: X, mut b: X) -> i32 {
+    return if (a.v == b.v) { 2 } else { 0 };
 }
-pub fn operator_ne_2(a: Value<X>, b: Value<X>) -> i32 {
-    return if ({ (*a.borrow()).v } != { (*b.borrow()).v }) {
-        3
-    } else {
-        0
-    };
+pub fn operator_ne_2(mut a: X, mut b: X) -> i32 {
+    return if (a.v != b.v) { 3 } else { 0 };
 }
-pub fn operator_lt_0(a: Value<X>, b: Value<X>) -> i32 {
-    return if ({ (*a.borrow()).v } < { (*b.borrow()).v }) {
-        4
-    } else {
-        0
-    };
+pub fn operator_lt_0(mut a: X, mut b: X) -> i32 {
+    return if (a.v < b.v) { 4 } else { 0 };
 }
-pub fn operator_gt_3(a: Value<X>, b: Value<X>) -> i32 {
-    return if ({ (*a.borrow()).v } > { (*b.borrow()).v }) {
-        5
-    } else {
-        0
-    };
+pub fn operator_gt_3(mut a: X, mut b: X) -> i32 {
+    return if (a.v > b.v) { 5 } else { 0 };
 }
-pub fn operator_le_4(a: Value<X>, b: Value<X>) -> i32 {
-    return if ({ (*a.borrow()).v } <= { (*b.borrow()).v }) {
-        6
-    } else {
-        0
-    };
+pub fn operator_le_4(mut a: X, mut b: X) -> i32 {
+    return if (a.v <= b.v) { 6 } else { 0 };
 }
-pub fn operator_ge_5(a: Value<X>, b: Value<X>) -> i32 {
-    return if ({ (*a.borrow()).v } >= { (*b.borrow()).v }) {
-        7
-    } else {
-        0
-    };
+pub fn operator_ge_5(mut a: X, mut b: X) -> i32 {
+    return if (a.v >= b.v) { 7 } else { 0 };
 }
 #[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
 #[byte_size(4)]
@@ -85,44 +46,17 @@ pub struct Result {
     #[offset(0)]
     pub r: i32,
 }
-impl Result {
-    pub fn new_1(this: Ptr<Result>) {}
-    pub fn copy_from(this: Ptr<Result>, _a0: Ptr<Result>) {
-        field!(this, r).write(_a0.with(|__s| __s.r));
-    }
-    pub fn move_from(this: Ptr<Result>, _a0: Ptr<Result>) {
-        field!(this, r).write({ (*_a0.upgrade().deref()).r });
-    }
-}
 #[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
 #[byte_size(4)]
 pub struct Custom {
     #[offset(0)]
     pub v: i32,
 }
-impl Custom {
-    pub fn new_1(this: Ptr<Custom>) {}
-    pub fn copy_from(this: Ptr<Custom>, _a0: Ptr<Custom>) {
-        field!(this, v).write(_a0.with(|__s| __s.v));
-    }
-    pub fn move_from(this: Ptr<Custom>, _a0: Ptr<Custom>) {
-        field!(this, v).write({ (*_a0.upgrade().deref()).v });
-    }
-}
 #[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
 #[byte_size(4)]
 pub struct Mixed {
     #[offset(0)]
     pub v: i32,
-}
-impl Mixed {
-    pub fn new_1(this: Ptr<Mixed>) {}
-    pub fn copy_from(this: Ptr<Mixed>, _a0: Ptr<Mixed>) {
-        field!(this, v).write(_a0.with(|__s| __s.v));
-    }
-    pub fn move_from(this: Ptr<Mixed>, _a0: Ptr<Mixed>) {
-        field!(this, v).write({ (*_a0.upgrade().deref()).v });
-    }
 }
 impl CppLess for Mixed {
     fn less(__lhs: &Ptr<Self>, __rhs: &Ptr<Self>) -> bool {
@@ -145,12 +79,6 @@ impl MyBool {
     pub fn new(this: Ptr<MyBool>, mut v: bool) {
         field!(this, value).write(v);
     }
-    pub fn copy_from(this: Ptr<MyBool>, _a0: Ptr<MyBool>) {
-        field!(this, value).write(_a0.with(|__s| __s.value));
-    }
-    pub fn move_from(this: Ptr<MyBool>, _a0: Ptr<MyBool>) {
-        field!(this, value).write({ (*_a0.upgrade().deref()).value });
-    }
 }
 #[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
 #[byte_size(4)]
@@ -158,24 +86,11 @@ pub struct Boolish {
     #[offset(0)]
     pub v: i32,
 }
-impl Boolish {
-    pub fn new_1(this: Ptr<Boolish>) {}
-    pub fn copy_from(this: Ptr<Boolish>, _a0: Ptr<Boolish>) {
-        field!(this, v).write(_a0.with(|__s| __s.v));
-    }
-    pub fn move_from(this: Ptr<Boolish>, _a0: Ptr<Boolish>) {
-        field!(this, v).write({ (*_a0.upgrade().deref()).v });
-    }
-}
 impl CppLess for Boolish {
     fn less(__lhs: &Ptr<Self>, __rhs: &Ptr<Self>) -> bool {
         {
             let __cmp: Value<MyBool> = Rc::new(RefCell::new(<MyBool>::uninit()));
-            operator_lt_6(
-                __cmp.as_pointer(),
-                Rc::new(RefCell::new(__lhs.read())),
-                Rc::new(RefCell::new(__rhs.read())),
-            );
+            operator_lt_6(__cmp.as_pointer(), __lhs.read(), __rhs.read());
             MyBoolImpl::to_bool(&__cmp.as_pointer())
         }
     }
@@ -184,25 +99,17 @@ impl CppEq for Boolish {
     fn equal(__lhs: &Ptr<Self>, __rhs: &Ptr<Self>) -> bool {
         {
             let __cmp: Value<MyBool> = Rc::new(RefCell::new(<MyBool>::uninit()));
-            operator_eq_7(
-                __cmp.as_pointer(),
-                Rc::new(RefCell::new(__lhs.read())),
-                Rc::new(RefCell::new(__rhs.read())),
-            );
+            operator_eq_7(__cmp.as_pointer(), __lhs.read(), __rhs.read());
             MyBoolImpl::to_bool(&__cmp.as_pointer())
         }
     }
 }
-pub fn operator_eq_7(__ret: Ptr<MyBool>, a: Value<Boolish>, b: Value<Boolish>) {
-    MyBool::new(__ret.clone(), {
-        ({ (*a.borrow()).v } == { (*b.borrow()).v })
-    });
+pub fn operator_eq_7(__ret: Ptr<MyBool>, mut a: Boolish, mut b: Boolish) {
+    MyBool::new(__ret.clone(), { (a.v == b.v) });
     return;
 }
-pub fn operator_lt_6(__ret: Ptr<MyBool>, a: Value<Boolish>, b: Value<Boolish>) {
-    MyBool::new(__ret.clone(), {
-        ({ (*a.borrow()).v } < { (*b.borrow()).v })
-    });
+pub fn operator_lt_6(__ret: Ptr<MyBool>, mut a: Boolish, mut b: Boolish) {
+    MyBool::new(__ret.clone(), { (a.v < b.v) });
     return;
 }
 #[derive(Record, ByteRepr, Uninit, FnPtrArg, CppFrom, Default)]
@@ -230,15 +137,6 @@ pub struct RefInt {
     #[offset(0)]
     pub v: i32,
 }
-impl RefInt {
-    pub fn new_1(this: Ptr<RefInt>) {}
-    pub fn copy_from(this: Ptr<RefInt>, _a0: Ptr<RefInt>) {
-        field!(this, v).write(_a0.with(|__s| __s.v));
-    }
-    pub fn move_from(this: Ptr<RefInt>, _a0: Ptr<RefInt>) {
-        field!(this, v).write({ (*_a0.upgrade().deref()).v });
-    }
-}
 impl CppEq for RefInt {
     fn equal(__lhs: &Ptr<Self>, __rhs: &Ptr<Self>) -> bool {
         {
@@ -252,137 +150,52 @@ pub fn main() {
     libcc2rs::cpp2rust_exit(main_0());
 }
 fn main_0() -> i32 {
-    let a: Value<X> = Rc::new(RefCell::new(<X>::uninit()));
-    {
-        let __d = a.as_pointer();
-        field!(__d, v).write(1);
-    };
-    let b: Value<X> = Rc::new(RefCell::new(<X>::uninit()));
-    {
-        let __d = b.as_pointer();
-        field!(__d, v).write(2);
-    };
-    let c: Value<X> = Rc::new(RefCell::new(<X>::uninit()));
-    {
-        let __d = c.as_pointer();
-        field!(__d, v).write(1);
-    };
+    let mut a: X = X { v: 1 };
+    let mut b: X = X { v: 2 };
+    let mut c: X = X { v: 1 };
     assert!(
         (({
-            let _a = {
-                let __v: Value<X> = Rc::new(RefCell::new(<X>::uninit()));
-                X::copy_from(__v.as_pointer(), { a.as_pointer() });
-                __v
-            };
-            operator_eq_1(_a, {
-                let __v: Value<X> = Rc::new(RefCell::new(<X>::uninit()));
-                X::copy_from(__v.as_pointer(), { c.as_pointer() });
-                __v
-            })
+            let _a: X = a;
+            operator_eq_1(_a, c)
         }) == 2)
     );
     assert!(
         (({
-            let _a = {
-                let __v: Value<X> = Rc::new(RefCell::new(<X>::uninit()));
-                X::copy_from(__v.as_pointer(), { a.as_pointer() });
-                __v
-            };
-            operator_eq_1(_a, {
-                let __v: Value<X> = Rc::new(RefCell::new(<X>::uninit()));
-                X::copy_from(__v.as_pointer(), { b.as_pointer() });
-                __v
-            })
+            let _a: X = a;
+            operator_eq_1(_a, b)
         }) == 0)
     );
     assert!(
         (({
-            let _a = {
-                let __v: Value<X> = Rc::new(RefCell::new(<X>::uninit()));
-                X::copy_from(__v.as_pointer(), { a.as_pointer() });
-                __v
-            };
-            operator_ne_2(_a, {
-                let __v: Value<X> = Rc::new(RefCell::new(<X>::uninit()));
-                X::copy_from(__v.as_pointer(), { b.as_pointer() });
-                __v
-            })
+            let _a: X = a;
+            operator_ne_2(_a, b)
         }) == 3)
     );
     assert!(
         (({
-            let _a = {
-                let __v: Value<X> = Rc::new(RefCell::new(<X>::uninit()));
-                X::copy_from(__v.as_pointer(), { a.as_pointer() });
-                __v
-            };
-            operator_lt_0(_a, {
-                let __v: Value<X> = Rc::new(RefCell::new(<X>::uninit()));
-                X::copy_from(__v.as_pointer(), { b.as_pointer() });
-                __v
-            })
+            let _a: X = a;
+            operator_lt_0(_a, b)
         }) == 4)
     );
     assert!(
         (({
-            let _a = {
-                let __v: Value<X> = Rc::new(RefCell::new(<X>::uninit()));
-                X::copy_from(__v.as_pointer(), { b.as_pointer() });
-                __v
-            };
-            operator_gt_3(_a, {
-                let __v: Value<X> = Rc::new(RefCell::new(<X>::uninit()));
-                X::copy_from(__v.as_pointer(), { a.as_pointer() });
-                __v
-            })
+            let _a: X = b;
+            operator_gt_3(_a, a)
         }) == 5)
     );
     assert!(
         (({
-            let _a = {
-                let __v: Value<X> = Rc::new(RefCell::new(<X>::uninit()));
-                X::copy_from(__v.as_pointer(), { a.as_pointer() });
-                __v
-            };
-            operator_le_4(_a, {
-                let __v: Value<X> = Rc::new(RefCell::new(<X>::uninit()));
-                X::copy_from(__v.as_pointer(), { c.as_pointer() });
-                __v
-            })
+            let _a: X = a;
+            operator_le_4(_a, c)
         }) == 6)
     );
     assert!(
         (({
-            let _a = {
-                let __v: Value<X> = Rc::new(RefCell::new(<X>::uninit()));
-                X::copy_from(__v.as_pointer(), { a.as_pointer() });
-                __v
-            };
-            operator_ge_5(_a, {
-                let __v: Value<X> = Rc::new(RefCell::new(<X>::uninit()));
-                X::copy_from(__v.as_pointer(), { c.as_pointer() });
-                __v
-            })
+            let _a: X = a;
+            operator_ge_5(_a, c)
         }) == 7)
     );
-    let xs: Value<Box<[X]>> = Rc::new(RefCell::new(
-        (0..3).map(|_| <X>::uninit()).collect::<Box<[_]>>(),
-    ));
-    {
-        let __d = xs.decay();
-        {
-            let __d = __d.offset(0);
-            field!(__d, v).write(3);
-        };
-        {
-            let __d = __d.offset(1);
-            field!(__d, v).write(1);
-        };
-        {
-            let __d = __d.offset(2);
-            field!(__d, v).write(2);
-        };
-    };
+    let xs: Value<Box<[X]>> = Rc::new(RefCell::new(Box::new([X { v: 3 }, X { v: 1 }, X { v: 2 }])));
     {
         let mut __tmp_0 = { xs.decay() };
         let __n = xs.decay().offset((3) as isize).iter_distance(&__tmp_0);
@@ -396,61 +209,19 @@ fn main_0() -> i32 {
                 && ({ (*xs.borrow())[(2) as usize].v } == 3)
         })
     );
-    let p: Value<Custom> = Rc::new(RefCell::new(<Custom>::uninit()));
-    {
-        let __d = p.as_pointer();
-        field!(__d, v).write(5);
-    };
-    let q: Value<Custom> = Rc::new(RefCell::new(<Custom>::uninit()));
-    {
-        let __d = q.as_pointer();
-        field!(__d, v).write(2);
-    };
-    let r: Value<Result> = Rc::new(RefCell::new(<Result>::uninit()));
-    ({ CustomImpl::operator_cmp(&p.as_pointer(), r.as_pointer(), q.as_pointer()) });
-    assert!(({ ({ (*r.borrow()).r } == 3) }));
-    let m: Value<Mixed> = Rc::new(RefCell::new(<Mixed>::uninit()));
-    {
-        let __d = m.as_pointer();
-        field!(__d, v).write(4);
-    };
-    let n: Value<Mixed> = Rc::new(RefCell::new(<Mixed>::uninit()));
-    {
-        let __d = n.as_pointer();
-        field!(__d, v).write(4);
-    };
+    let p: Value<Custom> = Rc::new(RefCell::new(Custom { v: 5 }));
+    let q: Value<Custom> = Rc::new(RefCell::new(Custom { v: 2 }));
+    let mut r: Result = ({ CustomImpl::operator_cmp(&p.as_pointer(), q.as_pointer()) });
+    assert!((r.r == 3));
+    let m: Value<Mixed> = Rc::new(RefCell::new(Mixed { v: 4 }));
+    let n: Value<Mixed> = Rc::new(RefCell::new(Mixed { v: 4 }));
     assert!((({ MixedImpl::operator_eq(&m.as_pointer(), n.as_pointer(),) }) == 9));
-    assert!(
-        ({
-            (Rc::try_unwrap({
-                let __v: Value<Result> = Rc::new(RefCell::new(<Result>::uninit()));
-                ({ MixedImpl::operator_cmp(&m.as_pointer(), __v.as_pointer(), n.as_pointer()) });
-                __v
-            })
-            .ok()
-            .unwrap()
-            .into_inner())
-            .r
-        } == 0)
-    );
-    let ms: Value<Box<[Mixed]>> = Rc::new(RefCell::new(
-        (0..3).map(|_| <Mixed>::uninit()).collect::<Box<[_]>>(),
-    ));
-    {
-        let __d = ms.decay();
-        {
-            let __d = __d.offset(0);
-            field!(__d, v).write(6);
-        };
-        {
-            let __d = __d.offset(1);
-            field!(__d, v).write(4);
-        };
-        {
-            let __d = __d.offset(2);
-            field!(__d, v).write(5);
-        };
-    };
+    assert!(({ ({ MixedImpl::operator_cmp(&m.as_pointer(), n.as_pointer(),) }).r } == 0));
+    let ms: Value<Box<[Mixed]>> = Rc::new(RefCell::new(Box::new([
+        Mixed { v: 6 },
+        Mixed { v: 4 },
+        Mixed { v: 5 },
+    ])));
     {
         let mut __tmp_1 = { ms.decay() };
         let __n = ms.decay().offset((3) as isize).iter_distance(&__tmp_1);
@@ -470,35 +241,16 @@ fn main_0() -> i32 {
             MixedImpl::operator_lt(&ms.decay().offset(0), _o)
         }) == 8)
     );
-    let b1: Value<Boolish> = Rc::new(RefCell::new(<Boolish>::uninit()));
-    {
-        let __d = b1.as_pointer();
-        field!(__d, v).write(1);
-    };
-    let b2: Value<Boolish> = Rc::new(RefCell::new(<Boolish>::uninit()));
-    {
-        let __d = b2.as_pointer();
-        field!(__d, v).write(2);
-    };
+    let mut b1: Boolish = Boolish { v: 1 };
+    let mut b2: Boolish = Boolish { v: 2 };
     assert!(
         ({
             MyBoolImpl::to_bool(
                 &{
                     let __v: Value<MyBool> = Rc::new(RefCell::new(<MyBool>::uninit()));
                     ({
-                        let _a = {
-                            let __v: Value<Boolish> = Rc::new(RefCell::new(<Boolish>::uninit()));
-                            Boolish::copy_from(__v.as_pointer(), { b1.as_pointer() });
-                            __v
-                        };
-                        operator_eq_7(__v.as_pointer(), _a, {
-                            let __v: Value<Boolish> = Rc::new(RefCell::new(<Boolish>::uninit()));
-                            {
-                                let __d = __v.as_pointer();
-                                field!(__d, v).write(1);
-                            };
-                            __v
-                        })
+                        let _a: Boolish = b1;
+                        operator_eq_7(__v.as_pointer(), _a, Boolish { v: 1 })
                     });
                     __v
                 }
@@ -512,16 +264,8 @@ fn main_0() -> i32 {
                 &{
                     let __v: Value<MyBool> = Rc::new(RefCell::new(<MyBool>::uninit()));
                     ({
-                        let _a = {
-                            let __v: Value<Boolish> = Rc::new(RefCell::new(<Boolish>::uninit()));
-                            Boolish::copy_from(__v.as_pointer(), { b2.as_pointer() });
-                            __v
-                        };
-                        operator_lt_6(__v.as_pointer(), _a, {
-                            let __v: Value<Boolish> = Rc::new(RefCell::new(<Boolish>::uninit()));
-                            Boolish::copy_from(__v.as_pointer(), { b1.as_pointer() });
-                            __v
-                        })
+                        let _a: Boolish = b2;
+                        operator_lt_6(__v.as_pointer(), _a, b1)
                     });
                     __v
                 }
@@ -531,36 +275,15 @@ fn main_0() -> i32 {
     );
     let lt: Value<MyBool> = Rc::new(RefCell::new(<MyBool>::uninit()));
     ({
-        let _a = {
-            let __v: Value<Boolish> = Rc::new(RefCell::new(<Boolish>::uninit()));
-            Boolish::copy_from(__v.as_pointer(), { b1.as_pointer() });
-            __v
-        };
-        operator_lt_6(lt.as_pointer(), _a, {
-            let __v: Value<Boolish> = Rc::new(RefCell::new(<Boolish>::uninit()));
-            Boolish::copy_from(__v.as_pointer(), { b2.as_pointer() });
-            __v
-        })
+        let _a: Boolish = b1;
+        operator_lt_6(lt.as_pointer(), _a, b2)
     });
     assert!(({ { (*lt.borrow()).value } }));
-    let bs: Value<Box<[Boolish]>> = Rc::new(RefCell::new(
-        (0..3).map(|_| <Boolish>::uninit()).collect::<Box<[_]>>(),
-    ));
-    {
-        let __d = bs.decay();
-        {
-            let __d = __d.offset(0);
-            field!(__d, v).write(3);
-        };
-        {
-            let __d = __d.offset(1);
-            field!(__d, v).write(1);
-        };
-        {
-            let __d = __d.offset(2);
-            field!(__d, v).write(2);
-        };
-    };
+    let bs: Value<Box<[Boolish]>> = Rc::new(RefCell::new(Box::new([
+        Boolish { v: 3 },
+        Boolish { v: 1 },
+        Boolish { v: 2 },
+    ])));
     {
         let mut __tmp_2 = { bs.decay() };
         let __n = bs.decay().offset((3) as isize).iter_distance(&__tmp_2);
@@ -574,16 +297,8 @@ fn main_0() -> i32 {
                 && ({ (*bs.borrow())[(2) as usize].v } == 3)
         })
     );
-    let ri1: Value<RefInt> = Rc::new(RefCell::new(<RefInt>::uninit()));
-    {
-        let __d = ri1.as_pointer();
-        field!(__d, v).write(1);
-    };
-    let ri2: Value<RefInt> = Rc::new(RefCell::new(<RefInt>::uninit()));
-    {
-        let __d = ri2.as_pointer();
-        field!(__d, v).write(2);
-    };
+    let ri1: Value<RefInt> = Rc::new(RefCell::new(RefInt { v: 1 }));
+    let ri2: Value<RefInt> = Rc::new(RefCell::new(RefInt { v: 2 }));
     assert!(
         ({
             RefBoolImpl::to_bool(
@@ -591,20 +306,8 @@ fn main_0() -> i32 {
             )
         })
     );
-    let ris: Value<Box<[RefInt]>> = Rc::new(RefCell::new(
-        (0..2).map(|_| <RefInt>::uninit()).collect::<Box<[_]>>(),
-    ));
-    {
-        let __d = ris.decay();
-        {
-            let __d = __d.offset(0);
-            field!(__d, v).write(1);
-        };
-        {
-            let __d = __d.offset(1);
-            field!(__d, v).write(2);
-        };
-    };
+    let ris: Value<Box<[RefInt]>> =
+        Rc::new(RefCell::new(Box::new([RefInt { v: 1 }, RefInt { v: 2 }])));
     assert!(
         ({
             let mut __tmp_3 = { ris.decay().offset((2) as isize) };
@@ -618,29 +321,25 @@ fn main_0() -> i32 {
     return 0;
 }
 pub trait CustomImpl {
-    fn operator_cmp(&self, __ret: Ptr<Result>, o: Ptr<Custom>);
+    fn operator_cmp(&self, o: Ptr<Custom>) -> Result;
 }
 impl CustomImpl for Ptr<Custom> {
-    fn operator_cmp(&self, __ret: Ptr<Result>, o: Ptr<Custom>) {
-        {
-            let __d = __ret.clone();
-            field!(__d, r).write(({ (*self).with(|__s| __s.v) } - { o.with(|__s| __s.v) }));
+    fn operator_cmp(&self, o: Ptr<Custom>) -> Result {
+        return Result {
+            r: ({ (*self).with(|__s| __s.v) } - { o.with(|__s| __s.v) }),
         };
-        return;
     }
 }
 pub trait MixedImpl {
-    fn operator_cmp(&self, __ret: Ptr<Result>, o: Ptr<Mixed>);
+    fn operator_cmp(&self, o: Ptr<Mixed>) -> Result;
     fn operator_lt(&self, o: Ptr<Mixed>) -> i32;
     fn operator_eq(&self, o: Ptr<Mixed>) -> i32;
 }
 impl MixedImpl for Ptr<Mixed> {
-    fn operator_cmp(&self, __ret: Ptr<Result>, o: Ptr<Mixed>) {
-        {
-            let __d = __ret.clone();
-            field!(__d, r).write(({ (*self).with(|__s| __s.v) } - { o.with(|__s| __s.v) }));
+    fn operator_cmp(&self, o: Ptr<Mixed>) -> Result {
+        return Result {
+            r: ({ (*self).with(|__s| __s.v) } - { o.with(|__s| __s.v) }),
         };
-        return;
     }
     fn operator_lt(&self, o: Ptr<Mixed>) -> i32 {
         return if ({ (*self).with(|__s| __s.v) } < { o.with(|__s| __s.v) }) {

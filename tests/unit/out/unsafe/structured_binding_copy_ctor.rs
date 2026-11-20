@@ -6,8 +6,7 @@ use std::collections::BTreeMap;
 use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
-pub static mut copies_0: libcc2rs::LazyStorage<i32> =
-    libcc2rs::LazyStorage::new(|__p| unsafe { __p.write(0) });
+pub static mut copies_0: std::cell::LazyCell<i32> = std::cell::LazyCell::new(|| unsafe { 0 });
 #[repr(C)]
 #[derive(VaArg, FnPtrArg, CopyAssignUnsafe, Default)]
 pub struct Counted {
@@ -22,7 +21,7 @@ impl Counted {
     pub unsafe fn copy_from(this: *mut Counted, other: *const Counted) {
         (&raw mut (*this).x).write((((*other).x) * (2)));
         (&raw mut (*this).y).write((((*other).y) * (2)));
-        (*(*&raw const copies_0).get()).prefix_inc();
+        (*std::cell::LazyCell::force_mut(&mut *&raw mut copies_0)).prefix_inc();
     }
     pub unsafe fn copy_assign(&mut self, _a0: *const Counted) -> *mut Counted {
         self.x = (*_a0).x;
@@ -57,26 +56,26 @@ unsafe fn main_0() -> i32 {
         Counted::copy_from(&raw mut __v, { &s });
         __v
     };
-    assert!(((*(*&raw const copies_0).get()) == (1)));
+    assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut copies_0)) == (1)));
     assert!(((__decomp_2.x) == (2)));
     assert!(((__decomp_2.y) == (4)));
     let __decomp_3: *mut Counted = &mut s;
-    assert!(((*(*&raw const copies_0).get()) == (1)));
+    assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut copies_0)) == (1)));
     assert!((((*__decomp_3).x) == (1)));
     assert!((((*__decomp_3).y) == (2)));
     let __decomp_4: *const Counted = &s;
-    assert!(((*(*&raw const copies_0).get()) == (1)));
+    assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut copies_0)) == (1)));
     assert!((((*__decomp_4).x) == (1)));
     let mut __decomp_5: Counted = {
         let mut __v: Counted = ::std::mem::MaybeUninit::uninit().assume_init();
         (unsafe { make_counted_1(&raw mut __v) });
         __v
     };
-    assert!(((*(*&raw const copies_0).get()) == (1)));
+    assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut copies_0)) == (1)));
     assert!(((__decomp_5.x) == (5)));
     assert!(((__decomp_5.y) == (6)));
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {
-    (*&raw const copies_0).get();
+    std::cell::LazyCell::force(&*&raw const copies_0);
 }

@@ -32,13 +32,6 @@ impl S {
         );
         return (unsafe { outer.call(20) });
     }
-    pub unsafe fn new_1(this: *mut S) {}
-    pub unsafe fn copy_from(this: *mut S, _a0: *const S) {
-        (&raw mut (*this).v).write((*_a0).v);
-    }
-    pub unsafe fn move_from(this: *mut S, _a0: *mut S) {
-        (&raw mut (*this).v).write((*_a0).v);
-    }
 }
 pub fn main() {
     unsafe {
@@ -68,11 +61,7 @@ unsafe fn main_0() -> i32 {
     assert!(((unsafe { outer.call(20,) }) == (31)));
     x = 100;
     assert!(((unsafe { outer.call(20,) }) == (121)));
-    let mut s: S = ::std::mem::MaybeUninit::uninit().assume_init();
-    {
-        let __d = &raw mut s;
-        (&raw mut (*__d).v).write(5);
-    };
+    let mut s: S = S { v: 5 };
     assert!(((unsafe { S::nested_this(&mut s,) }) == (26)));
     return 0;
 }

@@ -9,32 +9,6 @@ use std::rc::{Rc, Weak};
 #[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
 #[byte_size(1)]
 pub struct p16_rebind_member_Alloc_std_pair_const_int__int___rebind_std_pair_const_int__int__ {}
-impl p16_rebind_member_Alloc_std_pair_const_int__int___rebind_std_pair_const_int__int__ {
-    pub fn new_1(
-        this: Ptr<
-            p16_rebind_member_Alloc_std_pair_const_int__int___rebind_std_pair_const_int__int__,
-        >,
-    ) {
-    }
-    pub fn copy_from(
-        this: Ptr<
-            p16_rebind_member_Alloc_std_pair_const_int__int___rebind_std_pair_const_int__int__,
-        >,
-        _a0: Ptr<
-            p16_rebind_member_Alloc_std_pair_const_int__int___rebind_std_pair_const_int__int__,
-        >,
-    ) {
-    }
-    pub fn move_from(
-        this: Ptr<
-            p16_rebind_member_Alloc_std_pair_const_int__int___rebind_std_pair_const_int__int__,
-        >,
-        _a0: Ptr<
-            p16_rebind_member_Alloc_std_pair_const_int__int___rebind_std_pair_const_int__int__,
-        >,
-    ) {
-    }
-}
 #[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg)]
 #[byte_size(4)]
 pub struct p16_rebind_member_Alloc_std_pair_const_int__int__ {
@@ -44,18 +18,6 @@ pub struct p16_rebind_member_Alloc_std_pair_const_int__int__ {
 impl p16_rebind_member_Alloc_std_pair_const_int__int__ {
     pub fn new(this: Ptr<p16_rebind_member_Alloc_std_pair_const_int__int__>) {
         field!(this, id).write(0);
-    }
-    pub fn copy_from(
-        this: Ptr<p16_rebind_member_Alloc_std_pair_const_int__int__>,
-        _a0: Ptr<p16_rebind_member_Alloc_std_pair_const_int__int__>,
-    ) {
-        field!(this, id).write(_a0.with(|__s| __s.id));
-    }
-    pub fn move_from(
-        this: Ptr<p16_rebind_member_Alloc_std_pair_const_int__int__>,
-        _a0: Ptr<p16_rebind_member_Alloc_std_pair_const_int__int__>,
-    ) {
-        field!(this, id).write({ (*_a0.upgrade().deref()).id });
     }
 }
 impl Default for p16_rebind_member_Alloc_std_pair_const_int__int__ {
@@ -89,19 +51,6 @@ pub fn test_0() {
 #[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
 #[byte_size(1)]
 pub struct p18_rebind_to_container_node_Alloc_std_pair_const_int__int__ {}
-impl p18_rebind_to_container_node_Alloc_std_pair_const_int__int__ {
-    pub fn new(this: Ptr<p18_rebind_to_container_node_Alloc_std_pair_const_int__int__>) {}
-    pub fn copy_from(
-        this: Ptr<p18_rebind_to_container_node_Alloc_std_pair_const_int__int__>,
-        _a0: Ptr<p18_rebind_to_container_node_Alloc_std_pair_const_int__int__>,
-    ) {
-    }
-    pub fn move_from(
-        this: Ptr<p18_rebind_to_container_node_Alloc_std_pair_const_int__int__>,
-        _a0: Ptr<p18_rebind_to_container_node_Alloc_std_pair_const_int__int__>,
-    ) {
-    }
-}
 pub fn test_1() {
     let m: Value<Map<i32, (Value<i32>, Value<i32>)>> = Rc::new(RefCell::new(Map::new()));
     match (Rc::new(RefCell::new(1)).as_pointer(),) {

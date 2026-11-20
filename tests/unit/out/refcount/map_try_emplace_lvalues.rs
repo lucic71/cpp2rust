@@ -32,12 +32,6 @@ impl Item {
         });
         (*made_0.with(Value::clone).borrow_mut()).prefix_inc();
     }
-    pub fn copy_from(this: Ptr<Item>, _a0: Ptr<Item>) {
-        field!(this, value).write(_a0.with(|__s| __s.value));
-    }
-    pub fn move_from(this: Ptr<Item>, _a0: Ptr<Item>) {
-        field!(this, value).write({ (*_a0.upgrade().deref()).value });
-    }
 }
 impl Default for Item {
     fn default() -> Self {
@@ -80,18 +74,6 @@ impl Temporary {
         field!(this, data).write(Box::new([6, 7]));
         (*temporary_calls_4.with(Value::clone).borrow_mut()).prefix_inc();
     }
-    pub fn copy_from(this: Ptr<Temporary>, _a0: Ptr<Temporary>) {
-        field!(this, n).write(_a0.with(|__s| __s.n));
-        field!(this, data).write(Box::new(std::array::from_fn::<_, 2, _>(|__i: usize| {
-            (*_a0.upgrade().deref()).data[(__i) as usize]
-        })));
-    }
-    pub fn move_from(this: Ptr<Temporary>, _a0: Ptr<Temporary>) {
-        field!(this, n).write({ (*_a0.upgrade().deref()).n });
-        field!(this, data).write(Box::new(std::array::from_fn::<_, 2, _>(|__i: usize| {
-            (*_a0.upgrade().deref()).data[(__i) as usize]
-        })));
-    }
 }
 impl Default for Temporary {
     fn default() -> Self {
@@ -115,12 +97,6 @@ pub struct Nested {
 impl Nested {
     pub fn new_1(this: Ptr<Nested>) {
         Temporary::new(field_ptr!(this, inner));
-    }
-    pub fn copy_from(this: Ptr<Nested>, _a0: Ptr<Nested>) {
-        Temporary::copy_from(field_ptr!(this, inner), { field_ptr!(_a0, inner) });
-    }
-    pub fn move_from(this: Ptr<Nested>, _a0: Ptr<Nested>) {
-        Temporary::move_from(field_ptr!(this, inner), { field_ptr!(_a0, inner) });
     }
 }
 pub fn make_temporary_5(__ret: Ptr<Temporary>) {
@@ -178,11 +154,6 @@ pub struct Noncopy {
     #[offset(0)]
     pub n: i32,
 }
-impl Noncopy {
-    pub fn new(this: Ptr<Noncopy>) {
-        field!(this, n).write(5);
-    }
-}
 impl Default for Noncopy {
     fn default() -> Self {
         { Noncopy { n: 5 } }
@@ -205,12 +176,6 @@ impl Held {
     }
     pub fn new_3(this: Ptr<Held>, n: Ptr<i32>, mut _a1: i32) {
         field!(this, ptr).write((n).clone());
-    }
-    pub fn copy_from(this: Ptr<Held>, _a0: Ptr<Held>) {
-        field!(this, ptr).write(_a0.with(|__s| __s.ptr.clone()));
-    }
-    pub fn move_from(this: Ptr<Held>, _a0: Ptr<Held>) {
-        field!(this, ptr).write({ (*_a0.upgrade().deref()).ptr.clone() });
     }
 }
 impl Default for Held {
@@ -2427,18 +2392,7 @@ fn main_0() -> i32 {
         let __tmp_111: Value<Option<Value<Noncopy>>>;
         match ({
             __tmp_111 = Rc::new(RefCell::new(Some(Rc::new(RefCell::new(
-                Rc::try_unwrap({
-                    let __v: Value<Noncopy> = Rc::new(RefCell::new(<Noncopy>::uninit()));
-                    {
-                        let __d = __v.as_pointer();
-                        ();
-                        Noncopy::new(__d)
-                    };
-                    __v
-                })
-                .ok()
-                .unwrap()
-                .into_inner(),
+                <Noncopy>::default(),
             )))));
             __tmp_111.as_pointer()
         },)
@@ -2476,18 +2430,7 @@ fn main_0() -> i32 {
         let __tmp_113: Value<Option<Value<Noncopy>>>;
         match ({
             __tmp_113 = Rc::new(RefCell::new(Some(Rc::new(RefCell::new(
-                Rc::try_unwrap({
-                    let __v: Value<Noncopy> = Rc::new(RefCell::new(<Noncopy>::uninit()));
-                    {
-                        let __d = __v.as_pointer();
-                        ();
-                        Noncopy::new(__d)
-                    };
-                    __v
-                })
-                .ok()
-                .unwrap()
-                .into_inner(),
+                <Noncopy>::default(),
             )))));
             __tmp_113.as_pointer()
         },)

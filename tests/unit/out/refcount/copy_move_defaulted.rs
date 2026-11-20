@@ -12,15 +12,6 @@ pub struct Inner {
     #[offset(0)]
     pub x: i32,
 }
-impl Inner {
-    pub fn copy_from(this: Ptr<Inner>, _a0: Ptr<Inner>) {
-        field!(this, x).write(_a0.with(|__s| __s.x));
-    }
-    pub fn move_from(this: Ptr<Inner>, _a0: Ptr<Inner>) {
-        field!(this, x).write({ (*_a0.upgrade().deref()).x });
-    }
-    pub fn new_1(this: Ptr<Inner>) {}
-}
 #[derive(Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, CppFrom, Destructor)]
 #[cpp_from(i32, new, value)]
 #[byte_size(16)]
@@ -38,25 +29,8 @@ pub struct Explicit {
 impl Explicit {
     pub fn new(this: Ptr<Explicit>, mut v: i32) {
         field!(this, v).write(v);
-        {
-            let __d = field_ptr!(this, inner);
-            field!(__d, x).write((v * 10));
-        };
+        field!(this, inner).write(Inner { x: (v * 10) });
         field!(this, arr).write(Box::new([v, (v + 1)]));
-    }
-    pub fn copy_from(this: Ptr<Explicit>, _a0: Ptr<Explicit>) {
-        field!(this, v).write(_a0.with(|__s| __s.v));
-        Inner::copy_from(field_ptr!(this, inner), { field_ptr!(_a0, inner) });
-        field!(this, arr).write(Box::new(std::array::from_fn::<_, 2, _>(|__i: usize| {
-            (*_a0.upgrade().deref()).arr[(__i) as usize]
-        })));
-    }
-    pub fn move_from(this: Ptr<Explicit>, _a0: Ptr<Explicit>) {
-        field!(this, v).write({ (*_a0.upgrade().deref()).v });
-        Inner::move_from(field_ptr!(this, inner), { field_ptr!(_a0, inner) });
-        field!(this, arr).write(Box::new(std::array::from_fn::<_, 2, _>(|__i: usize| {
-            (*_a0.upgrade().deref()).arr[(__i) as usize]
-        })));
     }
 }
 impl Default for Explicit {
@@ -83,25 +57,6 @@ pub struct Implicit {
     #[array_len(2)]
     pub arr: Box<[i32]>,
 }
-impl Implicit {
-    pub fn new_1(this: Ptr<Implicit>) {
-        Inner::new_1(field_ptr!(this, inner));
-    }
-    pub fn copy_from(this: Ptr<Implicit>, _a0: Ptr<Implicit>) {
-        field!(this, v).write(_a0.with(|__s| __s.v));
-        Inner::copy_from(field_ptr!(this, inner), { field_ptr!(_a0, inner) });
-        field!(this, arr).write(Box::new(std::array::from_fn::<_, 2, _>(|__i: usize| {
-            (*_a0.upgrade().deref()).arr[(__i) as usize]
-        })));
-    }
-    pub fn move_from(this: Ptr<Implicit>, _a0: Ptr<Implicit>) {
-        field!(this, v).write({ (*_a0.upgrade().deref()).v });
-        Inner::move_from(field_ptr!(this, inner), { field_ptr!(_a0, inner) });
-        field!(this, arr).write(Box::new(std::array::from_fn::<_, 2, _>(|__i: usize| {
-            (*_a0.upgrade().deref()).arr[(__i) as usize]
-        })));
-    }
-}
 impl Default for Implicit {
     fn default() -> Self {
         {
@@ -125,9 +80,6 @@ pub struct DefaultCopyUserMove {
 impl DefaultCopyUserMove {
     pub fn new(this: Ptr<DefaultCopyUserMove>, mut v: i32) {
         field!(this, v).write(v);
-    }
-    pub fn copy_from(this: Ptr<DefaultCopyUserMove>, _a0: Ptr<DefaultCopyUserMove>) {
-        field!(this, v).write(_a0.with(|__s| __s.v));
     }
     pub fn move_from(this: Ptr<DefaultCopyUserMove>, o: Ptr<DefaultCopyUserMove>) {
         field!(this, v).write(o.with(|__s| __s.v));
@@ -291,16 +243,13 @@ pub struct Holder {
 }
 impl Holder {
     pub fn new(this: Ptr<Holder>, mut v: i32) {
-        {
-            let __d = field_ptr!(this, inner);
-            field!(__d, x).write(v);
-        };
+        field!(this, inner).write(Inner { x: v });
         Explicit::new(field_ptr!(this, e), { v });
         field!(this, p).write(None);
     }
     pub fn move_from(this: Ptr<Holder>, _a0: Ptr<Holder>) {
-        Inner::move_from(field_ptr!(this, inner), { field_ptr!(_a0, inner) });
-        Explicit::move_from(field_ptr!(this, e), { field_ptr!(_a0, e) });
+        field!(this, inner).write({ (*_a0.upgrade().deref()).inner });
+        (field_ptr!(this, e)).write({ (*_a0.upgrade().deref()).e.clone() });
         field!(this, p).write(field!(_a0, p).with_mut(|__v: &mut Option<Value<i32>>| __v.take()));
     }
 }
@@ -319,13 +268,13 @@ fn main_0() -> i32 {
     Explicit::new(a.as_pointer(), { 1 });
     let _dtor_a = std::mem::DropGuard::new(a.clone(), |__p| __p.as_pointer().destructor());
     let b: Value<Explicit> = Rc::new(RefCell::new(<Explicit>::uninit()));
-    Explicit::copy_from(b.as_pointer(), { a.as_pointer() });
+    (b.as_pointer()).write((*a.borrow()).clone());
     let _dtor_b = std::mem::DropGuard::new(b.clone(), |__p| __p.as_pointer().destructor());
     let c: Value<Explicit> = Rc::new(RefCell::new(<Explicit>::uninit()));
-    Explicit::copy_from(c.as_pointer(), { a.as_pointer() });
+    (c.as_pointer()).write((*a.borrow()).clone());
     let _dtor_c = std::mem::DropGuard::new(c.clone(), |__p| __p.as_pointer().destructor());
     let d: Value<Explicit> = Rc::new(RefCell::new(<Explicit>::uninit()));
-    Explicit::move_from(d.as_pointer(), { a.as_pointer() });
+    (d.as_pointer()).write((*a.borrow()).clone());
     let _dtor_d = std::mem::DropGuard::new(d.clone(), |__p| __p.as_pointer().destructor());
     assert!(
         (({ same_0(b.as_pointer(), a.as_pointer(),) })
@@ -355,44 +304,22 @@ fn main_0() -> i32 {
         ({ same_0(g.as_pointer(), f.as_pointer(),) })
             && ({ same_0(e.as_pointer(), f.as_pointer(),) })
     );
-    let i: Value<Implicit> = Rc::new(RefCell::new(<Implicit>::uninit()));
-    {
-        let __d = i.as_pointer();
-        field!(__d, v).write(5);
-        {
-            let __d = field_ptr!(__d, inner);
-            field!(__d, x).write(50);
-        };
-        field!(__d, arr).write(Box::new([5, 6]));
+    let mut i: Implicit = Implicit {
+        v: 5,
+        inner: Inner { x: 50 },
+        arr: Box::new([5, 6]),
     };
-    let j: Value<Implicit> = Rc::new(RefCell::new(<Implicit>::uninit()));
-    Implicit::copy_from(j.as_pointer(), { i.as_pointer() });
-    let k: Value<Implicit> = Rc::new(RefCell::new(<Implicit>::uninit()));
-    Implicit::move_from(k.as_pointer(), { i.as_pointer() });
-    assert!(
-        ({
-            (({ (*j.borrow()).v } == 5) && ({ (*j.borrow()).inner.x } == 50))
-                && ((array_elem!(j.as_pointer(), arr, 1).read()) == 6)
-        })
-    );
-    assert!(({ ({ (*i.borrow()).v } == 5) && ({ (*k.borrow()).v } == 5) }));
-    let l: Value<Implicit> = Rc::new(RefCell::new(<Implicit>::uninit()));
-    {
-        let __d = l.as_pointer();
-        field!(__d, v).write(0);
-        {
-            let __d = field_ptr!(__d, inner);
-            field!(__d, x).write(0);
-        };
-        field!(__d, arr).write(Box::new([0, 0]));
+    let mut j: Implicit = (i).clone();
+    let mut k: Implicit = (i).clone();
+    assert!(((j.v == 5) && (j.inner.x == 50)) && (j.arr[(1) as usize] == 6));
+    assert!((i.v == 5) && (k.v == 5));
+    let mut l: Implicit = Implicit {
+        v: 0,
+        inner: Inner { x: 0 },
+        arr: Box::new([0, 0]),
     };
-    (*l.borrow_mut()) = (*j.borrow()).clone();
-    assert!(
-        ({
-            (({ (*l.borrow()).v } == 5) && ({ (*l.borrow()).inner.x } == 50))
-                && ((array_elem!(l.as_pointer(), arr, 0).read()) == 5)
-        })
-    );
+    l = (j).clone();
+    assert!(((l.v == 5) && (l.inner.x == 50)) && (l.arr[(0) as usize] == 5));
     let mut vec_: Vec<Explicit> = Vec::new();
     {
         let a0_clone = (*b.borrow()).clone();
@@ -413,7 +340,7 @@ fn main_0() -> i32 {
     let m: Value<DefaultCopyUserMove> = Rc::new(RefCell::new(<DefaultCopyUserMove>::uninit()));
     DefaultCopyUserMove::new(m.as_pointer(), { 7 });
     let m1: Value<DefaultCopyUserMove> = Rc::new(RefCell::new(<DefaultCopyUserMove>::uninit()));
-    DefaultCopyUserMove::copy_from(m1.as_pointer(), { m.as_pointer() });
+    (m1.as_pointer()).write((*m.borrow()));
     let m2: Value<DefaultCopyUserMove> = Rc::new(RefCell::new(<DefaultCopyUserMove>::uninit()));
     DefaultCopyUserMove::move_from(m2.as_pointer(), { m.as_pointer() });
     assert!(

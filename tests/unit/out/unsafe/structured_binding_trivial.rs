@@ -12,17 +12,6 @@ pub struct Pair {
     pub first: i32,
     pub second: i32,
 }
-impl Pair {
-    pub unsafe fn new_1(this: *mut Pair) {}
-    pub unsafe fn copy_from(this: *mut Pair, _a0: *const Pair) {
-        (&raw mut (*this).first).write((*_a0).first);
-        (&raw mut (*this).second).write((*_a0).second);
-    }
-    pub unsafe fn move_from(this: *mut Pair, _a0: *mut Pair) {
-        (&raw mut (*this).first).write((*_a0).first);
-        (&raw mut (*this).second).write((*_a0).second);
-    }
-}
 pub fn main() {
     unsafe {
         __cpp2rust_init_globals();
@@ -36,17 +25,11 @@ unsafe fn main_0() -> i32 {
     };
     assert!(((__decomp_0.first) == (1)));
     assert!(((__decomp_0.second) == (2)));
-    let mut p: Pair = ::std::mem::MaybeUninit::uninit().assume_init();
-    {
-        let __d = &raw mut p;
-        (&raw mut (*__d).first).write(10);
-        (&raw mut (*__d).second).write(20);
+    let mut p: Pair = Pair {
+        first: 10,
+        second: 20,
     };
-    let mut __decomp_1: Pair = {
-        let mut __v: Pair = ::std::mem::MaybeUninit::uninit().assume_init();
-        Pair::copy_from(&raw mut __v, { &p });
-        __v
-    };
+    let mut __decomp_1: Pair = p;
     __decomp_1.first = 11;
     __decomp_1.second += 1;
     assert!(((__decomp_1.first) == (11)));

@@ -70,13 +70,6 @@ impl Boxed_short_ {
     pub fn twice(mut v: i16) -> i16 {
         return (((v as i32) + (v as i32)) as i16);
     }
-    pub fn new_1(this: Ptr<Boxed_short_>) {}
-    pub fn copy_from(this: Ptr<Boxed_short_>, _a0: Ptr<Boxed_short_>) {
-        field!(this, value).write(_a0.with(|__s| __s.value));
-    }
-    pub fn move_from(this: Ptr<Boxed_short_>, _a0: Ptr<Boxed_short_>) {
-        field!(this, value).write({ (*_a0.upgrade().deref()).value });
-    }
 }
 #[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
 #[byte_size(4)]
@@ -87,13 +80,6 @@ pub struct Boxed_int_ {
 impl Boxed_int_ {
     pub fn twice(mut v: i32) -> i32 {
         return (v + v);
-    }
-    pub fn new_1(this: Ptr<Boxed_int_>) {}
-    pub fn copy_from(this: Ptr<Boxed_int_>, _a0: Ptr<Boxed_int_>) {
-        field!(this, value).write(_a0.with(|__s| __s.value));
-    }
-    pub fn move_from(this: Ptr<Boxed_int_>, _a0: Ptr<Boxed_int_>) {
-        field!(this, value).write({ (*_a0.upgrade().deref()).value });
     }
 }
 #[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
@@ -106,13 +92,6 @@ impl Boxed_long_ {
     pub fn twice(mut v: i64) -> i64 {
         return (v + v);
     }
-    pub fn new_1(this: Ptr<Boxed_long_>) {}
-    pub fn copy_from(this: Ptr<Boxed_long_>, _a0: Ptr<Boxed_long_>) {
-        field!(this, value).write(_a0.with(|__s| __s.value));
-    }
-    pub fn move_from(this: Ptr<Boxed_long_>, _a0: Ptr<Boxed_long_>) {
-        field!(this, value).write({ (*_a0.upgrade().deref()).value });
-    }
 }
 #[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
 #[byte_size(8)]
@@ -122,31 +101,11 @@ pub struct Outer_int__Inner_int_ {
     #[offset(4)]
     pub u: i32,
 }
-impl Outer_int__Inner_int_ {
-    pub fn new_1(this: Ptr<Outer_int__Inner_int_>) {}
-    pub fn copy_from(this: Ptr<Outer_int__Inner_int_>, _a0: Ptr<Outer_int__Inner_int_>) {
-        field!(this, t).write(_a0.with(|__s| __s.t));
-        field!(this, u).write(_a0.with(|__s| __s.u));
-    }
-    pub fn move_from(this: Ptr<Outer_int__Inner_int_>, _a0: Ptr<Outer_int__Inner_int_>) {
-        field!(this, t).write({ (*_a0.upgrade().deref()).t });
-        field!(this, u).write({ (*_a0.upgrade().deref()).u });
-    }
-}
 #[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
 #[byte_size(4)]
 pub struct Outer_int_ {
     #[offset(0)]
     pub v: i32,
-}
-impl Outer_int_ {
-    pub fn new_1(this: Ptr<Outer_int_>) {}
-    pub fn copy_from(this: Ptr<Outer_int_>, _a0: Ptr<Outer_int_>) {
-        field!(this, v).write(_a0.with(|__s| __s.v));
-    }
-    pub fn move_from(this: Ptr<Outer_int_>, _a0: Ptr<Outer_int_>) {
-        field!(this, v).write({ (*_a0.upgrade().deref()).v });
-    }
 }
 #[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
 #[byte_size(16)]
@@ -156,17 +115,6 @@ pub struct Outer_long__Inner_int_ {
     #[offset(8)]
     pub u: i32,
 }
-impl Outer_long__Inner_int_ {
-    pub fn new_1(this: Ptr<Outer_long__Inner_int_>) {}
-    pub fn copy_from(this: Ptr<Outer_long__Inner_int_>, _a0: Ptr<Outer_long__Inner_int_>) {
-        field!(this, t).write(_a0.with(|__s| __s.t));
-        field!(this, u).write(_a0.with(|__s| __s.u));
-    }
-    pub fn move_from(this: Ptr<Outer_long__Inner_int_>, _a0: Ptr<Outer_long__Inner_int_>) {
-        field!(this, t).write({ (*_a0.upgrade().deref()).t });
-        field!(this, u).write({ (*_a0.upgrade().deref()).u });
-    }
-}
 #[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
 #[byte_size(16)]
 pub struct Outer_long__Inner_char_ {
@@ -175,46 +123,17 @@ pub struct Outer_long__Inner_char_ {
     #[offset(8)]
     pub u: i8,
 }
-impl Outer_long__Inner_char_ {
-    pub fn new_1(this: Ptr<Outer_long__Inner_char_>) {}
-    pub fn copy_from(this: Ptr<Outer_long__Inner_char_>, _a0: Ptr<Outer_long__Inner_char_>) {
-        field!(this, t).write(_a0.with(|__s| __s.t));
-        field!(this, u).write(_a0.with(|__s| __s.u));
-    }
-    pub fn move_from(this: Ptr<Outer_long__Inner_char_>, _a0: Ptr<Outer_long__Inner_char_>) {
-        field!(this, t).write({ (*_a0.upgrade().deref()).t });
-        field!(this, u).write({ (*_a0.upgrade().deref()).u });
-    }
-}
 #[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
 #[byte_size(8)]
 pub struct Outer_long_ {
     #[offset(0)]
     pub v: i64,
 }
-impl Outer_long_ {
-    pub fn new_1(this: Ptr<Outer_long_>) {}
-    pub fn copy_from(this: Ptr<Outer_long_>, _a0: Ptr<Outer_long_>) {
-        field!(this, v).write(_a0.with(|__s| __s.v));
-    }
-    pub fn move_from(this: Ptr<Outer_long_>, _a0: Ptr<Outer_long_>) {
-        field!(this, v).write({ (*_a0.upgrade().deref()).v });
-    }
-}
 #[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
 #[byte_size(4)]
 pub struct Elem {
     #[offset(0)]
     pub i: i32,
-}
-impl Elem {
-    pub fn new_1(this: Ptr<Elem>) {}
-    pub fn copy_from(this: Ptr<Elem>, _a0: Ptr<Elem>) {
-        field!(this, i).write(_a0.with(|__s| __s.i));
-    }
-    pub fn move_from(this: Ptr<Elem>, _a0: Ptr<Elem>) {
-        field!(this, i).write({ (*_a0.upgrade().deref()).i });
-    }
 }
 pub fn main() {
     __cpp2rust_init_globals();
@@ -228,45 +147,28 @@ fn main_0() -> i32 {
     };
     assert!((ev[0_usize].i == 2));
     assert!(((({ Boxed_short_::twice(2_i16,) }) as i32) == 4));
-    let oi: Value<Outer_int_> = Rc::new(RefCell::new(<Outer_int_>::uninit()));
-    {
-        let __d = oi.as_pointer();
-        field!(__d, v).write(3);
-    };
+    let oi: Value<Outer_int_> = Rc::new(RefCell::new(Outer_int_ { v: 3 }));
     assert!(
         (({
             Outer_int__Inner_int_Impl::sum(
-                &{
-                    let __v: Value<Outer_int__Inner_int_> =
-                        Rc::new(RefCell::new(<Outer_int__Inner_int_>::uninit()));
-                    ({ Outer_int_Impl::with(&oi.as_pointer(), __v.as_pointer(), 4) });
-                    __v
-                }
+                &Rc::new(RefCell::new(
+                    ({ Outer_int_Impl::with(&oi.as_pointer(), 4) }),
+                ))
                 .as_pointer(),
             )
         }) == 7)
     );
-    let ol: Value<Outer_long_> = Rc::new(RefCell::new(<Outer_long_>::uninit()));
-    {
-        let __d = ol.as_pointer();
-        field!(__d, v).write(5_i64);
-    };
-    let ic: Value<Outer_long__Inner_char_> =
-        Rc::new(RefCell::new(<Outer_long__Inner_char_>::uninit()));
-    {
-        let __d = ic.as_pointer();
-        field!(__d, t).write(6_i64);
-        field!(__d, u).write(('a' as i8));
-    };
+    let ol: Value<Outer_long_> = Rc::new(RefCell::new(Outer_long_ { v: 5_i64 }));
+    let ic: Value<Outer_long__Inner_char_> = Rc::new(RefCell::new(Outer_long__Inner_char_ {
+        t: 6_i64,
+        u: ('a' as i8),
+    }));
     assert!(
         (({
             Outer_long__Inner_int_Impl::sum(
-                &{
-                    let __v: Value<Outer_long__Inner_int_> =
-                        Rc::new(RefCell::new(<Outer_long__Inner_int_>::uninit()));
-                    ({ Outer_long_Impl::with(&ol.as_pointer(), __v.as_pointer(), 2) });
-                    __v
-                }
+                &Rc::new(RefCell::new(
+                    ({ Outer_long_Impl::with(&ol.as_pointer(), 2) }),
+                ))
                 .as_pointer(),
             )
         }) == 7)
@@ -275,18 +177,10 @@ fn main_0() -> i32 {
         (({ Outer_long__Inner_char_Impl::sum(&ic.as_pointer(),) }) == (6 + (('a' as i8) as i32)))
     );
     assert!((({ Boxed_int_::twice(3,) }) == 6));
-    let bi: Value<Boxed_int_> = Rc::new(RefCell::new(<Boxed_int_>::uninit()));
-    {
-        let __d = bi.as_pointer();
-        field!(__d, value).write(4);
-    };
+    let bi: Value<Boxed_int_> = Rc::new(RefCell::new(Boxed_int_ { value: 4 }));
     assert!((({ Boxed_int_Impl::plus(&bi.as_pointer(), 5,) }) == 9));
     assert!((({ Boxed_long_::twice(10_i64,) }) == 20_i64));
-    let bl: Value<Boxed_long_> = Rc::new(RefCell::new(<Boxed_long_>::uninit()));
-    {
-        let __d = bl.as_pointer();
-        field!(__d, value).write(7_i64);
-    };
+    let bl: Value<Boxed_long_> = Rc::new(RefCell::new(Boxed_long_ { value: 7_i64 }));
     assert!((({ Boxed_long_Impl::plus(&bl.as_pointer(), 1_i64,) }) == 8_i64));
     let imc: Value<MyContainer_int_> = Rc::new(RefCell::new(<MyContainer_int_>::uninit()));
     MyContainer_int_::new_1(imc.as_pointer());
@@ -479,16 +373,14 @@ impl MyContainer_int_Impl for Ptr<MyContainer_int_> {
     }
 }
 pub trait Outer_int_Impl {
-    fn with(&self, __ret: Ptr<Outer_int__Inner_int_>, n: i32);
+    fn with(&self, n: i32) -> Outer_int__Inner_int_;
 }
 impl Outer_int_Impl for Ptr<Outer_int_> {
-    fn with(&self, __ret: Ptr<Outer_int__Inner_int_>, mut n: i32) {
-        {
-            let __d = __ret.clone();
-            field!(__d, t).write((*self).with(|__s| __s.v));
-            field!(__d, u).write(n);
+    fn with(&self, mut n: i32) -> Outer_int__Inner_int_ {
+        return Outer_int__Inner_int_ {
+            t: (*self).with(|__s| __s.v),
+            u: n,
         };
-        return;
     }
 }
 pub trait Outer_int__Inner_int_Impl {
@@ -500,16 +392,14 @@ impl Outer_int__Inner_int_Impl for Ptr<Outer_int__Inner_int_> {
     }
 }
 pub trait Outer_long_Impl {
-    fn with(&self, __ret: Ptr<Outer_long__Inner_int_>, n: i32);
+    fn with(&self, n: i32) -> Outer_long__Inner_int_;
 }
 impl Outer_long_Impl for Ptr<Outer_long_> {
-    fn with(&self, __ret: Ptr<Outer_long__Inner_int_>, mut n: i32) {
-        {
-            let __d = __ret.clone();
-            field!(__d, t).write((*self).with(|__s| __s.v));
-            field!(__d, u).write(n);
+    fn with(&self, mut n: i32) -> Outer_long__Inner_int_ {
+        return Outer_long__Inner_int_ {
+            t: (*self).with(|__s| __s.v),
+            u: n,
         };
-        return;
     }
 }
 pub trait Outer_long__Inner_char_Impl {

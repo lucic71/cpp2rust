@@ -25,18 +25,6 @@ impl p1_1_parameter_hides_member_in_constructor_HasMemberNamedLikeParameter {
     pub unsafe fn add(&self, mut amount: i32) -> i32 {
         return ((self.amount) + (amount));
     }
-    pub unsafe fn copy_from(
-        this: *mut p1_1_parameter_hides_member_in_constructor_HasMemberNamedLikeParameter,
-        _a0: *const p1_1_parameter_hides_member_in_constructor_HasMemberNamedLikeParameter,
-    ) {
-        (&raw mut (*this).amount).write((*_a0).amount);
-    }
-    pub unsafe fn move_from(
-        this: *mut p1_1_parameter_hides_member_in_constructor_HasMemberNamedLikeParameter,
-        _a0: *mut p1_1_parameter_hides_member_in_constructor_HasMemberNamedLikeParameter,
-    ) {
-        (&raw mut (*this).amount).write((*_a0).amount);
-    }
 }
 pub unsafe fn test_0() {
     let mut object: p1_1_parameter_hides_member_in_constructor_HasMemberNamedLikeParameter =
@@ -52,18 +40,17 @@ pub unsafe fn test_0() {
     );
     assert!(((object.amount) == (5)));
 }
-pub static mut rate_1: libcc2rs::LazyStorage<i32> =
-    libcc2rs::LazyStorage::new(|__p| unsafe { __p.write(3) });
+pub static mut rate_1: std::cell::LazyCell<i32> = std::cell::LazyCell::new(|| unsafe { 3 });
 pub unsafe fn scale_2(mut rate: i32) -> i32 {
     rate *= 2;
     return rate;
 }
 pub unsafe fn read_rate_3() -> i32 {
-    return (*(*&raw const rate_1).get());
+    return (*std::cell::LazyCell::force_mut(&mut *&raw mut rate_1));
 }
 pub unsafe fn test_4() {
     assert!(((unsafe { scale_2(5,) }) == (10)));
-    assert!(((*(*&raw const rate_1).get()) == (3)));
+    assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut rate_1)) == (3)));
     assert!(((unsafe { read_rate_3() }) == (3)));
 }
 pub unsafe fn test_5() {
@@ -96,5 +83,5 @@ unsafe fn main_0() -> i32 {
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {
-    (*&raw const rate_1).get();
+    std::cell::LazyCell::force(&*&raw const rate_1);
 }

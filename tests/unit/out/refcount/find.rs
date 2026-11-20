@@ -12,15 +12,6 @@ pub struct P {
     #[offset(0)]
     pub x: i32,
 }
-impl P {
-    pub fn new_1(this: Ptr<P>) {}
-    pub fn copy_from(this: Ptr<P>, _a0: Ptr<P>) {
-        field!(this, x).write(_a0.with(|__s| __s.x));
-    }
-    pub fn move_from(this: Ptr<P>, _a0: Ptr<P>) {
-        field!(this, x).write({ (*_a0.upgrade().deref()).x });
-    }
-}
 impl CppEq for P {
     fn equal(__lhs: &Ptr<Self>, __rhs: &Ptr<Self>) -> bool {
         PImpl::operator_eq(__lhs, __rhs.clone())
@@ -151,50 +142,13 @@ fn main_0() -> i32 {
         }) == w.decay().begin().iter_add(4_isize)
     );
     let p: Value<Vec<P>> = Rc::new(RefCell::new(Vec::from([
-        Rc::try_unwrap({
-            let __v: Value<P> = Rc::new(RefCell::new(<P>::uninit()));
-            {
-                let __d = __v.as_pointer();
-                field!(__d, x).write(0);
-            };
-            __v
-        })
-        .ok()
-        .unwrap()
-        .into_inner(),
-        Rc::try_unwrap({
-            let __v: Value<P> = Rc::new(RefCell::new(<P>::uninit()));
-            {
-                let __d = __v.as_pointer();
-                field!(__d, x).write(1);
-            };
-            __v
-        })
-        .ok()
-        .unwrap()
-        .into_inner(),
-        Rc::try_unwrap({
-            let __v: Value<P> = Rc::new(RefCell::new(<P>::uninit()));
-            {
-                let __d = __v.as_pointer();
-                field!(__d, x).write(2);
-            };
-            __v
-        })
-        .ok()
-        .unwrap()
-        .into_inner(),
+        P { x: 0 },
+        P { x: 1 },
+        P { x: 2 },
     ])));
     assert!(
         ({
-            let __tmp_19: Value<P> = {
-                let __v: Value<P> = Rc::new(RefCell::new(<P>::uninit()));
-                {
-                    let __d = __v.as_pointer();
-                    field!(__d, x).write(1);
-                };
-                __v
-            };
+            let __tmp_19: Value<P> = Rc::new(RefCell::new(P { x: 1 }));
             {
                 let mut __tmp_17 = { p.decay().begin() };
                 let mut __tmp_18 = { p.decay().end() };

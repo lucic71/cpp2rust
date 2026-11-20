@@ -13,27 +13,26 @@ pub unsafe fn test_1() {
     assert!(((unsafe { pick_0() }) == (1)));
     assert!(((unsafe { pick_in_b_2() }) == (2)));
 }
-pub static mut limit_3: libcc2rs::LazyStorage<i32> =
-    libcc2rs::LazyStorage::new(|__p| unsafe { __p.write(10) });
+pub static mut limit_3: std::cell::LazyCell<i32> = std::cell::LazyCell::new(|| unsafe { 10 });
 pub unsafe fn test_4() {
-    assert!(((*(*&raw const limit_3).get()) == (10)));
+    assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut limit_3)) == (10)));
     assert!(((unsafe { limit_in_b_5() }) == (20)));
     assert!(
-        ((&raw const (*(*&raw const limit_3).get()) as *const i32)
+        ((&raw const (*std::cell::LazyCell::force_mut(&mut *&raw mut limit_3)) as *const i32)
             != (unsafe { limit_address_in_b_6() }))
     );
 }
 pub unsafe fn test_8() {
-    assert!(((*(*&raw const threshold_7).get()) == (30)));
+    assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut threshold_7)) == (30)));
     assert!(
-        ((&raw const (*(*&raw const threshold_7).get()) as *const i32)
+        ((&raw const (*std::cell::LazyCell::force_mut(&mut *&raw mut threshold_7)) as *const i32)
             == (unsafe { threshold_address_in_b_9() }))
     );
 }
 pub unsafe fn test_11() {
-    assert!(((*(*&raw const ceiling_10).get()) == (40)));
+    assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut ceiling_10)) == (40)));
     assert!(
-        ((&raw const (*(*&raw const ceiling_10).get()) as *const i32)
+        ((&raw const (*std::cell::LazyCell::force_mut(&mut *&raw mut ceiling_10)) as *const i32)
             == (unsafe { ceiling_address_in_b_12() }))
     );
 }
@@ -48,63 +47,49 @@ impl Default for anon_13 {
         unsafe { std::mem::zeroed() }
     }
 }
-pub static mut anon_13: libcc2rs::LazyStorage<anon_13> =
-    libcc2rs::LazyStorage::new(|__p| unsafe { __p.write(<anon_13>::default()) });
+pub static mut anon_13: std::cell::LazyCell<anon_13> =
+    std::cell::LazyCell::new(|| unsafe { <anon_13>::default() });
 pub unsafe fn test_14() {
-    (*(*&raw const anon_13).get()).whole = 5;
+    (*std::cell::LazyCell::force_mut(&mut *&raw mut anon_13)).whole = 5;
     (unsafe { set_whole_in_b_15(6) });
-    assert!((((*(*&raw const anon_13).get()).whole) == (5)));
+    assert!((((*std::cell::LazyCell::force_mut(&mut *&raw mut anon_13)).whole) == (5)));
     assert!(((unsafe { whole_in_b_16() }) == (6)));
 }
-pub static mut counter_17: libcc2rs::LazyStorage<i32> =
-    libcc2rs::LazyStorage::new(|__p| unsafe { __p.write(1) });
+pub static mut counter_17: std::cell::LazyCell<i32> = std::cell::LazyCell::new(|| unsafe { 1 });
 pub unsafe fn bump_18() -> i32 {
-    return (*(*(*&raw const counter_17).get()).prefix_inc());
+    return (*(*std::cell::LazyCell::force_mut(&mut *&raw mut counter_17)).prefix_inc());
 }
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg)]
 pub struct Record_19 {
     pub id: i32,
 }
-impl Record_19 {
-    pub unsafe fn new_1(this: *mut Record_19) {
-        (&raw mut (*this).id).write(100);
-    }
-    pub unsafe fn copy_from(this: *mut Record_19, _a0: *const Record_19) {
-        (&raw mut (*this).id).write((*_a0).id);
-    }
-    pub unsafe fn move_from(this: *mut Record_19, _a0: *mut Record_19) {
-        (&raw mut (*this).id).write((*_a0).id);
-    }
-}
 impl Default for Record_19 {
     fn default() -> Self {
         unsafe { Record_19 { id: 100 } }
     }
 }
-pub static mut depth_20: libcc2rs::LazyStorage<i32> =
-    libcc2rs::LazyStorage::new(|__p| unsafe { __p.write(3) });
+pub static mut depth_20: std::cell::LazyCell<i32> = std::cell::LazyCell::new(|| unsafe { 3 });
 pub unsafe fn test_21() {
     assert!(((unsafe { bump_18() }) == (2)));
     assert!(((unsafe { bump_in_b_22() }) == (51)));
-    assert!(((*(*&raw const counter_17).get()) == (2)));
-    let mut record: Record_19 = ::std::mem::MaybeUninit::uninit().assume_init();
-    Record_19::new_1(&raw mut record);
+    assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut counter_17)) == (2)));
+    let mut record: Record_19 = <Record_19>::default();
     assert!(((record.id) == (100)));
     assert!(((unsafe { record_id_in_b_23() }) == (200)));
-    assert!(((*(*&raw const depth_20).get()) == (3)));
+    assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut depth_20)) == (3)));
     assert!(((unsafe { depth_in_b_24() }) == (4)));
 }
 pub unsafe fn test_26() {
-    assert!(((*(*&raw const shared_total_25).get()) == (5)));
-    (*(*&raw const shared_total_25).get()) = 7;
+    assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut shared_total_25)) == (5)));
+    (*std::cell::LazyCell::force_mut(&mut *&raw mut shared_total_25)) = 7;
     (unsafe { add_in_b_27(3) });
-    assert!(((*(*&raw const shared_total_25).get()) == (10)));
+    assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut shared_total_25)) == (10)));
 }
 pub unsafe fn test_29() {
-    assert!(((*(*&raw const level_28).get()) == (1)));
+    assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut level_28)) == (1)));
     assert!(((unsafe { raise_30(2,) }) == (3)));
-    (*(*&raw const level_28).get()) = 10;
+    (*std::cell::LazyCell::force_mut(&mut *&raw mut level_28)) = 10;
     assert!(((unsafe { raise_30(1,) }) == (11)));
 }
 #[repr(C)]
@@ -112,74 +97,55 @@ pub unsafe fn test_29() {
 pub struct Tally_31 {}
 impl Tally_31 {
     pub unsafe fn add(&mut self, mut amount: i32) -> i32 {
-        (*(*&raw const total_32).get()) += amount;
-        return (*(*&raw const total_32).get());
+        (*std::cell::LazyCell::force_mut(&mut *&raw mut total_32)) += amount;
+        return (*std::cell::LazyCell::force_mut(&mut *&raw mut total_32));
     }
-    pub unsafe fn new_1(this: *mut Tally_31) {}
-    pub unsafe fn copy_from(this: *mut Tally_31, _a0: *const Tally_31) {}
-    pub unsafe fn move_from(this: *mut Tally_31, _a0: *mut Tally_31) {}
 }
-pub static mut total_32: libcc2rs::LazyStorage<i32> =
-    libcc2rs::LazyStorage::new(|__p| unsafe { __p.write(10) });
+pub static mut total_32: std::cell::LazyCell<i32> = std::cell::LazyCell::new(|| unsafe { 10 });
 pub unsafe fn test_33() {
-    let mut tally: Tally_31 = ::std::mem::MaybeUninit::uninit().assume_init();
-    Tally_31::new_1(&raw mut tally);
+    let mut tally: Tally_31 = <Tally_31>::default();
     assert!(((unsafe { Tally_31::add(&mut tally, 1,) }) == (11)));
     assert!(((unsafe { add_in_b_34(1,) }) == (102)));
-    assert!(((*(*&raw const total_32).get()) == (11)));
+    assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut total_32)) == (11)));
 }
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct p5_members_of_class_with_external_linkage_Ledger {}
-impl p5_members_of_class_with_external_linkage_Ledger {
-    pub unsafe fn new_1(this: *mut p5_members_of_class_with_external_linkage_Ledger) {}
-    pub unsafe fn copy_from(
-        this: *mut p5_members_of_class_with_external_linkage_Ledger,
-        _a0: *const p5_members_of_class_with_external_linkage_Ledger,
-    ) {
-    }
-    pub unsafe fn move_from(
-        this: *mut p5_members_of_class_with_external_linkage_Ledger,
-        _a0: *mut p5_members_of_class_with_external_linkage_Ledger,
-    ) {
-    }
-}
 pub unsafe fn test_36() {
-    assert!(((*(*&raw const balance_35).get()) == (50)));
-    (*(*&raw const balance_35).get()) = 60;
+    assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut balance_35)) == (50)));
+    (*std::cell::LazyCell::force_mut(&mut *&raw mut balance_35)) = 60;
     assert!(((unsafe { p5_members_of_class_with_external_linkage_Ledger::deposit(5,) }) == (65)));
-    assert!(((*(*&raw const balance_35).get()) == (65)));
+    assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut balance_35)) == (65)));
 }
 pub unsafe fn read_remote_37() -> i32 {
-    return (*(*&raw const remote_38).get());
+    return (*std::cell::LazyCell::force_mut(&mut *&raw mut remote_38));
 }
 pub unsafe fn test_39() {
     assert!(((unsafe { read_remote_37() }) == (70)));
     (unsafe { set_remote_in_b_40(71) });
     assert!(((unsafe { read_remote_37() }) == (71)));
 }
-pub static mut hidden_41: libcc2rs::LazyStorage<i32> =
-    libcc2rs::LazyStorage::new(|__p| unsafe { __p.write(80) });
+pub static mut hidden_41: std::cell::LazyCell<i32> = std::cell::LazyCell::new(|| unsafe { 80 });
 pub unsafe fn read_hidden_through_extern_42() -> i32 {
     let mut hidden: i32 = 1;
     {
-        return (*(*&raw const hidden_41).get());
+        return (*std::cell::LazyCell::force_mut(&mut *&raw mut hidden_41));
     }
     panic!("ub: non-void function does not return a value")
 }
 pub unsafe fn test_43() {
     assert!(((unsafe { read_hidden_through_extern_42() }) == (80)));
-    (*(*&raw const hidden_41).get()) = 81;
+    (*std::cell::LazyCell::force_mut(&mut *&raw mut hidden_41)) = 81;
     assert!(((unsafe { read_hidden_through_extern_42() }) == (81)));
     assert!(((unsafe { hidden_in_b_44() }) == (90)));
 }
 pub unsafe fn next_even_45() -> i32 {
-    (*(*&raw const count_46).get()) += 2;
-    return (*(*&raw const count_46).get());
+    (*std::cell::LazyCell::force_mut(&mut *&raw mut count_46)) += 2;
+    return (*std::cell::LazyCell::force_mut(&mut *&raw mut count_46));
 }
 pub unsafe fn next_odd_47() -> i32 {
-    (*(*&raw const count_48).get()) += 2;
-    return (*(*&raw const count_48).get());
+    (*std::cell::LazyCell::force_mut(&mut *&raw mut count_48)) += 2;
+    return (*std::cell::LazyCell::force_mut(&mut *&raw mut count_48));
 }
 pub unsafe fn test_49() {
     assert!(((unsafe { next_even_45() }) == (2)));
@@ -189,18 +155,14 @@ pub unsafe fn test_49() {
     assert!(((unsafe { next_odd_47() }) == (5)));
     assert!(((unsafe { next_in_b_50() }) == (2000)));
 }
-static mut count_46: libcc2rs::LazyStorage<i32> =
-    libcc2rs::LazyStorage::new(|__p| unsafe { __p.write(0) });
-static mut count_48: libcc2rs::LazyStorage<i32> =
-    libcc2rs::LazyStorage::new(|__p| unsafe { __p.write(1) });
+static mut count_46: std::cell::LazyCell<i32> = std::cell::LazyCell::new(|| unsafe { 0 });
+static mut count_48: std::cell::LazyCell<i32> = std::cell::LazyCell::new(|| unsafe { 1 });
 pub unsafe fn first_key_51() -> i32 {
-    let mut entry: Entry_52 = ::std::mem::MaybeUninit::uninit().assume_init();
-    Entry_52::new_1(&raw mut entry);
+    let mut entry: Entry_52 = <Entry_52>::default();
     return entry.key;
 }
 pub unsafe fn second_key_plus_value_53() -> i32 {
-    let mut entry: Entry_54 = ::std::mem::MaybeUninit::uninit().assume_init();
-    Entry_54::new_1(&raw mut entry);
+    let mut entry: Entry_54 = <Entry_54>::default();
     return ((entry.key) + (entry.value));
 }
 pub unsafe fn test_55() {
@@ -213,17 +175,6 @@ pub unsafe fn test_55() {
 pub struct Entry_52 {
     pub key: i32,
 }
-impl Entry_52 {
-    pub unsafe fn new_1(this: *mut Entry_52) {
-        (&raw mut (*this).key).write(1);
-    }
-    pub unsafe fn copy_from(this: *mut Entry_52, _a0: *const Entry_52) {
-        (&raw mut (*this).key).write((*_a0).key);
-    }
-    pub unsafe fn move_from(this: *mut Entry_52, _a0: *mut Entry_52) {
-        (&raw mut (*this).key).write((*_a0).key);
-    }
-}
 impl Default for Entry_52 {
     fn default() -> Self {
         unsafe { Entry_52 { key: 1 } }
@@ -235,28 +186,14 @@ pub struct Entry_54 {
     pub key: i32,
     pub value: i32,
 }
-impl Entry_54 {
-    pub unsafe fn new_1(this: *mut Entry_54) {
-        (&raw mut (*this).key).write(2);
-        (&raw mut (*this).value).write(30);
-    }
-    pub unsafe fn copy_from(this: *mut Entry_54, _a0: *const Entry_54) {
-        (&raw mut (*this).key).write((*_a0).key);
-        (&raw mut (*this).value).write((*_a0).value);
-    }
-    pub unsafe fn move_from(this: *mut Entry_54, _a0: *mut Entry_54) {
-        (&raw mut (*this).key).write((*_a0).key);
-        (&raw mut (*this).value).write((*_a0).value);
-    }
-}
 impl Default for Entry_54 {
     fn default() -> Self {
         unsafe { Entry_54 { key: 2, value: 30 } }
     }
 }
 pub unsafe fn test_58() {
-    assert!((((*(*&raw const table_57).get())[(1) as usize]) == (2)));
-    (*(*&raw const table_57).get())[(2) as usize] = 30;
+    assert!((((*std::cell::LazyCell::force_mut(&mut *&raw mut table_57))[(1) as usize]) == (2)));
+    (*std::cell::LazyCell::force_mut(&mut *&raw mut table_57))[(2) as usize] = 30;
     assert!(((unsafe { table_sum_in_b_59() }) == (33)));
 }
 pub fn main() {
@@ -289,23 +226,21 @@ pub unsafe fn pick_60() -> i32 {
 pub unsafe fn pick_in_b_2() -> i32 {
     return (unsafe { pick_60() });
 }
-pub static mut limit_61: libcc2rs::LazyStorage<i32> =
-    libcc2rs::LazyStorage::new(|__p| unsafe { __p.write(20) });
+pub static mut limit_61: std::cell::LazyCell<i32> = std::cell::LazyCell::new(|| unsafe { 20 });
 pub unsafe fn limit_in_b_5() -> i32 {
-    return (*(*&raw const limit_61).get());
+    return (*std::cell::LazyCell::force_mut(&mut *&raw mut limit_61));
 }
 pub unsafe fn limit_address_in_b_6() -> *const i32 {
-    return (&raw const (*(*&raw const limit_61).get()) as *const i32);
+    return (&raw const (*std::cell::LazyCell::force_mut(&mut *&raw mut limit_61)) as *const i32);
 }
-pub static mut threshold_7: libcc2rs::LazyStorage<i32> =
-    libcc2rs::LazyStorage::new(|__p| unsafe { __p.write(30) });
+pub static mut threshold_7: std::cell::LazyCell<i32> = std::cell::LazyCell::new(|| unsafe { 30 });
 pub unsafe fn threshold_address_in_b_9() -> *const i32 {
-    return (&raw const (*(*&raw const threshold_7).get()) as *const i32);
+    return (&raw const (*std::cell::LazyCell::force_mut(&mut *&raw mut threshold_7))
+        as *const i32);
 }
-pub static mut ceiling_10: libcc2rs::LazyStorage<i32> =
-    libcc2rs::LazyStorage::new(|__p| unsafe { __p.write(40) });
+pub static mut ceiling_10: std::cell::LazyCell<i32> = std::cell::LazyCell::new(|| unsafe { 40 });
 pub unsafe fn ceiling_address_in_b_12() -> *const i32 {
-    return (&raw const (*(*&raw const ceiling_10).get()) as *const i32);
+    return (&raw const (*std::cell::LazyCell::force_mut(&mut *&raw mut ceiling_10)) as *const i32);
 }
 #[repr(C)]
 #[derive(Copy, Clone, FnPtrArg, VaArg)]
@@ -318,38 +253,23 @@ impl Default for anon_62 {
         unsafe { std::mem::zeroed() }
     }
 }
-pub static mut anon_62: libcc2rs::LazyStorage<anon_62> =
-    libcc2rs::LazyStorage::new(|__p| unsafe { __p.write(<anon_62>::default()) });
+pub static mut anon_62: std::cell::LazyCell<anon_62> =
+    std::cell::LazyCell::new(|| unsafe { <anon_62>::default() });
 pub unsafe fn set_whole_in_b_15(mut value: i32) {
-    (*(*&raw const anon_62).get()).whole = value;
+    (*std::cell::LazyCell::force_mut(&mut *&raw mut anon_62)).whole = value;
 }
 pub unsafe fn whole_in_b_16() -> i32 {
-    return (*(*&raw const anon_62).get()).whole;
+    return (*std::cell::LazyCell::force_mut(&mut *&raw mut anon_62)).whole;
 }
-pub static mut counter_63: libcc2rs::LazyStorage<i32> =
-    libcc2rs::LazyStorage::new(|__p| unsafe { __p.write(50) });
+pub static mut counter_63: std::cell::LazyCell<i32> = std::cell::LazyCell::new(|| unsafe { 50 });
 pub unsafe fn bump_64() -> i32 {
-    return (*(*(*&raw const counter_63).get()).prefix_inc());
+    return (*(*std::cell::LazyCell::force_mut(&mut *&raw mut counter_63)).prefix_inc());
 }
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg)]
 pub struct Record_65 {
     pub id: i64,
     pub extra: i32,
-}
-impl Record_65 {
-    pub unsafe fn new_1(this: *mut Record_65) {
-        (&raw mut (*this).id).write(200_i64);
-        (&raw mut (*this).extra).write(1);
-    }
-    pub unsafe fn copy_from(this: *mut Record_65, _a0: *const Record_65) {
-        (&raw mut (*this).id).write((*_a0).id);
-        (&raw mut (*this).extra).write((*_a0).extra);
-    }
-    pub unsafe fn move_from(this: *mut Record_65, _a0: *mut Record_65) {
-        (&raw mut (*this).id).write((*_a0).id);
-        (&raw mut (*this).extra).write((*_a0).extra);
-    }
 }
 impl Default for Record_65 {
     fn default() -> Self {
@@ -361,76 +281,63 @@ impl Default for Record_65 {
         }
     }
 }
-pub static mut depth_66: libcc2rs::LazyStorage<i32> =
-    libcc2rs::LazyStorage::new(|__p| unsafe { __p.write(4) });
+pub static mut depth_66: std::cell::LazyCell<i32> = std::cell::LazyCell::new(|| unsafe { 4 });
 pub unsafe fn bump_in_b_22() -> i32 {
     return (unsafe { bump_64() });
 }
 pub unsafe fn record_id_in_b_23() -> i32 {
-    let mut record: Record_65 = ::std::mem::MaybeUninit::uninit().assume_init();
-    Record_65::new_1(&raw mut record);
+    let mut record: Record_65 = <Record_65>::default();
     return (record.id as i32);
 }
 pub unsafe fn depth_in_b_24() -> i32 {
-    return (*(*&raw const depth_66).get());
+    return (*std::cell::LazyCell::force_mut(&mut *&raw mut depth_66));
 }
-pub static mut shared_total_25: libcc2rs::LazyStorage<i32> =
-    libcc2rs::LazyStorage::new(|__p| unsafe { __p.write(5) });
+pub static mut shared_total_25: std::cell::LazyCell<i32> =
+    std::cell::LazyCell::new(|| unsafe { 5 });
 pub unsafe fn add_in_b_27(mut amount: i32) {
-    (*(*&raw const shared_total_25).get()) += amount;
+    (*std::cell::LazyCell::force_mut(&mut *&raw mut shared_total_25)) += amount;
 }
-pub static mut level_28: libcc2rs::LazyStorage<i32> =
-    libcc2rs::LazyStorage::new(|__p| unsafe { __p.write(1) });
+pub static mut level_28: std::cell::LazyCell<i32> = std::cell::LazyCell::new(|| unsafe { 1 });
 pub unsafe fn raise_30(mut by: i32) -> i32 {
-    (*(*&raw const level_28).get()) += by;
-    return (*(*&raw const level_28).get());
+    (*std::cell::LazyCell::force_mut(&mut *&raw mut level_28)) += by;
+    return (*std::cell::LazyCell::force_mut(&mut *&raw mut level_28));
 }
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct Tally_67 {}
 impl Tally_67 {
     pub unsafe fn add(&mut self, mut amount: i32) -> i32 {
-        (*(*&raw const total_68).get()) += ((amount) * (2));
-        return (*(*&raw const total_68).get());
+        (*std::cell::LazyCell::force_mut(&mut *&raw mut total_68)) += ((amount) * (2));
+        return (*std::cell::LazyCell::force_mut(&mut *&raw mut total_68));
     }
-    pub unsafe fn new_1(this: *mut Tally_67) {}
-    pub unsafe fn copy_from(this: *mut Tally_67, _a0: *const Tally_67) {}
-    pub unsafe fn move_from(this: *mut Tally_67, _a0: *mut Tally_67) {}
 }
-pub static mut total_68: libcc2rs::LazyStorage<i32> =
-    libcc2rs::LazyStorage::new(|__p| unsafe { __p.write(100) });
+pub static mut total_68: std::cell::LazyCell<i32> = std::cell::LazyCell::new(|| unsafe { 100 });
 pub unsafe fn add_in_b_34(mut amount: i32) -> i32 {
-    let mut tally: Tally_67 = ::std::mem::MaybeUninit::uninit().assume_init();
-    Tally_67::new_1(&raw mut tally);
+    let mut tally: Tally_67 = <Tally_67>::default();
     return (unsafe { Tally_67::add(&mut tally, amount) });
 }
-pub static mut balance_35: libcc2rs::LazyStorage<i32> =
-    libcc2rs::LazyStorage::new(|__p| unsafe { __p.write(50) });
+pub static mut balance_35: std::cell::LazyCell<i32> = std::cell::LazyCell::new(|| unsafe { 50 });
 impl p5_members_of_class_with_external_linkage_Ledger {
     pub unsafe fn deposit(mut amount: i32) -> i32 {
-        (*(*&raw const balance_35).get()) += amount;
-        return (*(*&raw const balance_35).get());
+        (*std::cell::LazyCell::force_mut(&mut *&raw mut balance_35)) += amount;
+        return (*std::cell::LazyCell::force_mut(&mut *&raw mut balance_35));
     }
 }
-pub static mut remote_38: libcc2rs::LazyStorage<i32> =
-    libcc2rs::LazyStorage::new(|__p| unsafe { __p.write(70) });
+pub static mut remote_38: std::cell::LazyCell<i32> = std::cell::LazyCell::new(|| unsafe { 70 });
 pub unsafe fn set_remote_in_b_40(mut value: i32) {
-    (*(*&raw const remote_38).get()) = value;
+    (*std::cell::LazyCell::force_mut(&mut *&raw mut remote_38)) = value;
 }
-pub static mut hidden_69: libcc2rs::LazyStorage<i32> =
-    libcc2rs::LazyStorage::new(|__p| unsafe { __p.write(90) });
+pub static mut hidden_69: std::cell::LazyCell<i32> = std::cell::LazyCell::new(|| unsafe { 90 });
 pub unsafe fn hidden_in_b_44() -> i32 {
-    return (*(*&raw const hidden_69).get());
+    return (*std::cell::LazyCell::force_mut(&mut *&raw mut hidden_69));
 }
 pub unsafe fn next_in_b_50() -> i32 {
-    (*(*&raw const count_70).get()) += 1000;
-    return (*(*&raw const count_70).get());
+    (*std::cell::LazyCell::force_mut(&mut *&raw mut count_70)) += 1000;
+    return (*std::cell::LazyCell::force_mut(&mut *&raw mut count_70));
 }
-static mut count_70: libcc2rs::LazyStorage<i32> =
-    libcc2rs::LazyStorage::new(|__p| unsafe { __p.write(0) });
+static mut count_70: std::cell::LazyCell<i32> = std::cell::LazyCell::new(|| unsafe { 0 });
 pub unsafe fn key_in_b_56() -> i32 {
-    let mut entry: Entry_71 = ::std::mem::MaybeUninit::uninit().assume_init();
-    Entry_71::new_1(&raw mut entry);
+    let mut entry: Entry_71 = <Entry_71>::default();
     return (entry.key as i32);
 }
 #[repr(C)]
@@ -438,47 +345,36 @@ pub unsafe fn key_in_b_56() -> i32 {
 pub struct Entry_71 {
     pub key: i64,
 }
-impl Entry_71 {
-    pub unsafe fn new_1(this: *mut Entry_71) {
-        (&raw mut (*this).key).write(400_i64);
-    }
-    pub unsafe fn copy_from(this: *mut Entry_71, _a0: *const Entry_71) {
-        (&raw mut (*this).key).write((*_a0).key);
-    }
-    pub unsafe fn move_from(this: *mut Entry_71, _a0: *mut Entry_71) {
-        (&raw mut (*this).key).write((*_a0).key);
-    }
-}
 impl Default for Entry_71 {
     fn default() -> Self {
         unsafe { Entry_71 { key: 400_i64 } }
     }
 }
-pub static mut table_57: libcc2rs::LazyStorage<[i32; 3]> =
-    libcc2rs::LazyStorage::new(|__p| unsafe { __p.write([1, 2, 3]) });
+pub static mut table_57: std::cell::LazyCell<[i32; 3]> =
+    std::cell::LazyCell::new(|| unsafe { [1, 2, 3] });
 pub unsafe fn table_sum_in_b_59() -> i32 {
-    return ((((*(*&raw const table_57).get())[(0) as usize])
-        + ((*(*&raw const table_57).get())[(1) as usize]))
-        + ((*(*&raw const table_57).get())[(2) as usize]));
+    return ((((*std::cell::LazyCell::force_mut(&mut *&raw mut table_57))[(0) as usize])
+        + ((*std::cell::LazyCell::force_mut(&mut *&raw mut table_57))[(1) as usize]))
+        + ((*std::cell::LazyCell::force_mut(&mut *&raw mut table_57))[(2) as usize]));
 }
 pub unsafe fn __cpp2rust_init_globals() {
-    (*&raw const limit_3).get();
-    (*&raw const anon_13).get();
-    (*&raw const counter_17).get();
-    (*&raw const depth_20).get();
-    (*&raw const total_32).get();
-    (*&raw const hidden_41).get();
-    (*&raw const limit_61).get();
-    (*&raw const threshold_7).get();
-    (*&raw const ceiling_10).get();
-    (*&raw const anon_62).get();
-    (*&raw const counter_63).get();
-    (*&raw const depth_66).get();
-    (*&raw const shared_total_25).get();
-    (*&raw const level_28).get();
-    (*&raw const total_68).get();
-    (*&raw const balance_35).get();
-    (*&raw const remote_38).get();
-    (*&raw const hidden_69).get();
-    (*&raw const table_57).get();
+    std::cell::LazyCell::force(&*&raw const limit_3);
+    std::cell::LazyCell::force(&*&raw const anon_13);
+    std::cell::LazyCell::force(&*&raw const counter_17);
+    std::cell::LazyCell::force(&*&raw const depth_20);
+    std::cell::LazyCell::force(&*&raw const total_32);
+    std::cell::LazyCell::force(&*&raw const hidden_41);
+    std::cell::LazyCell::force(&*&raw const limit_61);
+    std::cell::LazyCell::force(&*&raw const threshold_7);
+    std::cell::LazyCell::force(&*&raw const ceiling_10);
+    std::cell::LazyCell::force(&*&raw const anon_62);
+    std::cell::LazyCell::force(&*&raw const counter_63);
+    std::cell::LazyCell::force(&*&raw const depth_66);
+    std::cell::LazyCell::force(&*&raw const shared_total_25);
+    std::cell::LazyCell::force(&*&raw const level_28);
+    std::cell::LazyCell::force(&*&raw const total_68);
+    std::cell::LazyCell::force(&*&raw const balance_35);
+    std::cell::LazyCell::force(&*&raw const remote_38);
+    std::cell::LazyCell::force(&*&raw const hidden_69);
+    std::cell::LazyCell::force(&*&raw const table_57);
 }

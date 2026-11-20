@@ -17,15 +17,6 @@ impl Eq {
         return (((*(self as *const Eq)).a) == ((*_a0).a))
             && (((*(self as *const Eq)).b) == ((*_a0).b));
     }
-    pub unsafe fn new_1(this: *mut Eq) {}
-    pub unsafe fn copy_from(this: *mut Eq, _a0: *const Eq) {
-        (&raw mut (*this).a).write((*_a0).a);
-        (&raw mut (*this).b).write((*_a0).b);
-    }
-    pub unsafe fn move_from(this: *mut Eq, _a0: *mut Eq) {
-        (&raw mut (*this).a).write((*_a0).a);
-        (&raw mut (*this).b).write((*_a0).b);
-    }
 }
 impl std::cmp::PartialEq for Eq {
     fn eq(&self, other: &Self) -> bool {
@@ -60,15 +51,6 @@ impl Cmp {
     pub unsafe fn operator_eq(&self, _a0: *const Cmp) -> bool {
         return (((*(self as *const Cmp)).a) == ((*_a0).a))
             && (((*(self as *const Cmp)).b) == ((*_a0).b));
-    }
-    pub unsafe fn new_1(this: *mut Cmp) {}
-    pub unsafe fn copy_from(this: *mut Cmp, _a0: *const Cmp) {
-        (&raw mut (*this).a).write((*_a0).a);
-        (&raw mut (*this).b).write((*_a0).b);
-    }
-    pub unsafe fn move_from(this: *mut Cmp, _a0: *mut Cmp) {
-        (&raw mut (*this).a).write((*_a0).a);
-        (&raw mut (*this).b).write((*_a0).b);
     }
 }
 impl std::cmp::Ord for Cmp {
@@ -106,13 +88,6 @@ impl Both {
         }
         return std::cmp::Ordering::Equal;
     }
-    pub unsafe fn new_1(this: *mut Both) {}
-    pub unsafe fn copy_from(this: *mut Both, _a0: *const Both) {
-        (&raw mut (*this).a).write((*_a0).a);
-    }
-    pub unsafe fn move_from(this: *mut Both, _a0: *mut Both) {
-        (&raw mut (*this).a).write((*_a0).a);
-    }
 }
 impl std::cmp::Ord for Both {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering {
@@ -145,13 +120,6 @@ impl OrdOnly {
             }
         }
         return std::cmp::Ordering::Equal;
-    }
-    pub unsafe fn new_1(this: *mut OrdOnly) {}
-    pub unsafe fn copy_from(this: *mut OrdOnly, _a0: *const OrdOnly) {
-        (&raw mut (*this).a).write((*_a0).a);
-    }
-    pub unsafe fn move_from(this: *mut OrdOnly, _a0: *mut OrdOnly) {
-        (&raw mut (*this).a).write((*_a0).a);
     }
 }
 impl std::cmp::Ord for OrdOnly {
@@ -188,13 +156,6 @@ impl Inner {
     }
     pub unsafe fn operator_eq(&self, _a0: *const Inner) -> bool {
         return (((*(self as *const Inner)).x) == ((*_a0).x));
-    }
-    pub unsafe fn new_1(this: *mut Inner) {}
-    pub unsafe fn copy_from(this: *mut Inner, _a0: *const Inner) {
-        (&raw mut (*this).x).write((*_a0).x);
-    }
-    pub unsafe fn move_from(this: *mut Inner, _a0: *mut Inner) {
-        (&raw mut (*this).x).write((*_a0).x);
     }
 }
 impl std::cmp::Ord for Inner {
@@ -244,17 +205,6 @@ impl Outer {
             let _arg0: *const Inner = &(*_a0).i;
             Inner::operator_eq(&(*(self as *const Outer)).i, _arg0)
         }) && (((*(self as *const Outer)).y) == ((*_a0).y));
-    }
-    pub unsafe fn new_1(this: *mut Outer) {
-        Inner::new_1((&raw mut (*this).i));
-    }
-    pub unsafe fn copy_from(this: *mut Outer, _a0: *const Outer) {
-        Inner::copy_from((&raw mut (*this).i), { &(*_a0).i });
-        (&raw mut (*this).y).write((*_a0).y);
-    }
-    pub unsafe fn move_from(this: *mut Outer, _a0: *mut Outer) {
-        Inner::move_from((&raw mut (*this).i), { &mut (*_a0).i });
-        (&raw mut (*this).y).write((*_a0).y);
     }
 }
 impl std::cmp::Ord for Outer {
@@ -310,13 +260,6 @@ impl Secondary {
             Secondary::operator_cmp(&(*(self as *const Secondary)), _arg0)
         }) != std::cmp::Ordering::Less;
     }
-    pub unsafe fn new_1(this: *mut Secondary) {}
-    pub unsafe fn copy_from(this: *mut Secondary, _a0: *const Secondary) {
-        (&raw mut (*this).a).write((*_a0).a);
-    }
-    pub unsafe fn move_from(this: *mut Secondary, _a0: *mut Secondary) {
-        (&raw mut (*this).a).write((*_a0).a);
-    }
 }
 impl std::cmp::Ord for Secondary {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering {
@@ -353,13 +296,6 @@ impl PtrMember {
     pub unsafe fn operator_eq(&self, _a0: *const PtrMember) -> bool {
         return (((*(self as *const PtrMember)).p) == ((*_a0).p));
     }
-    pub unsafe fn new_1(this: *mut PtrMember) {}
-    pub unsafe fn copy_from(this: *mut PtrMember, _a0: *const PtrMember) {
-        (&raw mut (*this).p).write((*_a0).p);
-    }
-    pub unsafe fn move_from(this: *mut PtrMember, _a0: *mut PtrMember) {
-        (&raw mut (*this).p).write((*_a0).p);
-    }
 }
 impl std::cmp::Ord for PtrMember {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering {
@@ -386,50 +322,15 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    let mut e1: Eq = ::std::mem::MaybeUninit::uninit().assume_init();
-    {
-        let __d = &raw mut e1;
-        (&raw mut (*__d).a).write(1);
-        (&raw mut (*__d).b).write(2);
-    };
-    let mut e2: Eq = ::std::mem::MaybeUninit::uninit().assume_init();
-    {
-        let __d = &raw mut e2;
-        (&raw mut (*__d).a).write(1);
-        (&raw mut (*__d).b).write(2);
-    };
-    let mut e3: Eq = ::std::mem::MaybeUninit::uninit().assume_init();
-    {
-        let __d = &raw mut e3;
-        (&raw mut (*__d).a).write(1);
-        (&raw mut (*__d).b).write(3);
-    };
+    let mut e1: Eq = Eq { a: 1, b: 2 };
+    let mut e2: Eq = Eq { a: 1, b: 2 };
+    let mut e3: Eq = Eq { a: 1, b: 3 };
     assert!((unsafe { Eq::operator_eq(&e1, &e2,) }));
     assert!(!(unsafe { Eq::operator_eq(&e1, &e3,) }));
-    let mut c1: Cmp = ::std::mem::MaybeUninit::uninit().assume_init();
-    {
-        let __d = &raw mut c1;
-        (&raw mut (*__d).a).write(1);
-        (&raw mut (*__d).b).write(2);
-    };
-    let mut c2: Cmp = ::std::mem::MaybeUninit::uninit().assume_init();
-    {
-        let __d = &raw mut c2;
-        (&raw mut (*__d).a).write(1);
-        (&raw mut (*__d).b).write(3);
-    };
-    let mut c3: Cmp = ::std::mem::MaybeUninit::uninit().assume_init();
-    {
-        let __d = &raw mut c3;
-        (&raw mut (*__d).a).write(2);
-        (&raw mut (*__d).b).write(0);
-    };
-    let mut c4: Cmp = ::std::mem::MaybeUninit::uninit().assume_init();
-    {
-        let __d = &raw mut c4;
-        (&raw mut (*__d).a).write(1);
-        (&raw mut (*__d).b).write(9);
-    };
+    let mut c1: Cmp = Cmp { a: 1, b: 2 };
+    let mut c2: Cmp = Cmp { a: 1, b: 3 };
+    let mut c3: Cmp = Cmp { a: 2, b: 0 };
+    let mut c4: Cmp = Cmp { a: 1, b: 9 };
     assert!((unsafe { Cmp::operator_cmp(&c1, &c2,) }) == std::cmp::Ordering::Less);
     assert!((unsafe { Cmp::operator_cmp(&c3, &c4,) }) == std::cmp::Ordering::Greater);
     assert!(
@@ -439,16 +340,8 @@ unsafe fn main_0() -> i32 {
         })
     );
     assert!((unsafe { Cmp::operator_cmp(&c1, &c2,) }) == std::cmp::Ordering::Less);
-    let mut b1: Both = ::std::mem::MaybeUninit::uninit().assume_init();
-    {
-        let __d = &raw mut b1;
-        (&raw mut (*__d).a).write(1);
-    };
-    let mut b2: Both = ::std::mem::MaybeUninit::uninit().assume_init();
-    {
-        let __d = &raw mut b2;
-        (&raw mut (*__d).a).write(2);
-    };
+    let mut b1: Both = Both { a: 1 };
+    let mut b2: Both = Both { a: 2 };
     assert!((unsafe { Both::operator_cmp(&b1, &b2,) }) == std::cmp::Ordering::Less);
     assert!(
         (unsafe {
@@ -456,77 +349,40 @@ unsafe fn main_0() -> i32 {
             Both::operator_eq(&b2, _arg0)
         })
     );
-    let mut o1: OrdOnly = ::std::mem::MaybeUninit::uninit().assume_init();
-    {
-        let __d = &raw mut o1;
-        (&raw mut (*__d).a).write(1);
-    };
-    let mut o2: OrdOnly = ::std::mem::MaybeUninit::uninit().assume_init();
-    {
-        let __d = &raw mut o2;
-        (&raw mut (*__d).a).write(2);
-    };
+    let mut o1: OrdOnly = OrdOnly { a: 1 };
+    let mut o2: OrdOnly = OrdOnly { a: 2 };
     assert!((unsafe { OrdOnly::operator_cmp(&o1, &o2,) }) == std::cmp::Ordering::Less);
     assert!((unsafe { OrdOnly::operator_cmp(&o2, &o1,) }) == std::cmp::Ordering::Greater);
-    let mut x1: Outer = ::std::mem::MaybeUninit::uninit().assume_init();
-    {
-        let __d = &raw mut x1;
-        {
-            let __d = (&raw mut (*__d).i);
-            (&raw mut (*__d).x).write(1);
-        };
-        (&raw mut (*__d).y).write(9);
+    let mut x1: Outer = Outer {
+        i: Inner { x: 1 },
+        y: 9,
     };
-    let mut x2: Outer = ::std::mem::MaybeUninit::uninit().assume_init();
-    {
-        let __d = &raw mut x2;
-        {
-            let __d = (&raw mut (*__d).i);
-            (&raw mut (*__d).x).write(2);
-        };
-        (&raw mut (*__d).y).write(0);
+    let mut x2: Outer = Outer {
+        i: Inner { x: 2 },
+        y: 0,
     };
-    let mut x3: Outer = ::std::mem::MaybeUninit::uninit().assume_init();
-    {
-        let __d = &raw mut x3;
-        {
-            let __d = (&raw mut (*__d).i);
-            (&raw mut (*__d).x).write(1);
-        };
-        (&raw mut (*__d).y).write(9);
+    let mut x3: Outer = Outer {
+        i: Inner { x: 1 },
+        y: 9,
     };
     assert!((unsafe { Outer::operator_cmp(&x1, &x2,) }) == std::cmp::Ordering::Less);
     assert!((unsafe { Outer::operator_eq(&x1, &x3,) }));
     assert!((unsafe { Outer::operator_cmp(&x2, &x1,) }) == std::cmp::Ordering::Greater);
-    let mut s1: Secondary = ::std::mem::MaybeUninit::uninit().assume_init();
-    {
-        let __d = &raw mut s1;
-        (&raw mut (*__d).a).write(1);
-    };
-    let mut s2: Secondary = ::std::mem::MaybeUninit::uninit().assume_init();
-    {
-        let __d = &raw mut s2;
-        (&raw mut (*__d).a).write(2);
-    };
+    let mut s1: Secondary = Secondary { a: 1 };
+    let mut s2: Secondary = Secondary { a: 2 };
     assert!((unsafe { Secondary::operator_ne(&s1, &s2,) }));
     assert!((unsafe { Secondary::operator_lt(&s1, &s2,) }));
     assert!((unsafe { Secondary::operator_ge(&s2, &s1,) }));
     assert!(!(unsafe { Secondary::operator_lt(&s2, &s1,) }));
     let mut arr: [i32; 2] = [0, 0];
-    let mut p1: PtrMember = ::std::mem::MaybeUninit::uninit().assume_init();
-    {
-        let __d = &raw mut p1;
-        (&raw mut (*__d).p).write(arr.as_mut_ptr());
+    let mut p1: PtrMember = PtrMember {
+        p: arr.as_mut_ptr(),
     };
-    let mut p2: PtrMember = ::std::mem::MaybeUninit::uninit().assume_init();
-    {
-        let __d = &raw mut p2;
-        (&raw mut (*__d).p).write(arr.as_mut_ptr().offset((1) as isize));
+    let mut p2: PtrMember = PtrMember {
+        p: arr.as_mut_ptr().offset((1) as isize),
     };
-    let mut p3: PtrMember = ::std::mem::MaybeUninit::uninit().assume_init();
-    {
-        let __d = &raw mut p3;
-        (&raw mut (*__d).p).write(arr.as_mut_ptr());
+    let mut p3: PtrMember = PtrMember {
+        p: arr.as_mut_ptr(),
     };
     assert!((unsafe { PtrMember::operator_cmp(&p1, &p2,) }) == std::cmp::Ordering::Less);
     assert!((unsafe { PtrMember::operator_eq(&p1, &p3,) }));

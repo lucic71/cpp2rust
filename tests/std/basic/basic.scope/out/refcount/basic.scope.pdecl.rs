@@ -27,41 +27,19 @@ pub struct p1_own_address_in_initializer_SelfLinked {
     #[offset(8)]
     pub value: i32,
 }
-impl p1_own_address_in_initializer_SelfLinked {
-    pub fn new_1(this: Ptr<p1_own_address_in_initializer_SelfLinked>) {}
-    pub fn copy_from(
-        this: Ptr<p1_own_address_in_initializer_SelfLinked>,
-        _a0: Ptr<p1_own_address_in_initializer_SelfLinked>,
-    ) {
-        field!(this, next).write(_a0.with(|__s| __s.next.clone()));
-        field!(this, value).write(_a0.with(|__s| __s.value));
-    }
-    pub fn move_from(
-        this: Ptr<p1_own_address_in_initializer_SelfLinked>,
-        _a0: Ptr<p1_own_address_in_initializer_SelfLinked>,
-    ) {
-        field!(this, next).write({ (*_a0.upgrade().deref()).next.clone() });
-        field!(this, value).write({ (*_a0.upgrade().deref()).value });
-    }
-}
 pub fn test_1() {
-    let node: Value<p1_own_address_in_initializer_SelfLinked> = Rc::new(RefCell::new(
-        <p1_own_address_in_initializer_SelfLinked>::uninit(),
-    ));
-    {
-        let __d = node.as_pointer();
-        field!(__d, next).write(Ptr::<p1_own_address_in_initializer_SelfLinked>::null());
-        field!(__d, value).write(3);
-    };
+    let node: Value<p1_own_address_in_initializer_SelfLinked> =
+        Rc::new(RefCell::new(p1_own_address_in_initializer_SelfLinked {
+            next: Ptr::<p1_own_address_in_initializer_SelfLinked>::null(),
+            value: 3,
+        }));
     let mut outer: Ptr<p1_own_address_in_initializer_SelfLinked> = (node.as_pointer());
     {
-        let node: Value<p1_own_address_in_initializer_SelfLinked> = Rc::new(RefCell::new(
-            <p1_own_address_in_initializer_SelfLinked>::uninit(),
-        ));
-        {
-            let __d = node.as_pointer();
-            field!(__d, next).write((node.as_pointer()));
-            field!(__d, value).write(7);
+        let node: Value<p1_own_address_in_initializer_SelfLinked> =
+            <Value<p1_own_address_in_initializer_SelfLinked>>::default();
+        *node.borrow_mut() = p1_own_address_in_initializer_SelfLinked {
+            next: (node.as_pointer()),
+            value: 7,
         };
         assert!(({ ({ { (*node.borrow()).next.clone() } } == { (node.as_pointer()) }) }));
         assert!(({ ({ { (*node.borrow()).next.clone() } } != { (outer).clone() }) }));
@@ -109,18 +87,6 @@ impl p9_func_declared_before_function_body_RecordsConstructorName {
             (this.with(|__s| __s.name.clone())
                 == Ptr::<i8>::from_string_literal(b"RecordsConstructorName"))
         );
-    }
-    pub fn copy_from(
-        this: Ptr<p9_func_declared_before_function_body_RecordsConstructorName>,
-        _a0: Ptr<p9_func_declared_before_function_body_RecordsConstructorName>,
-    ) {
-        field!(this, name).write(_a0.with(|__s| __s.name.clone()));
-    }
-    pub fn move_from(
-        this: Ptr<p9_func_declared_before_function_body_RecordsConstructorName>,
-        _a0: Ptr<p9_func_declared_before_function_body_RecordsConstructorName>,
-    ) {
-        field!(this, name).write({ (*_a0.upgrade().deref()).name.clone() });
     }
 }
 impl Default for p9_func_declared_before_function_body_RecordsConstructorName {

@@ -80,12 +80,6 @@ pub struct AssertsDtorCountAtExit {
     #[offset(0)]
     pub expected: i32,
 }
-impl AssertsDtorCountAtExit {
-    pub fn new_1(this: Ptr<AssertsDtorCountAtExit>) {}
-    pub fn copy_from(this: Ptr<AssertsDtorCountAtExit>, _a0: Ptr<AssertsDtorCountAtExit>) {
-        field!(this, expected).write(_a0.with(|__s| __s.expected));
-    }
-}
 pub fn count_4() -> i32 {
     return (*(*n_6.with(Value::clone).borrow_mut()).prefix_inc());
 }
@@ -139,15 +133,7 @@ thread_local!(
 );
 thread_local!(
     pub static check_13: Value<AssertsDtorCountAtExit> = {
-        let __static = {
-            let __v: Value<AssertsDtorCountAtExit> =
-                Rc::new(RefCell::new(<AssertsDtorCountAtExit>::uninit()));
-            {
-                let __d = __v.as_pointer();
-                field!(__d, expected).write(4);
-            };
-            __v
-        };
+        let __static = Rc::new(RefCell::new(AssertsDtorCountAtExit { expected: 4 }));
         libcc2rs::register_static_destructor(|| {
             check_13.with(Value::clone).as_pointer().destructor()
         });
@@ -175,11 +161,6 @@ fn main_0() -> i32 {
 #[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
 #[byte_size(1)]
 pub struct S_14 {}
-impl S_14 {
-    pub fn new_1(this: Ptr<S_14>) {}
-    pub fn copy_from(this: Ptr<S_14>, _a0: Ptr<S_14>) {}
-    pub fn move_from(this: Ptr<S_14>, _a0: Ptr<S_14>) {}
-}
 pub fn count_18() -> i32 {
     return (*(*n_20.with(Value::clone).borrow_mut()).prefix_inc());
 }
@@ -209,11 +190,6 @@ pub fn b_count_local_15() -> i32 {
 #[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
 #[byte_size(1)]
 pub struct S_21 {}
-impl S_21 {
-    pub fn new_1(this: Ptr<S_21>) {}
-    pub fn copy_from(this: Ptr<S_21>, _a0: Ptr<S_21>) {}
-    pub fn move_from(this: Ptr<S_21>, _a0: Ptr<S_21>) {}
-}
 pub trait AssertsDtorCountAtExitImpl {
     fn destructor(&self);
 }

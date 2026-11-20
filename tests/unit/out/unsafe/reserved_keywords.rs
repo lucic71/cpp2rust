@@ -48,118 +48,15 @@ pub struct S {
     pub safe_: i32,
     pub vec_: i32,
 }
-impl S {
-    pub unsafe fn new_1(this: *mut S) {}
-    pub unsafe fn copy_from(this: *mut S, _a0: *const S) {
-        (&raw mut (*this).as_).write((*_a0).as_);
-        (&raw mut (*this).async_).write((*_a0).async_);
-        (&raw mut (*this).await_).write((*_a0).await_);
-        (&raw mut (*this).crate_).write((*_a0).crate_);
-        (&raw mut (*this).dyn_).write((*_a0).dyn_);
-        (&raw mut (*this).fn_).write((*_a0).fn_);
-        (&raw mut (*this).impl_).write((*_a0).impl_);
-        (&raw mut (*this).in_).write((*_a0).in_);
-        (&raw mut (*this).let_).write((*_a0).let_);
-        (&raw mut (*this).loop_).write((*_a0).loop_);
-        (&raw mut (*this).match_).write((*_a0).match_);
-        (&raw mut (*this).mod_).write((*_a0).mod_);
-        (&raw mut (*this).move_).write((*_a0).move_);
-        (&raw mut (*this).mut_).write((*_a0).mut_);
-        (&raw mut (*this).pub_).write((*_a0).pub_);
-        (&raw mut (*this).ref_).write((*_a0).ref_);
-        (&raw mut (*this).self_).write((*_a0).self_);
-        (&raw mut (*this).Self_).write((*_a0).Self_);
-        (&raw mut (*this).super_).write((*_a0).super_);
-        (&raw mut (*this).trait_).write((*_a0).trait_);
-        (&raw mut (*this).type_).write((*_a0).type_);
-        (&raw mut (*this).unsafe_).write((*_a0).unsafe_);
-        (&raw mut (*this).use_).write((*_a0).use_);
-        (&raw mut (*this).where_).write((*_a0).where_);
-        (&raw mut (*this).abstract_).write((*_a0).abstract_);
-        (&raw mut (*this).become_).write((*_a0).become_);
-        (&raw mut (*this).box_).write((*_a0).box_);
-        (&raw mut (*this).final_).write((*_a0).final_);
-        (&raw mut (*this).gen_).write((*_a0).gen_);
-        (&raw mut (*this).macro_).write((*_a0).macro_);
-        (&raw mut (*this).override_).write((*_a0).override_);
-        (&raw mut (*this).priv_).write((*_a0).priv_);
-        (&raw mut (*this).unsized_).write((*_a0).unsized_);
-        (&raw mut (*this).yield_).write((*_a0).yield_);
-        (&raw mut (*this).macro_rules_).write((*_a0).macro_rules_);
-        (&raw mut (*this).raw_).write((*_a0).raw_);
-        (&raw mut (*this).safe_).write((*_a0).safe_);
-        (&raw mut (*this).vec_).write((*_a0).vec_);
-    }
-    pub unsafe fn move_from(this: *mut S, _a0: *mut S) {
-        (&raw mut (*this).as_).write((*_a0).as_);
-        (&raw mut (*this).async_).write((*_a0).async_);
-        (&raw mut (*this).await_).write((*_a0).await_);
-        (&raw mut (*this).crate_).write((*_a0).crate_);
-        (&raw mut (*this).dyn_).write((*_a0).dyn_);
-        (&raw mut (*this).fn_).write((*_a0).fn_);
-        (&raw mut (*this).impl_).write((*_a0).impl_);
-        (&raw mut (*this).in_).write((*_a0).in_);
-        (&raw mut (*this).let_).write((*_a0).let_);
-        (&raw mut (*this).loop_).write((*_a0).loop_);
-        (&raw mut (*this).match_).write((*_a0).match_);
-        (&raw mut (*this).mod_).write((*_a0).mod_);
-        (&raw mut (*this).move_).write((*_a0).move_);
-        (&raw mut (*this).mut_).write((*_a0).mut_);
-        (&raw mut (*this).pub_).write((*_a0).pub_);
-        (&raw mut (*this).ref_).write((*_a0).ref_);
-        (&raw mut (*this).self_).write((*_a0).self_);
-        (&raw mut (*this).Self_).write((*_a0).Self_);
-        (&raw mut (*this).super_).write((*_a0).super_);
-        (&raw mut (*this).trait_).write((*_a0).trait_);
-        (&raw mut (*this).type_).write((*_a0).type_);
-        (&raw mut (*this).unsafe_).write((*_a0).unsafe_);
-        (&raw mut (*this).use_).write((*_a0).use_);
-        (&raw mut (*this).where_).write((*_a0).where_);
-        (&raw mut (*this).abstract_).write((*_a0).abstract_);
-        (&raw mut (*this).become_).write((*_a0).become_);
-        (&raw mut (*this).box_).write((*_a0).box_);
-        (&raw mut (*this).final_).write((*_a0).final_);
-        (&raw mut (*this).gen_).write((*_a0).gen_);
-        (&raw mut (*this).macro_).write((*_a0).macro_);
-        (&raw mut (*this).override_).write((*_a0).override_);
-        (&raw mut (*this).priv_).write((*_a0).priv_);
-        (&raw mut (*this).unsized_).write((*_a0).unsized_);
-        (&raw mut (*this).yield_).write((*_a0).yield_);
-        (&raw mut (*this).macro_rules_).write((*_a0).macro_rules_);
-        (&raw mut (*this).raw_).write((*_a0).raw_);
-        (&raw mut (*this).safe_).write((*_a0).safe_);
-        (&raw mut (*this).vec_).write((*_a0).vec_);
-    }
-}
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct type_ {
     pub v: i32,
 }
-impl type_ {
-    pub unsafe fn new_1(this: *mut type_) {}
-    pub unsafe fn copy_from(this: *mut type_, _a0: *const type_) {
-        (&raw mut (*this).v).write((*_a0).v);
-    }
-    pub unsafe fn move_from(this: *mut type_, _a0: *mut type_) {
-        (&raw mut (*this).v).write((*_a0).v);
-    }
-}
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct loop_ {
     pub t: type_,
-}
-impl loop_ {
-    pub unsafe fn new_1(this: *mut loop_) {
-        type_::new_1((&raw mut (*this).t));
-    }
-    pub unsafe fn copy_from(this: *mut loop_, _a0: *const loop_) {
-        type_::copy_from((&raw mut (*this).t), { &(*_a0).t });
-    }
-    pub unsafe fn move_from(this: *mut loop_, _a0: *mut loop_) {
-        type_::move_from((&raw mut (*this).t), { &mut (*_a0).t });
-    }
 }
 pub unsafe fn foo_0(
     mut as_: i32,
@@ -211,47 +108,45 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    let mut s: S = ::std::mem::MaybeUninit::uninit().assume_init();
-    {
-        let __d = &raw mut s;
-        (&raw mut (*__d).as_).write(0);
-        (&raw mut (*__d).async_).write(0);
-        (&raw mut (*__d).await_).write(0);
-        (&raw mut (*__d).crate_).write(0);
-        (&raw mut (*__d).dyn_).write(0);
-        (&raw mut (*__d).fn_).write(0);
-        (&raw mut (*__d).impl_).write(0);
-        (&raw mut (*__d).in_).write(0);
-        (&raw mut (*__d).let_).write(0);
-        (&raw mut (*__d).loop_).write(0);
-        (&raw mut (*__d).match_).write(0);
-        (&raw mut (*__d).mod_).write(0);
-        (&raw mut (*__d).move_).write(0);
-        (&raw mut (*__d).mut_).write(0);
-        (&raw mut (*__d).pub_).write(0);
-        (&raw mut (*__d).ref_).write(0);
-        (&raw mut (*__d).self_).write(0);
-        (&raw mut (*__d).Self_).write(0);
-        (&raw mut (*__d).super_).write(0);
-        (&raw mut (*__d).trait_).write(0);
-        (&raw mut (*__d).type_).write(0);
-        (&raw mut (*__d).unsafe_).write(0);
-        (&raw mut (*__d).use_).write(0);
-        (&raw mut (*__d).where_).write(0);
-        (&raw mut (*__d).abstract_).write(0);
-        (&raw mut (*__d).become_).write(0);
-        (&raw mut (*__d).box_).write(0);
-        (&raw mut (*__d).final_).write(0);
-        (&raw mut (*__d).gen_).write(0);
-        (&raw mut (*__d).macro_).write(0);
-        (&raw mut (*__d).override_).write(0);
-        (&raw mut (*__d).priv_).write(0);
-        (&raw mut (*__d).unsized_).write(0);
-        (&raw mut (*__d).yield_).write(0);
-        (&raw mut (*__d).macro_rules_).write(0);
-        (&raw mut (*__d).raw_).write(0);
-        (&raw mut (*__d).safe_).write(0);
-        (&raw mut (*__d).vec_).write(0);
+    let mut s: S = S {
+        as_: 0,
+        async_: 0,
+        await_: 0,
+        crate_: 0,
+        dyn_: 0,
+        fn_: 0,
+        impl_: 0,
+        in_: 0,
+        let_: 0,
+        loop_: 0,
+        match_: 0,
+        mod_: 0,
+        move_: 0,
+        mut_: 0,
+        pub_: 0,
+        ref_: 0,
+        self_: 0,
+        Self_: 0,
+        super_: 0,
+        trait_: 0,
+        type_: 0,
+        unsafe_: 0,
+        use_: 0,
+        where_: 0,
+        abstract_: 0,
+        become_: 0,
+        box_: 0,
+        final_: 0,
+        gen_: 0,
+        macro_: 0,
+        override_: 0,
+        priv_: 0,
+        unsized_: 0,
+        yield_: 0,
+        macro_rules_: 0,
+        raw_: 0,
+        safe_: 0,
+        vec_: 0,
     };
     let mut as_: i32 = 0;
     let mut async_: i32 = 0;
@@ -291,16 +186,8 @@ unsafe fn main_0() -> i32 {
     let mut raw_: i32 = 0;
     let mut safe_: i32 = 0;
     let mut vec_: i32 = 0;
-    let mut l: loop_ = ::std::mem::MaybeUninit::uninit().assume_init();
-    {
-        let __d = &raw mut l;
-        {
-            let __d = (&raw mut (*__d).t);
-            (&raw mut (*__d).v).write(3);
-        };
-    };
-    let mut t: type_ = ::std::mem::MaybeUninit::uninit().assume_init();
-    type_::copy_from(&raw mut t, { &l.t });
+    let mut l: loop_ = loop_ { t: type_ { v: 3 } };
+    let mut t: type_ = l.t;
     return (unsafe {
         foo_0(
             0,

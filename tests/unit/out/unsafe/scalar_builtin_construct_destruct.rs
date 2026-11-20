@@ -11,15 +11,6 @@ use std::rc::Rc;
 pub struct Pod {
     pub v: i32,
 }
-impl Pod {
-    pub unsafe fn new_1(this: *mut Pod) {}
-    pub unsafe fn copy_from(this: *mut Pod, _a0: *const Pod) {
-        (&raw mut (*this).v).write((*_a0).v);
-    }
-    pub unsafe fn move_from(this: *mut Pod, _a0: *mut Pod) {
-        (&raw mut (*this).v).write((*_a0).v);
-    }
-}
 pub unsafe fn zero_0() -> *mut i32 {
     return std::ptr::null_mut();
 }
@@ -45,11 +36,7 @@ unsafe fn main_0() -> i32 {
     let mut x: i32 = 5;
     (unsafe { destroy_2((&mut x as *mut i32)) });
     assert!(((x) == (5)));
-    let mut pod: Pod = ::std::mem::MaybeUninit::uninit().assume_init();
-    {
-        let __d = &raw mut pod;
-        (&raw mut (*__d).v).write(7);
-    };
+    let mut pod: Pod = Pod { v: 7 };
     (unsafe { destroy_3((&mut pod as *mut Pod)) });
     assert!(((pod.v) == (7)));
     return 0;

@@ -11,33 +11,11 @@ use std::rc::Rc;
 pub struct Chunk {
     pub data: i32,
 }
-impl Chunk {
-    pub unsafe fn new_1(this: *mut Chunk) {}
-    pub unsafe fn copy_from(this: *mut Chunk, _a0: *const Chunk) {
-        (&raw mut (*this).data).write((*_a0).data);
-    }
-    pub unsafe fn move_from(this: *mut Chunk, _a0: *mut Chunk) {
-        (&raw mut (*this).data).write((*_a0).data);
-    }
-}
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct Writer {
     pub output: *mut Vec<Chunk>,
     pub chunk: Chunk,
-}
-impl Writer {
-    pub unsafe fn new_1(this: *mut Writer) {
-        Chunk::new_1((&raw mut (*this).chunk));
-    }
-    pub unsafe fn copy_from(this: *mut Writer, _a0: *const Writer) {
-        (&raw mut (*this).output).write((*_a0).output);
-        Chunk::copy_from((&raw mut (*this).chunk), { &(*_a0).chunk });
-    }
-    pub unsafe fn move_from(this: *mut Writer, _a0: *mut Writer) {
-        (&raw mut (*this).output).write((*_a0).output);
-        Chunk::move_from((&raw mut (*this).chunk), { &mut (*_a0).chunk });
-    }
 }
 #[repr(C)]
 #[derive(Clone, VaArg, FnPtrArg, MoveCtorUnsafe, MoveAssignUnsafe, Default)]
@@ -125,11 +103,7 @@ pub unsafe fn emplace_local_from_field_4(mut jpg: *mut JPEGData, mut cond: bool)
     });
 }
 pub unsafe fn nested_emplace_move_5(mut bw: *mut Writer) {
-    (*(*bw).output).push_mut({
-        let mut __v: Chunk = ::std::mem::MaybeUninit::uninit().assume_init();
-        Chunk::move_from(&raw mut __v, { &mut (*bw).chunk });
-        __v
-    });
+    (*(*bw).output).push_mut((*bw).chunk);
 }
 pub unsafe fn self_ref_push_6(mut comps: *mut Vec<Chunk>) {
     {
@@ -156,14 +130,6 @@ impl Pair {
     pub unsafe fn new_3(this: *mut Pair, mut a: i32, mut b: i32) {
         (&raw mut (*this).first).write(a);
         (&raw mut (*this).second).write(((b) * (2)));
-    }
-    pub unsafe fn copy_from(this: *mut Pair, _a0: *const Pair) {
-        (&raw mut (*this).first).write((*_a0).first);
-        (&raw mut (*this).second).write((*_a0).second);
-    }
-    pub unsafe fn move_from(this: *mut Pair, _a0: *mut Pair) {
-        (&raw mut (*this).first).write((*_a0).first);
-        (&raw mut (*this).second).write((*_a0).second);
     }
 }
 impl Default for Pair {
@@ -229,11 +195,7 @@ pub unsafe fn emplace_addr_11(values: *mut Vec<i32>) -> *mut i32 {
 }
 pub unsafe fn emplace_self_reads_12(mut values: *mut Vec<i64>, mut pairs: *mut Vec<Pair>) {
     (*values).push_mut((((*(values).cast_const()).len()) as i64));
-    (*pairs).push_mut({
-        let mut __v: Pair = ::std::mem::MaybeUninit::uninit().assume_init();
-        Pair::copy_from(&raw mut __v, { &(&mut (*pairs))[(0_usize)] });
-        __v
-    });
+    (*pairs).push_mut((&mut (*pairs))[(0_usize)]);
     (*pairs).push_mut({
         let mut __v: Pair = ::std::mem::MaybeUninit::uninit().assume_init();
         Pair::new_3(
@@ -305,32 +267,15 @@ pub struct Plain {
     pub a: i32,
     pub b: [f64; 2],
 }
-impl Plain {
-    pub unsafe fn new_1(this: *mut Plain) {}
-    pub unsafe fn copy_from(this: *mut Plain, _a0: *const Plain) {
-        (&raw mut (*this).a).write((*_a0).a);
-        (&raw mut (*this).b).write(std::array::from_fn::<_, 2, _>(|__i: usize| (*_a0).b[(__i)]));
-    }
-    pub unsafe fn move_from(this: *mut Plain, _a0: *mut Plain) {
-        (&raw mut (*this).a).write((*_a0).a);
-        (&raw mut (*this).b).write(std::array::from_fn::<_, 2, _>(|__i: usize| (*_a0).b[(__i)]));
-    }
-}
 pub unsafe fn emplace_plain_15(mut v: *mut Vec<Plain>) {
-    let mut p: Plain = ::std::mem::MaybeUninit::uninit().assume_init();
-    {
-        let __d = &raw mut p;
-        (&raw mut (*__d).a).write(1);
-        (&raw mut (*__d).b).write([2_f64, 3_f64]);
+    let mut p: Plain = Plain {
+        a: 1,
+        b: [2_f64, 3_f64],
     };
-    (*v).push_mut({
-        let mut __v: Plain = ::std::mem::MaybeUninit::uninit().assume_init();
-        Plain::copy_from(&raw mut __v, { &p });
-        __v
-    });
+    (*v).push_mut(p);
 }
-pub static mut all_counted_16: libcc2rs::LazyStorage<*mut Vec<Counted>> =
-    libcc2rs::LazyStorage::new(|__p| unsafe { __p.write(std::ptr::null_mut()) });
+pub static mut all_counted_16: std::cell::LazyCell<*mut Vec<Counted>> =
+    std::cell::LazyCell::new(|| unsafe { std::ptr::null_mut() });
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct Counted {
@@ -338,13 +283,9 @@ pub struct Counted {
 }
 impl Counted {
     pub unsafe fn new(this: *mut Counted, mut _a0: i32) {
-        (&raw mut (*this).seen).write((*(*(*&raw const all_counted_16).get()).cast_const()).len());
-    }
-    pub unsafe fn copy_from(this: *mut Counted, _a0: *const Counted) {
-        (&raw mut (*this).seen).write((*_a0).seen);
-    }
-    pub unsafe fn move_from(this: *mut Counted, _a0: *mut Counted) {
-        (&raw mut (*this).seen).write((*_a0).seen);
+        (&raw mut (*this).seen).write(
+            (*(*std::cell::LazyCell::force_mut(&mut *&raw mut all_counted_16)).cast_const()).len(),
+        );
     }
 }
 impl Counted {}
@@ -392,8 +333,7 @@ unsafe fn main_0() -> i32 {
     let mut chunks: Vec<Chunk> = Vec::new();
     (unsafe { shrink_through_ptr_2((&mut chunks as *mut Vec<Chunk>)) });
     assert!(chunks.is_empty());
-    let mut w: Writer = ::std::mem::MaybeUninit::uninit().assume_init();
-    Writer::new_1(&raw mut w);
+    let mut w: Writer = <Writer>::default();
     w.chunk.data = 42;
     w.output = (&mut chunks as *mut Vec<Chunk>);
     (unsafe { nested_push_move_3((&mut w as *mut Writer)) });
@@ -492,12 +432,13 @@ unsafe fn main_0() -> i32 {
     (unsafe { emplace_plain_15((&mut plains as *mut Vec<Plain>)) });
     assert!(((plains[(0_usize)].a) == (1)) && ((plains[(0_usize)].b[(1) as usize]) == (3_f64)));
     let mut counted: Vec<Counted> = Vec::new();
-    (*(*&raw const all_counted_16).get()) = (&mut counted as *mut Vec<Counted>);
+    (*std::cell::LazyCell::force_mut(&mut *&raw mut all_counted_16)) =
+        (&mut counted as *mut Vec<Counted>);
     (unsafe { emplace_counted_17((&mut counted as *mut Vec<Counted>)) });
     (unsafe { emplace_counted_17((&mut counted as *mut Vec<Counted>)) });
     assert!(((counted[(0_usize)].seen) == (0_usize)) && ((counted[(1_usize)].seen) == (1_usize)));
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {
-    (*&raw const all_counted_16).get();
+    std::cell::LazyCell::force(&*&raw const all_counted_16);
 }

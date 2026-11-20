@@ -20,12 +20,6 @@ impl A {
     pub fn new_1(this: Ptr<A>, mut v: i32) {
         field!(this, v).write(v);
     }
-    pub fn copy_from(this: Ptr<A>, _a0: Ptr<A>) {
-        field!(this, v).write(_a0.with(|__s| __s.v));
-    }
-    pub fn move_from(this: Ptr<A>, _a0: Ptr<A>) {
-        field!(this, v).write({ (*_a0.upgrade().deref()).v });
-    }
 }
 impl Default for A {
     fn default() -> Self {
@@ -48,12 +42,6 @@ pub struct B {
 impl B {
     pub fn new(this: Ptr<B>) {
         field!(this, v).write(2);
-    }
-    pub fn copy_from(this: Ptr<B>, _a0: Ptr<B>) {
-        field!(this, v).write(_a0.with(|__s| __s.v));
-    }
-    pub fn move_from(this: Ptr<B>, _a0: Ptr<B>) {
-        field!(this, v).write({ (*_a0.upgrade().deref()).v });
     }
 }
 impl Default for B {
@@ -79,12 +67,6 @@ impl NoDefault {
     pub fn new(this: Ptr<NoDefault>, mut v: i32) {
         field!(this, v).write(v);
     }
-    pub fn copy_from(this: Ptr<NoDefault>, _a0: Ptr<NoDefault>) {
-        field!(this, v).write(_a0.with(|__s| __s.v));
-    }
-    pub fn move_from(this: Ptr<NoDefault>, _a0: Ptr<NoDefault>) {
-        field!(this, v).write({ (*_a0.upgrade().deref()).v });
-    }
 }
 pub fn used_0(x: Value<A>) -> i32 {
     return { (*x.borrow()).v };
@@ -108,12 +90,6 @@ pub struct S_NoDefault_ {
 impl S_NoDefault_ {
     pub fn new(this: Ptr<S_NoDefault_>, mut v: i32) {
         field!(this, v).write(v);
-    }
-    pub fn copy_from(this: Ptr<S_NoDefault_>, _a0: Ptr<S_NoDefault_>) {
-        field!(this, v).write(_a0.with(|__s| __s.v));
-    }
-    pub fn move_from(this: Ptr<S_NoDefault_>, _a0: Ptr<S_NoDefault_>) {
-        field!(this, v).write({ (*_a0.upgrade().deref()).v });
     }
 }
 pub fn main() {

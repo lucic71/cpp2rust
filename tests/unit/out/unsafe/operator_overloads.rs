@@ -24,8 +24,8 @@ impl S {
     pub unsafe fn operator_add(&self, o: *const S) -> i32 {
         return ((self.v) + ((*o).v));
     }
-    pub unsafe fn operator_sub(&self, o: *mut S) -> i32 {
-        return ((self.v) - ((*o).v));
+    pub unsafe fn operator_sub(&self, mut o: S) -> i32 {
+        return ((self.v) - (o.v));
     }
     pub unsafe fn operator_mul_6(&self, o: *const S) -> i32 {
         return ((self.v) * ((*o).v));
@@ -33,28 +33,21 @@ impl S {
     pub unsafe fn operator_mul_7(&self, mut o: i32) -> i32 {
         return (((self.v) * (o)) + (1));
     }
-    pub unsafe fn new_1(this: *mut S) {}
-    pub unsafe fn copy_from(this: *mut S, _a0: *const S) {
-        (&raw mut (*this).v).write((*_a0).v);
-    }
-    pub unsafe fn move_from(this: *mut S, _a0: *mut S) {
-        (&raw mut (*this).v).write((*_a0).v);
-    }
 }
 pub unsafe fn operator_div_0(a: *const S, b: *const S) -> i32 {
     return (((*a).v) / ((*b).v));
 }
-pub unsafe fn operator_div_1(a: *mut S, mut b: i32) -> i32 {
-    return ((((*a).v) / (b)) + (1));
+pub unsafe fn operator_div_1(mut a: S, mut b: i32) -> i32 {
+    return (((a.v) / (b)) + (1));
 }
-pub unsafe fn operator_rem_2(a: *mut S, b: *mut S) -> i32 {
-    return (((*a).v) % ((*b).v));
+pub unsafe fn operator_rem_2(mut a: S, mut b: S) -> i32 {
+    return ((a.v) % (b.v));
 }
 pub unsafe fn operator_rem_3(a: *const S, mut b: i32) -> i32 {
     return ((((*a).v) % (b)) + (1));
 }
-pub unsafe fn operator_eq_4(mut a: i32, b: *mut S) -> i32 {
-    return if ((a) == ((*b).v)) { 4 } else { 0 };
+pub unsafe fn operator_eq_4(mut a: i32, mut b: S) -> i32 {
+    return if ((a) == (b.v)) { 4 } else { 0 };
 }
 pub unsafe fn operator_eq_5(mut a: i64, b: *const S) -> i32 {
     return if ((a) == ((*b).v as i64)) { 5 } else { 0 };
@@ -66,32 +59,14 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    let mut s: S = ::std::mem::MaybeUninit::uninit().assume_init();
-    {
-        let __d = &raw mut s;
-        (&raw mut (*__d).v).write(6);
-    };
-    let mut t: S = ::std::mem::MaybeUninit::uninit().assume_init();
-    {
-        let __d = &raw mut t;
-        (&raw mut (*__d).v).write(4);
-    };
+    let mut s: S = S { v: 6 };
+    let mut t: S = S { v: 4 };
     assert!(((unsafe { S::operator_eq_1(&s, 6,) }) == (1)));
     assert!(((unsafe { S::operator_eq_2(&s, 6_i64,) }) == (2)));
     assert!(((unsafe { S::operator_eq_3(&s, 6_f64,) }) == (3)));
     assert!(((unsafe { S::operator_eq_1(&s, 7,) }) == (0)));
     assert!(((unsafe { S::operator_add(&s, &t,) }) == (10)));
-    assert!(
-        ((unsafe {
-            S::operator_sub(
-                &s,
-                (|__p: *mut S| {
-                    S::copy_from(__p, { &t });
-                    __p
-                })((&mut ::std::mem::MaybeUninit::<S>::uninit()).as_mut_ptr()),
-            )
-        }) == (2))
-    );
+    assert!(((unsafe { S::operator_sub(&s, t,) }) == (2)));
     assert!(((unsafe { S::operator_mul_6(&s, &t,) }) == (24)));
     assert!(((unsafe { S::operator_mul_7(&s, 2,) }) == (13)));
     assert!(
@@ -102,24 +77,14 @@ unsafe fn main_0() -> i32 {
     );
     assert!(
         ((unsafe {
-            let mut __tmp_0: S = ::std::mem::MaybeUninit::uninit().assume_init();
-            S::copy_from(&raw mut __tmp_0, { &s });
-            let _a = &raw mut __tmp_0;
+            let _a: S = s;
             operator_div_1(_a, 4)
         }) == (2))
     );
     assert!(
         ((unsafe {
-            let mut __tmp_1: S = ::std::mem::MaybeUninit::uninit().assume_init();
-            S::copy_from(&raw mut __tmp_1, { &s });
-            let _a = &raw mut __tmp_1;
-            operator_rem_2(
-                _a,
-                (|__p: *mut S| {
-                    S::copy_from(__p, { &t });
-                    __p
-                })((&mut ::std::mem::MaybeUninit::<S>::uninit()).as_mut_ptr()),
-            )
+            let _a: S = s;
+            operator_rem_2(_a, t)
         }) == (2))
     );
     assert!(
@@ -128,17 +93,7 @@ unsafe fn main_0() -> i32 {
             operator_rem_3(_a, 4)
         }) == (3))
     );
-    assert!(
-        ((unsafe {
-            operator_eq_4(
-                6,
-                (|__p: *mut S| {
-                    S::copy_from(__p, { &s });
-                    __p
-                })((&mut ::std::mem::MaybeUninit::<S>::uninit()).as_mut_ptr()),
-            )
-        }) == (4))
-    );
+    assert!(((unsafe { operator_eq_4(6, s,) }) == (4)));
     assert!(((unsafe { operator_eq_5(6_i64, &s,) }) == (5)));
     return 0;
 }

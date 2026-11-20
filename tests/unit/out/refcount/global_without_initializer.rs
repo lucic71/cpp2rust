@@ -12,15 +12,6 @@ pub struct S {
     #[offset(0)]
     pub a: i32,
 }
-impl S {
-    pub fn new_1(this: Ptr<S>) {}
-    pub fn copy_from(this: Ptr<S>, _a0: Ptr<S>) {
-        field!(this, a).write(_a0.with(|__s| __s.a));
-    }
-    pub fn move_from(this: Ptr<S>, _a0: Ptr<S>) {
-        field!(this, a).write({ (*_a0.upgrade().deref()).a });
-    }
-}
 thread_local!(
     pub static s_0: Value<Ptr<S>> = Rc::new(RefCell::new(Ptr::<S>::null()));
 );

@@ -36,28 +36,6 @@ impl Pair {
     pub unsafe fn as_ptr(&mut self) -> *mut i32 {
         return (&mut self.x as *mut i32);
     }
-    pub unsafe fn copy_from(this: *mut Pair, _a0: *const Pair) {
-        (&raw mut (*this).x).write((*_a0).x);
-        (&raw mut (*this).y).write((*_a0).y);
-        (&raw mut (*this).a).write(std::array::from_fn::<_, 5, _>(|__i: usize| (*_a0).a[(__i)]));
-        (&raw mut (*this).r).write((*_a0).r);
-        (&raw mut (*this).p).write((*_a0).p);
-        (&raw mut (*this).pair).write((*_a0).pair);
-        (&raw mut (*this).ap).write(std::array::from_fn::<_, 2, _>(|__i: usize| {
-            (*_a0).ap[(__i)]
-        }));
-    }
-    pub unsafe fn move_from(this: *mut Pair, _a0: *mut Pair) {
-        (&raw mut (*this).x).write((*_a0).x);
-        (&raw mut (*this).y).write((*_a0).y);
-        (&raw mut (*this).a).write(std::array::from_fn::<_, 5, _>(|__i: usize| (*_a0).a[(__i)]));
-        (&raw mut (*this).r).write((*_a0).r);
-        (&raw mut (*this).p).write((*_a0).p);
-        (&raw mut (*this).pair).write((*_a0).pair);
-        (&raw mut (*this).ap).write(std::array::from_fn::<_, 2, _>(|__i: usize| {
-            (*_a0).ap[(__i)]
-        }));
-    }
 }
 pub unsafe fn zero_0() -> i32 {
     return 0;
@@ -65,11 +43,6 @@ pub unsafe fn zero_0() -> i32 {
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct X1 {}
-impl X1 {
-    pub unsafe fn new_1(this: *mut X1) {}
-    pub unsafe fn copy_from(this: *mut X1, _a0: *const X1) {}
-    pub unsafe fn move_from(this: *mut X1, _a0: *mut X1) {}
-}
 pub unsafe fn foo_1(mut x1: i32, x2: *mut i32, mut x3: *mut i32, p2: *mut Pair, mut p3: *mut Pair) {
 }
 pub fn main() {
@@ -91,71 +64,63 @@ unsafe fn main_0() -> i32 {
     let mut px3: *mut i32 = px1;
     let mut res: i32 = ((x1) + (x2));
     res = ((x1) + (x2));
-    let mut y1: Pair = ::std::mem::MaybeUninit::uninit().assume_init();
-    {
-        let __d = &raw mut y1;
-        (&raw mut (*__d).x).write(1);
-        (&raw mut (*__d).y).write(2);
-        (&raw mut (*__d).a).write([1, 2, 3, 4, 5]);
-        (&raw mut (*__d).r).write(&mut x1);
-        (&raw mut (*__d).p).write(std::ptr::null_mut());
-        (&raw mut (*__d).pair).write(std::ptr::null_mut());
-        (&raw mut (*__d).ap).write([std::ptr::null_mut(), std::ptr::null_mut()]);
+    let mut y1: Pair = Pair {
+        x: 1,
+        y: 2,
+        a: [1, 2, 3, 4, 5],
+        r: &mut x1,
+        p: std::ptr::null_mut(),
+        pair: std::ptr::null_mut(),
+        ap: [std::ptr::null_mut(), std::ptr::null_mut()],
     };
-    let mut y4: Pair = ::std::mem::MaybeUninit::uninit().assume_init();
-    {
-        let __d = &raw mut y4;
-        (&raw mut (*__d).x).write(y1.x);
-        (&raw mut (*__d).y).write(y1.y);
-        (&raw mut (*__d).a).write([
+    let mut y4: Pair = Pair {
+        x: y1.x,
+        y: y1.y,
+        a: [
             y1.a[(0) as usize],
             y1.a[(1) as usize],
             y1.a[(2) as usize],
             y1.a[(3) as usize],
             y1.a[(4) as usize],
-        ]);
-        (&raw mut (*__d).r).write(y1.r);
-        (&raw mut (*__d).p).write(y1.p);
-        (&raw mut (*__d).pair).write(y1.pair);
-        (&raw mut (*__d).ap).write([y1.ap[(0) as usize], y1.ap[(1) as usize]]);
+        ],
+        r: y1.r,
+        p: y1.p,
+        pair: y1.pair,
+        ap: [y1.ap[(0) as usize], y1.ap[(1) as usize]],
     };
     let ry1: *mut Pair = &mut y1;
     let mut py1: *mut Pair = (&mut y1 as *mut Pair);
-    let mut y2: Pair = ::std::mem::MaybeUninit::uninit().assume_init();
-    {
-        let __d = &raw mut y2;
-        (&raw mut (*__d).x).write((*ry1).x);
-        (&raw mut (*__d).y).write((*ry1).y);
-        (&raw mut (*__d).a).write([
+    let mut y2: Pair = Pair {
+        x: (*ry1).x,
+        y: (*ry1).y,
+        a: [
             (*ry1).a[(0) as usize],
             (*ry1).a[(1) as usize],
             (*ry1).a[(2) as usize],
             (*ry1).a[(3) as usize],
             (*ry1).a[(4) as usize],
-        ]);
-        (&raw mut (*__d).r).write((*ry1).r);
-        (&raw mut (*__d).p).write((*ry1).p);
-        (&raw mut (*__d).pair).write((*ry1).pair);
-        (&raw mut (*__d).ap).write([(*ry1).ap[(0) as usize], (*ry1).ap[(1) as usize]]);
+        ],
+        r: (*ry1).r,
+        p: (*ry1).p,
+        pair: (*ry1).pair,
+        ap: [(*ry1).ap[(0) as usize], (*ry1).ap[(1) as usize]],
     };
     let ry2: *mut Pair = ry1;
     let mut py2: *mut Pair = (ry1);
-    let mut y3: Pair = ::std::mem::MaybeUninit::uninit().assume_init();
-    {
-        let __d = &raw mut y3;
-        (&raw mut (*__d).x).write((*py1).x);
-        (&raw mut (*__d).y).write((*py1).y);
-        (&raw mut (*__d).a).write([
+    let mut y3: Pair = Pair {
+        x: (*py1).x,
+        y: (*py1).y,
+        a: [
             (*py1).a[(0) as usize],
             (*py1).a[(1) as usize],
             (*py1).a[(2) as usize],
             (*py1).a[(3) as usize],
             (*py1).a[(4) as usize],
-        ]);
-        (&raw mut (*__d).r).write((*py1).r);
-        (&raw mut (*__d).p).write((*py1).p);
-        (&raw mut (*__d).pair).write((*py1).pair);
-        (&raw mut (*__d).ap).write([(*py1).ap[(0) as usize], (*py1).ap[(1) as usize]]);
+        ],
+        r: (*py1).r,
+        p: (*py1).p,
+        pair: (*py1).pair,
+        ap: [(*py1).ap[(0) as usize], (*py1).ap[(1) as usize]],
     };
     let ry3: *mut Pair = &mut (*py1);
     let mut py3: *mut Pair = py1;
@@ -215,16 +180,14 @@ unsafe fn main_0() -> i32 {
     (*y1.ap[(0) as usize]) = 0;
     c1 = ((x1) + (1));
     let mut j: i32 = 0;
-    let mut new_y: Pair = ::std::mem::MaybeUninit::uninit().assume_init();
-    {
-        let __d = &raw mut new_y;
-        (&raw mut (*__d).x).write(1);
-        (&raw mut (*__d).y).write(2);
-        (&raw mut (*__d).a).write([1, 2, 3, 4, 5]);
-        (&raw mut (*__d).r).write(&mut j);
-        (&raw mut (*__d).p).write(std::ptr::null_mut());
-        (&raw mut (*__d).pair).write(std::ptr::null_mut());
-        (&raw mut (*__d).ap).write([std::ptr::null_mut(), std::ptr::null_mut()]);
+    let mut new_y: Pair = Pair {
+        x: 1,
+        y: 2,
+        a: [1, 2, 3, 4, 5],
+        r: &mut j,
+        p: std::ptr::null_mut(),
+        pair: std::ptr::null_mut(),
+        ap: [std::ptr::null_mut(), std::ptr::null_mut()],
     };
     y1.x = new_y.x;
     let mut i: u32 = 1_u32;
@@ -238,14 +201,8 @@ unsafe fn main_0() -> i32 {
     y1.pair = (&mut y2 as *mut Pair);
     y2.pair = (&mut y3 as *mut Pair);
     (unsafe { Pair::method(&mut (*(*y1.pair).pair)) });
-    let mut x: X1 = ::std::mem::MaybeUninit::uninit().assume_init();
-    {
-        let __d = &raw mut x;
-    };
-    let mut y: X1 = ::std::mem::MaybeUninit::uninit().assume_init();
-    {
-        let __d = &raw mut y;
-    };
+    let mut x: X1 = <X1>::default();
+    let mut y: X1 = <X1>::default();
     x1 = ((unsafe { zero_0() }) + (y1.x));
     y1.x = ((unsafe { zero_0() }) + (5));
     let mut ptr2ptr_1: *mut *mut i32 = (&mut px1 as *mut *mut i32);

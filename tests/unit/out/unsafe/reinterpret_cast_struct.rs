@@ -12,17 +12,6 @@ pub struct Point {
     pub x: i32,
     pub y: i32,
 }
-impl Point {
-    pub unsafe fn new_1(this: *mut Point) {}
-    pub unsafe fn copy_from(this: *mut Point, _a0: *const Point) {
-        (&raw mut (*this).x).write((*_a0).x);
-        (&raw mut (*this).y).write((*_a0).y);
-    }
-    pub unsafe fn move_from(this: *mut Point, _a0: *mut Point) {
-        (&raw mut (*this).x).write((*_a0).x);
-        (&raw mut (*this).y).write((*_a0).y);
-    }
-}
 pub fn main() {
     unsafe {
         __cpp2rust_init_globals();
@@ -30,8 +19,7 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    let mut p: Point = ::std::mem::MaybeUninit::uninit().assume_init();
-    Point::new_1(&raw mut p);
+    let mut p: Point = <Point>::default();
     p.x = 67305985;
     p.y = 134678021;
     let mut bytes: *mut u8 = ((&mut p as *mut Point) as *mut u8);

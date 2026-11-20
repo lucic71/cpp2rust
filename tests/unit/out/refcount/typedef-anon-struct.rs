@@ -14,17 +14,6 @@ pub struct Outer_RunInfo {
     #[offset(4)]
     pub num_extra_zero_runs: i32,
 }
-impl Outer_RunInfo {
-    pub fn new_1(this: Ptr<Outer_RunInfo>) {}
-    pub fn copy_from(this: Ptr<Outer_RunInfo>, _a0: Ptr<Outer_RunInfo>) {
-        field!(this, block_idx).write(_a0.with(|__s| __s.block_idx));
-        field!(this, num_extra_zero_runs).write(_a0.with(|__s| __s.num_extra_zero_runs));
-    }
-    pub fn move_from(this: Ptr<Outer_RunInfo>, _a0: Ptr<Outer_RunInfo>) {
-        field!(this, block_idx).write({ (*_a0.upgrade().deref()).block_idx });
-        field!(this, num_extra_zero_runs).write({ (*_a0.upgrade().deref()).num_extra_zero_runs });
-    }
-}
 #[derive(Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, MoveCtor, MoveAssign, Default)]
 #[byte_size(24)]
 pub struct Outer {
@@ -50,12 +39,11 @@ pub fn main() {
 fn main_0() -> i32 {
     let o: Value<Outer> = Rc::new(RefCell::new(<Outer>::uninit()));
     Outer::new_1(o.as_pointer());
-    let info: Value<Outer_RunInfo> = Rc::new(RefCell::new(<Outer_RunInfo>::uninit()));
-    Outer_RunInfo::new_1(info.as_pointer());
-    (*info.borrow_mut()).block_idx = 1;
-    (*info.borrow_mut()).num_extra_zero_runs = 2;
+    let mut info: Outer_RunInfo = <Outer_RunInfo>::default();
+    info.block_idx = 1;
+    info.num_extra_zero_runs = 2;
     {
-        let a0_clone = ({ (*info.borrow()) }).clone();
+        let a0_clone = info.clone();
         (*o.borrow_mut()).runs.push(a0_clone)
     };
     assert!(({ ((*o.borrow()).runs.len() == 1_usize) }));

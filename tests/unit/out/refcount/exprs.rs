@@ -12,15 +12,6 @@ pub struct X {
     #[offset(0)]
     pub x: i32,
 }
-impl X {
-    pub fn new_1(this: Ptr<X>) {}
-    pub fn copy_from(this: Ptr<X>, _a0: Ptr<X>) {
-        field!(this, x).write(_a0.with(|__s| __s.x));
-    }
-    pub fn move_from(this: Ptr<X>, _a0: Ptr<X>) {
-        field!(this, x).write({ (*_a0.upgrade().deref()).x });
-    }
-}
 #[derive(Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
 #[byte_size(16)]
 pub struct Y {
@@ -30,19 +21,6 @@ pub struct Y {
     #[offset(8)]
     #[byte_size(8)]
     pub p: Ptr<X>,
-}
-impl Y {
-    pub fn new_1(this: Ptr<Y>) {
-        X::new_1(field_ptr!(this, x));
-    }
-    pub fn copy_from(this: Ptr<Y>, _a0: Ptr<Y>) {
-        X::copy_from(field_ptr!(this, x), { field_ptr!(_a0, x) });
-        field!(this, p).write(_a0.with(|__s| __s.p.clone()));
-    }
-    pub fn move_from(this: Ptr<Y>, _a0: Ptr<Y>) {
-        X::move_from(field_ptr!(this, x), { field_ptr!(_a0, x) });
-        field!(this, p).write({ (*_a0.upgrade().deref()).p.clone() });
-    }
 }
 pub fn main() {
     __cpp2rust_init_globals();
@@ -69,20 +47,11 @@ fn main_0() -> i32 {
     let mut x7: i32 = (r.read());
     let mut x8: i32 = (({ (r.read()) } + { (*x1.borrow()) }) + 5);
     let mut p2: Ptr<i32> = (r).clone();
-    let x: Value<X> = Rc::new(RefCell::new(<X>::uninit()));
-    {
-        let __d = x.as_pointer();
-        field!(__d, x).write(1);
-    };
-    let y: Value<Y> = Rc::new(RefCell::new(<Y>::uninit()));
-    {
-        let __d = y.as_pointer();
-        {
-            let __d = field_ptr!(__d, x);
-            field!(__d, x).write(0);
-        };
-        field!(__d, p).write((x.as_pointer()));
-    };
+    let x: Value<X> = Rc::new(RefCell::new(X { x: 1 }));
+    let y: Value<Y> = Rc::new(RefCell::new(Y {
+        x: X { x: 0 },
+        p: (x.as_pointer()),
+    }));
     (*y.borrow_mut()).x.x = 5;
     field!(({ YImpl::foo(&y.as_pointer(),) }), x).write(1);
     field!({ (*y.borrow()).p.clone() }, x).write(10);

@@ -12,15 +12,6 @@ pub struct Lt {
     #[offset(0)]
     pub v: i32,
 }
-impl Lt {
-    pub fn new_1(this: Ptr<Lt>) {}
-    pub fn copy_from(this: Ptr<Lt>, _a0: Ptr<Lt>) {
-        field!(this, v).write(_a0.with(|__s| __s.v));
-    }
-    pub fn move_from(this: Ptr<Lt>, _a0: Ptr<Lt>) {
-        field!(this, v).write({ (*_a0.upgrade().deref()).v });
-    }
-}
 impl CppLess for Lt {
     fn less(__lhs: &Ptr<Self>, __rhs: &Ptr<Self>) -> bool {
         LtImpl::operator_lt(__lhs, __rhs.clone())
@@ -37,15 +28,6 @@ pub struct Eq {
     #[offset(0)]
     pub v: i32,
 }
-impl Eq {
-    pub fn new_1(this: Ptr<Eq>) {}
-    pub fn copy_from(this: Ptr<Eq>, _a0: Ptr<Eq>) {
-        field!(this, v).write(_a0.with(|__s| __s.v));
-    }
-    pub fn move_from(this: Ptr<Eq>, _a0: Ptr<Eq>) {
-        field!(this, v).write({ (*_a0.upgrade().deref()).v });
-    }
-}
 impl CppEq for Eq {
     fn equal(__lhs: &Ptr<Self>, __rhs: &Ptr<Self>) -> bool {
         EqImpl::operator_eq(__lhs, __rhs.clone())
@@ -56,15 +38,6 @@ impl CppEq for Eq {
 pub struct Cmp {
     #[offset(0)]
     pub v: i32,
-}
-impl Cmp {
-    pub fn new_1(this: Ptr<Cmp>) {}
-    pub fn copy_from(this: Ptr<Cmp>, _a0: Ptr<Cmp>) {
-        field!(this, v).write(_a0.with(|__s| __s.v));
-    }
-    pub fn move_from(this: Ptr<Cmp>, _a0: Ptr<Cmp>) {
-        field!(this, v).write({ (*_a0.upgrade().deref()).v });
-    }
 }
 impl CppLess for Cmp {
     fn less(__lhs: &Ptr<Self>, __rhs: &Ptr<Self>) -> bool {
@@ -81,15 +54,6 @@ impl CppEq for Cmp {
 pub struct Free {
     #[offset(0)]
     pub v: i32,
-}
-impl Free {
-    pub fn new_1(this: Ptr<Free>) {}
-    pub fn copy_from(this: Ptr<Free>, _a0: Ptr<Free>) {
-        field!(this, v).write(_a0.with(|__s| __s.v));
-    }
-    pub fn move_from(this: Ptr<Free>, _a0: Ptr<Free>) {
-        field!(this, v).write({ (*_a0.upgrade().deref()).v });
-    }
 }
 impl CppLess for Free {
     fn less(__lhs: &Ptr<Self>, __rhs: &Ptr<Self>) -> bool {
@@ -113,60 +77,17 @@ pub struct Wrapped_int_ {
     #[offset(0)]
     pub v: i32,
 }
-impl Wrapped_int_ {
-    pub fn new_1(this: Ptr<Wrapped_int_>) {}
-    pub fn copy_from(this: Ptr<Wrapped_int_>, _a0: Ptr<Wrapped_int_>) {
-        field!(this, v).write(_a0.with(|__s| __s.v));
-    }
-    pub fn move_from(this: Ptr<Wrapped_int_>, _a0: Ptr<Wrapped_int_>) {
-        field!(this, v).write({ (*_a0.upgrade().deref()).v });
-    }
-}
 pub fn main() {
     __cpp2rust_init_globals();
     libcc2rs::cpp2rust_exit(main_0());
 }
 fn main_0() -> i32 {
-    let w: Value<Wrapped_int_> = Rc::new(RefCell::new(<Wrapped_int_>::uninit()));
-    {
-        let __d = w.as_pointer();
-        field!(__d, v).write(2);
-    };
-    assert!(({ ({ (*w.borrow()).v } == 2) }));
+    let mut w: Wrapped_int_ = Wrapped_int_ { v: 2 };
+    assert!((w.v == 2));
     let lts: Value<Vec<Lt>> = Rc::new(RefCell::new(Vec::from([
-        Rc::try_unwrap({
-            let __v: Value<Lt> = Rc::new(RefCell::new(<Lt>::uninit()));
-            {
-                let __d = __v.as_pointer();
-                field!(__d, v).write(3);
-            };
-            __v
-        })
-        .ok()
-        .unwrap()
-        .into_inner(),
-        Rc::try_unwrap({
-            let __v: Value<Lt> = Rc::new(RefCell::new(<Lt>::uninit()));
-            {
-                let __d = __v.as_pointer();
-                field!(__d, v).write(1);
-            };
-            __v
-        })
-        .ok()
-        .unwrap()
-        .into_inner(),
-        Rc::try_unwrap({
-            let __v: Value<Lt> = Rc::new(RefCell::new(<Lt>::uninit()));
-            {
-                let __d = __v.as_pointer();
-                field!(__d, v).write(2);
-            };
-            __v
-        })
-        .ok()
-        .unwrap()
-        .into_inner(),
+        Lt { v: 3 },
+        Lt { v: 1 },
+        Lt { v: 2 },
     ])));
     {
         let mut __tmp_0 = { lts.decay().begin() };
@@ -182,50 +103,12 @@ fn main_0() -> i32 {
         })
     );
     let eqs: Value<Vec<Eq>> = Rc::new(RefCell::new(Vec::from([
-        Rc::try_unwrap({
-            let __v: Value<Eq> = Rc::new(RefCell::new(<Eq>::uninit()));
-            {
-                let __d = __v.as_pointer();
-                field!(__d, v).write(1);
-            };
-            __v
-        })
-        .ok()
-        .unwrap()
-        .into_inner(),
-        Rc::try_unwrap({
-            let __v: Value<Eq> = Rc::new(RefCell::new(<Eq>::uninit()));
-            {
-                let __d = __v.as_pointer();
-                field!(__d, v).write(2);
-            };
-            __v
-        })
-        .ok()
-        .unwrap()
-        .into_inner(),
-        Rc::try_unwrap({
-            let __v: Value<Eq> = Rc::new(RefCell::new(<Eq>::uninit()));
-            {
-                let __d = __v.as_pointer();
-                field!(__d, v).write(3);
-            };
-            __v
-        })
-        .ok()
-        .unwrap()
-        .into_inner(),
+        Eq { v: 1 },
+        Eq { v: 2 },
+        Eq { v: 3 },
     ])));
-    let two: Value<Eq> = Rc::new(RefCell::new(<Eq>::uninit()));
-    {
-        let __d = two.as_pointer();
-        field!(__d, v).write(2);
-    };
-    let nine: Value<Eq> = Rc::new(RefCell::new(<Eq>::uninit()));
-    {
-        let __d = nine.as_pointer();
-        field!(__d, v).write(9);
-    };
+    let two: Value<Eq> = Rc::new(RefCell::new(Eq { v: 2 }));
+    let nine: Value<Eq> = Rc::new(RefCell::new(Eq { v: 9 }));
     assert!(
         ({
             let mut __tmp_1 = { eqs.decay().begin() };
@@ -252,39 +135,9 @@ fn main_0() -> i32 {
         } == eqs.decay().end()
     );
     let cmps: Value<Vec<Cmp>> = Rc::new(RefCell::new(Vec::from([
-        Rc::try_unwrap({
-            let __v: Value<Cmp> = Rc::new(RefCell::new(<Cmp>::uninit()));
-            {
-                let __d = __v.as_pointer();
-                field!(__d, v).write(3);
-            };
-            __v
-        })
-        .ok()
-        .unwrap()
-        .into_inner(),
-        Rc::try_unwrap({
-            let __v: Value<Cmp> = Rc::new(RefCell::new(<Cmp>::uninit()));
-            {
-                let __d = __v.as_pointer();
-                field!(__d, v).write(1);
-            };
-            __v
-        })
-        .ok()
-        .unwrap()
-        .into_inner(),
-        Rc::try_unwrap({
-            let __v: Value<Cmp> = Rc::new(RefCell::new(<Cmp>::uninit()));
-            {
-                let __d = __v.as_pointer();
-                field!(__d, v).write(2);
-            };
-            __v
-        })
-        .ok()
-        .unwrap()
-        .into_inner(),
+        Cmp { v: 3 },
+        Cmp { v: 1 },
+        Cmp { v: 2 },
     ])));
     {
         let mut __tmp_5 = { cmps.decay().begin() };
@@ -298,11 +151,7 @@ fn main_0() -> i32 {
             ({ { (*cmps.borrow())[0_usize] }.v } == 1) && ({ { (*cmps.borrow())[2_usize] }.v } == 3)
         })
     );
-    let three: Value<Cmp> = Rc::new(RefCell::new(<Cmp>::uninit()));
-    {
-        let __d = three.as_pointer();
-        field!(__d, v).write(3);
-    };
+    let three: Value<Cmp> = Rc::new(RefCell::new(Cmp { v: 3 }));
     assert!(
         ({
             let mut __tmp_6 = { cmps.decay().begin() };
@@ -317,30 +166,7 @@ fn main_0() -> i32 {
         .with(|__s| __s.v)
             == 3)
     );
-    let frees: Value<Vec<Free>> = Rc::new(RefCell::new(Vec::from([
-        Rc::try_unwrap({
-            let __v: Value<Free> = Rc::new(RefCell::new(<Free>::uninit()));
-            {
-                let __d = __v.as_pointer();
-                field!(__d, v).write(2);
-            };
-            __v
-        })
-        .ok()
-        .unwrap()
-        .into_inner(),
-        Rc::try_unwrap({
-            let __v: Value<Free> = Rc::new(RefCell::new(<Free>::uninit()));
-            {
-                let __d = __v.as_pointer();
-                field!(__d, v).write(1);
-            };
-            __v
-        })
-        .ok()
-        .unwrap()
-        .into_inner(),
-    ])));
+    let frees: Value<Vec<Free>> = Rc::new(RefCell::new(Vec::from([Free { v: 2 }, Free { v: 1 }])));
     {
         let mut __tmp_8 = { frees.decay().begin() };
         let __n = frees.decay().end().iter_distance(&__tmp_8);
@@ -349,11 +175,7 @@ fn main_0() -> i32 {
         reorder(__order, |__i| __tmp_8.iter_at(__i));
     };
     assert!(({ ({ { (*frees.borrow())[0_usize] }.v } == 1) }));
-    let ftwo: Value<Free> = Rc::new(RefCell::new(<Free>::uninit()));
-    {
-        let __d = ftwo.as_pointer();
-        field!(__d, v).write(2);
-    };
+    let ftwo: Value<Free> = Rc::new(RefCell::new(Free { v: 2 }));
     assert!(
         ({
             let mut __tmp_9 = { frees.decay().begin() };
@@ -369,31 +191,13 @@ fn main_0() -> i32 {
             == 2)
     );
     let m: Value<Map<Lt, (Value<Lt>, Value<i32>)>> = Rc::new(RefCell::new(Map::new()));
-    match ({
-        let __v: Value<Lt> = Rc::new(RefCell::new(<Lt>::uninit()));
-        {
-            let __d = __v.as_pointer();
-            field!(__d, v).write(2);
-        };
-        __v
-    }
-    .as_pointer(),)
-    {
+    match (Rc::new(RefCell::new(Lt { v: 2 })).as_pointer(),) {
         (__tmp_11,) => {
             ({ (*m.borrow_mut()).subscript_move(__tmp_11, |__k| cpp_move!(__k), || 0_i32) })
         }
     }
     .write(20);
-    match ({
-        let __v: Value<Lt> = Rc::new(RefCell::new(<Lt>::uninit()));
-        {
-            let __d = __v.as_pointer();
-            field!(__d, v).write(1);
-        };
-        __v
-    }
-    .as_pointer(),)
-    {
+    match (Rc::new(RefCell::new(Lt { v: 1 })).as_pointer(),) {
         (__tmp_12,) => {
             ({ (*m.borrow_mut()).subscript_move(__tmp_12, |__k| cpp_move!(__k), || 0_i32) })
         }
@@ -411,16 +215,7 @@ fn main_0() -> i32 {
             == 10)
     );
     assert!(
-        ((match ({
-            let __v: Value<Lt> = Rc::new(RefCell::new(<Lt>::uninit()));
-            {
-                let __d = __v.as_pointer();
-                field!(__d, v).write(2);
-            };
-            __v
-        }
-        .as_pointer(),)
-        {
+        ((match (Rc::new(RefCell::new(Lt { v: 2 })).as_pointer(),) {
             (__tmp_13,) => {
                 ({ (*m.borrow_mut()).subscript_move(__tmp_13, |__k| cpp_move!(__k), || 0_i32) })
             }

@@ -19,18 +19,6 @@ impl p23_1_new_without_initializer_Counted {
     pub fn new(this: Ptr<p23_1_new_without_initializer_Counted>) {
         field!(this, id).write((*(*constructed_0.with(Value::clone).borrow_mut()).prefix_inc()));
     }
-    pub fn copy_from(
-        this: Ptr<p23_1_new_without_initializer_Counted>,
-        _a0: Ptr<p23_1_new_without_initializer_Counted>,
-    ) {
-        field!(this, id).write(_a0.with(|__s| __s.id));
-    }
-    pub fn move_from(
-        this: Ptr<p23_1_new_without_initializer_Counted>,
-        _a0: Ptr<p23_1_new_without_initializer_Counted>,
-    ) {
-        field!(this, id).write({ (*_a0.upgrade().deref()).id });
-    }
 }
 impl Default for p23_1_new_without_initializer_Counted {
     fn default() -> Self {
@@ -74,23 +62,6 @@ pub struct p23_2_new_with_initializer_Pair {
     #[offset(4)]
     pub second: i32,
 }
-impl p23_2_new_with_initializer_Pair {
-    pub fn new_1(this: Ptr<p23_2_new_with_initializer_Pair>) {}
-    pub fn copy_from(
-        this: Ptr<p23_2_new_with_initializer_Pair>,
-        _a0: Ptr<p23_2_new_with_initializer_Pair>,
-    ) {
-        field!(this, first).write(_a0.with(|__s| __s.first));
-        field!(this, second).write(_a0.with(|__s| __s.second));
-    }
-    pub fn move_from(
-        this: Ptr<p23_2_new_with_initializer_Pair>,
-        _a0: Ptr<p23_2_new_with_initializer_Pair>,
-    ) {
-        field!(this, first).write({ (*_a0.upgrade().deref()).first });
-        field!(this, second).write({ (*_a0.upgrade().deref()).second });
-    }
-}
 #[derive(Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, CppFrom, Default)]
 #[cpp_from(i32, new, value)]
 #[byte_size(16)]
@@ -106,39 +77,15 @@ impl p23_2_new_with_initializer_Tracker {
         field!(this, self_).write((this).clone());
         field!(this, value).write(value);
     }
-    pub fn copy_from(
-        this: Ptr<p23_2_new_with_initializer_Tracker>,
-        _a0: Ptr<p23_2_new_with_initializer_Tracker>,
-    ) {
-        field!(this, self_).write(_a0.with(|__s| __s.self_.clone()));
-        field!(this, value).write(_a0.with(|__s| __s.value));
-    }
-    pub fn move_from(
-        this: Ptr<p23_2_new_with_initializer_Tracker>,
-        _a0: Ptr<p23_2_new_with_initializer_Tracker>,
-    ) {
-        field!(this, self_).write({ (*_a0.upgrade().deref()).self_.clone() });
-        field!(this, value).write({ (*_a0.upgrade().deref()).value });
-    }
 }
 pub fn test_2() {
-    let mut dirty: Ptr<p23_2_new_with_initializer_Pair> = {
-        let __p = Ptr::alloc(<p23_2_new_with_initializer_Pair>::uninit());
-        p23_2_new_with_initializer_Pair::new_1(__p.clone());
-        __p
-    };
+    let mut dirty: Ptr<p23_2_new_with_initializer_Pair> =
+        Ptr::alloc(<p23_2_new_with_initializer_Pair>::default());
     field!(dirty, first).write(23130);
     field!(dirty, second).write(23130);
     dirty.delete();
-    let mut zeroed: Ptr<p23_2_new_with_initializer_Pair> = {
-        let __p = Ptr::alloc(<p23_2_new_with_initializer_Pair>::uninit());
-        {
-            let __d = __p.clone();
-            ();
-            p23_2_new_with_initializer_Pair::new_1(__d)
-        };
-        __p
-    };
+    let mut zeroed: Ptr<p23_2_new_with_initializer_Pair> =
+        Ptr::alloc(<p23_2_new_with_initializer_Pair>::default());
     assert!((zeroed.with(|__s| __s.first) == 0) && (zeroed.with(|__s| __s.second) == 0));
     zeroed.delete();
     let mut tracker: Ptr<p23_2_new_with_initializer_Tracker> = {
@@ -151,15 +98,11 @@ pub fn test_2() {
             && (tracker.with(|__s| __s.value) == 4)
     );
     tracker.delete();
-    let mut braces: Ptr<p23_2_new_with_initializer_Pair> = {
-        let __p = Ptr::alloc(<p23_2_new_with_initializer_Pair>::uninit());
-        {
-            let __d = __p.clone();
-            field!(__d, first).write(1);
-            field!(__d, second).write(2);
-        };
-        __p
-    };
+    let mut braces: Ptr<p23_2_new_with_initializer_Pair> =
+        Ptr::alloc(p23_2_new_with_initializer_Pair {
+            first: 1,
+            second: 2,
+        });
     assert!((braces.with(|__s| __s.first) == 1) && (braces.with(|__s| __s.second) == 2));
     braces.delete();
     let mut number: Ptr<i32> = Ptr::alloc(7);

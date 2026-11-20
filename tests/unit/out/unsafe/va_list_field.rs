@@ -38,18 +38,12 @@ impl Guard_1 {
     pub unsafe fn destructor(&mut self) {
         if self.active {}
     }
-    pub unsafe fn copy_from(this: *mut Guard_1, _a0: *const Guard_1) {
-        (&raw mut (*this).ap).write((*_a0).ap);
-        (&raw mut (*this).active).write((*_a0).active);
-    }
 }
 pub unsafe fn sum_ptr_2(mut n: i32, __args: Box<[VaArg]>) -> i32 {
     let mut ap: *const VaArg = ::std::ptr::null();
     ap = __args.as_ptr();
-    let mut cursor: Cursor_3 = ::std::mem::MaybeUninit::uninit().assume_init();
-    {
-        let __d = &raw mut cursor;
-        (&raw mut (*__d).ap).write((&mut ap as *mut *const VaArg));
+    let mut cursor: Cursor_3 = Cursor_3 {
+        ap: (&mut ap as *mut *const VaArg),
     };
     let mut total: i32 = 0;
     {
@@ -65,15 +59,6 @@ pub unsafe fn sum_ptr_2(mut n: i32, __args: Box<[VaArg]>) -> i32 {
 #[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct Cursor_3 {
     pub ap: *mut *const VaArg,
-}
-impl Cursor_3 {
-    pub unsafe fn new_1(this: *mut Cursor_3) {}
-    pub unsafe fn copy_from(this: *mut Cursor_3, _a0: *const Cursor_3) {
-        (&raw mut (*this).ap).write((*_a0).ap);
-    }
-    pub unsafe fn move_from(this: *mut Cursor_3, _a0: *mut Cursor_3) {
-        (&raw mut (*this).ap).write((*_a0).ap);
-    }
 }
 pub fn main() {
     unsafe {

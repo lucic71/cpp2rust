@@ -257,24 +257,10 @@ pub trait p4_1_pure_virtual_without_definition_HasPureVirtual {
 #[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
 #[byte_size(8)]
 pub struct p4_1_pure_virtual_without_definition_OverridesPureVirtual {}
-impl p4_1_pure_virtual_without_definition_OverridesPureVirtual {
-    pub fn new_1(this: Ptr<p4_1_pure_virtual_without_definition_OverridesPureVirtual>) {}
-    pub fn copy_from(
-        this: Ptr<p4_1_pure_virtual_without_definition_OverridesPureVirtual>,
-        _a0: Ptr<p4_1_pure_virtual_without_definition_OverridesPureVirtual>,
-    ) {
-    }
-    pub fn move_from(
-        this: Ptr<p4_1_pure_virtual_without_definition_OverridesPureVirtual>,
-        _a0: Ptr<p4_1_pure_virtual_without_definition_OverridesPureVirtual>,
-    ) {
-    }
-}
 pub fn test_11() {
     let d: Value<p4_1_pure_virtual_without_definition_OverridesPureVirtual> = Rc::new(
-        RefCell::new(<p4_1_pure_virtual_without_definition_OverridesPureVirtual>::uninit()),
+        RefCell::new(<p4_1_pure_virtual_without_definition_OverridesPureVirtual>::default()),
     );
-    p4_1_pure_virtual_without_definition_OverridesPureVirtual::new_1(d.as_pointer());
     let mut p: PtrDyn<dyn p4_1_pure_virtual_without_definition_HasPureVirtual> =
         (d.as_pointer()).to_dyn::<dyn p4_1_pure_virtual_without_definition_HasPureVirtual>(|w| w);
     ({ (*p.upgrade().deref_mut()).f() });
@@ -627,11 +613,6 @@ impl p9_destructor_not_potentially_invoked_HasUndefinedDestructor {
     pub fn new(this: Ptr<p9_destructor_not_potentially_invoked_HasUndefinedDestructor>) {
         (*t_ctors_27.with(Value::clone).borrow_mut()).prefix_inc();
     }
-    pub fn copy_from(
-        this: Ptr<p9_destructor_not_potentially_invoked_HasUndefinedDestructor>,
-        _a0: Ptr<p9_destructor_not_potentially_invoked_HasUndefinedDestructor>,
-    ) {
-    }
 }
 impl Default for p9_destructor_not_potentially_invoked_HasUndefinedDestructor {
     fn default() -> Self {
@@ -708,11 +689,6 @@ impl p9_unused_implicit_assignment_HasUndefinedCopyAssignment {
     pub fn new(this: Ptr<p9_unused_implicit_assignment_HasUndefinedCopyAssignment>) {
         (*m_ctors_32.with(Value::clone).borrow_mut()).prefix_inc();
     }
-    pub fn copy_from(
-        this: Ptr<p9_unused_implicit_assignment_HasUndefinedCopyAssignment>,
-        _a0: Ptr<p9_unused_implicit_assignment_HasUndefinedCopyAssignment>,
-    ) {
-    }
 }
 impl Default for p9_unused_implicit_assignment_HasUndefinedCopyAssignment {
     fn default() -> Self {
@@ -736,24 +712,8 @@ pub struct p9_unused_implicit_assignment_HasMemberWithUndefinedCopyAssignment {
     pub m: p9_unused_implicit_assignment_HasUndefinedCopyAssignment,
 }
 impl p9_unused_implicit_assignment_HasMemberWithUndefinedCopyAssignment {
-    pub fn move_from(
-        this: Ptr<p9_unused_implicit_assignment_HasMemberWithUndefinedCopyAssignment>,
-        _a0: Ptr<p9_unused_implicit_assignment_HasMemberWithUndefinedCopyAssignment>,
-    ) {
-        p9_unused_implicit_assignment_HasUndefinedCopyAssignment::copy_from(field_ptr!(this, m), {
-            field_ptr!(_a0, m)
-        });
-    }
     pub fn new_1(this: Ptr<p9_unused_implicit_assignment_HasMemberWithUndefinedCopyAssignment>) {
         p9_unused_implicit_assignment_HasUndefinedCopyAssignment::new(field_ptr!(this, m));
-    }
-    pub fn copy_from(
-        this: Ptr<p9_unused_implicit_assignment_HasMemberWithUndefinedCopyAssignment>,
-        _a0: Ptr<p9_unused_implicit_assignment_HasMemberWithUndefinedCopyAssignment>,
-    ) {
-        p9_unused_implicit_assignment_HasUndefinedCopyAssignment::copy_from(field_ptr!(this, m), {
-            field_ptr!(_a0, m)
-        });
     }
 }
 pub fn test_33() {

@@ -26,31 +26,6 @@ pub struct Pointers {
     #[offset(136)]
     pub x5: i32,
 }
-impl Pointers {
-    pub fn new_1(this: Ptr<Pointers>) {}
-    pub fn copy_from(this: Ptr<Pointers>, _a0: Ptr<Pointers>) {
-        field!(this, x1).write(_a0.with(|__s| __s.x1.clone()));
-        field!(this, x2).write(_a0.with(|__s| __s.x2.clone()));
-        field!(this, x3).write(Box::new(std::array::from_fn::<_, 5, _>(|__i: usize| {
-            ((*_a0.upgrade().deref()).x3[(__i) as usize]).clone()
-        })));
-        field!(this, x4).write(Box::new(std::array::from_fn::<_, 10, _>(|__i: usize| {
-            ((*_a0.upgrade().deref()).x4[(__i) as usize]).clone()
-        })));
-        field!(this, x5).write(_a0.with(|__s| __s.x5));
-    }
-    pub fn move_from(this: Ptr<Pointers>, _a0: Ptr<Pointers>) {
-        field!(this, x1).write({ (*_a0.upgrade().deref()).x1.clone() });
-        field!(this, x2).write({ (*_a0.upgrade().deref()).x2.clone() });
-        field!(this, x3).write(Box::new(std::array::from_fn::<_, 5, _>(|__i: usize| {
-            ((*_a0.upgrade().deref()).x3[(__i) as usize]).clone()
-        })));
-        field!(this, x4).write(Box::new(std::array::from_fn::<_, 10, _>(|__i: usize| {
-            ((*_a0.upgrade().deref()).x4[(__i) as usize]).clone()
-        })));
-        field!(this, x5).write({ (*_a0.upgrade().deref()).x5 });
-    }
-}
 impl Default for Pointers {
     fn default() -> Self {
         {
@@ -87,50 +62,6 @@ pub struct SmallArrays {
     #[array_len(2)]
     pub p: Box<[Pointers]>,
 }
-impl SmallArrays {
-    pub fn new_1(this: Ptr<SmallArrays>) {
-        {
-            let __d = array_field_ptr!(this, p);
-            for __i in 0..2_isize {
-                Pointers::new_1(__d.offset(__i));
-            }
-        };
-    }
-    pub fn copy_from(this: Ptr<SmallArrays>, _a0: Ptr<SmallArrays>) {
-        field!(this, a).write(Box::new(std::array::from_fn::<_, 32, _>(|__i: usize| {
-            (*_a0.upgrade().deref()).a[(__i) as usize]
-        })));
-        field!(this, f).write(_a0.with(|__s| __s.f.clone()));
-        field!(this, fs).write(Box::new(std::array::from_fn::<_, 2, _>(|__i: usize| {
-            ((*_a0.upgrade().deref()).fs[(__i) as usize]).clone()
-        })));
-        {
-            let __d = array_field_ptr!(this, p);
-            for __i in 0..2_usize {
-                Pointers::copy_from(__d.offset(__i as isize), {
-                    array_field_ptr!(_a0, p).offset(__i)
-                });
-            }
-        };
-    }
-    pub fn move_from(this: Ptr<SmallArrays>, _a0: Ptr<SmallArrays>) {
-        field!(this, a).write(Box::new(std::array::from_fn::<_, 32, _>(|__i: usize| {
-            (*_a0.upgrade().deref()).a[(__i) as usize]
-        })));
-        field!(this, f).write({ (*_a0.upgrade().deref()).f.clone() });
-        field!(this, fs).write(Box::new(std::array::from_fn::<_, 2, _>(|__i: usize| {
-            ((*_a0.upgrade().deref()).fs[(__i) as usize]).clone()
-        })));
-        {
-            let __d = array_field_ptr!(this, p);
-            for __i in 0..2_usize {
-                Pointers::move_from(__d.offset(__i as isize), {
-                    array_field_ptr!(_a0, p).offset(__i)
-                });
-            }
-        };
-    }
-}
 impl Default for SmallArrays {
     fn default() -> Self {
         {
@@ -154,19 +85,6 @@ pub struct BigArray {
     #[byte_size(132)]
     #[array_len(33)]
     pub a: Box<[i32]>,
-}
-impl BigArray {
-    pub fn new_1(this: Ptr<BigArray>) {}
-    pub fn copy_from(this: Ptr<BigArray>, _a0: Ptr<BigArray>) {
-        field!(this, a).write(Box::new(std::array::from_fn::<_, 33, _>(|__i: usize| {
-            (*_a0.upgrade().deref()).a[(__i) as usize]
-        })));
-    }
-    pub fn move_from(this: Ptr<BigArray>, _a0: Ptr<BigArray>) {
-        field!(this, a).write(Box::new(std::array::from_fn::<_, 33, _>(|__i: usize| {
-            (*_a0.upgrade().deref()).a[(__i) as usize]
-        })));
-    }
 }
 impl Default for BigArray {
     fn default() -> Self {

@@ -12,17 +12,6 @@ pub struct Inner {
     pub x: i32,
     pub y: i32,
 }
-impl Inner {
-    pub unsafe fn new_1(this: *mut Inner) {}
-    pub unsafe fn copy_from(this: *mut Inner, _a0: *const Inner) {
-        (&raw mut (*this).x).write((*_a0).x);
-        (&raw mut (*this).y).write((*_a0).y);
-    }
-    pub unsafe fn move_from(this: *mut Inner, _a0: *mut Inner) {
-        (&raw mut (*this).x).write((*_a0).x);
-        (&raw mut (*this).y).write((*_a0).y);
-    }
-}
 #[repr(C)]
 #[derive(FnPtrArg, MoveCtorUnsafe, MoveAssignUnsafe, Default)]
 pub struct Outer {

@@ -14,24 +14,12 @@ pub struct Point {
     #[offset(4)]
     pub y: i32,
 }
-impl Point {
-    pub fn new_1(this: Ptr<Point>) {}
-    pub fn copy_from(this: Ptr<Point>, _a0: Ptr<Point>) {
-        field!(this, x).write(_a0.with(|__s| __s.x));
-        field!(this, y).write(_a0.with(|__s| __s.y));
-    }
-    pub fn move_from(this: Ptr<Point>, _a0: Ptr<Point>) {
-        field!(this, x).write({ (*_a0.upgrade().deref()).x });
-        field!(this, y).write({ (*_a0.upgrade().deref()).y });
-    }
-}
 pub fn main() {
     __cpp2rust_init_globals();
     libcc2rs::cpp2rust_exit(main_0());
 }
 fn main_0() -> i32 {
-    let p: Value<Point> = Rc::new(RefCell::new(<Point>::uninit()));
-    Point::new_1(p.as_pointer());
+    let p: Value<Point> = Rc::new(RefCell::new(<Point>::default()));
     (*p.borrow_mut()).x = 67305985;
     (*p.borrow_mut()).y = 134678021;
     let mut bytes: Ptr<u8> = (p.as_pointer()).reinterpret_cast::<u8>();

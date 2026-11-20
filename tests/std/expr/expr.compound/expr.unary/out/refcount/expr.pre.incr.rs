@@ -12,21 +12,6 @@ pub struct p1_result_is_updated_operand_Counter {
     #[offset(0)]
     pub n: i32,
 }
-impl p1_result_is_updated_operand_Counter {
-    pub fn new_1(this: Ptr<p1_result_is_updated_operand_Counter>) {}
-    pub fn copy_from(
-        this: Ptr<p1_result_is_updated_operand_Counter>,
-        _a0: Ptr<p1_result_is_updated_operand_Counter>,
-    ) {
-        field!(this, n).write(_a0.with(|__s| __s.n));
-    }
-    pub fn move_from(
-        this: Ptr<p1_result_is_updated_operand_Counter>,
-        _a0: Ptr<p1_result_is_updated_operand_Counter>,
-    ) {
-        field!(this, n).write({ (*_a0.upgrade().deref()).n });
-    }
-}
 pub fn test_0() {
     let x: Value<i32> = Rc::new(RefCell::new(0));
     let r: Ptr<i32> = {
@@ -67,13 +52,8 @@ pub fn test_0() {
     assert!(({ (q).clone() } == { (p.as_pointer()) }));
     assert!((((q.read()).read()) == 2));
     assert!(({ (((*(*p.borrow_mut()).prefix_inc()).read()) == 3) }));
-    let c: Value<p1_result_is_updated_operand_Counter> = Rc::new(RefCell::new(
-        <p1_result_is_updated_operand_Counter>::uninit(),
-    ));
-    {
-        let __d = c.as_pointer();
-        field!(__d, n).write(0);
-    };
+    let c: Value<p1_result_is_updated_operand_Counter> =
+        Rc::new(RefCell::new(p1_result_is_updated_operand_Counter { n: 0 }));
     let mut pc: Ptr<p1_result_is_updated_operand_Counter> = (c.as_pointer());
     let mut v: i32 = { (*c.borrow_mut()).n.prefix_inc().clone() };
     assert!((v == 1) && (pc.with(|__s| __s.n) == 1));

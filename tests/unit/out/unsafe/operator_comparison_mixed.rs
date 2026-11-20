@@ -30,13 +30,6 @@ impl S {
     pub unsafe fn operator_ge(&self, mut o: *const libc::c_char) -> bool {
         return ((self.v) >= (((*o) as i32) - (('0' as libc::c_char) as i32)));
     }
-    pub unsafe fn new_1(this: *mut S) {}
-    pub unsafe fn copy_from(this: *mut S, _a0: *const S) {
-        (&raw mut (*this).v).write((*_a0).v);
-    }
-    pub unsafe fn move_from(this: *mut S, _a0: *mut S) {
-        (&raw mut (*this).v).write((*_a0).v);
-    }
 }
 pub unsafe fn operator_eq_0(mut a: i32, b: *const S) -> bool {
     return ((a) == ((*b).v));
@@ -66,11 +59,7 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    let mut s: S = ::std::mem::MaybeUninit::uninit().assume_init();
-    {
-        let __d = &raw mut s;
-        (&raw mut (*__d).v).write(5);
-    };
+    let mut s: S = S { v: 5 };
     let cs: *const S = &s;
     assert!((unsafe { S::operator_eq(&(*cs), 5,) }));
     assert!((unsafe { S::operator_ne(&(*cs), 4,) }));

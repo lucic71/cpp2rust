@@ -7,15 +7,13 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 pub unsafe fn a_0() -> i32 {
-    return (*(*&raw const i_1).get());
+    return (*std::cell::LazyCell::force_mut(&mut *&raw mut i_1));
 }
-static mut i_1: libcc2rs::LazyStorage<i32> =
-    libcc2rs::LazyStorage::new(|__p| unsafe { __p.write(1) });
+static mut i_1: std::cell::LazyCell<i32> = std::cell::LazyCell::new(|| unsafe { 1 });
 pub unsafe fn b_2() -> i32 {
-    return (*(*&raw const i_3).get());
+    return (*std::cell::LazyCell::force_mut(&mut *&raw mut i_3));
 }
-static mut i_3: libcc2rs::LazyStorage<i32> =
-    libcc2rs::LazyStorage::new(|__p| unsafe { __p.write(2) });
+static mut i_3: std::cell::LazyCell<i32> = std::cell::LazyCell::new(|| unsafe { 2 });
 pub fn main() {
     unsafe {
         __cpp2rust_init_globals();

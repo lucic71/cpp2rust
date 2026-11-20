@@ -80,12 +80,6 @@ pub struct AssertsDtorCountAtExit {
     #[offset(0)]
     pub expected: i32,
 }
-impl AssertsDtorCountAtExit {
-    pub fn new_1(this: Ptr<AssertsDtorCountAtExit>) {}
-    pub fn copy_from(this: Ptr<AssertsDtorCountAtExit>, _a0: Ptr<AssertsDtorCountAtExit>) {
-        field!(this, expected).write(_a0.with(|__s| __s.expected));
-    }
-}
 pub fn f_4(mut cond: bool, mut p: FnPtr<fn()>) {
     if cond {
         ({
@@ -115,15 +109,7 @@ thread_local!(
 );
 thread_local!(
     pub static check_6: Value<AssertsDtorCountAtExit> = {
-        let __static = {
-            let __v: Value<AssertsDtorCountAtExit> =
-                Rc::new(RefCell::new(<AssertsDtorCountAtExit>::uninit()));
-            {
-                let __d = __v.as_pointer();
-                field!(__d, expected).write(1);
-            };
-            __v
-        };
+        let __static = Rc::new(RefCell::new(AssertsDtorCountAtExit { expected: 1 }));
         libcc2rs::register_static_destructor(|| {
             check_6.with(Value::clone).as_pointer().destructor()
         });

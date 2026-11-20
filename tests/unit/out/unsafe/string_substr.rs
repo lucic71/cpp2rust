@@ -11,14 +11,6 @@ use std::rc::Rc;
 pub struct Text {
     pub value: *mut Vec<libc::c_char>,
 }
-impl Text {
-    pub unsafe fn copy_from(this: *mut Text, _a0: *const Text) {
-        (&raw mut (*this).value).write((*_a0).value);
-    }
-    pub unsafe fn move_from(this: *mut Text, _a0: *mut Text) {
-        (&raw mut (*this).value).write((*_a0).value);
-    }
-}
 pub unsafe fn receiver_0(s: *mut Vec<libc::c_char>, calls: *mut i32) -> *mut Vec<libc::c_char> {
     (*calls).prefix_inc();
     return s;
@@ -237,11 +229,7 @@ unsafe fn main_0() -> i32 {
             + 1,
     )
     .to_vec();
-    let mut text: Text = ::std::mem::MaybeUninit::uninit().assume_init();
-    {
-        let __d = &raw mut text;
-        (&raw mut (*__d).value).write(&mut field);
-    };
+    let mut text: Text = Text { value: &mut field };
     {
         out = {
             let __range = 1_usize

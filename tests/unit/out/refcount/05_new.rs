@@ -9,19 +9,9 @@ use std::rc::{Rc, Weak};
 #[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
 #[byte_size(1)]
 pub struct A {}
-impl A {
-    pub fn new_1(this: Ptr<A>) {}
-    pub fn copy_from(this: Ptr<A>, _a0: Ptr<A>) {}
-    pub fn move_from(this: Ptr<A>, _a0: Ptr<A>) {}
-}
 #[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
 #[byte_size(1)]
 pub struct D {}
-impl D {
-    pub fn new_1(this: Ptr<D>) {}
-    pub fn copy_from(this: Ptr<D>, _a0: Ptr<D>) {}
-    pub fn move_from(this: Ptr<D>, _a0: Ptr<D>) {}
-}
 pub fn main() {
     __cpp2rust_init_globals();
     libcc2rs::cpp2rust_exit(main_0());
@@ -34,19 +24,8 @@ fn main_0() -> i32 {
     c.delete();
     ({
         DImpl::operator_call(
-            &{
-                let __v: Value<D> = Rc::new(RefCell::new(<D>::uninit()));
-                {
-                    let __d = __v.as_pointer();
-                };
-                __v
-            }
-            .as_pointer(),
-            {
-                let __p = Ptr::alloc(<A>::uninit());
-                A::new_1(__p.clone());
-                __p
-            },
+            &Rc::new(RefCell::new(<D>::default())).as_pointer(),
+            Ptr::alloc(<A>::default()),
         )
     });
     return 0;

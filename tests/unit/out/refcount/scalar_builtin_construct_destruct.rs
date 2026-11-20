@@ -12,15 +12,6 @@ pub struct Pod {
     #[offset(0)]
     pub v: i32,
 }
-impl Pod {
-    pub fn new_1(this: Ptr<Pod>) {}
-    pub fn copy_from(this: Ptr<Pod>, _a0: Ptr<Pod>) {
-        field!(this, v).write(_a0.with(|__s| __s.v));
-    }
-    pub fn move_from(this: Ptr<Pod>, _a0: Ptr<Pod>) {
-        field!(this, v).write({ (*_a0.upgrade().deref()).v });
-    }
-}
 pub fn zero_0() -> Ptr<i32> {
     return Ptr::<i32>::null();
 }
@@ -44,11 +35,7 @@ fn main_0() -> i32 {
     let x: Value<i32> = Rc::new(RefCell::new(5));
     ({ destroy_2((x.as_pointer())) });
     assert!(({ ((*x.borrow()) == 5) }));
-    let pod: Value<Pod> = Rc::new(RefCell::new(<Pod>::uninit()));
-    {
-        let __d = pod.as_pointer();
-        field!(__d, v).write(7);
-    };
+    let pod: Value<Pod> = Rc::new(RefCell::new(Pod { v: 7 }));
     ({ destroy_3((pod.as_pointer())) });
     assert!(({ ({ (*pod.borrow()).v } == 7) }));
     return 0;

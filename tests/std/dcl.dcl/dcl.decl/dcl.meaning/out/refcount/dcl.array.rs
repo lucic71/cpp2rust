@@ -16,25 +16,6 @@ pub struct p6_array_of_pointers_to_data_members_HasThreeInts {
     #[offset(8)]
     pub third: i32,
 }
-impl p6_array_of_pointers_to_data_members_HasThreeInts {
-    pub fn new_1(this: Ptr<p6_array_of_pointers_to_data_members_HasThreeInts>) {}
-    pub fn copy_from(
-        this: Ptr<p6_array_of_pointers_to_data_members_HasThreeInts>,
-        _a0: Ptr<p6_array_of_pointers_to_data_members_HasThreeInts>,
-    ) {
-        field!(this, first).write(_a0.with(|__s| __s.first));
-        field!(this, second).write(_a0.with(|__s| __s.second));
-        field!(this, third).write(_a0.with(|__s| __s.third));
-    }
-    pub fn move_from(
-        this: Ptr<p6_array_of_pointers_to_data_members_HasThreeInts>,
-        _a0: Ptr<p6_array_of_pointers_to_data_members_HasThreeInts>,
-    ) {
-        field!(this, first).write({ (*_a0.upgrade().deref()).first });
-        field!(this, second).write({ (*_a0.upgrade().deref()).second });
-        field!(this, third).write({ (*_a0.upgrade().deref()).third });
-    }
-}
 pub fn test_0() {
     let members: Value<Box<[isize]>> = Rc::new(RefCell::new(Box::new([
         (offset_of_field!(p6_array_of_pointers_to_data_members_HasThreeInts, third) as isize),
@@ -42,14 +23,12 @@ pub fn test_0() {
         (offset_of_field!(p6_array_of_pointers_to_data_members_HasThreeInts, second) as isize),
     ])));
     let obj: Value<p6_array_of_pointers_to_data_members_HasThreeInts> = Rc::new(RefCell::new(
-        <p6_array_of_pointers_to_data_members_HasThreeInts>::uninit(),
+        p6_array_of_pointers_to_data_members_HasThreeInts {
+            first: 4,
+            second: 5,
+            third: 6,
+        },
     ));
-    {
-        let __d = obj.as_pointer();
-        field!(__d, first).write(4);
-        field!(__d, second).write(5);
-        field!(__d, third).write(6);
-    };
     assert!(
         ({
             (((obj.as_pointer())

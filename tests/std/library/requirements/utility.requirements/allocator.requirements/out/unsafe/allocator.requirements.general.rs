@@ -9,22 +9,6 @@ use std::rc::Rc;
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct p16_rebind_member_Alloc_std_pair_const_int__int___rebind_std_pair_const_int__int__ {}
-impl p16_rebind_member_Alloc_std_pair_const_int__int___rebind_std_pair_const_int__int__ {
-    pub unsafe fn new_1(
-        this: *mut p16_rebind_member_Alloc_std_pair_const_int__int___rebind_std_pair_const_int__int__,
-    ) {
-    }
-    pub unsafe fn copy_from(
-        this: *mut p16_rebind_member_Alloc_std_pair_const_int__int___rebind_std_pair_const_int__int__,
-        _a0 : *const p16_rebind_member_Alloc_std_pair_const_int__int___rebind_std_pair_const_int__int__,
-    ) {
-    }
-    pub unsafe fn move_from(
-        this: *mut p16_rebind_member_Alloc_std_pair_const_int__int___rebind_std_pair_const_int__int__,
-        _a0 : *mut p16_rebind_member_Alloc_std_pair_const_int__int___rebind_std_pair_const_int__int__,
-    ) {
-    }
-}
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg)]
 pub struct p16_rebind_member_Alloc_std_pair_const_int__int__ {
@@ -33,18 +17,6 @@ pub struct p16_rebind_member_Alloc_std_pair_const_int__int__ {
 impl p16_rebind_member_Alloc_std_pair_const_int__int__ {
     pub unsafe fn new(this: *mut p16_rebind_member_Alloc_std_pair_const_int__int__) {
         (&raw mut (*this).id).write(0);
-    }
-    pub unsafe fn copy_from(
-        this: *mut p16_rebind_member_Alloc_std_pair_const_int__int__,
-        _a0: *const p16_rebind_member_Alloc_std_pair_const_int__int__,
-    ) {
-        (&raw mut (*this).id).write((*_a0).id);
-    }
-    pub unsafe fn move_from(
-        this: *mut p16_rebind_member_Alloc_std_pair_const_int__int__,
-        _a0: *mut p16_rebind_member_Alloc_std_pair_const_int__int__,
-    ) {
-        (&raw mut (*this).id).write((*_a0).id);
     }
 }
 impl Default for p16_rebind_member_Alloc_std_pair_const_int__int__ {
@@ -65,19 +37,6 @@ pub unsafe fn test_0() {
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct p18_rebind_to_container_node_Alloc_std_pair_const_int__int__ {}
-impl p18_rebind_to_container_node_Alloc_std_pair_const_int__int__ {
-    pub unsafe fn new(this: *mut p18_rebind_to_container_node_Alloc_std_pair_const_int__int__) {}
-    pub unsafe fn copy_from(
-        this: *mut p18_rebind_to_container_node_Alloc_std_pair_const_int__int__,
-        _a0: *const p18_rebind_to_container_node_Alloc_std_pair_const_int__int__,
-    ) {
-    }
-    pub unsafe fn move_from(
-        this: *mut p18_rebind_to_container_node_Alloc_std_pair_const_int__int__,
-        _a0: *mut p18_rebind_to_container_node_Alloc_std_pair_const_int__int__,
-    ) {
-    }
-}
 pub unsafe fn test_1() {
     let mut m: UnsafeMap<i32, (i32, i32)> = UnsafeMap::new();
     (*m.subscript_move(&mut 1, |__k| cpp_move_unsafe!(__k), || 0_i32)) = 2;

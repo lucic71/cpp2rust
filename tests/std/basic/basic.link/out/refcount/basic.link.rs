@@ -73,17 +73,6 @@ pub struct Record_19 {
     #[offset(0)]
     pub id: i32,
 }
-impl Record_19 {
-    pub fn new_1(this: Ptr<Record_19>) {
-        field!(this, id).write(100);
-    }
-    pub fn copy_from(this: Ptr<Record_19>, _a0: Ptr<Record_19>) {
-        field!(this, id).write(_a0.with(|__s| __s.id));
-    }
-    pub fn move_from(this: Ptr<Record_19>, _a0: Ptr<Record_19>) {
-        field!(this, id).write({ (*_a0.upgrade().deref()).id });
-    }
-}
 impl Default for Record_19 {
     fn default() -> Self {
         { Record_19 { id: 100 } }
@@ -96,9 +85,8 @@ pub fn test_21() {
     assert!((({ bump_18() }) == 2));
     assert!((({ bump_in_b_22() }) == 51));
     assert!((counter_17.with(|rc| *rc.borrow()) == 2));
-    let record: Value<Record_19> = Rc::new(RefCell::new(<Record_19>::uninit()));
-    Record_19::new_1(record.as_pointer());
-    assert!(({ ({ (*record.borrow()).id } == 100) }));
+    let mut record: Record_19 = <Record_19>::default();
+    assert!((record.id == 100));
     assert!((({ record_id_in_b_23() }) == 200));
     assert!((depth_20.with(|rc| *rc.borrow()) == 3));
     assert!((({ depth_in_b_24() }) == 4));
@@ -118,17 +106,11 @@ pub fn test_29() {
 #[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
 #[byte_size(1)]
 pub struct Tally_31 {}
-impl Tally_31 {
-    pub fn new_1(this: Ptr<Tally_31>) {}
-    pub fn copy_from(this: Ptr<Tally_31>, _a0: Ptr<Tally_31>) {}
-    pub fn move_from(this: Ptr<Tally_31>, _a0: Ptr<Tally_31>) {}
-}
 thread_local!(
     pub static total_32: Value<i32> = Rc::new(RefCell::new(10));
 );
 pub fn test_33() {
-    let tally: Value<Tally_31> = Rc::new(RefCell::new(<Tally_31>::uninit()));
-    Tally_31::new_1(tally.as_pointer());
+    let tally: Value<Tally_31> = Rc::new(RefCell::new(<Tally_31>::default()));
     assert!((({ Tally_31Impl::add(&tally.as_pointer(), 1,) }) == 11));
     assert!((({ add_in_b_34(1,) }) == 102));
     assert!((total_32.with(|rc| *rc.borrow()) == 11));
@@ -136,19 +118,6 @@ pub fn test_33() {
 #[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
 #[byte_size(1)]
 pub struct p5_members_of_class_with_external_linkage_Ledger {}
-impl p5_members_of_class_with_external_linkage_Ledger {
-    pub fn new_1(this: Ptr<p5_members_of_class_with_external_linkage_Ledger>) {}
-    pub fn copy_from(
-        this: Ptr<p5_members_of_class_with_external_linkage_Ledger>,
-        _a0: Ptr<p5_members_of_class_with_external_linkage_Ledger>,
-    ) {
-    }
-    pub fn move_from(
-        this: Ptr<p5_members_of_class_with_external_linkage_Ledger>,
-        _a0: Ptr<p5_members_of_class_with_external_linkage_Ledger>,
-    ) {
-    }
-}
 pub fn test_36() {
     assert!((balance_35.with(|rc| *rc.borrow()) == 50));
     balance_35.with(|rc| *rc.borrow_mut() = 60);
@@ -202,14 +171,12 @@ thread_local!(
     static count_48: Value<i32> = Rc::new(RefCell::new(1));
 );
 pub fn first_key_51() -> i32 {
-    let entry: Value<Entry_52> = Rc::new(RefCell::new(<Entry_52>::uninit()));
-    Entry_52::new_1(entry.as_pointer());
-    return { (*entry.borrow()).key };
+    let mut entry: Entry_52 = <Entry_52>::default();
+    return entry.key;
 }
 pub fn second_key_plus_value_53() -> i32 {
-    let entry: Value<Entry_54> = Rc::new(RefCell::new(<Entry_54>::uninit()));
-    Entry_54::new_1(entry.as_pointer());
-    return ({ (*entry.borrow()).key } + { (*entry.borrow()).value });
+    let mut entry: Entry_54 = <Entry_54>::default();
+    return (entry.key + entry.value);
 }
 pub fn test_55() {
     assert!((({ first_key_51() }) == 1));
@@ -221,17 +188,6 @@ pub fn test_55() {
 pub struct Entry_52 {
     #[offset(0)]
     pub key: i32,
-}
-impl Entry_52 {
-    pub fn new_1(this: Ptr<Entry_52>) {
-        field!(this, key).write(1);
-    }
-    pub fn copy_from(this: Ptr<Entry_52>, _a0: Ptr<Entry_52>) {
-        field!(this, key).write(_a0.with(|__s| __s.key));
-    }
-    pub fn move_from(this: Ptr<Entry_52>, _a0: Ptr<Entry_52>) {
-        field!(this, key).write({ (*_a0.upgrade().deref()).key });
-    }
 }
 impl Default for Entry_52 {
     fn default() -> Self {
@@ -245,20 +201,6 @@ pub struct Entry_54 {
     pub key: i32,
     #[offset(4)]
     pub value: i32,
-}
-impl Entry_54 {
-    pub fn new_1(this: Ptr<Entry_54>) {
-        field!(this, key).write(2);
-        field!(this, value).write(30);
-    }
-    pub fn copy_from(this: Ptr<Entry_54>, _a0: Ptr<Entry_54>) {
-        field!(this, key).write(_a0.with(|__s| __s.key));
-        field!(this, value).write(_a0.with(|__s| __s.value));
-    }
-    pub fn move_from(this: Ptr<Entry_54>, _a0: Ptr<Entry_54>) {
-        field!(this, key).write({ (*_a0.upgrade().deref()).key });
-        field!(this, value).write({ (*_a0.upgrade().deref()).value });
-    }
 }
 impl Default for Entry_54 {
     fn default() -> Self {
@@ -370,20 +312,6 @@ pub struct Record_65 {
     #[offset(8)]
     pub extra: i32,
 }
-impl Record_65 {
-    pub fn new_1(this: Ptr<Record_65>) {
-        field!(this, id).write(200_i64);
-        field!(this, extra).write(1);
-    }
-    pub fn copy_from(this: Ptr<Record_65>, _a0: Ptr<Record_65>) {
-        field!(this, id).write(_a0.with(|__s| __s.id));
-        field!(this, extra).write(_a0.with(|__s| __s.extra));
-    }
-    pub fn move_from(this: Ptr<Record_65>, _a0: Ptr<Record_65>) {
-        field!(this, id).write({ (*_a0.upgrade().deref()).id });
-        field!(this, extra).write({ (*_a0.upgrade().deref()).extra });
-    }
-}
 impl Default for Record_65 {
     fn default() -> Self {
         {
@@ -401,9 +329,8 @@ pub fn bump_in_b_22() -> i32 {
     return ({ bump_64() });
 }
 pub fn record_id_in_b_23() -> i32 {
-    let record: Value<Record_65> = Rc::new(RefCell::new(<Record_65>::uninit()));
-    Record_65::new_1(record.as_pointer());
-    return ({ (*record.borrow()).id } as i32);
+    let mut record: Record_65 = <Record_65>::default();
+    return (record.id as i32);
 }
 pub fn depth_in_b_24() -> i32 {
     return depth_66.with(|rc| *rc.borrow());
@@ -424,17 +351,11 @@ pub fn raise_30(mut by: i32) -> i32 {
 #[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
 #[byte_size(1)]
 pub struct Tally_67 {}
-impl Tally_67 {
-    pub fn new_1(this: Ptr<Tally_67>) {}
-    pub fn copy_from(this: Ptr<Tally_67>, _a0: Ptr<Tally_67>) {}
-    pub fn move_from(this: Ptr<Tally_67>, _a0: Ptr<Tally_67>) {}
-}
 thread_local!(
     pub static total_68: Value<i32> = Rc::new(RefCell::new(100));
 );
 pub fn add_in_b_34(mut amount: i32) -> i32 {
-    let tally: Value<Tally_67> = Rc::new(RefCell::new(<Tally_67>::uninit()));
-    Tally_67::new_1(tally.as_pointer());
+    let tally: Value<Tally_67> = Rc::new(RefCell::new(<Tally_67>::default()));
     return ({ Tally_67Impl::add(&tally.as_pointer(), amount) });
 }
 thread_local!(
@@ -466,26 +387,14 @@ thread_local!(
     static count_70: Value<i32> = Rc::new(RefCell::new(0));
 );
 pub fn key_in_b_56() -> i32 {
-    let entry: Value<Entry_71> = Rc::new(RefCell::new(<Entry_71>::uninit()));
-    Entry_71::new_1(entry.as_pointer());
-    return ({ (*entry.borrow()).key } as i32);
+    let mut entry: Entry_71 = <Entry_71>::default();
+    return (entry.key as i32);
 }
 #[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg)]
 #[byte_size(8)]
 pub struct Entry_71 {
     #[offset(0)]
     pub key: i64,
-}
-impl Entry_71 {
-    pub fn new_1(this: Ptr<Entry_71>) {
-        field!(this, key).write(400_i64);
-    }
-    pub fn copy_from(this: Ptr<Entry_71>, _a0: Ptr<Entry_71>) {
-        field!(this, key).write(_a0.with(|__s| __s.key));
-    }
-    pub fn move_from(this: Ptr<Entry_71>, _a0: Ptr<Entry_71>) {
-        field!(this, key).write({ (*_a0.upgrade().deref()).key });
-    }
 }
 impl Default for Entry_71 {
     fn default() -> Self {

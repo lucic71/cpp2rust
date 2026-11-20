@@ -12,21 +12,6 @@ pub struct p4_reference_const_cast_Pair {
     #[offset(0)]
     pub x: i32,
 }
-impl p4_reference_const_cast_Pair {
-    pub fn new_1(this: Ptr<p4_reference_const_cast_Pair>) {}
-    pub fn copy_from(
-        this: Ptr<p4_reference_const_cast_Pair>,
-        _a0: Ptr<p4_reference_const_cast_Pair>,
-    ) {
-        field!(this, x).write(_a0.with(|__s| __s.x));
-    }
-    pub fn move_from(
-        this: Ptr<p4_reference_const_cast_Pair>,
-        _a0: Ptr<p4_reference_const_cast_Pair>,
-    ) {
-        field!(this, x).write({ (*_a0.upgrade().deref()).x });
-    }
-}
 pub fn take_0(r: Ptr<i32>) {
     r.write(8);
 }
@@ -38,11 +23,7 @@ pub fn test_1() {
     ({ take_0((cr).clone()) });
     assert!(({ ((*v.borrow()) == 8) }));
     let pair: Value<p4_reference_const_cast_Pair> =
-        Rc::new(RefCell::new(<p4_reference_const_cast_Pair>::uninit()));
-    {
-        let __d = pair.as_pointer();
-        field!(__d, x).write(1);
-    };
+        Rc::new(RefCell::new(p4_reference_const_cast_Pair { x: 1 }));
     let cpair: Ptr<p4_reference_const_cast_Pair> = pair.as_pointer();
     field!(cpair, x).write(2);
     assert!(({ ({ (*pair.borrow()).x } == 2) }));

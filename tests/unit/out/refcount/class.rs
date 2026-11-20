@@ -14,17 +14,6 @@ pub struct Pair {
     #[offset(4)]
     pub second: i32,
 }
-impl Pair {
-    pub fn new_1(this: Ptr<Pair>) {}
-    pub fn copy_from(this: Ptr<Pair>, _a0: Ptr<Pair>) {
-        field!(this, first).write(_a0.with(|__s| __s.first));
-        field!(this, second).write(_a0.with(|__s| __s.second));
-    }
-    pub fn move_from(this: Ptr<Pair>, _a0: Ptr<Pair>) {
-        field!(this, first).write({ (*_a0.upgrade().deref()).first });
-        field!(this, second).write({ (*_a0.upgrade().deref()).second });
-    }
-}
 #[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
 #[byte_size(16)]
 pub struct Route {
@@ -34,19 +23,6 @@ pub struct Route {
     #[offset(8)]
     pub cost: f64,
 }
-impl Route {
-    pub fn new_1(this: Ptr<Route>) {
-        Pair::new_1(field_ptr!(this, path));
-    }
-    pub fn copy_from(this: Ptr<Route>, _a0: Ptr<Route>) {
-        Pair::copy_from(field_ptr!(this, path), { field_ptr!(_a0, path) });
-        field!(this, cost).write(_a0.with(|__s| __s.cost));
-    }
-    pub fn move_from(this: Ptr<Route>, _a0: Ptr<Route>) {
-        Pair::move_from(field_ptr!(this, path), { field_ptr!(_a0, path) });
-        field!(this, cost).write({ (*_a0.upgrade().deref()).cost });
-    }
-}
 #[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
 #[byte_size(8)]
 pub struct Counter {
@@ -54,17 +30,6 @@ pub struct Counter {
     pub v: i32,
     #[offset(4)]
     pub calls: i32,
-}
-impl Counter {
-    pub fn new_1(this: Ptr<Counter>) {}
-    pub fn copy_from(this: Ptr<Counter>, _a0: Ptr<Counter>) {
-        field!(this, v).write(_a0.with(|__s| __s.v));
-        field!(this, calls).write(_a0.with(|__s| __s.calls));
-    }
-    pub fn move_from(this: Ptr<Counter>, _a0: Ptr<Counter>) {
-        field!(this, v).write({ (*_a0.upgrade().deref()).v });
-        field!(this, calls).write({ (*_a0.upgrade().deref()).calls });
-    }
 }
 impl CppEq for Counter {
     fn equal(__lhs: &Ptr<Self>, __rhs: &Ptr<Self>) -> bool {
@@ -76,15 +41,6 @@ impl CppEq for Counter {
 pub struct Tally {
     #[offset(0)]
     pub calls: i32,
-}
-impl Tally {
-    pub fn new_1(this: Ptr<Tally>) {}
-    pub fn copy_from(this: Ptr<Tally>, _a0: Ptr<Tally>) {
-        field!(this, calls).write(_a0.with(|__s| __s.calls));
-    }
-    pub fn move_from(this: Ptr<Tally>, _a0: Ptr<Tally>) {
-        field!(this, calls).write({ (*_a0.upgrade().deref()).calls });
-    }
 }
 pub fn RandomRoute_0(route: Ptr<Route>) -> i32 {
     if ((route.with(|__s| __s.path.first) % 2) != 0) {
@@ -105,26 +61,20 @@ pub fn main() {
     libcc2rs::cpp2rust_exit(main_0());
 }
 fn main_0() -> i32 {
-    let route1: Value<Route> = Rc::new(RefCell::new(<Route>::uninit()));
-    {
-        let __d = route1.as_pointer();
-        {
-            let __d = field_ptr!(__d, path);
-            field!(__d, first).write(0);
-            field!(__d, second).write(1);
-        };
-        field!(__d, cost).write(5_f64);
-    };
-    let route2: Value<Route> = Rc::new(RefCell::new(<Route>::uninit()));
-    {
-        let __d = route2.as_pointer();
-        {
-            let __d = field_ptr!(__d, path);
-            field!(__d, first).write(1);
-            field!(__d, second).write(0);
-        };
-        field!(__d, cost).write(10_f64);
-    };
+    let route1: Value<Route> = Rc::new(RefCell::new(Route {
+        path: Pair {
+            first: 0,
+            second: 1,
+        },
+        cost: 5_f64,
+    }));
+    let route2: Value<Route> = Rc::new(RefCell::new(Route {
+        path: Pair {
+            first: 1,
+            second: 0,
+        },
+        cost: 10_f64,
+    }));
     let mut old_cost: f64 = ({
         RouteImpl::SetCost(
             &route1.as_pointer(),
@@ -137,18 +87,8 @@ fn main_0() -> i32 {
             + old_cost)
             == 9_f64)
     );
-    let c1: Value<Counter> = Rc::new(RefCell::new(<Counter>::uninit()));
-    {
-        let __d = c1.as_pointer();
-        field!(__d, v).write(3);
-        field!(__d, calls).write(0);
-    };
-    let c2: Value<Counter> = Rc::new(RefCell::new(<Counter>::uninit()));
-    {
-        let __d = c2.as_pointer();
-        field!(__d, v).write(3);
-        field!(__d, calls).write(0);
-    };
+    let c1: Value<Counter> = Rc::new(RefCell::new(Counter { v: 3, calls: 0 }));
+    let c2: Value<Counter> = Rc::new(RefCell::new(Counter { v: 3, calls: 0 }));
     let mut pc: Ptr<Counter> = (c1.as_pointer());
     assert!((({ CounterImpl::Get(&c1.as_pointer(),) }) == 3));
     assert!((({ CounterImpl::Get(&c2.as_pointer(),) }) == 3));
@@ -157,16 +97,8 @@ fn main_0() -> i32 {
     assert!(({ CounterImpl::operator_eq(&c2.as_pointer(), c1.as_pointer(),) }));
     assert!(({ ({ (*c1.borrow()).calls } == 3) }));
     assert!(({ ({ (*c2.borrow()).calls } == 2) }));
-    let t: Value<Tally> = Rc::new(RefCell::new(<Tally>::uninit()));
-    {
-        let __d = t.as_pointer();
-        field!(__d, calls).write(0);
-    };
-    let ct: Value<Tally> = Rc::new(RefCell::new(<Tally>::uninit()));
-    {
-        let __d = ct.as_pointer();
-        field!(__d, calls).write(0);
-    };
+    let t: Value<Tally> = Rc::new(RefCell::new(Tally { calls: 0 }));
+    let ct: Value<Tally> = Rc::new(RefCell::new(Tally { calls: 0 }));
     let rt: Ptr<Tally> = t.as_pointer();
     assert!((({ TallyImpl::SameNameBetweenConstAndNonConst_1(&t.as_pointer(),) }) == 1));
     assert!((({ TallyImpl::SameNameBetweenConstAndNonConst_2(&ct.as_pointer(),) }) == 2));

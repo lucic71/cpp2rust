@@ -18,19 +18,6 @@ pub struct node_t {
     #[offset(16)]
     pub value: i32,
 }
-impl node_t {
-    pub fn new_1(this: Ptr<node_t>) {}
-    pub fn copy_from(this: Ptr<node_t>, _a0: Ptr<node_t>) {
-        field!(this, left).write(_a0.with(|__s| __s.left.clone()));
-        field!(this, right).write(_a0.with(|__s| __s.right.clone()));
-        field!(this, value).write(_a0.with(|__s| __s.value));
-    }
-    pub fn move_from(this: Ptr<node_t>, _a0: Ptr<node_t>) {
-        field!(this, left).write({ (*_a0.upgrade().deref()).left.clone() });
-        field!(this, right).write({ (*_a0.upgrade().deref()).right.clone() });
-        field!(this, value).write({ (*_a0.upgrade().deref()).value });
-    }
-}
 pub fn find_0(mut node: Ptr<node_t>, mut value: i32) -> Ptr<node_t> {
     if ({ value } < { node.with(|__s| __s.value) })
         && (!((node.with(|__s| __s.left.clone())).is_null()))
@@ -63,81 +50,31 @@ pub fn main() {
     libcc2rs::cpp2rust_exit(main_0());
 }
 fn main_0() -> i32 {
-    let mut tree: Option<Value<node_t>> = Some(Rc::new(RefCell::new(
-        Rc::try_unwrap({
-            let __v: Value<node_t> = Rc::new(RefCell::new(<node_t>::uninit()));
-            {
-                let __d = __v.as_pointer();
-                field!(__d, left).write(Ptr::<node_t>::null());
-                field!(__d, right).write(Ptr::<node_t>::null());
-                field!(__d, value).write(0);
-            };
-            __v
-        })
-        .ok()
-        .unwrap()
-        .into_inner(),
-    )));
-    let mut n1: Option<Value<node_t>> = Some(Rc::new(RefCell::new(
-        Rc::try_unwrap({
-            let __v: Value<node_t> = Rc::new(RefCell::new(<node_t>::uninit()));
-            {
-                let __d = __v.as_pointer();
-                field!(__d, left).write(Ptr::<node_t>::null());
-                field!(__d, right).write(Ptr::<node_t>::null());
-                field!(__d, value).write(1);
-            };
-            __v
-        })
-        .ok()
-        .unwrap()
-        .into_inner(),
-    )));
-    let mut n2: Option<Value<node_t>> = Some(Rc::new(RefCell::new(
-        Rc::try_unwrap({
-            let __v: Value<node_t> = Rc::new(RefCell::new(<node_t>::uninit()));
-            {
-                let __d = __v.as_pointer();
-                field!(__d, left).write(Ptr::<node_t>::null());
-                field!(__d, right).write(Ptr::<node_t>::null());
-                field!(__d, value).write(2);
-            };
-            __v
-        })
-        .ok()
-        .unwrap()
-        .into_inner(),
-    )));
-    let mut n3: Option<Value<node_t>> = Some(Rc::new(RefCell::new(
-        Rc::try_unwrap({
-            let __v: Value<node_t> = Rc::new(RefCell::new(<node_t>::uninit()));
-            {
-                let __d = __v.as_pointer();
-                field!(__d, left).write(Ptr::<node_t>::null());
-                field!(__d, right).write(Ptr::<node_t>::null());
-                field!(__d, value).write(3);
-            };
-            __v
-        })
-        .ok()
-        .unwrap()
-        .into_inner(),
-    )));
-    let mut n4: Option<Value<node_t>> = Some(Rc::new(RefCell::new(
-        Rc::try_unwrap({
-            let __v: Value<node_t> = Rc::new(RefCell::new(<node_t>::uninit()));
-            {
-                let __d = __v.as_pointer();
-                field!(__d, left).write(Ptr::<node_t>::null());
-                field!(__d, right).write(Ptr::<node_t>::null());
-                field!(__d, value).write(4);
-            };
-            __v
-        })
-        .ok()
-        .unwrap()
-        .into_inner(),
-    )));
+    let mut tree: Option<Value<node_t>> = Some(Rc::new(RefCell::new(node_t {
+        left: Ptr::<node_t>::null(),
+        right: Ptr::<node_t>::null(),
+        value: 0,
+    })));
+    let mut n1: Option<Value<node_t>> = Some(Rc::new(RefCell::new(node_t {
+        left: Ptr::<node_t>::null(),
+        right: Ptr::<node_t>::null(),
+        value: 1,
+    })));
+    let mut n2: Option<Value<node_t>> = Some(Rc::new(RefCell::new(node_t {
+        left: Ptr::<node_t>::null(),
+        right: Ptr::<node_t>::null(),
+        value: 2,
+    })));
+    let mut n3: Option<Value<node_t>> = Some(Rc::new(RefCell::new(node_t {
+        left: Ptr::<node_t>::null(),
+        right: Ptr::<node_t>::null(),
+        value: 3,
+    })));
+    let mut n4: Option<Value<node_t>> = Some(Rc::new(RefCell::new(node_t {
+        left: Ptr::<node_t>::null(),
+        right: Ptr::<node_t>::null(),
+        value: 4,
+    })));
     let mut ptr1: Ptr<node_t> = (tree.as_pointer());
     let __rhs = ({ insert_1((ptr1).clone(), (n1.as_pointer())) });
     ptr1 = __rhs;

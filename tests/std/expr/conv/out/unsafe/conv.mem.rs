@@ -12,23 +12,6 @@ pub struct p1_null_distinct_from_first_member_HasTwoInts {
     pub first: i32,
     pub second: i32,
 }
-impl p1_null_distinct_from_first_member_HasTwoInts {
-    pub unsafe fn new_1(this: *mut p1_null_distinct_from_first_member_HasTwoInts) {}
-    pub unsafe fn copy_from(
-        this: *mut p1_null_distinct_from_first_member_HasTwoInts,
-        _a0: *const p1_null_distinct_from_first_member_HasTwoInts,
-    ) {
-        (&raw mut (*this).first).write((*_a0).first);
-        (&raw mut (*this).second).write((*_a0).second);
-    }
-    pub unsafe fn move_from(
-        this: *mut p1_null_distinct_from_first_member_HasTwoInts,
-        _a0: *mut p1_null_distinct_from_first_member_HasTwoInts,
-    ) {
-        (&raw mut (*this).first).write((*_a0).first);
-        (&raw mut (*this).second).write((*_a0).second);
-    }
-}
 pub unsafe fn test_0() {
     let mut null_pm: isize = -1_isize;
     let mut first_pm: isize =

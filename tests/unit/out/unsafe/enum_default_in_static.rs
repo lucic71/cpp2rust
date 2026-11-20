@@ -16,8 +16,8 @@ pub struct Config {
     pub count: i32,
     pub mode: Mode,
 }
-pub static mut config_0: libcc2rs::LazyStorage<Config> =
-    libcc2rs::LazyStorage::new(|__p| unsafe { __p.write(<Config>::default()) });
+pub static mut config_0: std::cell::LazyCell<Config> =
+    std::cell::LazyCell::new(|| unsafe { <Config>::default() });
 pub fn main() {
     unsafe {
         __cpp2rust_init_globals();
@@ -25,10 +25,13 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    assert!((((*(*&raw const config_0).get()).count) == (0)));
-    assert!((((*(*&raw const config_0).get()).mode as u32) == ((Mode_MODE_NONE as i32) as u32)));
+    assert!((((*std::cell::LazyCell::force_mut(&mut *&raw mut config_0)).count) == (0)));
+    assert!(
+        (((*std::cell::LazyCell::force_mut(&mut *&raw mut config_0)).mode as u32)
+            == ((Mode_MODE_NONE as i32) as u32))
+    );
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {
-    (*&raw const config_0).get();
+    std::cell::LazyCell::force(&*&raw const config_0);
 }

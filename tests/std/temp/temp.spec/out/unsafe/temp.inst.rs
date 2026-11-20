@@ -21,18 +21,6 @@ impl p2_reference_does_not_instantiate_Member {
     ) {
         (&raw mut (*this).value).write(2);
     }
-    pub unsafe fn copy_from(
-        this: *mut p2_reference_does_not_instantiate_Member,
-        _a0: *const p2_reference_does_not_instantiate_Member,
-    ) {
-        (&raw mut (*this).value).write((*_a0).value);
-    }
-    pub unsafe fn move_from(
-        this: *mut p2_reference_does_not_instantiate_Member,
-        _a0: *mut p2_reference_does_not_instantiate_Member,
-    ) {
-        (&raw mut (*this).value).write((*_a0).value);
-    }
 }
 impl Default for p2_reference_does_not_instantiate_Member {
     fn default() -> Self {
@@ -52,9 +40,7 @@ impl p2_reference_does_not_instantiate_Holder {
         this: *mut p2_reference_does_not_instantiate_Holder,
         _a0: *mut p2_reference_does_not_instantiate_Holder,
     ) {
-        p2_reference_does_not_instantiate_Member::move_from((&raw mut (*this).member), {
-            &mut (*_a0).member
-        });
+        (&raw mut (*this).member).write((*_a0).member);
     }
 }
 pub unsafe fn test_0() {

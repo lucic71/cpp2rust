@@ -18,61 +18,22 @@ pub struct p9_move_trivially_copyable_Point {
     pub x: i32,
     pub y: i32,
 }
-impl p9_move_trivially_copyable_Point {
-    pub unsafe fn new_1(this: *mut p9_move_trivially_copyable_Point) {}
-    pub unsafe fn copy_from(
-        this: *mut p9_move_trivially_copyable_Point,
-        _a0: *const p9_move_trivially_copyable_Point,
-    ) {
-        (&raw mut (*this).x).write((*_a0).x);
-        (&raw mut (*this).y).write((*_a0).y);
-    }
-    pub unsafe fn move_from(
-        this: *mut p9_move_trivially_copyable_Point,
-        _a0: *mut p9_move_trivially_copyable_Point,
-    ) {
-        (&raw mut (*this).x).write((*_a0).x);
-        (&raw mut (*this).y).write((*_a0).y);
-    }
-}
 pub unsafe fn test_1() {
     let mut source: p9_move_trivially_copyable_Point =
-        ::std::mem::MaybeUninit::uninit().assume_init();
-    {
-        let __d = &raw mut source;
-        (&raw mut (*__d).x).write(1);
-        (&raw mut (*__d).y).write(2);
-    };
-    let mut target: p9_move_trivially_copyable_Point =
-        ::std::mem::MaybeUninit::uninit().assume_init();
-    p9_move_trivially_copyable_Point::move_from(&raw mut target, { &mut source });
+        p9_move_trivially_copyable_Point { x: 1, y: 2 };
+    let mut target: p9_move_trivially_copyable_Point = source;
     assert!(((target.x) == (1)) && ((target.y) == (2)));
     assert!(((source.x) == (1)) && ((source.y) == (2)));
     let mut assigned: p9_move_trivially_copyable_Point =
-        ::std::mem::MaybeUninit::uninit().assume_init();
-    {
-        let __d = &raw mut assigned;
-        (&raw mut (*__d).x).write(0);
-        (&raw mut (*__d).y).write(0);
-    };
+        p9_move_trivially_copyable_Point { x: 0, y: 0 };
     let mut other: p9_move_trivially_copyable_Point =
-        ::std::mem::MaybeUninit::uninit().assume_init();
-    {
-        let __d = &raw mut other;
-        (&raw mut (*__d).x).write(3);
-        (&raw mut (*__d).y).write(4);
-    };
+        p9_move_trivially_copyable_Point { x: 3, y: 4 };
     assigned = other;
     assert!(((assigned.x) == (3)) && ((assigned.y) == (4)));
     assert!(((other.x) == (3)) && ((other.y) == (4)));
     let mut points: Vec<p9_move_trivially_copyable_Point> = Vec::new();
     let mut element: p9_move_trivially_copyable_Point =
-        ::std::mem::MaybeUninit::uninit().assume_init();
-    {
-        let __d = &raw mut element;
-        (&raw mut (*__d).x).write(5);
-        (&raw mut (*__d).y).write(6);
-    };
+        p9_move_trivially_copyable_Point { x: 5, y: 6 };
     {
         let __a1 = element;
         points.push(__a1)

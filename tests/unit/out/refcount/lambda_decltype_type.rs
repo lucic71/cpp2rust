@@ -19,38 +19,6 @@ pub struct Sorted__lambda_at_lambda_decltype_type_cpp_22_18__ {
     #[byte_size(1)]
     pub cmp: FnPtr<fn(i32, i32) -> bool>,
 }
-impl Sorted__lambda_at_lambda_decltype_type_cpp_22_18__ {
-    pub fn new_1(this: Ptr<Sorted__lambda_at_lambda_decltype_type_cpp_22_18__>) {
-        field!(this, size).write(0);
-        field!(this, cmp).write(FnPtr::<fn(i32, i32) -> bool>::new(
-            |mut a: i32, mut b: i32| -> bool {
-                {
-                    return (a > b);
-                }
-            },
-        ));
-    }
-    pub fn copy_from(
-        this: Ptr<Sorted__lambda_at_lambda_decltype_type_cpp_22_18__>,
-        _a0: Ptr<Sorted__lambda_at_lambda_decltype_type_cpp_22_18__>,
-    ) {
-        field!(this, items).write(Box::new(std::array::from_fn::<_, 4, _>(|__i: usize| {
-            (*_a0.upgrade().deref()).items[(__i) as usize]
-        })));
-        field!(this, size).write(_a0.with(|__s| __s.size));
-        field!(this, cmp).write((*_a0.upgrade().deref()).cmp.copy_from());
-    }
-    pub fn move_from(
-        this: Ptr<Sorted__lambda_at_lambda_decltype_type_cpp_22_18__>,
-        _a0: Ptr<Sorted__lambda_at_lambda_decltype_type_cpp_22_18__>,
-    ) {
-        field!(this, items).write(Box::new(std::array::from_fn::<_, 4, _>(|__i: usize| {
-            (*_a0.upgrade().deref()).items[(__i) as usize]
-        })));
-        field!(this, size).write({ (*_a0.upgrade().deref()).size });
-        field!(this, cmp).write((*_a0.upgrade().deref()).cmp.move_from());
-    }
-}
 impl Default for Sorted__lambda_at_lambda_decltype_type_cpp_22_18__ {
     fn default() -> Self {
         {
@@ -78,38 +46,6 @@ pub struct Sorted__lambda_at_lambda_decltype_type_cpp_19_23__ {
     #[offset(20)]
     #[byte_size(1)]
     pub cmp: FnPtr<fn(i32, i32) -> bool>,
-}
-impl Sorted__lambda_at_lambda_decltype_type_cpp_19_23__ {
-    pub fn new_1(this: Ptr<Sorted__lambda_at_lambda_decltype_type_cpp_19_23__>) {
-        field!(this, size).write(0);
-        field!(this, cmp).write(FnPtr::<fn(i32, i32) -> bool>::new(
-            |mut a: i32, mut b: i32| -> bool {
-                {
-                    return (a < b);
-                }
-            },
-        ));
-    }
-    pub fn copy_from(
-        this: Ptr<Sorted__lambda_at_lambda_decltype_type_cpp_19_23__>,
-        _a0: Ptr<Sorted__lambda_at_lambda_decltype_type_cpp_19_23__>,
-    ) {
-        field!(this, items).write(Box::new(std::array::from_fn::<_, 4, _>(|__i: usize| {
-            (*_a0.upgrade().deref()).items[(__i) as usize]
-        })));
-        field!(this, size).write(_a0.with(|__s| __s.size));
-        field!(this, cmp).write((*_a0.upgrade().deref()).cmp.copy_from());
-    }
-    pub fn move_from(
-        this: Ptr<Sorted__lambda_at_lambda_decltype_type_cpp_19_23__>,
-        _a0: Ptr<Sorted__lambda_at_lambda_decltype_type_cpp_19_23__>,
-    ) {
-        field!(this, items).write(Box::new(std::array::from_fn::<_, 4, _>(|__i: usize| {
-            (*_a0.upgrade().deref()).items[(__i) as usize]
-        })));
-        field!(this, size).write({ (*_a0.upgrade().deref()).size });
-        field!(this, cmp).write((*_a0.upgrade().deref()).cmp.move_from());
-    }
 }
 impl Default for Sorted__lambda_at_lambda_decltype_type_cpp_19_23__ {
     fn default() -> Self {
@@ -140,9 +76,8 @@ fn main_0() -> i32 {
             },
         )));
     let desc: Value<Sorted__lambda_at_lambda_decltype_type_cpp_22_18__> = Rc::new(RefCell::new(
-        <Sorted__lambda_at_lambda_decltype_type_cpp_22_18__>::uninit(),
+        <Sorted__lambda_at_lambda_decltype_type_cpp_22_18__>::default(),
     ));
-    Sorted__lambda_at_lambda_decltype_type_cpp_22_18__::new_1(desc.as_pointer());
     ({ Sorted__lambda_at_lambda_decltype_type_cpp_22_18__Impl::insert(&desc.as_pointer(), 2) });
     ({ Sorted__lambda_at_lambda_decltype_type_cpp_22_18__Impl::insert(&desc.as_pointer(), 7) });
     ({ Sorted__lambda_at_lambda_decltype_type_cpp_22_18__Impl::insert(&desc.as_pointer(), 4) });
@@ -150,9 +85,8 @@ fn main_0() -> i32 {
     assert!(((array_elem!(desc.as_pointer(), items, 1).read()) == 4));
     assert!(((array_elem!(desc.as_pointer(), items, 2).read()) == 2));
     let asc: Value<Sorted__lambda_at_lambda_decltype_type_cpp_19_23__> = Rc::new(RefCell::new(
-        <Sorted__lambda_at_lambda_decltype_type_cpp_19_23__>::uninit(),
+        <Sorted__lambda_at_lambda_decltype_type_cpp_19_23__>::default(),
     ));
-    Sorted__lambda_at_lambda_decltype_type_cpp_19_23__::new_1(asc.as_pointer());
     ({ Sorted__lambda_at_lambda_decltype_type_cpp_19_23__Impl::insert(&asc.as_pointer(), 2) });
     ({ Sorted__lambda_at_lambda_decltype_type_cpp_19_23__Impl::insert(&asc.as_pointer(), 7) });
     ({ Sorted__lambda_at_lambda_decltype_type_cpp_19_23__Impl::insert(&asc.as_pointer(), 4) });

@@ -12,17 +12,6 @@ pub struct Entry {
     pub bits: u8,
     pub value: u16,
 }
-impl Entry {
-    pub unsafe fn new_1(this: *mut Entry) {}
-    pub unsafe fn copy_from(this: *mut Entry, _a0: *const Entry) {
-        (&raw mut (*this).bits).write((*_a0).bits);
-        (&raw mut (*this).value).write((*_a0).value);
-    }
-    pub unsafe fn move_from(this: *mut Entry, _a0: *mut Entry) {
-        (&raw mut (*this).bits).write((*_a0).bits);
-        (&raw mut (*this).value).write((*_a0).value);
-    }
-}
 pub fn main() {
     unsafe {
         __cpp2rust_init_globals();
@@ -30,50 +19,40 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    let mut table: [Entry; 8] = ::std::mem::MaybeUninit::uninit().assume_init();
-    {
-        let __d = (&raw mut table).cast::<Entry>();
-        {
-            let __d = __d.offset(0);
-            (&raw mut (*__d).bits).write(1_u8);
-            (&raw mut (*__d).value).write(4369_u16);
-        };
-        {
-            let __d = __d.offset(1);
-            (&raw mut (*__d).bits).write(2_u8);
-            (&raw mut (*__d).value).write(8738_u16);
-        };
-        {
-            let __d = __d.offset(2);
-            (&raw mut (*__d).bits).write(3_u8);
-            (&raw mut (*__d).value).write(13107_u16);
-        };
-        {
-            let __d = __d.offset(3);
-            (&raw mut (*__d).bits).write(4_u8);
-            (&raw mut (*__d).value).write(17476_u16);
-        };
-        {
-            let __d = __d.offset(4);
-            (&raw mut (*__d).bits).write(0_u8);
-            (&raw mut (*__d).value).write(0_u16);
-        };
-        {
-            let __d = __d.offset(5);
-            (&raw mut (*__d).bits).write(0_u8);
-            (&raw mut (*__d).value).write(0_u16);
-        };
-        {
-            let __d = __d.offset(6);
-            (&raw mut (*__d).bits).write(0_u8);
-            (&raw mut (*__d).value).write(0_u16);
-        };
-        {
-            let __d = __d.offset(7);
-            (&raw mut (*__d).bits).write(0_u8);
-            (&raw mut (*__d).value).write(0_u16);
-        };
-    };
+    let mut table: [Entry; 8] = [
+        Entry {
+            bits: 1_u8,
+            value: 4369_u16,
+        },
+        Entry {
+            bits: 2_u8,
+            value: 8738_u16,
+        },
+        Entry {
+            bits: 3_u8,
+            value: 13107_u16,
+        },
+        Entry {
+            bits: 4_u8,
+            value: 17476_u16,
+        },
+        Entry {
+            bits: 0_u8,
+            value: 0_u16,
+        },
+        Entry {
+            bits: 0_u8,
+            value: 0_u16,
+        },
+        Entry {
+            bits: 0_u8,
+            value: 0_u16,
+        },
+        Entry {
+            bits: 0_u8,
+            value: 0_u16,
+        },
+    ];
     let mut table_size: usize = 4_usize;
     {
         let mut __tmp_0 = { ((&mut table[(table_size)] as *mut Entry) as *mut ::libc::c_void) };

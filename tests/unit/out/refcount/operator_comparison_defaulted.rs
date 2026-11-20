@@ -14,17 +14,6 @@ pub struct Eq {
     #[offset(4)]
     pub b: i32,
 }
-impl Eq {
-    pub fn new_1(this: Ptr<Eq>) {}
-    pub fn copy_from(this: Ptr<Eq>, _a0: Ptr<Eq>) {
-        field!(this, a).write(_a0.with(|__s| __s.a));
-        field!(this, b).write(_a0.with(|__s| __s.b));
-    }
-    pub fn move_from(this: Ptr<Eq>, _a0: Ptr<Eq>) {
-        field!(this, a).write({ (*_a0.upgrade().deref()).a });
-        field!(this, b).write({ (*_a0.upgrade().deref()).b });
-    }
-}
 impl CppEq for Eq {
     fn equal(__lhs: &Ptr<Self>, __rhs: &Ptr<Self>) -> bool {
         EqImpl::operator_eq(__lhs, __rhs.clone())
@@ -37,17 +26,6 @@ pub struct Cmp {
     pub a: i32,
     #[offset(4)]
     pub b: i32,
-}
-impl Cmp {
-    pub fn new_1(this: Ptr<Cmp>) {}
-    pub fn copy_from(this: Ptr<Cmp>, _a0: Ptr<Cmp>) {
-        field!(this, a).write(_a0.with(|__s| __s.a));
-        field!(this, b).write(_a0.with(|__s| __s.b));
-    }
-    pub fn move_from(this: Ptr<Cmp>, _a0: Ptr<Cmp>) {
-        field!(this, a).write({ (*_a0.upgrade().deref()).a });
-        field!(this, b).write({ (*_a0.upgrade().deref()).b });
-    }
 }
 impl CppLess for Cmp {
     fn less(__lhs: &Ptr<Self>, __rhs: &Ptr<Self>) -> bool {
@@ -65,15 +43,6 @@ pub struct Both {
     #[offset(0)]
     pub a: i32,
 }
-impl Both {
-    pub fn new_1(this: Ptr<Both>) {}
-    pub fn copy_from(this: Ptr<Both>, _a0: Ptr<Both>) {
-        field!(this, a).write(_a0.with(|__s| __s.a));
-    }
-    pub fn move_from(this: Ptr<Both>, _a0: Ptr<Both>) {
-        field!(this, a).write({ (*_a0.upgrade().deref()).a });
-    }
-}
 impl CppLess for Both {
     fn less(__lhs: &Ptr<Self>, __rhs: &Ptr<Self>) -> bool {
         BothImpl::operator_cmp(__lhs, __rhs.clone()) == std::cmp::Ordering::Less
@@ -90,15 +59,6 @@ pub struct OrdOnly {
     #[offset(0)]
     pub a: i32,
 }
-impl OrdOnly {
-    pub fn new_1(this: Ptr<OrdOnly>) {}
-    pub fn copy_from(this: Ptr<OrdOnly>, _a0: Ptr<OrdOnly>) {
-        field!(this, a).write(_a0.with(|__s| __s.a));
-    }
-    pub fn move_from(this: Ptr<OrdOnly>, _a0: Ptr<OrdOnly>) {
-        field!(this, a).write({ (*_a0.upgrade().deref()).a });
-    }
-}
 impl CppLess for OrdOnly {
     fn less(__lhs: &Ptr<Self>, __rhs: &Ptr<Self>) -> bool {
         OrdOnlyImpl::operator_cmp(__lhs, __rhs.clone()) == std::cmp::Ordering::Less
@@ -114,15 +74,6 @@ impl CppEq for OrdOnly {
 pub struct Inner {
     #[offset(0)]
     pub x: i32,
-}
-impl Inner {
-    pub fn new_1(this: Ptr<Inner>) {}
-    pub fn copy_from(this: Ptr<Inner>, _a0: Ptr<Inner>) {
-        field!(this, x).write(_a0.with(|__s| __s.x));
-    }
-    pub fn move_from(this: Ptr<Inner>, _a0: Ptr<Inner>) {
-        field!(this, x).write({ (*_a0.upgrade().deref()).x });
-    }
 }
 impl CppLess for Inner {
     fn less(__lhs: &Ptr<Self>, __rhs: &Ptr<Self>) -> bool {
@@ -143,19 +94,6 @@ pub struct Outer {
     #[offset(4)]
     pub y: i32,
 }
-impl Outer {
-    pub fn new_1(this: Ptr<Outer>) {
-        Inner::new_1(field_ptr!(this, i));
-    }
-    pub fn copy_from(this: Ptr<Outer>, _a0: Ptr<Outer>) {
-        Inner::copy_from(field_ptr!(this, i), { field_ptr!(_a0, i) });
-        field!(this, y).write(_a0.with(|__s| __s.y));
-    }
-    pub fn move_from(this: Ptr<Outer>, _a0: Ptr<Outer>) {
-        Inner::move_from(field_ptr!(this, i), { field_ptr!(_a0, i) });
-        field!(this, y).write({ (*_a0.upgrade().deref()).y });
-    }
-}
 impl CppLess for Outer {
     fn less(__lhs: &Ptr<Self>, __rhs: &Ptr<Self>) -> bool {
         OuterImpl::operator_cmp(__lhs, __rhs.clone()) == std::cmp::Ordering::Less
@@ -171,15 +109,6 @@ impl CppEq for Outer {
 pub struct Secondary {
     #[offset(0)]
     pub a: i32,
-}
-impl Secondary {
-    pub fn new_1(this: Ptr<Secondary>) {}
-    pub fn copy_from(this: Ptr<Secondary>, _a0: Ptr<Secondary>) {
-        field!(this, a).write(_a0.with(|__s| __s.a));
-    }
-    pub fn move_from(this: Ptr<Secondary>, _a0: Ptr<Secondary>) {
-        field!(this, a).write({ (*_a0.upgrade().deref()).a });
-    }
 }
 impl CppLess for Secondary {
     fn less(__lhs: &Ptr<Self>, __rhs: &Ptr<Self>) -> bool {
@@ -198,15 +127,6 @@ pub struct PtrMember {
     #[byte_size(8)]
     pub p: Ptr<i32>,
 }
-impl PtrMember {
-    pub fn new_1(this: Ptr<PtrMember>) {}
-    pub fn copy_from(this: Ptr<PtrMember>, _a0: Ptr<PtrMember>) {
-        field!(this, p).write(_a0.with(|__s| __s.p.clone()));
-    }
-    pub fn move_from(this: Ptr<PtrMember>, _a0: Ptr<PtrMember>) {
-        field!(this, p).write({ (*_a0.upgrade().deref()).p.clone() });
-    }
-}
 impl CppLess for PtrMember {
     fn less(__lhs: &Ptr<Self>, __rhs: &Ptr<Self>) -> bool {
         PtrMemberImpl::operator_cmp(__lhs, __rhs.clone()) == std::cmp::Ordering::Less
@@ -222,50 +142,15 @@ pub fn main() {
     libcc2rs::cpp2rust_exit(main_0());
 }
 fn main_0() -> i32 {
-    let e1: Value<Eq> = Rc::new(RefCell::new(<Eq>::uninit()));
-    {
-        let __d = e1.as_pointer();
-        field!(__d, a).write(1);
-        field!(__d, b).write(2);
-    };
-    let e2: Value<Eq> = Rc::new(RefCell::new(<Eq>::uninit()));
-    {
-        let __d = e2.as_pointer();
-        field!(__d, a).write(1);
-        field!(__d, b).write(2);
-    };
-    let e3: Value<Eq> = Rc::new(RefCell::new(<Eq>::uninit()));
-    {
-        let __d = e3.as_pointer();
-        field!(__d, a).write(1);
-        field!(__d, b).write(3);
-    };
+    let e1: Value<Eq> = Rc::new(RefCell::new(Eq { a: 1, b: 2 }));
+    let e2: Value<Eq> = Rc::new(RefCell::new(Eq { a: 1, b: 2 }));
+    let e3: Value<Eq> = Rc::new(RefCell::new(Eq { a: 1, b: 3 }));
     assert!(({ EqImpl::operator_eq(&e1.as_pointer(), e2.as_pointer(),) }));
     assert!(!({ EqImpl::operator_eq(&e1.as_pointer(), e3.as_pointer(),) }));
-    let c1: Value<Cmp> = Rc::new(RefCell::new(<Cmp>::uninit()));
-    {
-        let __d = c1.as_pointer();
-        field!(__d, a).write(1);
-        field!(__d, b).write(2);
-    };
-    let c2: Value<Cmp> = Rc::new(RefCell::new(<Cmp>::uninit()));
-    {
-        let __d = c2.as_pointer();
-        field!(__d, a).write(1);
-        field!(__d, b).write(3);
-    };
-    let c3: Value<Cmp> = Rc::new(RefCell::new(<Cmp>::uninit()));
-    {
-        let __d = c3.as_pointer();
-        field!(__d, a).write(2);
-        field!(__d, b).write(0);
-    };
-    let c4: Value<Cmp> = Rc::new(RefCell::new(<Cmp>::uninit()));
-    {
-        let __d = c4.as_pointer();
-        field!(__d, a).write(1);
-        field!(__d, b).write(9);
-    };
+    let c1: Value<Cmp> = Rc::new(RefCell::new(Cmp { a: 1, b: 2 }));
+    let c2: Value<Cmp> = Rc::new(RefCell::new(Cmp { a: 1, b: 3 }));
+    let c3: Value<Cmp> = Rc::new(RefCell::new(Cmp { a: 2, b: 0 }));
+    let c4: Value<Cmp> = Rc::new(RefCell::new(Cmp { a: 1, b: 9 }));
     assert!(
         ({ CmpImpl::operator_cmp(&c1.as_pointer(), c2.as_pointer(),) }) == std::cmp::Ordering::Less
     );
@@ -282,16 +167,8 @@ fn main_0() -> i32 {
     assert!(
         ({ CmpImpl::operator_cmp(&c1.as_pointer(), c2.as_pointer(),) }) == std::cmp::Ordering::Less
     );
-    let b1: Value<Both> = Rc::new(RefCell::new(<Both>::uninit()));
-    {
-        let __d = b1.as_pointer();
-        field!(__d, a).write(1);
-    };
-    let b2: Value<Both> = Rc::new(RefCell::new(<Both>::uninit()));
-    {
-        let __d = b2.as_pointer();
-        field!(__d, a).write(2);
-    };
+    let b1: Value<Both> = Rc::new(RefCell::new(Both { a: 1 }));
+    let b2: Value<Both> = Rc::new(RefCell::new(Both { a: 2 }));
     assert!(
         ({ BothImpl::operator_cmp(&b1.as_pointer(), b2.as_pointer(),) })
             == std::cmp::Ordering::Less
@@ -302,16 +179,8 @@ fn main_0() -> i32 {
             BothImpl::operator_eq(&b2.as_pointer(), _arg0)
         })
     );
-    let o1: Value<OrdOnly> = Rc::new(RefCell::new(<OrdOnly>::uninit()));
-    {
-        let __d = o1.as_pointer();
-        field!(__d, a).write(1);
-    };
-    let o2: Value<OrdOnly> = Rc::new(RefCell::new(<OrdOnly>::uninit()));
-    {
-        let __d = o2.as_pointer();
-        field!(__d, a).write(2);
-    };
+    let o1: Value<OrdOnly> = Rc::new(RefCell::new(OrdOnly { a: 1 }));
+    let o2: Value<OrdOnly> = Rc::new(RefCell::new(OrdOnly { a: 2 }));
     assert!(
         ({ OrdOnlyImpl::operator_cmp(&o1.as_pointer(), o2.as_pointer(),) })
             == std::cmp::Ordering::Less
@@ -320,33 +189,18 @@ fn main_0() -> i32 {
         ({ OrdOnlyImpl::operator_cmp(&o2.as_pointer(), o1.as_pointer(),) })
             == std::cmp::Ordering::Greater
     );
-    let x1: Value<Outer> = Rc::new(RefCell::new(<Outer>::uninit()));
-    {
-        let __d = x1.as_pointer();
-        {
-            let __d = field_ptr!(__d, i);
-            field!(__d, x).write(1);
-        };
-        field!(__d, y).write(9);
-    };
-    let x2: Value<Outer> = Rc::new(RefCell::new(<Outer>::uninit()));
-    {
-        let __d = x2.as_pointer();
-        {
-            let __d = field_ptr!(__d, i);
-            field!(__d, x).write(2);
-        };
-        field!(__d, y).write(0);
-    };
-    let x3: Value<Outer> = Rc::new(RefCell::new(<Outer>::uninit()));
-    {
-        let __d = x3.as_pointer();
-        {
-            let __d = field_ptr!(__d, i);
-            field!(__d, x).write(1);
-        };
-        field!(__d, y).write(9);
-    };
+    let x1: Value<Outer> = Rc::new(RefCell::new(Outer {
+        i: Inner { x: 1 },
+        y: 9,
+    }));
+    let x2: Value<Outer> = Rc::new(RefCell::new(Outer {
+        i: Inner { x: 2 },
+        y: 0,
+    }));
+    let x3: Value<Outer> = Rc::new(RefCell::new(Outer {
+        i: Inner { x: 1 },
+        y: 9,
+    }));
     assert!(
         ({ OuterImpl::operator_cmp(&x1.as_pointer(), x2.as_pointer(),) })
             == std::cmp::Ordering::Less
@@ -356,36 +210,18 @@ fn main_0() -> i32 {
         ({ OuterImpl::operator_cmp(&x2.as_pointer(), x1.as_pointer(),) })
             == std::cmp::Ordering::Greater
     );
-    let s1: Value<Secondary> = Rc::new(RefCell::new(<Secondary>::uninit()));
-    {
-        let __d = s1.as_pointer();
-        field!(__d, a).write(1);
-    };
-    let s2: Value<Secondary> = Rc::new(RefCell::new(<Secondary>::uninit()));
-    {
-        let __d = s2.as_pointer();
-        field!(__d, a).write(2);
-    };
+    let s1: Value<Secondary> = Rc::new(RefCell::new(Secondary { a: 1 }));
+    let s2: Value<Secondary> = Rc::new(RefCell::new(Secondary { a: 2 }));
     assert!(({ SecondaryImpl::operator_ne(&s1.as_pointer(), s2.as_pointer(),) }));
     assert!(({ SecondaryImpl::operator_lt(&s1.as_pointer(), s2.as_pointer(),) }));
     assert!(({ SecondaryImpl::operator_ge(&s2.as_pointer(), s1.as_pointer(),) }));
     assert!(!({ SecondaryImpl::operator_lt(&s2.as_pointer(), s1.as_pointer(),) }));
     let arr: Value<Box<[i32]>> = Rc::new(RefCell::new(Box::new([0, 0])));
-    let p1: Value<PtrMember> = Rc::new(RefCell::new(<PtrMember>::uninit()));
-    {
-        let __d = p1.as_pointer();
-        field!(__d, p).write(arr.decay());
-    };
-    let p2: Value<PtrMember> = Rc::new(RefCell::new(<PtrMember>::uninit()));
-    {
-        let __d = p2.as_pointer();
-        field!(__d, p).write(arr.decay().offset((1) as isize));
-    };
-    let p3: Value<PtrMember> = Rc::new(RefCell::new(<PtrMember>::uninit()));
-    {
-        let __d = p3.as_pointer();
-        field!(__d, p).write(arr.decay());
-    };
+    let p1: Value<PtrMember> = Rc::new(RefCell::new(PtrMember { p: arr.decay() }));
+    let p2: Value<PtrMember> = Rc::new(RefCell::new(PtrMember {
+        p: arr.decay().offset((1) as isize),
+    }));
+    let p3: Value<PtrMember> = Rc::new(RefCell::new(PtrMember { p: arr.decay() }));
     assert!(
         ({ PtrMemberImpl::operator_cmp(&p1.as_pointer(), p2.as_pointer(),) })
             == std::cmp::Ordering::Less

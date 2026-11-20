@@ -27,12 +27,6 @@ impl p2_condition_variable_created_each_iteration_ConvertsToBool {
         field!(this, value).write(value);
         (*ctorCount_0.with(Value::clone).borrow_mut()).prefix_inc();
     }
-    pub fn copy_from(
-        this: Ptr<p2_condition_variable_created_each_iteration_ConvertsToBool>,
-        _a0: Ptr<p2_condition_variable_created_each_iteration_ConvertsToBool>,
-    ) {
-        field!(this, value).write(_a0.with(|__s| __s.value));
-    }
 }
 pub fn test_2() {
     let mut remaining: i32 = 2;
@@ -80,12 +74,6 @@ impl p2_continue_destroys_condition_variable_ConvertsToBool {
     pub fn new(this: Ptr<p2_continue_destroys_condition_variable_ConvertsToBool>, mut value: i32) {
         field!(this, value).write(value);
         (*ctorCount_3.with(Value::clone).borrow_mut()).prefix_inc();
-    }
-    pub fn copy_from(
-        this: Ptr<p2_continue_destroys_condition_variable_ConvertsToBool>,
-        _a0: Ptr<p2_continue_destroys_condition_variable_ConvertsToBool>,
-    ) {
-        field!(this, value).write(_a0.with(|__s| __s.value));
     }
 }
 pub fn test_5() {

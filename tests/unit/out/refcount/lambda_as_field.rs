@@ -13,19 +13,6 @@ pub struct Guard__lambda_at_lambda_as_field_cpp_34_13__ {
     #[byte_size(1)]
     pub f: FnPtr<fn()>,
 }
-impl Guard__lambda_at_lambda_as_field_cpp_34_13__ {
-    pub fn new_1(this: Ptr<Guard__lambda_at_lambda_as_field_cpp_34_13__>) {
-        field!(this, f).write(FnPtr::<fn()>::new(|| {
-            (*count_0.with(Value::clone).borrow_mut()).postfix_inc();
-        }));
-    }
-    pub fn copy_from(
-        this: Ptr<Guard__lambda_at_lambda_as_field_cpp_34_13__>,
-        _a0: Ptr<Guard__lambda_at_lambda_as_field_cpp_34_13__>,
-    ) {
-        field!(this, f).write((*_a0.upgrade().deref()).f.copy_from());
-    }
-}
 impl Default for Guard__lambda_at_lambda_as_field_cpp_34_13__ {
     fn default() -> Self {
         {
@@ -44,14 +31,6 @@ pub struct Guard__lambda_at_lambda_as_field_cpp_45_13__ {
     #[byte_size(8)]
     pub f: FnPtr<fn()>,
 }
-impl Guard__lambda_at_lambda_as_field_cpp_45_13__ {
-    pub fn copy_from(
-        this: Ptr<Guard__lambda_at_lambda_as_field_cpp_45_13__>,
-        _a0: Ptr<Guard__lambda_at_lambda_as_field_cpp_45_13__>,
-    ) {
-        field!(this, f).write((*_a0.upgrade().deref()).f.copy_from());
-    }
-}
 #[derive(Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg)]
 #[byte_size(8)]
 pub struct Holder__lambda_at_lambda_as_field_cpp_39_12__ {
@@ -60,29 +39,6 @@ pub struct Holder__lambda_at_lambda_as_field_cpp_39_12__ {
     pub f: FnPtr<fn(i32) -> i32>,
     #[offset(4)]
     pub calls: i32,
-}
-impl Holder__lambda_at_lambda_as_field_cpp_39_12__ {
-    pub fn new_1(this: Ptr<Holder__lambda_at_lambda_as_field_cpp_39_12__>) {
-        field!(this, f).write(FnPtr::<fn(i32) -> i32>::new(|mut x: i32| -> i32 {
-            {
-                return (x + 1);
-            }
-        }));
-    }
-    pub fn copy_from(
-        this: Ptr<Holder__lambda_at_lambda_as_field_cpp_39_12__>,
-        _a0: Ptr<Holder__lambda_at_lambda_as_field_cpp_39_12__>,
-    ) {
-        field!(this, f).write((*_a0.upgrade().deref()).f.copy_from());
-        field!(this, calls).write(_a0.with(|__s| __s.calls));
-    }
-    pub fn move_from(
-        this: Ptr<Holder__lambda_at_lambda_as_field_cpp_39_12__>,
-        _a0: Ptr<Holder__lambda_at_lambda_as_field_cpp_39_12__>,
-    ) {
-        field!(this, f).write((*_a0.upgrade().deref()).f.move_from());
-        field!(this, calls).write({ (*_a0.upgrade().deref()).calls });
-    }
 }
 impl Default for Holder__lambda_at_lambda_as_field_cpp_39_12__ {
     fn default() -> Self {
@@ -106,22 +62,6 @@ pub struct Holder__lambda_at_lambda_as_field_cpp_51_12__ {
     pub f: FnPtr<fn(i32) -> i32>,
     #[offset(4)]
     pub calls: i32,
-}
-impl Holder__lambda_at_lambda_as_field_cpp_51_12__ {
-    pub fn copy_from(
-        this: Ptr<Holder__lambda_at_lambda_as_field_cpp_51_12__>,
-        _a0: Ptr<Holder__lambda_at_lambda_as_field_cpp_51_12__>,
-    ) {
-        field!(this, f).write((*_a0.upgrade().deref()).f.copy_from());
-        field!(this, calls).write(_a0.with(|__s| __s.calls));
-    }
-    pub fn move_from(
-        this: Ptr<Holder__lambda_at_lambda_as_field_cpp_51_12__>,
-        _a0: Ptr<Holder__lambda_at_lambda_as_field_cpp_51_12__>,
-    ) {
-        field!(this, f).write((*_a0.upgrade().deref()).f.move_from());
-        field!(this, calls).write({ (*_a0.upgrade().deref()).calls });
-    }
 }
 #[derive(Record, ByteRepr, Uninit, FnPtrArg, MoveCtor, CppFrom)]
 #[cpp_from(FnPtr<fn(i32  ,) -> i32  >  , new, value)]
@@ -194,71 +134,61 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     {
-        let g: Value<Guard__lambda_at_lambda_as_field_cpp_34_13__> = Rc::new(RefCell::new(
-            <Guard__lambda_at_lambda_as_field_cpp_34_13__>::uninit(),
-        ));
-        {
-            let __d = g.as_pointer();
-            field!(__d, f).write(FnPtr::<fn()>::new(|| {
-                (*count_0.with(Value::clone).borrow_mut()).postfix_inc();
+        let g: Value<Guard__lambda_at_lambda_as_field_cpp_34_13__> =
+            Rc::new(RefCell::new(Guard__lambda_at_lambda_as_field_cpp_34_13__ {
+                f: FnPtr::<fn()>::new(|| {
+                    (*count_0.with(Value::clone).borrow_mut()).postfix_inc();
+                }),
             }));
-        };
         let _dtor_g = std::mem::DropGuard::new(g.clone(), |__p| __p.as_pointer().destructor());
         assert!((count_0.with(|rc| *rc.borrow()) == 0));
     }
     assert!((count_0.with(|rc| *rc.borrow()) == 1));
     let n: Value<Holder__lambda_at_lambda_as_field_cpp_39_12__> = Rc::new(RefCell::new(
-        <Holder__lambda_at_lambda_as_field_cpp_39_12__>::uninit(),
+        Holder__lambda_at_lambda_as_field_cpp_39_12__ {
+            f: FnPtr::<fn(i32) -> i32>::new(|mut x: i32| -> i32 {
+                {
+                    return (x + 1);
+                }
+            }),
+            calls: 0,
+        },
     ));
-    {
-        let __d = n.as_pointer();
-        field!(__d, f).write(FnPtr::<fn(i32) -> i32>::new(|mut x: i32| -> i32 {
-            {
-                return (x + 1);
-            }
-        }));
-        field!(__d, calls).write(0);
-    };
     assert!(
         (({ Holder__lambda_at_lambda_as_field_cpp_39_12__Impl::call(&n.as_pointer(), 2,) }) == 3)
     );
     assert!(({ ({ (*n.borrow()).calls } == 1) }));
     let cleaned: Value<i32> = Rc::new(RefCell::new(0));
     {
-        let g: Value<Guard__lambda_at_lambda_as_field_cpp_45_13__> = Rc::new(RefCell::new(
-            <Guard__lambda_at_lambda_as_field_cpp_45_13__>::uninit(),
-        ));
-        {
-            let __d = g.as_pointer();
-            field!(__d, f).write(lambda!(
-                {
-                    let cleaned: Ptr<i32> = cleaned.as_pointer();
-                },
-                || {
-                    cleaned.with_mut(|__v| __v.postfix_inc());
-                }
-            ));
-        };
+        let g: Value<Guard__lambda_at_lambda_as_field_cpp_45_13__> =
+            Rc::new(RefCell::new(Guard__lambda_at_lambda_as_field_cpp_45_13__ {
+                f: lambda!(
+                    {
+                        let cleaned: Ptr<i32> = cleaned.as_pointer();
+                    },
+                    || {
+                        cleaned.with_mut(|__v| __v.postfix_inc());
+                    }
+                ),
+            }));
         let _dtor_g = std::mem::DropGuard::new(g.clone(), |__p| __p.as_pointer().destructor());
         assert!(({ ((*cleaned.borrow()) == 0) }));
     }
     assert!(({ ((*cleaned.borrow()) == 1) }));
     let factor: Value<i32> = Rc::new(RefCell::new(3));
     let h: Value<Holder__lambda_at_lambda_as_field_cpp_51_12__> = Rc::new(RefCell::new(
-        <Holder__lambda_at_lambda_as_field_cpp_51_12__>::uninit(),
+        Holder__lambda_at_lambda_as_field_cpp_51_12__ {
+            f: lambda!(
+                {
+                    let factor: Value<i32> = Rc::new(RefCell::new((*factor.borrow())));
+                },
+                |mut x: i32| -> i32 {
+                    return (x * (*factor.borrow()));
+                }
+            ),
+            calls: 0,
+        },
     ));
-    {
-        let __d = h.as_pointer();
-        field!(__d, f).write(lambda!(
-            {
-                let factor: Value<i32> = Rc::new(RefCell::new((*factor.borrow())));
-            },
-            |mut x: i32| -> i32 {
-                return (x * (*factor.borrow()));
-            }
-        ));
-        field!(__d, calls).write(0);
-    };
     (*factor.borrow_mut()) = 100;
     assert!(
         (({ Holder__lambda_at_lambda_as_field_cpp_51_12__Impl::call(&h.as_pointer(), 2,) }) == 6)

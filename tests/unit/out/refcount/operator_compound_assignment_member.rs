@@ -12,30 +12,13 @@ pub struct S {
     #[offset(0)]
     pub v: u32,
 }
-impl S {
-    pub fn new_1(this: Ptr<S>) {}
-    pub fn copy_from(this: Ptr<S>, _a0: Ptr<S>) {
-        field!(this, v).write(_a0.with(|__s| __s.v));
-    }
-    pub fn move_from(this: Ptr<S>, _a0: Ptr<S>) {
-        field!(this, v).write({ (*_a0.upgrade().deref()).v });
-    }
-}
 pub fn main() {
     __cpp2rust_init_globals();
     libcc2rs::cpp2rust_exit(main_0());
 }
 fn main_0() -> i32 {
-    let a: Value<S> = Rc::new(RefCell::new(<S>::uninit()));
-    {
-        let __d = a.as_pointer();
-        field!(__d, v).write(6_u32);
-    };
-    let b: Value<S> = Rc::new(RefCell::new(<S>::uninit()));
-    {
-        let __d = b.as_pointer();
-        field!(__d, v).write(4_u32);
-    };
+    let a: Value<S> = Rc::new(RefCell::new(S { v: 6_u32 }));
+    let b: Value<S> = Rc::new(RefCell::new(S { v: 4_u32 }));
     ({ SImpl::operator_add_assign(&a.as_pointer(), b.as_pointer()) });
     assert!(({ ({ (*a.borrow()).v } == 10_u32) }));
     ({ SImpl::operator_sub_assign(&a.as_pointer(), b.as_pointer()) });
@@ -66,16 +49,12 @@ fn main_0() -> i32 {
         )
     });
     assert!(({ ({ (*a.borrow()).v } == 14_u32) }));
-    let c: Value<S> = Rc::new(RefCell::new(<S>::uninit()));
-    {
-        let __d = c.as_pointer();
-        field!(__d, v).write(0_u32);
-    };
-    (*c.borrow_mut()) = (*({ SImpl::operator_assign_1(&a.as_pointer(), 1_u32) })
+    let mut c: S = S { v: 0_u32 };
+    c = (*({ SImpl::operator_assign_1(&a.as_pointer(), 1_u32) })
         .upgrade()
         .deref());
     assert!(({ ({ (*a.borrow()).v } == 1_u32) }));
-    assert!(({ ({ (*c.borrow()).v } == 1_u32) }));
+    assert!((c.v == 1_u32));
     return 0;
 }
 pub trait SImpl {

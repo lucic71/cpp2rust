@@ -12,17 +12,6 @@ pub struct Pair {
     pub first: i32,
     pub second: i32,
 }
-impl Pair {
-    pub unsafe fn new_1(this: *mut Pair) {}
-    pub unsafe fn copy_from(this: *mut Pair, _a0: *const Pair) {
-        (&raw mut (*this).first).write((*_a0).first);
-        (&raw mut (*this).second).write((*_a0).second);
-    }
-    pub unsafe fn move_from(this: *mut Pair, _a0: *mut Pair) {
-        (&raw mut (*this).first).write((*_a0).first);
-        (&raw mut (*this).second).write((*_a0).second);
-    }
-}
 pub fn main() {
     unsafe {
         __cpp2rust_init_globals();
@@ -30,25 +19,20 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    let mut arr: [Pair; 3] = ::std::mem::MaybeUninit::uninit().assume_init();
-    {
-        let __d = (&raw mut arr).cast::<Pair>();
-        {
-            let __d = __d.offset(0);
-            (&raw mut (*__d).first).write(1);
-            (&raw mut (*__d).second).write(2);
-        };
-        {
-            let __d = __d.offset(1);
-            (&raw mut (*__d).first).write(3);
-            (&raw mut (*__d).second).write(4);
-        };
-        {
-            let __d = __d.offset(2);
-            (&raw mut (*__d).first).write(5);
-            (&raw mut (*__d).second).write(6);
-        };
-    };
+    let mut arr: [Pair; 3] = [
+        Pair {
+            first: 1,
+            second: 2,
+        },
+        Pair {
+            first: 3,
+            second: 4,
+        },
+        Pair {
+            first: 5,
+            second: 6,
+        },
+    ];
     'loop_: for __decomp_0 in
         IterRange::new(arr.as_mut_ptr(), arr.as_mut_ptr().offset((3_i64) as isize))
     {
@@ -60,11 +44,7 @@ unsafe fn main_0() -> i32 {
     'loop_: for __decomp_1 in
         IterRange::new(arr.as_mut_ptr(), arr.as_mut_ptr().offset((3_i64) as isize))
     {
-        let mut __decomp_1: Pair = {
-            let mut __v: Pair = ::std::mem::MaybeUninit::uninit().assume_init();
-            Pair::copy_from(&raw mut __v, { &(*__decomp_1) });
-            __v
-        };
+        let mut __decomp_1: Pair = (*__decomp_1);
         __decomp_1.first = 0;
         __decomp_1.second = 0;
     }

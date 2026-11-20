@@ -18,13 +18,6 @@ impl p1_as_const_Counter {
     pub unsafe fn get_2(&self) -> i32 {
         return self.value;
     }
-    pub unsafe fn new_1(this: *mut p1_as_const_Counter) {}
-    pub unsafe fn copy_from(this: *mut p1_as_const_Counter, _a0: *const p1_as_const_Counter) {
-        (&raw mut (*this).value).write((*_a0).value);
-    }
-    pub unsafe fn move_from(this: *mut p1_as_const_Counter, _a0: *mut p1_as_const_Counter) {
-        (&raw mut (*this).value).write((*_a0).value);
-    }
 }
 pub unsafe fn test_0() {
     let mut number: i32 = 3;
@@ -35,11 +28,7 @@ pub unsafe fn test_0() {
     assert!(((number) == (4)));
     let mut pointer: *mut i32 = (&mut number as *mut i32);
     assert!(((pointer) == (&mut number as *mut i32)));
-    let mut counter: p1_as_const_Counter = ::std::mem::MaybeUninit::uninit().assume_init();
-    {
-        let __d = &raw mut counter;
-        (&raw mut (*__d).value).write(5);
-    };
+    let mut counter: p1_as_const_Counter = p1_as_const_Counter { value: 5 };
     assert!(((unsafe { p1_as_const_Counter::get_2(&counter,) }) == (5)));
     assert!(((unsafe { p1_as_const_Counter::get_1(&mut counter,) }) == (6)));
 }

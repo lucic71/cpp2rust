@@ -22,17 +22,8 @@ pub unsafe fn more_refs_0(mut x1: i32, mut x2: i32, r1: *mut i32, r2: *const i32
 pub struct Val {
     pub x: i32,
 }
-impl Val {
-    pub unsafe fn new_1(this: *mut Val) {}
-    pub unsafe fn copy_from(this: *mut Val, _a0: *const Val) {
-        (&raw mut (*this).x).write((*_a0).x);
-    }
-    pub unsafe fn move_from(this: *mut Val, _a0: *mut Val) {
-        (&raw mut (*this).x).write((*_a0).x);
-    }
-}
-pub unsafe fn sum_1(a: *mut Val, b: *mut Val) -> i32 {
-    return (((*a).x) + ((*b).x));
+pub unsafe fn sum_1(mut a: Val, mut b: Val) -> i32 {
+    return ((a.x) + (b.x));
 }
 pub fn main() {
     unsafe {
@@ -45,45 +36,25 @@ unsafe fn main_0() -> i32 {
     let x2: i32 = 2;
     (unsafe { more_refs_0(3, 4, &mut x1, &x2) });
     assert!((((x1) + (x2)) == (21)));
-    let mut v: Val = ::std::mem::MaybeUninit::uninit().assume_init();
-    {
-        let __d = &raw mut v;
-        (&raw mut (*__d).x).write(5);
-    };
+    let mut v: Val = Val { x: 5 };
     let mut acc: i32 = (unsafe {
-        let mut __tmp_0: Val = ::std::mem::MaybeUninit::uninit().assume_init();
-        Val::copy_from(&raw mut __tmp_0, { &v });
-        let _a = &raw mut __tmp_0;
-        let mut __tmp_1: Val = ::std::mem::MaybeUninit::uninit().assume_init();
-        Val::copy_from(&raw mut __tmp_1, { &v });
-        let _b = &raw mut __tmp_1;
+        let _a: Val = v;
+        let _b: Val = v;
         sum_1(_a, _b)
     });
     acc += (unsafe {
-        let mut __tmp_2: Val = ::std::mem::MaybeUninit::uninit().assume_init();
-        Val::copy_from(&raw mut __tmp_2, { &v });
-        let _a = &raw mut __tmp_2;
-        let mut __tmp_3: Val = ::std::mem::MaybeUninit::uninit().assume_init();
-        Val::copy_from(&raw mut __tmp_3, { &v });
-        let _b = &raw mut __tmp_3;
+        let _a: Val = v;
+        let _b: Val = v;
         sum_1(_a, _b)
     });
     acc += (unsafe {
-        let mut __tmp_4: Val = ::std::mem::MaybeUninit::uninit().assume_init();
-        Val::move_from(&raw mut __tmp_4, { &mut v });
-        let _a = &raw mut __tmp_4;
-        let mut __tmp_5: Val = ::std::mem::MaybeUninit::uninit().assume_init();
-        Val::copy_from(&raw mut __tmp_5, { &v });
-        let _b = &raw mut __tmp_5;
+        let _a: Val = v;
+        let _b: Val = v;
         sum_1(_a, _b)
     });
     acc += (unsafe {
-        let mut __tmp_6: Val = ::std::mem::MaybeUninit::uninit().assume_init();
-        Val::copy_from(&raw mut __tmp_6, { &v });
-        let _a = &raw mut __tmp_6;
-        let mut __tmp_7: Val = ::std::mem::MaybeUninit::uninit().assume_init();
-        Val::copy_from(&raw mut __tmp_7, { &v });
-        let _b = &raw mut __tmp_7;
+        let _a: Val = v;
+        let _b: Val = v;
         sum_1(_a, _b)
     });
     assert!(((acc) == (40)));

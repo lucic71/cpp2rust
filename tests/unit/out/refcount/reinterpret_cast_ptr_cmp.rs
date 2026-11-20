@@ -14,17 +14,6 @@ pub struct S {
     #[offset(4)]
     pub y: i32,
 }
-impl S {
-    pub fn new_1(this: Ptr<S>) {}
-    pub fn copy_from(this: Ptr<S>, _a0: Ptr<S>) {
-        field!(this, x).write(_a0.with(|__s| __s.x));
-        field!(this, y).write(_a0.with(|__s| __s.y));
-    }
-    pub fn move_from(this: Ptr<S>, _a0: Ptr<S>) {
-        field!(this, x).write({ (*_a0.upgrade().deref()).x });
-        field!(this, y).write({ (*_a0.upgrade().deref()).y });
-    }
-}
 #[derive(Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg)]
 #[byte_size(28)]
 pub struct W {
@@ -34,38 +23,6 @@ pub struct W {
     #[byte_size(24)]
     #[array_len(3)]
     pub arr: Box<[S]>,
-}
-impl W {
-    pub fn new_1(this: Ptr<W>) {
-        {
-            let __d = array_field_ptr!(this, arr);
-            for __i in 0..3_isize {
-                S::new_1(__d.offset(__i));
-            }
-        };
-    }
-    pub fn copy_from(this: Ptr<W>, _a0: Ptr<W>) {
-        field!(this, h).write(_a0.with(|__s| __s.h));
-        {
-            let __d = array_field_ptr!(this, arr);
-            for __i in 0..3_usize {
-                S::copy_from(__d.offset(__i as isize), {
-                    array_field_ptr!(_a0, arr).offset(__i)
-                });
-            }
-        };
-    }
-    pub fn move_from(this: Ptr<W>, _a0: Ptr<W>) {
-        field!(this, h).write({ (*_a0.upgrade().deref()).h });
-        {
-            let __d = array_field_ptr!(this, arr);
-            for __i in 0..3_usize {
-                S::move_from(__d.offset(__i as isize), {
-                    array_field_ptr!(_a0, arr).offset(__i)
-                });
-            }
-        };
-    }
 }
 impl Default for W {
     fn default() -> Self {
@@ -88,21 +45,6 @@ pub struct P {
     #[array_len(3)]
     pub arr: Box<[Ptr<i32>]>,
 }
-impl P {
-    pub fn new_1(this: Ptr<P>) {}
-    pub fn copy_from(this: Ptr<P>, _a0: Ptr<P>) {
-        field!(this, a).write(_a0.with(|__s| __s.a.clone()));
-        field!(this, arr).write(Box::new(std::array::from_fn::<_, 3, _>(|__i: usize| {
-            ((*_a0.upgrade().deref()).arr[(__i) as usize]).clone()
-        })));
-    }
-    pub fn move_from(this: Ptr<P>, _a0: Ptr<P>) {
-        field!(this, a).write({ (*_a0.upgrade().deref()).a.clone() });
-        field!(this, arr).write(Box::new(std::array::from_fn::<_, 3, _>(|__i: usize| {
-            ((*_a0.upgrade().deref()).arr[(__i) as usize]).clone()
-        })));
-    }
-}
 impl Default for P {
     fn default() -> Self {
         {
@@ -116,8 +58,7 @@ impl Default for P {
     }
 }
 pub fn typed_0() {
-    let w: Value<W> = Rc::new(RefCell::new(<W>::uninit()));
-    W::new_1(w.as_pointer());
+    let w: Value<W> = Rc::new(RefCell::new(<W>::default()));
     let mut p: Ptr<S> = (array_field_ptr!(w.as_pointer(), arr).offset((2) as isize));
     let mut q: Ptr<S> = ((w.as_pointer())
         .reinterpret_cast::<i8>()
@@ -147,8 +88,7 @@ pub fn typed_0() {
     assert!(({ (ptrs.decay().offset(1)) } < { (f).clone() }));
     assert!(({ (f).clone() } < { (ptrs.decay().offset(3)) }));
     assert!((((f).clone() - ptrs.decay()) as i64 == 2_i64));
-    let s: Value<P> = Rc::new(RefCell::new(<P>::uninit()));
-    P::new_1(s.as_pointer());
+    let s: Value<P> = Rc::new(RefCell::new(<P>::default()));
     let mut a: Ptr<Ptr<i32>> = (field_ptr!(s.as_pointer(), a));
     let mut b: Ptr<Ptr<i32>> = (array_field_ptr!(s.as_pointer(), arr).offset((1) as isize));
     assert!(({ (a).clone() } < { (b).clone() }));

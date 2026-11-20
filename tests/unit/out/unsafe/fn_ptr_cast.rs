@@ -34,18 +34,8 @@ pub unsafe fn test_double_cast_2() {
 pub struct Command {
     pub data: *mut ::libc::c_void,
 }
-impl Command {
-    pub unsafe fn new_1(this: *mut Command) {}
-    pub unsafe fn copy_from(this: *mut Command, _a0: *const Command) {
-        (&raw mut (*this).data).write((*_a0).data);
-    }
-    pub unsafe fn move_from(this: *mut Command, _a0: *mut Command) {
-        (&raw mut (*this).data).write((*_a0).data);
-    }
-}
 pub unsafe fn test_void_ptr_to_fn_3() {
-    let mut cmd: Command = ::std::mem::MaybeUninit::uninit().assume_init();
-    Command::new_1(&raw mut cmd);
+    let mut cmd: Command = <Command>::default();
     cmd.data = std::mem::transmute::<Option<unsafe fn(i32) -> i32>, *mut ::libc::c_void>(Some(
         double_it_0,
     ));

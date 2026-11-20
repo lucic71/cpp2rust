@@ -62,13 +62,8 @@ fn main_0() -> i32 {
     let local: Value<FnPtr<fn() -> i32>> =
         Rc::new(RefCell::new(FnPtr::<fn() -> i32>::new(|| -> i32 {
             {
-                let p: Value<P_4> = Rc::new(RefCell::new(<P_4>::uninit()));
-                {
-                    let __d = p.as_pointer();
-                    field!(__d, x).write(2);
-                    field!(__d, y).write(3);
-                };
-                return ({ (*p.borrow()).x } * { (*p.borrow()).y });
+                let mut p: P_4 = P_4 { x: 2, y: 3 };
+                return (p.x * p.y);
             }
         })));
     assert!(({ (({ (*local.borrow()).call() }) == 6) }));
@@ -90,17 +85,6 @@ pub struct P_4 {
     pub x: i32,
     #[offset(4)]
     pub y: i32,
-}
-impl P_4 {
-    pub fn new_1(this: Ptr<P_4>) {}
-    pub fn copy_from(this: Ptr<P_4>, _a0: Ptr<P_4>) {
-        field!(this, x).write(_a0.with(|__s| __s.x));
-        field!(this, y).write(_a0.with(|__s| __s.y));
-    }
-    pub fn move_from(this: Ptr<P_4>, _a0: Ptr<P_4>) {
-        field!(this, x).write({ (*_a0.upgrade().deref()).x });
-        field!(this, y).write({ (*_a0.upgrade().deref()).y });
-    }
 }
 pub fn __cpp2rust_init_globals() {
     let _ = a_0.with(|_| ());

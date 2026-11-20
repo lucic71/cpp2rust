@@ -18,11 +18,7 @@ impl S {
     pub unsafe fn modify_copy(&mut self) -> i32 {
         let mut f: FnPtr<fn() -> i32> = lambda_unsafe!(
             {
-                let this_: S = {
-                    let mut __v: S = ::std::mem::MaybeUninit::uninit().assume_init();
-                    S::copy_from(&raw mut __v, { &(*(self as *mut S)) });
-                    __v
-                };
+                let this_: S = (*(self as *mut S));
             },
             || -> i32 {
                 (*(&raw mut this_)).n += 10;
@@ -35,11 +31,7 @@ impl S {
     pub unsafe fn snapshot(&mut self) -> i32 {
         let mut f: FnPtr<fn() -> i32> = lambda_unsafe!(
             {
-                let this_: S = {
-                    let mut __v: S = ::std::mem::MaybeUninit::uninit().assume_init();
-                    S::copy_from(&raw mut __v, { &(*(self as *mut S)) });
-                    __v
-                };
+                let this_: S = (*(self as *mut S));
             },
             || -> i32 {
                 return (unsafe { S::twice(&(*(&raw mut this_))) });
@@ -51,11 +43,7 @@ impl S {
     pub unsafe fn mixed(&mut self, mut k: i32) -> i32 {
         let mut f: FnPtr<fn() -> i32> = lambda_unsafe!(
             {
-                let this_: S = {
-                    let mut __v: S = ::std::mem::MaybeUninit::uninit().assume_init();
-                    S::copy_from(&raw mut __v, { &(*(self as *mut S)) });
-                    __v
-                };
+                let this_: S = (*(self as *mut S));
                 let k: i32 = k;
             },
             || -> i32 {
@@ -65,13 +53,6 @@ impl S {
         self.n = 0;
         return (unsafe { f.call() });
     }
-    pub unsafe fn new_1(this: *mut S) {}
-    pub unsafe fn copy_from(this: *mut S, _a0: *const S) {
-        (&raw mut (*this).n).write((*_a0).n);
-    }
-    pub unsafe fn move_from(this: *mut S, _a0: *mut S) {
-        (&raw mut (*this).n).write((*_a0).n);
-    }
 }
 pub fn main() {
     unsafe {
@@ -80,11 +61,7 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    let mut s: S = ::std::mem::MaybeUninit::uninit().assume_init();
-    {
-        let __d = &raw mut s;
-        (&raw mut (*__d).n).write(1);
-    };
+    let mut s: S = S { n: 1 };
     assert!(((unsafe { S::modify_copy(&mut s,) }) == (1101)));
     assert!(((s.n) == (1)));
     assert!(((unsafe { S::snapshot(&mut s,) }) == (2)));

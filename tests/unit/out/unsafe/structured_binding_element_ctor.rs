@@ -6,10 +6,8 @@ use std::collections::BTreeMap;
 use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
-pub static mut copies_0: libcc2rs::LazyStorage<i32> =
-    libcc2rs::LazyStorage::new(|__p| unsafe { __p.write(0) });
-pub static mut moves_1: libcc2rs::LazyStorage<i32> =
-    libcc2rs::LazyStorage::new(|__p| unsafe { __p.write(0) });
+pub static mut copies_0: std::cell::LazyCell<i32> = std::cell::LazyCell::new(|| unsafe { 0 });
+pub static mut moves_1: std::cell::LazyCell<i32> = std::cell::LazyCell::new(|| unsafe { 0 });
 #[repr(C)]
 #[derive(VaArg, FnPtrArg, MoveCtorUnsafe, CppFromUnsafe, Default)]
 #[cpp_from(i32, new, value)]
@@ -22,12 +20,12 @@ impl Elem {
     }
     pub unsafe fn copy_from(this: *mut Elem, other: *const Elem) {
         (&raw mut (*this).v).write((((*other).v) + (100)));
-        (*(*&raw const copies_0).get()).prefix_inc();
+        (*std::cell::LazyCell::force_mut(&mut *&raw mut copies_0)).prefix_inc();
     }
     pub unsafe fn move_from(this: *mut Elem, other: *mut Elem) {
         (&raw mut (*this).v).write((((*other).v) + (1000)));
         (*other).v = -1_i32;
-        (*(*&raw const moves_1).get()).prefix_inc();
+        (*std::cell::LazyCell::force_mut(&mut *&raw mut moves_1)).prefix_inc();
     }
 }
 impl Clone for Elem {
@@ -76,19 +74,19 @@ unsafe fn main_0() -> i32 {
         Elem::new((&raw mut (*__d).a), { 1 });
         Elem::new((&raw mut (*__d).b), { 2 });
     };
-    let mut base_copies: i32 = (*(*&raw const copies_0).get());
-    let mut base_moves: i32 = (*(*&raw const moves_1).get());
+    let mut base_copies: i32 = (*std::cell::LazyCell::force_mut(&mut *&raw mut copies_0));
+    let mut base_moves: i32 = (*std::cell::LazyCell::force_mut(&mut *&raw mut moves_1));
     let mut __decomp_3: Two = {
         let mut __v: Two = ::std::mem::MaybeUninit::uninit().assume_init();
         Two::copy_from(&raw mut __v, { &t });
         __v
     };
-    assert!(((*(*&raw const copies_0).get()) == ((base_copies) + (2))));
-    assert!(((*(*&raw const moves_1).get()) == (base_moves)));
+    assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut copies_0)) == ((base_copies) + (2))));
+    assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut moves_1)) == (base_moves)));
     assert!(((__decomp_3.a.v) == (101)));
     assert!(((__decomp_3.b.v) == (102)));
     let __decomp_4: *mut Two = &mut t;
-    assert!(((*(*&raw const copies_0).get()) == ((base_copies) + (2))));
+    assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut copies_0)) == ((base_copies) + (2))));
     assert!((((*__decomp_4).a.v) == (1)));
     (*__decomp_4).a.v = 50;
     assert!(((t.a.v) == (50)));
@@ -97,19 +95,19 @@ unsafe fn main_0() -> i32 {
         Two::move_from(&raw mut __v, { &mut t });
         __v
     };
-    assert!(((*(*&raw const moves_1).get()) == ((base_moves) + (2))));
+    assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut moves_1)) == ((base_moves) + (2))));
     assert!(((__decomp_5.a.v) == (1050)));
     assert!(((__decomp_5.b.v) == (1002)));
     assert!(((t.a.v) == (-1_i32)));
-    let mut before_copies: i32 = (*(*&raw const copies_0).get());
-    let mut before_moves: i32 = (*(*&raw const moves_1).get());
+    let mut before_copies: i32 = (*std::cell::LazyCell::force_mut(&mut *&raw mut copies_0));
+    let mut before_moves: i32 = (*std::cell::LazyCell::force_mut(&mut *&raw mut moves_1));
     let mut __decomp_6: Two = {
         let mut __v: Two = ::std::mem::MaybeUninit::uninit().assume_init();
         (unsafe { make_two_2(&raw mut __v) });
         __v
     };
-    assert!(((*(*&raw const copies_0).get()) == (before_copies)));
-    assert!(((*(*&raw const moves_1).get()) == (before_moves)));
+    assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut copies_0)) == (before_copies)));
+    assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut moves_1)) == (before_moves)));
     assert!(((__decomp_6.a.v) == (1)));
     let mut p: (Elem, Elem) = (
         {
@@ -123,16 +121,18 @@ unsafe fn main_0() -> i32 {
             __v
         },
     );
-    before_copies = (*(*&raw const copies_0).get());
+    before_copies = (*std::cell::LazyCell::force_mut(&mut *&raw mut copies_0));
     let mut __decomp_7: (Elem, Elem) = p.clone();
     let x: *mut Elem = &mut *__decomp_7.get_mut::<0>();
     let y: *mut Elem = &mut *__decomp_7.get_mut::<1>();
-    assert!(((*(*&raw const copies_0).get()) == ((before_copies) + (2))));
+    assert!(
+        ((*std::cell::LazyCell::force_mut(&mut *&raw mut copies_0)) == ((before_copies) + (2)))
+    );
     assert!((((*x).v) == ((p.0.v) + (100))));
     assert!((((*y).v) == ((p.1.v) + (100))));
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {
-    (*&raw const copies_0).get();
-    (*&raw const moves_1).get();
+    std::cell::LazyCell::force(&*&raw const copies_0);
+    std::cell::LazyCell::force(&*&raw const moves_1);
 }

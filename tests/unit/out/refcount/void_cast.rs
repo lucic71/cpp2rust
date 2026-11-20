@@ -40,15 +40,6 @@ pub struct Holder {
     #[offset(0)]
     pub field: i32,
 }
-impl Holder {
-    pub fn new_1(this: Ptr<Holder>) {}
-    pub fn copy_from(this: Ptr<Holder>, _a0: Ptr<Holder>) {
-        field!(this, field).write(_a0.with(|__s| __s.field));
-    }
-    pub fn move_from(this: Ptr<Holder>, _a0: Ptr<Holder>) {
-        field!(this, field).write({ (*_a0.upgrade().deref()).field });
-    }
-}
 #[derive(Record, ByteRepr, Uninit, FnPtrArg, MoveCtor, MoveAssign, Default)]
 #[byte_size(8)]
 pub struct NonCopyable {
@@ -111,11 +102,7 @@ fn main_0() -> i32 {
     let storage: Value<i32> = Rc::new(RefCell::new(11));
     let mut p: Ptr<i32> = (storage.as_pointer());
     let mut arr: [i32; 3] = [1, 2, 3];
-    let h: Value<Holder> = Rc::new(RefCell::new(<Holder>::uninit()));
-    {
-        let __d = h.as_pointer();
-        field!(__d, field).write(17);
-    };
+    let h: Value<Holder> = Rc::new(RefCell::new(Holder { field: 17 }));
     let mut hp: Ptr<Holder> = (h.as_pointer());
     let nt: Value<NonTrivial> = Rc::new(RefCell::new(<NonTrivial>::uninit()));
     NonTrivial::new_1(nt.as_pointer());

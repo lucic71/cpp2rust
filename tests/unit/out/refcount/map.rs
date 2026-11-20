@@ -29,14 +29,6 @@ impl Point {
         field!(this, x).write(x);
         field!(this, y).write(y);
     }
-    pub fn copy_from(this: Ptr<Point>, _a0: Ptr<Point>) {
-        field!(this, x).write(_a0.with(|__s| __s.x));
-        field!(this, y).write(_a0.with(|__s| __s.y));
-    }
-    pub fn move_from(this: Ptr<Point>, _a0: Ptr<Point>) {
-        field!(this, x).write({ (*_a0.upgrade().deref()).x });
-        field!(this, y).write({ (*_a0.upgrade().deref()).y });
-    }
 }
 impl Default for Point {
     fn default() -> Self {

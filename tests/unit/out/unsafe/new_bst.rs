@@ -13,19 +13,6 @@ pub struct node_t {
     pub right: *mut node_t,
     pub value: i32,
 }
-impl node_t {
-    pub unsafe fn new_1(this: *mut node_t) {}
-    pub unsafe fn copy_from(this: *mut node_t, _a0: *const node_t) {
-        (&raw mut (*this).left).write((*_a0).left);
-        (&raw mut (*this).right).write((*_a0).right);
-        (&raw mut (*this).value).write((*_a0).value);
-    }
-    pub unsafe fn move_from(this: *mut node_t, _a0: *mut node_t) {
-        (&raw mut (*this).left).write((*_a0).left);
-        (&raw mut (*this).right).write((*_a0).right);
-        (&raw mut (*this).value).write((*_a0).value);
-    }
-}
 pub unsafe fn find_0(mut node: *mut node_t, mut value: i32) -> *mut node_t {
     if ((value) < ((*node).value)) && (!(((*node).left).is_null())) {
         return (unsafe { find_0((*node).left, value) });
@@ -38,16 +25,11 @@ pub unsafe fn find_0(mut node: *mut node_t, mut value: i32) -> *mut node_t {
 }
 pub unsafe fn insert_1(mut node: *mut node_t, mut value: i32) -> *mut node_t {
     if (node).is_null() {
-        return {
-            let __p = Box::into_raw(Box::<node_t>::new_uninit()) as *mut node_t;
-            {
-                let __d = __p;
-                (&raw mut (*__d).left).write(std::ptr::null_mut());
-                (&raw mut (*__d).right).write(std::ptr::null_mut());
-                (&raw mut (*__d).value).write(value);
-            };
-            __p
-        };
+        return (Box::leak(Box::new(node_t {
+            left: std::ptr::null_mut(),
+            right: std::ptr::null_mut(),
+            value: value,
+        })) as *mut node_t);
     }
     if ((value) < ((*node).value)) {
         (*node).left = (unsafe { insert_1((*node).left, value) });
@@ -77,16 +59,11 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    let mut root: *mut node_t = {
-        let __p = Box::into_raw(Box::<node_t>::new_uninit()) as *mut node_t;
-        {
-            let __d = __p;
-            (&raw mut (*__d).left).write(std::ptr::null_mut());
-            (&raw mut (*__d).right).write(std::ptr::null_mut());
-            (&raw mut (*__d).value).write(0);
-        };
-        __p
-    };
+    let mut root: *mut node_t = (Box::leak(Box::new(node_t {
+        left: std::ptr::null_mut(),
+        right: std::ptr::null_mut(),
+        value: 0,
+    })) as *mut node_t);
     root = (unsafe { insert_1(root, 1) });
     root = (unsafe { insert_1(root, 2) });
     root = (unsafe { insert_1(root, 3) });

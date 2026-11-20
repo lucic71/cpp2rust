@@ -16,19 +16,6 @@ pub struct Edge {
     #[offset(8)]
     pub weight: f64,
 }
-impl Edge {
-    pub fn new_1(this: Ptr<Edge>) {}
-    pub fn copy_from(this: Ptr<Edge>, _a0: Ptr<Edge>) {
-        field!(this, u).write(_a0.with(|__s| __s.u));
-        field!(this, v).write(_a0.with(|__s| __s.v));
-        field!(this, weight).write(_a0.with(|__s| __s.weight));
-    }
-    pub fn move_from(this: Ptr<Edge>, _a0: Ptr<Edge>) {
-        field!(this, u).write({ (*_a0.upgrade().deref()).u });
-        field!(this, v).write({ (*_a0.upgrade().deref()).v });
-        field!(this, weight).write({ (*_a0.upgrade().deref()).weight });
-    }
-}
 pub fn partition_0(arr: Ptr<Option<Value<Box<[Edge]>>>>, mut start: i32, mut end: i32) -> i32 {
     let pivot: Ptr<Edge> = ({ (*arr.upgrade().deref()).decay().offset((start as usize)) });
     let mut count: i32 = 0;
@@ -45,18 +32,11 @@ pub fn partition_0(arr: Ptr<Option<Value<Box<[Edge]>>>>, mut start: i32, mut end
         }
     }
     let mut pidx: i32 = (start + count);
-    let tmp: Value<Edge> = Rc::new(RefCell::new(<Edge>::uninit()));
-    {
-        let __d = tmp.as_pointer();
-        field!(__d, u).write(
-            ({ (*arr.upgrade().deref()).decay().offset((pidx as usize)) }).with(|__s| __s.u),
-        );
-        field!(__d, v).write(
-            ({ (*arr.upgrade().deref()).decay().offset((pidx as usize)) }).with(|__s| __s.v),
-        );
-        field!(__d, weight).write(
-            ({ (*arr.upgrade().deref()).decay().offset((pidx as usize)) }).with(|__s| __s.weight),
-        );
+    let mut tmp: Edge = Edge {
+        u: ({ (*arr.upgrade().deref()).decay().offset((pidx as usize)) }).with(|__s| __s.u),
+        v: ({ (*arr.upgrade().deref()).decay().offset((pidx as usize)) }).with(|__s| __s.v),
+        weight: ({ (*arr.upgrade().deref()).decay().offset((pidx as usize)) })
+            .with(|__s| __s.weight),
     };
     let __rhs = Edge {
         u: ({ (*arr.upgrade().deref()).decay().offset((start as usize)) }).with(|__s| __s.u),
@@ -66,9 +46,9 @@ pub fn partition_0(arr: Ptr<Option<Value<Box<[Edge]>>>>, mut start: i32, mut end
     };
     ({ (*arr.upgrade().deref()).decay().offset((pidx as usize)) }).write(__rhs);
     ({ (*arr.upgrade().deref()).decay().offset((start as usize)) }).write(Edge {
-        u: { (*tmp.borrow()).u },
-        v: { (*tmp.borrow()).v },
-        weight: { (*tmp.borrow()).weight },
+        u: tmp.u,
+        v: tmp.v,
+        weight: tmp.weight,
     });
     let mut i: i32 = start;
     let mut j: i32 = end;
@@ -86,7 +66,7 @@ pub fn partition_0(arr: Ptr<Option<Value<Box<[Edge]>>>>, mut start: i32, mut end
             j.prefix_dec();
         }
         if (i < pidx) && (j > pidx) {
-            (*tmp.borrow_mut()) = Edge {
+            tmp = Edge {
                 u: ({ (*arr.upgrade().deref()).decay().offset((i as usize)) }).with(|__s| __s.u),
                 v: ({ (*arr.upgrade().deref()).decay().offset((i as usize)) }).with(|__s| __s.v),
                 weight: ({ (*arr.upgrade().deref()).decay().offset((i as usize)) })
@@ -100,9 +80,9 @@ pub fn partition_0(arr: Ptr<Option<Value<Box<[Edge]>>>>, mut start: i32, mut end
             };
             ({ (*arr.upgrade().deref()).decay().offset((i as usize)) }).write(__rhs);
             ({ (*arr.upgrade().deref()).decay().offset((j as usize)) }).write(Edge {
-                u: { (*tmp.borrow()).u },
-                v: { (*tmp.borrow()).v },
-                weight: { (*tmp.borrow()).weight },
+                u: tmp.u,
+                v: tmp.v,
+                weight: tmp.weight,
             });
             i.postfix_inc();
             j.postfix_dec();

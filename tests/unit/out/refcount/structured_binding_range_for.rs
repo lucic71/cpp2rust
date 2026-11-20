@@ -14,43 +14,25 @@ pub struct Pair {
     #[offset(4)]
     pub second: i32,
 }
-impl Pair {
-    pub fn new_1(this: Ptr<Pair>) {}
-    pub fn copy_from(this: Ptr<Pair>, _a0: Ptr<Pair>) {
-        field!(this, first).write(_a0.with(|__s| __s.first));
-        field!(this, second).write(_a0.with(|__s| __s.second));
-    }
-    pub fn move_from(this: Ptr<Pair>, _a0: Ptr<Pair>) {
-        field!(this, first).write({ (*_a0.upgrade().deref()).first });
-        field!(this, second).write({ (*_a0.upgrade().deref()).second });
-    }
-}
 pub fn main() {
     __cpp2rust_init_globals();
     libcc2rs::cpp2rust_exit(main_0());
 }
 fn main_0() -> i32 {
-    let arr: Value<Box<[Pair]>> = Rc::new(RefCell::new(
-        (0..3).map(|_| <Pair>::uninit()).collect::<Box<[_]>>(),
-    ));
-    {
-        let __d = arr.decay();
-        {
-            let __d = __d.offset(0);
-            field!(__d, first).write(1);
-            field!(__d, second).write(2);
-        };
-        {
-            let __d = __d.offset(1);
-            field!(__d, first).write(3);
-            field!(__d, second).write(4);
-        };
-        {
-            let __d = __d.offset(2);
-            field!(__d, first).write(5);
-            field!(__d, second).write(6);
-        };
-    };
+    let arr: Value<Box<[Pair]>> = Rc::new(RefCell::new(Box::new([
+        Pair {
+            first: 1,
+            second: 2,
+        },
+        Pair {
+            first: 3,
+            second: 4,
+        },
+        Pair {
+            first: 5,
+            second: 6,
+        },
+    ])));
     'loop_: for __decomp_0 in IterRange::new(arr.decay(), arr.decay().offset((3_i64) as isize)) {
         let __decomp_0: Ptr<Pair> = (__decomp_0).clone();
         {
@@ -61,11 +43,7 @@ fn main_0() -> i32 {
     assert!(({ ({ (*arr.borrow())[(0) as usize].first } == 3) }));
     assert!(({ ({ (*arr.borrow())[(2) as usize].first } == 11) }));
     'loop_: for __decomp_1 in IterRange::new(arr.decay(), arr.decay().offset((3_i64) as isize)) {
-        let __decomp_1: Value<Pair> = {
-            let __v: Value<Pair> = Rc::new(RefCell::new(<Pair>::uninit()));
-            Pair::copy_from(__v.as_pointer(), { (__decomp_1).clone() });
-            __v
-        };
+        let __decomp_1: Value<Pair> = Rc::new(RefCell::new((*__decomp_1.upgrade().deref())));
         (*__decomp_1.borrow_mut()).first = 0;
         (*__decomp_1.borrow_mut()).second = 0;
     }

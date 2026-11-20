@@ -16,19 +16,6 @@ pub struct Triple {
     #[offset(8)]
     pub c: i32,
 }
-impl Triple {
-    pub fn new_1(this: Ptr<Triple>) {}
-    pub fn copy_from(this: Ptr<Triple>, _a0: Ptr<Triple>) {
-        field!(this, a).write(_a0.with(|__s| __s.a));
-        field!(this, b).write(_a0.with(|__s| __s.b));
-        field!(this, c).write(_a0.with(|__s| __s.c));
-    }
-    pub fn move_from(this: Ptr<Triple>, _a0: Ptr<Triple>) {
-        field!(this, a).write({ (*_a0.upgrade().deref()).a });
-        field!(this, b).write({ (*_a0.upgrade().deref()).b });
-        field!(this, c).write({ (*_a0.upgrade().deref()).c });
-    }
-}
 pub fn sum_0(t: Ptr<Triple>) -> i32 {
     let __decomp_1: Ptr<Triple> = (t).clone();
     return ((__decomp_1.with(|__s| __s.a) + (if __decomp_1.with(|__s| __s.b) { 1 } else { 0 }))
@@ -39,13 +26,11 @@ pub fn main() {
     libcc2rs::cpp2rust_exit(main_0());
 }
 fn main_0() -> i32 {
-    let t: Value<Triple> = Rc::new(RefCell::new(<Triple>::uninit()));
-    {
-        let __d = t.as_pointer();
-        field!(__d, a).write(10);
-        field!(__d, b).write(false);
-        field!(__d, c).write(20);
-    };
+    let t: Value<Triple> = Rc::new(RefCell::new(Triple {
+        a: 10,
+        b: false,
+        c: 20,
+    }));
     let __decomp_2: Ptr<Triple> = t.as_pointer();
     field!(__decomp_2, a).write(11);
     field!(__decomp_2, b).write(true);

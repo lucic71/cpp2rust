@@ -15,17 +15,6 @@ pub struct Defaulted {
     pub a: i32,
     pub b: i32,
 }
-impl Defaulted {
-    pub unsafe fn new_1(this: *mut Defaulted) {}
-    pub unsafe fn copy_from(this: *mut Defaulted, _a0: *const Defaulted) {
-        (&raw mut (*this).a).write((*_a0).a);
-        (&raw mut (*this).b).write((*_a0).b);
-    }
-    pub unsafe fn move_from(this: *mut Defaulted, _a0: *mut Defaulted) {
-        (&raw mut (*this).a).write((*_a0).a);
-        (&raw mut (*this).b).write((*_a0).b);
-    }
-}
 impl std::cmp::PartialEq for Defaulted {
     fn eq(&self, other: &Self) -> bool {
         unsafe { operator_eq_0(self as *const Defaulted, other as *const Defaulted) }
@@ -52,15 +41,6 @@ pub unsafe fn operator_eq_2(_a0: *const DefaultedOrd, _a1: *const DefaultedOrd) 
 pub struct DefaultedOrd {
     pub a: i32,
 }
-impl DefaultedOrd {
-    pub unsafe fn new_1(this: *mut DefaultedOrd) {}
-    pub unsafe fn copy_from(this: *mut DefaultedOrd, _a0: *const DefaultedOrd) {
-        (&raw mut (*this).a).write((*_a0).a);
-    }
-    pub unsafe fn move_from(this: *mut DefaultedOrd, _a0: *mut DefaultedOrd) {
-        (&raw mut (*this).a).write((*_a0).a);
-    }
-}
 impl std::cmp::Ord for DefaultedOrd {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering {
         unsafe { operator_cmp_1(self as *const DefaultedOrd, other as *const DefaultedOrd) }
@@ -83,26 +63,15 @@ pub unsafe fn operator_eq_3(x: *const Inline, y: *const Inline) -> bool {
 pub unsafe fn operator_lt_4(x: *const Inline, y: *const Inline) -> bool {
     return (((*x).a) < ((*y).a));
 }
-pub unsafe fn operator_add_5(__ret: *mut Inline, x: *const Inline, y: *const Inline) {
-    {
-        let __d = __ret.clone();
-        (&raw mut (*__d).a).write((((*x).a) + ((*y).a)));
+pub unsafe fn operator_add_5(x: *const Inline, y: *const Inline) -> Inline {
+    return Inline {
+        a: (((*x).a) + ((*y).a)),
     };
-    return;
 }
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct Inline {
     pub a: i32,
-}
-impl Inline {
-    pub unsafe fn new_1(this: *mut Inline) {}
-    pub unsafe fn copy_from(this: *mut Inline, _a0: *const Inline) {
-        (&raw mut (*this).a).write((*_a0).a);
-    }
-    pub unsafe fn move_from(this: *mut Inline, _a0: *mut Inline) {
-        (&raw mut (*this).a).write((*_a0).a);
-    }
 }
 impl std::cmp::Ord for Inline {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering {
@@ -132,15 +101,6 @@ impl std::cmp::Eq for Inline {}
 #[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct OutOfLine {
     pub a: i32,
-}
-impl OutOfLine {
-    pub unsafe fn new_1(this: *mut OutOfLine) {}
-    pub unsafe fn copy_from(this: *mut OutOfLine, _a0: *const OutOfLine) {
-        (&raw mut (*this).a).write((*_a0).a);
-    }
-    pub unsafe fn move_from(this: *mut OutOfLine, _a0: *mut OutOfLine) {
-        (&raw mut (*this).a).write((*_a0).a);
-    }
 }
 impl std::cmp::PartialEq for OutOfLine {
     fn eq(&self, other: &Self) -> bool {
@@ -172,15 +132,6 @@ pub unsafe fn operator_eq_10(x: *const Tmpl_int_, y: *const Tmpl_long_) -> bool 
 pub struct Tmpl_int_ {
     pub v: i32,
 }
-impl Tmpl_int_ {
-    pub unsafe fn new_1(this: *mut Tmpl_int_) {}
-    pub unsafe fn copy_from(this: *mut Tmpl_int_, _a0: *const Tmpl_int_) {
-        (&raw mut (*this).v).write((*_a0).v);
-    }
-    pub unsafe fn move_from(this: *mut Tmpl_int_, _a0: *mut Tmpl_int_) {
-        (&raw mut (*this).v).write((*_a0).v);
-    }
-}
 impl std::cmp::Ord for Tmpl_int_ {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering {
         unsafe {
@@ -210,15 +161,6 @@ impl std::cmp::Eq for Tmpl_int_ {}
 pub struct Tmpl_long_ {
     pub v: i64,
 }
-impl Tmpl_long_ {
-    pub unsafe fn new_1(this: *mut Tmpl_long_) {}
-    pub unsafe fn copy_from(this: *mut Tmpl_long_, _a0: *const Tmpl_long_) {
-        (&raw mut (*this).v).write((*_a0).v);
-    }
-    pub unsafe fn move_from(this: *mut Tmpl_long_, _a0: *mut Tmpl_long_) {
-        (&raw mut (*this).v).write((*_a0).v);
-    }
-}
 pub unsafe fn operator_eq_11(
     _a0: *const TmplDefaulted_int_,
     _a1: *const TmplDefaulted_int_,
@@ -229,15 +171,6 @@ pub unsafe fn operator_eq_11(
 #[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct TmplDefaulted_int_ {
     pub v: i32,
-}
-impl TmplDefaulted_int_ {
-    pub unsafe fn new_1(this: *mut TmplDefaulted_int_) {}
-    pub unsafe fn copy_from(this: *mut TmplDefaulted_int_, _a0: *const TmplDefaulted_int_) {
-        (&raw mut (*this).v).write((*_a0).v);
-    }
-    pub unsafe fn move_from(this: *mut TmplDefaulted_int_, _a0: *mut TmplDefaulted_int_) {
-        (&raw mut (*this).v).write((*_a0).v);
-    }
 }
 impl std::cmp::PartialEq for TmplDefaulted_int_ {
     fn eq(&self, other: &Self) -> bool {
@@ -257,24 +190,9 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    let mut d1: Defaulted = ::std::mem::MaybeUninit::uninit().assume_init();
-    {
-        let __d = &raw mut d1;
-        (&raw mut (*__d).a).write(1);
-        (&raw mut (*__d).b).write(2);
-    };
-    let mut d2: Defaulted = ::std::mem::MaybeUninit::uninit().assume_init();
-    {
-        let __d = &raw mut d2;
-        (&raw mut (*__d).a).write(1);
-        (&raw mut (*__d).b).write(2);
-    };
-    let mut d3: Defaulted = ::std::mem::MaybeUninit::uninit().assume_init();
-    {
-        let __d = &raw mut d3;
-        (&raw mut (*__d).a).write(1);
-        (&raw mut (*__d).b).write(3);
-    };
+    let mut d1: Defaulted = Defaulted { a: 1, b: 2 };
+    let mut d2: Defaulted = Defaulted { a: 1, b: 2 };
+    let mut d3: Defaulted = Defaulted { a: 1, b: 3 };
     assert!(
         (unsafe {
             let _arg0: *const Defaulted = &d1;
@@ -293,16 +211,8 @@ unsafe fn main_0() -> i32 {
             operator_eq_0(_arg0, &d3)
         })
     );
-    let mut o1: DefaultedOrd = ::std::mem::MaybeUninit::uninit().assume_init();
-    {
-        let __d = &raw mut o1;
-        (&raw mut (*__d).a).write(1);
-    };
-    let mut o2: DefaultedOrd = ::std::mem::MaybeUninit::uninit().assume_init();
-    {
-        let __d = &raw mut o2;
-        (&raw mut (*__d).a).write(2);
-    };
+    let mut o1: DefaultedOrd = DefaultedOrd { a: 1 };
+    let mut o2: DefaultedOrd = DefaultedOrd { a: 2 };
     assert!(
         (unsafe {
             let _arg0: *const DefaultedOrd = &o1;
@@ -328,21 +238,9 @@ unsafe fn main_0() -> i32 {
             operator_cmp_1(_arg0, &o2)
         }) == std::cmp::Ordering::Less
     );
-    let mut i1: Inline = ::std::mem::MaybeUninit::uninit().assume_init();
-    {
-        let __d = &raw mut i1;
-        (&raw mut (*__d).a).write(1);
-    };
-    let mut i2: Inline = ::std::mem::MaybeUninit::uninit().assume_init();
-    {
-        let __d = &raw mut i2;
-        (&raw mut (*__d).a).write(2);
-    };
-    let mut i3: Inline = ::std::mem::MaybeUninit::uninit().assume_init();
-    {
-        let __d = &raw mut i3;
-        (&raw mut (*__d).a).write(1);
-    };
+    let mut i1: Inline = Inline { a: 1 };
+    let mut i2: Inline = Inline { a: 2 };
+    let mut i3: Inline = Inline { a: 1 };
     assert!(
         (unsafe {
             let _x: *const Inline = &i1;
@@ -369,36 +267,17 @@ unsafe fn main_0() -> i32 {
     );
     assert!(
         (unsafe {
-            let mut _x: Inline = ::std::mem::MaybeUninit::uninit().assume_init();
-            let __tmp_0 = &raw mut _x;
-            (unsafe {
+            let mut _x: Inline = (unsafe {
                 let _x: *const Inline = &i1;
-                operator_add_5(__tmp_0, _x, &i2)
+                operator_add_5(_x, &i2)
             });
-            let mut _y: Inline = ::std::mem::MaybeUninit::uninit().assume_init();
-            let __tmp_1 = &raw mut _y;
-            {
-                let __d = __tmp_1;
-                (&raw mut (*__d).a).write(3);
-            };
+            let mut _y: Inline = Inline { a: 3 };
             operator_eq_3(&mut _x, &mut _y)
         })
     );
-    let mut f1: OutOfLine = ::std::mem::MaybeUninit::uninit().assume_init();
-    {
-        let __d = &raw mut f1;
-        (&raw mut (*__d).a).write(4);
-    };
-    let mut f2: OutOfLine = ::std::mem::MaybeUninit::uninit().assume_init();
-    {
-        let __d = &raw mut f2;
-        (&raw mut (*__d).a).write(4);
-    };
-    let mut f3: OutOfLine = ::std::mem::MaybeUninit::uninit().assume_init();
-    {
-        let __d = &raw mut f3;
-        (&raw mut (*__d).a).write(5);
-    };
+    let mut f1: OutOfLine = OutOfLine { a: 4 };
+    let mut f2: OutOfLine = OutOfLine { a: 4 };
+    let mut f3: OutOfLine = OutOfLine { a: 5 };
     assert!(
         (unsafe {
             let _x: *const OutOfLine = &f1;
@@ -417,21 +296,9 @@ unsafe fn main_0() -> i32 {
             operator_eq_6(_x, &f3)
         })
     );
-    let mut t1: Tmpl_int_ = ::std::mem::MaybeUninit::uninit().assume_init();
-    {
-        let __d = &raw mut t1;
-        (&raw mut (*__d).v).write(1);
-    };
-    let mut t2: Tmpl_int_ = ::std::mem::MaybeUninit::uninit().assume_init();
-    {
-        let __d = &raw mut t2;
-        (&raw mut (*__d).v).write(2);
-    };
-    let mut t3: Tmpl_int_ = ::std::mem::MaybeUninit::uninit().assume_init();
-    {
-        let __d = &raw mut t3;
-        (&raw mut (*__d).v).write(1);
-    };
+    let mut t1: Tmpl_int_ = Tmpl_int_ { v: 1 };
+    let mut t2: Tmpl_int_ = Tmpl_int_ { v: 2 };
+    let mut t3: Tmpl_int_ = Tmpl_int_ { v: 1 };
     assert!(
         (unsafe {
             let _x: *const Tmpl_int_ = &t1;
@@ -450,16 +317,8 @@ unsafe fn main_0() -> i32 {
             operator_lt_9(_x, &t2)
         })
     );
-    let mut u1: Tmpl_long_ = ::std::mem::MaybeUninit::uninit().assume_init();
-    {
-        let __d = &raw mut u1;
-        (&raw mut (*__d).v).write(1_i64);
-    };
-    let mut u2: Tmpl_long_ = ::std::mem::MaybeUninit::uninit().assume_init();
-    {
-        let __d = &raw mut u2;
-        (&raw mut (*__d).v).write(2_i64);
-    };
+    let mut u1: Tmpl_long_ = Tmpl_long_ { v: 1_i64 };
+    let mut u2: Tmpl_long_ = Tmpl_long_ { v: 2_i64 };
     assert!(
         (unsafe {
             let _x: *const Tmpl_int_ = &t1;
@@ -472,21 +331,9 @@ unsafe fn main_0() -> i32 {
             operator_eq_10(_x, &u2)
         })
     );
-    let mut v1: TmplDefaulted_int_ = ::std::mem::MaybeUninit::uninit().assume_init();
-    {
-        let __d = &raw mut v1;
-        (&raw mut (*__d).v).write(7);
-    };
-    let mut v2: TmplDefaulted_int_ = ::std::mem::MaybeUninit::uninit().assume_init();
-    {
-        let __d = &raw mut v2;
-        (&raw mut (*__d).v).write(7);
-    };
-    let mut v3: TmplDefaulted_int_ = ::std::mem::MaybeUninit::uninit().assume_init();
-    {
-        let __d = &raw mut v3;
-        (&raw mut (*__d).v).write(8);
-    };
+    let mut v1: TmplDefaulted_int_ = TmplDefaulted_int_ { v: 7 };
+    let mut v2: TmplDefaulted_int_ = TmplDefaulted_int_ { v: 7 };
+    let mut v3: TmplDefaulted_int_ = TmplDefaulted_int_ { v: 8 };
     assert!(
         (unsafe {
             let _arg0: *const TmplDefaulted_int_ = &v1;

@@ -14,46 +14,26 @@ pub struct Complex {
     #[offset(8)]
     pub img: f64,
 }
-impl Complex {
-    pub fn new_1(this: Ptr<Complex>) {}
-    pub fn copy_from(this: Ptr<Complex>, _a0: Ptr<Complex>) {
-        field!(this, re).write(_a0.with(|__s| __s.re));
-        field!(this, img).write(_a0.with(|__s| __s.img));
-    }
-    pub fn move_from(this: Ptr<Complex>, _a0: Ptr<Complex>) {
-        field!(this, re).write({ (*_a0.upgrade().deref()).re });
-        field!(this, img).write({ (*_a0.upgrade().deref()).img });
-    }
-}
-pub fn Product_0(__ret: Ptr<Complex>, z1: Value<Complex>, z2: Value<Complex>) {
-    let mut ac: f64 = ({ (*z1.borrow()).re } * { (*z2.borrow()).re });
-    let mut bd: f64 = ({ (*z1.borrow()).img } * { (*z2.borrow()).img });
-    let mut ad: f64 = ({ (*z1.borrow()).re } * { (*z2.borrow()).img });
-    let mut bc: f64 = ({ (*z1.borrow()).img } * { (*z2.borrow()).re });
-    {
-        let __d = __ret.clone();
-        field!(__d, re).write((ac - bd));
-        field!(__d, img).write((ad + bc));
+pub fn Product_0(mut z1: Complex, mut z2: Complex) -> Complex {
+    let mut ac: f64 = (z1.re * z2.re);
+    let mut bd: f64 = (z1.img * z2.img);
+    let mut ad: f64 = (z1.re * z2.img);
+    let mut bc: f64 = (z1.img * z2.re);
+    return Complex {
+        re: (ac - bd),
+        img: (ad + bc),
     };
-    return;
 }
-pub fn Sum_1(__ret: Ptr<Complex>, z1: Value<Complex>, z2: Value<Complex>) {
-    let mut ac: f64 = ({ (*z1.borrow()).re } + { (*z2.borrow()).re });
-    let mut bd: f64 = ({ (*z1.borrow()).img } + { (*z2.borrow()).img });
-    {
-        let __d = __ret.clone();
-        field!(__d, re).write(ac);
-        field!(__d, img).write(bd);
-    };
-    return;
+pub fn Sum_1(mut z1: Complex, mut z2: Complex) -> Complex {
+    let mut ac: f64 = (z1.re + z2.re);
+    let mut bd: f64 = (z1.img + z2.img);
+    return Complex { re: ac, img: bd };
 }
-pub fn Neg_2(__ret: Ptr<Complex>, z1: Value<Complex>) {
-    {
-        let __d = __ret.clone();
-        field!(__d, re).write(-{ (*z1.borrow()).re });
-        field!(__d, img).write(-{ (*z1.borrow()).img });
+pub fn Neg_2(mut z1: Complex) -> Complex {
+    return Complex {
+        re: -z1.re,
+        img: -z1.img,
     };
-    return;
 }
 pub fn fft_3(a: Ptr<Option<Value<Box<[Complex]>>>>, mut N: i32) -> Option<Value<Box<[Complex]>>> {
     let mut y: Option<Value<Box<[Complex]>>> = Some(Rc::new(RefCell::new(
@@ -132,81 +112,35 @@ pub fn fft_3(a: Ptr<Option<Value<Box<[Complex]>>>>, mut N: i32) -> Option<Value<
     {
         let mut k: i32 = 0;
         'loop_: while (k < (N / 2)) {
-            let yk: Value<Complex> = Rc::new(RefCell::new(<Complex>::uninit()));
-            ({
-                let _z1 = {
-                    let __v: Value<Complex> = Rc::new(RefCell::new(<Complex>::uninit()));
-                    Complex::copy_from(__v.as_pointer(), { y0.decay().offset((k as usize)) });
-                    __v
-                };
-                let _z2 = {
-                    let __v: Value<Complex> = Rc::new(RefCell::new(<Complex>::uninit()));
-                    ({
-                        let _z1 = {
-                            let __v: Value<Complex> = Rc::new(RefCell::new(<Complex>::uninit()));
-                            Complex::copy_from(__v.as_pointer(), {
-                                w.decay().offset((k as usize))
-                            });
-                            __v
-                        };
-                        let _z2 = {
-                            let __v: Value<Complex> = Rc::new(RefCell::new(<Complex>::uninit()));
-                            Complex::copy_from(__v.as_pointer(), {
-                                y1.decay().offset((k as usize))
-                            });
-                            __v
-                        };
-                        Product_0(__v.as_pointer(), _z1, _z2)
-                    });
-                    __v
-                };
-                Sum_1(yk.as_pointer(), _z1, _z2)
+            let mut yk: Complex = ({
+                let _z1: Complex = (*y0.decay().offset((k as usize)).upgrade().deref());
+                let _z2: Complex = ({
+                    let _z1: Complex = (*w.decay().offset((k as usize)).upgrade().deref());
+                    let _z2: Complex = (*y1.decay().offset((k as usize)).upgrade().deref());
+                    Product_0(_z1, _z2)
+                });
+                Sum_1(_z1, _z2)
             });
             y.decay().offset((k as usize)).write(Complex {
-                re: { (*yk.borrow()).re },
-                img: { (*yk.borrow()).img },
+                re: yk.re,
+                img: yk.img,
             });
-            let yk_n2: Value<Complex> = Rc::new(RefCell::new(<Complex>::uninit()));
-            ({
-                let _z1 = {
-                    let __v: Value<Complex> = Rc::new(RefCell::new(<Complex>::uninit()));
-                    Complex::copy_from(__v.as_pointer(), { y0.decay().offset((k as usize)) });
-                    __v
-                };
-                let _z2 = {
-                    let __v: Value<Complex> = Rc::new(RefCell::new(<Complex>::uninit()));
-                    ({
-                        Neg_2(__v.as_pointer(), {
-                            let __v: Value<Complex> = Rc::new(RefCell::new(<Complex>::uninit()));
-                            ({
-                                let _z1 = {
-                                    let __v: Value<Complex> =
-                                        Rc::new(RefCell::new(<Complex>::uninit()));
-                                    Complex::copy_from(__v.as_pointer(), {
-                                        w.decay().offset((k as usize))
-                                    });
-                                    __v
-                                };
-                                let _z2 = {
-                                    let __v: Value<Complex> =
-                                        Rc::new(RefCell::new(<Complex>::uninit()));
-                                    Complex::copy_from(__v.as_pointer(), {
-                                        y1.decay().offset((k as usize))
-                                    });
-                                    __v
-                                };
-                                Product_0(__v.as_pointer(), _z1, _z2)
-                            });
-                            __v
-                        })
-                    });
-                    __v
-                };
-                Sum_1(yk_n2.as_pointer(), _z1, _z2)
+            let mut yk_n2: Complex = ({
+                let _z1: Complex = (*y0.decay().offset((k as usize)).upgrade().deref());
+                let _z2: Complex = ({
+                    Neg_2(
+                        ({
+                            let _z1: Complex = (*w.decay().offset((k as usize)).upgrade().deref());
+                            let _z2: Complex = (*y1.decay().offset((k as usize)).upgrade().deref());
+                            Product_0(_z1, _z2)
+                        }),
+                    )
+                });
+                Sum_1(_z1, _z2)
             });
             y.decay().offset(((k + (N / 2)) as usize)).write(Complex {
-                re: { (*yk_n2.borrow()).re },
-                img: { (*yk_n2.borrow()).img },
+                re: yk_n2.re,
+                img: yk_n2.img,
             });
             k.postfix_inc();
         }

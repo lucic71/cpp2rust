@@ -12,15 +12,6 @@ pub struct Counter {
     #[offset(0)]
     pub n: i32,
 }
-impl Counter {
-    pub fn copy_from(this: Ptr<Counter>, _a0: Ptr<Counter>) {
-        field!(this, n).write(_a0.with(|__s| __s.n));
-    }
-    pub fn move_from(this: Ptr<Counter>, _a0: Ptr<Counter>) {
-        field!(this, n).write({ (*_a0.upgrade().deref()).n });
-    }
-    pub fn new_1(this: Ptr<Counter>) {}
-}
 #[derive(Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, MoveCtor, MoveAssign)]
 #[byte_size(40)]
 pub struct S {
@@ -40,38 +31,27 @@ pub struct S {
 impl S {
     pub fn copy_from(this: Ptr<S>, _a0: Ptr<S>) {
         field!(this, tag).write(_a0.with(|__s| __s.tag));
-        Counter::copy_from(field_ptr!(this, c), { field_ptr!(_a0, c) });
-        {
-            let __d = array_field_ptr!(this, arr);
-            for __i in 0..2_usize {
-                Counter::copy_from(__d.offset(__i as isize), {
-                    array_field_ptr!(_a0, arr).offset(__i)
-                });
-            }
-        };
+        field!(this, c).write(_a0.with(|__s| __s.c));
+        field!(this, arr).write(Box::new(std::array::from_fn::<_, 2, _>(|__i: usize| {
+            (*_a0.upgrade().deref()).arr[(__i) as usize]
+        })));
         field!(this, v).write((*_a0.upgrade().deref()).v.clone());
     }
     pub fn move_from(this: Ptr<S>, _a0: Ptr<S>) {
         field!(this, tag).write({ (*_a0.upgrade().deref()).tag });
-        Counter::move_from(field_ptr!(this, c), { field_ptr!(_a0, c) });
-        {
-            let __d = array_field_ptr!(this, arr);
-            for __i in 0..2_usize {
-                Counter::move_from(__d.offset(__i as isize), {
-                    array_field_ptr!(_a0, arr).offset(__i)
-                });
-            }
-        };
+        field!(this, c).write({ (*_a0.upgrade().deref()).c });
+        field!(this, arr).write(Box::new(std::array::from_fn::<_, 2, _>(|__i: usize| {
+            (*_a0.upgrade().deref()).arr[(__i) as usize]
+        })));
         field!(this, v).write(field!(_a0, v).with_mut(std::mem::take));
     }
     pub fn new_1(this: Ptr<S>) {
-        Counter::new_1(field_ptr!(this, c));
-        {
-            let __d = array_field_ptr!(this, arr);
-            for __i in 0..2_isize {
-                Counter::new_1(__d.offset(__i));
-            }
-        };
+        field!(this, c).write(<Counter>::default());
+        field!(this, arr).write(
+            (0..2)
+                .map(|_| <Counter>::default())
+                .collect::<Box<[Counter]>>(),
+        );
         field!(this, v).write(Vec::new());
     }
 }
@@ -132,21 +112,8 @@ fn main_0() -> i32 {
     {
         let __d = local.as_pointer();
         ();
-        {
-            let __d = field_ptr!(__d, c);
-            ();
-        };
-        {
-            let __d = array_field_ptr!(__d, arr);
-            {
-                let __d = __d.offset(0);
-                ();
-            };
-            {
-                let __d = __d.offset(1);
-                ();
-            };
-        };
+        field!(__d, c).write(<Counter>::default());
+        field!(__d, arr).write(Box::new([<Counter>::default(); 2]));
         field!(__d, v).write(Vec::new());
     };
     (*local.borrow_mut()).tag = 1;
@@ -156,21 +123,8 @@ fn main_0() -> i32 {
         {
             let __d = __p.clone();
             ();
-            {
-                let __d = field_ptr!(__d, c);
-                ();
-            };
-            {
-                let __d = array_field_ptr!(__d, arr);
-                {
-                    let __d = __d.offset(0);
-                    ();
-                };
-                {
-                    let __d = __d.offset(1);
-                    ();
-                };
-            };
+            field!(__d, c).write(<Counter>::default());
+            field!(__d, arr).write(Box::new([<Counter>::default(); 2]));
             field!(__d, v).write(Vec::new());
         };
         __p

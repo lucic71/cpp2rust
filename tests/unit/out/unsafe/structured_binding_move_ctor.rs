@@ -6,10 +6,8 @@ use std::collections::BTreeMap;
 use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
-pub static mut copies_0: libcc2rs::LazyStorage<i32> =
-    libcc2rs::LazyStorage::new(|__p| unsafe { __p.write(0) });
-pub static mut moves_1: libcc2rs::LazyStorage<i32> =
-    libcc2rs::LazyStorage::new(|__p| unsafe { __p.write(0) });
+pub static mut copies_0: std::cell::LazyCell<i32> = std::cell::LazyCell::new(|| unsafe { 0 });
+pub static mut moves_1: std::cell::LazyCell<i32> = std::cell::LazyCell::new(|| unsafe { 0 });
 #[repr(C)]
 #[derive(VaArg, FnPtrArg, MoveCtorUnsafe, Default)]
 pub struct Movable {
@@ -24,14 +22,14 @@ impl Movable {
     pub unsafe fn copy_from(this: *mut Movable, other: *const Movable) {
         (&raw mut (*this).x).write((*other).x);
         (&raw mut (*this).y).write((*other).y);
-        (*(*&raw const copies_0).get()).prefix_inc();
+        (*std::cell::LazyCell::force_mut(&mut *&raw mut copies_0)).prefix_inc();
     }
     pub unsafe fn move_from(this: *mut Movable, other: *mut Movable) {
         (&raw mut (*this).x).write((*other).x);
         (&raw mut (*this).y).write((*other).y);
         (*other).x = 0;
         (*other).y = 0;
-        (*(*&raw const moves_1).get()).prefix_inc();
+        (*std::cell::LazyCell::force_mut(&mut *&raw mut moves_1)).prefix_inc();
     }
 }
 impl Clone for Movable {
@@ -94,8 +92,8 @@ unsafe fn main_0() -> i32 {
         Movable::move_from(&raw mut __v, { &mut m });
         __v
     };
-    assert!(((*(*&raw const moves_1).get()) == (1)));
-    assert!(((*(*&raw const copies_0).get()) == (0)));
+    assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut moves_1)) == (1)));
+    assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut copies_0)) == (0)));
     assert!(((__decomp_2.x) == (3)));
     assert!(((__decomp_2.y) == (4)));
     assert!(((m.x) == (0)));
@@ -120,6 +118,6 @@ unsafe fn main_0() -> i32 {
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {
-    (*&raw const copies_0).get();
-    (*&raw const moves_1).get();
+    std::cell::LazyCell::force(&*&raw const copies_0);
+    std::cell::LazyCell::force(&*&raw const moves_1);
 }

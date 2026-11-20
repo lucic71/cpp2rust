@@ -15,23 +15,6 @@ pub struct p1_member_hides_namespace_variable_HasBalance {
     #[offset(0)]
     pub balance: i32,
 }
-impl p1_member_hides_namespace_variable_HasBalance {
-    pub fn new_1(this: Ptr<p1_member_hides_namespace_variable_HasBalance>) {
-        field!(this, balance).write(7);
-    }
-    pub fn copy_from(
-        this: Ptr<p1_member_hides_namespace_variable_HasBalance>,
-        _a0: Ptr<p1_member_hides_namespace_variable_HasBalance>,
-    ) {
-        field!(this, balance).write(_a0.with(|__s| __s.balance));
-    }
-    pub fn move_from(
-        this: Ptr<p1_member_hides_namespace_variable_HasBalance>,
-        _a0: Ptr<p1_member_hides_namespace_variable_HasBalance>,
-    ) {
-        field!(this, balance).write({ (*_a0.upgrade().deref()).balance });
-    }
-}
 impl Default for p1_member_hides_namespace_variable_HasBalance {
     fn default() -> Self {
         { p1_member_hides_namespace_variable_HasBalance { balance: 7 } }
@@ -39,9 +22,8 @@ impl Default for p1_member_hides_namespace_variable_HasBalance {
 }
 pub fn test_1() {
     let object: Value<p1_member_hides_namespace_variable_HasBalance> = Rc::new(RefCell::new(
-        <p1_member_hides_namespace_variable_HasBalance>::uninit(),
+        <p1_member_hides_namespace_variable_HasBalance>::default(),
     ));
-    p1_member_hides_namespace_variable_HasBalance::new_1(object.as_pointer());
     assert!(
         (({
             p1_member_hides_namespace_variable_HasBalanceImpl::deposit(&object.as_pointer(), 3)
@@ -69,23 +51,6 @@ pub struct p1_out_of_class_definition_is_in_class_scope_HasStaticTotal {
     #[offset(0)]
     pub held: i32,
 }
-impl p1_out_of_class_definition_is_in_class_scope_HasStaticTotal {
-    pub fn new_1(this: Ptr<p1_out_of_class_definition_is_in_class_scope_HasStaticTotal>) {
-        field!(this, held).write(1);
-    }
-    pub fn copy_from(
-        this: Ptr<p1_out_of_class_definition_is_in_class_scope_HasStaticTotal>,
-        _a0: Ptr<p1_out_of_class_definition_is_in_class_scope_HasStaticTotal>,
-    ) {
-        field!(this, held).write(_a0.with(|__s| __s.held));
-    }
-    pub fn move_from(
-        this: Ptr<p1_out_of_class_definition_is_in_class_scope_HasStaticTotal>,
-        _a0: Ptr<p1_out_of_class_definition_is_in_class_scope_HasStaticTotal>,
-    ) {
-        field!(this, held).write({ (*_a0.upgrade().deref()).held });
-    }
-}
 impl Default for p1_out_of_class_definition_is_in_class_scope_HasStaticTotal {
     fn default() -> Self {
         { p1_out_of_class_definition_is_in_class_scope_HasStaticTotal { held: 1 } }
@@ -100,9 +65,8 @@ thread_local!(
 pub fn test_5() {
     assert!((total_4.with(|rc| *rc.borrow()) == 7));
     let object: Value<p1_out_of_class_definition_is_in_class_scope_HasStaticTotal> = Rc::new(
-        RefCell::new(<p1_out_of_class_definition_is_in_class_scope_HasStaticTotal>::uninit()),
+        RefCell::new(<p1_out_of_class_definition_is_in_class_scope_HasStaticTotal>::default()),
     );
-    p1_out_of_class_definition_is_in_class_scope_HasStaticTotal::new_1(object.as_pointer());
     assert!(
         (({
             p1_out_of_class_definition_is_in_class_scope_HasStaticTotalImpl::add(

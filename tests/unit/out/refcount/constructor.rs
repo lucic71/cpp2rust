@@ -22,9 +22,6 @@ impl S {
         ({ SImpl::mut_method(&this) });
         total_0.with(|rc| *rc.borrow_mut() += ({ SImpl::const_method(&this) }));
     }
-    pub fn copy_from(this: Ptr<S>, _a0: Ptr<S>) {
-        field!(this, v).write(_a0.with(|__s| __s.v));
-    }
 }
 #[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, CppFrom)]
 #[cpp_from(i32, new_1, value)]
@@ -51,14 +48,6 @@ impl Point {
         {
             field!(this, x).with_mut(|__v| *__v = *__v + 100)
         };
-    }
-    pub fn copy_from(this: Ptr<Point>, _a0: Ptr<Point>) {
-        field!(this, x).write(_a0.with(|__s| __s.x));
-        field!(this, y).write(_a0.with(|__s| __s.y));
-    }
-    pub fn move_from(this: Ptr<Point>, _a0: Ptr<Point>) {
-        field!(this, x).write({ (*_a0.upgrade().deref()).x });
-        field!(this, y).write({ (*_a0.upgrade().deref()).y });
     }
 }
 impl Default for Point {

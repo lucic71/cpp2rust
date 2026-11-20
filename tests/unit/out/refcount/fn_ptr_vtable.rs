@@ -19,19 +19,6 @@ pub struct Vtable {
     #[byte_size(8)]
     pub destroy: FnPtr<fn(AnyPtr)>,
 }
-impl Vtable {
-    pub fn new_1(this: Ptr<Vtable>) {}
-    pub fn copy_from(this: Ptr<Vtable>, _a0: Ptr<Vtable>) {
-        field!(this, create).write(_a0.with(|__s| __s.create.clone()));
-        field!(this, get).write(_a0.with(|__s| __s.get.clone()));
-        field!(this, destroy).write(_a0.with(|__s| __s.destroy.clone()));
-    }
-    pub fn move_from(this: Ptr<Vtable>, _a0: Ptr<Vtable>) {
-        field!(this, create).write({ (*_a0.upgrade().deref()).create.clone() });
-        field!(this, get).write({ (*_a0.upgrade().deref()).get.clone() });
-        field!(this, destroy).write({ (*_a0.upgrade().deref()).destroy.clone() });
-    }
-}
 thread_local!(
     pub static storage_0: Value<i32> = Rc::new(RefCell::new(0_i32));
 );
@@ -50,22 +37,20 @@ pub fn main() {
     libcc2rs::cpp2rust_exit(main_0());
 }
 fn main_0() -> i32 {
-    let vt: Value<Vtable> = Rc::new(RefCell::new(<Vtable>::uninit()));
-    {
-        let __d = vt.as_pointer();
-        field!(__d, create).write(FnPtr::<fn(i32) -> AnyPtr>::new(int_create_1));
-        field!(__d, get).write(FnPtr::<fn(AnyPtr) -> i32>::new(int_get_2));
-        field!(__d, destroy).write(FnPtr::<fn(AnyPtr)>::new(int_destroy_3));
+    let mut vt: Vtable = Vtable {
+        create: FnPtr::<fn(i32) -> AnyPtr>::new(int_create_1),
+        get: FnPtr::<fn(AnyPtr) -> i32>::new(int_get_2),
+        destroy: FnPtr::<fn(AnyPtr)>::new(int_destroy_3),
     };
-    assert!(({ !(({ (*vt.borrow()).create.clone() }).is_null()) }));
-    assert!(({ !(({ (*vt.borrow()).get.clone() }).is_null()) }));
-    assert!(({ !(({ (*vt.borrow()).destroy.clone() }).is_null()) }));
-    let mut obj: AnyPtr = ({ { (*vt.borrow()).create.clone() }.call(42) });
-    assert!(({ (({ { (*vt.borrow()).get.clone() }.call((obj).clone(),) }) == 42) }));
-    ({ { (*vt.borrow()).destroy.clone() }.call((obj).clone()) });
+    assert!(!((vt.create).is_null()));
+    assert!(!((vt.get).is_null()));
+    assert!(!((vt.destroy).is_null()));
+    let mut obj: AnyPtr = ({ vt.create.call(42) });
+    assert!((({ vt.get.call((obj).clone(),) }) == 42));
+    ({ vt.destroy.call((obj).clone()) });
     assert!((storage_0.with(|rc| *rc.borrow()) == 0));
-    (*vt.borrow_mut()).get = FnPtr::<fn(AnyPtr) -> i32>::null();
-    assert!(({ ({ (*vt.borrow()).get.clone() }).is_null() }));
+    vt.get = FnPtr::<fn(AnyPtr) -> i32>::null();
+    assert!((vt.get).is_null());
     return 0;
 }
 pub fn __cpp2rust_init_globals() {

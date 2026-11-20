@@ -12,17 +12,6 @@ pub struct Item {
     pub key: i32,
     pub value: i32,
 }
-impl Item {
-    pub unsafe fn new_1(this: *mut Item) {}
-    pub unsafe fn copy_from(this: *mut Item, _a0: *const Item) {
-        (&raw mut (*this).key).write((*_a0).key);
-        (&raw mut (*this).value).write((*_a0).value);
-    }
-    pub unsafe fn move_from(this: *mut Item, _a0: *mut Item) {
-        (&raw mut (*this).key).write((*_a0).key);
-        (&raw mut (*this).value).write((*_a0).value);
-    }
-}
 pub unsafe fn Compare_0(a: *const Item, b: *const Item) -> bool {
     return (((*a).key) < ((*b).key));
 }

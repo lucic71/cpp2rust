@@ -30,12 +30,6 @@ impl Holder {
     pub unsafe fn run(&self, mut x: i32) -> i32 {
         return (unsafe { (self.f).unwrap()(x) });
     }
-    pub unsafe fn copy_from(this: *mut Holder, _a0: *const Holder) {
-        (&raw mut (*this).f).write((*_a0).f);
-    }
-    pub unsafe fn move_from(this: *mut Holder, _a0: *mut Holder) {
-        (&raw mut (*this).f).write((*_a0).f);
-    }
 }
 pub fn main() {
     unsafe {
@@ -51,11 +45,7 @@ unsafe fn main_0() -> i32 {
     assert!(((unsafe { call_ref_2(r, 5,) }) == (25)));
     assert!(((unsafe { call_deduced_3(Some(twice_1), 7,) }) == (14)));
     assert!(((unsafe { call_forwarded_4(Some(square_0), 6,) }) == (36)));
-    let mut h: Holder = ::std::mem::MaybeUninit::uninit().assume_init();
-    {
-        let __d = &raw mut h;
-        (&raw mut (*__d).f).write(Some(twice_1));
-    };
+    let mut h: Holder = Holder { f: Some(twice_1) };
     assert!(((unsafe { Holder::run(&h, 8,) }) == (16)));
     return 0;
 }

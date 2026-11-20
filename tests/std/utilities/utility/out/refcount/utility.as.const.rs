@@ -12,15 +12,6 @@ pub struct p1_as_const_Counter {
     #[offset(0)]
     pub value: i32,
 }
-impl p1_as_const_Counter {
-    pub fn new_1(this: Ptr<p1_as_const_Counter>) {}
-    pub fn copy_from(this: Ptr<p1_as_const_Counter>, _a0: Ptr<p1_as_const_Counter>) {
-        field!(this, value).write(_a0.with(|__s| __s.value));
-    }
-    pub fn move_from(this: Ptr<p1_as_const_Counter>, _a0: Ptr<p1_as_const_Counter>) {
-        field!(this, value).write({ (*_a0.upgrade().deref()).value });
-    }
-}
 pub fn test_0() {
     let number: Value<i32> = Rc::new(RefCell::new(3));
     let ref_: Ptr<i32> = number.as_pointer();
@@ -31,11 +22,7 @@ pub fn test_0() {
     let mut pointer: Ptr<i32> = (number.as_pointer());
     assert!(({ (pointer).clone() } == { (number.as_pointer()) }));
     let counter: Value<p1_as_const_Counter> =
-        Rc::new(RefCell::new(<p1_as_const_Counter>::uninit()));
-    {
-        let __d = counter.as_pointer();
-        field!(__d, value).write(5);
-    };
+        Rc::new(RefCell::new(p1_as_const_Counter { value: 5 }));
     assert!((({ p1_as_const_CounterImpl::get_2(&counter.as_pointer(),) }) == 5));
     assert!((({ p1_as_const_CounterImpl::get_1(&counter.as_pointer(),) }) == 6));
 }

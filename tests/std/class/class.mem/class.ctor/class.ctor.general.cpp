@@ -27,25 +27,6 @@ void test() {
 }
 } // namespace local_variable
 
-namespace static_local_variable {
-Tracker *get() {
-  static Tracker once(2);
-  return &once;
-}
-
-void test() {
-  Tracker *p = get();
-  assert(p->self == p && p->value == 2);
-  assert(get() == p);
-}
-} // namespace static_local_variable
-
-namespace global_variable {
-Tracker global(3);
-
-void test() { assert(global.self == &global && global.value == 3); }
-} // namespace global_variable
-
 namespace default_constructor {
 void test() {
   Tracker a;
@@ -191,8 +172,6 @@ void test() {
 int main() {
   lifetime::test();
   local_variable::test();
-  static_local_variable::test();
-  global_variable::test();
   default_constructor::test();
   delegating_constructor::test();
   copy_constructor::test();

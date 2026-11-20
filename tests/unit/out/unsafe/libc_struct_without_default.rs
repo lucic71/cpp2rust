@@ -52,17 +52,6 @@ impl Default for UserDefined {
 pub struct FieldIsLibcType {
     pub addr: libc::sockaddr,
 }
-impl FieldIsLibcType {
-    pub unsafe fn new_1(this: *mut FieldIsLibcType) {
-        (&raw mut (*this).addr).write(std::mem::zeroed());
-    }
-    pub unsafe fn copy_from(this: *mut FieldIsLibcType, _a0: *const FieldIsLibcType) {
-        (&raw mut (*this).addr).write((*_a0).addr);
-    }
-    pub unsafe fn move_from(this: *mut FieldIsLibcType, _a0: *mut FieldIsLibcType) {
-        (&raw mut (*this).addr).write((*_a0).addr);
-    }
-}
 impl Default for FieldIsLibcType {
     fn default() -> Self {
         unsafe {
@@ -104,8 +93,7 @@ unsafe fn main_0() -> i32 {
     ud.a[(0_usize)] = 3;
     assert!(((ud.a[(0_usize)]) == (3)));
     assert!(((ud.v.len()) == (0_usize)));
-    let mut filt: FieldIsLibcType = ::std::mem::MaybeUninit::uninit().assume_init();
-    FieldIsLibcType::new_1(&raw mut filt);
+    let mut filt: FieldIsLibcType = <FieldIsLibcType>::default();
     filt.addr.sa_family = (2 as libc::sa_family_t);
     assert!(((filt.addr.sa_family as i32) == (2)));
     return 0;

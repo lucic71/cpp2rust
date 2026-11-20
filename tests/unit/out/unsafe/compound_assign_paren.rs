@@ -11,15 +11,6 @@ use std::rc::Rc;
 pub struct Item {
     pub flags: u8,
 }
-impl Item {
-    pub unsafe fn new_1(this: *mut Item) {}
-    pub unsafe fn copy_from(this: *mut Item, _a0: *const Item) {
-        (&raw mut (*this).flags).write((*_a0).flags);
-    }
-    pub unsafe fn move_from(this: *mut Item, _a0: *mut Item) {
-        (&raw mut (*this).flags).write((*_a0).flags);
-    }
-}
 pub fn main() {
     unsafe {
         __cpp2rust_init_globals();
@@ -27,11 +18,7 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    let mut item: Item = ::std::mem::MaybeUninit::uninit().assume_init();
-    {
-        let __d = &raw mut item;
-        (&raw mut (*__d).flags).write(0_u8);
-    };
+    let mut item: Item = Item { flags: 0_u8 };
     let mut ptr: *mut Item = (&mut item as *mut Item);
     (*(ptr)).flags = (((*(ptr)).flags as i32) | ((1) << (0))) as u8;
     (*(ptr)).flags = (((*(ptr)).flags as i32) | ((1) << (1))) as u8;

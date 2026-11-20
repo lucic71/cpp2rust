@@ -70,7 +70,7 @@ unsafe fn main_0() -> i32 {
         let __p = Box::into_raw(Box::<S>::new_uninit()) as *mut S;
         {
             let __d = __p;
-            __d.write_bytes(0, 1);
+            (__d).write_bytes(0, 1);
             S::new_1(__d)
         };
         __p

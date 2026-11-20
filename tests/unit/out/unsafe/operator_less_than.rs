@@ -17,15 +17,6 @@ impl Pair {
         return ((self.x) < ((*other).x))
             || (((self.x) == ((*other).x)) && ((self.y) < ((*other).y)));
     }
-    pub unsafe fn new_1(this: *mut Pair) {}
-    pub unsafe fn copy_from(this: *mut Pair, _a0: *const Pair) {
-        (&raw mut (*this).x).write((*_a0).x);
-        (&raw mut (*this).y).write((*_a0).y);
-    }
-    pub unsafe fn move_from(this: *mut Pair, _a0: *mut Pair) {
-        (&raw mut (*this).x).write((*_a0).x);
-        (&raw mut (*this).y).write((*_a0).y);
-    }
 }
 impl std::cmp::Ord for Pair {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering {
@@ -61,18 +52,8 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    let mut pair1: Pair = ::std::mem::MaybeUninit::uninit().assume_init();
-    {
-        let __d = &raw mut pair1;
-        (&raw mut (*__d).x).write(1);
-        (&raw mut (*__d).y).write(2);
-    };
-    let mut pair2: Pair = ::std::mem::MaybeUninit::uninit().assume_init();
-    {
-        let __d = &raw mut pair2;
-        (&raw mut (*__d).x).write(1);
-        (&raw mut (*__d).y).write(3);
-    };
+    let mut pair1: Pair = Pair { x: 1, y: 2 };
+    let mut pair2: Pair = Pair { x: 1, y: 3 };
     assert!((unsafe { Pair::operator_lt(&mut pair1, &pair2,) }));
     return 0;
 }

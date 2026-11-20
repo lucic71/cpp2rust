@@ -14,23 +14,6 @@ pub struct p2_static_storage_is_zero_initialized_Pair {
     #[offset(4)]
     pub second: i32,
 }
-impl p2_static_storage_is_zero_initialized_Pair {
-    pub fn new_1(this: Ptr<p2_static_storage_is_zero_initialized_Pair>) {}
-    pub fn copy_from(
-        this: Ptr<p2_static_storage_is_zero_initialized_Pair>,
-        _a0: Ptr<p2_static_storage_is_zero_initialized_Pair>,
-    ) {
-        field!(this, first).write(_a0.with(|__s| __s.first));
-        field!(this, second).write(_a0.with(|__s| __s.second));
-    }
-    pub fn move_from(
-        this: Ptr<p2_static_storage_is_zero_initialized_Pair>,
-        _a0: Ptr<p2_static_storage_is_zero_initialized_Pair>,
-    ) {
-        field!(this, first).write({ (*_a0.upgrade().deref()).first });
-        field!(this, second).write({ (*_a0.upgrade().deref()).second });
-    }
-}
 #[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg)]
 #[byte_size(8)]
 pub struct p2_static_storage_is_zero_initialized_Partial {
@@ -42,20 +25,6 @@ pub struct p2_static_storage_is_zero_initialized_Partial {
 impl p2_static_storage_is_zero_initialized_Partial {
     pub fn new(this: Ptr<p2_static_storage_is_zero_initialized_Partial>) {
         field!(this, set).write(4);
-    }
-    pub fn copy_from(
-        this: Ptr<p2_static_storage_is_zero_initialized_Partial>,
-        _a0: Ptr<p2_static_storage_is_zero_initialized_Partial>,
-    ) {
-        field!(this, set).write(_a0.with(|__s| __s.set));
-        field!(this, unset).write(_a0.with(|__s| __s.unset));
-    }
-    pub fn move_from(
-        this: Ptr<p2_static_storage_is_zero_initialized_Partial>,
-        _a0: Ptr<p2_static_storage_is_zero_initialized_Partial>,
-    ) {
-        field!(this, set).write({ (*_a0.upgrade().deref()).set });
-        field!(this, unset).write({ (*_a0.upgrade().deref()).unset });
     }
 }
 impl Default for p2_static_storage_is_zero_initialized_Partial {
@@ -73,13 +42,9 @@ impl Default for p2_static_storage_is_zero_initialized_Partial {
     }
 }
 thread_local!(
-    pub static global_pair_0: Value<p2_static_storage_is_zero_initialized_Pair> = {
-        let __v: Value<p2_static_storage_is_zero_initialized_Pair> = Rc::new(RefCell::new(
-            <p2_static_storage_is_zero_initialized_Pair>::uninit(),
-        ));
-        p2_static_storage_is_zero_initialized_Pair::new_1(__v.as_pointer());
-        __v
-    };
+    pub static global_pair_0: Value<p2_static_storage_is_zero_initialized_Pair> = Rc::new(
+        RefCell::new(<p2_static_storage_is_zero_initialized_Pair>::default()),
+    );
 );
 thread_local!(
     pub static global_numbers_1: Value<Box<[i32]>> =
@@ -125,13 +90,9 @@ pub fn test_7() {
     assert!((({ read_static_local_4() }) == 0));
 }
 thread_local!(
-    static local_pair_5: Value<p2_static_storage_is_zero_initialized_Pair> = {
-        let __v: Value<p2_static_storage_is_zero_initialized_Pair> = Rc::new(RefCell::new(
-            <p2_static_storage_is_zero_initialized_Pair>::uninit(),
-        ));
-        p2_static_storage_is_zero_initialized_Pair::new_1(__v.as_pointer());
-        __v
-    };
+    static local_pair_5: Value<p2_static_storage_is_zero_initialized_Pair> = Rc::new(RefCell::new(
+        <p2_static_storage_is_zero_initialized_Pair>::default(),
+    ));
 );
 thread_local!(
     static local_partial_6: Value<p2_static_storage_is_zero_initialized_Partial> = {

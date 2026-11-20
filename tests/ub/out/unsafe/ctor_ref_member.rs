@@ -16,12 +16,6 @@ impl S {
     pub unsafe fn new(this: *mut S, x: *const i32) {
         (&raw mut (*this).r).write(x);
     }
-    pub unsafe fn copy_from(this: *mut S, _a0: *const S) {
-        (&raw mut (*this).r).write((*_a0).r);
-    }
-    pub unsafe fn move_from(this: *mut S, _a0: *mut S) {
-        (&raw mut (*this).r).write((*_a0).r);
-    }
 }
 pub fn main() {
     unsafe {

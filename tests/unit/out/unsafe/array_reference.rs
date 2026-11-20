@@ -64,17 +64,6 @@ pub struct Point {
     pub x: i32,
     pub y: i32,
 }
-impl Point {
-    pub unsafe fn new_1(this: *mut Point) {}
-    pub unsafe fn copy_from(this: *mut Point, _a0: *const Point) {
-        (&raw mut (*this).x).write((*_a0).x);
-        (&raw mut (*this).y).write((*_a0).y);
-    }
-    pub unsafe fn move_from(this: *mut Point, _a0: *mut Point) {
-        (&raw mut (*this).x).write((*_a0).x);
-        (&raw mut (*this).y).write((*_a0).y);
-    }
-}
 pub unsafe fn sum_points_11(p: *const [Point; 2]) -> i32 {
     return (((((*p)[(0) as usize].x) + ((*p)[(0) as usize].y)) + ((*p)[(1) as usize].x))
         + ((*p)[(1) as usize].y));
@@ -87,8 +76,8 @@ pub unsafe fn total_len_13(names: *mut [*const libc::c_char; 2]) -> i32 {
     return ((unsafe { len5_1((*names)[(0) as usize]) })
         + (unsafe { len5_1((*names)[(1) as usize]) }));
 }
-pub static mut kTable_14: libcc2rs::LazyStorage<[[i32; 3]; 2]> =
-    libcc2rs::LazyStorage::new(|__p| unsafe { __p.write([[1, 2, 3], [4, 5, 6]]) });
+pub static mut kTable_14: std::cell::LazyCell<[[i32; 3]; 2]> =
+    std::cell::LazyCell::new(|| unsafe { [[1, 2, 3], [4, 5, 6]] });
 pub fn main() {
     unsafe {
         __cpp2rust_init_globals();
@@ -121,20 +110,7 @@ unsafe fn main_0() -> i32 {
             == (('b' as libc::c_char) as i32))
     );
     assert!(((unsafe { len_0((unsafe { pick_10(&buf,) }),) }) == (4)));
-    let mut pts: [Point; 2] = ::std::mem::MaybeUninit::uninit().assume_init();
-    {
-        let __d = (&raw mut pts).cast::<Point>();
-        {
-            let __d = __d.offset(0);
-            (&raw mut (*__d).x).write(1);
-            (&raw mut (*__d).y).write(2);
-        };
-        {
-            let __d = __d.offset(1);
-            (&raw mut (*__d).x).write(3);
-            (&raw mut (*__d).y).write(4);
-        };
-    };
+    let mut pts: [Point; 2] = [Point { x: 1, y: 2 }, Point { x: 3, y: 4 }];
     assert!(((unsafe { sum_points_11(&pts,) }) == (10)));
     (unsafe { shift_points_12(&mut pts, 10) });
     assert!(((pts[(0) as usize].x) == (11)));
@@ -185,8 +161,8 @@ unsafe fn main_0() -> i32 {
                 ::std::mem::size_of::<[i32; 3]>(),
             );
             let sb = core::slice::from_raw_parts(
-                ((*(*&raw const kTable_14).get())[(1) as usize].as_ptr() as *const ::libc::c_void)
-                    as *const u8,
+                ((*std::cell::LazyCell::force_mut(&mut *&raw mut kTable_14))[(1) as usize].as_ptr()
+                    as *const ::libc::c_void) as *const u8,
                 ::std::mem::size_of::<[i32; 3]>(),
             );
             let mut diff = 0_i32;
@@ -206,8 +182,8 @@ unsafe fn main_0() -> i32 {
                 ::std::mem::size_of::<[i32; 3]>(),
             );
             let sb = core::slice::from_raw_parts(
-                ((*(*&raw const kTable_14).get())[(0) as usize].as_ptr() as *const ::libc::c_void)
-                    as *const u8,
+                ((*std::cell::LazyCell::force_mut(&mut *&raw mut kTable_14))[(0) as usize].as_ptr()
+                    as *const ::libc::c_void) as *const u8,
                 ::std::mem::size_of::<[i32; 3]>(),
             );
             let mut diff = 0_i32;
@@ -221,11 +197,14 @@ unsafe fn main_0() -> i32 {
         }) != (0))
     );
     assert!(
-        (((*(*&raw const kTable_14).get())[(1) as usize][(2) as usize]) == (6))
-            && (((*(*&raw const kTable_14).get())[(0) as usize][(1) as usize]) == (2))
+        (((*std::cell::LazyCell::force_mut(&mut *&raw mut kTable_14))[(1) as usize][(2) as usize])
+            == (6))
+            && (((*std::cell::LazyCell::force_mut(&mut *&raw mut kTable_14))[(0) as usize]
+                [(1) as usize])
+                == (2))
     );
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {
-    (*&raw const kTable_14).get();
+    std::cell::LazyCell::force(&*&raw const kTable_14);
 }

@@ -18,12 +18,6 @@ pub struct S {
     #[offset(0)]
     pub v: i32,
 }
-impl S {
-    pub fn copy_from(this: Ptr<S>, _a0: Ptr<S>) {
-        field!(this, v).write(_a0.with(|__s| __s.v));
-    }
-    pub fn new_1(this: Ptr<S>) {}
-}
 #[derive(Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Destructor, Default)]
 #[byte_size(8)]
 pub struct Outer {
@@ -33,36 +27,14 @@ pub struct Outer {
     #[offset(4)]
     pub w: i32,
 }
-impl Outer {
-    pub fn copy_from(this: Ptr<Outer>, _a0: Ptr<Outer>) {
-        S::copy_from(field_ptr!(this, inner), { field_ptr!(_a0, inner) });
-        field!(this, w).write(_a0.with(|__s| __s.w));
-    }
-    pub fn move_from(this: Ptr<Outer>, _a0: Ptr<Outer>) {
-        S::copy_from(field_ptr!(this, inner), { field_ptr!(_a0, inner) });
-        field!(this, w).write({ (*_a0.upgrade().deref()).w });
-    }
-    pub fn new_1(this: Ptr<Outer>) {
-        S::new_1(field_ptr!(this, inner));
-    }
+pub fn make_2(mut v: i32) -> S {
+    return S { v: v };
 }
-pub fn make_2(__ret: Ptr<S>, mut v: i32) {
-    {
-        let __d = __ret.clone();
-        field!(__d, v).write(v);
+pub fn make_outer_3() -> Outer {
+    return Outer {
+        inner: S { v: 7 },
+        w: 8,
     };
-    return;
-}
-pub fn make_outer_3(__ret: Ptr<Outer>) {
-    {
-        let __d = __ret.clone();
-        {
-            let __d = field_ptr!(__d, inner);
-            field!(__d, v).write(7);
-        };
-        field!(__d, w).write(8);
-    };
-    return;
 }
 pub fn use_4(s: Ptr<S>) -> i32 {
     assert!((destroyed_0.with(|rc| *rc.borrow()) == 0));
@@ -76,69 +48,25 @@ pub fn main() {
     libcc2rs::cpp2rust_exit(main_0());
 }
 fn main_0() -> i32 {
-    Rc::try_unwrap({
-        let __v: Value<S> = Rc::new(RefCell::new(<S>::uninit()));
-        ({ make_2(__v.as_pointer(), 1) });
-        __v
-    })
-    .ok()
-    .unwrap()
-    .into_inner();
+    ({ make_2(1) });
     assert!((destroyed_0.with(|rc| *rc.borrow()) == 1) && (last_1.with(|rc| *rc.borrow()) == 1));
     destroyed_0.with(|rc| *rc.borrow_mut() = 0);
-    &(Rc::try_unwrap({
-        let __v: Value<S> = Rc::new(RefCell::new(<S>::uninit()));
-        ({ make_2(__v.as_pointer(), 2) });
-        __v
-    })
-    .ok()
-    .unwrap()
-    .into_inner());
+    &({ make_2(2) });
     assert!((destroyed_0.with(|rc| *rc.borrow()) == 1) && (last_1.with(|rc| *rc.borrow()) == 2));
     destroyed_0.with(|rc| *rc.borrow_mut() = 0);
-    let mut x: i32 = {
-        Rc::try_unwrap({
-            let __v: Value<S> = Rc::new(RefCell::new(<S>::uninit()));
-            ({ make_2(__v.as_pointer(), 3) });
-            __v
-        })
-        .ok()
-        .unwrap()
-        .into_inner()
-        .v
-    };
+    let mut x: i32 = { ({ make_2(3) }).v };
     assert!(
         ((x == 3) && (destroyed_0.with(|rc| *rc.borrow()) == 1))
             && (last_1.with(|rc| *rc.borrow()) == 3)
     );
     destroyed_0.with(|rc| *rc.borrow_mut() = 0);
-    x = ({
-        SImpl::get(
-            &{
-                let __v: Value<S> = Rc::new(RefCell::new(<S>::uninit()));
-                ({ make_2(__v.as_pointer(), 4) });
-                __v
-            }
-            .as_pointer(),
-        )
-    });
+    x = ({ SImpl::get(&Rc::new(RefCell::new(({ make_2(4) }))).as_pointer()) });
     assert!(
         ((x == 4) && (destroyed_0.with(|rc| *rc.borrow()) == 1))
             && (last_1.with(|rc| *rc.borrow()) == 4)
     );
     destroyed_0.with(|rc| *rc.borrow_mut() = 0);
-    x = {
-        Rc::try_unwrap({
-            let __v: Value<Outer> = Rc::new(RefCell::new(<Outer>::uninit()));
-            ({ make_outer_3(__v.as_pointer()) });
-            __v
-        })
-        .ok()
-        .unwrap()
-        .into_inner()
-        .inner
-        .v
-    };
+    x = { ({ make_outer_3() }).inner.v };
     assert!(
         ((x == 7) && (destroyed_0.with(|rc| *rc.borrow()) == 1))
             && (last_1.with(|rc| *rc.borrow()) == 7)
@@ -148,11 +76,7 @@ fn main_0() -> i32 {
     assert!((x == 5) && (destroyed_0.with(|rc| *rc.borrow()) == 1));
     destroyed_0.with(|rc| *rc.borrow_mut() = 0);
     x = ({
-        let _s: Value<S> = {
-            let __v: Value<S> = Rc::new(RefCell::new(<S>::uninit()));
-            ({ make_2(__v.as_pointer(), 6) });
-            __v
-        };
+        let _s: Value<S> = Rc::new(RefCell::new(({ make_2(6) })));
         use_4(_s.as_pointer())
     });
     assert!(
@@ -161,38 +85,17 @@ fn main_0() -> i32 {
     );
     destroyed_0.with(|rc| *rc.borrow_mut() = 0);
     x = (({
-        let _s: Value<S> = {
-            let __v: Value<S> = Rc::new(RefCell::new(<S>::uninit()));
-            {
-                let __d = __v.as_pointer();
-                field!(__d, v).write(1);
-            };
-            __v
-        };
+        let _s: Value<S> = Rc::new(RefCell::new(S { v: 1 }));
         value_5(_s.as_pointer())
     }) + ({
-        let _s: Value<S> = {
-            let __v: Value<S> = Rc::new(RefCell::new(<S>::uninit()));
-            {
-                let __d = __v.as_pointer();
-                field!(__d, v).write(2);
-            };
-            __v
-        };
+        let _s: Value<S> = Rc::new(RefCell::new(S { v: 2 }));
         value_5(_s.as_pointer())
     }));
     assert!((x == 3) && (destroyed_0.with(|rc| *rc.borrow()) == 2));
     destroyed_0.with(|rc| *rc.borrow_mut() = 0);
     let __rhs = {
         (if (x == 3) {
-            Rc::try_unwrap({
-                let __v: Value<S> = Rc::new(RefCell::new(<S>::uninit()));
-                ({ make_2(__v.as_pointer(), 9) });
-                __v
-            })
-            .ok()
-            .unwrap()
-            .into_inner()
+            ({ make_2(9) })
         } else {
             S { v: 10 }
         })
@@ -205,31 +108,16 @@ fn main_0() -> i32 {
     );
     destroyed_0.with(|rc| *rc.borrow_mut() = 0);
     {
-        let __tmp_0: Value<S> = {
-            let __v: Value<S> = Rc::new(RefCell::new(<S>::uninit()));
-            ({ make_2(__v.as_pointer(), 11) });
-            __v
-        };
+        let __tmp_0: Value<S> = Rc::new(RefCell::new(({ make_2(11) })));
         let r: Ptr<S> = __tmp_0.as_pointer();
         assert!((destroyed_0.with(|rc| *rc.borrow()) == 0) && (r.with(|__s| __s.v) == 11));
     }
     assert!((destroyed_0.with(|rc| *rc.borrow()) == 1) && (last_1.with(|rc| *rc.borrow()) == 11));
     destroyed_0.with(|rc| *rc.borrow_mut() = 0);
     {
-        let s: Value<S> = Rc::new(RefCell::new(<S>::uninit()));
-        {
-            let __d = s.as_pointer();
-            field!(__d, v).write(12);
-        };
+        let s: Value<S> = Rc::new(RefCell::new(S { v: 12 }));
         let _dtor_s = std::mem::DropGuard::new(s.clone(), |__p| __p.as_pointer().destructor());
-        (*s.borrow_mut()) = Rc::try_unwrap({
-            let __v: Value<S> = Rc::new(RefCell::new(<S>::uninit()));
-            ({ make_2(__v.as_pointer(), 13) });
-            __v
-        })
-        .ok()
-        .unwrap()
-        .into_inner();
+        (*s.borrow_mut()) = ({ make_2(13) });
         assert!(
             ({
                 ((destroyed_0.with(|rc| *rc.borrow()) == 1)

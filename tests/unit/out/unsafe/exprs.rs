@@ -11,15 +11,6 @@ use std::rc::Rc;
 pub struct X {
     pub x: i32,
 }
-impl X {
-    pub unsafe fn new_1(this: *mut X) {}
-    pub unsafe fn copy_from(this: *mut X, _a0: *const X) {
-        (&raw mut (*this).x).write((*_a0).x);
-    }
-    pub unsafe fn move_from(this: *mut X, _a0: *mut X) {
-        (&raw mut (*this).x).write((*_a0).x);
-    }
-}
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct Y {
@@ -32,17 +23,6 @@ impl Y {
     }
     pub unsafe fn ptr(&mut self) -> *mut X {
         return (&mut self.x as *mut X);
-    }
-    pub unsafe fn new_1(this: *mut Y) {
-        X::new_1((&raw mut (*this).x));
-    }
-    pub unsafe fn copy_from(this: *mut Y, _a0: *const Y) {
-        X::copy_from((&raw mut (*this).x), { &(*_a0).x });
-        (&raw mut (*this).p).write((*_a0).p);
-    }
-    pub unsafe fn move_from(this: *mut Y, _a0: *mut Y) {
-        X::move_from((&raw mut (*this).x), { &mut (*_a0).x });
-        (&raw mut (*this).p).write((*_a0).p);
     }
 }
 pub fn main() {
@@ -72,19 +52,10 @@ unsafe fn main_0() -> i32 {
     let mut x7: i32 = (*r);
     let mut x8: i32 = (((*r) + (x1)) + (5));
     let mut p2: *mut i32 = (r);
-    let mut x: X = ::std::mem::MaybeUninit::uninit().assume_init();
-    {
-        let __d = &raw mut x;
-        (&raw mut (*__d).x).write(1);
-    };
-    let mut y: Y = ::std::mem::MaybeUninit::uninit().assume_init();
-    {
-        let __d = &raw mut y;
-        {
-            let __d = (&raw mut (*__d).x);
-            (&raw mut (*__d).x).write(0);
-        };
-        (&raw mut (*__d).p).write((&mut x as *mut X));
+    let mut x: X = X { x: 1 };
+    let mut y: Y = Y {
+        x: X { x: 0 },
+        p: (&mut x as *mut X),
     };
     y.x.x = 5;
     (*(unsafe { Y::foo(&mut y) })).x = 1;

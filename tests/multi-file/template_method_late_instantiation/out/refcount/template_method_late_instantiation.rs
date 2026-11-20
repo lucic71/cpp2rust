@@ -12,17 +12,6 @@ pub struct S_int_ {
     #[offset(0)]
     pub x: i32,
 }
-impl S_int_ {
-    pub fn new_1(this: Ptr<S_int_>) {
-        field!(this, x).write(0);
-    }
-    pub fn copy_from(this: Ptr<S_int_>, _a0: Ptr<S_int_>) {
-        field!(this, x).write(_a0.with(|__s| __s.x));
-    }
-    pub fn move_from(this: Ptr<S_int_>, _a0: Ptr<S_int_>) {
-        field!(this, x).write({ (*_a0.upgrade().deref()).x });
-    }
-}
 impl Default for S_int_ {
     fn default() -> Self {
         { S_int_ { x: 0 } }
@@ -33,8 +22,7 @@ pub fn main() {
     libcc2rs::cpp2rust_exit(main_0());
 }
 fn main_0() -> i32 {
-    let p: Value<S_int_> = Rc::new(RefCell::new(<S_int_>::uninit()));
-    S_int_::new_1(p.as_pointer());
+    let p: Value<S_int_> = Rc::new(RefCell::new(<S_int_>::default()));
     ({ S_int_Impl::set(&p.as_pointer(), 3) });
     assert!((({ f_0((p.as_pointer()),) }) == 3));
     return 0;

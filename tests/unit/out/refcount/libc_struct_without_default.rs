@@ -58,17 +58,6 @@ pub struct FieldIsLibcType {
     #[byte_size(16)]
     pub addr: libcc2rs::Sockaddr,
 }
-impl FieldIsLibcType {
-    pub fn new_1(this: Ptr<FieldIsLibcType>) {
-        field!(this, addr).write(Default::default());
-    }
-    pub fn copy_from(this: Ptr<FieldIsLibcType>, _a0: Ptr<FieldIsLibcType>) {
-        field!(this, addr).write(_a0.with(|__s| __s.addr.clone()));
-    }
-    pub fn move_from(this: Ptr<FieldIsLibcType>, _a0: Ptr<FieldIsLibcType>) {
-        field!(this, addr).write(field!(_a0, addr).read());
-    }
-}
 impl Default for FieldIsLibcType {
     fn default() -> Self {
         {
@@ -108,10 +97,9 @@ fn main_0() -> i32 {
     elem!(field_ref!(ud.as_pointer(), a).decay(), 0_usize).write(3);
     assert!(((elem!(field_ref!(ud.as_pointer(), a).decay(), 0_usize).read()) == 3));
     assert!(({ ((*ud.borrow()).v.len() == 0_usize) }));
-    let filt: Value<FieldIsLibcType> = Rc::new(RefCell::new(<FieldIsLibcType>::uninit()));
-    FieldIsLibcType::new_1(filt.as_pointer());
-    (*filt.borrow_mut()).addr.sa_family = 2_u16;
-    assert!(({ (({ (*filt.borrow()).addr.sa_family } as i32) == 2) }));
+    let mut filt: FieldIsLibcType = <FieldIsLibcType>::default();
+    filt.addr.sa_family = 2_u16;
+    assert!(((filt.addr.sa_family as i32) == 2));
     return 0;
 }
 pub trait UserDefinedImpl {

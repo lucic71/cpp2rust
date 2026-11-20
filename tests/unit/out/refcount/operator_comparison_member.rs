@@ -12,15 +12,6 @@ pub struct S {
     #[offset(0)]
     pub v: i32,
 }
-impl S {
-    pub fn new_1(this: Ptr<S>) {}
-    pub fn copy_from(this: Ptr<S>, _a0: Ptr<S>) {
-        field!(this, v).write(_a0.with(|__s| __s.v));
-    }
-    pub fn move_from(this: Ptr<S>, _a0: Ptr<S>) {
-        field!(this, v).write({ (*_a0.upgrade().deref()).v });
-    }
-}
 impl CppLess for S {
     fn less(__lhs: &Ptr<Self>, __rhs: &Ptr<Self>) -> bool {
         SImpl::operator_lt_3(__lhs, __rhs.clone())
@@ -36,21 +27,9 @@ pub fn main() {
     libcc2rs::cpp2rust_exit(main_0());
 }
 fn main_0() -> i32 {
-    let a: Value<S> = Rc::new(RefCell::new(<S>::uninit()));
-    {
-        let __d = a.as_pointer();
-        field!(__d, v).write(1);
-    };
-    let b: Value<S> = Rc::new(RefCell::new(<S>::uninit()));
-    {
-        let __d = b.as_pointer();
-        field!(__d, v).write(2);
-    };
-    let c: Value<S> = Rc::new(RefCell::new(<S>::uninit()));
-    {
-        let __d = c.as_pointer();
-        field!(__d, v).write(1);
-    };
+    let a: Value<S> = Rc::new(RefCell::new(S { v: 1 }));
+    let b: Value<S> = Rc::new(RefCell::new(S { v: 2 }));
+    let c: Value<S> = Rc::new(RefCell::new(S { v: 1 }));
     assert!(({ SImpl::operator_eq(&a.as_pointer(), c.as_pointer(),) }));
     assert!(({ SImpl::operator_ne(&a.as_pointer(), b.as_pointer(),) }));
     assert!(({ SImpl::operator_lt_3(&a.as_pointer(), b.as_pointer(),) }));

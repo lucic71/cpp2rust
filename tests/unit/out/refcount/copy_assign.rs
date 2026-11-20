@@ -48,9 +48,6 @@ impl NonConstAssign {
     pub fn new(this: Ptr<NonConstAssign>) {
         field!(this, mark).write(0);
     }
-    pub fn copy_from(this: Ptr<NonConstAssign>, _a0: Ptr<NonConstAssign>) {
-        field!(this, mark).write(_a0.with(|__s| __s.mark));
-    }
 }
 impl Default for NonConstAssign {
     fn default() -> Self {
@@ -73,9 +70,6 @@ pub struct RefQualified {
 impl RefQualified {
     pub fn new(this: Ptr<RefQualified>) {
         field!(this, mark).write(0);
-    }
-    pub fn copy_from(this: Ptr<RefQualified>, _a0: Ptr<RefQualified>) {
-        field!(this, mark).write(_a0.with(|__s| __s.mark));
     }
 }
 impl Default for RefQualified {

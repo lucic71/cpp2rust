@@ -12,11 +12,7 @@ pub struct S {
     #[offset(0)]
     pub v: i32,
 }
-impl S {
-    pub fn copy_from(this: Ptr<S>, _a0: Ptr<S>) {
-        field!(this, v).write(_a0.with(|__s| __s.v));
-    }
-}
+impl S {}
 pub trait Base {
     fn apply(&mut self, x: i32) -> i32;
 }
@@ -42,17 +38,6 @@ pub struct Pair {
     #[offset(4)]
     pub second: i32,
 }
-impl Pair {
-    pub fn new_1(this: Ptr<Pair>) {}
-    pub fn copy_from(this: Ptr<Pair>, _a0: Ptr<Pair>) {
-        field!(this, first).write(_a0.with(|__s| __s.first));
-        field!(this, second).write(_a0.with(|__s| __s.second));
-    }
-    pub fn move_from(this: Ptr<Pair>, _a0: Ptr<Pair>) {
-        field!(this, first).write({ (*_a0.upgrade().deref()).first });
-        field!(this, second).write({ (*_a0.upgrade().deref()).second });
-    }
-}
 pub fn pair_diff_0(mut p: Ptr<Pair>) -> i32 {
     return ({ p.with(|__s| __s.first) } - { p.with(|__s| __s.second) });
 }
@@ -71,12 +56,10 @@ fn main_0() -> i32 {
     Derived::new(derived.as_pointer(), { 3 });
     let mut base: PtrDyn<dyn Base> = (derived.as_pointer()).to_dyn::<dyn Base>(|w| w);
     assert!((({ (*base.upgrade().deref_mut()).apply(5,) }) == 15));
-    let pair: Value<Pair> = Rc::new(RefCell::new(<Pair>::uninit()));
-    {
-        let __d = pair.as_pointer();
-        field!(__d, first).write(7);
-        field!(__d, second).write(3);
-    };
+    let pair: Value<Pair> = Rc::new(RefCell::new(Pair {
+        first: 7,
+        second: 3,
+    }));
     assert!((({ pair_sum_1((pair.as_pointer()),) }) == 10));
     assert!((({ pair_diff_0((pair.as_pointer()),) }) == 4));
     return 0;

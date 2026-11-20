@@ -16,12 +16,6 @@ impl Degrees {
     pub unsafe fn new(this: *mut Degrees, mut v: i32) {
         (&raw mut (*this).value).write(v);
     }
-    pub unsafe fn copy_from(this: *mut Degrees, _a0: *const Degrees) {
-        (&raw mut (*this).value).write((*_a0).value);
-    }
-    pub unsafe fn move_from(this: *mut Degrees, _a0: *mut Degrees) {
-        (&raw mut (*this).value).write((*_a0).value);
-    }
 }
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, CppFromUnsafe, Default)]
@@ -32,13 +26,6 @@ pub struct Reading {
 impl Reading {
     pub unsafe fn to_i64(&self) -> i64 {
         return ((self.raw_ as i64) * (10_i64));
-    }
-    pub unsafe fn new_1(this: *mut Reading) {}
-    pub unsafe fn copy_from(this: *mut Reading, _a0: *const Reading) {
-        (&raw mut (*this).raw_).write((*_a0).raw_);
-    }
-    pub unsafe fn move_from(this: *mut Reading, _a0: *mut Reading) {
-        (&raw mut (*this).raw_).write((*_a0).raw_);
     }
 }
 pub fn main() {
@@ -180,18 +167,7 @@ unsafe fn main_0() -> i32 {
         __v
     };
     assert!(((v7[(1_usize)].value) == (5)));
-    let mut readings: [Reading; 2] = ::std::mem::MaybeUninit::uninit().assume_init();
-    {
-        let __d = (&raw mut readings).cast::<Reading>();
-        {
-            let __d = __d.offset(0);
-            (&raw mut (*__d).raw_).write(4);
-        };
-        {
-            let __d = __d.offset(1);
-            (&raw mut (*__d).raw_).write(5);
-        };
-    };
+    let mut readings: [Reading; 2] = [Reading { raw_: 4 }, Reading { raw_: 5 }];
     let mut v8: Vec<i64> = {
         let mut __tmp_12 = { readings.as_mut_ptr().offset((2) as isize) };
         let mut __v = Vec::new();

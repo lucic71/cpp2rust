@@ -6,30 +6,18 @@ use std::collections::BTreeMap;
 use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
-pub static mut allocations_0: libcc2rs::LazyStorage<i32> =
-    libcc2rs::LazyStorage::new(|__p| unsafe { __p.write(0) });
+pub static mut allocations_0: std::cell::LazyCell<i32> = std::cell::LazyCell::new(|| unsafe { 0 });
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct p1_allocation_function_is_static_Allocates {}
 impl p1_allocation_function_is_static_Allocates {
     pub unsafe fn operator_new(mut size: usize) -> *mut ::libc::c_void {
-        (*(*&raw const allocations_0).get()).prefix_inc();
+        (*std::cell::LazyCell::force_mut(&mut *&raw mut allocations_0)).prefix_inc();
         return libcc2rs::malloc_unsafe(size);
     }
     pub unsafe fn operator_new_arr(mut size: usize) -> *mut ::libc::c_void {
-        (*(*&raw const allocations_0).get()) += 10;
+        (*std::cell::LazyCell::force_mut(&mut *&raw mut allocations_0)) += 10;
         return libcc2rs::malloc_unsafe(size);
-    }
-    pub unsafe fn new_1(this: *mut p1_allocation_function_is_static_Allocates) {}
-    pub unsafe fn copy_from(
-        this: *mut p1_allocation_function_is_static_Allocates,
-        _a0: *const p1_allocation_function_is_static_Allocates,
-    ) {
-    }
-    pub unsafe fn move_from(
-        this: *mut p1_allocation_function_is_static_Allocates,
-        _a0: *mut p1_allocation_function_is_static_Allocates,
-    ) {
     }
 }
 pub unsafe fn test_1() {
@@ -38,7 +26,7 @@ pub unsafe fn test_1() {
     }) as *mut i32);
     (*one) = 7;
     assert!(((*one) == (7)));
-    assert!(((*(*&raw const allocations_0).get()) == (1)));
+    assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut allocations_0)) == (1)));
     libcc2rs::free_unsafe((one as *mut ::libc::c_void));
     let mut many: *mut i32 = ((unsafe {
         p1_allocation_function_is_static_Allocates::operator_new_arr(
@@ -48,33 +36,22 @@ pub unsafe fn test_1() {
     (*many.offset((0) as isize)) = 1;
     (*many.offset((1) as isize)) = 2;
     assert!((((*many.offset((0) as isize)) + (*many.offset((1) as isize))) == (3)));
-    assert!(((*(*&raw const allocations_0).get()) == (11)));
+    assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut allocations_0)) == (11)));
     libcc2rs::free_unsafe((many as *mut ::libc::c_void));
 }
-pub static mut deallocations_2: libcc2rs::LazyStorage<i32> =
-    libcc2rs::LazyStorage::new(|__p| unsafe { __p.write(0) });
+pub static mut deallocations_2: std::cell::LazyCell<i32> =
+    std::cell::LazyCell::new(|| unsafe { 0 });
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct p3_deallocation_function_is_static_Deallocates {}
 impl p3_deallocation_function_is_static_Deallocates {
     pub unsafe fn operator_delete(mut ptr: *mut ::libc::c_void) {
-        (*(*&raw const deallocations_2).get()).prefix_inc();
+        (*std::cell::LazyCell::force_mut(&mut *&raw mut deallocations_2)).prefix_inc();
         libcc2rs::free_unsafe(ptr);
     }
     pub unsafe fn operator_delete_arr(mut ptr: *mut ::libc::c_void) {
-        (*(*&raw const deallocations_2).get()) += 10;
+        (*std::cell::LazyCell::force_mut(&mut *&raw mut deallocations_2)) += 10;
         libcc2rs::free_unsafe(ptr);
-    }
-    pub unsafe fn new_1(this: *mut p3_deallocation_function_is_static_Deallocates) {}
-    pub unsafe fn copy_from(
-        this: *mut p3_deallocation_function_is_static_Deallocates,
-        _a0: *const p3_deallocation_function_is_static_Deallocates,
-    ) {
-    }
-    pub unsafe fn move_from(
-        this: *mut p3_deallocation_function_is_static_Deallocates,
-        _a0: *mut p3_deallocation_function_is_static_Deallocates,
-    ) {
     }
 }
 pub unsafe fn test_3() {
@@ -84,7 +61,7 @@ pub unsafe fn test_3() {
             (one as *mut ::libc::c_void),
         )
     });
-    assert!(((*(*&raw const deallocations_2).get()) == (1)));
+    assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut deallocations_2)) == (1)));
     let mut many: *mut i32 =
         ((libcc2rs::malloc_unsafe((::std::mem::size_of::<i32>() as usize).wrapping_mul(2_usize)))
             as *mut i32);
@@ -93,7 +70,7 @@ pub unsafe fn test_3() {
             (many as *mut ::libc::c_void),
         )
     });
-    assert!(((*(*&raw const deallocations_2).get()) == (11)));
+    assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut deallocations_2)) == (11)));
 }
 pub fn main() {
     unsafe {
@@ -107,6 +84,6 @@ unsafe fn main_0() -> i32 {
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {
-    (*&raw const allocations_0).get();
-    (*&raw const deallocations_2).get();
+    std::cell::LazyCell::force(&*&raw const allocations_0);
+    std::cell::LazyCell::force(&*&raw const deallocations_2);
 }

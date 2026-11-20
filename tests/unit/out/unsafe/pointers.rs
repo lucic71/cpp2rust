@@ -24,13 +24,6 @@ impl Test {
     pub unsafe fn update(&mut self, mut x: i32, mut y: i32) {
         self.x = ((x) + (y));
     }
-    pub unsafe fn new_1(this: *mut Test) {}
-    pub unsafe fn copy_from(this: *mut Test, _a0: *const Test) {
-        (&raw mut (*this).x).write((*_a0).x);
-    }
-    pub unsafe fn move_from(this: *mut Test, _a0: *mut Test) {
-        (&raw mut (*this).x).write((*_a0).x);
-    }
 }
 pub unsafe fn Update_0(mut t: *mut Test) -> *mut Test {
     let mut x: i32 = 1;
@@ -53,11 +46,7 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    let mut t1: Test = ::std::mem::MaybeUninit::uninit().assume_init();
-    {
-        let __d = &raw mut t1;
-        (&raw mut (*__d).x).write(100);
-    };
+    let mut t1: Test = Test { x: 100 };
     let mut t2: *mut Test = (unsafe { Update_0((&mut t1 as *mut Test)) });
     let mut t3: *mut Test = std::ptr::null_mut();
     t3 = t2;

@@ -17,9 +17,6 @@ impl Tracker {
         field!(this, tag).write(tag);
         printf!(b"construct %d\n", tag);
     }
-    pub fn copy_from(this: Ptr<Tracker>, _a0: Ptr<Tracker>) {
-        field!(this, tag).write(_a0.with(|__s| __s.tag));
-    }
 }
 thread_local!(
     pub static global_0: Value<Tracker> = {

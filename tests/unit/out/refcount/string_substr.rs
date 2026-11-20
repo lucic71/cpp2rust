@@ -13,14 +13,6 @@ pub struct Text {
     #[byte_size(8)]
     pub value: Ptr<Vec<i8>>,
 }
-impl Text {
-    pub fn copy_from(this: Ptr<Text>, _a0: Ptr<Text>) {
-        field!(this, value).write((_a0.with(|__s| __s.value.clone())).clone());
-    }
-    pub fn move_from(this: Ptr<Text>, _a0: Ptr<Text>) {
-        field!(this, value).write(({ (*_a0.upgrade().deref()).value.clone() }).clone());
-    }
-}
 pub fn receiver_0(s: Ptr<Vec<i8>>, calls: Ptr<i32>) -> Ptr<Vec<i8>> {
     calls.with_mut(|__v| {
         __v.prefix_inc();
@@ -169,11 +161,9 @@ fn main_0() -> i32 {
         __bytes.push(0);
         __bytes
     }));
-    let text: Value<Text> = Rc::new(RefCell::new(<Text>::uninit()));
-    {
-        let __d = text.as_pointer();
-        field!(__d, value).write(field.as_pointer());
-    };
+    let text: Value<Text> = Rc::new(RefCell::new(Text {
+        value: field.as_pointer(),
+    }));
     {
         (*out.borrow_mut()) = { (*text.borrow()).value.clone() }.with(|__s: &Vec<i8>| {
             let mut __tmp1 = __s

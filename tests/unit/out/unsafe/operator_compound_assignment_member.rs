@@ -56,13 +56,6 @@ impl S {
         self.v >>= n;
         return &mut (*(self as *mut S));
     }
-    pub unsafe fn new_1(this: *mut S) {}
-    pub unsafe fn copy_from(this: *mut S, _a0: *const S) {
-        (&raw mut (*this).v).write((*_a0).v);
-    }
-    pub unsafe fn move_from(this: *mut S, _a0: *mut S) {
-        (&raw mut (*this).v).write((*_a0).v);
-    }
 }
 pub fn main() {
     unsafe {
@@ -71,16 +64,8 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    let mut a: S = ::std::mem::MaybeUninit::uninit().assume_init();
-    {
-        let __d = &raw mut a;
-        (&raw mut (*__d).v).write(6_u32);
-    };
-    let mut b: S = ::std::mem::MaybeUninit::uninit().assume_init();
-    {
-        let __d = &raw mut b;
-        (&raw mut (*__d).v).write(4_u32);
-    };
+    let mut a: S = S { v: 6_u32 };
+    let mut b: S = S { v: 4_u32 };
     (unsafe { S::operator_add_assign(&mut a, &b) });
     assert!(((a.v) == (10_u32)));
     (unsafe { S::operator_sub_assign(&mut a, &b) });
@@ -108,11 +93,7 @@ unsafe fn main_0() -> i32 {
         S::operator_add_assign(&mut (*(unsafe { S::operator_add_assign(&mut a, &b) })), _o)
     });
     assert!(((a.v) == (14_u32)));
-    let mut c: S = ::std::mem::MaybeUninit::uninit().assume_init();
-    {
-        let __d = &raw mut c;
-        (&raw mut (*__d).v).write(0_u32);
-    };
+    let mut c: S = S { v: 0_u32 };
     c = (*(unsafe { S::operator_assign_1(&mut a, 1_u32) }));
     assert!(((a.v) == (1_u32)));
     assert!(((c.v) == (1_u32)));

@@ -12,15 +12,6 @@ pub struct S {
     #[offset(0)]
     pub x: i32,
 }
-impl S {
-    pub fn new_1(this: Ptr<S>) {}
-    pub fn copy_from(this: Ptr<S>, _a0: Ptr<S>) {
-        field!(this, x).write(_a0.with(|__s| __s.x));
-    }
-    pub fn move_from(this: Ptr<S>, _a0: Ptr<S>) {
-        field!(this, x).write({ (*_a0.upgrade().deref()).x });
-    }
-}
 pub fn copy_0(mut copy_vector: Vec<i32>) {}
 #[derive(Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, MoveCtor, MoveAssign, Default)]
 #[byte_size(48)]
@@ -459,11 +450,7 @@ fn main_0() -> i32 {
             ) == 103_usize)
         })
     );
-    let a: Value<S> = Rc::new(RefCell::new(<S>::uninit()));
-    {
-        let __d = a.as_pointer();
-        field!(__d, x).write(1);
-    };
+    let a: Value<S> = Rc::new(RefCell::new(S { x: 1 }));
     let pa: Value<Ptr<S>> = Rc::new(RefCell::new((a.as_pointer())));
     let mut v8: Vec<Ptr<Ptr<S>>> = Vec::new();
     {

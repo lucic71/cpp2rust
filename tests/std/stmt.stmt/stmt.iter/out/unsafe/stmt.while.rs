@@ -6,10 +6,8 @@ use std::collections::BTreeMap;
 use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
-pub static mut ctorCount_0: libcc2rs::LazyStorage<i32> =
-    libcc2rs::LazyStorage::new(|__p| unsafe { __p.write(0) });
-pub static mut dtorCount_1: libcc2rs::LazyStorage<i32> =
-    libcc2rs::LazyStorage::new(|__p| unsafe { __p.write(0) });
+pub static mut ctorCount_0: std::cell::LazyCell<i32> = std::cell::LazyCell::new(|| unsafe { 0 });
+pub static mut dtorCount_1: std::cell::LazyCell<i32> = std::cell::LazyCell::new(|| unsafe { 0 });
 #[repr(C)]
 #[derive(Clone, VaArg, FnPtrArg, CppFromUnsafe, DestructorUnsafe, Default)]
 #[cpp_from(i32, new, value)]
@@ -22,19 +20,13 @@ impl p2_condition_variable_created_each_iteration_ConvertsToBool {
         mut value: i32,
     ) {
         (&raw mut (*this).value).write(value);
-        (*(*&raw const ctorCount_0).get()).prefix_inc();
+        (*std::cell::LazyCell::force_mut(&mut *&raw mut ctorCount_0)).prefix_inc();
     }
     pub unsafe fn destructor(&mut self) {
-        (*(*&raw const dtorCount_1).get()).prefix_inc();
+        (*std::cell::LazyCell::force_mut(&mut *&raw mut dtorCount_1)).prefix_inc();
     }
     pub unsafe fn to_bool(&self) -> bool {
         return ((self.value) != (0));
-    }
-    pub unsafe fn copy_from(
-        this: *mut p2_condition_variable_created_each_iteration_ConvertsToBool,
-        _a0: *const p2_condition_variable_created_each_iteration_ConvertsToBool,
-    ) {
-        (&raw mut (*this).value).write((*_a0).value);
     }
 }
 pub unsafe fn test_2() {
@@ -55,18 +47,18 @@ pub unsafe fn test_2() {
         }
         iterations.prefix_inc();
         assert!(((condition.value) == (remaining)));
-        assert!(((*(*&raw const ctorCount_0).get()) == (iterations)));
-        assert!(((*(*&raw const dtorCount_1).get()) == ((iterations) - (1))));
+        assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut ctorCount_0)) == (iterations)));
+        assert!(
+            ((*std::cell::LazyCell::force_mut(&mut *&raw mut dtorCount_1)) == ((iterations) - (1)))
+        );
         remaining.prefix_dec();
     }
     assert!(((iterations) == (2)));
-    assert!(((*(*&raw const ctorCount_0).get()) == (3)));
-    assert!(((*(*&raw const dtorCount_1).get()) == (3)));
+    assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut ctorCount_0)) == (3)));
+    assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut dtorCount_1)) == (3)));
 }
-pub static mut ctorCount_3: libcc2rs::LazyStorage<i32> =
-    libcc2rs::LazyStorage::new(|__p| unsafe { __p.write(0) });
-pub static mut dtorCount_4: libcc2rs::LazyStorage<i32> =
-    libcc2rs::LazyStorage::new(|__p| unsafe { __p.write(0) });
+pub static mut ctorCount_3: std::cell::LazyCell<i32> = std::cell::LazyCell::new(|| unsafe { 0 });
+pub static mut dtorCount_4: std::cell::LazyCell<i32> = std::cell::LazyCell::new(|| unsafe { 0 });
 #[repr(C)]
 #[derive(Clone, VaArg, FnPtrArg, CppFromUnsafe, DestructorUnsafe, Default)]
 #[cpp_from(i32, new, value)]
@@ -79,19 +71,13 @@ impl p2_continue_destroys_condition_variable_ConvertsToBool {
         mut value: i32,
     ) {
         (&raw mut (*this).value).write(value);
-        (*(*&raw const ctorCount_3).get()).prefix_inc();
+        (*std::cell::LazyCell::force_mut(&mut *&raw mut ctorCount_3)).prefix_inc();
     }
     pub unsafe fn destructor(&mut self) {
-        (*(*&raw const dtorCount_4).get()).prefix_inc();
+        (*std::cell::LazyCell::force_mut(&mut *&raw mut dtorCount_4)).prefix_inc();
     }
     pub unsafe fn to_bool(&self) -> bool {
         return ((self.value) != (0));
-    }
-    pub unsafe fn copy_from(
-        this: *mut p2_continue_destroys_condition_variable_ConvertsToBool,
-        _a0: *const p2_continue_destroys_condition_variable_ConvertsToBool,
-    ) {
-        (&raw mut (*this).value).write((*_a0).value);
     }
 }
 pub unsafe fn test_5() {
@@ -115,16 +101,16 @@ pub unsafe fn test_5() {
             continued.prefix_inc();
             continue 'loop_;
         }
-        assert!(((*(*&raw const ctorCount_3).get()) == (2)));
-        assert!(((*(*&raw const dtorCount_4).get()) == (1)));
+        assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut ctorCount_3)) == (2)));
+        assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut dtorCount_4)) == (1)));
         completed.prefix_inc();
         break;
     }
     assert!(((continued) == (1)));
     assert!(((completed) == (1)));
     assert!(((remaining) == (1)));
-    assert!(((*(*&raw const ctorCount_3).get()) == (2)));
-    assert!(((*(*&raw const dtorCount_4).get()) == (2)));
+    assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut ctorCount_3)) == (2)));
+    assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut dtorCount_4)) == (2)));
 }
 pub fn main() {
     unsafe {
@@ -138,8 +124,8 @@ unsafe fn main_0() -> i32 {
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {
-    (*&raw const ctorCount_0).get();
-    (*&raw const dtorCount_1).get();
-    (*&raw const ctorCount_3).get();
-    (*&raw const dtorCount_4).get();
+    std::cell::LazyCell::force(&*&raw const ctorCount_0);
+    std::cell::LazyCell::force(&*&raw const dtorCount_1);
+    std::cell::LazyCell::force(&*&raw const ctorCount_3);
+    std::cell::LazyCell::force(&*&raw const dtorCount_4);
 }

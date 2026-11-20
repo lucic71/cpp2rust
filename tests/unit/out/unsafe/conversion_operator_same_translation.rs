@@ -20,13 +20,6 @@ impl S {
     pub unsafe fn to_u8(&self) -> u8 {
         return (((self.v) + (1)) as u8);
     }
-    pub unsafe fn new_1(this: *mut S) {}
-    pub unsafe fn copy_from(this: *mut S, _a0: *const S) {
-        (&raw mut (*this).v).write((*_a0).v);
-    }
-    pub unsafe fn move_from(this: *mut S, _a0: *mut S) {
-        (&raw mut (*this).v).write((*_a0).v);
-    }
 }
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, CppFromUnsafe, Default)]
@@ -41,13 +34,6 @@ impl T {
     pub unsafe fn to_i64_2(&self) -> i64 {
         return (((self.v) + (1)) as i64);
     }
-    pub unsafe fn new_1(this: *mut T) {}
-    pub unsafe fn copy_from(this: *mut T, _a0: *const T) {
-        (&raw mut (*this).v).write((*_a0).v);
-    }
-    pub unsafe fn move_from(this: *mut T, _a0: *mut T) {
-        (&raw mut (*this).v).write((*_a0).v);
-    }
 }
 pub fn main() {
     unsafe {
@@ -56,11 +42,7 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    let mut s: S = ::std::mem::MaybeUninit::uninit().assume_init();
-    {
-        let __d = &raw mut s;
-        (&raw mut (*__d).v).write(65);
-    };
+    let mut s: S = S { v: 65 };
     let mut a: libc::c_char = (unsafe { S::to_libcc_char(&s) });
     let mut b: u8 = (unsafe { S::to_u8(&s) });
     assert!(((a as i32) == (('A' as libc::c_char) as i32)));
@@ -69,11 +51,7 @@ unsafe fn main_0() -> i32 {
         ((((unsafe { S::to_libcc_char(&s,) }) as i32) + ((unsafe { S::to_u8(&s,) }) as i32))
             == (131))
     );
-    let mut t: T = ::std::mem::MaybeUninit::uninit().assume_init();
-    {
-        let __d = &raw mut t;
-        (&raw mut (*__d).v).write(3);
-    };
+    let mut t: T = T { v: 3 };
     let mut c: i64 = (unsafe { T::to_i64_1(&t) });
     let mut d: i64 = (unsafe { T::to_i64_2(&t) });
     assert!(((c) == (3_i64)));

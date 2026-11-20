@@ -14,11 +14,6 @@ const _: () = assert!(
 #[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
 #[byte_size(1)]
 pub struct Sized {}
-impl Sized {
-    pub fn new_1(this: Ptr<Sized>) {}
-    pub fn copy_from(this: Ptr<Sized>, _a0: Ptr<Sized>) {}
-    pub fn move_from(this: Ptr<Sized>, _a0: Ptr<Sized>) {}
-}
 pub fn is_small_0() -> bool {
     return true;
 }

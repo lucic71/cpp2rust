@@ -15,29 +15,6 @@ pub struct S {
     pub j: i32,
     pub k: i32,
 }
-impl S {
-    pub unsafe fn new_1(this: *mut S) {
-        (&raw mut (*this).j).write(10);
-        (&raw mut (*this).k).write(
-            ((unsafe {
-                FnPtr::<fn() -> i32>::new(|| -> i32 {
-                    unsafe {
-                        return 3;
-                    }
-                })
-                .call()
-            }) + (1)),
-        );
-    }
-    pub unsafe fn copy_from(this: *mut S, _a0: *const S) {
-        (&raw mut (*this).j).write((*_a0).j);
-        (&raw mut (*this).k).write((*_a0).k);
-    }
-    pub unsafe fn move_from(this: *mut S, _a0: *mut S) {
-        (&raw mut (*this).j).write((*_a0).j);
-        (&raw mut (*this).k).write((*_a0).k);
-    }
-}
 impl Default for S {
     fn default() -> Self {
         unsafe {
@@ -55,25 +32,23 @@ impl Default for S {
         }
     }
 }
-pub static mut g_1: libcc2rs::LazyStorage<i32> = libcc2rs::LazyStorage::new(|__p| unsafe {
-    __p.write(
-        (unsafe {
-            FnPtr::<fn() -> i32>::new(|| -> i32 {
-                unsafe {
-                    let mut s: i32 = 0;
-                    {
-                        let mut i: i32 = 1;
-                        'loop_: while ((i) <= (4)) {
-                            s += i;
-                            i.postfix_inc();
-                        }
+pub static mut g_1: std::cell::LazyCell<i32> = std::cell::LazyCell::new(|| unsafe {
+    (unsafe {
+        FnPtr::<fn() -> i32>::new(|| -> i32 {
+            unsafe {
+                let mut s: i32 = 0;
+                {
+                    let mut i: i32 = 1;
+                    'loop_: while ((i) <= (4)) {
+                        s += i;
+                        i.postfix_inc();
                     }
-                    return s;
                 }
-            })
-            .call()
-        }),
-    )
+                return s;
+            }
+        })
+        .call()
+    })
 });
 pub fn main() {
     unsafe {
@@ -97,10 +72,9 @@ unsafe fn main_0() -> i32 {
         }) == (237))
     );
     assert!(((unsafe { pick_0(1,) }) == (1)));
-    let mut s: S = ::std::mem::MaybeUninit::uninit().assume_init();
-    S::new_1(&raw mut s);
+    let mut s: S = <S>::default();
     assert!(((s.k) == (4)));
-    assert!(((*(*&raw const g_1).get()) == (10)));
+    assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut g_1)) == (10)));
     let mut a: i32 = 2;
     let c: i32 = (unsafe {
         lambda_unsafe!(
@@ -119,5 +93,5 @@ unsafe fn main_0() -> i32 {
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {
-    (*&raw const g_1).get();
+    std::cell::LazyCell::force(&*&raw const g_1);
 }

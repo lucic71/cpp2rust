@@ -45,12 +45,6 @@ impl H {
     pub unsafe fn new(this: *mut H, values: *const Vec<i32>) {
         (&raw mut (*this).last).write((&(*values))[(3_usize)]);
     }
-    pub unsafe fn copy_from(this: *mut H, _a0: *const H) {
-        (&raw mut (*this).last).write((*_a0).last);
-    }
-    pub unsafe fn move_from(this: *mut H, _a0: *mut H) {
-        (&raw mut (*this).last).write((*_a0).last);
-    }
 }
 pub fn main() {
     unsafe {

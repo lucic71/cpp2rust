@@ -33,13 +33,6 @@ impl S {
     pub unsafe fn operator_lt_7(&self, mut o: i32) -> bool {
         return ((self.v) < (o));
     }
-    pub unsafe fn new_1(this: *mut S) {}
-    pub unsafe fn copy_from(this: *mut S, _a0: *const S) {
-        (&raw mut (*this).v).write((*_a0).v);
-    }
-    pub unsafe fn move_from(this: *mut S, _a0: *mut S) {
-        (&raw mut (*this).v).write((*_a0).v);
-    }
 }
 impl std::cmp::Ord for S {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering {
@@ -72,21 +65,9 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    let mut a: S = ::std::mem::MaybeUninit::uninit().assume_init();
-    {
-        let __d = &raw mut a;
-        (&raw mut (*__d).v).write(1);
-    };
-    let mut b: S = ::std::mem::MaybeUninit::uninit().assume_init();
-    {
-        let __d = &raw mut b;
-        (&raw mut (*__d).v).write(2);
-    };
-    let mut c: S = ::std::mem::MaybeUninit::uninit().assume_init();
-    {
-        let __d = &raw mut c;
-        (&raw mut (*__d).v).write(1);
-    };
+    let mut a: S = S { v: 1 };
+    let mut b: S = S { v: 2 };
+    let mut c: S = S { v: 1 };
     assert!((unsafe { S::operator_eq(&a, &c,) }));
     assert!((unsafe { S::operator_ne(&a, &b,) }));
     assert!((unsafe { S::operator_lt_3(&a, &b,) }));

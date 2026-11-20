@@ -18,28 +18,13 @@ impl MinHeapNode {
     pub unsafe fn IsLeaf(&self) -> bool {
         return ((self.left).is_null()) && ((self.right).is_null());
     }
-    pub unsafe fn new_1(this: *mut MinHeapNode) {}
-    pub unsafe fn copy_from(this: *mut MinHeapNode, _a0: *const MinHeapNode) {
-        (&raw mut (*this).data).write((*_a0).data);
-        (&raw mut (*this).freq).write((*_a0).freq);
-        (&raw mut (*this).left).write((*_a0).left);
-        (&raw mut (*this).right).write((*_a0).right);
-    }
-    pub unsafe fn move_from(this: *mut MinHeapNode, _a0: *mut MinHeapNode) {
-        (&raw mut (*this).data).write((*_a0).data);
-        (&raw mut (*this).freq).write((*_a0).freq);
-        (&raw mut (*this).left).write((*_a0).left);
-        (&raw mut (*this).right).write((*_a0).right);
-    }
 }
 pub unsafe fn Swap_0(a: *mut MinHeapNode, b: *mut MinHeapNode) {
-    let mut t: MinHeapNode = ::std::mem::MaybeUninit::uninit().assume_init();
-    {
-        let __d = &raw mut t;
-        (&raw mut (*__d).data).write((*a).data);
-        (&raw mut (*__d).freq).write((*a).freq);
-        (&raw mut (*__d).left).write((*a).left);
-        (&raw mut (*__d).right).write((*a).right);
+    let mut t: MinHeapNode = MinHeapNode {
+        data: (*a).data,
+        freq: (*a).freq,
+        left: (*a).left,
+        right: (*a).right,
     };
     (*a) = MinHeapNode {
         data: (*b).data,

@@ -39,26 +39,20 @@ impl Guard_1 {
         field!(this, ap).write((val).clone());
         field!(this, active).write(true);
     }
-    pub fn copy_from(this: Ptr<Guard_1>, _a0: Ptr<Guard_1>) {
-        field!(this, ap).write((_a0.with(|__s| __s.ap.clone())).clone());
-        field!(this, active).write(_a0.with(|__s| __s.active));
-    }
 }
 pub fn sum_ptr_2(n: i32, __args: Box<[VaArg]>) -> i32 {
     let __args: Value<Box<[VaArg]>> = Rc::new(RefCell::new(__args.into()));
     let n: Value<i32> = Rc::new(RefCell::new(n));
     let ap: Value<Ptr<VaArg>> = Rc::new(RefCell::new(Ptr::<VaArg>::default()));
     (*ap.borrow_mut()) = __args.decay();
-    let cursor: Value<Cursor_3> = Rc::new(RefCell::new(<Cursor_3>::uninit()));
-    {
-        let __d = cursor.as_pointer();
-        field!(__d, ap).write((ap.as_pointer()));
+    let mut cursor: Cursor_3 = Cursor_3 {
+        ap: (ap.as_pointer()),
     };
     let mut total: i32 = 0;
     {
         let mut i: i32 = 0;
         'loop_: while (i < (*n.borrow())) {
-            total += { (*cursor.borrow()).ap.clone() }.with_mut(|__v| __v.arg::<i32>());
+            total += cursor.ap.with_mut(|__v| __v.arg::<i32>());
             i.prefix_inc();
         }
     };
@@ -70,15 +64,6 @@ pub struct Cursor_3 {
     #[offset(0)]
     #[byte_size(8)]
     pub ap: Ptr<Ptr<VaArg>>,
-}
-impl Cursor_3 {
-    pub fn new_1(this: Ptr<Cursor_3>) {}
-    pub fn copy_from(this: Ptr<Cursor_3>, _a0: Ptr<Cursor_3>) {
-        field!(this, ap).write(_a0.with(|__s| __s.ap.clone()));
-    }
-    pub fn move_from(this: Ptr<Cursor_3>, _a0: Ptr<Cursor_3>) {
-        field!(this, ap).write({ (*_a0.upgrade().deref()).ap.clone() });
-    }
 }
 pub fn main() {
     __cpp2rust_init_globals();

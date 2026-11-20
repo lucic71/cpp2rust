@@ -16,32 +16,21 @@ pub struct Pair {
     #[byte_size(8)]
     pub x2: Ptr<i32>,
 }
-impl Pair {
-    pub fn copy_from(this: Ptr<Pair>, _a0: Ptr<Pair>) {
-        field!(this, x1).write((_a0.with(|__s| __s.x1.clone())).clone());
-        field!(this, x2).write((_a0.with(|__s| __s.x2.clone())).clone());
-    }
-    pub fn move_from(this: Ptr<Pair>, _a0: Ptr<Pair>) {
-        field!(this, x1).write(({ (*_a0.upgrade().deref()).x1.clone() }).clone());
-        field!(this, x2).write(({ (*_a0.upgrade().deref()).x2.clone() }).clone());
-    }
-}
-pub fn mkPair_0(__ret: Ptr<Pair>, x1: Ptr<i32>, x2: Ptr<i32>) {
-    {
-        let __d = __ret.clone();
-        field!(__d, x1).write((x1).clone());
-        field!(__d, x2).write((x2).clone());
+pub fn mkPair_0(x1: Ptr<i32>, x2: Ptr<i32>) -> Pair {
+    return Pair {
+        x1: (x1).clone(),
+        x2: (x2).clone(),
     };
-    return;
 }
 pub fn fill_1(arr: Ptr<Option<Value<Box<[Ptr<i32>]>>>>, n1: Ptr<i32>) {
     let n2: Value<i32> = Rc::new(RefCell::new((n1.read())));
-    let pair: Value<Pair> = Rc::new(RefCell::new(<Pair>::uninit()));
-    ({
-        let _x1: Ptr<i32> = (n1).clone();
-        let _x2: Ptr<i32> = n2.as_pointer();
-        mkPair_0(pair.as_pointer(), _x1, _x2)
-    });
+    let pair: Value<Pair> = Rc::new(RefCell::new(
+        ({
+            let _x1: Ptr<i32> = (n1).clone();
+            let _x2: Ptr<i32> = n2.as_pointer();
+            mkPair_0(_x1, _x2)
+        }),
+    ));
     ({ (*arr.upgrade().deref()).decay().offset(0_usize) })
         .write(({ (*pair.borrow()).x1.clone() }).clone());
     ({ (*arr.upgrade().deref()).decay().offset(1_usize) })

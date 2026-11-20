@@ -20,12 +20,6 @@ impl PtrCtor_unsigned_long_ {
     pub unsafe fn new(this: *mut PtrCtor_unsigned_long_, mut p: *const u64) {
         (&raw mut (*this).v).write((*p.offset((1) as isize)));
     }
-    pub unsafe fn copy_from(this: *mut PtrCtor_unsigned_long_, _a0: *const PtrCtor_unsigned_long_) {
-        (&raw mut (*this).v).write((*_a0).v);
-    }
-    pub unsafe fn move_from(this: *mut PtrCtor_unsigned_long_, _a0: *mut PtrCtor_unsigned_long_) {
-        (&raw mut (*this).v).write((*_a0).v);
-    }
 }
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, CppFromUnsafe, Default)]
@@ -36,12 +30,6 @@ pub struct RefCtor_unsigned_long_ {
 impl RefCtor_unsigned_long_ {
     pub unsafe fn new(this: *mut RefCtor_unsigned_long_, x: *const u64) {
         (&raw mut (*this).v).write((*x).wrapping_add(1_u64));
-    }
-    pub unsafe fn copy_from(this: *mut RefCtor_unsigned_long_, _a0: *const RefCtor_unsigned_long_) {
-        (&raw mut (*this).v).write((*_a0).v);
-    }
-    pub unsafe fn move_from(this: *mut RefCtor_unsigned_long_, _a0: *mut RefCtor_unsigned_long_) {
-        (&raw mut (*this).v).write((*_a0).v);
     }
 }
 pub unsafe fn neg_ll_1() -> i64 {

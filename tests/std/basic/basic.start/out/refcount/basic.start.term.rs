@@ -17,9 +17,6 @@ impl Tracker {
         field!(this, tag).write(tag);
         printf!(b"construct %d\n", tag);
     }
-    pub fn copy_from(this: Ptr<Tracker>, _a0: Ptr<Tracker>) {
-        field!(this, tag).write(_a0.with(|__s| __s.tag));
-    }
 }
 #[derive(Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Destructor, Default)]
 #[byte_size(4)]
@@ -28,28 +25,11 @@ pub struct HoldsTracker {
     #[byte_size(4)]
     pub member: Tracker,
 }
-impl HoldsTracker {
-    pub fn copy_from(this: Ptr<HoldsTracker>, _a0: Ptr<HoldsTracker>) {
-        Tracker::copy_from(field_ptr!(this, member), { field_ptr!(_a0, member) });
-    }
-    pub fn move_from(this: Ptr<HoldsTracker>, _a0: Ptr<HoldsTracker>) {
-        Tracker::copy_from(field_ptr!(this, member), { field_ptr!(_a0, member) });
-    }
-}
 #[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
 #[byte_size(4)]
 pub struct TriviallyDestructible {
     #[offset(0)]
     pub value: i32,
-}
-impl TriviallyDestructible {
-    pub fn new_1(this: Ptr<TriviallyDestructible>) {}
-    pub fn copy_from(this: Ptr<TriviallyDestructible>, _a0: Ptr<TriviallyDestructible>) {
-        field!(this, value).write(_a0.with(|__s| __s.value));
-    }
-    pub fn move_from(this: Ptr<TriviallyDestructible>, _a0: Ptr<TriviallyDestructible>) {
-        field!(this, value).write({ (*_a0.upgrade().deref()).value });
-    }
 }
 thread_local!(
     pub static global_0: Value<Tracker> = {
@@ -134,32 +114,12 @@ thread_local!(
     };
 );
 thread_local!(
-    pub static trivial_9: Value<TriviallyDestructible> = {
-        let __v: Value<TriviallyDestructible> =
-            Rc::new(RefCell::new(<TriviallyDestructible>::uninit()));
-        {
-            let __d = __v.as_pointer();
-            field!(__d, value).write(6);
-        };
-        __v
-    };
+    pub static trivial_9: Value<TriviallyDestructible> =
+        Rc::new(RefCell::new(TriviallyDestructible { value: 6 }));
 );
 #[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
 #[byte_size(1)]
 pub struct p3_reverse_completion_order_WithStaticMember {}
-impl p3_reverse_completion_order_WithStaticMember {
-    pub fn new_1(this: Ptr<p3_reverse_completion_order_WithStaticMember>) {}
-    pub fn copy_from(
-        this: Ptr<p3_reverse_completion_order_WithStaticMember>,
-        _a0: Ptr<p3_reverse_completion_order_WithStaticMember>,
-    ) {
-    }
-    pub fn move_from(
-        this: Ptr<p3_reverse_completion_order_WithStaticMember>,
-        _a0: Ptr<p3_reverse_completion_order_WithStaticMember>,
-    ) {
-    }
-}
 thread_local!(
     pub static member_10: Value<Tracker> = {
         let __static = {

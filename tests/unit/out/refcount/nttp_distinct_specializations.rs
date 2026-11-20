@@ -14,46 +14,17 @@ pub struct S_2_ {
     #[offset(4)]
     pub w: i32,
 }
-impl S_2_ {
-    pub fn new_1(this: Ptr<S_2_>) {}
-    pub fn copy_from(this: Ptr<S_2_>, _a0: Ptr<S_2_>) {
-        field!(this, v).write(_a0.with(|__s| __s.v));
-        field!(this, w).write(_a0.with(|__s| __s.w));
-    }
-    pub fn move_from(this: Ptr<S_2_>, _a0: Ptr<S_2_>) {
-        field!(this, v).write({ (*_a0.upgrade().deref()).v });
-        field!(this, w).write({ (*_a0.upgrade().deref()).w });
-    }
-}
 #[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
 #[byte_size(4)]
 pub struct S_1_ {
     #[offset(0)]
     pub v: i32,
 }
-impl S_1_ {
-    pub fn new_1(this: Ptr<S_1_>) {}
-    pub fn copy_from(this: Ptr<S_1_>, _a0: Ptr<S_1_>) {
-        field!(this, v).write(_a0.with(|__s| __s.v));
-    }
-    pub fn move_from(this: Ptr<S_1_>, _a0: Ptr<S_1_>) {
-        field!(this, v).write({ (*_a0.upgrade().deref()).v });
-    }
-}
 #[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
 #[byte_size(4)]
 pub struct S_3_ {
     #[offset(0)]
     pub v: i32,
-}
-impl S_3_ {
-    pub fn new_1(this: Ptr<S_3_>) {}
-    pub fn copy_from(this: Ptr<S_3_>, _a0: Ptr<S_3_>) {
-        field!(this, v).write(_a0.with(|__s| __s.v));
-    }
-    pub fn move_from(this: Ptr<S_3_>, _a0: Ptr<S_3_>) {
-        field!(this, v).write({ (*_a0.upgrade().deref()).v });
-    }
 }
 pub fn scale_0(mut x: i32) -> i32 {
     return (x * 1);
@@ -87,22 +58,9 @@ pub fn main() {
     libcc2rs::cpp2rust_exit(main_0());
 }
 fn main_0() -> i32 {
-    let s1: Value<S_1_> = Rc::new(RefCell::new(<S_1_>::uninit()));
-    {
-        let __d = s1.as_pointer();
-        field!(__d, v).write(5);
-    };
-    let s2: Value<S_2_> = Rc::new(RefCell::new(<S_2_>::uninit()));
-    {
-        let __d = s2.as_pointer();
-        field!(__d, v).write(5);
-        field!(__d, w).write(1);
-    };
-    let s3: Value<S_3_> = Rc::new(RefCell::new(<S_3_>::uninit()));
-    {
-        let __d = s3.as_pointer();
-        field!(__d, v).write(5);
-    };
+    let s1: Value<S_1_> = Rc::new(RefCell::new(S_1_ { v: 5 }));
+    let s2: Value<S_2_> = Rc::new(RefCell::new(S_2_ { v: 5, w: 1 }));
+    let s3: Value<S_3_> = Rc::new(RefCell::new(S_3_ { v: 5 }));
     assert!((({ S_1_Impl::get(&s1.as_pointer(),) }) == 5));
     assert!((({ S_2_Impl::get(&s2.as_pointer(),) }) == 4));
     assert!((({ S_3_Impl::get(&s3.as_pointer(),) }) == 15));

@@ -14,38 +14,15 @@ pub struct Foo {
     #[offset(4)]
     pub x2: i32,
 }
-impl Foo {
-    pub fn new_1(this: Ptr<Foo>) {}
-    pub fn copy_from(this: Ptr<Foo>, _a0: Ptr<Foo>) {
-        field!(this, x1).write(_a0.with(|__s| __s.x1));
-        field!(this, x2).write(_a0.with(|__s| __s.x2));
-    }
-    pub fn move_from(this: Ptr<Foo>, _a0: Ptr<Foo>) {
-        field!(this, x1).write({ (*_a0.upgrade().deref()).x1 });
-        field!(this, x2).write({ (*_a0.upgrade().deref()).x2 });
-    }
-}
 pub fn main() {
     __cpp2rust_init_globals();
     libcc2rs::cpp2rust_exit(main_0());
 }
 fn main_0() -> i32 {
-    let arr: Value<Box<[Foo]>> = Rc::new(RefCell::new(
-        (0..2).map(|_| <Foo>::uninit()).collect::<Box<[_]>>(),
-    ));
-    {
-        let __d = arr.decay();
-        {
-            let __d = __d.offset(0);
-            field!(__d, x1).write(1);
-            field!(__d, x2).write(2);
-        };
-        {
-            let __d = __d.offset(1);
-            field!(__d, x1).write(3);
-            field!(__d, x2).write(4);
-        };
-    };
+    let arr: Value<Box<[Foo]>> = Rc::new(RefCell::new(Box::new([
+        Foo { x1: 1, x2: 2 },
+        Foo { x1: 3, x2: 4 },
+    ])));
     let mut p1: Ptr<i32> = (field_ptr!(arr.decay().offset(1), x1));
     let mut a: i32 = (p1.read());
     let mut p2: Ptr<Foo> = (arr.decay().offset(0));

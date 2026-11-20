@@ -12,22 +12,12 @@ pub struct XX {
     #[offset(0)]
     pub x: i32,
 }
-impl XX {
-    pub fn new_1(this: Ptr<XX>) {}
-    pub fn copy_from(this: Ptr<XX>, _a0: Ptr<XX>) {
-        field!(this, x).write(_a0.with(|__s| __s.x));
-    }
-    pub fn move_from(this: Ptr<XX>, _a0: Ptr<XX>) {
-        field!(this, x).write({ (*_a0.upgrade().deref()).x });
-    }
-}
 pub fn main() {
     __cpp2rust_init_globals();
     libcc2rs::cpp2rust_exit(main_0());
 }
 fn main_0() -> i32 {
-    let obj: Value<XX> = Rc::new(RefCell::new(<XX>::uninit()));
-    XX::new_1(obj.as_pointer());
+    let obj: Value<XX> = Rc::new(RefCell::new(<XX>::default()));
     let mut ptr: Ptr<XX> = (obj.as_pointer());
     field!(ptr, x).write(2);
     let mut c: bool = false;

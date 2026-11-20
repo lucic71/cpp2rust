@@ -86,103 +86,11 @@ pub struct S {
     #[offset(148)]
     pub vec_: i32,
 }
-impl S {
-    pub fn new_1(this: Ptr<S>) {}
-    pub fn copy_from(this: Ptr<S>, _a0: Ptr<S>) {
-        field!(this, as_).write(_a0.with(|__s| __s.as_));
-        field!(this, async_).write(_a0.with(|__s| __s.async_));
-        field!(this, await_).write(_a0.with(|__s| __s.await_));
-        field!(this, crate_).write(_a0.with(|__s| __s.crate_));
-        field!(this, dyn_).write(_a0.with(|__s| __s.dyn_));
-        field!(this, fn_).write(_a0.with(|__s| __s.fn_));
-        field!(this, impl_).write(_a0.with(|__s| __s.impl_));
-        field!(this, in_).write(_a0.with(|__s| __s.in_));
-        field!(this, let_).write(_a0.with(|__s| __s.let_));
-        field!(this, loop_).write(_a0.with(|__s| __s.loop_));
-        field!(this, match_).write(_a0.with(|__s| __s.match_));
-        field!(this, mod_).write(_a0.with(|__s| __s.mod_));
-        field!(this, move_).write(_a0.with(|__s| __s.move_));
-        field!(this, mut_).write(_a0.with(|__s| __s.mut_));
-        field!(this, pub_).write(_a0.with(|__s| __s.pub_));
-        field!(this, ref_).write(_a0.with(|__s| __s.ref_));
-        field!(this, self_).write(_a0.with(|__s| __s.self_));
-        field!(this, Self_).write(_a0.with(|__s| __s.Self_));
-        field!(this, super_).write(_a0.with(|__s| __s.super_));
-        field!(this, trait_).write(_a0.with(|__s| __s.trait_));
-        field!(this, type_).write(_a0.with(|__s| __s.type_));
-        field!(this, unsafe_).write(_a0.with(|__s| __s.unsafe_));
-        field!(this, use_).write(_a0.with(|__s| __s.use_));
-        field!(this, where_).write(_a0.with(|__s| __s.where_));
-        field!(this, abstract_).write(_a0.with(|__s| __s.abstract_));
-        field!(this, become_).write(_a0.with(|__s| __s.become_));
-        field!(this, box_).write(_a0.with(|__s| __s.box_));
-        field!(this, final_).write(_a0.with(|__s| __s.final_));
-        field!(this, gen_).write(_a0.with(|__s| __s.gen_));
-        field!(this, macro_).write(_a0.with(|__s| __s.macro_));
-        field!(this, override_).write(_a0.with(|__s| __s.override_));
-        field!(this, priv_).write(_a0.with(|__s| __s.priv_));
-        field!(this, unsized_).write(_a0.with(|__s| __s.unsized_));
-        field!(this, yield_).write(_a0.with(|__s| __s.yield_));
-        field!(this, macro_rules_).write(_a0.with(|__s| __s.macro_rules_));
-        field!(this, raw_).write(_a0.with(|__s| __s.raw_));
-        field!(this, safe_).write(_a0.with(|__s| __s.safe_));
-        field!(this, vec_).write(_a0.with(|__s| __s.vec_));
-    }
-    pub fn move_from(this: Ptr<S>, _a0: Ptr<S>) {
-        field!(this, as_).write({ (*_a0.upgrade().deref()).as_ });
-        field!(this, async_).write({ (*_a0.upgrade().deref()).async_ });
-        field!(this, await_).write({ (*_a0.upgrade().deref()).await_ });
-        field!(this, crate_).write({ (*_a0.upgrade().deref()).crate_ });
-        field!(this, dyn_).write({ (*_a0.upgrade().deref()).dyn_ });
-        field!(this, fn_).write({ (*_a0.upgrade().deref()).fn_ });
-        field!(this, impl_).write({ (*_a0.upgrade().deref()).impl_ });
-        field!(this, in_).write({ (*_a0.upgrade().deref()).in_ });
-        field!(this, let_).write({ (*_a0.upgrade().deref()).let_ });
-        field!(this, loop_).write({ (*_a0.upgrade().deref()).loop_ });
-        field!(this, match_).write({ (*_a0.upgrade().deref()).match_ });
-        field!(this, mod_).write({ (*_a0.upgrade().deref()).mod_ });
-        field!(this, move_).write({ (*_a0.upgrade().deref()).move_ });
-        field!(this, mut_).write({ (*_a0.upgrade().deref()).mut_ });
-        field!(this, pub_).write({ (*_a0.upgrade().deref()).pub_ });
-        field!(this, ref_).write({ (*_a0.upgrade().deref()).ref_ });
-        field!(this, self_).write({ (*_a0.upgrade().deref()).self_ });
-        field!(this, Self_).write({ (*_a0.upgrade().deref()).Self_ });
-        field!(this, super_).write({ (*_a0.upgrade().deref()).super_ });
-        field!(this, trait_).write({ (*_a0.upgrade().deref()).trait_ });
-        field!(this, type_).write({ (*_a0.upgrade().deref()).type_ });
-        field!(this, unsafe_).write({ (*_a0.upgrade().deref()).unsafe_ });
-        field!(this, use_).write({ (*_a0.upgrade().deref()).use_ });
-        field!(this, where_).write({ (*_a0.upgrade().deref()).where_ });
-        field!(this, abstract_).write({ (*_a0.upgrade().deref()).abstract_ });
-        field!(this, become_).write({ (*_a0.upgrade().deref()).become_ });
-        field!(this, box_).write({ (*_a0.upgrade().deref()).box_ });
-        field!(this, final_).write({ (*_a0.upgrade().deref()).final_ });
-        field!(this, gen_).write({ (*_a0.upgrade().deref()).gen_ });
-        field!(this, macro_).write({ (*_a0.upgrade().deref()).macro_ });
-        field!(this, override_).write({ (*_a0.upgrade().deref()).override_ });
-        field!(this, priv_).write({ (*_a0.upgrade().deref()).priv_ });
-        field!(this, unsized_).write({ (*_a0.upgrade().deref()).unsized_ });
-        field!(this, yield_).write({ (*_a0.upgrade().deref()).yield_ });
-        field!(this, macro_rules_).write({ (*_a0.upgrade().deref()).macro_rules_ });
-        field!(this, raw_).write({ (*_a0.upgrade().deref()).raw_ });
-        field!(this, safe_).write({ (*_a0.upgrade().deref()).safe_ });
-        field!(this, vec_).write({ (*_a0.upgrade().deref()).vec_ });
-    }
-}
 #[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
 #[byte_size(4)]
 pub struct type_ {
     #[offset(0)]
     pub v: i32,
-}
-impl type_ {
-    pub fn new_1(this: Ptr<type_>) {}
-    pub fn copy_from(this: Ptr<type_>, _a0: Ptr<type_>) {
-        field!(this, v).write(_a0.with(|__s| __s.v));
-    }
-    pub fn move_from(this: Ptr<type_>, _a0: Ptr<type_>) {
-        field!(this, v).write({ (*_a0.upgrade().deref()).v });
-    }
 }
 #[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
 #[byte_size(4)]
@@ -190,17 +98,6 @@ pub struct loop_ {
     #[offset(0)]
     #[byte_size(4)]
     pub t: type_,
-}
-impl loop_ {
-    pub fn new_1(this: Ptr<loop_>) {
-        type_::new_1(field_ptr!(this, t));
-    }
-    pub fn copy_from(this: Ptr<loop_>, _a0: Ptr<loop_>) {
-        type_::copy_from(field_ptr!(this, t), { field_ptr!(_a0, t) });
-    }
-    pub fn move_from(this: Ptr<loop_>, _a0: Ptr<loop_>) {
-        type_::move_from(field_ptr!(this, t), { field_ptr!(_a0, t) });
-    }
 }
 pub fn foo_0(
     mut as_: i32,
@@ -250,47 +147,45 @@ pub fn main() {
     libcc2rs::cpp2rust_exit(main_0());
 }
 fn main_0() -> i32 {
-    let s: Value<S> = Rc::new(RefCell::new(<S>::uninit()));
-    {
-        let __d = s.as_pointer();
-        field!(__d, as_).write(0);
-        field!(__d, async_).write(0);
-        field!(__d, await_).write(0);
-        field!(__d, crate_).write(0);
-        field!(__d, dyn_).write(0);
-        field!(__d, fn_).write(0);
-        field!(__d, impl_).write(0);
-        field!(__d, in_).write(0);
-        field!(__d, let_).write(0);
-        field!(__d, loop_).write(0);
-        field!(__d, match_).write(0);
-        field!(__d, mod_).write(0);
-        field!(__d, move_).write(0);
-        field!(__d, mut_).write(0);
-        field!(__d, pub_).write(0);
-        field!(__d, ref_).write(0);
-        field!(__d, self_).write(0);
-        field!(__d, Self_).write(0);
-        field!(__d, super_).write(0);
-        field!(__d, trait_).write(0);
-        field!(__d, type_).write(0);
-        field!(__d, unsafe_).write(0);
-        field!(__d, use_).write(0);
-        field!(__d, where_).write(0);
-        field!(__d, abstract_).write(0);
-        field!(__d, become_).write(0);
-        field!(__d, box_).write(0);
-        field!(__d, final_).write(0);
-        field!(__d, gen_).write(0);
-        field!(__d, macro_).write(0);
-        field!(__d, override_).write(0);
-        field!(__d, priv_).write(0);
-        field!(__d, unsized_).write(0);
-        field!(__d, yield_).write(0);
-        field!(__d, macro_rules_).write(0);
-        field!(__d, raw_).write(0);
-        field!(__d, safe_).write(0);
-        field!(__d, vec_).write(0);
+    let mut s: S = S {
+        as_: 0,
+        async_: 0,
+        await_: 0,
+        crate_: 0,
+        dyn_: 0,
+        fn_: 0,
+        impl_: 0,
+        in_: 0,
+        let_: 0,
+        loop_: 0,
+        match_: 0,
+        mod_: 0,
+        move_: 0,
+        mut_: 0,
+        pub_: 0,
+        ref_: 0,
+        self_: 0,
+        Self_: 0,
+        super_: 0,
+        trait_: 0,
+        type_: 0,
+        unsafe_: 0,
+        use_: 0,
+        where_: 0,
+        abstract_: 0,
+        become_: 0,
+        box_: 0,
+        final_: 0,
+        gen_: 0,
+        macro_: 0,
+        override_: 0,
+        priv_: 0,
+        unsized_: 0,
+        yield_: 0,
+        macro_rules_: 0,
+        raw_: 0,
+        safe_: 0,
+        vec_: 0,
     };
     let mut as_: i32 = 0;
     let mut async_: i32 = 0;
@@ -330,16 +225,8 @@ fn main_0() -> i32 {
     let mut raw_: i32 = 0;
     let mut safe_: i32 = 0;
     let mut vec_: i32 = 0;
-    let l: Value<loop_> = Rc::new(RefCell::new(<loop_>::uninit()));
-    {
-        let __d = l.as_pointer();
-        {
-            let __d = field_ptr!(__d, t);
-            field!(__d, v).write(3);
-        };
-    };
-    let t: Value<type_> = Rc::new(RefCell::new(<type_>::uninit()));
-    type_::copy_from(t.as_pointer(), { field_ptr!(l.as_pointer(), t) });
+    let mut l: loop_ = loop_ { t: type_ { v: 3 } };
+    let mut t: type_ = l.t;
     return ({
         foo_0(
             0,
@@ -380,7 +267,7 @@ fn main_0() -> i32 {
             0,
             0,
             0,
-            ({ (*t.borrow()).v } - 3),
+            (t.v - 3),
         )
     });
 }

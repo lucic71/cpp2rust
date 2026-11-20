@@ -18,17 +18,6 @@ pub struct Pair {
     pub first: i32,
     pub second: i32,
 }
-impl Pair {
-    pub unsafe fn new_1(this: *mut Pair) {}
-    pub unsafe fn copy_from(this: *mut Pair, _a0: *const Pair) {
-        (&raw mut (*this).first).write((*_a0).first);
-        (&raw mut (*this).second).write((*_a0).second);
-    }
-    pub unsafe fn move_from(this: *mut Pair, _a0: *mut Pair) {
-        (&raw mut (*this).first).write((*_a0).first);
-        (&raw mut (*this).second).write((*_a0).second);
-    }
-}
 pub unsafe fn total_2(v: *const Vec<i32>) -> i32 {
     let mut s: i32 = 0;
     'loop_: for x in IterRange::new((*v).begin(), (*v).end()) {
@@ -63,17 +52,6 @@ pub unsafe trait Shape {
 #[derive(Copy, Clone, VaArg, FnPtrArg)]
 pub struct Square {
     pub side: i32,
-}
-impl Square {
-    pub unsafe fn copy_from(this: *mut Square, _a0: *const Square) {
-        (&raw mut (*this).side).write((*_a0).side);
-    }
-    pub unsafe fn move_from(this: *mut Square, _a0: *mut Square) {
-        (&raw mut (*this).side).write((*_a0).side);
-    }
-    pub unsafe fn new_1(this: *mut Square) {
-        (&raw mut (*this).side).write(2);
-    }
 }
 impl Default for Square {
     fn default() -> Self {
@@ -140,21 +118,14 @@ unsafe fn main_0() -> i32 {
     assert!(((unsafe { countdown_4(10, 1,) }) == (10)));
     assert!(((unsafe { countdown_4(10, 3,) }) == (4)));
     let mut init: i32 = 3;
-    let mut pair: Pair = ::std::mem::MaybeUninit::uninit().assume_init();
-    {
-        let __d = &raw mut pair;
-        (&raw mut (*__d).first).write(init);
-        (&raw mut (*__d).second).write(((init) + (1)));
+    let mut pair: Pair = Pair {
+        first: init,
+        second: ((init) + (1)),
     };
-    let mut heap: *mut Pair = {
-        let __p = Box::into_raw(Box::<Pair>::new_uninit()) as *mut Pair;
-        {
-            let __d = __p;
-            (&raw mut (*__d).first).write(init);
-            (&raw mut (*__d).second).write(init);
-        };
-        __p
-    };
+    let mut heap: *mut Pair = (Box::leak(Box::new(Pair {
+        first: init,
+        second: init,
+    })) as *mut Pair);
     assert!(((pair.second) == (4)) && (((*heap).first) == (3)));
     {
         let __p = heap;
@@ -191,8 +162,7 @@ unsafe fn main_0() -> i32 {
     let mut data: Vec<i32> = vec![0; 2_usize];
     (unsafe { set_0(data.as_mut_ptr(), 8) });
     assert!(((data[(0_usize)]) == (8)));
-    let mut square: Square = ::std::mem::MaybeUninit::uninit().assume_init();
-    Square::new_1(&raw mut square);
+    let mut square: Square = <Square>::default();
     let mut shape: *mut dyn Shape = (&mut square as *mut Square);
     assert!(((unsafe { (*shape).scale(3,) }) == (6)));
     return 0;

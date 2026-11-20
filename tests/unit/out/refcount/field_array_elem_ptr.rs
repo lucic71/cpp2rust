@@ -14,17 +14,6 @@ pub struct Point {
     #[offset(4)]
     pub y: i32,
 }
-impl Point {
-    pub fn new_1(this: Ptr<Point>) {}
-    pub fn copy_from(this: Ptr<Point>, _a0: Ptr<Point>) {
-        field!(this, x).write(_a0.with(|__s| __s.x));
-        field!(this, y).write(_a0.with(|__s| __s.y));
-    }
-    pub fn move_from(this: Ptr<Point>, _a0: Ptr<Point>) {
-        field!(this, x).write({ (*_a0.upgrade().deref()).x });
-        field!(this, y).write({ (*_a0.upgrade().deref()).y });
-    }
-}
 #[derive(Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg)]
 #[byte_size(48)]
 pub struct Shape {
@@ -40,46 +29,6 @@ pub struct Shape {
     pub points: Box<[Point]>,
     #[offset(44)]
     pub tail: i32,
-}
-impl Shape {
-    pub fn new_1(this: Ptr<Shape>) {
-        {
-            let __d = array_field_ptr!(this, points);
-            for __i in 0..3_isize {
-                Point::new_1(__d.offset(__i));
-            }
-        };
-    }
-    pub fn copy_from(this: Ptr<Shape>, _a0: Ptr<Shape>) {
-        field!(this, id).write(_a0.with(|__s| __s.id));
-        field!(this, coords).write(Box::new(std::array::from_fn::<_, 4, _>(|__i: usize| {
-            (*_a0.upgrade().deref()).coords[(__i) as usize]
-        })));
-        {
-            let __d = array_field_ptr!(this, points);
-            for __i in 0..3_usize {
-                Point::copy_from(__d.offset(__i as isize), {
-                    array_field_ptr!(_a0, points).offset(__i)
-                });
-            }
-        };
-        field!(this, tail).write(_a0.with(|__s| __s.tail));
-    }
-    pub fn move_from(this: Ptr<Shape>, _a0: Ptr<Shape>) {
-        field!(this, id).write({ (*_a0.upgrade().deref()).id });
-        field!(this, coords).write(Box::new(std::array::from_fn::<_, 4, _>(|__i: usize| {
-            (*_a0.upgrade().deref()).coords[(__i) as usize]
-        })));
-        {
-            let __d = array_field_ptr!(this, points);
-            for __i in 0..3_usize {
-                Point::move_from(__d.offset(__i as isize), {
-                    array_field_ptr!(_a0, points).offset(__i)
-                });
-            }
-        };
-        field!(this, tail).write({ (*_a0.upgrade().deref()).tail });
-    }
 }
 impl Default for Shape {
     fn default() -> Self {
@@ -112,31 +61,16 @@ pub fn main() {
     libcc2rs::cpp2rust_exit(main_0());
 }
 fn main_0() -> i32 {
-    let s: Value<Shape> = Rc::new(RefCell::new(<Shape>::uninit()));
-    {
-        let __d = s.as_pointer();
-        field!(__d, id).write(1);
-        field!(__d, coords).write(Box::new([10, 20, 30, 40]));
-        {
-            let __d = array_field_ptr!(__d, points);
-            {
-                let __d = __d.offset(0);
-                field!(__d, x).write(1);
-                field!(__d, y).write(2);
-            };
-            {
-                let __d = __d.offset(1);
-                field!(__d, x).write(3);
-                field!(__d, y).write(4);
-            };
-            {
-                let __d = __d.offset(2);
-                field!(__d, x).write(5);
-                field!(__d, y).write(6);
-            };
-        };
-        field!(__d, tail).write(99);
-    };
+    let s: Value<Shape> = Rc::new(RefCell::new(Shape {
+        id: 1,
+        coords: Box::new([10, 20, 30, 40]),
+        points: Box::new([
+            Point { x: 1, y: 2 },
+            Point { x: 3, y: 4 },
+            Point { x: 5, y: 6 },
+        ]),
+        tail: 99,
+    }));
     let mut c: Ptr<i32> = (array_field_ptr!(s.as_pointer(), coords).offset((1) as isize));
     assert!(((c.read()) == 20));
     c.write(21);
@@ -183,21 +117,14 @@ fn main_0() -> i32 {
     let mut q: Ptr<Point> = array_field_ptr!(sp, points);
     field!(elem!(q, 2), x).write(8);
     assert!((array_elem!(sp, points, 2).with(|__s| __s.x) == 8));
-    let t: Value<Shape> = Rc::new(RefCell::new(<Shape>::uninit()));
-    Shape::copy_from(t.as_pointer(), { s.as_pointer() });
-    array_elem!(t.as_pointer(), coords, 0).write(0);
-    field!(array_elem!(t.as_pointer(), points, 0), x).write(0);
+    let mut t: Shape = (*s.borrow()).clone();
+    t.coords[(0) as usize] = 0;
+    t.points[(0) as usize].x = 0;
     assert!(
         ((array_elem!(s.as_pointer(), coords, 0).read()) == 10)
             && (array_elem!(s.as_pointer(), points, 0).with(|__s| __s.x) == 1)
     );
-    assert!(
-        ({
-            (((array_elem!(t.as_pointer(), coords, 1).read()) == 21)
-                && (array_elem!(t.as_pointer(), points, 2).with(|__s| __s.y) == 60))
-                && ({ (*t.borrow()).tail } == 99)
-        })
-    );
+    assert!(((t.coords[(1) as usize] == 21) && (t.points[(2) as usize].y == 60)) && (t.tail == 99));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

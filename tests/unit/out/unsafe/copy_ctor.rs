@@ -6,8 +6,7 @@ use std::collections::BTreeMap;
 use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
-pub static mut copies_0: libcc2rs::LazyStorage<i32> =
-    libcc2rs::LazyStorage::new(|__p| unsafe { __p.write(0) });
+pub static mut copies_0: std::cell::LazyCell<i32> = std::cell::LazyCell::new(|| unsafe { 0 });
 #[repr(C)]
 #[derive(VaArg, FnPtrArg, CppFromUnsafe, CopyAssignUnsafe, Default)]
 #[cpp_from(i32, new, value)]
@@ -20,7 +19,7 @@ impl Counted {
     }
     pub unsafe fn copy_from(this: *mut Counted, o: *const Counted) {
         (&raw mut (*this).v).write((*o).v);
-        (*(*&raw const copies_0).get()).prefix_inc();
+        (*std::cell::LazyCell::force_mut(&mut *&raw mut copies_0)).prefix_inc();
     }
     pub unsafe fn copy_assign(&mut self, _a0: *const Counted) -> *mut Counted {
         self.v = (*_a0).v;
@@ -88,7 +87,7 @@ impl Ignored {
     }
     pub unsafe fn copy_from(this: *mut Ignored, _a0: *const Ignored) {
         (&raw mut (*this).v).write(-1_i32);
-        (*(*&raw const copies_0).get()).prefix_inc();
+        (*std::cell::LazyCell::force_mut(&mut *&raw mut copies_0)).prefix_inc();
     }
     pub unsafe fn copy_assign(&mut self, _a0: *const Ignored) -> *mut Ignored {
         self.v = (*_a0).v;
@@ -196,7 +195,7 @@ impl OutOfLine {
     }
     pub unsafe fn copy_from(this: *mut OutOfLine, o: *const OutOfLine) {
         (&raw mut (*this).v).write((((*o).v) + (100)));
-        (*(*&raw const copies_0).get()).prefix_inc();
+        (*std::cell::LazyCell::force_mut(&mut *&raw mut copies_0)).prefix_inc();
     }
     pub unsafe fn copy_assign(&mut self, _a0: *const OutOfLine) -> *mut OutOfLine {
         self.v = (*_a0).v;
@@ -272,7 +271,7 @@ unsafe fn main_0() -> i32 {
     Counted::copy_from(&raw mut c, { &a });
     let mut d: Counted = ::std::mem::MaybeUninit::uninit().assume_init();
     Counted::copy_from(&raw mut d, { &a });
-    assert!(((*(*&raw const copies_0).get()) == (3)));
+    assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut copies_0)) == (3)));
     assert!((((b.v) == (1)) && ((c.v) == (1))) && ((d.v) == (1)));
     assert!(
         ((unsafe {
@@ -284,21 +283,21 @@ unsafe fn main_0() -> i32 {
             ))
         }) == (1))
     );
-    assert!(((*(*&raw const copies_0).get()) == (4)));
+    assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut copies_0)) == (4)));
     let mut e: Counted = ::std::mem::MaybeUninit::uninit().assume_init();
     (unsafe { make_3(&raw mut e, 5) });
     assert!(((e.v) == (5)));
-    assert!(((*(*&raw const copies_0).get()) == (5)));
+    assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut copies_0)) == (5)));
     let mut f: Counted = ::std::mem::MaybeUninit::uninit().assume_init();
     Counted::new(&raw mut f, { 6 });
     assert!(((f.v) == (6)));
-    assert!(((*(*&raw const copies_0).get()) == (5)));
+    assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut copies_0)) == (5)));
     let mut g: Counted = ::std::mem::MaybeUninit::uninit().assume_init();
     Counted::new(&raw mut g, { 7 });
     let mut h: Counted = ::std::mem::MaybeUninit::uninit().assume_init();
     Counted::copy_from(&raw mut h, { &g });
     assert!(((h.v) == (7)));
-    assert!(((*(*&raw const copies_0).get()) == (6)));
+    assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut copies_0)) == (6)));
     let mut hold: Holder = ::std::mem::MaybeUninit::uninit().assume_init();
     {
         let __d = &raw mut hold;
@@ -315,20 +314,20 @@ unsafe fn main_0() -> i32 {
         (((hold2.c.v) == (8)) && ((hold2.arr[(0) as usize].v) == (9)))
             && ((hold2.arr[(1) as usize].v) == (10))
     );
-    assert!(((*(*&raw const copies_0).get()) == (9)));
+    assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut copies_0)) == (9)));
     let mut vec_: Vec<Counted> = Vec::new();
     {
         let a0_clone = a.clone();
         vec_.push(a0_clone)
     };
     assert!(((vec_[(0_usize)].v) == (1)));
-    assert!(((*(*&raw const copies_0).get()) == (10)));
+    assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut copies_0)) == (10)));
     let mut i1: Ignored = ::std::mem::MaybeUninit::uninit().assume_init();
     Ignored::new(&raw mut i1, { 1 });
     let mut i2: Ignored = ::std::mem::MaybeUninit::uninit().assume_init();
     Ignored::copy_from(&raw mut i2, { &i1 });
     assert!(((i1.v) == (1)) && ((i2.v) == (-1_i32)));
-    assert!(((*(*&raw const copies_0).get()) == (11)));
+    assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut copies_0)) == (11)));
     let mut o: Owner = ::std::mem::MaybeUninit::uninit().assume_init();
     {
         let __d = &raw mut o;
@@ -342,7 +341,7 @@ unsafe fn main_0() -> i32 {
     let mut ol2: OutOfLine = ::std::mem::MaybeUninit::uninit().assume_init();
     OutOfLine::copy_from(&raw mut ol2, { &ol1 });
     assert!(((ol2.v) == (105)));
-    assert!(((*(*&raw const copies_0).get()) == (12)));
+    assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut copies_0)) == (12)));
     let mut n: NonConst = ::std::mem::MaybeUninit::uninit().assume_init();
     NonConst::new(&raw mut n);
     let mut n1: NonConst = ::std::mem::MaybeUninit::uninit().assume_init();
@@ -368,5 +367,5 @@ unsafe fn main_0() -> i32 {
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {
-    (*&raw const copies_0).get();
+    std::cell::LazyCell::force(&*&raw const copies_0);
 }

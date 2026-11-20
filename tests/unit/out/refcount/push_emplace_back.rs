@@ -12,15 +12,6 @@ pub struct Chunk {
     #[offset(0)]
     pub data: i32,
 }
-impl Chunk {
-    pub fn new_1(this: Ptr<Chunk>) {}
-    pub fn copy_from(this: Ptr<Chunk>, _a0: Ptr<Chunk>) {
-        field!(this, data).write(_a0.with(|__s| __s.data));
-    }
-    pub fn move_from(this: Ptr<Chunk>, _a0: Ptr<Chunk>) {
-        field!(this, data).write({ (*_a0.upgrade().deref()).data });
-    }
-}
 #[derive(Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
 #[byte_size(16)]
 pub struct Writer {
@@ -30,19 +21,6 @@ pub struct Writer {
     #[offset(8)]
     #[byte_size(4)]
     pub chunk: Chunk,
-}
-impl Writer {
-    pub fn new_1(this: Ptr<Writer>) {
-        Chunk::new_1(field_ptr!(this, chunk));
-    }
-    pub fn copy_from(this: Ptr<Writer>, _a0: Ptr<Writer>) {
-        field!(this, output).write(_a0.with(|__s| __s.output.clone()));
-        Chunk::copy_from(field_ptr!(this, chunk), { field_ptr!(_a0, chunk) });
-    }
-    pub fn move_from(this: Ptr<Writer>, _a0: Ptr<Writer>) {
-        field!(this, output).write({ (*_a0.upgrade().deref()).output.clone() });
-        Chunk::move_from(field_ptr!(this, chunk), { field_ptr!(_a0, chunk) });
-    }
 }
 #[derive(Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, MoveCtor, MoveAssign, Default)]
 #[byte_size(48)]
@@ -132,16 +110,7 @@ pub fn emplace_local_from_field_4(mut jpg: Ptr<JPEGData>, mut cond: bool) {
 pub fn nested_emplace_move_5(mut bw: Ptr<Writer>) {
     {
         let mut __tmp_2 = { bw.with(|__s| __s.output.clone()) };
-        let mut __tmp_3 = {
-            Rc::try_unwrap({
-                let __v: Value<Chunk> = Rc::new(RefCell::new(<Chunk>::uninit()));
-                Chunk::move_from(__v.as_pointer(), { field_ptr!(bw, chunk) });
-                __v
-            })
-            .ok()
-            .unwrap()
-            .into_inner()
-        };
+        let mut __tmp_3 = { bw.with(|__s| __s.chunk) };
         __tmp_2.with_mut(|__v: &mut Vec<Chunk>| __v.push(__tmp_3));
     };
 }
@@ -172,14 +141,6 @@ impl Pair {
     pub fn new_3(this: Ptr<Pair>, mut a: i32, mut b: i32) {
         field!(this, first).write(a);
         field!(this, second).write((b * 2));
-    }
-    pub fn copy_from(this: Ptr<Pair>, _a0: Ptr<Pair>) {
-        field!(this, first).write(_a0.with(|__s| __s.first));
-        field!(this, second).write(_a0.with(|__s| __s.second));
-    }
-    pub fn move_from(this: Ptr<Pair>, _a0: Ptr<Pair>) {
-        field!(this, first).write({ (*_a0.upgrade().deref()).first });
-        field!(this, second).write({ (*_a0.upgrade().deref()).second });
     }
 }
 impl Default for Pair {
@@ -333,7 +294,7 @@ pub fn emplace_self_reads_12(mut values: Ptr<Vec<i64>>, mut pairs: Ptr<Vec<Pair>
         let mut __tmp_10 = {
             Rc::try_unwrap({
                 let __v: Value<Pair> = Rc::new(RefCell::new(<Pair>::uninit()));
-                Pair::copy_from(__v.as_pointer(), { (pairs).decay().offset(0_usize) });
+                (__v.as_pointer()).write(index!(pairs, 0_usize).read());
                 __v
             })
             .ok()
@@ -446,21 +407,6 @@ pub struct Plain {
     #[array_len(2)]
     pub b: Box<[f64]>,
 }
-impl Plain {
-    pub fn new_1(this: Ptr<Plain>) {}
-    pub fn copy_from(this: Ptr<Plain>, _a0: Ptr<Plain>) {
-        field!(this, a).write(_a0.with(|__s| __s.a));
-        field!(this, b).write(Box::new(std::array::from_fn::<_, 2, _>(|__i: usize| {
-            (*_a0.upgrade().deref()).b[(__i) as usize]
-        })));
-    }
-    pub fn move_from(this: Ptr<Plain>, _a0: Ptr<Plain>) {
-        field!(this, a).write({ (*_a0.upgrade().deref()).a });
-        field!(this, b).write(Box::new(std::array::from_fn::<_, 2, _>(|__i: usize| {
-            (*_a0.upgrade().deref()).b[(__i) as usize]
-        })));
-    }
-}
 impl Default for Plain {
     fn default() -> Self {
         {
@@ -472,25 +418,12 @@ impl Default for Plain {
     }
 }
 pub fn emplace_plain_15(mut v: Ptr<Vec<Plain>>) {
-    let p: Value<Plain> = Rc::new(RefCell::new(<Plain>::uninit()));
+    let p: Value<Plain> = Rc::new(RefCell::new(Plain {
+        a: 1,
+        b: Box::new([2_f64, 3_f64]),
+    }));
     {
-        let __d = p.as_pointer();
-        field!(__d, a).write(1);
-        field!(__d, b).write(Box::new([2_f64, 3_f64]));
-    };
-    {
-        v.with_mut(|__v: &mut Vec<Plain>| {
-            __v.push(
-                Rc::try_unwrap({
-                    let __v: Value<Plain> = Rc::new(RefCell::new(<Plain>::uninit()));
-                    Plain::copy_from(__v.as_pointer(), { p.as_pointer() });
-                    __v
-                })
-                .ok()
-                .unwrap()
-                .into_inner(),
-            )
-        });
+        v.with_mut(|__v: &mut Vec<Plain>| __v.push((*p.borrow()).clone()));
     };
 }
 thread_local!(
@@ -511,12 +444,6 @@ impl Counted {
                 .deref())
             .len(),
         );
-    }
-    pub fn copy_from(this: Ptr<Counted>, _a0: Ptr<Counted>) {
-        field!(this, seen).write(_a0.with(|__s| __s.seen));
-    }
-    pub fn move_from(this: Ptr<Counted>, _a0: Ptr<Counted>) {
-        field!(this, seen).write({ (*_a0.upgrade().deref()).seen });
     }
 }
 impl Counted {}
@@ -591,8 +518,7 @@ fn main_0() -> i32 {
     let chunks: Value<Vec<Chunk>> = Rc::new(RefCell::new(Vec::new()));
     ({ shrink_through_ptr_2((chunks.as_pointer())) });
     assert!(({ (*chunks.borrow()).is_empty() }));
-    let w: Value<Writer> = Rc::new(RefCell::new(<Writer>::uninit()));
-    Writer::new_1(w.as_pointer());
+    let w: Value<Writer> = Rc::new(RefCell::new(<Writer>::default()));
     (*w.borrow_mut()).chunk.data = 42;
     (*w.borrow_mut()).output = (chunks.as_pointer());
     ({ nested_push_move_3((w.as_pointer())) });

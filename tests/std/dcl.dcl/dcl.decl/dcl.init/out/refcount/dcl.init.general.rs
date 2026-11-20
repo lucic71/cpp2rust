@@ -14,44 +14,12 @@ pub struct p6_1_zero_initialized_pointer_to_member_HasTwoInts {
     #[offset(4)]
     pub second: i32,
 }
-impl p6_1_zero_initialized_pointer_to_member_HasTwoInts {
-    pub fn new_1(this: Ptr<p6_1_zero_initialized_pointer_to_member_HasTwoInts>) {}
-    pub fn copy_from(
-        this: Ptr<p6_1_zero_initialized_pointer_to_member_HasTwoInts>,
-        _a0: Ptr<p6_1_zero_initialized_pointer_to_member_HasTwoInts>,
-    ) {
-        field!(this, first).write(_a0.with(|__s| __s.first));
-        field!(this, second).write(_a0.with(|__s| __s.second));
-    }
-    pub fn move_from(
-        this: Ptr<p6_1_zero_initialized_pointer_to_member_HasTwoInts>,
-        _a0: Ptr<p6_1_zero_initialized_pointer_to_member_HasTwoInts>,
-    ) {
-        field!(this, first).write({ (*_a0.upgrade().deref()).first });
-        field!(this, second).write({ (*_a0.upgrade().deref()).second });
-    }
-}
 #[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg)]
 #[byte_size(8)]
 pub struct p6_1_zero_initialized_pointer_to_member_HoldsSelector {
     #[offset(0)]
     #[byte_size(8)]
     pub selector: isize,
-}
-impl p6_1_zero_initialized_pointer_to_member_HoldsSelector {
-    pub fn new_1(this: Ptr<p6_1_zero_initialized_pointer_to_member_HoldsSelector>) {}
-    pub fn copy_from(
-        this: Ptr<p6_1_zero_initialized_pointer_to_member_HoldsSelector>,
-        _a0: Ptr<p6_1_zero_initialized_pointer_to_member_HoldsSelector>,
-    ) {
-        field!(this, selector).write(_a0.with(|__s| __s.selector));
-    }
-    pub fn move_from(
-        this: Ptr<p6_1_zero_initialized_pointer_to_member_HoldsSelector>,
-        _a0: Ptr<p6_1_zero_initialized_pointer_to_member_HoldsSelector>,
-    ) {
-        field!(this, selector).write({ (*_a0.upgrade().deref()).selector });
-    }
 }
 impl Default for p6_1_zero_initialized_pointer_to_member_HoldsSelector {
     fn default() -> Self {
@@ -75,20 +43,13 @@ pub fn test_1() {
             != (offset_of_field!(p6_1_zero_initialized_pointer_to_member_HasTwoInts, first)
                 as isize))
     );
-    let holder: Value<p6_1_zero_initialized_pointer_to_member_HoldsSelector> = Rc::new(
-        RefCell::new(<p6_1_zero_initialized_pointer_to_member_HoldsSelector>::uninit()),
-    );
-    {
-        let __d = holder.as_pointer();
-        field!(__d, selector).write(-1_isize);
-    };
-    assert!(({ (({ (*holder.borrow()).selector }) == -1_isize) }));
+    let mut holder: p6_1_zero_initialized_pointer_to_member_HoldsSelector =
+        <p6_1_zero_initialized_pointer_to_member_HoldsSelector>::default();
+    assert!(((holder.selector) == -1_isize));
     assert!(
-        ({
-            ({ (*holder.borrow()).selector }
-                != (offset_of_field!(p6_1_zero_initialized_pointer_to_member_HasTwoInts, first)
-                    as isize))
-        })
+        (holder.selector
+            != (offset_of_field!(p6_1_zero_initialized_pointer_to_member_HasTwoInts, first)
+                as isize))
     );
 }
 thread_local!(
@@ -103,18 +64,6 @@ pub struct p7_default_initialization_calls_default_constructor_Counted {
 impl p7_default_initialization_calls_default_constructor_Counted {
     pub fn new(this: Ptr<p7_default_initialization_calls_default_constructor_Counted>) {
         field!(this, id).write((*(*constructed_2.with(Value::clone).borrow_mut()).prefix_inc()));
-    }
-    pub fn copy_from(
-        this: Ptr<p7_default_initialization_calls_default_constructor_Counted>,
-        _a0: Ptr<p7_default_initialization_calls_default_constructor_Counted>,
-    ) {
-        field!(this, id).write(_a0.with(|__s| __s.id));
-    }
-    pub fn move_from(
-        this: Ptr<p7_default_initialization_calls_default_constructor_Counted>,
-        _a0: Ptr<p7_default_initialization_calls_default_constructor_Counted>,
-    ) {
-        field!(this, id).write({ (*_a0.upgrade().deref()).id });
     }
 }
 impl Default for p7_default_initialization_calls_default_constructor_Counted {
@@ -172,18 +121,6 @@ impl p9_1_1_value_initialization_calls_user_provided_constructor_Seven {
     pub fn new(this: Ptr<p9_1_1_value_initialization_calls_user_provided_constructor_Seven>) {
         field!(this, value).write(7);
         (*constructed_4.with(Value::clone).borrow_mut()).prefix_inc();
-    }
-    pub fn copy_from(
-        this: Ptr<p9_1_1_value_initialization_calls_user_provided_constructor_Seven>,
-        _a0: Ptr<p9_1_1_value_initialization_calls_user_provided_constructor_Seven>,
-    ) {
-        field!(this, value).write(_a0.with(|__s| __s.value));
-    }
-    pub fn move_from(
-        this: Ptr<p9_1_1_value_initialization_calls_user_provided_constructor_Seven>,
-        _a0: Ptr<p9_1_1_value_initialization_calls_user_provided_constructor_Seven>,
-    ) {
-        field!(this, value).write({ (*_a0.upgrade().deref()).value });
     }
 }
 impl Default for p9_1_1_value_initialization_calls_user_provided_constructor_Seven {
@@ -252,23 +189,6 @@ pub struct p9_1_2_value_initialization_zeroes_then_default_initializes_Pair {
     #[offset(4)]
     pub second: i32,
 }
-impl p9_1_2_value_initialization_zeroes_then_default_initializes_Pair {
-    pub fn new_1(this: Ptr<p9_1_2_value_initialization_zeroes_then_default_initializes_Pair>) {}
-    pub fn copy_from(
-        this: Ptr<p9_1_2_value_initialization_zeroes_then_default_initializes_Pair>,
-        _a0: Ptr<p9_1_2_value_initialization_zeroes_then_default_initializes_Pair>,
-    ) {
-        field!(this, first).write(_a0.with(|__s| __s.first));
-        field!(this, second).write(_a0.with(|__s| __s.second));
-    }
-    pub fn move_from(
-        this: Ptr<p9_1_2_value_initialization_zeroes_then_default_initializes_Pair>,
-        _a0: Ptr<p9_1_2_value_initialization_zeroes_then_default_initializes_Pair>,
-    ) {
-        field!(this, first).write({ (*_a0.upgrade().deref()).first });
-        field!(this, second).write({ (*_a0.upgrade().deref()).second });
-    }
-}
 #[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg)]
 #[byte_size(4)]
 pub struct p9_1_2_value_initialization_zeroes_then_default_initializes_Member {
@@ -278,18 +198,6 @@ pub struct p9_1_2_value_initialization_zeroes_then_default_initializes_Member {
 impl p9_1_2_value_initialization_zeroes_then_default_initializes_Member {
     pub fn new(this: Ptr<p9_1_2_value_initialization_zeroes_then_default_initializes_Member>) {
         field!(this, id).write((*(*constructed_6.with(Value::clone).borrow_mut()).prefix_inc()));
-    }
-    pub fn copy_from(
-        this: Ptr<p9_1_2_value_initialization_zeroes_then_default_initializes_Member>,
-        _a0: Ptr<p9_1_2_value_initialization_zeroes_then_default_initializes_Member>,
-    ) {
-        field!(this, id).write(_a0.with(|__s| __s.id));
-    }
-    pub fn move_from(
-        this: Ptr<p9_1_2_value_initialization_zeroes_then_default_initializes_Member>,
-        _a0: Ptr<p9_1_2_value_initialization_zeroes_then_default_initializes_Member>,
-    ) {
-        field!(this, id).write({ (*_a0.upgrade().deref()).id });
     }
 }
 impl Default for p9_1_2_value_initialization_zeroes_then_default_initializes_Member {
@@ -327,101 +235,25 @@ impl p9_1_2_value_initialization_zeroes_then_default_initializes_Holder {
             this, member
         ));
     }
-    pub fn copy_from(
-        this: Ptr<p9_1_2_value_initialization_zeroes_then_default_initializes_Holder>,
-        _a0: Ptr<p9_1_2_value_initialization_zeroes_then_default_initializes_Holder>,
-    ) {
-        field!(this, number).write(_a0.with(|__s| __s.number));
-        p9_1_2_value_initialization_zeroes_then_default_initializes_Member::copy_from(
-            field_ptr!(this, member),
-            { field_ptr!(_a0, member) },
-        );
-        field!(this, pointer).write(_a0.with(|__s| __s.pointer.clone()));
-    }
-    pub fn move_from(
-        this: Ptr<p9_1_2_value_initialization_zeroes_then_default_initializes_Holder>,
-        _a0: Ptr<p9_1_2_value_initialization_zeroes_then_default_initializes_Holder>,
-    ) {
-        field!(this, number).write({ (*_a0.upgrade().deref()).number });
-        p9_1_2_value_initialization_zeroes_then_default_initializes_Member::move_from(
-            field_ptr!(this, member),
-            { field_ptr!(_a0, member) },
-        );
-        field!(this, pointer).write({ (*_a0.upgrade().deref()).pointer.clone() });
-    }
 }
 pub fn test_7() {
-    let braces: Value<p9_1_2_value_initialization_zeroes_then_default_initializes_Pair> = Rc::new(
-        RefCell::new(<p9_1_2_value_initialization_zeroes_then_default_initializes_Pair>::uninit()),
-    );
-    {
-        let __d = braces.as_pointer();
-        ();
-        ();
-    };
-    assert!(({ ({ (*braces.borrow()).first } == 0) && ({ (*braces.borrow()).second } == 0) }));
+    let mut braces: p9_1_2_value_initialization_zeroes_then_default_initializes_Pair =
+        <p9_1_2_value_initialization_zeroes_then_default_initializes_Pair>::default();
+    assert!((braces.first == 0) && (braces.second == 0));
     assert!(
-        ({
-            Rc::try_unwrap({
-                let __v: Value<p9_1_2_value_initialization_zeroes_then_default_initializes_Pair> =
-                    Rc::new(RefCell::new(
-                        <p9_1_2_value_initialization_zeroes_then_default_initializes_Pair>::uninit(
-                        ),
-                    ));
-                {
-                    let __d = __v.as_pointer();
-                    ();
-                    p9_1_2_value_initialization_zeroes_then_default_initializes_Pair::new_1(__d)
-                };
-                __v
-            })
-            .ok()
-            .unwrap()
-            .into_inner()
-            .first
-        } == 0)
+        ({ <p9_1_2_value_initialization_zeroes_then_default_initializes_Pair>::default().first }
+            == 0)
             && ({
-                Rc::try_unwrap({
-                    let __v: Value<
-                        p9_1_2_value_initialization_zeroes_then_default_initializes_Pair,
-                    > = Rc::new(RefCell::new(
-                        <p9_1_2_value_initialization_zeroes_then_default_initializes_Pair>::uninit(
-                        ),
-                    ));
-                    {
-                        let __d = __v.as_pointer();
-                        ();
-                        p9_1_2_value_initialization_zeroes_then_default_initializes_Pair::new_1(__d)
-                    };
-                    __v
-                })
-                .ok()
-                .unwrap()
-                .into_inner()
-                .second
+                <p9_1_2_value_initialization_zeroes_then_default_initializes_Pair>::default().second
             } == 0)
     );
-    let mut dirty: Ptr<p9_1_2_value_initialization_zeroes_then_default_initializes_Pair> = {
-        let __p = Ptr::alloc(
-            <p9_1_2_value_initialization_zeroes_then_default_initializes_Pair>::uninit(),
-        );
-        p9_1_2_value_initialization_zeroes_then_default_initializes_Pair::new_1(__p.clone());
-        __p
-    };
+    let mut dirty: Ptr<p9_1_2_value_initialization_zeroes_then_default_initializes_Pair> =
+        Ptr::alloc(<p9_1_2_value_initialization_zeroes_then_default_initializes_Pair>::default());
     field!(dirty, first).write(23130);
     field!(dirty, second).write(23130);
     dirty.delete();
-    let mut heap: Ptr<p9_1_2_value_initialization_zeroes_then_default_initializes_Pair> = {
-        let __p = Ptr::alloc(
-            <p9_1_2_value_initialization_zeroes_then_default_initializes_Pair>::uninit(),
-        );
-        {
-            let __d = __p.clone();
-            ();
-            p9_1_2_value_initialization_zeroes_then_default_initializes_Pair::new_1(__d)
-        };
-        __p
-    };
+    let mut heap: Ptr<p9_1_2_value_initialization_zeroes_then_default_initializes_Pair> =
+        Ptr::alloc(<p9_1_2_value_initialization_zeroes_then_default_initializes_Pair>::default());
     assert!((heap.with(|__s| __s.first) == 0) && (heap.with(|__s| __s.second) == 0));
     heap.delete();
     let holder: Value<p9_1_2_value_initialization_zeroes_then_default_initializes_Holder> =
@@ -476,48 +308,10 @@ pub struct p9_2_value_initialized_array_and_scalar_Pair {
     #[offset(4)]
     pub second: i32,
 }
-impl p9_2_value_initialized_array_and_scalar_Pair {
-    pub fn new_1(this: Ptr<p9_2_value_initialized_array_and_scalar_Pair>) {}
-    pub fn copy_from(
-        this: Ptr<p9_2_value_initialized_array_and_scalar_Pair>,
-        _a0: Ptr<p9_2_value_initialized_array_and_scalar_Pair>,
-    ) {
-        field!(this, first).write(_a0.with(|__s| __s.first));
-        field!(this, second).write(_a0.with(|__s| __s.second));
-    }
-    pub fn move_from(
-        this: Ptr<p9_2_value_initialized_array_and_scalar_Pair>,
-        _a0: Ptr<p9_2_value_initialized_array_and_scalar_Pair>,
-    ) {
-        field!(this, first).write({ (*_a0.upgrade().deref()).first });
-        field!(this, second).write({ (*_a0.upgrade().deref()).second });
-    }
-}
 pub fn test_8() {
-    let pairs: Value<Box<[p9_2_value_initialized_array_and_scalar_Pair]>> = Rc::new(RefCell::new(
-        (0..2)
-            .map(|_| <p9_2_value_initialized_array_and_scalar_Pair>::uninit())
-            .collect::<Box<[_]>>(),
-    ));
-    {
-        let __d = pairs.decay();
-        {
-            let __d = __d.offset(0);
-            ();
-            ();
-        };
-        {
-            let __d = __d.offset(1);
-            ();
-            ();
-        };
-    };
-    assert!(
-        ({
-            ({ (*pairs.borrow())[(0) as usize].first } == 0)
-                && ({ (*pairs.borrow())[(1) as usize].second } == 0)
-        })
-    );
+    let mut pairs: [p9_2_value_initialized_array_and_scalar_Pair; 2] =
+        [<p9_2_value_initialized_array_and_scalar_Pair>::default(); 2];
+    assert!((pairs[(0) as usize].first == 0) && (pairs[(1) as usize].second == 0));
     let mut numbers: [i32; 3] = [0_i32; 3];
     assert!((numbers[(0) as usize] == 0) && (numbers[(2) as usize] == 0));
     let mut number: i32 = 0_i32;

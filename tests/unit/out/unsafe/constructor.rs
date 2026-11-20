@@ -6,8 +6,7 @@ use std::collections::BTreeMap;
 use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
-pub static mut total_0: libcc2rs::LazyStorage<i32> =
-    libcc2rs::LazyStorage::new(|__p| unsafe { __p.write(0) });
+pub static mut total_0: std::cell::LazyCell<i32> = std::cell::LazyCell::new(|| unsafe { 0 });
 #[repr(C)]
 #[derive(Clone, VaArg, FnPtrArg, CppFromUnsafe, DestructorUnsafe, Default)]
 #[cpp_from(i32, new, value)]
@@ -24,14 +23,13 @@ impl S {
     pub unsafe fn new(this: *mut S, mut init: i32) {
         (&raw mut (*this).v).write(init);
         (unsafe { S::mut_method(&mut *this) });
-        (*(*&raw const total_0).get()) += (unsafe { S::const_method(&mut *this) });
+        (*std::cell::LazyCell::force_mut(&mut *&raw mut total_0)) +=
+            (unsafe { S::const_method(&mut *this) });
     }
     pub unsafe fn destructor(&mut self) {
         (unsafe { S::mut_method(self) });
-        (*(*&raw const total_0).get()) += (unsafe { S::const_method(self) });
-    }
-    pub unsafe fn copy_from(this: *mut S, _a0: *const S) {
-        (&raw mut (*this).v).write((*_a0).v);
+        (*std::cell::LazyCell::force_mut(&mut *&raw mut total_0)) +=
+            (unsafe { S::const_method(self) });
     }
 }
 #[repr(C)]
@@ -53,14 +51,6 @@ impl Point {
     pub unsafe fn new_3(this: *mut Point) {
         Point::new_1(this.clone(), { 4 });
         (*this).x += 100;
-    }
-    pub unsafe fn copy_from(this: *mut Point, _a0: *const Point) {
-        (&raw mut (*this).x).write((*_a0).x);
-        (&raw mut (*this).y).write((*_a0).y);
-    }
-    pub unsafe fn move_from(this: *mut Point, _a0: *mut Point) {
-        (&raw mut (*this).x).write((*_a0).x);
-        (&raw mut (*this).y).write((*_a0).y);
     }
 }
 impl Default for Point {
@@ -86,9 +76,9 @@ unsafe fn main_0() -> i32 {
         S::new(&raw mut s, { 3 });
         let _dtor_s = std::mem::DropGuard::new(&raw mut s, |__p| unsafe { (*__p).destructor() });
         assert!(((s.v) == (4)));
-        assert!(((*(*&raw const total_0).get()) == (8)));
+        assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut total_0)) == (8)));
     }
-    assert!(((*(*&raw const total_0).get()) == (18)));
+    assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut total_0)) == (18)));
     let mut p: Point = ::std::mem::MaybeUninit::uninit().assume_init();
     Point::new_3(&raw mut p);
     assert!(((p.x) == (104)));
@@ -100,5 +90,5 @@ unsafe fn main_0() -> i32 {
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {
-    (*&raw const total_0).get();
+    std::cell::LazyCell::force(&*&raw const total_0);
 }

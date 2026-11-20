@@ -16,15 +16,6 @@ impl Point {
     pub unsafe fn sum(&self) -> i32 {
         return ((self.x) + (self.y));
     }
-    pub unsafe fn new_1(this: *mut Point) {}
-    pub unsafe fn copy_from(this: *mut Point, _a0: *const Point) {
-        (&raw mut (*this).x).write((*_a0).x);
-        (&raw mut (*this).y).write((*_a0).y);
-    }
-    pub unsafe fn move_from(this: *mut Point, _a0: *mut Point) {
-        (&raw mut (*this).x).write((*_a0).x);
-        (&raw mut (*this).y).write((*_a0).y);
-    }
 }
 #[repr(C)]
 #[derive(Clone, VaArg, FnPtrArg, MoveCtorUnsafe, MoveAssignUnsafe, Default)]
@@ -128,8 +119,7 @@ unsafe fn main_0() -> i32 {
     (&mut (*hp)).values[(0_usize)] = (((&mut (*hp)).values[(1_usize)]) + (1));
     (&mut (*hp)).points[(0_usize)].x = (&mut (*hp)).values[(0_usize)];
     assert!(((h.values[(0_usize)]) == (7)) && ((h.points[(0_usize)].x) == (7)));
-    let mut q: Point = ::std::mem::MaybeUninit::uninit().assume_init();
-    Point::copy_from(&raw mut q, { &h.points[(0_usize)] });
+    let mut q: Point = h.points[(0_usize)];
     q.x = 0;
     assert!(((h.points[(0_usize)].x) == (7)));
     let mut grid: Vec<Vec<i32>> = Vec::new();

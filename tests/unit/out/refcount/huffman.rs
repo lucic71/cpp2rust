@@ -20,29 +20,12 @@ pub struct MinHeapNode {
     #[byte_size(8)]
     pub right: Ptr<MinHeapNode>,
 }
-impl MinHeapNode {
-    pub fn new_1(this: Ptr<MinHeapNode>) {}
-    pub fn copy_from(this: Ptr<MinHeapNode>, _a0: Ptr<MinHeapNode>) {
-        field!(this, data).write(_a0.with(|__s| __s.data));
-        field!(this, freq).write(_a0.with(|__s| __s.freq));
-        field!(this, left).write(_a0.with(|__s| __s.left.clone()));
-        field!(this, right).write(_a0.with(|__s| __s.right.clone()));
-    }
-    pub fn move_from(this: Ptr<MinHeapNode>, _a0: Ptr<MinHeapNode>) {
-        field!(this, data).write({ (*_a0.upgrade().deref()).data });
-        field!(this, freq).write({ (*_a0.upgrade().deref()).freq });
-        field!(this, left).write({ (*_a0.upgrade().deref()).left.clone() });
-        field!(this, right).write({ (*_a0.upgrade().deref()).right.clone() });
-    }
-}
 pub fn Swap_0(a: Ptr<MinHeapNode>, b: Ptr<MinHeapNode>) {
-    let t: Value<MinHeapNode> = Rc::new(RefCell::new(<MinHeapNode>::uninit()));
-    {
-        let __d = t.as_pointer();
-        field!(__d, data).write(a.with(|__s| __s.data));
-        field!(__d, freq).write(a.with(|__s| __s.freq));
-        field!(__d, left).write(a.with(|__s| __s.left.clone()));
-        field!(__d, right).write(a.with(|__s| __s.right.clone()));
+    let mut t: MinHeapNode = MinHeapNode {
+        data: a.with(|__s| __s.data),
+        freq: a.with(|__s| __s.freq),
+        left: a.with(|__s| __s.left.clone()),
+        right: a.with(|__s| __s.right.clone()),
     };
     a.write({
         MinHeapNode {
@@ -54,10 +37,10 @@ pub fn Swap_0(a: Ptr<MinHeapNode>, b: Ptr<MinHeapNode>) {
     });
     b.write({
         MinHeapNode {
-            data: { (*t.borrow()).data },
-            freq: { (*t.borrow()).freq },
-            left: { (*t.borrow()).left.clone() },
-            right: { (*t.borrow()).right.clone() },
+            data: t.data,
+            freq: t.freq,
+            left: (t.left).clone(),
+            right: (t.right).clone(),
         }
     });
 }

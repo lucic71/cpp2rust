@@ -11,58 +11,27 @@ use std::rc::Rc;
 pub struct Inner {
     pub value: i32,
 }
-impl Inner {
-    pub unsafe fn new_1(this: *mut Inner) {}
-    pub unsafe fn copy_from(this: *mut Inner, _a0: *const Inner) {
-        (&raw mut (*this).value).write((*_a0).value);
-    }
-    pub unsafe fn move_from(this: *mut Inner, _a0: *mut Inner) {
-        (&raw mut (*this).value).write((*_a0).value);
-    }
-}
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct Outer {
     pub p: *mut Inner,
 }
-impl Outer {
-    pub unsafe fn new_1(this: *mut Outer) {}
-    pub unsafe fn copy_from(this: *mut Outer, _a0: *const Outer) {
-        (&raw mut (*this).p).write((*_a0).p);
-    }
-    pub unsafe fn move_from(this: *mut Outer, _a0: *mut Outer) {
-        (&raw mut (*this).p).write((*_a0).p);
-    }
-}
-pub static mut alpha_0: libcc2rs::LazyStorage<Inner> = libcc2rs::LazyStorage::new(|__p| unsafe {
-    {
-        let __d = __p;
-        (&raw mut (*__d).value).write(1);
-    }
-});
-pub static mut beta_1: libcc2rs::LazyStorage<Inner> = libcc2rs::LazyStorage::new(|__p| unsafe {
-    {
-        let __d = __p;
-        (&raw mut (*__d).value).write(2);
-    }
-});
-pub static mut shared_2: libcc2rs::LazyStorage<Inner> = libcc2rs::LazyStorage::new(|__p| unsafe {
-    {
-        let __d = __p;
-        (&raw mut (*__d).value).write(42);
-    }
-});
-pub static mut items_3: libcc2rs::LazyStorage<[*mut Inner; 2]> =
-    libcc2rs::LazyStorage::new(|__p| unsafe {
-        __p.write([
-            (&raw mut (*(*&raw const alpha_0).get()) as *mut Inner),
-            (&raw mut (*(*&raw const beta_1).get()) as *mut Inner),
-        ])
+pub static mut alpha_0: std::cell::LazyCell<Inner> =
+    std::cell::LazyCell::new(|| unsafe { Inner { value: 1 } });
+pub static mut beta_1: std::cell::LazyCell<Inner> =
+    std::cell::LazyCell::new(|| unsafe { Inner { value: 2 } });
+pub static mut shared_2: std::cell::LazyCell<Inner> =
+    std::cell::LazyCell::new(|| unsafe { Inner { value: 42 } });
+pub static mut items_3: std::cell::LazyCell<[*mut Inner; 2]> =
+    std::cell::LazyCell::new(|| unsafe {
+        [
+            (&raw mut (*std::cell::LazyCell::force_mut(&mut *&raw mut alpha_0)) as *mut Inner),
+            (&raw mut (*std::cell::LazyCell::force_mut(&mut *&raw mut beta_1)) as *mut Inner),
+        ]
     });
-pub static mut obj_4: libcc2rs::LazyStorage<Outer> = libcc2rs::LazyStorage::new(|__p| unsafe {
-    {
-        let __d = __p;
-        (&raw mut (*__d).p).write((&raw mut (*(*&raw const shared_2).get()) as *mut Inner));
+pub static mut obj_4: std::cell::LazyCell<Outer> = std::cell::LazyCell::new(|| unsafe {
+    Outer {
+        p: (&raw mut (*std::cell::LazyCell::force_mut(&mut *&raw mut shared_2)) as *mut Inner),
     }
 });
 pub fn main() {
@@ -72,24 +41,31 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    assert!((((*(*(*&raw const items_3).get())[(0) as usize]).value) == (1)));
-    assert!((((*(*(*&raw const items_3).get())[(1) as usize]).value) == (2)));
-    assert!((((*(*(*&raw const obj_4).get()).p).value) == (42)));
-    assert!((((*(*(*&raw const cache_5).get())[(0) as usize]).value) == (1)));
-    assert!((((*(*(*&raw const cache_5).get())[(1) as usize]).value) == (2)));
+    assert!(
+        (((*(*std::cell::LazyCell::force_mut(&mut *&raw mut items_3))[(0) as usize]).value) == (1))
+    );
+    assert!(
+        (((*(*std::cell::LazyCell::force_mut(&mut *&raw mut items_3))[(1) as usize]).value) == (2))
+    );
+    assert!((((*(*std::cell::LazyCell::force_mut(&mut *&raw mut obj_4)).p).value) == (42)));
+    assert!(
+        (((*(*std::cell::LazyCell::force_mut(&mut *&raw mut cache_5))[(0) as usize]).value) == (1))
+    );
+    assert!(
+        (((*(*std::cell::LazyCell::force_mut(&mut *&raw mut cache_5))[(1) as usize]).value) == (2))
+    );
     return 0;
 }
-static mut cache_5: libcc2rs::LazyStorage<[*mut Inner; 2]> =
-    libcc2rs::LazyStorage::new(|__p| unsafe {
-        __p.write([
-            (&raw mut (*(*&raw const alpha_0).get()) as *mut Inner),
-            (&raw mut (*(*&raw const beta_1).get()) as *mut Inner),
-        ])
-    });
+static mut cache_5: std::cell::LazyCell<[*mut Inner; 2]> = std::cell::LazyCell::new(|| unsafe {
+    [
+        (&raw mut (*std::cell::LazyCell::force_mut(&mut *&raw mut alpha_0)) as *mut Inner),
+        (&raw mut (*std::cell::LazyCell::force_mut(&mut *&raw mut beta_1)) as *mut Inner),
+    ]
+});
 pub unsafe fn __cpp2rust_init_globals() {
-    (*&raw const alpha_0).get();
-    (*&raw const beta_1).get();
-    (*&raw const shared_2).get();
-    (*&raw const items_3).get();
-    (*&raw const obj_4).get();
+    std::cell::LazyCell::force(&*&raw const alpha_0);
+    std::cell::LazyCell::force(&*&raw const beta_1);
+    std::cell::LazyCell::force(&*&raw const shared_2);
+    std::cell::LazyCell::force(&*&raw const items_3);
+    std::cell::LazyCell::force(&*&raw const obj_4);
 }

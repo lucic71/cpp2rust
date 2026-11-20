@@ -11,15 +11,6 @@ use std::rc::Rc;
 pub struct Data {
     pub v: i32,
 }
-impl Data {
-    pub unsafe fn new_1(this: *mut Data) {}
-    pub unsafe fn copy_from(this: *mut Data, _a0: *const Data) {
-        (&raw mut (*this).v).write((*_a0).v);
-    }
-    pub unsafe fn move_from(this: *mut Data, _a0: *mut Data) {
-        (&raw mut (*this).v).write((*_a0).v);
-    }
-}
 #[repr(C)]
 #[derive(FnPtrArg, MoveCtorUnsafe, MoveAssignUnsafe, Default)]
 pub struct Holder {
@@ -64,14 +55,7 @@ unsafe fn main_0() -> i32 {
     h.n = 1;
     let mut hp: *mut Holder = (&mut h as *mut Holder);
     {
-        let _a0: *mut Data = {
-            let __p = Box::into_raw(Box::<Data>::new_uninit()) as *mut Data;
-            {
-                let __d = __p;
-                (&raw mut (*__d).v).write(3);
-            };
-            __p
-        };
+        let _a0: *mut Data = (Box::leak(Box::new(Data { v: 3 })) as *mut Data);
         (*hp).data = if _a0.is_null() {
             None
         } else {
@@ -85,16 +69,7 @@ unsafe fn main_0() -> i32 {
             .map_or(::std::ptr::null_mut(), |v| v as *const Data as *mut Data))
         .v) == (3))
     );
-    (unsafe {
-        Holder::set(&mut h, {
-            let __p = Box::into_raw(Box::<Data>::new_uninit()) as *mut Data;
-            {
-                let __d = __p;
-                (&raw mut (*__d).v).write(4);
-            };
-            __p
-        })
-    });
+    (unsafe { Holder::set(&mut h, (Box::leak(Box::new(Data { v: 4 })) as *mut Data)) });
     assert!(
         (((*(*hp)
             .data

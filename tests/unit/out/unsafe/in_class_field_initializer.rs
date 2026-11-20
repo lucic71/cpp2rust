@@ -12,20 +12,6 @@ pub struct Inner {
     pub x: i32,
     pub y: i32,
 }
-impl Inner {
-    pub unsafe fn new_1(this: *mut Inner) {
-        (&raw mut (*this).x).write(3);
-        (&raw mut (*this).y).write(4);
-    }
-    pub unsafe fn copy_from(this: *mut Inner, _a0: *const Inner) {
-        (&raw mut (*this).x).write((*_a0).x);
-        (&raw mut (*this).y).write((*_a0).y);
-    }
-    pub unsafe fn move_from(this: *mut Inner, _a0: *mut Inner) {
-        (&raw mut (*this).x).write((*_a0).x);
-        (&raw mut (*this).y).write((*_a0).y);
-    }
-}
 impl Default for Inner {
     fn default() -> Self {
         unsafe { Inner { x: 3, y: 4 } }
@@ -38,30 +24,6 @@ pub struct S {
     pub b: libc::c_char,
     pub c: Inner,
     pub d: Inner,
-}
-impl S {
-    pub unsafe fn new_1(this: *mut S) {
-        (&raw mut (*this).a).write(1);
-        (&raw mut (*this).b).write((2 as libc::c_char));
-        {
-            let __d = (&raw mut (*this).c);
-            (&raw mut (*__d).x).write(3);
-            (&raw mut (*__d).y).write(4);
-        };
-        Inner::new_1((&raw mut (*this).d));
-    }
-    pub unsafe fn copy_from(this: *mut S, _a0: *const S) {
-        (&raw mut (*this).a).write((*_a0).a);
-        (&raw mut (*this).b).write((*_a0).b);
-        Inner::copy_from((&raw mut (*this).c), { &(*_a0).c });
-        Inner::copy_from((&raw mut (*this).d), { &(*_a0).d });
-    }
-    pub unsafe fn move_from(this: *mut S, _a0: *mut S) {
-        (&raw mut (*this).a).write((*_a0).a);
-        (&raw mut (*this).b).write((*_a0).b);
-        Inner::move_from((&raw mut (*this).c), { &mut (*_a0).c });
-        Inner::move_from((&raw mut (*this).d), { &mut (*_a0).d });
-    }
 }
 impl Default for S {
     fn default() -> Self {
@@ -86,14 +48,6 @@ impl Boxed_int_ {
         (&raw mut (*this).v).write(x);
         (&raw mut (*this).tag).write(t);
     }
-    pub unsafe fn copy_from(this: *mut Boxed_int_, _a0: *const Boxed_int_) {
-        (&raw mut (*this).v).write((*_a0).v);
-        (&raw mut (*this).tag).write((*_a0).tag);
-    }
-    pub unsafe fn move_from(this: *mut Boxed_int_, _a0: *mut Boxed_int_) {
-        (&raw mut (*this).v).write((*_a0).v);
-        (&raw mut (*this).tag).write((*_a0).tag);
-    }
 }
 impl Default for Boxed_int_ {
     fn default() -> Self {
@@ -107,8 +61,7 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    let mut s: S = ::std::mem::MaybeUninit::uninit().assume_init();
-    S::new_1(&raw mut s);
+    let mut s: S = <S>::default();
     assert!(((s.a) == (1)));
     assert!(((s.b as i32) == (2)));
     assert!(((s.c.x) == (3)));

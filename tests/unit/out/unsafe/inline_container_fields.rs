@@ -161,14 +161,10 @@ pub unsafe fn fill_1(mut s: *mut State) {
         (*s).rows.push(__a1)
     };
 }
-pub static mut copies_2: libcc2rs::LazyStorage<i32> =
-    libcc2rs::LazyStorage::new(|__p| unsafe { __p.write(0) });
-pub static mut moves_3: libcc2rs::LazyStorage<i32> =
-    libcc2rs::LazyStorage::new(|__p| unsafe { __p.write(0) });
-pub static mut copy_assigns_4: libcc2rs::LazyStorage<i32> =
-    libcc2rs::LazyStorage::new(|__p| unsafe { __p.write(0) });
-pub static mut move_assigns_5: libcc2rs::LazyStorage<i32> =
-    libcc2rs::LazyStorage::new(|__p| unsafe { __p.write(0) });
+pub static mut copies_2: std::cell::LazyCell<i32> = std::cell::LazyCell::new(|| unsafe { 0 });
+pub static mut moves_3: std::cell::LazyCell<i32> = std::cell::LazyCell::new(|| unsafe { 0 });
+pub static mut copy_assigns_4: std::cell::LazyCell<i32> = std::cell::LazyCell::new(|| unsafe { 0 });
+pub static mut move_assigns_5: std::cell::LazyCell<i32> = std::cell::LazyCell::new(|| unsafe { 0 });
 #[repr(C)]
 #[derive(VaArg, FnPtrArg, MoveCtorUnsafe, CopyAssignUnsafe, MoveAssignUnsafe)]
 pub struct Counted {
@@ -180,22 +176,22 @@ impl Counted {
     }
     pub unsafe fn copy_from(this: *mut Counted, o: *const Counted) {
         (&raw mut (*this).v).write((*o).v);
-        (*(*&raw const copies_2).get()).prefix_inc();
+        (*std::cell::LazyCell::force_mut(&mut *&raw mut copies_2)).prefix_inc();
     }
     pub unsafe fn move_from(this: *mut Counted, o: *mut Counted) {
         (&raw mut (*this).v).write((*o).v);
         (*o).v = -1_i32;
-        (*(*&raw const moves_3).get()).prefix_inc();
+        (*std::cell::LazyCell::force_mut(&mut *&raw mut moves_3)).prefix_inc();
     }
     pub unsafe fn copy_assign(&mut self, o: *const Counted) -> *mut Counted {
         self.v = (*o).v;
-        (*(*&raw const copy_assigns_4).get()).prefix_inc();
+        (*std::cell::LazyCell::force_mut(&mut *&raw mut copy_assigns_4)).prefix_inc();
         return &mut (*(self as *mut Counted));
     }
     pub unsafe fn move_assign(&mut self, o: *mut Counted) -> *mut Counted {
         self.v = (*o).v;
         (*o).v = -1_i32;
-        (*(*&raw const move_assigns_5).get()).prefix_inc();
+        (*std::cell::LazyCell::force_mut(&mut *&raw mut move_assigns_5)).prefix_inc();
         return &mut (*(self as *mut Counted));
     }
 }
@@ -323,13 +319,15 @@ unsafe fn main_0() -> i32 {
     let mut cb: [Counted; 3] =
         std::array::from_fn(|__i| <Counted as MoveCtorUnsafe>::move_ctor(&mut ca[__i]));
     assert!(
-        ((((*(*&raw const moves_3).get()) == (3)) && ((*(*&raw const copies_2).get()) == (0)))
+        ((((*std::cell::LazyCell::force_mut(&mut *&raw mut moves_3)) == (3))
+            && ((*std::cell::LazyCell::force_mut(&mut *&raw mut copies_2)) == (0)))
             && ((cb[(1_usize)].v) == (5)))
             && ((ca[(1_usize)].v) == (-1_i32))
     );
     let mut cc: [Counted; 3] = cb.clone();
     assert!(
-        (((*(*&raw const copies_2).get()) == (3)) && ((cc[(1_usize)].v) == (5)))
+        (((*std::cell::LazyCell::force_mut(&mut *&raw mut copies_2)) == (3))
+            && ((cc[(1_usize)].v) == (5)))
             && ((cb[(1_usize)].v) == (5))
     );
     assert!(((3) == (3_usize)));
@@ -340,8 +338,8 @@ unsafe fn main_0() -> i32 {
         }
     };
     assert!(
-        (((*(*&raw const copy_assigns_4).get()) == (3))
-            && ((*(*&raw const move_assigns_5).get()) == (0)))
+        (((*std::cell::LazyCell::force_mut(&mut *&raw mut copy_assigns_4)) == (3))
+            && ((*std::cell::LazyCell::force_mut(&mut *&raw mut move_assigns_5)) == (0)))
             && ((cb[(2_usize)].v) == (8))
     );
     {
@@ -350,12 +348,14 @@ unsafe fn main_0() -> i32 {
         }
     };
     assert!(
-        (((*(*&raw const move_assigns_5).get()) == (3)) && ((ca[(2_usize)].v) == (8)))
+        (((*std::cell::LazyCell::force_mut(&mut *&raw mut move_assigns_5)) == (3))
+            && ((ca[(2_usize)].v) == (8)))
             && ((cb[(2_usize)].v) == (-1_i32))
     );
     assert!(
-        (((*(*&raw const moves_3).get()) == (3)) && ((*(*&raw const copies_2).get()) == (3)))
-            && ((*(*&raw const copy_assigns_4).get()) == (3))
+        (((*std::cell::LazyCell::force_mut(&mut *&raw mut moves_3)) == (3))
+            && ((*std::cell::LazyCell::force_mut(&mut *&raw mut copies_2)) == (3)))
+            && ((*std::cell::LazyCell::force_mut(&mut *&raw mut copy_assigns_4)) == (3))
     );
     let mut va: [Vec<i32>; 2] = std::array::from_fn::<_, 2, _>(|_| Default::default());
     {
@@ -375,8 +375,8 @@ unsafe fn main_0() -> i32 {
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {
-    (*&raw const copies_2).get();
-    (*&raw const moves_3).get();
-    (*&raw const copy_assigns_4).get();
-    (*&raw const move_assigns_5).get();
+    std::cell::LazyCell::force(&*&raw const copies_2);
+    std::cell::LazyCell::force(&*&raw const moves_3);
+    std::cell::LazyCell::force(&*&raw const copy_assigns_4);
+    std::cell::LazyCell::force(&*&raw const move_assigns_5);
 }

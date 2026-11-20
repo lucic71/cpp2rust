@@ -12,15 +12,6 @@ pub struct Test {
     #[offset(0)]
     pub x: i32,
 }
-impl Test {
-    pub fn new_1(this: Ptr<Test>) {}
-    pub fn copy_from(this: Ptr<Test>, _a0: Ptr<Test>) {
-        field!(this, x).write(_a0.with(|__s| __s.x));
-    }
-    pub fn move_from(this: Ptr<Test>, _a0: Ptr<Test>) {
-        field!(this, x).write({ (*_a0.upgrade().deref()).x });
-    }
-}
 pub fn Update_0(mut t: Ptr<Test>) -> Ptr<Test> {
     let mut x: i32 = 1;
     let mut y: i32 = 2;
@@ -40,11 +31,7 @@ pub fn main() {
     libcc2rs::cpp2rust_exit(main_0());
 }
 fn main_0() -> i32 {
-    let t1: Value<Test> = Rc::new(RefCell::new(<Test>::uninit()));
-    {
-        let __d = t1.as_pointer();
-        field!(__d, x).write(100);
-    };
+    let t1: Value<Test> = Rc::new(RefCell::new(Test { x: 100 }));
     let mut t2: Ptr<Test> = ({ Update_0((t1.as_pointer())) });
     let mut t3: Ptr<Test> = Ptr::<Test>::null();
     t3 = (t2).clone();

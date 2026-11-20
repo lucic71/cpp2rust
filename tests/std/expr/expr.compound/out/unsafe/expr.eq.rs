@@ -12,23 +12,6 @@ pub struct p4_1_both_null_HasTwoInts {
     pub first: i32,
     pub second: i32,
 }
-impl p4_1_both_null_HasTwoInts {
-    pub unsafe fn new_1(this: *mut p4_1_both_null_HasTwoInts) {}
-    pub unsafe fn copy_from(
-        this: *mut p4_1_both_null_HasTwoInts,
-        _a0: *const p4_1_both_null_HasTwoInts,
-    ) {
-        (&raw mut (*this).first).write((*_a0).first);
-        (&raw mut (*this).second).write((*_a0).second);
-    }
-    pub unsafe fn move_from(
-        this: *mut p4_1_both_null_HasTwoInts,
-        _a0: *mut p4_1_both_null_HasTwoInts,
-    ) {
-        (&raw mut (*this).first).write((*_a0).first);
-        (&raw mut (*this).second).write((*_a0).second);
-    }
-}
 pub unsafe fn test_0() {
     let mut first_null: isize = -1_isize;
     let mut second_null: isize = -1_isize;
@@ -40,23 +23,6 @@ pub unsafe fn test_0() {
 pub struct p4_2_one_null_HasTwoInts {
     pub first: i32,
     pub second: i32,
-}
-impl p4_2_one_null_HasTwoInts {
-    pub unsafe fn new_1(this: *mut p4_2_one_null_HasTwoInts) {}
-    pub unsafe fn copy_from(
-        this: *mut p4_2_one_null_HasTwoInts,
-        _a0: *const p4_2_one_null_HasTwoInts,
-    ) {
-        (&raw mut (*this).first).write((*_a0).first);
-        (&raw mut (*this).second).write((*_a0).second);
-    }
-    pub unsafe fn move_from(
-        this: *mut p4_2_one_null_HasTwoInts,
-        _a0: *mut p4_2_one_null_HasTwoInts,
-    ) {
-        (&raw mut (*this).first).write((*_a0).first);
-        (&raw mut (*this).second).write((*_a0).second);
-    }
 }
 pub unsafe fn test_1() {
     let mut null_pm: isize = -1_isize;
@@ -88,23 +54,6 @@ pub unsafe fn test_2() {
 pub struct p4_6_data_members_HasTwoInts {
     pub first: i32,
     pub second: i32,
-}
-impl p4_6_data_members_HasTwoInts {
-    pub unsafe fn new_1(this: *mut p4_6_data_members_HasTwoInts) {}
-    pub unsafe fn copy_from(
-        this: *mut p4_6_data_members_HasTwoInts,
-        _a0: *const p4_6_data_members_HasTwoInts,
-    ) {
-        (&raw mut (*this).first).write((*_a0).first);
-        (&raw mut (*this).second).write((*_a0).second);
-    }
-    pub unsafe fn move_from(
-        this: *mut p4_6_data_members_HasTwoInts,
-        _a0: *mut p4_6_data_members_HasTwoInts,
-    ) {
-        (&raw mut (*this).first).write((*_a0).first);
-        (&raw mut (*this).second).write((*_a0).second);
-    }
 }
 pub unsafe fn test_3() {
     let mut first_pm: isize =

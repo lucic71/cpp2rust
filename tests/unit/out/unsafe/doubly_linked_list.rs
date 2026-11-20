@@ -20,17 +20,6 @@ impl Node {
     pub unsafe fn SetPrev(&mut self, mut p: *mut Node) {
         self.prev = p;
     }
-    pub unsafe fn new_1(this: *mut Node) {}
-    pub unsafe fn copy_from(this: *mut Node, _a0: *const Node) {
-        (&raw mut (*this).val).write((*_a0).val);
-        (&raw mut (*this).next).write((*_a0).next);
-        (&raw mut (*this).prev).write((*_a0).prev);
-    }
-    pub unsafe fn move_from(this: *mut Node, _a0: *mut Node) {
-        (&raw mut (*this).val).write((*_a0).val);
-        (&raw mut (*this).next).write((*_a0).next);
-        (&raw mut (*this).prev).write((*_a0).prev);
-    }
 }
 pub unsafe fn Find_0(mut head: *mut Node, mut idx: i32) -> *mut Node {
     let mut curr: *mut Node = head;
@@ -101,62 +90,46 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    let mut n0: Node = ::std::mem::MaybeUninit::uninit().assume_init();
-    {
-        let __d = &raw mut n0;
-        (&raw mut (*__d).val).write(5);
-        (&raw mut (*__d).next).write(std::ptr::null_mut());
-        (&raw mut (*__d).prev).write(std::ptr::null_mut());
+    let mut n0: Node = Node {
+        val: 5,
+        next: std::ptr::null_mut(),
+        prev: std::ptr::null_mut(),
     };
     let mut head: *mut Node = (&mut n0 as *mut Node);
-    let mut n1: Node = ::std::mem::MaybeUninit::uninit().assume_init();
-    {
-        let __d = &raw mut n1;
-        (&raw mut (*__d).val).write(4);
-        (&raw mut (*__d).next).write(std::ptr::null_mut());
-        (&raw mut (*__d).prev).write(std::ptr::null_mut());
+    let mut n1: Node = Node {
+        val: 4,
+        next: std::ptr::null_mut(),
+        prev: std::ptr::null_mut(),
     };
-    let mut n2: Node = ::std::mem::MaybeUninit::uninit().assume_init();
-    {
-        let __d = &raw mut n2;
-        (&raw mut (*__d).val).write(3);
-        (&raw mut (*__d).next).write(std::ptr::null_mut());
-        (&raw mut (*__d).prev).write(std::ptr::null_mut());
+    let mut n2: Node = Node {
+        val: 3,
+        next: std::ptr::null_mut(),
+        prev: std::ptr::null_mut(),
     };
-    let mut n3: Node = ::std::mem::MaybeUninit::uninit().assume_init();
-    {
-        let __d = &raw mut n3;
-        (&raw mut (*__d).val).write(2);
-        (&raw mut (*__d).next).write(std::ptr::null_mut());
-        (&raw mut (*__d).prev).write(std::ptr::null_mut());
+    let mut n3: Node = Node {
+        val: 2,
+        next: std::ptr::null_mut(),
+        prev: std::ptr::null_mut(),
     };
-    let mut n4: Node = ::std::mem::MaybeUninit::uninit().assume_init();
-    {
-        let __d = &raw mut n4;
-        (&raw mut (*__d).val).write(1);
-        (&raw mut (*__d).next).write(std::ptr::null_mut());
-        (&raw mut (*__d).prev).write(std::ptr::null_mut());
+    let mut n4: Node = Node {
+        val: 1,
+        next: std::ptr::null_mut(),
+        prev: std::ptr::null_mut(),
     };
-    let mut n5: Node = ::std::mem::MaybeUninit::uninit().assume_init();
-    {
-        let __d = &raw mut n5;
-        (&raw mut (*__d).val).write(0);
-        (&raw mut (*__d).next).write(std::ptr::null_mut());
-        (&raw mut (*__d).prev).write(std::ptr::null_mut());
+    let mut n5: Node = Node {
+        val: 0,
+        next: std::ptr::null_mut(),
+        prev: std::ptr::null_mut(),
     };
-    let mut n6: Node = ::std::mem::MaybeUninit::uninit().assume_init();
-    {
-        let __d = &raw mut n6;
-        (&raw mut (*__d).val).write(-1_i32);
-        (&raw mut (*__d).next).write(std::ptr::null_mut());
-        (&raw mut (*__d).prev).write(std::ptr::null_mut());
+    let mut n6: Node = Node {
+        val: -1_i32,
+        next: std::ptr::null_mut(),
+        prev: std::ptr::null_mut(),
     };
-    let mut n7: Node = ::std::mem::MaybeUninit::uninit().assume_init();
-    {
-        let __d = &raw mut n7;
-        (&raw mut (*__d).val).write(-2_i32);
-        (&raw mut (*__d).next).write(std::ptr::null_mut());
-        (&raw mut (*__d).prev).write(std::ptr::null_mut());
+    let mut n7: Node = Node {
+        val: -2_i32,
+        next: std::ptr::null_mut(),
+        prev: std::ptr::null_mut(),
     };
     (unsafe {
         let _head: *mut Node = &mut (*head);

@@ -40,18 +40,6 @@ impl HashHolder_unsigned_long__ptr__bool__ {
     pub fn new(this: Ptr<HashHolder_unsigned_long__ptr__bool__>, h: Ptr<FnPtr<fn(bool) -> u64>>) {
         field!(this, h).write((h.read()));
     }
-    pub fn copy_from(
-        this: Ptr<HashHolder_unsigned_long__ptr__bool__>,
-        _a0: Ptr<HashHolder_unsigned_long__ptr__bool__>,
-    ) {
-        field!(this, h).write(_a0.with(|__s| __s.h.clone()));
-    }
-    pub fn move_from(
-        this: Ptr<HashHolder_unsigned_long__ptr__bool__>,
-        _a0: Ptr<HashHolder_unsigned_long__ptr__bool__>,
-    ) {
-        field!(this, h).write({ (*_a0.upgrade().deref()).h.clone() });
-    }
 }
 thread_local!(
     pub static total_7: Value<i32> = Rc::new(RefCell::new(0));

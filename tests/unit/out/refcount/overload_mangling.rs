@@ -23,25 +23,11 @@ pub fn twice_2(mut n: i32) -> i32 {
 #[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
 #[byte_size(1)]
 pub struct Access_S_ {}
-impl Access_S_ {
-    pub fn new_1(this: Ptr<Access_S_>) {}
-    pub fn copy_from(this: Ptr<Access_S_>, _a0: Ptr<Access_S_>) {}
-    pub fn move_from(this: Ptr<Access_S_>, _a0: Ptr<Access_S_>) {}
-}
 #[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
 #[byte_size(4)]
 pub struct S {
     #[offset(0)]
     pub base: i32,
-}
-impl S {
-    pub fn new_1(this: Ptr<S>) {}
-    pub fn copy_from(this: Ptr<S>, _a0: Ptr<S>) {
-        field!(this, base).write(_a0.with(|__s| __s.base));
-    }
-    pub fn move_from(this: Ptr<S>, _a0: Ptr<S>) {
-        field!(this, base).write({ (*_a0.upgrade().deref()).base });
-    }
 }
 #[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
 #[byte_size(4)]
@@ -49,25 +35,12 @@ pub struct Box_ {
     #[offset(0)]
     pub v: i32,
 }
-impl Box_ {
-    pub fn new_1(this: Ptr<Box_>) {}
-    pub fn copy_from(this: Ptr<Box_>, _a0: Ptr<Box_>) {
-        field!(this, v).write(_a0.with(|__s| __s.v));
-    }
-    pub fn move_from(this: Ptr<Box_>, _a0: Ptr<Box_>) {
-        field!(this, v).write({ (*_a0.upgrade().deref()).v });
-    }
-}
 pub fn main() {
     __cpp2rust_init_globals();
     libcc2rs::cpp2rust_exit(main_0());
 }
 fn main_0() -> i32 {
-    let s: Value<S> = Rc::new(RefCell::new(<S>::uninit()));
-    {
-        let __d = s.as_pointer();
-        field!(__d, base).write(100);
-    };
+    let s: Value<S> = Rc::new(RefCell::new(S { base: 100 }));
     assert!((({ SImpl::width_1_char(&s.as_pointer(), 3,) }) == 103));
     assert!((({ SImpl::width_1_int(&s.as_pointer(), 3,) }) == 112));
     assert!((({ SImpl::scale_2_2(&s.as_pointer(), 5,) }) == 110));
@@ -140,8 +113,7 @@ fn main_0() -> i32 {
         }) == 107)
     );
     assert!(({ ((*z.borrow()) == 6) }));
-    let a: Value<Access_S_> = Rc::new(RefCell::new(<Access_S_>::uninit()));
-    Access_S_::new_1(a.as_pointer());
+    let a: Value<Access_S_> = Rc::new(RefCell::new(<Access_S_>::default()));
     let mut cs: Ptr<S> = (s.as_pointer());
     let cr: Ptr<S> = s.as_pointer();
     assert!((({ Access_S_Impl::get_1(&a.as_pointer(), (s.as_pointer()),) }) == 100));
@@ -153,12 +125,8 @@ fn main_0() -> i32 {
             Access_S_Impl::ref_4(&a.as_pointer(), _r)
         }) == 103)
     );
-    let b: Value<Box_> = Rc::new(RefCell::new(<Box_>::uninit()));
-    {
-        let __d = b.as_pointer();
-        field!(__d, v).write(4);
-    };
-    assert!(({ ({ (*b.borrow()).v } == 4) }));
+    let mut b: Box_ = Box_ { v: 4 };
+    assert!((b.v == 4));
     return 0;
 }
 pub trait Access_S_Impl {

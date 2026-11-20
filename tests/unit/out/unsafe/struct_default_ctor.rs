@@ -17,14 +17,6 @@ impl S {
         (&raw mut (*this).a).write(11);
         (&raw mut (*this).b).write(true);
     }
-    pub unsafe fn copy_from(this: *mut S, _a0: *const S) {
-        (&raw mut (*this).a).write((*_a0).a);
-        (&raw mut (*this).b).write((*_a0).b);
-    }
-    pub unsafe fn move_from(this: *mut S, _a0: *mut S) {
-        (&raw mut (*this).a).write((*_a0).a);
-        (&raw mut (*this).b).write((*_a0).b);
-    }
 }
 impl Default for S {
     fn default() -> Self {
@@ -42,14 +34,7 @@ impl Default for S {
 pub struct Declared {
     pub v: i32,
 }
-impl Declared {
-    pub unsafe fn copy_from(this: *mut Declared, _a0: *const Declared) {
-        (&raw mut (*this).v).write((*_a0).v);
-    }
-    pub unsafe fn move_from(this: *mut Declared, _a0: *mut Declared) {
-        (&raw mut (*this).v).write((*_a0).v);
-    }
-}
+impl Declared {}
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct Holder {
@@ -64,46 +49,18 @@ impl Holder {
             }
         };
     }
-    pub unsafe fn copy_from(this: *mut Holder, _a0: *const Holder) {
-        {
-            let __d = (&raw mut (*this).items).cast::<S>();
-            for __i in 0..2_usize {
-                S::copy_from(__d.offset(__i as isize), { &(*_a0).items[(__i)] });
-            }
-        };
-    }
-    pub unsafe fn move_from(this: *mut Holder, _a0: *mut Holder) {
-        {
-            let __d = (&raw mut (*this).items).cast::<S>();
-            for __i in 0..2_usize {
-                S::move_from(__d.offset(__i as isize), { &mut (*_a0).items[(__i)] });
-            }
-        };
-    }
 }
-pub static mut kInit_0: libcc2rs::LazyStorage<i32> =
-    libcc2rs::LazyStorage::new(|__p| unsafe { __p.write(3) });
+pub static mut kInit_0: std::cell::LazyCell<i32> = std::cell::LazyCell::new(|| unsafe { 3 });
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg)]
 pub struct FromStatic {
     pub v: i32,
 }
-impl FromStatic {
-    pub unsafe fn new_1(this: *mut FromStatic) {
-        (&raw mut (*this).v).write((*(*&raw const kInit_0).get()));
-    }
-    pub unsafe fn copy_from(this: *mut FromStatic, _a0: *const FromStatic) {
-        (&raw mut (*this).v).write((*_a0).v);
-    }
-    pub unsafe fn move_from(this: *mut FromStatic, _a0: *mut FromStatic) {
-        (&raw mut (*this).v).write((*_a0).v);
-    }
-}
 impl Default for FromStatic {
     fn default() -> Self {
         unsafe {
             FromStatic {
-                v: (*(*&raw const kInit_0).get()),
+                v: (*std::cell::LazyCell::force_mut(&mut *&raw mut kInit_0)),
             }
         }
     }
@@ -158,5 +115,5 @@ unsafe fn main_0() -> i32 {
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {
-    (*&raw const kInit_0).get();
+    std::cell::LazyCell::force(&*&raw const kInit_0);
 }

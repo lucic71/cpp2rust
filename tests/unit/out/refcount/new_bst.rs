@@ -18,19 +18,6 @@ pub struct node_t {
     #[offset(16)]
     pub value: i32,
 }
-impl node_t {
-    pub fn new_1(this: Ptr<node_t>) {}
-    pub fn copy_from(this: Ptr<node_t>, _a0: Ptr<node_t>) {
-        field!(this, left).write(_a0.with(|__s| __s.left.clone()));
-        field!(this, right).write(_a0.with(|__s| __s.right.clone()));
-        field!(this, value).write(_a0.with(|__s| __s.value));
-    }
-    pub fn move_from(this: Ptr<node_t>, _a0: Ptr<node_t>) {
-        field!(this, left).write({ (*_a0.upgrade().deref()).left.clone() });
-        field!(this, right).write({ (*_a0.upgrade().deref()).right.clone() });
-        field!(this, value).write({ (*_a0.upgrade().deref()).value });
-    }
-}
 pub fn find_0(mut node: Ptr<node_t>, mut value: i32) -> Ptr<node_t> {
     if ({ value } < { node.with(|__s| __s.value) })
         && (!((node.with(|__s| __s.left.clone())).is_null()))
@@ -47,16 +34,11 @@ pub fn find_0(mut node: Ptr<node_t>, mut value: i32) -> Ptr<node_t> {
 }
 pub fn insert_1(mut node: Ptr<node_t>, mut value: i32) -> Ptr<node_t> {
     if (node).is_null() {
-        return {
-            let __p = Ptr::alloc(<node_t>::uninit());
-            {
-                let __d = __p.clone();
-                field!(__d, left).write(Ptr::<node_t>::null());
-                field!(__d, right).write(Ptr::<node_t>::null());
-                field!(__d, value).write(value);
-            };
-            __p
-        };
+        return Ptr::alloc(node_t {
+            left: Ptr::<node_t>::null(),
+            right: Ptr::<node_t>::null(),
+            value: value,
+        });
     }
     if ({ value } < { node.with(|__s| __s.value) }) {
         let __rhs = ({ insert_1(node.with(|__s| __s.left.clone()), value) });
@@ -81,16 +63,11 @@ pub fn main() {
     libcc2rs::cpp2rust_exit(main_0());
 }
 fn main_0() -> i32 {
-    let mut root: Ptr<node_t> = {
-        let __p = Ptr::alloc(<node_t>::uninit());
-        {
-            let __d = __p.clone();
-            field!(__d, left).write(Ptr::<node_t>::null());
-            field!(__d, right).write(Ptr::<node_t>::null());
-            field!(__d, value).write(0);
-        };
-        __p
-    };
+    let mut root: Ptr<node_t> = Ptr::alloc(node_t {
+        left: Ptr::<node_t>::null(),
+        right: Ptr::<node_t>::null(),
+        value: 0,
+    });
     let __rhs = ({ insert_1((root).clone(), 1) });
     root = __rhs;
     let __rhs = ({ insert_1((root).clone(), 2) });

@@ -11,15 +11,6 @@ use std::rc::Rc;
 pub struct S {
     pub v: u32,
 }
-impl S {
-    pub unsafe fn new_1(this: *mut S) {}
-    pub unsafe fn copy_from(this: *mut S, _a0: *const S) {
-        (&raw mut (*this).v).write((*_a0).v);
-    }
-    pub unsafe fn move_from(this: *mut S, _a0: *mut S) {
-        (&raw mut (*this).v).write((*_a0).v);
-    }
-}
 pub unsafe fn operator_add_assign_0(a: *mut S, b: *const S) -> *mut S {
     (*a).v = ((*a).v).wrapping_add((*b).v);
     return a;
@@ -67,16 +58,8 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    let mut a: S = ::std::mem::MaybeUninit::uninit().assume_init();
-    {
-        let __d = &raw mut a;
-        (&raw mut (*__d).v).write(6_u32);
-    };
-    let mut b: S = ::std::mem::MaybeUninit::uninit().assume_init();
-    {
-        let __d = &raw mut b;
-        (&raw mut (*__d).v).write(4_u32);
-    };
+    let mut a: S = S { v: 6_u32 };
+    let mut b: S = S { v: 4_u32 };
     (unsafe {
         let _a: *mut S = &mut a;
         operator_add_assign_0(_a, &b)

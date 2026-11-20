@@ -21,12 +21,6 @@ impl PtrCtor_unsigned_long_ {
     pub fn new(this: Ptr<PtrCtor_unsigned_long_>, mut p: Ptr<u64>) {
         field!(this, v).write((elem!(p, 1).read()));
     }
-    pub fn copy_from(this: Ptr<PtrCtor_unsigned_long_>, _a0: Ptr<PtrCtor_unsigned_long_>) {
-        field!(this, v).write(_a0.with(|__s| __s.v));
-    }
-    pub fn move_from(this: Ptr<PtrCtor_unsigned_long_>, _a0: Ptr<PtrCtor_unsigned_long_>) {
-        field!(this, v).write({ (*_a0.upgrade().deref()).v });
-    }
 }
 #[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, CppFrom, Default)]
 #[cpp_from(u64, new, ptr)]
@@ -38,12 +32,6 @@ pub struct RefCtor_unsigned_long_ {
 impl RefCtor_unsigned_long_ {
     pub fn new(this: Ptr<RefCtor_unsigned_long_>, x: Ptr<u64>) {
         field!(this, v).write((x.read()).wrapping_add(1_u64));
-    }
-    pub fn copy_from(this: Ptr<RefCtor_unsigned_long_>, _a0: Ptr<RefCtor_unsigned_long_>) {
-        field!(this, v).write(_a0.with(|__s| __s.v));
-    }
-    pub fn move_from(this: Ptr<RefCtor_unsigned_long_>, _a0: Ptr<RefCtor_unsigned_long_>) {
-        field!(this, v).write({ (*_a0.upgrade().deref()).v });
     }
 }
 pub fn neg_ll_1() -> i64 {

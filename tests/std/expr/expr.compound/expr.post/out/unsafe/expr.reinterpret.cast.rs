@@ -22,42 +22,10 @@ pub struct p10_null_converts_to_null_HasTwoInts {
     pub first: i32,
     pub second: i32,
 }
-impl p10_null_converts_to_null_HasTwoInts {
-    pub unsafe fn new_1(this: *mut p10_null_converts_to_null_HasTwoInts) {}
-    pub unsafe fn copy_from(
-        this: *mut p10_null_converts_to_null_HasTwoInts,
-        _a0: *const p10_null_converts_to_null_HasTwoInts,
-    ) {
-        (&raw mut (*this).first).write((*_a0).first);
-        (&raw mut (*this).second).write((*_a0).second);
-    }
-    pub unsafe fn move_from(
-        this: *mut p10_null_converts_to_null_HasTwoInts,
-        _a0: *mut p10_null_converts_to_null_HasTwoInts,
-    ) {
-        (&raw mut (*this).first).write((*_a0).first);
-        (&raw mut (*this).second).write((*_a0).second);
-    }
-}
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct p10_null_converts_to_null_HasChar {
     pub character: libc::c_char,
-}
-impl p10_null_converts_to_null_HasChar {
-    pub unsafe fn new_1(this: *mut p10_null_converts_to_null_HasChar) {}
-    pub unsafe fn copy_from(
-        this: *mut p10_null_converts_to_null_HasChar,
-        _a0: *const p10_null_converts_to_null_HasChar,
-    ) {
-        (&raw mut (*this).character).write((*_a0).character);
-    }
-    pub unsafe fn move_from(
-        this: *mut p10_null_converts_to_null_HasChar,
-        _a0: *mut p10_null_converts_to_null_HasChar,
-    ) {
-        (&raw mut (*this).character).write((*_a0).character);
-    }
 }
 pub unsafe fn test_1() {
     let mut pm: isize = -1_isize;
@@ -70,42 +38,10 @@ pub struct p10_2_data_member_round_trip_HasTwoInts {
     pub first: i32,
     pub second: i32,
 }
-impl p10_2_data_member_round_trip_HasTwoInts {
-    pub unsafe fn new_1(this: *mut p10_2_data_member_round_trip_HasTwoInts) {}
-    pub unsafe fn copy_from(
-        this: *mut p10_2_data_member_round_trip_HasTwoInts,
-        _a0: *const p10_2_data_member_round_trip_HasTwoInts,
-    ) {
-        (&raw mut (*this).first).write((*_a0).first);
-        (&raw mut (*this).second).write((*_a0).second);
-    }
-    pub unsafe fn move_from(
-        this: *mut p10_2_data_member_round_trip_HasTwoInts,
-        _a0: *mut p10_2_data_member_round_trip_HasTwoInts,
-    ) {
-        (&raw mut (*this).first).write((*_a0).first);
-        (&raw mut (*this).second).write((*_a0).second);
-    }
-}
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct p10_2_data_member_round_trip_HasChar {
     pub character: libc::c_char,
-}
-impl p10_2_data_member_round_trip_HasChar {
-    pub unsafe fn new_1(this: *mut p10_2_data_member_round_trip_HasChar) {}
-    pub unsafe fn copy_from(
-        this: *mut p10_2_data_member_round_trip_HasChar,
-        _a0: *const p10_2_data_member_round_trip_HasChar,
-    ) {
-        (&raw mut (*this).character).write((*_a0).character);
-    }
-    pub unsafe fn move_from(
-        this: *mut p10_2_data_member_round_trip_HasChar,
-        _a0: *mut p10_2_data_member_round_trip_HasChar,
-    ) {
-        (&raw mut (*this).character).write((*_a0).character);
-    }
 }
 pub unsafe fn test_2() {
     let mut converted: isize =
@@ -116,12 +52,10 @@ pub unsafe fn test_2() {
             == (::std::mem::offset_of!(p10_2_data_member_round_trip_HasTwoInts, second) as isize))
     );
     let mut obj: p10_2_data_member_round_trip_HasTwoInts =
-        ::std::mem::MaybeUninit::uninit().assume_init();
-    {
-        let __d = &raw mut obj;
-        (&raw mut (*__d).first).write(3);
-        (&raw mut (*__d).second).write(4);
-    };
+        p10_2_data_member_round_trip_HasTwoInts {
+            first: 3,
+            second: 4,
+        };
     assert!(
         ((*(&mut obj as *mut p10_2_data_member_round_trip_HasTwoInts)
             .wrapping_byte_offset(back)

@@ -12,21 +12,10 @@ pub struct S {
     #[offset(0)]
     pub v: i32,
 }
-impl S {
-    pub fn new_1(this: Ptr<S>) {}
-    pub fn copy_from(this: Ptr<S>, _a0: Ptr<S>) {
-        field!(this, v).write(_a0.with(|__s| __s.v));
-    }
-    pub fn move_from(this: Ptr<S>, _a0: Ptr<S>) {
-        field!(this, v).write({ (*_a0.upgrade().deref()).v });
-    }
-}
-pub fn operator_comma_0(__ret: Ptr<S>, a: Ptr<S>, b: Ptr<S>) {
-    {
-        let __d = __ret.clone();
-        field!(__d, v).write(({ (a.with(|__s| __s.v) * 10) } + { b.with(|__s| __s.v) }));
+pub fn operator_comma_0(a: Ptr<S>, b: Ptr<S>) -> S {
+    return S {
+        v: ({ (a.with(|__s| __s.v) * 10) } + { b.with(|__s| __s.v) }),
     };
-    return;
 }
 pub fn operator_literal__k_1(mut v: u64) -> i64 {
     return (((v).wrapping_mul(1000_u64)) as i64);
@@ -39,53 +28,29 @@ pub fn main() {
     libcc2rs::cpp2rust_exit(main_0());
 }
 fn main_0() -> i32 {
-    let s: Value<S> = Rc::new(RefCell::new(<S>::uninit()));
-    {
-        let __d = s.as_pointer();
-        field!(__d, v).write(3);
-    };
-    let t: Value<S> = Rc::new(RefCell::new(<S>::uninit()));
-    {
-        let __d = t.as_pointer();
-        field!(__d, v).write(4);
-    };
+    let s: Value<S> = Rc::new(RefCell::new(S { v: 3 }));
+    let t: Value<S> = Rc::new(RefCell::new(S { v: 4 }));
     assert!(
         ({
-            (Rc::try_unwrap({
-                let __v: Value<S> = Rc::new(RefCell::new(<S>::uninit()));
-                ({
-                    let _a: Ptr<S> = s.as_pointer();
-                    operator_comma_0(__v.as_pointer(), _a, t.as_pointer())
-                });
-                __v
+            ({
+                let _a: Ptr<S> = s.as_pointer();
+                operator_comma_0(_a, t.as_pointer())
             })
-            .ok()
-            .unwrap()
-            .into_inner())
             .v
         } == 34)
     );
     assert!(
         ({
-            (Rc::try_unwrap({
-                let __v: Value<S> = Rc::new(RefCell::new(<S>::uninit()));
-                ({
-                    let _a: Value<S> = {
-                        let __v: Value<S> = Rc::new(RefCell::new(<S>::uninit()));
-                        ({
-                            let _a: Ptr<S> = s.as_pointer();
-                            operator_comma_0(__v.as_pointer(), _a, t.as_pointer())
-                        });
-                        __v
-                    };
-                    let _b: Ptr<S> = s.as_pointer();
-                    operator_comma_0(__v.as_pointer(), _a.as_pointer(), _b)
-                });
-                __v
+            ({
+                let _a: Value<S> = Rc::new(RefCell::new(
+                    ({
+                        let _a: Ptr<S> = s.as_pointer();
+                        operator_comma_0(_a, t.as_pointer())
+                    }),
+                ));
+                let _b: Ptr<S> = s.as_pointer();
+                operator_comma_0(_a.as_pointer(), _b)
             })
-            .ok()
-            .unwrap()
-            .into_inner())
             .v
         } == 343)
     );

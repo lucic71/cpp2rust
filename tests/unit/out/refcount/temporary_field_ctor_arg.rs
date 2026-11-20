@@ -42,12 +42,6 @@ impl H {
     pub fn new(this: Ptr<H>, values: Ptr<Vec<i32>>) {
         field!(this, last).write((index!(values, 3_usize).read()));
     }
-    pub fn copy_from(this: Ptr<H>, _a0: Ptr<H>) {
-        field!(this, last).write(_a0.with(|__s| __s.last));
-    }
-    pub fn move_from(this: Ptr<H>, _a0: Ptr<H>) {
-        field!(this, last).write({ (*_a0.upgrade().deref()).last });
-    }
 }
 pub fn main() {
     __cpp2rust_init_globals();

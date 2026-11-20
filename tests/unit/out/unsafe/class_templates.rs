@@ -150,13 +150,6 @@ impl Boxed_short_ {
     pub unsafe fn plus(&self, mut other: i16) -> i16 {
         return (((self.value as i32) + (other as i32)) as i16);
     }
-    pub unsafe fn new_1(this: *mut Boxed_short_) {}
-    pub unsafe fn copy_from(this: *mut Boxed_short_, _a0: *const Boxed_short_) {
-        (&raw mut (*this).value).write((*_a0).value);
-    }
-    pub unsafe fn move_from(this: *mut Boxed_short_, _a0: *mut Boxed_short_) {
-        (&raw mut (*this).value).write((*_a0).value);
-    }
 }
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
@@ -169,13 +162,6 @@ impl Boxed_int_ {
     }
     pub unsafe fn plus(&self, mut other: i32) -> i32 {
         return ((self.value) + (other));
-    }
-    pub unsafe fn new_1(this: *mut Boxed_int_) {}
-    pub unsafe fn copy_from(this: *mut Boxed_int_, _a0: *const Boxed_int_) {
-        (&raw mut (*this).value).write((*_a0).value);
-    }
-    pub unsafe fn move_from(this: *mut Boxed_int_, _a0: *mut Boxed_int_) {
-        (&raw mut (*this).value).write((*_a0).value);
     }
 }
 #[repr(C)]
@@ -190,13 +176,6 @@ impl Boxed_long_ {
     pub unsafe fn plus(&self, mut other: i64) -> i64 {
         return ((self.value) + (other));
     }
-    pub unsafe fn new_1(this: *mut Boxed_long_) {}
-    pub unsafe fn copy_from(this: *mut Boxed_long_, _a0: *const Boxed_long_) {
-        (&raw mut (*this).value).write((*_a0).value);
-    }
-    pub unsafe fn move_from(this: *mut Boxed_long_, _a0: *mut Boxed_long_) {
-        (&raw mut (*this).value).write((*_a0).value);
-    }
 }
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
@@ -208,15 +187,6 @@ impl Outer_int__Inner_int_ {
     pub unsafe fn sum(&self) -> i32 {
         return ((self.t as i32) + (self.u as i32));
     }
-    pub unsafe fn new_1(this: *mut Outer_int__Inner_int_) {}
-    pub unsafe fn copy_from(this: *mut Outer_int__Inner_int_, _a0: *const Outer_int__Inner_int_) {
-        (&raw mut (*this).t).write((*_a0).t);
-        (&raw mut (*this).u).write((*_a0).u);
-    }
-    pub unsafe fn move_from(this: *mut Outer_int__Inner_int_, _a0: *mut Outer_int__Inner_int_) {
-        (&raw mut (*this).t).write((*_a0).t);
-        (&raw mut (*this).u).write((*_a0).u);
-    }
 }
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
@@ -224,20 +194,8 @@ pub struct Outer_int_ {
     pub v: i32,
 }
 impl Outer_int_ {
-    pub unsafe fn with(&self, __ret: *mut Outer_int__Inner_int_, mut n: i32) {
-        {
-            let __d = __ret.clone();
-            (&raw mut (*__d).t).write(self.v);
-            (&raw mut (*__d).u).write(n);
-        };
-        return;
-    }
-    pub unsafe fn new_1(this: *mut Outer_int_) {}
-    pub unsafe fn copy_from(this: *mut Outer_int_, _a0: *const Outer_int_) {
-        (&raw mut (*this).v).write((*_a0).v);
-    }
-    pub unsafe fn move_from(this: *mut Outer_int_, _a0: *mut Outer_int_) {
-        (&raw mut (*this).v).write((*_a0).v);
+    pub unsafe fn with(&self, mut n: i32) -> Outer_int__Inner_int_ {
+        return Outer_int__Inner_int_ { t: self.v, u: n };
     }
 }
 #[repr(C)]
@@ -250,15 +208,6 @@ impl Outer_long__Inner_int_ {
     pub unsafe fn sum(&self) -> i32 {
         return ((self.t as i32) + (self.u as i32));
     }
-    pub unsafe fn new_1(this: *mut Outer_long__Inner_int_) {}
-    pub unsafe fn copy_from(this: *mut Outer_long__Inner_int_, _a0: *const Outer_long__Inner_int_) {
-        (&raw mut (*this).t).write((*_a0).t);
-        (&raw mut (*this).u).write((*_a0).u);
-    }
-    pub unsafe fn move_from(this: *mut Outer_long__Inner_int_, _a0: *mut Outer_long__Inner_int_) {
-        (&raw mut (*this).t).write((*_a0).t);
-        (&raw mut (*this).u).write((*_a0).u);
-    }
 }
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
@@ -270,18 +219,6 @@ impl Outer_long__Inner_char_ {
     pub unsafe fn sum(&self) -> i32 {
         return ((self.t as i32) + (self.u as i32));
     }
-    pub unsafe fn new_1(this: *mut Outer_long__Inner_char_) {}
-    pub unsafe fn copy_from(
-        this: *mut Outer_long__Inner_char_,
-        _a0: *const Outer_long__Inner_char_,
-    ) {
-        (&raw mut (*this).t).write((*_a0).t);
-        (&raw mut (*this).u).write((*_a0).u);
-    }
-    pub unsafe fn move_from(this: *mut Outer_long__Inner_char_, _a0: *mut Outer_long__Inner_char_) {
-        (&raw mut (*this).t).write((*_a0).t);
-        (&raw mut (*this).u).write((*_a0).u);
-    }
 }
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
@@ -289,35 +226,14 @@ pub struct Outer_long_ {
     pub v: i64,
 }
 impl Outer_long_ {
-    pub unsafe fn with(&self, __ret: *mut Outer_long__Inner_int_, mut n: i32) {
-        {
-            let __d = __ret.clone();
-            (&raw mut (*__d).t).write(self.v);
-            (&raw mut (*__d).u).write(n);
-        };
-        return;
-    }
-    pub unsafe fn new_1(this: *mut Outer_long_) {}
-    pub unsafe fn copy_from(this: *mut Outer_long_, _a0: *const Outer_long_) {
-        (&raw mut (*this).v).write((*_a0).v);
-    }
-    pub unsafe fn move_from(this: *mut Outer_long_, _a0: *mut Outer_long_) {
-        (&raw mut (*this).v).write((*_a0).v);
+    pub unsafe fn with(&self, mut n: i32) -> Outer_long__Inner_int_ {
+        return Outer_long__Inner_int_ { t: self.v, u: n };
     }
 }
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct Elem {
     pub i: i32,
-}
-impl Elem {
-    pub unsafe fn new_1(this: *mut Elem) {}
-    pub unsafe fn copy_from(this: *mut Elem, _a0: *const Elem) {
-        (&raw mut (*this).i).write((*_a0).i);
-    }
-    pub unsafe fn move_from(this: *mut Elem, _a0: *mut Elem) {
-        (&raw mut (*this).i).write((*_a0).i);
-    }
 }
 pub fn main() {
     unsafe {
@@ -333,58 +249,27 @@ unsafe fn main_0() -> i32 {
     };
     assert!(((ev[(0_usize)].i) == (2)));
     assert!((((unsafe { Boxed_short_::twice(2_i16,) }) as i32) == (4)));
-    let mut oi: Outer_int_ = ::std::mem::MaybeUninit::uninit().assume_init();
-    {
-        let __d = &raw mut oi;
-        (&raw mut (*__d).v).write(3);
-    };
+    let mut oi: Outer_int_ = Outer_int_ { v: 3 };
     assert!(
-        ((unsafe {
-            Outer_int__Inner_int_::sum(&mut *(|__p: *mut Outer_int__Inner_int_| {
-                (unsafe { Outer_int_::with(&oi, __p, 4) });
-                __p
-            })(
-                (&mut ::std::mem::MaybeUninit::<Outer_int__Inner_int_>::uninit()).as_mut_ptr(),
-            ))
-        }) == (7))
+        ((unsafe { Outer_int__Inner_int_::sum(&(unsafe { Outer_int_::with(&oi, 4,) }),) }) == (7))
     );
-    let mut ol: Outer_long_ = ::std::mem::MaybeUninit::uninit().assume_init();
-    {
-        let __d = &raw mut ol;
-        (&raw mut (*__d).v).write(5_i64);
-    };
-    let mut ic: Outer_long__Inner_char_ = ::std::mem::MaybeUninit::uninit().assume_init();
-    {
-        let __d = &raw mut ic;
-        (&raw mut (*__d).t).write(6_i64);
-        (&raw mut (*__d).u).write(('a' as libc::c_char));
+    let mut ol: Outer_long_ = Outer_long_ { v: 5_i64 };
+    let mut ic: Outer_long__Inner_char_ = Outer_long__Inner_char_ {
+        t: 6_i64,
+        u: ('a' as libc::c_char),
     };
     assert!(
-        ((unsafe {
-            Outer_long__Inner_int_::sum(&mut *(|__p: *mut Outer_long__Inner_int_| {
-                (unsafe { Outer_long_::with(&ol, __p, 2) });
-                __p
-            })(
-                (&mut ::std::mem::MaybeUninit::<Outer_long__Inner_int_>::uninit()).as_mut_ptr(),
-            ))
-        }) == (7))
+        ((unsafe { Outer_long__Inner_int_::sum(&(unsafe { Outer_long_::with(&ol, 2,) }),) })
+            == (7))
     );
     assert!(
         ((unsafe { Outer_long__Inner_char_::sum(&ic,) }) == ((6) + (('a' as libc::c_char) as i32)))
     );
     assert!(((unsafe { Boxed_int_::twice(3,) }) == (6)));
-    let mut bi: Boxed_int_ = ::std::mem::MaybeUninit::uninit().assume_init();
-    {
-        let __d = &raw mut bi;
-        (&raw mut (*__d).value).write(4);
-    };
+    let mut bi: Boxed_int_ = Boxed_int_ { value: 4 };
     assert!(((unsafe { Boxed_int_::plus(&bi, 5,) }) == (9)));
     assert!(((unsafe { Boxed_long_::twice(10_i64,) }) == (20_i64)));
-    let mut bl: Boxed_long_ = ::std::mem::MaybeUninit::uninit().assume_init();
-    {
-        let __d = &raw mut bl;
-        (&raw mut (*__d).value).write(7_i64);
-    };
+    let mut bl: Boxed_long_ = Boxed_long_ { value: 7_i64 };
     assert!(((unsafe { Boxed_long_::plus(&bl, 1_i64,) }) == (8_i64)));
     let mut imc: MyContainer_int_ = ::std::mem::MaybeUninit::uninit().assume_init();
     MyContainer_int_::new_1(&raw mut imc);

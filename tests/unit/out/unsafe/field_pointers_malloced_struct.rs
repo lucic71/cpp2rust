@@ -13,19 +13,6 @@ pub struct S {
     pub b: i32,
     pub c: i32,
 }
-impl S {
-    pub unsafe fn new_1(this: *mut S) {}
-    pub unsafe fn copy_from(this: *mut S, _a0: *const S) {
-        (&raw mut (*this).a).write((*_a0).a);
-        (&raw mut (*this).b).write((*_a0).b);
-        (&raw mut (*this).c).write((*_a0).c);
-    }
-    pub unsafe fn move_from(this: *mut S, _a0: *mut S) {
-        (&raw mut (*this).a).write((*_a0).a);
-        (&raw mut (*this).b).write((*_a0).b);
-        (&raw mut (*this).c).write((*_a0).c);
-    }
-}
 pub unsafe fn bump_0(mut s: *mut S) -> i32 {
     (*s).b += 10;
     return (*s).b;

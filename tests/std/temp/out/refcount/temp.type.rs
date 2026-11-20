@@ -14,23 +14,6 @@ pub struct p2_6_pointer_to_member_argument_HasTwoInts {
     #[offset(4)]
     pub second: i32,
 }
-impl p2_6_pointer_to_member_argument_HasTwoInts {
-    pub fn new_1(this: Ptr<p2_6_pointer_to_member_argument_HasTwoInts>) {}
-    pub fn copy_from(
-        this: Ptr<p2_6_pointer_to_member_argument_HasTwoInts>,
-        _a0: Ptr<p2_6_pointer_to_member_argument_HasTwoInts>,
-    ) {
-        field!(this, first).write(_a0.with(|__s| __s.first));
-        field!(this, second).write(_a0.with(|__s| __s.second));
-    }
-    pub fn move_from(
-        this: Ptr<p2_6_pointer_to_member_argument_HasTwoInts>,
-        _a0: Ptr<p2_6_pointer_to_member_argument_HasTwoInts>,
-    ) {
-        field!(this, first).write({ (*_a0.upgrade().deref()).first });
-        field!(this, second).write({ (*_a0.upgrade().deref()).second });
-    }
-}
 thread_local!(
     pub static count_0: Value<i32> = Rc::new(RefCell::new(0));
 );
@@ -38,7 +21,6 @@ thread_local!(
 #[byte_size(1)]
 pub struct p2_6_pointer_to_member_argument_CountsPerMember_refp2_6_pointer_to_member_argument_HasTwoInts_first_
 {}
-impl p2_6_pointer_to_member_argument_CountsPerMember_refp2_6_pointer_to_member_argument_HasTwoInts_first_ { pub fn new_1 ( this: Ptr<p2_6_pointer_to_member_argument_CountsPerMember_refp2_6_pointer_to_member_argument_HasTwoInts_first_>, ) { } pub fn copy_from ( this: Ptr<p2_6_pointer_to_member_argument_CountsPerMember_refp2_6_pointer_to_member_argument_HasTwoInts_first_>, _a0 : Ptr< p2_6_pointer_to_member_argument_CountsPerMember_refp2_6_pointer_to_member_argument_HasTwoInts_first_  > , ) { } pub fn move_from ( this: Ptr<p2_6_pointer_to_member_argument_CountsPerMember_refp2_6_pointer_to_member_argument_HasTwoInts_first_>, _a0 : Ptr< p2_6_pointer_to_member_argument_CountsPerMember_refp2_6_pointer_to_member_argument_HasTwoInts_first_  > , ) { } }
 thread_local!(
     pub static count_1: Value<i32> = Rc::new(RefCell::new(0));
 );
@@ -46,26 +28,12 @@ thread_local!(
 #[byte_size(1)]
 pub struct p2_6_pointer_to_member_argument_CountsPerMember_refp2_6_pointer_to_member_argument_HasTwoInts_second_
 {}
-impl p2_6_pointer_to_member_argument_CountsPerMember_refp2_6_pointer_to_member_argument_HasTwoInts_second_ { pub fn new_1 ( this: Ptr<p2_6_pointer_to_member_argument_CountsPerMember_refp2_6_pointer_to_member_argument_HasTwoInts_second_>, ) { } pub fn copy_from ( this: Ptr<p2_6_pointer_to_member_argument_CountsPerMember_refp2_6_pointer_to_member_argument_HasTwoInts_second_>, _a0 : Ptr< p2_6_pointer_to_member_argument_CountsPerMember_refp2_6_pointer_to_member_argument_HasTwoInts_second_  > , ) { } pub fn move_from ( this: Ptr<p2_6_pointer_to_member_argument_CountsPerMember_refp2_6_pointer_to_member_argument_HasTwoInts_second_>, _a0 : Ptr< p2_6_pointer_to_member_argument_CountsPerMember_refp2_6_pointer_to_member_argument_HasTwoInts_second_  > , ) { } }
 thread_local!(
     pub static count_2: Value<i32> = Rc::new(RefCell::new(0));
 );
 #[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
 #[byte_size(1)]
 pub struct p2_6_pointer_to_member_argument_CountsPerMember_nullptr_ {}
-impl p2_6_pointer_to_member_argument_CountsPerMember_nullptr_ {
-    pub fn new_1(this: Ptr<p2_6_pointer_to_member_argument_CountsPerMember_nullptr_>) {}
-    pub fn copy_from(
-        this: Ptr<p2_6_pointer_to_member_argument_CountsPerMember_nullptr_>,
-        _a0: Ptr<p2_6_pointer_to_member_argument_CountsPerMember_nullptr_>,
-    ) {
-    }
-    pub fn move_from(
-        this: Ptr<p2_6_pointer_to_member_argument_CountsPerMember_nullptr_>,
-        _a0: Ptr<p2_6_pointer_to_member_argument_CountsPerMember_nullptr_>,
-    ) {
-    }
-}
 pub fn test_3() {
     (*count_0.with(Value::clone).borrow_mut()).prefix_inc();
     assert!((count_0.with(|rc| *rc.borrow()) == 1));

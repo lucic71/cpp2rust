@@ -18,32 +18,12 @@ pub struct Pair {
     #[offset(4)]
     pub y: i32,
 }
-impl Pair {
-    pub fn new_1(this: Ptr<Pair>) {}
-    pub fn copy_from(this: Ptr<Pair>, _a0: Ptr<Pair>) {
-        field!(this, x).write(_a0.with(|__s| __s.x));
-        field!(this, y).write(_a0.with(|__s| __s.y));
-    }
-    pub fn move_from(this: Ptr<Pair>, _a0: Ptr<Pair>) {
-        field!(this, x).write({ (*_a0.upgrade().deref()).x });
-        field!(this, y).write({ (*_a0.upgrade().deref()).y });
-    }
-}
 #[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
 #[byte_size(64)]
 #[byte_align(64)]
 pub struct Wide {
     #[offset(0)]
     pub c: i8,
-}
-impl Wide {
-    pub fn new_1(this: Ptr<Wide>) {}
-    pub fn copy_from(this: Ptr<Wide>, _a0: Ptr<Wide>) {
-        field!(this, c).write(_a0.with(|__s| __s.c));
-    }
-    pub fn move_from(this: Ptr<Wide>, _a0: Ptr<Wide>) {
-        field!(this, c).write({ (*_a0.upgrade().deref()).c });
-    }
 }
 #[derive(Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg)]
 #[byte_size(40)]
@@ -58,31 +38,6 @@ pub struct Grid {
     #[byte_size(24)]
     #[array_len(2, 3)]
     pub cells: Box<[Box<[i32]>]>,
-}
-impl Grid {
-    pub fn new_1(this: Ptr<Grid>) {}
-    pub fn copy_from(this: Ptr<Grid>, _a0: Ptr<Grid>) {
-        field!(this, h).write(_a0.with(|__s| __s.h));
-        field!(this, row).write(Box::new(std::array::from_fn::<_, 3, _>(|__i: usize| {
-            (*_a0.upgrade().deref()).row[(__i) as usize]
-        })));
-        field!(this, cells).write(Box::new(std::array::from_fn::<_, 2, _>(|__i: usize| {
-            Box::<[_]>::from(std::array::from_fn::<_, 3, _>(|__i2: usize| {
-                (*_a0.upgrade().deref()).cells[(__i) as usize][(__i2) as usize]
-            }))
-        })));
-    }
-    pub fn move_from(this: Ptr<Grid>, _a0: Ptr<Grid>) {
-        field!(this, h).write({ (*_a0.upgrade().deref()).h });
-        field!(this, row).write(Box::new(std::array::from_fn::<_, 3, _>(|__i: usize| {
-            (*_a0.upgrade().deref()).row[(__i) as usize]
-        })));
-        field!(this, cells).write(Box::new(std::array::from_fn::<_, 2, _>(|__i: usize| {
-            Box::<[_]>::from(std::array::from_fn::<_, 3, _>(|__i2: usize| {
-                (*_a0.upgrade().deref()).cells[(__i) as usize][(__i2) as usize]
-            }))
-        })));
-    }
 }
 impl Default for Grid {
     fn default() -> Self {
@@ -270,14 +225,8 @@ pub fn over_aligned_3() {
     let c: Value<i8> = Rc::new(RefCell::new(('c' as i8)));
     assert!(((c.as_pointer()).to_int() != 0_usize));
     let w: Value<Box<[Wide]>> = Rc::new(RefCell::new(
-        (0..3).map(|_| <Wide>::uninit()).collect::<Box<[_]>>(),
+        (0..3).map(|_| <Wide>::default()).collect::<Box<[Wide]>>(),
     ));
-    {
-        let __d = w.decay();
-        for __i in 0..3_isize {
-            Wide::new_1(__d.offset(__i));
-        }
-    };
     let mut iw: usize = w.decay().to_int();
     assert!(((iw as u64).wrapping_rem((64usize as u64)) == 0_u64));
     assert!((((w.decay().offset(1)).to_int()).wrapping_sub(iw) == 64usize));
@@ -345,13 +294,7 @@ pub fn vector_capacity_4() {
     );
 }
 pub fn nested_5() {
-    let g: Value<Grid> = Rc::new(RefCell::new(<Grid>::uninit()));
-    {
-        let __d = g.as_pointer();
-        ();
-        ();
-        ();
-    };
+    let g: Value<Grid> = Rc::new(RefCell::new(<Grid>::default()));
     let mut ig: usize = (g.as_pointer()).to_int();
     assert!(
         ((array_field_ptr!(g.as_pointer(), row).offset((2) as isize)).to_int()
@@ -463,12 +406,7 @@ pub fn nested_5() {
     );
 }
 pub fn struct_fields_6() {
-    let pr: Value<Pair> = Rc::new(RefCell::new(<Pair>::uninit()));
-    {
-        let __d = pr.as_pointer();
-        field!(__d, x).write(1);
-        field!(__d, y).write(2);
-    };
+    let pr: Value<Pair> = Rc::new(RefCell::new(Pair { x: 1, y: 2 }));
     let mut ip: usize = (pr.as_pointer()).to_int();
     assert!(
         ((field_ptr!(pr.as_pointer(), y)).to_int()

@@ -16,27 +16,6 @@ pub struct p2_pointer_to_array_member_HasIntArray {
     #[array_len(3)]
     pub elements: Box<[i32]>,
 }
-impl p2_pointer_to_array_member_HasIntArray {
-    pub fn new_1(this: Ptr<p2_pointer_to_array_member_HasIntArray>) {}
-    pub fn copy_from(
-        this: Ptr<p2_pointer_to_array_member_HasIntArray>,
-        _a0: Ptr<p2_pointer_to_array_member_HasIntArray>,
-    ) {
-        field!(this, before).write(_a0.with(|__s| __s.before));
-        field!(this, elements).write(Box::new(std::array::from_fn::<_, 3, _>(|__i: usize| {
-            (*_a0.upgrade().deref()).elements[(__i) as usize]
-        })));
-    }
-    pub fn move_from(
-        this: Ptr<p2_pointer_to_array_member_HasIntArray>,
-        _a0: Ptr<p2_pointer_to_array_member_HasIntArray>,
-    ) {
-        field!(this, before).write({ (*_a0.upgrade().deref()).before });
-        field!(this, elements).write(Box::new(std::array::from_fn::<_, 3, _>(|__i: usize| {
-            (*_a0.upgrade().deref()).elements[(__i) as usize]
-        })));
-    }
-}
 impl Default for p2_pointer_to_array_member_HasIntArray {
     fn default() -> Self {
         {
@@ -50,14 +29,11 @@ impl Default for p2_pointer_to_array_member_HasIntArray {
 pub fn test_0() {
     let mut pm: isize =
         (offset_of_field!(p2_pointer_to_array_member_HasIntArray, elements) as isize);
-    let obj: Value<p2_pointer_to_array_member_HasIntArray> = Rc::new(RefCell::new(
-        <p2_pointer_to_array_member_HasIntArray>::uninit(),
-    ));
-    {
-        let __d = obj.as_pointer();
-        field!(__d, before).write(1);
-        field!(__d, elements).write(Box::new([2, 3, 4]));
-    };
+    let obj: Value<p2_pointer_to_array_member_HasIntArray> =
+        Rc::new(RefCell::new(p2_pointer_to_array_member_HasIntArray {
+            before: 1,
+            elements: Box::new([2, 3, 4]),
+        }));
     assert!((((obj.as_pointer()).member::<Box<[i32]>>(pm).read())[(0) as usize] == 2));
     assert!((((obj.as_pointer()).member::<Box<[i32]>>(pm).read())[(2) as usize] == 4));
     index!((obj.as_pointer()).member::<Box<[i32]>>(pm), 1).write(7);
@@ -72,33 +48,13 @@ pub struct p2_pointer_to_data_member_HasTwoInts {
     #[offset(4)]
     pub second: i32,
 }
-impl p2_pointer_to_data_member_HasTwoInts {
-    pub fn new_1(this: Ptr<p2_pointer_to_data_member_HasTwoInts>) {}
-    pub fn copy_from(
-        this: Ptr<p2_pointer_to_data_member_HasTwoInts>,
-        _a0: Ptr<p2_pointer_to_data_member_HasTwoInts>,
-    ) {
-        field!(this, first).write(_a0.with(|__s| __s.first));
-        field!(this, second).write(_a0.with(|__s| __s.second));
-    }
-    pub fn move_from(
-        this: Ptr<p2_pointer_to_data_member_HasTwoInts>,
-        _a0: Ptr<p2_pointer_to_data_member_HasTwoInts>,
-    ) {
-        field!(this, first).write({ (*_a0.upgrade().deref()).first });
-        field!(this, second).write({ (*_a0.upgrade().deref()).second });
-    }
-}
 pub fn test_1() {
     let mut pm: isize = (offset_of_field!(p2_pointer_to_data_member_HasTwoInts, first) as isize);
-    let obj: Value<p2_pointer_to_data_member_HasTwoInts> = Rc::new(RefCell::new(
-        <p2_pointer_to_data_member_HasTwoInts>::uninit(),
-    ));
-    {
-        let __d = obj.as_pointer();
-        field!(__d, first).write(3);
-        field!(__d, second).write(4);
-    };
+    let obj: Value<p2_pointer_to_data_member_HasTwoInts> =
+        Rc::new(RefCell::new(p2_pointer_to_data_member_HasTwoInts {
+            first: 3,
+            second: 4,
+        }));
     assert!((((obj.as_pointer()).member::<i32>(pm).read()) == 3));
     (obj.as_pointer()).member::<i32>(pm).write(5);
     assert!(({ ({ (*obj.borrow()).first } == 5) }));
@@ -120,23 +76,6 @@ pub struct p2_pointer_to_member_of_incomplete_class_CompletedLater {
     #[offset(4)]
     pub second: i32,
 }
-impl p2_pointer_to_member_of_incomplete_class_CompletedLater {
-    pub fn new_1(this: Ptr<p2_pointer_to_member_of_incomplete_class_CompletedLater>) {}
-    pub fn copy_from(
-        this: Ptr<p2_pointer_to_member_of_incomplete_class_CompletedLater>,
-        _a0: Ptr<p2_pointer_to_member_of_incomplete_class_CompletedLater>,
-    ) {
-        field!(this, first).write(_a0.with(|__s| __s.first));
-        field!(this, second).write(_a0.with(|__s| __s.second));
-    }
-    pub fn move_from(
-        this: Ptr<p2_pointer_to_member_of_incomplete_class_CompletedLater>,
-        _a0: Ptr<p2_pointer_to_member_of_incomplete_class_CompletedLater>,
-    ) {
-        field!(this, first).write({ (*_a0.upgrade().deref()).first });
-        field!(this, second).write({ (*_a0.upgrade().deref()).second });
-    }
-}
 pub fn test_3() {
     assert!(((pm_2.with(|rc| *rc.borrow())) == -1_isize));
     pm_2.with(|rc| {
@@ -146,13 +85,11 @@ pub fn test_3() {
         ) as isize)
     });
     let obj: Value<p2_pointer_to_member_of_incomplete_class_CompletedLater> = Rc::new(
-        RefCell::new(<p2_pointer_to_member_of_incomplete_class_CompletedLater>::uninit()),
+        RefCell::new(p2_pointer_to_member_of_incomplete_class_CompletedLater {
+            first: 3,
+            second: 4,
+        }),
     );
-    {
-        let __d = obj.as_pointer();
-        field!(__d, first).write(3);
-        field!(__d, second).write(4);
-    };
     assert!(
         (((obj.as_pointer())
             .member::<i32>(pm_2.with(|rc| *rc.borrow()))
@@ -168,44 +105,12 @@ pub struct p2_pointer_to_member_of_pointer_to_member_type_HasTwoInts {
     #[offset(4)]
     pub second: i32,
 }
-impl p2_pointer_to_member_of_pointer_to_member_type_HasTwoInts {
-    pub fn new_1(this: Ptr<p2_pointer_to_member_of_pointer_to_member_type_HasTwoInts>) {}
-    pub fn copy_from(
-        this: Ptr<p2_pointer_to_member_of_pointer_to_member_type_HasTwoInts>,
-        _a0: Ptr<p2_pointer_to_member_of_pointer_to_member_type_HasTwoInts>,
-    ) {
-        field!(this, first).write(_a0.with(|__s| __s.first));
-        field!(this, second).write(_a0.with(|__s| __s.second));
-    }
-    pub fn move_from(
-        this: Ptr<p2_pointer_to_member_of_pointer_to_member_type_HasTwoInts>,
-        _a0: Ptr<p2_pointer_to_member_of_pointer_to_member_type_HasTwoInts>,
-    ) {
-        field!(this, first).write({ (*_a0.upgrade().deref()).first });
-        field!(this, second).write({ (*_a0.upgrade().deref()).second });
-    }
-}
 #[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg)]
 #[byte_size(8)]
 pub struct p2_pointer_to_member_of_pointer_to_member_type_HoldsSelector {
     #[offset(0)]
     #[byte_size(8)]
     pub selector: isize,
-}
-impl p2_pointer_to_member_of_pointer_to_member_type_HoldsSelector {
-    pub fn new_1(this: Ptr<p2_pointer_to_member_of_pointer_to_member_type_HoldsSelector>) {}
-    pub fn copy_from(
-        this: Ptr<p2_pointer_to_member_of_pointer_to_member_type_HoldsSelector>,
-        _a0: Ptr<p2_pointer_to_member_of_pointer_to_member_type_HoldsSelector>,
-    ) {
-        field!(this, selector).write(_a0.with(|__s| __s.selector));
-    }
-    pub fn move_from(
-        this: Ptr<p2_pointer_to_member_of_pointer_to_member_type_HoldsSelector>,
-        _a0: Ptr<p2_pointer_to_member_of_pointer_to_member_type_HoldsSelector>,
-    ) {
-        field!(this, selector).write({ (*_a0.upgrade().deref()).selector });
-    }
 }
 impl Default for p2_pointer_to_member_of_pointer_to_member_type_HoldsSelector {
     fn default() -> Self {
@@ -217,26 +122,21 @@ pub fn test_4() {
         p2_pointer_to_member_of_pointer_to_member_type_HoldsSelector,
         selector
     ) as isize);
-    let holder: Value<p2_pointer_to_member_of_pointer_to_member_type_HoldsSelector> = Rc::new(
-        RefCell::new(<p2_pointer_to_member_of_pointer_to_member_type_HoldsSelector>::uninit()),
-    );
-    {
-        let __d = holder.as_pointer();
-        field!(__d, selector).write(
-            (offset_of_field!(
-                p2_pointer_to_member_of_pointer_to_member_type_HasTwoInts,
-                second
-            ) as isize),
-        );
-    };
+    let holder: Value<p2_pointer_to_member_of_pointer_to_member_type_HoldsSelector> =
+        Rc::new(RefCell::new(
+            p2_pointer_to_member_of_pointer_to_member_type_HoldsSelector {
+                selector: (offset_of_field!(
+                    p2_pointer_to_member_of_pointer_to_member_type_HasTwoInts,
+                    second
+                ) as isize),
+            },
+        ));
     let obj: Value<p2_pointer_to_member_of_pointer_to_member_type_HasTwoInts> = Rc::new(
-        RefCell::new(<p2_pointer_to_member_of_pointer_to_member_type_HasTwoInts>::uninit()),
+        RefCell::new(p2_pointer_to_member_of_pointer_to_member_type_HasTwoInts {
+            first: 3,
+            second: 4,
+        }),
     );
-    {
-        let __d = obj.as_pointer();
-        field!(__d, first).write(3);
-        field!(__d, second).write(4);
-    };
     assert!(
         (((obj.as_pointer())
             .member::<i32>(((holder.as_pointer()).member::<isize>(pm).read()))

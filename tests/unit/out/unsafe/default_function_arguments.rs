@@ -22,12 +22,6 @@ impl Bar {
     pub unsafe fn new(this: *mut Bar, mut v: i32) {
         (&raw mut (*this).v).write(v);
     }
-    pub unsafe fn copy_from(this: *mut Bar, _a0: *const Bar) {
-        (&raw mut (*this).v).write((*_a0).v);
-    }
-    pub unsafe fn move_from(this: *mut Bar, _a0: *mut Bar) {
-        (&raw mut (*this).v).write((*_a0).v);
-    }
 }
 impl Default for Bar {
     fn default() -> Self {
@@ -40,10 +34,9 @@ impl Default for Bar {
         }
     }
 }
-pub static mut counter_2: libcc2rs::LazyStorage<i32> =
-    libcc2rs::LazyStorage::new(|__p| unsafe { __p.write(0) });
+pub static mut counter_2: std::cell::LazyCell<i32> = std::cell::LazyCell::new(|| unsafe { 0 });
 pub unsafe fn next_3() -> i32 {
-    return (*(*(*&raw const counter_2).get()).prefix_inc());
+    return (*(*std::cell::LazyCell::force_mut(&mut *&raw mut counter_2)).prefix_inc());
 }
 pub unsafe fn lazy_4(mut x: i32) -> i32 {
     return x;
@@ -51,8 +44,13 @@ pub unsafe fn lazy_4(mut x: i32) -> i32 {
 pub unsafe fn by_ref_5(b: *const Bar) -> i32 {
     return (*b).v;
 }
-pub static mut global_bar_6: libcc2rs::LazyStorage<Bar> =
-    libcc2rs::LazyStorage::new(|__p| unsafe { Bar::new(__p, { 9 }) });
+pub static mut global_bar_6: std::cell::LazyCell<Bar> = std::cell::LazyCell::new(|| unsafe {
+    {
+        let mut __v: Bar = ::std::mem::MaybeUninit::zeroed().assume_init();
+        Bar::new(&raw mut __v, { 9 });
+        __v
+    }
+});
 pub unsafe fn by_global_ref_7(b: *const Bar) -> i32 {
     return (*b).v;
 }
@@ -70,12 +68,6 @@ pub struct Holder_int_ {
 impl Holder_int_ {
     pub unsafe fn new(this: *mut Holder_int_, mut v: i32) {
         (&raw mut (*this).v).write(v);
-    }
-    pub unsafe fn copy_from(this: *mut Holder_int_, _a0: *const Holder_int_) {
-        (&raw mut (*this).v).write((*_a0).v);
-    }
-    pub unsafe fn move_from(this: *mut Holder_int_, _a0: *mut Holder_int_) {
-        (&raw mut (*this).v).write((*_a0).v);
     }
 }
 pub fn main() {
@@ -121,9 +113,9 @@ unsafe fn main_0() -> i32 {
     assert!(((arr[(0) as usize].v) == (1)));
     assert!(((arr[(2) as usize].v) == (1)));
     assert!(((unsafe { lazy_4(5,) }) == (5)));
-    assert!(((*(*&raw const counter_2).get()) == (0)));
+    assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut counter_2)) == (0)));
     assert!(((unsafe { lazy_4((unsafe { next_3() }),) }) == (1)));
-    assert!(((*(*&raw const counter_2).get()) == (1)));
+    assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut counter_2)) == (1)));
     assert!(
         ((unsafe {
             let mut _b: Bar = ::std::mem::MaybeUninit::uninit().assume_init();
@@ -140,7 +132,11 @@ unsafe fn main_0() -> i32 {
             by_ref_5(&mut _b)
         }) == (3))
     );
-    assert!(((unsafe { by_global_ref_7(&(*(*&raw const global_bar_6).get()),) }) == (9)));
+    assert!(
+        ((unsafe {
+            by_global_ref_7(&(*std::cell::LazyCell::force_mut(&mut *&raw mut global_bar_6)))
+        }) == (9))
+    );
     assert!(
         ((unsafe {
             let mut _b: Bar = ::std::mem::MaybeUninit::uninit().assume_init();
@@ -163,6 +159,6 @@ unsafe fn main_0() -> i32 {
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {
-    (*&raw const counter_2).get();
-    (*&raw const global_bar_6).get();
+    std::cell::LazyCell::force(&*&raw const counter_2);
+    std::cell::LazyCell::force(&*&raw const global_bar_6);
 }

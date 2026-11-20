@@ -22,18 +22,6 @@ impl p2_reference_does_not_instantiate_Member {
     ) {
         field!(this, value).write(2);
     }
-    pub fn copy_from(
-        this: Ptr<p2_reference_does_not_instantiate_Member>,
-        _a0: Ptr<p2_reference_does_not_instantiate_Member>,
-    ) {
-        field!(this, value).write(_a0.with(|__s| __s.value));
-    }
-    pub fn move_from(
-        this: Ptr<p2_reference_does_not_instantiate_Member>,
-        _a0: Ptr<p2_reference_does_not_instantiate_Member>,
-    ) {
-        field!(this, value).write({ (*_a0.upgrade().deref()).value });
-    }
 }
 impl Default for p2_reference_does_not_instantiate_Member {
     fn default() -> Self {
@@ -55,9 +43,7 @@ impl p2_reference_does_not_instantiate_Holder {
         this: Ptr<p2_reference_does_not_instantiate_Holder>,
         _a0: Ptr<p2_reference_does_not_instantiate_Holder>,
     ) {
-        p2_reference_does_not_instantiate_Member::move_from(field_ptr!(this, member), {
-            field_ptr!(_a0, member)
-        });
+        (field_ptr!(this, member)).write({ (*_a0.upgrade().deref()).member });
     }
 }
 pub fn test_0() {

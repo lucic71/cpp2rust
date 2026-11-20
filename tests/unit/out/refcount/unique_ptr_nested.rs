@@ -14,17 +14,6 @@ pub struct Inner {
     #[offset(4)]
     pub y: i32,
 }
-impl Inner {
-    pub fn new_1(this: Ptr<Inner>) {}
-    pub fn copy_from(this: Ptr<Inner>, _a0: Ptr<Inner>) {
-        field!(this, x).write(_a0.with(|__s| __s.x));
-        field!(this, y).write(_a0.with(|__s| __s.y));
-    }
-    pub fn move_from(this: Ptr<Inner>, _a0: Ptr<Inner>) {
-        field!(this, x).write({ (*_a0.upgrade().deref()).x });
-        field!(this, y).write({ (*_a0.upgrade().deref()).y });
-    }
-}
 #[derive(Record, ByteRepr, Uninit, FnPtrArg, MoveCtor, MoveAssign, Default)]
 #[byte_size(8)]
 pub struct Outer {
@@ -51,20 +40,7 @@ fn main_0() -> i32 {
             let __v: Value<Outer> = Rc::new(RefCell::new(<Outer>::uninit()));
             {
                 let __d = __v.as_pointer();
-                field!(__d, inner).write(Some(Rc::new(RefCell::new(
-                    Rc::try_unwrap({
-                        let __v: Value<Inner> = Rc::new(RefCell::new(<Inner>::uninit()));
-                        {
-                            let __d = __v.as_pointer();
-                            field!(__d, x).write(10);
-                            field!(__d, y).write(20);
-                        };
-                        __v
-                    })
-                    .ok()
-                    .unwrap()
-                    .into_inner(),
-                ))));
+                field!(__d, inner).write(Some(Rc::new(RefCell::new(Inner { x: 10, y: 20 }))));
             };
             __v
         })

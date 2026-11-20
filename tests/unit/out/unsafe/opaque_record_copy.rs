@@ -9,29 +9,11 @@ use std::rc::Rc;
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct Probe {}
-impl Probe {
-    pub unsafe fn new_1(this: *mut Probe) {}
-    pub unsafe fn copy_from(this: *mut Probe, _a0: *const Probe) {}
-    pub unsafe fn move_from(this: *mut Probe, _a0: *mut Probe) {}
-}
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct Wrapper_Probe_ {
     pub base_: Probe,
     pub tag: i32,
-}
-impl Wrapper_Probe_ {
-    pub unsafe fn new_1(this: *mut Wrapper_Probe_) {
-        Probe::new_1((&raw mut (*this).base_));
-    }
-    pub unsafe fn copy_from(this: *mut Wrapper_Probe_, _a0: *const Wrapper_Probe_) {
-        Probe::copy_from((&raw mut (*this).base_), { &(*_a0).base_ });
-        (&raw mut (*this).tag).write((*_a0).tag);
-    }
-    pub unsafe fn move_from(this: *mut Wrapper_Probe_, _a0: *mut Wrapper_Probe_) {
-        Probe::move_from((&raw mut (*this).base_), { &mut (*_a0).base_ });
-        (&raw mut (*this).tag).write((*_a0).tag);
-    }
 }
 pub fn main() {
     unsafe {
@@ -40,17 +22,9 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    let mut a: Wrapper_Probe_ = ::std::mem::MaybeUninit::uninit().assume_init();
-    {
-        let __d = &raw mut a;
-        {
-            let __d = (&raw mut (*__d).base_);
-        };
-        (&raw mut (*__d).tag).write(0_i32);
-    };
+    let mut a: Wrapper_Probe_ = <Wrapper_Probe_>::default();
     a.tag = 3;
-    let mut b: Wrapper_Probe_ = ::std::mem::MaybeUninit::uninit().assume_init();
-    Wrapper_Probe_::copy_from(&raw mut b, { &a });
+    let mut b: Wrapper_Probe_ = a;
     assert!(((b.tag) == (3)));
     return 0;
 }

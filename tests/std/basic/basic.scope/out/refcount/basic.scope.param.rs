@@ -23,18 +23,6 @@ impl p1_1_parameter_hides_member_in_constructor_HasMemberNamedLikeParameter {
         assert!((amount == 14));
         assert!((this.with(|__s| __s.amount) == 5));
     }
-    pub fn copy_from(
-        this: Ptr<p1_1_parameter_hides_member_in_constructor_HasMemberNamedLikeParameter>,
-        _a0: Ptr<p1_1_parameter_hides_member_in_constructor_HasMemberNamedLikeParameter>,
-    ) {
-        field!(this, amount).write(_a0.with(|__s| __s.amount));
-    }
-    pub fn move_from(
-        this: Ptr<p1_1_parameter_hides_member_in_constructor_HasMemberNamedLikeParameter>,
-        _a0: Ptr<p1_1_parameter_hides_member_in_constructor_HasMemberNamedLikeParameter>,
-    ) {
-        field!(this, amount).write({ (*_a0.upgrade().deref()).amount });
-    }
 }
 pub fn test_0() {
     let object: Value<p1_1_parameter_hides_member_in_constructor_HasMemberNamedLikeParameter> =

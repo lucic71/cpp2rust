@@ -30,17 +30,6 @@ pub struct Pair {
     #[offset(4)]
     pub y: i32,
 }
-impl Pair {
-    pub fn new_1(this: Ptr<Pair>) {}
-    pub fn copy_from(this: Ptr<Pair>, _a0: Ptr<Pair>) {
-        field!(this, x).write(_a0.with(|__s| __s.x));
-        field!(this, y).write(_a0.with(|__s| __s.y));
-    }
-    pub fn move_from(this: Ptr<Pair>, _a0: Ptr<Pair>) {
-        field!(this, x).write({ (*_a0.upgrade().deref()).x });
-        field!(this, y).write({ (*_a0.upgrade().deref()).y });
-    }
-}
 pub fn DoStuffWithSafePointer_0(safe_ptr: Ptr<Option<Value<SafePointer>>>) {
     let mut x1: Option<Value<i32>> = Some(Rc::new(RefCell::new(0)));
     let mut x2: Option<Value<i32>> = Some(Rc::new(RefCell::new(0)));
@@ -74,20 +63,10 @@ pub fn DoStuffWithSafePointer_0(safe_ptr: Ptr<Option<Value<SafePointer>>>) {
     {
         raw_ptr2.with_mut(|__v| *__v = *__v + 1)
     };
-    let mut pair: Option<Value<Pair>> = Some(Rc::new(RefCell::new(
-        Rc::try_unwrap({
-            let __v: Value<Pair> = Rc::new(RefCell::new(<Pair>::uninit()));
-            {
-                let __d = __v.as_pointer();
-                field!(__d, x).write((raw_ptr2.read()));
-                field!(__d, y).write(5);
-            };
-            __v
-        })
-        .ok()
-        .unwrap()
-        .into_inner(),
-    )));
+    let mut pair: Option<Value<Pair>> = Some(Rc::new(RefCell::new(Pair {
+        x: (raw_ptr2.read()),
+        y: 5,
+    })));
     ({ PairImpl::inc(&(pair.as_pointer()), 10) });
     let __rhs = ({
         ({
@@ -104,16 +83,7 @@ pub fn DoStuffWithSafePointer_0(safe_ptr: Ptr<Option<Value<SafePointer>>>) {
 }
 pub fn Consume_1(mut safe_ptr: Option<Value<SafePointer>>) -> i32 {
     let mut x: Option<Value<SafePointer>> = safe_ptr.take();
-    let mut p: Option<Value<Pair>> = {
-        let __p = Ptr::alloc(<Pair>::uninit());
-        {
-            let __d = __p.clone();
-            ();
-            Pair::new_1(__d)
-        };
-        __p
-    }
-    .to_owned_opt();
+    let mut p: Option<Value<Pair>> = Ptr::alloc(<Pair>::default()).to_owned_opt();
     return ((x
         .as_pointer()
         .with(|__s| (__s).ptr.clone())

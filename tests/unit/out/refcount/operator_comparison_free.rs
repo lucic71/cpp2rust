@@ -12,15 +12,6 @@ pub struct S {
     #[offset(0)]
     pub v: i32,
 }
-impl S {
-    pub fn new_1(this: Ptr<S>) {}
-    pub fn copy_from(this: Ptr<S>, _a0: Ptr<S>) {
-        field!(this, v).write(_a0.with(|__s| __s.v));
-    }
-    pub fn move_from(this: Ptr<S>, _a0: Ptr<S>) {
-        field!(this, v).write({ (*_a0.upgrade().deref()).v });
-    }
-}
 impl CppLess for S {
     fn less(__lhs: &Ptr<Self>, __rhs: &Ptr<Self>) -> bool {
         operator_lt_0(__lhs.clone(), __rhs.clone())
@@ -61,148 +52,69 @@ pub struct V {
     #[offset(0)]
     pub v: i32,
 }
-impl V {
-    pub fn new_1(this: Ptr<V>) {}
-    pub fn copy_from(this: Ptr<V>, _a0: Ptr<V>) {
-        field!(this, v).write(_a0.with(|__s| __s.v));
-    }
-    pub fn move_from(this: Ptr<V>, _a0: Ptr<V>) {
-        field!(this, v).write({ (*_a0.upgrade().deref()).v });
-    }
-}
 impl CppLess for V {
     fn less(__lhs: &Ptr<Self>, __rhs: &Ptr<Self>) -> bool {
-        operator_lt_8(
-            Rc::new(RefCell::new(__lhs.read())),
-            Rc::new(RefCell::new(__rhs.read())),
-        )
+        operator_lt_8(__lhs.read(), __rhs.read())
     }
 }
 impl CppEq for V {
     fn equal(__lhs: &Ptr<Self>, __rhs: &Ptr<Self>) -> bool {
-        operator_eq_9(
-            Rc::new(RefCell::new(__lhs.read())),
-            Rc::new(RefCell::new(__rhs.read())),
-        )
+        operator_eq_9(__lhs.read(), __rhs.read())
     }
 }
-pub fn operator_eq_9(a: Value<V>, b: Value<V>) -> bool {
-    return ({ (*a.borrow()).v } == { (*b.borrow()).v });
+pub fn operator_eq_9(mut a: V, mut b: V) -> bool {
+    return (a.v == b.v);
 }
-pub fn operator_ne_10(a: Value<V>, b: Value<V>) -> bool {
-    return ({ (*a.borrow()).v } != { (*b.borrow()).v });
+pub fn operator_ne_10(mut a: V, mut b: V) -> bool {
+    return (a.v != b.v);
 }
-pub fn operator_lt_8(a: Value<V>, b: Value<V>) -> bool {
-    return ({ (*a.borrow()).v } < { (*b.borrow()).v });
+pub fn operator_lt_8(mut a: V, mut b: V) -> bool {
+    return (a.v < b.v);
 }
-pub fn operator_gt_11(a: Value<V>, b: Value<V>) -> bool {
-    return ({ (*a.borrow()).v } > { (*b.borrow()).v });
+pub fn operator_gt_11(mut a: V, mut b: V) -> bool {
+    return (a.v > b.v);
 }
 pub fn main() {
     __cpp2rust_init_globals();
     libcc2rs::cpp2rust_exit(main_0());
 }
 fn main_0() -> i32 {
-    let x: Value<V> = Rc::new(RefCell::new(<V>::uninit()));
-    {
-        let __d = x.as_pointer();
-        field!(__d, v).write(1);
-    };
-    let y: Value<V> = Rc::new(RefCell::new(<V>::uninit()));
-    {
-        let __d = y.as_pointer();
-        field!(__d, v).write(2);
-    };
-    let z: Value<V> = Rc::new(RefCell::new(<V>::uninit()));
-    {
-        let __d = z.as_pointer();
-        field!(__d, v).write(1);
-    };
+    let mut x: V = V { v: 1 };
+    let mut y: V = V { v: 2 };
+    let mut z: V = V { v: 1 };
     assert!(
         ({
-            let _a = {
-                let __v: Value<V> = Rc::new(RefCell::new(<V>::uninit()));
-                V::copy_from(__v.as_pointer(), { x.as_pointer() });
-                __v
-            };
-            operator_eq_9(_a, {
-                let __v: Value<V> = Rc::new(RefCell::new(<V>::uninit()));
-                V::copy_from(__v.as_pointer(), { z.as_pointer() });
-                __v
-            })
+            let _a: V = x;
+            operator_eq_9(_a, z)
         })
     );
     assert!(
         ({
-            let _a = {
-                let __v: Value<V> = Rc::new(RefCell::new(<V>::uninit()));
-                V::copy_from(__v.as_pointer(), { x.as_pointer() });
-                __v
-            };
-            operator_ne_10(_a, {
-                let __v: Value<V> = Rc::new(RefCell::new(<V>::uninit()));
-                V::copy_from(__v.as_pointer(), { y.as_pointer() });
-                __v
-            })
+            let _a: V = x;
+            operator_ne_10(_a, y)
         })
     );
     assert!(
         ({
-            let _a = {
-                let __v: Value<V> = Rc::new(RefCell::new(<V>::uninit()));
-                V::copy_from(__v.as_pointer(), { x.as_pointer() });
-                __v
-            };
-            operator_lt_8(_a, {
-                let __v: Value<V> = Rc::new(RefCell::new(<V>::uninit()));
-                V::copy_from(__v.as_pointer(), { y.as_pointer() });
-                __v
-            })
+            let _a: V = x;
+            operator_lt_8(_a, y)
         })
     );
     assert!(
         ({
-            let _a = {
-                let __v: Value<V> = Rc::new(RefCell::new(<V>::uninit()));
-                V::copy_from(__v.as_pointer(), { y.as_pointer() });
-                __v
-            };
-            operator_gt_11(_a, {
-                let __v: Value<V> = Rc::new(RefCell::new(<V>::uninit()));
-                V::copy_from(__v.as_pointer(), { x.as_pointer() });
-                __v
-            })
+            let _a: V = y;
+            operator_gt_11(_a, x)
         })
     );
     assert!(
         !({
-            let _a = {
-                let __v: Value<V> = Rc::new(RefCell::new(<V>::uninit()));
-                V::copy_from(__v.as_pointer(), { y.as_pointer() });
-                __v
-            };
-            operator_lt_8(_a, {
-                let __v: Value<V> = Rc::new(RefCell::new(<V>::uninit()));
-                V::copy_from(__v.as_pointer(), { x.as_pointer() });
-                __v
-            })
+            let _a: V = y;
+            operator_lt_8(_a, x)
         })
     );
-    let a: Value<S> = Rc::new(RefCell::new(<S>::uninit()));
-    {
-        let __d = a.as_pointer();
-        field!(__d, v).write(1);
-    };
-    let b: Value<S> = Rc::new(RefCell::new(<S>::uninit()));
-    {
-        let __d = b.as_pointer();
-        field!(__d, v).write(2);
-    };
-    let c: Value<S> = Rc::new(RefCell::new(<S>::uninit()));
-    {
-        let __d = c.as_pointer();
-        field!(__d, v).write(1);
-    };
+    let a: Value<S> = Rc::new(RefCell::new(S { v: 1 }));
+    let b: Value<S> = Rc::new(RefCell::new(S { v: 2 }));
+    let c: Value<S> = Rc::new(RefCell::new(S { v: 1 }));
     assert!(
         ({
             let _a: Ptr<S> = a.as_pointer();

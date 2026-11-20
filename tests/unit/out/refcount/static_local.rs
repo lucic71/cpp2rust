@@ -27,29 +27,8 @@ thread_local!(
     static kX2_5: Value<i32> = Rc::new(RefCell::new(2));
 );
 pub fn from_local_class_6() -> i32 {
-    return (({
-        S_8Impl::get(
-            &{
-                let __v: Value<S_8> = Rc::new(RefCell::new(<S_8>::uninit()));
-                {
-                    let __d = __v.as_pointer();
-                };
-                __v
-            }
-            .as_pointer(),
-        )
-    }) + ({
-        S_8Impl::get(
-            &{
-                let __v: Value<S_8> = Rc::new(RefCell::new(<S_8>::uninit()));
-                {
-                    let __d = __v.as_pointer();
-                };
-                __v
-            }
-            .as_pointer(),
-        )
-    }));
+    return (({ S_8Impl::get(&Rc::new(RefCell::new(<S_8>::default())).as_pointer()) })
+        + ({ S_8Impl::get(&Rc::new(RefCell::new(<S_8>::default())).as_pointer()) }));
 }
 thread_local!(
     static x_7: Value<i32> = Rc::new(RefCell::new(3));
@@ -57,11 +36,6 @@ thread_local!(
 #[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
 #[byte_size(1)]
 pub struct S_8 {}
-impl S_8 {
-    pub fn new_1(this: Ptr<S_8>) {}
-    pub fn copy_from(this: Ptr<S_8>, _a0: Ptr<S_8>) {}
-    pub fn move_from(this: Ptr<S_8>, _a0: Ptr<S_8>) {}
-}
 pub fn main() {
     __cpp2rust_init_globals();
     libcc2rs::cpp2rust_exit(main_0());

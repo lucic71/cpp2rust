@@ -44,23 +44,10 @@ impl HashHolder_unsigned_long__ptr__bool__ {
     ) {
         (&raw mut (*this).h).write((*h));
     }
-    pub unsafe fn copy_from(
-        this: *mut HashHolder_unsigned_long__ptr__bool__,
-        _a0: *const HashHolder_unsigned_long__ptr__bool__,
-    ) {
-        (&raw mut (*this).h).write(((*_a0).h));
-    }
-    pub unsafe fn move_from(
-        this: *mut HashHolder_unsigned_long__ptr__bool__,
-        _a0: *mut HashHolder_unsigned_long__ptr__bool__,
-    ) {
-        (&raw mut (*this).h).write(((*_a0).h));
-    }
 }
-pub static mut total_7: libcc2rs::LazyStorage<i32> =
-    libcc2rs::LazyStorage::new(|__p| unsafe { __p.write(0) });
+pub static mut total_7: std::cell::LazyCell<i32> = std::cell::LazyCell::new(|| unsafe { 0 });
 pub unsafe fn add_to_total_8(mut x: i32) {
-    (*(*&raw const total_7).get()) += x;
+    (*std::cell::LazyCell::force_mut(&mut *&raw mut total_7)) += x;
 }
 pub unsafe fn pair_sum_9(mut p: (i32, i32)) -> i32 {
     return ((p.0) + (p.1));
@@ -113,7 +100,7 @@ unsafe fn main_0() -> i32 {
     let mut handler: Option<unsafe fn(i32)> = Some(add_to_total_8);
     (unsafe { (handler).unwrap()(2) });
     (unsafe { (handler).unwrap()(3) });
-    assert!(((*(*&raw const total_7).get()) == (5)));
+    assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut total_7)) == (5)));
     let mut pf: Option<unsafe fn((i32, i32)) -> i32> = Some(pair_sum_9);
     assert!(((unsafe { (pf).unwrap()((1, 2),) }) == (3)));
     let mut sf: Option<unsafe fn(Vec<libc::c_char>) -> usize> = Some(string_size_10);
@@ -139,5 +126,5 @@ unsafe fn main_0() -> i32 {
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {
-    (*&raw const total_7).get();
+    std::cell::LazyCell::force(&*&raw const total_7);
 }

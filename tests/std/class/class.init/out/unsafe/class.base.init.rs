@@ -17,12 +17,6 @@ impl Logged {
         (&raw mut (*this).id).write(id);
         (unsafe { libc::printf(c"member %d\n".as_ptr() as *const libc::c_char, (id)) });
     }
-    pub unsafe fn copy_from(this: *mut Logged, _a0: *const Logged) {
-        (&raw mut (*this).id).write((*_a0).id);
-    }
-    pub unsafe fn move_from(this: *mut Logged, _a0: *mut Logged) {
-        (&raw mut (*this).id).write((*_a0).id);
-    }
 }
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, CppFromUnsafe)]
@@ -48,18 +42,6 @@ impl p6_delegating_constructor_runs_target_first_Delegating {
         });
         (*this).value += 1;
     }
-    pub unsafe fn copy_from(
-        this: *mut p6_delegating_constructor_runs_target_first_Delegating,
-        _a0: *const p6_delegating_constructor_runs_target_first_Delegating,
-    ) {
-        (&raw mut (*this).value).write((*_a0).value);
-    }
-    pub unsafe fn move_from(
-        this: *mut p6_delegating_constructor_runs_target_first_Delegating,
-        _a0: *mut p6_delegating_constructor_runs_target_first_Delegating,
-    ) {
-        (&raw mut (*this).value).write((*_a0).value);
-    }
 }
 impl Default for p6_delegating_constructor_runs_target_first_Delegating {
     fn default() -> Self {
@@ -79,10 +61,9 @@ pub unsafe fn test_0() {
     p6_delegating_constructor_runs_target_first_Delegating::new_2(&raw mut object);
     assert!(((object.value) == (43)));
 }
-pub static mut evaluated_1: libcc2rs::LazyStorage<i32> =
-    libcc2rs::LazyStorage::new(|__p| unsafe { __p.write(0) });
+pub static mut evaluated_1: std::cell::LazyCell<i32> = std::cell::LazyCell::new(|| unsafe { 0 });
 pub unsafe fn next_2() -> i32 {
-    return (*(*(*&raw const evaluated_1).get()).prefix_inc());
+    return (*(*std::cell::LazyCell::force_mut(&mut *&raw mut evaluated_1)).prefix_inc());
 }
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, CppFromUnsafe)]
@@ -99,20 +80,6 @@ impl p9_1_default_member_initializer_WithDefaults {
     pub unsafe fn new_1(this: *mut p9_1_default_member_initializer_WithDefaults, mut counted: i32) {
         (&raw mut (*this).fixed).write(5);
         (&raw mut (*this).counted).write(counted);
-    }
-    pub unsafe fn copy_from(
-        this: *mut p9_1_default_member_initializer_WithDefaults,
-        _a0: *const p9_1_default_member_initializer_WithDefaults,
-    ) {
-        (&raw mut (*this).fixed).write((*_a0).fixed);
-        (&raw mut (*this).counted).write((*_a0).counted);
-    }
-    pub unsafe fn move_from(
-        this: *mut p9_1_default_member_initializer_WithDefaults,
-        _a0: *mut p9_1_default_member_initializer_WithDefaults,
-    ) {
-        (&raw mut (*this).fixed).write((*_a0).fixed);
-        (&raw mut (*this).counted).write((*_a0).counted);
     }
 }
 impl Default for p9_1_default_member_initializer_WithDefaults {
@@ -133,18 +100,17 @@ pub unsafe fn test_3() {
     p9_1_default_member_initializer_WithDefaults::new_2(&raw mut defaults);
     assert!(
         (((defaults.fixed) == (5)) && ((defaults.counted) == (1)))
-            && ((*(*&raw const evaluated_1).get()) == (1))
+            && ((*std::cell::LazyCell::force_mut(&mut *&raw mut evaluated_1)) == (1))
     );
     let mut given: p9_1_default_member_initializer_WithDefaults =
         ::std::mem::MaybeUninit::uninit().assume_init();
     p9_1_default_member_initializer_WithDefaults::new_1(&raw mut given, { 9 });
     assert!(
         (((given.fixed) == (5)) && ((given.counted) == (9)))
-            && ((*(*&raw const evaluated_1).get()) == (1))
+            && ((*std::cell::LazyCell::force_mut(&mut *&raw mut evaluated_1)) == (1))
     );
 }
-pub static mut constructed_4: libcc2rs::LazyStorage<i32> =
-    libcc2rs::LazyStorage::new(|__p| unsafe { __p.write(0) });
+pub static mut constructed_4: std::cell::LazyCell<i32> = std::cell::LazyCell::new(|| unsafe { 0 });
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg)]
 pub struct p9_3_member_is_default_initialized_Member {
@@ -152,19 +118,8 @@ pub struct p9_3_member_is_default_initialized_Member {
 }
 impl p9_3_member_is_default_initialized_Member {
     pub unsafe fn new(this: *mut p9_3_member_is_default_initialized_Member) {
-        (&raw mut (*this).id).write((*(*(*&raw const constructed_4).get()).prefix_inc()));
-    }
-    pub unsafe fn copy_from(
-        this: *mut p9_3_member_is_default_initialized_Member,
-        _a0: *const p9_3_member_is_default_initialized_Member,
-    ) {
-        (&raw mut (*this).id).write((*_a0).id);
-    }
-    pub unsafe fn move_from(
-        this: *mut p9_3_member_is_default_initialized_Member,
-        _a0: *mut p9_3_member_is_default_initialized_Member,
-    ) {
-        (&raw mut (*this).id).write((*_a0).id);
+        (&raw mut (*this).id)
+            .write((*(*std::cell::LazyCell::force_mut(&mut *&raw mut constructed_4)).prefix_inc()));
     }
 }
 impl Default for p9_3_member_is_default_initialized_Member {
@@ -192,30 +147,6 @@ impl p9_3_member_is_default_initialized_Holder {
         p9_3_member_is_default_initialized_Member::new((&raw mut (*this).second));
         (&raw mut (*this).number).write(3);
     }
-    pub unsafe fn copy_from(
-        this: *mut p9_3_member_is_default_initialized_Holder,
-        _a0: *const p9_3_member_is_default_initialized_Holder,
-    ) {
-        p9_3_member_is_default_initialized_Member::copy_from((&raw mut (*this).first), {
-            &(*_a0).first
-        });
-        p9_3_member_is_default_initialized_Member::copy_from((&raw mut (*this).second), {
-            &(*_a0).second
-        });
-        (&raw mut (*this).number).write((*_a0).number);
-    }
-    pub unsafe fn move_from(
-        this: *mut p9_3_member_is_default_initialized_Holder,
-        _a0: *mut p9_3_member_is_default_initialized_Holder,
-    ) {
-        p9_3_member_is_default_initialized_Member::move_from((&raw mut (*this).first), {
-            &mut (*_a0).first
-        });
-        p9_3_member_is_default_initialized_Member::move_from((&raw mut (*this).second), {
-            &mut (*_a0).second
-        });
-        (&raw mut (*this).number).write((*_a0).number);
-    }
 }
 impl Default for p9_3_member_is_default_initialized_Holder {
     fn default() -> Self {
@@ -234,7 +165,8 @@ pub unsafe fn test_5() {
         ::std::mem::MaybeUninit::uninit().assume_init();
     p9_3_member_is_default_initialized_Holder::new(&raw mut holder);
     assert!(
-        (((*(*&raw const constructed_4).get()) == (2)) && ((holder.first.id) == (1)))
+        (((*std::cell::LazyCell::force_mut(&mut *&raw mut constructed_4)) == (2))
+            && ((holder.first.id) == (1)))
             && ((holder.second.id) == (2))
     );
     assert!(((holder.number) == (3)));
@@ -252,22 +184,6 @@ impl p13_members_initialized_in_declaration_order_Ordered {
         Logged::new((&raw mut (*this).second), { 2 });
         (&raw mut (*this).sum).write((((*this).first.id) + ((*this).second.id)));
         (unsafe { libc::printf(c"body %d\n".as_ptr() as *const libc::c_char, ((*this).sum)) });
-    }
-    pub unsafe fn copy_from(
-        this: *mut p13_members_initialized_in_declaration_order_Ordered,
-        _a0: *const p13_members_initialized_in_declaration_order_Ordered,
-    ) {
-        Logged::copy_from((&raw mut (*this).first), { &(*_a0).first });
-        Logged::copy_from((&raw mut (*this).second), { &(*_a0).second });
-        (&raw mut (*this).sum).write((*_a0).sum);
-    }
-    pub unsafe fn move_from(
-        this: *mut p13_members_initialized_in_declaration_order_Ordered,
-        _a0: *mut p13_members_initialized_in_declaration_order_Ordered,
-    ) {
-        Logged::move_from((&raw mut (*this).first), { &mut (*_a0).first });
-        Logged::move_from((&raw mut (*this).second), { &mut (*_a0).second });
-        (&raw mut (*this).sum).write((*_a0).sum);
     }
 }
 impl Default for p13_members_initialized_in_declaration_order_Ordered {
@@ -302,6 +218,6 @@ unsafe fn main_0() -> i32 {
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {
-    (*&raw const evaluated_1).get();
-    (*&raw const constructed_4).get();
+    std::cell::LazyCell::force(&*&raw const evaluated_1);
+    std::cell::LazyCell::force(&*&raw const constructed_4);
 }

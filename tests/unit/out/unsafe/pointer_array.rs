@@ -11,19 +11,6 @@ use std::rc::Rc;
 pub struct StackArray {
     pub arr: [*mut i32; 3],
 }
-impl StackArray {
-    pub unsafe fn new_1(this: *mut StackArray) {}
-    pub unsafe fn copy_from(this: *mut StackArray, _a0: *const StackArray) {
-        (&raw mut (*this).arr).write(std::array::from_fn::<_, 3, _>(|__i: usize| {
-            (*_a0).arr[(__i)]
-        }));
-    }
-    pub unsafe fn move_from(this: *mut StackArray, _a0: *mut StackArray) {
-        (&raw mut (*this).arr).write(std::array::from_fn::<_, 3, _>(|__i: usize| {
-            (*_a0).arr[(__i)]
-        }));
-    }
-}
 pub unsafe fn IncrementAll_0(s: *mut StackArray) {
     {
         let mut i: i32 = 0;
@@ -41,14 +28,12 @@ pub fn main() {
 }
 unsafe fn main_0() -> i32 {
     let mut x: i32 = 0;
-    let mut s: StackArray = ::std::mem::MaybeUninit::uninit().assume_init();
-    {
-        let __d = &raw mut s;
-        (&raw mut (*__d).arr).write([
+    let mut s: StackArray = StackArray {
+        arr: [
             (&mut x as *mut i32),
             (&mut x as *mut i32),
             (&mut x as *mut i32),
-        ]);
+        ],
     };
     (unsafe { IncrementAll_0(&mut s) });
     assert!(((x) == (3)));

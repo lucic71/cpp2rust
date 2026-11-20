@@ -25,14 +25,6 @@ impl StructWithCtor {
     pub unsafe fn x2(&self) -> *const i32 {
         return &self.x2_;
     }
-    pub unsafe fn copy_from(this: *mut StructWithCtor, _a0: *const StructWithCtor) {
-        (&raw mut (*this).x1_).write((*_a0).x1_);
-        (&raw mut (*this).x2_).write((*_a0).x2_);
-    }
-    pub unsafe fn move_from(this: *mut StructWithCtor, _a0: *mut StructWithCtor) {
-        (&raw mut (*this).x1_).write((*_a0).x1_);
-        (&raw mut (*this).x2_).write((*_a0).x2_);
-    }
 }
 pub unsafe fn foo_0(x: *mut i32) -> *mut i32 {
     return x;
@@ -47,12 +39,6 @@ impl Value_ {
     pub unsafe fn new(this: *mut Value_, mut u: i32) {
         (&raw mut (*this).v).write(u);
     }
-    pub unsafe fn copy_from(this: *mut Value_, _a0: *const Value_) {
-        (&raw mut (*this).v).write((*_a0).v);
-    }
-    pub unsafe fn move_from(this: *mut Value_, _a0: *mut Value_) {
-        (&raw mut (*this).v).write((*_a0).v);
-    }
 }
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg)]
@@ -64,14 +50,6 @@ impl Ptr_ {
     pub unsafe fn new(this: *mut Ptr_) {
         Value_::new((&raw mut (*this).v1), { 11 });
         Value_::new((&raw mut (*this).v2), { 22 });
-    }
-    pub unsafe fn copy_from(this: *mut Ptr_, _a0: *const Ptr_) {
-        Value_::copy_from((&raw mut (*this).v1), { &(*_a0).v1 });
-        Value_::copy_from((&raw mut (*this).v2), { &(*_a0).v2 });
-    }
-    pub unsafe fn move_from(this: *mut Ptr_, _a0: *mut Ptr_) {
-        Value_::move_from((&raw mut (*this).v1), { &mut (*_a0).v1 });
-        Value_::move_from((&raw mut (*this).v2), { &mut (*_a0).v2 });
     }
 }
 impl Default for Ptr_ {

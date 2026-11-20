@@ -24,18 +24,6 @@ impl p1_template_constructor_from_own_type_Probe {
     pub unsafe fn new_2(this: *mut p1_template_constructor_from_own_type_Probe, mut v: i32) {
         (&raw mut (*this).value).write(v);
     }
-    pub unsafe fn copy_from(
-        this: *mut p1_template_constructor_from_own_type_Probe,
-        _a0: *const p1_template_constructor_from_own_type_Probe,
-    ) {
-        (&raw mut (*this).value).write((*_a0).value);
-    }
-    pub unsafe fn move_from(
-        this: *mut p1_template_constructor_from_own_type_Probe,
-        _a0: *mut p1_template_constructor_from_own_type_Probe,
-    ) {
-        (&raw mut (*this).value).write((*_a0).value);
-    }
 }
 pub unsafe fn test_0() {
     let mut probe: p1_template_constructor_from_own_type_Probe =

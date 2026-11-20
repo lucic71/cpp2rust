@@ -20,67 +20,28 @@ pub struct p9_move_trivially_copyable_Point {
     #[offset(4)]
     pub y: i32,
 }
-impl p9_move_trivially_copyable_Point {
-    pub fn new_1(this: Ptr<p9_move_trivially_copyable_Point>) {}
-    pub fn copy_from(
-        this: Ptr<p9_move_trivially_copyable_Point>,
-        _a0: Ptr<p9_move_trivially_copyable_Point>,
-    ) {
-        field!(this, x).write(_a0.with(|__s| __s.x));
-        field!(this, y).write(_a0.with(|__s| __s.y));
-    }
-    pub fn move_from(
-        this: Ptr<p9_move_trivially_copyable_Point>,
-        _a0: Ptr<p9_move_trivially_copyable_Point>,
-    ) {
-        field!(this, x).write({ (*_a0.upgrade().deref()).x });
-        field!(this, y).write({ (*_a0.upgrade().deref()).y });
-    }
-}
 pub fn test_1() {
-    let source: Value<p9_move_trivially_copyable_Point> =
-        Rc::new(RefCell::new(<p9_move_trivially_copyable_Point>::uninit()));
-    {
-        let __d = source.as_pointer();
-        field!(__d, x).write(1);
-        field!(__d, y).write(2);
-    };
-    let target: Value<p9_move_trivially_copyable_Point> =
-        Rc::new(RefCell::new(<p9_move_trivially_copyable_Point>::uninit()));
-    p9_move_trivially_copyable_Point::move_from(target.as_pointer(), { source.as_pointer() });
-    assert!(({ ({ (*target.borrow()).x } == 1) && ({ (*target.borrow()).y } == 2) }));
-    assert!(({ ({ (*source.borrow()).x } == 1) && ({ (*source.borrow()).y } == 2) }));
-    let assigned: Value<p9_move_trivially_copyable_Point> =
-        Rc::new(RefCell::new(<p9_move_trivially_copyable_Point>::uninit()));
-    {
-        let __d = assigned.as_pointer();
-        field!(__d, x).write(0);
-        field!(__d, y).write(0);
-    };
-    let other: Value<p9_move_trivially_copyable_Point> =
-        Rc::new(RefCell::new(<p9_move_trivially_copyable_Point>::uninit()));
-    {
-        let __d = other.as_pointer();
-        field!(__d, x).write(3);
-        field!(__d, y).write(4);
-    };
-    (*assigned.borrow_mut()) = (*other.borrow());
-    assert!(({ ({ (*assigned.borrow()).x } == 3) && ({ (*assigned.borrow()).y } == 4) }));
-    assert!(({ ({ (*other.borrow()).x } == 3) && ({ (*other.borrow()).y } == 4) }));
+    let mut source: p9_move_trivially_copyable_Point =
+        p9_move_trivially_copyable_Point { x: 1, y: 2 };
+    let mut target: p9_move_trivially_copyable_Point = source;
+    assert!((target.x == 1) && (target.y == 2));
+    assert!((source.x == 1) && (source.y == 2));
+    let mut assigned: p9_move_trivially_copyable_Point =
+        p9_move_trivially_copyable_Point { x: 0, y: 0 };
+    let mut other: p9_move_trivially_copyable_Point =
+        p9_move_trivially_copyable_Point { x: 3, y: 4 };
+    assigned = other;
+    assert!((assigned.x == 3) && (assigned.y == 4));
+    assert!((other.x == 3) && (other.y == 4));
     let mut points: Vec<p9_move_trivially_copyable_Point> = Vec::new();
-    let element: Value<p9_move_trivially_copyable_Point> =
-        Rc::new(RefCell::new(<p9_move_trivially_copyable_Point>::uninit()));
+    let mut element: p9_move_trivially_copyable_Point =
+        p9_move_trivially_copyable_Point { x: 5, y: 6 };
     {
-        let __d = element.as_pointer();
-        field!(__d, x).write(5);
-        field!(__d, y).write(6);
-    };
-    {
-        let __a1 = ({ (*element.borrow()) });
+        let __a1 = element;
         points.push(__a1)
     };
     assert!((points[0_usize].x == 5) && (points[0_usize].y == 6));
-    assert!(({ ({ (*element.borrow()).x } == 5) && ({ (*element.borrow()).y } == 6) }));
+    assert!((element.x == 5) && (element.y == 6));
 }
 #[derive(Record, ByteRepr, Uninit, FnPtrArg, MoveCtor, CppFrom, Default)]
 #[cpp_from(i32, new, value)]

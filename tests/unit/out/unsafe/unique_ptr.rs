@@ -39,17 +39,6 @@ pub struct Pair {
     pub y: i32,
 }
 impl Pair {
-    pub unsafe fn new_1(this: *mut Pair) {}
-    pub unsafe fn copy_from(this: *mut Pair, _a0: *const Pair) {
-        (&raw mut (*this).x).write((*_a0).x);
-        (&raw mut (*this).y).write((*_a0).y);
-    }
-    pub unsafe fn move_from(this: *mut Pair, _a0: *mut Pair) {
-        (&raw mut (*this).x).write((*_a0).x);
-        (&raw mut (*this).y).write((*_a0).y);
-    }
-}
-impl Pair {
     pub unsafe fn inc(&mut self, mut k: i32) {
         self.x += k;
         self.y += k;
@@ -144,15 +133,9 @@ pub unsafe fn DoStuffWithSafePointer_0(safe_ptr: *mut Option<Box<SafePointer>>) 
 }
 pub unsafe fn Consume_1(mut safe_ptr: Option<Box<SafePointer>>) -> i32 {
     let mut x: Option<Box<SafePointer>> = safe_ptr.take();
-    let mut p: Option<Box<Pair>> = Some(Box::from_raw({
-        let __p = Box::into_raw(Box::<Pair>::new_uninit()) as *mut Pair;
-        {
-            let __d = __p;
-            __d.write_bytes(0, 1);
-            Pair::new_1(__d)
-        };
-        __p
-    }));
+    let mut p: Option<Box<Pair>> = Some(Box::from_raw(
+        (Box::leak(Box::new(<Pair>::default())) as *mut Pair),
+    ));
     return ((*(*x.as_deref().map_or(::std::ptr::null_mut(), |v| {
         v as *const SafePointer as *mut SafePointer
     }))

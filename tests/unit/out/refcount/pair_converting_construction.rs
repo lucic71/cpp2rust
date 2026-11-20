@@ -17,12 +17,6 @@ impl Celsius {
     pub fn new(this: Ptr<Celsius>, mut d: i32) {
         field!(this, degrees).write(d);
     }
-    pub fn copy_from(this: Ptr<Celsius>, _a0: Ptr<Celsius>) {
-        field!(this, degrees).write(_a0.with(|__s| __s.degrees));
-    }
-    pub fn move_from(this: Ptr<Celsius>, _a0: Ptr<Celsius>) {
-        field!(this, degrees).write({ (*_a0.upgrade().deref()).degrees });
-    }
 }
 #[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, CppFrom, Default)]
 #[cpp_into(i32, to_i32)]
@@ -30,15 +24,6 @@ impl Celsius {
 pub struct Meters {
     #[offset(0)]
     pub value: i32,
-}
-impl Meters {
-    pub fn new_1(this: Ptr<Meters>) {}
-    pub fn copy_from(this: Ptr<Meters>, _a0: Ptr<Meters>) {
-        field!(this, value).write(_a0.with(|__s| __s.value));
-    }
-    pub fn move_from(this: Ptr<Meters>, _a0: Ptr<Meters>) {
-        field!(this, value).write({ (*_a0.upgrade().deref()).value });
-    }
 }
 #[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, CppFrom, Default)]
 #[cpp_from(Celsius, new, ptr)]
@@ -50,12 +35,6 @@ pub struct Label {
 impl Label {
     pub fn new(this: Ptr<Label>, c: Ptr<Celsius>) {
         field!(this, id).write(c.with(|__s| __s.degrees));
-    }
-    pub fn copy_from(this: Ptr<Label>, _a0: Ptr<Label>) {
-        field!(this, id).write(_a0.with(|__s| __s.id));
-    }
-    pub fn move_from(this: Ptr<Label>, _a0: Ptr<Label>) {
-        field!(this, id).write({ (*_a0.upgrade().deref()).id });
     }
 }
 #[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, CppFrom, Default)]
@@ -77,14 +56,6 @@ impl Owner {
         field!(this, taken).write(c.with(|__s| __s.degrees));
         field!(this, copied).write(0);
     }
-    pub fn copy_from(this: Ptr<Owner>, _a0: Ptr<Owner>) {
-        field!(this, taken).write(_a0.with(|__s| __s.taken));
-        field!(this, copied).write(_a0.with(|__s| __s.copied));
-    }
-    pub fn move_from(this: Ptr<Owner>, _a0: Ptr<Owner>) {
-        field!(this, taken).write({ (*_a0.upgrade().deref()).taken });
-        field!(this, copied).write({ (*_a0.upgrade().deref()).copied });
-    }
 }
 #[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, CppFrom, Default)]
 #[cpp_from(Celsius, new, storage)]
@@ -97,12 +68,6 @@ impl Holder {
     pub fn new(this: Ptr<Holder>, c: Value<Celsius>) {
         field!(this, value).write({ (*c.borrow()).degrees });
     }
-    pub fn copy_from(this: Ptr<Holder>, _a0: Ptr<Holder>) {
-        field!(this, value).write(_a0.with(|__s| __s.value));
-    }
-    pub fn move_from(this: Ptr<Holder>, _a0: Ptr<Holder>) {
-        field!(this, value).write({ (*_a0.upgrade().deref()).value });
-    }
 }
 #[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, CppFrom)]
 #[cpp_from(i32, new, value)]
@@ -114,12 +79,6 @@ pub struct Fallback {
 impl Fallback {
     pub fn new(this: Ptr<Fallback>, mut v: i32) {
         field!(this, value).write(v);
-    }
-    pub fn copy_from(this: Ptr<Fallback>, _a0: Ptr<Fallback>) {
-        field!(this, value).write(_a0.with(|__s| __s.value));
-    }
-    pub fn move_from(this: Ptr<Fallback>, _a0: Ptr<Fallback>) {
-        field!(this, value).write({ (*_a0.upgrade().deref()).value });
     }
 }
 impl Default for Fallback {
@@ -140,15 +99,6 @@ pub struct Counter {
     #[offset(0)]
     pub hits: i32,
 }
-impl Counter {
-    pub fn new_1(this: Ptr<Counter>) {}
-    pub fn copy_from(this: Ptr<Counter>, _a0: Ptr<Counter>) {
-        field!(this, hits).write(_a0.with(|__s| __s.hits));
-    }
-    pub fn move_from(this: Ptr<Counter>, _a0: Ptr<Counter>) {
-        field!(this, hits).write({ (*_a0.upgrade().deref()).hits });
-    }
-}
 #[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, CppFrom, Default)]
 #[cpp_from(Counter, new, mut_ptr)]
 #[byte_size(4)]
@@ -160,12 +110,6 @@ impl Observer {
     pub fn new(this: Ptr<Observer>, c: Ptr<Counter>) {
         field!(this, seen).write(c.with(|__s| __s.hits));
         field!(c, hits).with_mut(|__v| __v.postfix_inc());
-    }
-    pub fn copy_from(this: Ptr<Observer>, _a0: Ptr<Observer>) {
-        field!(this, seen).write(_a0.with(|__s| __s.seen));
-    }
-    pub fn move_from(this: Ptr<Observer>, _a0: Ptr<Observer>) {
-        field!(this, seen).write({ (*_a0.upgrade().deref()).seen });
     }
 }
 impl Tag {
@@ -179,14 +123,6 @@ impl Tag {
 pub struct Tag {
     #[offset(0)]
     pub code: i32,
-}
-impl Tag {
-    pub fn copy_from(this: Ptr<Tag>, _a0: Ptr<Tag>) {
-        field!(this, code).write(_a0.with(|__s| __s.code));
-    }
-    pub fn move_from(this: Ptr<Tag>, _a0: Ptr<Tag>) {
-        field!(this, code).write({ (*_a0.upgrade().deref()).code });
-    }
 }
 #[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, CppFrom, Default)]
 #[cpp_from(Ptr< i8  >  , new, value)]
@@ -203,12 +139,6 @@ impl Name {
                 __v.prefix_inc();
             });
         }
-    }
-    pub fn copy_from(this: Ptr<Name>, _a0: Ptr<Name>) {
-        field!(this, len).write(_a0.with(|__s| __s.len));
-    }
-    pub fn move_from(this: Ptr<Name>, _a0: Ptr<Name>) {
-        field!(this, len).write({ (*_a0.upgrade().deref()).len });
     }
 }
 pub fn main() {
@@ -246,11 +176,7 @@ fn main_0() -> i32 {
     )));
     assert!(({ ({ (*(*from_ints.borrow()).0.borrow()).degrees } == 1) }));
     assert!(({ ({ (*(*from_ints.borrow()).1.borrow()).degrees } == 2) }));
-    let m: Value<Meters> = Rc::new(RefCell::new(<Meters>::uninit()));
-    {
-        let __d = m.as_pointer();
-        field!(__d, value).write(7);
-    };
+    let m: Value<Meters> = Rc::new(RefCell::new(Meters { value: 7 }));
     let from_operators: Value<(Value<i32>, Value<i64>)> = Rc::new(RefCell::new((
         Rc::new(RefCell::new(({ MetersImpl::to_i32(&m.as_pointer()) }))),
         Rc::new(RefCell::new(
@@ -437,11 +363,7 @@ fn main_0() -> i32 {
     )));
     assert!(({ ({ (*(*from_defaulted_ctor.borrow()).0.borrow()).value } == 5) }));
     assert!(({ ((*(*from_defaulted_ctor.borrow()).1.borrow()) == 6_i64) }));
-    let counter: Value<Counter> = Rc::new(RefCell::new(<Counter>::uninit()));
-    {
-        let __d = counter.as_pointer();
-        field!(__d, hits).write(3);
-    };
+    let counter: Value<Counter> = Rc::new(RefCell::new(Counter { hits: 3 }));
     let forwarded_mutable_ref: Value<(Value<Observer>, Value<i32>)> = Rc::new(RefCell::new((
         Rc::new(RefCell::new(
             Rc::try_unwrap({

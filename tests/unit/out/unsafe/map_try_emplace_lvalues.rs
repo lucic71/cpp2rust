@@ -6,10 +6,8 @@ use std::collections::BTreeMap;
 use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
-pub static mut made_0: libcc2rs::LazyStorage<i32> =
-    libcc2rs::LazyStorage::new(|__p| unsafe { __p.write(0) });
-pub static mut visits_1: libcc2rs::LazyStorage<i32> =
-    libcc2rs::LazyStorage::new(|__p| unsafe { __p.write(0) });
+pub static mut made_0: std::cell::LazyCell<i32> = std::cell::LazyCell::new(|| unsafe { 0 });
+pub static mut visits_1: std::cell::LazyCell<i32> = std::cell::LazyCell::new(|| unsafe { 0 });
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg)]
 pub struct Item {
@@ -24,13 +22,7 @@ impl Item {
             (*counter) += amount;
             (*counter)
         });
-        (*(*&raw const made_0).get()).prefix_inc();
-    }
-    pub unsafe fn copy_from(this: *mut Item, _a0: *const Item) {
-        (&raw mut (*this).value).write((*_a0).value);
-    }
-    pub unsafe fn move_from(this: *mut Item, _a0: *mut Item) {
-        (&raw mut (*this).value).write((*_a0).value);
+        (*std::cell::LazyCell::force_mut(&mut *&raw mut made_0)).prefix_inc();
     }
 }
 impl Default for Item {
@@ -45,15 +37,15 @@ impl Default for Item {
     }
 }
 pub unsafe fn receiver_2(m: *mut UnsafeMap<i32, (i32, Item)>) -> *mut UnsafeMap<i32, (i32, Item)> {
-    (*(*&raw const visits_1).get()).prefix_inc();
+    (*std::cell::LazyCell::force_mut(&mut *&raw mut visits_1)).prefix_inc();
     return m;
 }
 pub unsafe fn place_3(n: *mut i32) -> *mut i32 {
-    (*(*&raw const visits_1).get()).prefix_inc();
+    (*std::cell::LazyCell::force_mut(&mut *&raw mut visits_1)).prefix_inc();
     return n;
 }
-pub static mut temporary_calls_4: libcc2rs::LazyStorage<i32> =
-    libcc2rs::LazyStorage::new(|__p| unsafe { __p.write(0) });
+pub static mut temporary_calls_4: std::cell::LazyCell<i32> =
+    std::cell::LazyCell::new(|| unsafe { 0 });
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg)]
 pub struct Temporary {
@@ -64,19 +56,7 @@ impl Temporary {
     pub unsafe fn new(this: *mut Temporary) {
         (&raw mut (*this).n).write(5);
         (&raw mut (*this).data).write([6, 7]);
-        (*(*&raw const temporary_calls_4).get()).prefix_inc();
-    }
-    pub unsafe fn copy_from(this: *mut Temporary, _a0: *const Temporary) {
-        (&raw mut (*this).n).write((*_a0).n);
-        (&raw mut (*this).data).write(std::array::from_fn::<_, 2, _>(|__i: usize| {
-            (*_a0).data[(__i)]
-        }));
-    }
-    pub unsafe fn move_from(this: *mut Temporary, _a0: *mut Temporary) {
-        (&raw mut (*this).n).write((*_a0).n);
-        (&raw mut (*this).data).write(std::array::from_fn::<_, 2, _>(|__i: usize| {
-            (*_a0).data[(__i)]
-        }));
+        (*std::cell::LazyCell::force_mut(&mut *&raw mut temporary_calls_4)).prefix_inc();
     }
 }
 impl Default for Temporary {
@@ -99,12 +79,6 @@ impl Nested {
     pub unsafe fn new_1(this: *mut Nested) {
         Temporary::new((&raw mut (*this).inner));
     }
-    pub unsafe fn copy_from(this: *mut Nested, _a0: *const Nested) {
-        Temporary::copy_from((&raw mut (*this).inner), { &(*_a0).inner });
-    }
-    pub unsafe fn move_from(this: *mut Nested, _a0: *mut Nested) {
-        Temporary::move_from((&raw mut (*this).inner), { &mut (*_a0).inner });
-    }
 }
 pub unsafe fn make_temporary_5(__ret: *mut Temporary) {
     Temporary::new(__ret.clone());
@@ -113,7 +87,7 @@ pub unsafe fn make_temporary_5(__ret: *mut Temporary) {
 pub unsafe fn make_nested_6(__ret: *mut Nested) {
     {
         let __d = __ret.clone();
-        __d.write_bytes(0, 1);
+        (__d).write_bytes(0, 1);
         Nested::new_1(__d)
     };
     return;
@@ -163,11 +137,6 @@ impl Default for Owner {
 pub struct Noncopy {
     pub n: i32,
 }
-impl Noncopy {
-    pub unsafe fn new(this: *mut Noncopy) {
-        (&raw mut (*this).n).write(5);
-    }
-}
 impl Default for Noncopy {
     fn default() -> Self {
         unsafe { Noncopy { n: 5 } }
@@ -189,12 +158,6 @@ impl Held {
     pub unsafe fn new_3(this: *mut Held, n: *const [i32; 2], mut _a1: i32) {
         (&raw mut (*this).ptr).write((*n).as_ptr());
     }
-    pub unsafe fn copy_from(this: *mut Held, _a0: *const Held) {
-        (&raw mut (*this).ptr).write((*_a0).ptr);
-    }
-    pub unsafe fn move_from(this: *mut Held, _a0: *mut Held) {
-        (&raw mut (*this).ptr).write((*_a0).ptr);
-    }
 }
 impl Default for Held {
     fn default() -> Self {
@@ -207,25 +170,21 @@ impl Default for Held {
         }
     }
 }
-pub static mut global_values_7: libcc2rs::LazyStorage<UnsafeMap<i32, (i32, i32)>> =
-    libcc2rs::LazyStorage::new(|__p| unsafe { __p.write(UnsafeMap::new()) });
-pub static mut global_key_8: libcc2rs::LazyStorage<i32> =
-    libcc2rs::LazyStorage::new(|__p| unsafe { __p.write(0) });
-pub static mut conditional_key_9: libcc2rs::LazyStorage<i32> =
-    libcc2rs::LazyStorage::new(|__p| unsafe { __p.write(1) });
-pub static mut owned_key_10: libcc2rs::LazyStorage<i32> =
-    libcc2rs::LazyStorage::new(|__p| unsafe { __p.write(2) });
-pub static mut global_a_11: libcc2rs::LazyStorage<i32> =
-    libcc2rs::LazyStorage::new(|__p| unsafe { __p.write(0) });
-pub static mut global_b_12: libcc2rs::LazyStorage<i32> =
-    libcc2rs::LazyStorage::new(|__p| unsafe { __p.write(0) });
-pub static mut global_choose_13: libcc2rs::LazyStorage<bool> =
-    libcc2rs::LazyStorage::new(|__p| unsafe { __p.write(false) });
-pub static mut global_temporary_14: libcc2rs::LazyStorage<(
+pub static mut global_values_7: std::cell::LazyCell<UnsafeMap<i32, (i32, i32)>> =
+    std::cell::LazyCell::new(|| unsafe { UnsafeMap::new() });
+pub static mut global_key_8: std::cell::LazyCell<i32> = std::cell::LazyCell::new(|| unsafe { 0 });
+pub static mut conditional_key_9: std::cell::LazyCell<i32> =
+    std::cell::LazyCell::new(|| unsafe { 1 });
+pub static mut owned_key_10: std::cell::LazyCell<i32> = std::cell::LazyCell::new(|| unsafe { 2 });
+pub static mut global_a_11: std::cell::LazyCell<i32> = std::cell::LazyCell::new(|| unsafe { 0 });
+pub static mut global_b_12: std::cell::LazyCell<i32> = std::cell::LazyCell::new(|| unsafe { 0 });
+pub static mut global_choose_13: std::cell::LazyCell<bool> =
+    std::cell::LazyCell::new(|| unsafe { false });
+pub static mut global_temporary_14: std::cell::LazyCell<(
     UnsafeBidirectionalIterator<(i32, i32)>,
     bool,
-)> = libcc2rs::LazyStorage::new(|__p| unsafe {
-    __p.write({
+)> = std::cell::LazyCell::new(|| unsafe {
+    {
         let mut __tmp_1: Temporary;
         match ((&mut (*{
             __tmp_1 = ::std::mem::MaybeUninit::uninit().assume_init();
@@ -235,44 +194,49 @@ pub static mut global_temporary_14: libcc2rs::LazyStorage<(
         })
         .n as *mut i32),)
         {
-            (__tmp_0,) => (*(*&raw const global_values_7).get())
-                .try_emplace((*(*&raw const global_key_8).get()), || (*__tmp_0)),
+            (__tmp_0,) => (*std::cell::LazyCell::force_mut(&mut *&raw mut global_values_7))
+                .try_emplace(
+                    (*std::cell::LazyCell::force_mut(&mut *&raw mut global_key_8)),
+                    || (*__tmp_0),
+                ),
         }
-    })
+    }
 });
-pub static mut global_conditional_15: libcc2rs::LazyStorage<(
+pub static mut global_conditional_15: std::cell::LazyCell<(
     UnsafeBidirectionalIterator<(i32, i32)>,
     bool,
-)> = libcc2rs::LazyStorage::new(|__p| unsafe {
-    __p.write(
-        match ((if (*(*&raw const global_choose_13).get()) {
+)> = std::cell::LazyCell::new(|| unsafe {
+    match (
+        (if (*std::cell::LazyCell::force_mut(&mut *&raw mut global_choose_13)) {
             ({
-                let __tmp_4 = &mut (*(*&raw const global_a_11).get());
+                let __tmp_4 = &mut (*std::cell::LazyCell::force_mut(&mut *&raw mut global_a_11));
                 (*__tmp_4).prefix_inc();
                 __tmp_4
             } as *mut i32)
         } else {
             ({
-                let __tmp_5 = &mut (*(*&raw const global_b_12).get());
+                let __tmp_5 = &mut (*std::cell::LazyCell::force_mut(&mut *&raw mut global_b_12));
                 (*__tmp_5).prefix_inc();
                 __tmp_5
             } as *mut i32)
-        } as *mut i32),)
-        {
-            (__tmp_3,) => (*(*&raw const global_values_7).get())
-                .try_emplace((*(*&raw const conditional_key_9).get()), || (*__tmp_3)),
-        },
-    )
+        } as *mut i32),
+    ) {
+        (__tmp_3,) => (*std::cell::LazyCell::force_mut(&mut *&raw mut global_values_7))
+            .try_emplace(
+                (*std::cell::LazyCell::force_mut(&mut *&raw mut conditional_key_9)),
+                || (*__tmp_3),
+            ),
+    }
 });
-pub static mut global_owned_16: libcc2rs::LazyStorage<(
+pub static mut global_owned_16: std::cell::LazyCell<(
     UnsafeBidirectionalIterator<(i32, i32)>,
     bool,
-)> = libcc2rs::LazyStorage::new(|__p| unsafe {
-    __p.write({
+)> = std::cell::LazyCell::new(|| unsafe {
+    {
         let mut __tmp_7: Option<Box<Temporary>>;
         match ((&mut (*(*{
             __tmp_7 = Some(Box::new({
-                let mut __v: Temporary = ::std::mem::MaybeUninit::uninit().assume_init();
+                let mut __v: Temporary = ::std::mem::MaybeUninit::zeroed().assume_init();
                 Temporary::new(&raw mut __v);
                 __v
             }));
@@ -284,10 +248,13 @@ pub static mut global_owned_16: libcc2rs::LazyStorage<(
         }))
         .n as *mut i32),)
         {
-            (__tmp_6,) => (*(*&raw const global_values_7).get())
-                .try_emplace((*(*&raw const owned_key_10).get()), || (*__tmp_6)),
+            (__tmp_6,) => (*std::cell::LazyCell::force_mut(&mut *&raw mut global_values_7))
+                .try_emplace(
+                    (*std::cell::LazyCell::force_mut(&mut *&raw mut owned_key_10)),
+                    || (*__tmp_6),
+                ),
         }
-    })
+    }
 });
 pub fn main() {
     unsafe {
@@ -297,18 +264,27 @@ pub fn main() {
 }
 unsafe fn main_0() -> i32 {
     assert!(
-        ((*(*&raw const global_temporary_14).get()).1)
-            && (((*(*(*&raw const global_temporary_14).get()).0.iter_deref()).1) == (5))
+        ((*std::cell::LazyCell::force_mut(&mut *&raw mut global_temporary_14)).1)
+            && (((*(*std::cell::LazyCell::force_mut(&mut *&raw mut global_temporary_14))
+                .0
+                .iter_deref())
+            .1) == (5))
     );
     assert!(
-        ((*(*&raw const global_owned_16).get()).1)
-            && (((*(*(*&raw const global_owned_16).get()).0.iter_deref()).1) == (5))
+        ((*std::cell::LazyCell::force_mut(&mut *&raw mut global_owned_16)).1)
+            && (((*(*std::cell::LazyCell::force_mut(&mut *&raw mut global_owned_16))
+                .0
+                .iter_deref())
+            .1) == (5))
     );
     assert!(
-        ((((*(*&raw const global_conditional_15).get()).1)
-            && (((*(*(*&raw const global_conditional_15).get()).0.iter_deref()).1) == (1)))
-            && ((*(*&raw const global_a_11).get()) == (0)))
-            && ((*(*&raw const global_b_12).get()) == (1))
+        ((((*std::cell::LazyCell::force_mut(&mut *&raw mut global_conditional_15)).1)
+            && (((*(*std::cell::LazyCell::force_mut(&mut *&raw mut global_conditional_15))
+                .0
+                .iter_deref())
+            .1) == (1)))
+            && ((*std::cell::LazyCell::force_mut(&mut *&raw mut global_a_11)) == (0)))
+            && ((*std::cell::LazyCell::force_mut(&mut *&raw mut global_b_12)) == (1))
     );
     let mut m: UnsafeMap<i32, (i32, Item)> = UnsafeMap::new();
     let mut key: i32 = 0;
@@ -318,7 +294,7 @@ unsafe fn main_0() -> i32 {
         Item::new_2(&raw mut __v, { &mut counter }, { 3 });
         __v
     });
-    (*(*&raw const made_0).get()) = 0;
+    (*std::cell::LazyCell::force_mut(&mut *&raw mut made_0)) = 0;
     let mut hit: (UnsafeBidirectionalIterator<(i32, Item)>, bool) = match (
         ((unsafe { receiver_2(&mut m) }) as *mut UnsafeMap<i32, (i32, Item)>),
         ({
@@ -334,8 +310,8 @@ unsafe fn main_0() -> i32 {
         }),
     };
     assert!(
-        ((((counter) == (4)) && ((*(*&raw const made_0).get()) == (0)))
-            && ((*(*&raw const visits_1).get()) == (2)))
+        ((((counter) == (4)) && ((*std::cell::LazyCell::force_mut(&mut *&raw mut made_0)) == (0)))
+            && ((*std::cell::LazyCell::force_mut(&mut *&raw mut visits_1)) == (2)))
             && (!(hit.1))
     );
     key.prefix_inc();
@@ -351,7 +327,10 @@ unsafe fn main_0() -> i32 {
             __v
         }),
     };
-    assert!((((counter) == (7)) && ((*(*&raw const made_0).get()) == (1))) && (inserted.1));
+    assert!(
+        (((counter) == (7)) && ((*std::cell::LazyCell::force_mut(&mut *&raw mut made_0)) == (1)))
+            && (inserted.1)
+    );
     let mut assigned: (UnsafeBidirectionalIterator<(i32, Item)>, bool) =
         match ((match ({ 9 }, (&mut counter as *mut i32)) {
             (__tmp_15, __tmp_14) => {
@@ -366,7 +345,10 @@ unsafe fn main_0() -> i32 {
                 __v
             }),
         };
-    assert!((((counter) == (9)) && ((*(*&raw const made_0).get()) == (1))) && (!(assigned.1)));
+    assert!(
+        (((counter) == (9)) && ((*std::cell::LazyCell::force_mut(&mut *&raw mut made_0)) == (1)))
+            && (!(assigned.1))
+    );
     key.prefix_inc();
     let mut compound: (UnsafeBidirectionalIterator<(i32, Item)>, bool) =
         match ((match ({ 4 }, (&mut counter as *mut i32)) {
@@ -382,7 +364,10 @@ unsafe fn main_0() -> i32 {
                 __v
             }),
         };
-    assert!((((counter) == (15)) && ((*(*&raw const made_0).get()) == (2))) && (compound.1));
+    assert!(
+        (((counter) == (15)) && ((*std::cell::LazyCell::force_mut(&mut *&raw mut made_0)) == (2)))
+            && (compound.1)
+    );
     assert!(
         (((*inserted.0.iter_deref()).1.value) == (7))
             && (((*compound.0.iter_deref()).1.value) == (15))
@@ -404,7 +389,7 @@ unsafe fn main_0() -> i32 {
     };
     assert!(
         (((index) == (1)) && ((array[(0) as usize]) == (4)))
-            && ((*(*&raw const made_0).get()) == (3))
+            && ((*std::cell::LazyCell::force_mut(&mut *&raw mut made_0)) == (3))
     );
     key.prefix_inc();
     match ((match (
@@ -425,7 +410,7 @@ unsafe fn main_0() -> i32 {
     };
     assert!(
         (((index) == (2)) && ((array[(1) as usize]) == (8)))
-            && ((*(*&raw const made_0).get()) == (4))
+            && ((*std::cell::LazyCell::force_mut(&mut *&raw mut made_0)) == (4))
     );
     match ((match ({ ((counter) + (1)) }, (&mut counter as *mut i32)) {
         (__tmp_26, __tmp_25) => {
@@ -440,7 +425,9 @@ unsafe fn main_0() -> i32 {
             __v
         }),
     };
-    assert!(((counter) == (16)) && ((*(*&raw const made_0).get()) == (4)));
+    assert!(
+        ((counter) == (16)) && ((*std::cell::LazyCell::force_mut(&mut *&raw mut made_0)) == (4))
+    );
     let mut a: i32 = 0;
     let mut b: i32 = 0;
     let mut choose: bool = false;
@@ -464,7 +451,10 @@ unsafe fn main_0() -> i32 {
             __v
         }),
     };
-    assert!((((a) == (0)) && ((b) == (1))) && ((*(*&raw const made_0).get()) == (4)));
+    assert!(
+        (((a) == (0)) && ((b) == (1)))
+            && ((*std::cell::LazyCell::force_mut(&mut *&raw mut made_0)) == (4))
+    );
     choose = true;
     match ((if choose {
         ({
@@ -486,7 +476,10 @@ unsafe fn main_0() -> i32 {
             __v
         }),
     };
-    assert!((((a) == (1)) && ((b) == (1))) && ((*(*&raw const made_0).get()) == (4)));
+    assert!(
+        (((a) == (1)) && ((b) == (1)))
+            && ((*std::cell::LazyCell::force_mut(&mut *&raw mut made_0)) == (4))
+    );
     match (({
         counter.postfix_inc();
         &mut counter
@@ -498,7 +491,9 @@ unsafe fn main_0() -> i32 {
             __v
         }),
     };
-    assert!(((counter) == (17)) && ((*(*&raw const made_0).get()) == (4)));
+    assert!(
+        ((counter) == (17)) && ((*std::cell::LazyCell::force_mut(&mut *&raw mut made_0)) == (4))
+    );
     let mut unsigned_map: UnsafeMap<i32, (i32, u32)> = UnsafeMap::new();
     let mut n: u32 = !0_u32;
     let mut wrapped: (UnsafeBidirectionalIterator<(i32, u32)>, bool) =
@@ -841,7 +836,8 @@ unsafe fn main_0() -> i32 {
                     (*values.subscript(&k, || 0_i32)) = 42;
                 }
             }
-            let mut before: i32 = (*(*&raw const temporary_calls_4).get());
+            let mut before: i32 =
+                (*std::cell::LazyCell::force_mut(&mut *&raw mut temporary_calls_4));
             let mut index: i32 = 0;
             let mut member: (UnsafeBidirectionalIterator<(i32, i32)>, bool) = {
                 let mut __tmp_75: Temporary;
@@ -884,7 +880,9 @@ unsafe fn main_0() -> i32 {
                 }
             };
             assert!(
-                ((*(*&raw const temporary_calls_4).get()) == ((before) + (3))) && ((index) == (1))
+                ((*std::cell::LazyCell::force_mut(&mut *&raw mut temporary_calls_4))
+                    == ((before) + (3)))
+                    && ((index) == (1))
             );
             assert!(
                 ((((member.1) as i32) == (!(hit != 0) as i32))
@@ -908,7 +906,7 @@ unsafe fn main_0() -> i32 {
                             __v
                         });
                     }
-                    before = (*(*&raw const temporary_calls_4).get());
+                    before = (*std::cell::LazyCell::force_mut(&mut *&raw mut temporary_calls_4));
                     index = 0;
                     let mut value: i32 = 0;
                     {
@@ -946,7 +944,8 @@ unsafe fn main_0() -> i32 {
                         }
                     };
                     assert!(
-                        ((*(*&raw const temporary_calls_4).get()) == ((before) + (1)))
+                        ((*std::cell::LazyCell::force_mut(&mut *&raw mut temporary_calls_4))
+                            == ((before) + (1)))
                             && ((index) == (if (choose != 0) { 0 } else { 1 }))
                     );
                     assert!(
@@ -966,7 +965,7 @@ unsafe fn main_0() -> i32 {
                             __v
                         });
                     }
-                    before = (*(*&raw const temporary_calls_4).get());
+                    before = (*std::cell::LazyCell::force_mut(&mut *&raw mut temporary_calls_4));
                     {
                         let mut __tmp_89: Nested;
                         let mut __tmp_91: Temporary;
@@ -1003,7 +1002,8 @@ unsafe fn main_0() -> i32 {
                         }
                     };
                     assert!(
-                        ((*(*&raw const temporary_calls_4).get()) == ((before) + (1)))
+                        ((*std::cell::LazyCell::force_mut(&mut *&raw mut temporary_calls_4))
+                            == ((before) + (1)))
                             && ((value) == (if (hit != 0) { 10 } else { 7 }))
                     );
                     choose.prefix_inc();
@@ -1025,7 +1025,8 @@ unsafe fn main_0() -> i32 {
                     (*values.subscript(&k, || 0_i32)) = 42;
                 }
             }
-            let mut before: i32 = (*(*&raw const temporary_calls_4).get());
+            let mut before: i32 =
+                (*std::cell::LazyCell::force_mut(&mut *&raw mut temporary_calls_4));
             let mut index: i32 = 0;
             let mut arrow: (UnsafeBidirectionalIterator<(i32, i32)>, bool) = {
                 let mut __tmp_94: Option<Box<Temporary>>;
@@ -1053,7 +1054,7 @@ unsafe fn main_0() -> i32 {
                         let mut __v: Nested = ::std::mem::MaybeUninit::uninit().assume_init();
                         {
                             let __d = &raw mut __v;
-                            __d.write_bytes(0, 1);
+                            (__d).write_bytes(0, 1);
                             Nested::new_1(__d)
                         };
                         __v
@@ -1149,7 +1150,9 @@ unsafe fn main_0() -> i32 {
                 }
             };
             assert!(
-                ((*(*&raw const temporary_calls_4).get()) == ((before) + (6))) && ((index) == (1))
+                ((*std::cell::LazyCell::force_mut(&mut *&raw mut temporary_calls_4))
+                    == ((before) + (6)))
+                    && ((index) == (1))
             );
             assert!(
                 (((((((arrow.1) as i32) == (!(hit != 0) as i32))
@@ -1182,7 +1185,7 @@ unsafe fn main_0() -> i32 {
                             __v
                         });
                     }
-                    before = (*(*&raw const temporary_calls_4).get());
+                    before = (*std::cell::LazyCell::force_mut(&mut *&raw mut temporary_calls_4));
                     index = 0;
                     let mut value: i32 = 0;
                     {
@@ -1233,7 +1236,8 @@ unsafe fn main_0() -> i32 {
                         }
                     };
                     assert!(
-                        ((*(*&raw const temporary_calls_4).get()) == ((before) + (1)))
+                        ((*std::cell::LazyCell::force_mut(&mut *&raw mut temporary_calls_4))
+                            == ((before) + (1)))
                             && ((index) == (if (choose != 0) { 0 } else { 1 }))
                     );
                     assert!(
@@ -1277,15 +1281,7 @@ unsafe fn main_0() -> i32 {
     ) = {
         let mut __tmp_110: Option<Box<Noncopy>>;
         match (({
-            __tmp_110 = Some(Box::new({
-                let mut __v: Noncopy = ::std::mem::MaybeUninit::uninit().assume_init();
-                {
-                    let __d = &raw mut __v;
-                    __d.write_bytes(0, 1);
-                    Noncopy::new(__d)
-                };
-                __v
-            }));
+            __tmp_110 = Some(Box::new(<Noncopy>::default()));
             &mut __tmp_110
         } as *mut Option<Box<Noncopy>>),)
         {
@@ -1298,15 +1294,7 @@ unsafe fn main_0() -> i32 {
     ) = {
         let mut __tmp_112: Option<Box<Noncopy>>;
         match (({
-            __tmp_112 = Some(Box::new({
-                let mut __v: Noncopy = ::std::mem::MaybeUninit::uninit().assume_init();
-                {
-                    let __d = &raw mut __v;
-                    __d.write_bytes(0, 1);
-                    Noncopy::new(__d)
-                };
-                __v
-            }));
+            __tmp_112 = Some(Box::new(<Noncopy>::default()));
             &mut __tmp_112
         } as *mut Option<Box<Noncopy>>),)
         {
@@ -1344,7 +1332,7 @@ unsafe fn main_0() -> i32 {
         .to_vec()
     });
     let mut string_hit: (UnsafeBidirectionalIterator<(i32, Vec<libc::c_char>)>, bool) = match (({
-        (*(*&raw const visits_1).get()).prefix_inc();
+        (*std::cell::LazyCell::force_mut(&mut *&raw mut visits_1)).prefix_inc();
         &mut text
     }
         as *mut Vec<libc::c_char>),)
@@ -1352,7 +1340,7 @@ unsafe fn main_0() -> i32 {
         (__tmp_113,) => strings.try_emplace(key, || std::mem::replace(&mut (*__tmp_113), vec![0])),
     };
     assert!(
-        (((*(*&raw const visits_1).get()) == (3)) && (!(string_hit.1)))
+        (((*std::cell::LazyCell::force_mut(&mut *&raw mut visits_1)) == (3)) && (!(string_hit.1)))
             && (text == {
                 std::slice::from_raw_parts(
                     c"value".as_ptr(),
@@ -1366,7 +1354,7 @@ unsafe fn main_0() -> i32 {
     );
     key.prefix_inc();
     let mut string_new: (UnsafeBidirectionalIterator<(i32, Vec<libc::c_char>)>, bool) = match (({
-        (*(*&raw const visits_1).get()).prefix_inc();
+        (*std::cell::LazyCell::force_mut(&mut *&raw mut visits_1)).prefix_inc();
         &mut text
     }
         as *mut Vec<libc::c_char>),)
@@ -1374,7 +1362,7 @@ unsafe fn main_0() -> i32 {
         (__tmp_114,) => strings.try_emplace(key, || std::mem::replace(&mut (*__tmp_114), vec![0])),
     };
     assert!(
-        (((*(*&raw const visits_1).get()) == (4)) && (string_new.1))
+        (((*std::cell::LazyCell::force_mut(&mut *&raw mut visits_1)) == (4)) && (string_new.1))
             && ((*string_new.0.iter_deref()).1 == {
                 std::slice::from_raw_parts(
                     c"value".as_ptr(),
@@ -1389,17 +1377,17 @@ unsafe fn main_0() -> i32 {
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {
-    (*&raw const made_0).get();
-    (*&raw const visits_1).get();
-    (*&raw const temporary_calls_4).get();
-    (*&raw const global_values_7).get();
-    (*&raw const global_key_8).get();
-    (*&raw const conditional_key_9).get();
-    (*&raw const owned_key_10).get();
-    (*&raw const global_a_11).get();
-    (*&raw const global_b_12).get();
-    (*&raw const global_choose_13).get();
-    (*&raw const global_temporary_14).get();
-    (*&raw const global_conditional_15).get();
-    (*&raw const global_owned_16).get();
+    std::cell::LazyCell::force(&*&raw const made_0);
+    std::cell::LazyCell::force(&*&raw const visits_1);
+    std::cell::LazyCell::force(&*&raw const temporary_calls_4);
+    std::cell::LazyCell::force(&*&raw const global_values_7);
+    std::cell::LazyCell::force(&*&raw const global_key_8);
+    std::cell::LazyCell::force(&*&raw const conditional_key_9);
+    std::cell::LazyCell::force(&*&raw const owned_key_10);
+    std::cell::LazyCell::force(&*&raw const global_a_11);
+    std::cell::LazyCell::force(&*&raw const global_b_12);
+    std::cell::LazyCell::force(&*&raw const global_choose_13);
+    std::cell::LazyCell::force(&*&raw const global_temporary_14);
+    std::cell::LazyCell::force(&*&raw const global_conditional_15);
+    std::cell::LazyCell::force(&*&raw const global_owned_16);
 }

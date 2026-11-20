@@ -6,8 +6,7 @@ use std::collections::BTreeMap;
 use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
-pub static mut constructed_0: libcc2rs::LazyStorage<i32> =
-    libcc2rs::LazyStorage::new(|__p| unsafe { __p.write(0) });
+pub static mut constructed_0: std::cell::LazyCell<i32> = std::cell::LazyCell::new(|| unsafe { 0 });
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg)]
 pub struct p23_1_new_without_initializer_Counted {
@@ -15,19 +14,8 @@ pub struct p23_1_new_without_initializer_Counted {
 }
 impl p23_1_new_without_initializer_Counted {
     pub unsafe fn new(this: *mut p23_1_new_without_initializer_Counted) {
-        (&raw mut (*this).id).write((*(*(*&raw const constructed_0).get()).prefix_inc()));
-    }
-    pub unsafe fn copy_from(
-        this: *mut p23_1_new_without_initializer_Counted,
-        _a0: *const p23_1_new_without_initializer_Counted,
-    ) {
-        (&raw mut (*this).id).write((*_a0).id);
-    }
-    pub unsafe fn move_from(
-        this: *mut p23_1_new_without_initializer_Counted,
-        _a0: *mut p23_1_new_without_initializer_Counted,
-    ) {
-        (&raw mut (*this).id).write((*_a0).id);
+        (&raw mut (*this).id)
+            .write((*(*std::cell::LazyCell::force_mut(&mut *&raw mut constructed_0)).prefix_inc()));
     }
 }
 impl Default for p23_1_new_without_initializer_Counted {
@@ -49,7 +37,10 @@ pub unsafe fn test_1() {
         p23_1_new_without_initializer_Counted::new(__p);
         __p
     };
-    assert!(((*(*&raw const constructed_0).get()) == (1)) && (((*one).id) == (1)));
+    assert!(
+        ((*std::cell::LazyCell::force_mut(&mut *&raw mut constructed_0)) == (1))
+            && (((*one).id) == (1))
+    );
     {
         let __p = one;
         if !__p.is_null() {
@@ -62,7 +53,7 @@ pub unsafe fn test_1() {
             .collect::<Box<[p23_1_new_without_initializer_Counted]>>(),
     )
     .as_mut_ptr();
-    assert!(((*(*&raw const constructed_0).get()) == (4)));
+    assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut constructed_0)) == (4)));
     assert!(
         ((((*many.offset((0) as isize)).id) == (2)) && (((*many.offset((1) as isize)).id) == (3)))
             && (((*many.offset((2) as isize)).id) == (4))
@@ -84,23 +75,6 @@ pub struct p23_2_new_with_initializer_Pair {
     pub first: i32,
     pub second: i32,
 }
-impl p23_2_new_with_initializer_Pair {
-    pub unsafe fn new_1(this: *mut p23_2_new_with_initializer_Pair) {}
-    pub unsafe fn copy_from(
-        this: *mut p23_2_new_with_initializer_Pair,
-        _a0: *const p23_2_new_with_initializer_Pair,
-    ) {
-        (&raw mut (*this).first).write((*_a0).first);
-        (&raw mut (*this).second).write((*_a0).second);
-    }
-    pub unsafe fn move_from(
-        this: *mut p23_2_new_with_initializer_Pair,
-        _a0: *mut p23_2_new_with_initializer_Pair,
-    ) {
-        (&raw mut (*this).first).write((*_a0).first);
-        (&raw mut (*this).second).write((*_a0).second);
-    }
-}
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, CppFromUnsafe, Default)]
 #[cpp_from(i32, new, value)]
@@ -113,28 +87,11 @@ impl p23_2_new_with_initializer_Tracker {
         (&raw mut (*this).self_).write(this);
         (&raw mut (*this).value).write(value);
     }
-    pub unsafe fn copy_from(
-        this: *mut p23_2_new_with_initializer_Tracker,
-        _a0: *const p23_2_new_with_initializer_Tracker,
-    ) {
-        (&raw mut (*this).self_).write((*_a0).self_);
-        (&raw mut (*this).value).write((*_a0).value);
-    }
-    pub unsafe fn move_from(
-        this: *mut p23_2_new_with_initializer_Tracker,
-        _a0: *mut p23_2_new_with_initializer_Tracker,
-    ) {
-        (&raw mut (*this).self_).write((*_a0).self_);
-        (&raw mut (*this).value).write((*_a0).value);
-    }
 }
 pub unsafe fn test_2() {
-    let mut dirty: *mut p23_2_new_with_initializer_Pair = {
-        let __p = Box::into_raw(Box::<p23_2_new_with_initializer_Pair>::new_uninit())
-            as *mut p23_2_new_with_initializer_Pair;
-        p23_2_new_with_initializer_Pair::new_1(__p);
-        __p
-    };
+    let mut dirty: *mut p23_2_new_with_initializer_Pair =
+        (Box::leak(Box::new(<p23_2_new_with_initializer_Pair>::default()))
+            as *mut p23_2_new_with_initializer_Pair);
     (*dirty).first = 23130;
     (*dirty).second = 23130;
     {
@@ -143,16 +100,9 @@ pub unsafe fn test_2() {
             ::std::mem::drop(Box::from_raw(__p))
         }
     };
-    let mut zeroed: *mut p23_2_new_with_initializer_Pair = {
-        let __p = Box::into_raw(Box::<p23_2_new_with_initializer_Pair>::new_uninit())
-            as *mut p23_2_new_with_initializer_Pair;
-        {
-            let __d = __p;
-            __d.write_bytes(0, 1);
-            p23_2_new_with_initializer_Pair::new_1(__d)
-        };
-        __p
-    };
+    let mut zeroed: *mut p23_2_new_with_initializer_Pair =
+        (Box::leak(Box::new(<p23_2_new_with_initializer_Pair>::default()))
+            as *mut p23_2_new_with_initializer_Pair);
     assert!((((*zeroed).first) == (0)) && (((*zeroed).second) == (0)));
     {
         let __p = zeroed;
@@ -173,16 +123,11 @@ pub unsafe fn test_2() {
             ::std::mem::drop(Box::from_raw(__p))
         }
     };
-    let mut braces: *mut p23_2_new_with_initializer_Pair = {
-        let __p = Box::into_raw(Box::<p23_2_new_with_initializer_Pair>::new_uninit())
-            as *mut p23_2_new_with_initializer_Pair;
-        {
-            let __d = __p;
-            (&raw mut (*__d).first).write(1);
-            (&raw mut (*__d).second).write(2);
-        };
-        __p
-    };
+    let mut braces: *mut p23_2_new_with_initializer_Pair =
+        (Box::leak(Box::new(p23_2_new_with_initializer_Pair {
+            first: 1,
+            second: 2,
+        })) as *mut p23_2_new_with_initializer_Pair);
     assert!((((*braces).first) == (1)) && (((*braces).second) == (2)));
     {
         let __p = braces;
@@ -219,5 +164,5 @@ unsafe fn main_0() -> i32 {
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {
-    (*&raw const constructed_0).get();
+    std::cell::LazyCell::force(&*&raw const constructed_0);
 }

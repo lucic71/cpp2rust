@@ -80,20 +80,9 @@ pub struct AssertsDtorCountAtExit {
     #[offset(0)]
     pub expected: i32,
 }
-impl AssertsDtorCountAtExit {
-    pub fn new_1(this: Ptr<AssertsDtorCountAtExit>) {}
-    pub fn copy_from(this: Ptr<AssertsDtorCountAtExit>, _a0: Ptr<AssertsDtorCountAtExit>) {
-        field!(this, expected).write(_a0.with(|__s| __s.expected));
-    }
-}
 #[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
 #[byte_size(1)]
 pub struct X {}
-impl X {
-    pub fn new_1(this: Ptr<X>) {}
-    pub fn copy_from(this: Ptr<X>, _a0: Ptr<X>) {}
-    pub fn move_from(this: Ptr<X>, _a0: Ptr<X>) {}
-}
 thread_local!(
     static local_4: Value<LifetimeTracked> = {
         let __static = {
@@ -109,15 +98,7 @@ thread_local!(
 );
 thread_local!(
     pub static check_5: Value<AssertsDtorCountAtExit> = {
-        let __static = {
-            let __v: Value<AssertsDtorCountAtExit> =
-                Rc::new(RefCell::new(<AssertsDtorCountAtExit>::uninit()));
-            {
-                let __d = __v.as_pointer();
-                field!(__d, expected).write(1);
-            };
-            __v
-        };
+        let __static = Rc::new(RefCell::new(AssertsDtorCountAtExit { expected: 1 }));
         libcc2rs::register_static_destructor(|| {
             check_5.with(Value::clone).as_pointer().destructor()
         });
@@ -130,8 +111,7 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     assert!((ctorCount_0.with(|rc| *rc.borrow()) == 0));
-    let x: Value<X> = Rc::new(RefCell::new(<X>::uninit()));
-    X::new_1(x.as_pointer());
+    let x: Value<X> = Rc::new(RefCell::new(<X>::default()));
     ({
         XImpl::h(
             &x.as_pointer(),
@@ -149,8 +129,7 @@ fn main_0() -> i32 {
     return 0;
 }
 pub fn b_call_6() {
-    let x: Value<X> = Rc::new(RefCell::new(<X>::uninit()));
-    X::new_1(x.as_pointer());
+    let x: Value<X> = Rc::new(RefCell::new(<X>::default()));
     ({
         XImpl::h(
             &x.as_pointer(),

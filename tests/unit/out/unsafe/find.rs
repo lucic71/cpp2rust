@@ -15,13 +15,6 @@ impl P {
     pub unsafe fn operator_eq(&self, o: *const P) -> bool {
         return ((self.x) == ((*o).x));
     }
-    pub unsafe fn new_1(this: *mut P) {}
-    pub unsafe fn copy_from(this: *mut P, _a0: *const P) {
-        (&raw mut (*this).x).write((*_a0).x);
-    }
-    pub unsafe fn move_from(this: *mut P, _a0: *mut P) {
-        (&raw mut (*this).x).write((*_a0).x);
-    }
 }
 impl std::cmp::PartialEq for P {
     fn eq(&self, other: &Self) -> bool {

@@ -12,17 +12,6 @@ pub struct Point {
     pub x: i32,
     pub y: i32,
 }
-impl Point {
-    pub unsafe fn new_1(this: *mut Point) {}
-    pub unsafe fn copy_from(this: *mut Point, _a0: *const Point) {
-        (&raw mut (*this).x).write((*_a0).x);
-        (&raw mut (*this).y).write((*_a0).y);
-    }
-    pub unsafe fn move_from(this: *mut Point, _a0: *mut Point) {
-        (&raw mut (*this).x).write((*_a0).x);
-        (&raw mut (*this).y).write((*_a0).y);
-    }
-}
 pub unsafe fn set_0(mut ref_: *mut i32, mut val: i32) {
     (*ref_) = val;
 }
@@ -56,12 +45,7 @@ unsafe fn main_0() -> i32 {
         i1,
         (unsafe { read_1(ref_1,) }),
     );
-    let mut point: Point = ::std::mem::MaybeUninit::uninit().assume_init();
-    {
-        let __d = &raw mut point;
-        (&raw mut (*__d).x).write(3);
-        (&raw mut (*__d).y).write(4);
-    };
+    let mut point: Point = Point { x: 3, y: 4 };
     let mut point_ref: *mut Point = &mut point;
     (*point_ref).x = 30;
     (*point_ref).y = 40;

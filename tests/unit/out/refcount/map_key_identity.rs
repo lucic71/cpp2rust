@@ -17,17 +17,6 @@ pub struct Key {
     #[offset(4)]
     pub identity: i32,
 }
-impl Key {
-    pub fn copy_from(this: Ptr<Key>, _a0: Ptr<Key>) {
-        field!(this, order).write(_a0.with(|__s| __s.order));
-        field!(this, identity).write(_a0.with(|__s| __s.identity));
-    }
-    pub fn move_from(this: Ptr<Key>, _a0: Ptr<Key>) {
-        field!(this, order).write({ (*_a0.upgrade().deref()).order });
-        field!(this, identity).write({ (*_a0.upgrade().deref()).identity });
-    }
-    pub fn new_1(this: Ptr<Key>) {}
-}
 impl CppLess for Key {
     fn less(__lhs: &Ptr<Self>, __rhs: &Ptr<Self>) -> bool {
         operator_lt_1(__lhs.clone(), __rhs.clone())
@@ -55,12 +44,6 @@ impl Mapped {
         field!(this, value).write(0);
         (*default_constructions_0.with(Value::clone).borrow_mut()).prefix_inc();
     }
-    pub fn copy_from(this: Ptr<Mapped>, _a0: Ptr<Mapped>) {
-        field!(this, value).write(_a0.with(|__s| __s.value));
-    }
-    pub fn move_from(this: Ptr<Mapped>, _a0: Ptr<Mapped>) {
-        field!(this, value).write({ (*_a0.upgrade().deref()).value });
-    }
 }
 impl Default for Mapped {
     fn default() -> Self {
@@ -80,18 +63,14 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     let mut ok: bool = true;
-    let distinct_a: Value<Key> = Rc::new(RefCell::new(<Key>::uninit()));
-    {
-        let __d = distinct_a.as_pointer();
-        field!(__d, order).write(1);
-        field!(__d, identity).write(7);
-    };
-    let distinct_b: Value<Key> = Rc::new(RefCell::new(<Key>::uninit()));
-    {
-        let __d = distinct_b.as_pointer();
-        field!(__d, order).write(2);
-        field!(__d, identity).write(7);
-    };
+    let distinct_a: Value<Key> = Rc::new(RefCell::new(Key {
+        order: 1,
+        identity: 7,
+    }));
+    let distinct_b: Value<Key> = Rc::new(RefCell::new(Key {
+        order: 2,
+        identity: 7,
+    }));
     {
         let rhs_0 = ((ok as i32)
             & (({
@@ -219,18 +198,14 @@ fn main_0() -> i32 {
         distinct_count.prefix_inc();
     }
     ok = { ((ok as i32) & ((distinct_count == 2_usize) as i32)) != 0 };
-    let equivalent_a: Value<Key> = Rc::new(RefCell::new(<Key>::uninit()));
-    {
-        let __d = equivalent_a.as_pointer();
-        field!(__d, order).write(3);
-        field!(__d, identity).write(8);
-    };
-    let equivalent_b: Value<Key> = Rc::new(RefCell::new(<Key>::uninit()));
-    {
-        let __d = equivalent_b.as_pointer();
-        field!(__d, order).write(3);
-        field!(__d, identity).write(9);
-    };
+    let equivalent_a: Value<Key> = Rc::new(RefCell::new(Key {
+        order: 3,
+        identity: 8,
+    }));
+    let equivalent_b: Value<Key> = Rc::new(RefCell::new(Key {
+        order: 3,
+        identity: 9,
+    }));
     {
         let rhs_0 = ((ok as i32)
             & (!({
@@ -352,12 +327,10 @@ fn main_0() -> i32 {
             != 0;
         ok = rhs_0
     };
-    let later_key: Value<Key> = Rc::new(RefCell::new(<Key>::uninit()));
-    {
-        let __d = later_key.as_pointer();
-        field!(__d, order).write(4);
-        field!(__d, identity).write(10);
-    };
+    let later_key: Value<Key> = Rc::new(RefCell::new(Key {
+        order: 4,
+        identity: 10,
+    }));
     let later: Ptr<Mapped> =
         ({ (*equivalent.borrow_mut()).subscript(later_key.as_pointer(), || <Mapped>::default()) });
     field!(later, value).write(41);
@@ -400,24 +373,18 @@ fn main_0() -> i32 {
             ok = rhs_0
         };
     }
-    let matching_a: Value<Key> = Rc::new(RefCell::new(<Key>::uninit()));
-    {
-        let __d = matching_a.as_pointer();
-        field!(__d, order).write(5);
-        field!(__d, identity).write(5);
-    };
-    let matching_b: Value<Key> = Rc::new(RefCell::new(<Key>::uninit()));
-    {
-        let __d = matching_b.as_pointer();
-        field!(__d, order).write(5);
-        field!(__d, identity).write(5);
-    };
-    let matching_c: Value<Key> = Rc::new(RefCell::new(<Key>::uninit()));
-    {
-        let __d = matching_c.as_pointer();
-        field!(__d, order).write(6);
-        field!(__d, identity).write(6);
-    };
+    let matching_a: Value<Key> = Rc::new(RefCell::new(Key {
+        order: 5,
+        identity: 5,
+    }));
+    let matching_b: Value<Key> = Rc::new(RefCell::new(Key {
+        order: 5,
+        identity: 5,
+    }));
+    let matching_c: Value<Key> = Rc::new(RefCell::new(Key {
+        order: 6,
+        identity: 6,
+    }));
     let mut before_matching: i32 = default_constructions_0.with(|rc| *rc.borrow());
     let matching: Value<Map<Key, (Value<Key>, Value<Mapped>)>> = Rc::new(RefCell::new(Map::new()));
     let matched: Ptr<Mapped> =

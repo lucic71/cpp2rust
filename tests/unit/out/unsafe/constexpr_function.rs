@@ -30,17 +30,10 @@ impl Flag {
     pub unsafe fn to_bool(&self) -> bool {
         return ((self.v) != (0));
     }
-    pub unsafe fn new_1(this: *mut Flag) {}
-    pub unsafe fn copy_from(this: *mut Flag, _a0: *const Flag) {
-        (&raw mut (*this).v).write((*_a0).v);
-    }
-    pub unsafe fn move_from(this: *mut Flag, _a0: *mut Flag) {
-        (&raw mut (*this).v).write((*_a0).v);
-    }
 }
-pub unsafe fn use_4(f: *mut Flag) -> i32 {
-    assert!((unsafe { Flag::to_bool(&(*f),) }));
-    return (*f).v;
+pub unsafe fn use_4(mut f: Flag) -> i32 {
+    assert!((unsafe { Flag::to_bool(&f,) }));
+    return f.v;
 }
 pub unsafe fn checked_5(mut x: i32) -> i32 {
     assert!(((x) > (0)));
@@ -63,13 +56,6 @@ impl P {
     pub unsafe fn get(&self) -> i32 {
         return self.v;
     }
-    pub unsafe fn new_1(this: *mut P) {}
-    pub unsafe fn copy_from(this: *mut P, _a0: *const P) {
-        (&raw mut (*this).v).write((*_a0).v);
-    }
-    pub unsafe fn move_from(this: *mut P, _a0: *mut P) {
-        (&raw mut (*this).v).write((*_a0).v);
-    }
 }
 pub fn main() {
     unsafe {
@@ -89,38 +75,12 @@ unsafe fn main_0() -> i32 {
     assert!(((unsafe { checked_5(1,) }) == (2)));
     let c: i32 = (unsafe { checked_5(4) });
     assert!(((c) == (5)));
-    assert!(
-        ((unsafe {
-            use_4((|__p: *mut Flag| {
-                {
-                    let __d = __p;
-                    (&raw mut (*__d).v).write(2);
-                };
-                __p
-            })(
-                (&mut ::std::mem::MaybeUninit::<Flag>::uninit()).as_mut_ptr(),
-            ))
-        }) == (2))
-    );
-    let u: i32 = (unsafe {
-        use_4((|__p: *mut Flag| {
-            {
-                let __d = __p;
-                (&raw mut (*__d).v).write(3);
-            };
-            __p
-        })(
-            (&mut ::std::mem::MaybeUninit::<Flag>::uninit()).as_mut_ptr(),
-        ))
-    });
+    assert!(((unsafe { use_4(Flag { v: 2 },) }) == (2)));
+    let u: i32 = (unsafe { use_4(Flag { v: 3 }) });
     assert!(((u) == (3)));
     let mut ptr: *mut i32 = arr.as_mut_ptr();
     assert!(!(ptr).is_null());
-    let mut p: P = ::std::mem::MaybeUninit::uninit().assume_init();
-    {
-        let __d = &raw mut p;
-        (&raw mut (*__d).v).write(9);
-    };
+    let mut p: P = P { v: 9 };
     assert!(((unsafe { P::get(&p,) }) == (9)));
     let k: i32 = (unsafe { scaled_2(4) });
     assert!(((k) == (4)));
@@ -128,13 +88,12 @@ unsafe fn main_0() -> i32 {
     assert!(ce);
     let n: i32 = if true { 13 } else { 17 };
     assert!(((n) == (13)));
-    assert!((*(*&raw const s_8).get()));
+    assert!((*std::cell::LazyCell::force_mut(&mut *&raw mut s_8)));
     let mut rt: bool = false;
     assert!(!(rt));
     let mut b: bool = (unsafe { imm_7(true) });
     assert!(b);
     return 0;
 }
-static mut s_8: libcc2rs::LazyStorage<bool> =
-    libcc2rs::LazyStorage::new(|__p| unsafe { __p.write(true) });
+static mut s_8: std::cell::LazyCell<bool> = std::cell::LazyCell::new(|| unsafe { true });
 pub unsafe fn __cpp2rust_init_globals() {}

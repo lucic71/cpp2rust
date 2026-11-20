@@ -17,12 +17,6 @@ impl Degrees {
     pub fn new(this: Ptr<Degrees>, mut v: i32) {
         field!(this, value).write(v);
     }
-    pub fn copy_from(this: Ptr<Degrees>, _a0: Ptr<Degrees>) {
-        field!(this, value).write(_a0.with(|__s| __s.value));
-    }
-    pub fn move_from(this: Ptr<Degrees>, _a0: Ptr<Degrees>) {
-        field!(this, value).write({ (*_a0.upgrade().deref()).value });
-    }
 }
 #[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, CppFrom, Default)]
 #[cpp_into(i64, to_i64)]
@@ -30,15 +24,6 @@ impl Degrees {
 pub struct Reading {
     #[offset(0)]
     pub raw_: i32,
-}
-impl Reading {
-    pub fn new_1(this: Ptr<Reading>) {}
-    pub fn copy_from(this: Ptr<Reading>, _a0: Ptr<Reading>) {
-        field!(this, raw_).write(_a0.with(|__s| __s.raw_));
-    }
-    pub fn move_from(this: Ptr<Reading>, _a0: Ptr<Reading>) {
-        field!(this, raw_).write({ (*_a0.upgrade().deref()).raw_ });
-    }
 }
 pub fn main() {
     __cpp2rust_init_globals();
@@ -213,20 +198,10 @@ fn main_0() -> i32 {
         __v
     };
     assert!((v7[1_usize].value == 5));
-    let readings: Value<Box<[Reading]>> = Rc::new(RefCell::new(
-        (0..2).map(|_| <Reading>::uninit()).collect::<Box<[_]>>(),
-    ));
-    {
-        let __d = readings.decay();
-        {
-            let __d = __d.offset(0);
-            field!(__d, raw_).write(4);
-        };
-        {
-            let __d = __d.offset(1);
-            field!(__d, raw_).write(5);
-        };
-    };
+    let readings: Value<Box<[Reading]>> = Rc::new(RefCell::new(Box::new([
+        Reading { raw_: 4 },
+        Reading { raw_: 5 },
+    ])));
     let mut v8: Vec<i64> = {
         let mut __tmp_14 = { readings.decay().offset((2) as isize) };
         let mut __v = Vec::new();

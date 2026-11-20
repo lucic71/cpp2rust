@@ -99,15 +99,6 @@ pub struct Item {
     #[offset(0)]
     pub value: i32,
 }
-impl Item {
-    pub fn new_1(this: Ptr<Item>) {}
-    pub fn copy_from(this: Ptr<Item>, _a0: Ptr<Item>) {
-        field!(this, value).write(_a0.with(|__s| __s.value));
-    }
-    pub fn move_from(this: Ptr<Item>, _a0: Ptr<Item>) {
-        field!(this, value).write({ (*_a0.upgrade().deref()).value });
-    }
-}
 pub fn read_array_7(value: Ptr<i32>) -> i32 {
     return (elem!(value, 0).read());
 }
@@ -135,23 +126,18 @@ thread_local!(
             }])));
             read_array_7(__tmp_7.decay())
         }) + ({
-            __tmp_10 = {
-                let __v: Value<Item> = Rc::new(RefCell::new(<Item>::uninit()));
-                {
-                    let __d = __v.as_pointer();
-                    field!(__d, value).write({
-                        __tmp_11 = Rc::new(RefCell::new(5));
-                        __tmp_12 = Rc::new(RefCell::new(6));
-                        (if CppLess::less(&__tmp_11.as_pointer(), &__tmp_12.as_pointer()) {
-                            __tmp_12.as_pointer()
-                        } else {
-                            __tmp_11.as_pointer()
-                        }
-                        .read())
-                    });
-                };
-                __v
-            };
+            __tmp_10 = Rc::new(RefCell::new(Item {
+                value: {
+                    __tmp_11 = Rc::new(RefCell::new(5));
+                    __tmp_12 = Rc::new(RefCell::new(6));
+                    (if CppLess::less(&__tmp_11.as_pointer(), &__tmp_12.as_pointer()) {
+                        __tmp_12.as_pointer()
+                    } else {
+                        __tmp_11.as_pointer()
+                    }
+                    .read())
+                },
+            }));
             read_record_8(__tmp_10.as_pointer())
         }))
     }));
@@ -233,23 +219,18 @@ thread_local!(
             }])));
             read_array_7(__tmp_15.decay())
         }) + ({
-            __tmp_18 = {
-                let __v: Value<Item> = Rc::new(RefCell::new(<Item>::uninit()));
-                {
-                    let __d = __v.as_pointer();
-                    field!(__d, value).write({
-                        __tmp_19 = Rc::new(RefCell::new(10));
-                        __tmp_20 = Rc::new(RefCell::new(9));
-                        (if CppLess::less(&__tmp_19.as_pointer(), &__tmp_20.as_pointer()) {
-                            __tmp_19.as_pointer()
-                        } else {
-                            __tmp_20.as_pointer()
-                        }
-                        .read())
-                    });
-                };
-                __v
-            };
+            __tmp_18 = Rc::new(RefCell::new(Item {
+                value: {
+                    __tmp_19 = Rc::new(RefCell::new(10));
+                    __tmp_20 = Rc::new(RefCell::new(9));
+                    (if CppLess::less(&__tmp_19.as_pointer(), &__tmp_20.as_pointer()) {
+                        __tmp_19.as_pointer()
+                    } else {
+                        __tmp_20.as_pointer()
+                    }
+                    .read())
+                },
+            }));
             read_record_8(__tmp_18.as_pointer())
         }))
     }));

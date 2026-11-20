@@ -13,19 +13,6 @@ pub struct Edge {
     pub v: i32,
     pub weight: f64,
 }
-impl Edge {
-    pub unsafe fn new_1(this: *mut Edge) {}
-    pub unsafe fn copy_from(this: *mut Edge, _a0: *const Edge) {
-        (&raw mut (*this).u).write((*_a0).u);
-        (&raw mut (*this).v).write((*_a0).v);
-        (&raw mut (*this).weight).write((*_a0).weight);
-    }
-    pub unsafe fn move_from(this: *mut Edge, _a0: *mut Edge) {
-        (&raw mut (*this).u).write((*_a0).u);
-        (&raw mut (*this).v).write((*_a0).v);
-        (&raw mut (*this).weight).write((*_a0).weight);
-    }
-}
 pub unsafe fn partition_0(arr: *mut Option<Box<[Edge]>>, mut start: i32, mut end: i32) -> i32 {
     let pivot: *mut Edge = &mut (*(*arr)
         .as_deref()
@@ -48,30 +35,22 @@ pub unsafe fn partition_0(arr: *mut Option<Box<[Edge]>>, mut start: i32, mut end
         }
     }
     let mut pidx: i32 = ((start) + (count));
-    let mut tmp: Edge = ::std::mem::MaybeUninit::uninit().assume_init();
-    {
-        let __d = &raw mut tmp;
-        (&raw mut (*__d).u).write(
-            (*(*arr)
-                .as_deref()
-                .map_or(::std::ptr::null_mut(), |s| s.as_ptr() as *mut Edge)
-                .add((pidx as usize)))
-            .u,
-        );
-        (&raw mut (*__d).v).write(
-            (*(*arr)
-                .as_deref()
-                .map_or(::std::ptr::null_mut(), |s| s.as_ptr() as *mut Edge)
-                .add((pidx as usize)))
-            .v,
-        );
-        (&raw mut (*__d).weight).write(
-            (*(*arr)
-                .as_deref()
-                .map_or(::std::ptr::null_mut(), |s| s.as_ptr() as *mut Edge)
-                .add((pidx as usize)))
-            .weight,
-        );
+    let mut tmp: Edge = Edge {
+        u: (*(*arr)
+            .as_deref()
+            .map_or(::std::ptr::null_mut(), |s| s.as_ptr() as *mut Edge)
+            .add((pidx as usize)))
+        .u,
+        v: (*(*arr)
+            .as_deref()
+            .map_or(::std::ptr::null_mut(), |s| s.as_ptr() as *mut Edge)
+            .add((pidx as usize)))
+        .v,
+        weight: (*(*arr)
+            .as_deref()
+            .map_or(::std::ptr::null_mut(), |s| s.as_ptr() as *mut Edge)
+            .add((pidx as usize)))
+        .weight,
     };
     (*(*arr)
         .as_deref()

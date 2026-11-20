@@ -89,24 +89,11 @@ pub struct p1_1_condition_variable_visible_in_else_ConvertsToBool {
     #[offset(0)]
     pub value: i32,
 }
-impl p1_1_condition_variable_visible_in_else_ConvertsToBool {
-    pub fn new_1(this: Ptr<p1_1_condition_variable_visible_in_else_ConvertsToBool>) {}
-    pub fn copy_from(
-        this: Ptr<p1_1_condition_variable_visible_in_else_ConvertsToBool>,
-        _a0: Ptr<p1_1_condition_variable_visible_in_else_ConvertsToBool>,
-    ) {
-        field!(this, value).write(_a0.with(|__s| __s.value));
-    }
-}
 pub fn test_7() {
     {
         let condition: Value<p1_1_condition_variable_visible_in_else_ConvertsToBool> = Rc::new(
-            RefCell::new(<p1_1_condition_variable_visible_in_else_ConvertsToBool>::uninit()),
+            RefCell::new(p1_1_condition_variable_visible_in_else_ConvertsToBool { value: 0 }),
         );
-        {
-            let __d = condition.as_pointer();
-            field!(__d, value).write(0);
-        };
         let _dtor_condition =
             std::mem::DropGuard::new(condition.clone(), |__p| __p.as_pointer().destructor());
         if ({
@@ -126,12 +113,8 @@ pub fn test_7() {
     assert!((dtorCount_6.with(|rc| *rc.borrow()) == 1));
     {
         let condition: Value<p1_1_condition_variable_visible_in_else_ConvertsToBool> = Rc::new(
-            RefCell::new(<p1_1_condition_variable_visible_in_else_ConvertsToBool>::uninit()),
+            RefCell::new(p1_1_condition_variable_visible_in_else_ConvertsToBool { value: 6 }),
         );
-        {
-            let __d = condition.as_pointer();
-            field!(__d, value).write(6);
-        };
         let _dtor_condition =
             std::mem::DropGuard::new(condition.clone(), |__p| __p.as_pointer().destructor());
         if ({

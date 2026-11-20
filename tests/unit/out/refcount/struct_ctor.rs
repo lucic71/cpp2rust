@@ -25,14 +25,6 @@ impl StructWithCtor {
             __v.prefix_dec();
         });
     }
-    pub fn copy_from(this: Ptr<StructWithCtor>, _a0: Ptr<StructWithCtor>) {
-        field!(this, x1_).write(_a0.with(|__s| __s.x1_));
-        field!(this, x2_).write(_a0.with(|__s| __s.x2_));
-    }
-    pub fn move_from(this: Ptr<StructWithCtor>, _a0: Ptr<StructWithCtor>) {
-        field!(this, x1_).write({ (*_a0.upgrade().deref()).x1_ });
-        field!(this, x2_).write({ (*_a0.upgrade().deref()).x2_ });
-    }
 }
 pub fn foo_0(x: Ptr<i32>) -> Ptr<i32> {
     return (x).clone();
@@ -47,12 +39,6 @@ pub struct Value_ {
 impl Value_ {
     pub fn new(this: Ptr<Value_>, mut u: i32) {
         field!(this, v).write(u);
-    }
-    pub fn copy_from(this: Ptr<Value_>, _a0: Ptr<Value_>) {
-        field!(this, v).write(_a0.with(|__s| __s.v));
-    }
-    pub fn move_from(this: Ptr<Value_>, _a0: Ptr<Value_>) {
-        field!(this, v).write({ (*_a0.upgrade().deref()).v });
     }
 }
 #[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg)]
@@ -69,14 +55,6 @@ impl Ptr_ {
     pub fn new(this: Ptr<Ptr_>) {
         Value_::new(field_ptr!(this, v1), { 11 });
         Value_::new(field_ptr!(this, v2), { 22 });
-    }
-    pub fn copy_from(this: Ptr<Ptr_>, _a0: Ptr<Ptr_>) {
-        Value_::copy_from(field_ptr!(this, v1), { field_ptr!(_a0, v1) });
-        Value_::copy_from(field_ptr!(this, v2), { field_ptr!(_a0, v2) });
-    }
-    pub fn move_from(this: Ptr<Ptr_>, _a0: Ptr<Ptr_>) {
-        Value_::move_from(field_ptr!(this, v1), { field_ptr!(_a0, v1) });
-        Value_::move_from(field_ptr!(this, v2), { field_ptr!(_a0, v2) });
     }
 }
 impl Default for Ptr_ {

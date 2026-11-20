@@ -19,12 +19,6 @@ impl A {
     pub unsafe fn new_1(this: *mut A, mut v: i32) {
         (&raw mut (*this).v).write(v);
     }
-    pub unsafe fn copy_from(this: *mut A, _a0: *const A) {
-        (&raw mut (*this).v).write((*_a0).v);
-    }
-    pub unsafe fn move_from(this: *mut A, _a0: *mut A) {
-        (&raw mut (*this).v).write((*_a0).v);
-    }
 }
 impl Default for A {
     fn default() -> Self {
@@ -45,12 +39,6 @@ pub struct B {
 impl B {
     pub unsafe fn new(this: *mut B) {
         (&raw mut (*this).v).write(2);
-    }
-    pub unsafe fn copy_from(this: *mut B, _a0: *const B) {
-        (&raw mut (*this).v).write((*_a0).v);
-    }
-    pub unsafe fn move_from(this: *mut B, _a0: *mut B) {
-        (&raw mut (*this).v).write((*_a0).v);
     }
 }
 impl Default for B {
@@ -73,12 +61,6 @@ pub struct NoDefault {
 impl NoDefault {
     pub unsafe fn new(this: *mut NoDefault, mut v: i32) {
         (&raw mut (*this).v).write(v);
-    }
-    pub unsafe fn copy_from(this: *mut NoDefault, _a0: *const NoDefault) {
-        (&raw mut (*this).v).write((*_a0).v);
-    }
-    pub unsafe fn move_from(this: *mut NoDefault, _a0: *mut NoDefault) {
-        (&raw mut (*this).v).write((*_a0).v);
     }
 }
 pub unsafe fn used_0(x: *mut A) -> i32 {
@@ -105,12 +87,6 @@ impl S_NoDefault_ {
     }
     pub unsafe fn get(&self, t: *mut NoDefault) -> i32 {
         return ((self.v) + ((*t).v));
-    }
-    pub unsafe fn copy_from(this: *mut S_NoDefault_, _a0: *const S_NoDefault_) {
-        (&raw mut (*this).v).write((*_a0).v);
-    }
-    pub unsafe fn move_from(this: *mut S_NoDefault_, _a0: *mut S_NoDefault_) {
-        (&raw mut (*this).v).write((*_a0).v);
     }
 }
 pub fn main() {
