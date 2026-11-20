@@ -6,10 +6,10 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
 #[byte_size(1)]
 pub struct p16_rebind_member_Alloc_std_pair_const_int__int___rebind_std_pair_const_int__int__ {}
-#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg)]
+#[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg)]
 #[byte_size(4)]
 pub struct p16_rebind_member_Alloc_std_pair_const_int__int__ {
     #[offset(0)]
@@ -43,7 +43,7 @@ pub fn test_0() {
     );
     assert!(({ ((*n.borrow()).len() == 1_usize) }));
 }
-#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
 #[byte_size(1)]
 pub struct p18_rebind_to_container_node_Alloc_std_pair_const_int__int__ {}
 pub fn test_1() {

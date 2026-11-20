@@ -6,7 +6,7 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Destructor, Default)]
+#[derive(Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Destructor, Default)]
 #[byte_size(4)]
 pub struct Tracker {
     #[offset(0)]
@@ -19,14 +19,14 @@ impl Tracker {
         __this
     }
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Destructor, Default)]
+#[derive(Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Destructor, Default)]
 #[byte_size(4)]
 pub struct HoldsTracker {
     #[offset(0)]
     #[byte_size(4)]
     pub member: Tracker,
 }
-#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
 #[byte_size(4)]
 pub struct TriviallyDestructible {
     #[offset(0)]
@@ -97,7 +97,7 @@ thread_local!(
     pub static trivial_9: Value<TriviallyDestructible> =
         Rc::new(RefCell::new(TriviallyDestructible { value: 6 }));
 );
-#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
 #[byte_size(1)]
 pub struct p3_reverse_completion_order_WithStaticMember {}
 thread_local!(

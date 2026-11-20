@@ -18,7 +18,7 @@ pub fn via_size_t_param_2(mut b: usize) -> u64 {
 pub fn via_size_t_return_3(mut b: u64) -> usize {
     return (b as usize);
 }
-#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
 #[byte_size(8)]
 pub struct pair {
     #[offset(0)]

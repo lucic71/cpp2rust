@@ -6,7 +6,7 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg)]
+#[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg)]
 #[byte_size(4)]
 pub struct p2_reference_does_not_instantiate_Member {
     #[offset(0)]
@@ -22,7 +22,7 @@ impl Default for p2_reference_does_not_instantiate_Member {
         { p2_reference_does_not_instantiate_Member { value: 1 } }
     }
 }
-#[derive(Record, ByteRepr, FnPtrArg, MoveCtor, Default)]
+#[derive(Record, ByteRepr, Uninit, FnPtrArg, MoveCtor, Default)]
 #[byte_size(4)]
 pub struct p2_reference_does_not_instantiate_Holder {
     #[offset(0)]

@@ -9,7 +9,7 @@ use std::rc::{Rc, Weak};
 thread_local!(
     pub static copyCount_0: Value<i32> = Rc::new(RefCell::new(0));
 );
-#[derive(Record, ByteRepr, VaArg, FnPtrArg, CppFrom, CopyAssign, Default)]
+#[derive(Record, ByteRepr, Uninit, VaArg, FnPtrArg, CppFrom, CopyAssign, Default)]
 #[cpp_from(i32, new, value)]
 #[byte_size(4)]
 pub struct HasConstexprCtor {
@@ -50,7 +50,7 @@ thread_local!(
 thread_local!(
     pub static useCount_4: Value<i32> = Rc::new(RefCell::new(0));
 );
-#[derive(Record, ByteRepr, VaArg, FnPtrArg, CopyAssign, Destructor)]
+#[derive(Record, ByteRepr, Uninit, VaArg, FnPtrArg, CopyAssign, Destructor)]
 #[byte_size(4)]
 pub struct LifetimeTracked {
     #[offset(0)]
@@ -180,7 +180,7 @@ thread_local!(
 pub trait p4_1_pure_virtual_without_definition_HasPureVirtual {
     fn f(&mut self);
 }
-#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
 #[byte_size(8)]
 pub struct p4_1_pure_virtual_without_definition_OverridesPureVirtual {}
 pub fn test_11() {
@@ -279,7 +279,7 @@ pub fn test_17() {
 thread_local!(
     pub static copies_18: Value<i32> = Rc::new(RefCell::new(0_i32));
 );
-#[derive(Record, ByteRepr, VaArg, FnPtrArg, CppFrom, CopyAssign, Default)]
+#[derive(Record, ByteRepr, Uninit, VaArg, FnPtrArg, CppFrom, CopyAssign, Default)]
 #[cpp_from(i32, new, value)]
 #[byte_size(8)]
 pub struct p5_2_mutable_subobject_is_odr_used_HasMutableMember {
@@ -336,7 +336,7 @@ pub fn test_19() {
     assert!(({ (({ (*f.borrow()).call() }) == 5) }));
     assert!((copies_18.with(|rc| *rc.borrow()) == 1));
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, CopyAssign, Destructor, Default)]
+#[derive(Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, CopyAssign, Destructor, Default)]
 #[byte_size(8)]
 pub struct p6_unevaluated_binding_needs_no_capture_HasTwoMembers {
     #[offset(0)]
@@ -367,7 +367,7 @@ pub fn test_20() {
     assert!((copyCount_2.with(|rc| *rc.borrow()) == 0));
     assert!((useCount_4.with(|rc| *rc.borrow()) == 0));
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, CopyAssign, Destructor)]
+#[derive(Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, CopyAssign, Destructor)]
 #[byte_size(8)]
 pub struct p7_member_access_captures_this_HasMemberUsedInLambda {
     #[offset(0)]
@@ -403,7 +403,7 @@ pub fn test_22() {
     assert!(({ ({ (*c.borrow()).x.uses } == 2) }));
     assert!((copyCount_2.with(|rc| *rc.borrow()) == 0));
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, CopyAssign, Destructor, Default)]
+#[derive(Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, CopyAssign, Destructor, Default)]
 #[byte_size(4)]
 pub struct p7_unevaluated_this_needs_no_capture_HasMemberUsedInLambda {
     #[offset(0)]
@@ -448,7 +448,7 @@ pub fn test_26() {
 thread_local!(
     pub static t_ctors_27: Value<i32> = Rc::new(RefCell::new(0_i32));
 );
-#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg)]
+#[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg)]
 #[byte_size(1)]
 pub struct p9_destructor_not_potentially_invoked_HasUndefinedDestructor {}
 impl p9_destructor_not_potentially_invoked_HasUndefinedDestructor {
@@ -472,7 +472,7 @@ pub fn test_28() {
 thread_local!(
     pub static ctor_calls_29: Value<i32> = Rc::new(RefCell::new(0_i32));
 );
-#[derive(Record, ByteRepr, FnPtrArg)]
+#[derive(Record, ByteRepr, Uninit, FnPtrArg)]
 #[byte_size(4)]
 pub struct p9_unused_copy_constructor_HasUndefinedCopyCtor {
     #[offset(0)]
@@ -503,7 +503,7 @@ pub fn test_31() {
 thread_local!(
     pub static m_ctors_32: Value<i32> = Rc::new(RefCell::new(0_i32));
 );
-#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg)]
+#[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg)]
 #[byte_size(1)]
 pub struct p9_unused_implicit_assignment_HasUndefinedCopyAssignment {}
 impl p9_unused_implicit_assignment_HasUndefinedCopyAssignment {
@@ -518,7 +518,7 @@ impl Default for p9_unused_implicit_assignment_HasUndefinedCopyAssignment {
         { p9_unused_implicit_assignment_HasUndefinedCopyAssignment::new() }
     }
 }
-#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
 #[byte_size(1)]
 pub struct p9_unused_implicit_assignment_HasMemberWithUndefinedCopyAssignment {
     #[offset(0)]

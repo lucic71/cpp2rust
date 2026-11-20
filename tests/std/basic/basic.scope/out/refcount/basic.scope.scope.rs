@@ -44,7 +44,7 @@ pub const p2_11_unscoped_enumerator_in_both_scopes_HasUnscopedEnum_Size_small:
     p2_11_unscoped_enumerator_in_both_scopes_HasUnscopedEnum_Size = 3;
 pub const p2_11_unscoped_enumerator_in_both_scopes_HasUnscopedEnum_Size_large:
     p2_11_unscoped_enumerator_in_both_scopes_HasUnscopedEnum_Size = 8;
-#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
 #[byte_size(1)]
 pub struct p2_11_unscoped_enumerator_in_both_scopes_HasUnscopedEnum {}
 pub fn test_5() {
@@ -72,7 +72,7 @@ pub fn test_5() {
 thread_local!(
     pub static count_6: Value<i32> = Rc::new(RefCell::new(0));
 );
-#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
 #[byte_size(1)]
 pub struct p2_12_class_name_in_own_scope_HasStaticCounter {}
 impl p2_12_class_name_in_own_scope_HasStaticCounter {
@@ -88,11 +88,12 @@ pub fn test_7() {
     count_6.with(|rc| *rc.borrow_mut() = 6);
     assert!((count_6.with(|rc| *rc.borrow()) == 6));
 }
-#[derive(VaArg, FnPtrArg, ByteRepr, Clone)]
+#[derive(VaArg, FnPtrArg, ByteRepr, Clone, Uninit)]
 #[byte_size(8)]
 pub struct anon_8 {
     #[offset(0)]
     #[byte_size(8)]
+    #[array_len(8)]
     __bytes: Box<[u8]>,
 }
 impl anon_8 {
@@ -113,11 +114,12 @@ impl Default for anon_8 {
 thread_local!(
     pub static anon_8: Value<anon_8> = Rc::new(RefCell::new(<anon_8>::default()));
 );
-#[derive(VaArg, FnPtrArg, ByteRepr, Clone)]
+#[derive(VaArg, FnPtrArg, ByteRepr, Clone, Uninit)]
 #[byte_size(8)]
 pub struct anon_9 {
     #[offset(0)]
     #[byte_size(8)]
+    #[array_len(8)]
     __bytes: Box<[u8]>,
 }
 impl anon_9 {
@@ -135,7 +137,7 @@ impl Default for anon_9 {
         }
     }
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
 #[byte_size(16)]
 pub struct p2_13_anonymous_union_members_in_parent_scope_HasAnonymousUnion {
     #[offset(0)]
@@ -171,11 +173,12 @@ pub fn test_10() {
     anon_11::block_ratio(anon_11.as_pointer()).write(0.75_f64);
     assert!(((anon_11::block_ratio(anon_11.as_pointer()).read()) == 0.75_f64));
 }
-#[derive(VaArg, FnPtrArg, ByteRepr, Clone)]
+#[derive(VaArg, FnPtrArg, ByteRepr, Clone, Uninit)]
 #[byte_size(8)]
 pub struct anon_11 {
     #[offset(0)]
     #[byte_size(8)]
+    #[array_len(8)]
     __bytes: Box<[u8]>,
 }
 impl anon_11 {
@@ -193,7 +196,7 @@ impl Default for anon_11 {
         }
     }
 }
-#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg)]
+#[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg)]
 #[byte_size(8)]
 pub struct p3_2_const_qualified_member_is_distinct_HasConstOverload {
     #[offset(0)]
@@ -237,7 +240,7 @@ thread_local!(
 thread_local!(
     pub static rvalue_calls_14: Value<i32> = Rc::new(RefCell::new(0));
 );
-#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg)]
+#[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg)]
 #[byte_size(4)]
 pub struct p3_2_explicit_object_and_rvalue_members_are_distinct_HasExplicitObjectOverload {
     #[offset(0)]
@@ -279,7 +282,7 @@ thread_local!(
 thread_local!(
     pub static rvalue_calls_17: Value<i32> = Rc::new(RefCell::new(0));
 );
-#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
 #[byte_size(1)]
 pub struct p3_2_ref_qualified_members_are_distinct_HasRefQualifiedOverloads {}
 pub fn test_18() {
@@ -317,7 +320,7 @@ pub fn test_18() {
     assert!((lvalue_calls_16.with(|rc| *rc.borrow()) == 1));
     assert!((rvalue_calls_17.with(|rc| *rc.borrow()) == 2));
 }
-#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg)]
+#[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg)]
 #[byte_size(8)]
 pub struct p3_4_const_qualified_member_templates_are_distinct_HasConstTemplateOverload {
     #[offset(0)]
@@ -364,7 +367,7 @@ thread_local!(
 thread_local!(
     pub static rvalue_calls_21: Value<i32> = Rc::new(RefCell::new(0));
 );
-#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
 #[byte_size(1)]
 pub struct p3_4_ref_qualified_member_templates_are_distinct_HasRefQualifiedTemplateOverloads {}
 pub fn test_22() {
@@ -394,14 +397,14 @@ pub fn test_22() {
 thread_local!(
     pub static friend_calls_23: Value<i32> = Rc::new(RefCell::new(0_i32));
 );
-#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
 #[byte_size(1)]
 pub struct p4_friend_definition_defines_earlier_friend_declaration_DeclaresFriend {}
 pub fn shared_friend_24() -> i32 {
     (*friend_calls_23.with(Value::clone).borrow_mut()).prefix_inc();
     return 7;
 }
-#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
 #[byte_size(1)]
 pub struct p4_friend_definition_defines_earlier_friend_declaration_DefinesFriend {}
 pub fn test_25() {
@@ -433,7 +436,7 @@ pub fn test_30() {
 thread_local!(
     pub static function_calls_31: Value<i32> = Rc::new(RefCell::new(0_i32));
 );
-#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
 #[byte_size(4)]
 pub struct p4_2_class_and_function_share_name_Reading {
     #[offset(0)]
@@ -451,7 +454,7 @@ pub fn test_33() {
     assert!((({ Reading_32(reading.value,) }) == 5));
     assert!((function_calls_31.with(|rc| *rc.borrow()) == 1));
 }
-#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
 #[byte_size(4)]
 pub struct p4_2_class_and_variable_share_name_Limit {
     #[offset(0)]

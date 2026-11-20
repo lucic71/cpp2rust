@@ -9,11 +9,12 @@ use std::rc::{Rc, Weak};
 pub type Kind_enum = u32;
 pub const Kind_enum_KIND_NONE: Kind_enum = 0;
 pub const Kind_enum_KIND_DONE: Kind_enum = 1;
-#[derive(VaArg, FnPtrArg, ByteRepr, Clone)]
+#[derive(VaArg, FnPtrArg, ByteRepr, Clone, Uninit)]
 #[byte_size(8)]
 pub struct anon_0 {
     #[offset(0)]
     #[byte_size(8)]
+    #[array_len(8)]
     __bytes: Box<[u8]>,
 }
 impl anon_0 {
@@ -31,7 +32,7 @@ impl Default for anon_0 {
         }
     }
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
 #[byte_size(24)]
 pub struct Event {
     #[offset(0)]

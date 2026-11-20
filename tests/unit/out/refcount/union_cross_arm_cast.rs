@@ -6,13 +6,14 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg)]
+#[derive(Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg)]
 #[byte_size(16)]
 pub struct shape_a {
     #[offset(0)]
     pub code: u16,
     #[offset(2)]
     #[byte_size(14)]
+    #[array_len(14)]
     pub pad: Box<[i8]>,
 }
 impl Default for shape_a {
@@ -25,7 +26,7 @@ impl Default for shape_a {
         }
     }
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg)]
+#[derive(Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg)]
 #[byte_size(28)]
 pub struct shape_b {
     #[offset(0)]
@@ -36,6 +37,7 @@ pub struct shape_b {
     pub mid: u32,
     #[offset(8)]
     #[byte_size(16)]
+    #[array_len(16)]
     pub fill: Box<[u8]>,
     #[offset(24)]
     pub tail: u32,
@@ -53,11 +55,12 @@ impl Default for shape_b {
         }
     }
 }
-#[derive(VaArg, FnPtrArg, ByteRepr, Clone)]
+#[derive(VaArg, FnPtrArg, ByteRepr, Clone, Uninit)]
 #[byte_size(64)]
 pub struct anon_0 {
     #[offset(0)]
     #[byte_size(64)]
+    #[array_len(64)]
     __bytes: Box<[u8]>,
 }
 impl anon_0 {
@@ -78,7 +81,7 @@ impl Default for anon_0 {
         }
     }
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
 #[byte_size(68)]
 pub struct Container {
     #[offset(0)]

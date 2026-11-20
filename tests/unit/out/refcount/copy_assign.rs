@@ -9,7 +9,7 @@ use std::rc::{Rc, Weak};
 thread_local!(
     pub static assigns_0: Value<i32> = Rc::new(RefCell::new(0));
 );
-#[derive(Record, ByteRepr, VaArg, FnPtrArg, CopyAssign, Default)]
+#[derive(Record, ByteRepr, Uninit, VaArg, FnPtrArg, CopyAssign, Default)]
 #[byte_size(8)]
 pub struct Partial {
     #[offset(0)]
@@ -37,7 +37,7 @@ impl Clone for Partial {
         Partial::copy_from(__src.as_pointer())
     }
 }
-#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg)]
+#[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg)]
 #[byte_size(4)]
 pub struct NonConstAssign {
     #[offset(0)]
@@ -53,7 +53,7 @@ impl Default for NonConstAssign {
         { NonConstAssign::new() }
     }
 }
-#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, CopyAssign)]
+#[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, CopyAssign)]
 #[byte_size(4)]
 pub struct RefQualified {
     #[offset(0)]
@@ -69,7 +69,7 @@ impl Default for RefQualified {
         { RefQualified::new() }
     }
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, CopyAssign)]
+#[derive(Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, CopyAssign)]
 #[byte_size(24)]
 pub struct Holder {
     #[offset(0)]
@@ -77,6 +77,7 @@ pub struct Holder {
     pub p: Partial,
     #[offset(8)]
     #[byte_size(16)]
+    #[array_len(2)]
     pub arr: Box<[Partial]>,
 }
 impl Default for Holder {
@@ -94,7 +95,7 @@ impl Default for Holder {
 thread_local!(
     pub static copies_1: Value<i32> = Rc::new(RefCell::new(0));
 );
-#[derive(Record, ByteRepr, VaArg, FnPtrArg, CppFrom, CopyAssign, Default)]
+#[derive(Record, ByteRepr, Uninit, VaArg, FnPtrArg, CppFrom, CopyAssign, Default)]
 #[cpp_from(i32, new, value)]
 #[byte_size(4)]
 pub struct CopyCounted {
@@ -119,7 +120,7 @@ impl Clone for CopyCounted {
         CopyCounted::copy_from(__src.as_pointer())
     }
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, CopyAssign)]
+#[derive(Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, CopyAssign)]
 #[byte_size(12)]
 pub struct HasCopyCounted {
     #[offset(0)]
@@ -127,6 +128,7 @@ pub struct HasCopyCounted {
     pub c: CopyCounted,
     #[offset(4)]
     #[byte_size(8)]
+    #[array_len(2)]
     pub arr: Box<[CopyCounted]>,
 }
 impl Default for HasCopyCounted {

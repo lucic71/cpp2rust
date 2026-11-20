@@ -6,13 +6,13 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
 #[byte_size(4)]
 pub struct Inner {
     #[offset(0)]
     pub x: i32,
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, CppFrom, Destructor)]
+#[derive(Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, CppFrom, Destructor)]
 #[cpp_from(i32, new, value)]
 #[byte_size(16)]
 pub struct Explicit {
@@ -23,6 +23,7 @@ pub struct Explicit {
     pub inner: Inner,
     #[offset(8)]
     #[byte_size(8)]
+    #[array_len(2)]
     pub arr: Box<[i32]>,
 }
 impl Explicit {
@@ -45,7 +46,7 @@ impl Default for Explicit {
         }
     }
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg)]
+#[derive(Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg)]
 #[byte_size(16)]
 pub struct Implicit {
     #[offset(0)]
@@ -55,6 +56,7 @@ pub struct Implicit {
     pub inner: Inner,
     #[offset(8)]
     #[byte_size(8)]
+    #[array_len(2)]
     pub arr: Box<[i32]>,
 }
 impl Default for Implicit {
@@ -69,7 +71,7 @@ impl Default for Implicit {
     }
 }
 #[derive(
-    Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, MoveCtor, CppFrom, MoveAssign, Default,
+    Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, MoveCtor, CppFrom, MoveAssign, Default,
 )]
 #[cpp_from(i32, new, value)]
 #[byte_size(4)]
@@ -89,7 +91,9 @@ impl DefaultCopyUserMove {
         __this
     }
 }
-#[derive(Record, ByteRepr, VaArg, FnPtrArg, MoveCtor, CppFrom, CopyAssign, MoveAssign, Default)]
+#[derive(
+    Record, ByteRepr, Uninit, VaArg, FnPtrArg, MoveCtor, CppFrom, CopyAssign, MoveAssign, Default,
+)]
 #[cpp_from(i32, new, value)]
 #[byte_size(4)]
 pub struct UserCopyDefaultMove {
@@ -118,7 +122,7 @@ impl Clone for UserCopyDefaultMove {
         UserCopyDefaultMove::copy_from(__src.as_pointer())
     }
 }
-#[derive(Record, ByteRepr, FnPtrArg, MoveCtor, CppFrom, MoveAssign)]
+#[derive(Record, ByteRepr, Uninit, FnPtrArg, MoveCtor, CppFrom, MoveAssign)]
 #[cpp_from(i32, new, value)]
 #[byte_size(64)]
 pub struct Buffer {
@@ -132,6 +136,7 @@ pub struct Buffer {
     pub n: i32,
     #[offset(52)]
     #[byte_size(8)]
+    #[array_len(2)]
     pub arr: Box<[i32]>,
 }
 impl Buffer {
@@ -172,7 +177,7 @@ impl Default for Buffer {
         }
     }
 }
-#[derive(Record, ByteRepr, FnPtrArg, MoveCtor, MoveAssign)]
+#[derive(Record, ByteRepr, Uninit, FnPtrArg, MoveCtor, MoveAssign)]
 #[byte_size(48)]
 pub struct Owner {
     #[offset(0)]
@@ -182,6 +187,7 @@ pub struct Owner {
     pub n: i32,
     #[offset(28)]
     #[byte_size(8)]
+    #[array_len(2)]
     pub arr: Box<[i32]>,
     #[offset(40)]
     #[byte_size(8)]
@@ -211,7 +217,7 @@ impl Default for Owner {
         }
     }
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, MoveCtor, MoveAssign, Default)]
+#[derive(Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, MoveCtor, MoveAssign, Default)]
 #[byte_size(24)]
 pub struct Copyable {
     #[offset(0)]
@@ -225,7 +231,9 @@ impl Copyable {
         }
     }
 }
-#[derive(Record, ByteRepr, FnPtrArg, MoveCtor, CppFrom, MoveAssign, Destructor, Default)]
+#[derive(
+    Record, ByteRepr, Uninit, FnPtrArg, MoveCtor, CppFrom, MoveAssign, Destructor, Default,
+)]
 #[cpp_from(i32, new, value)]
 #[byte_size(32)]
 pub struct Holder {

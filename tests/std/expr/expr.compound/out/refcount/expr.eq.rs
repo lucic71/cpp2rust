@@ -6,7 +6,7 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
 #[byte_size(8)]
 pub struct p4_1_both_null_HasTwoInts {
     #[offset(0)]
@@ -20,7 +20,7 @@ pub fn test_0() {
     assert!((first_null == second_null));
     assert!(!(first_null != second_null));
 }
-#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
 #[byte_size(8)]
 pub struct p4_2_one_null_HasTwoInts {
     #[offset(0)]
@@ -36,11 +36,12 @@ pub fn test_1() {
     assert!((null_pm != first_pm));
     assert!(!(null_pm == first_pm));
 }
-#[derive(VaArg, FnPtrArg, ByteRepr, Clone)]
+#[derive(VaArg, FnPtrArg, ByteRepr, Clone, Uninit)]
 #[byte_size(4)]
 pub struct p4_5_members_of_same_union_HasTwoIntMembers {
     #[offset(0)]
     #[byte_size(4)]
+    #[array_len(4)]
     __bytes: Box<[u8]>,
 }
 impl p4_5_members_of_same_union_HasTwoIntMembers {
@@ -64,7 +65,7 @@ pub fn test_2() {
     assert!((first_pm == second_pm));
     assert!(!(first_pm != second_pm));
 }
-#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
 #[byte_size(8)]
 pub struct p4_6_data_members_HasTwoInts {
     #[offset(0)]

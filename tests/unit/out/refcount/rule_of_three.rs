@@ -12,12 +12,13 @@ thread_local!(
 thread_local!(
     pub static copies_1: Value<i32> = Rc::new(RefCell::new(0));
 );
-#[derive(Record, ByteRepr, VaArg, FnPtrArg, CppFrom, CopyAssign, Destructor)]
+#[derive(Record, ByteRepr, Uninit, VaArg, FnPtrArg, CppFrom, CopyAssign, Destructor)]
 #[cpp_from(i32, new, value)]
 #[byte_size(20)]
 pub struct Buffer {
     #[offset(0)]
     #[byte_size(16)]
+    #[array_len(4)]
     pub data: Box<[i32]>,
     #[offset(16)]
     pub size: i32,

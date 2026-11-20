@@ -9,7 +9,7 @@ use std::rc::{Rc, Weak};
 pub fn f_0(list: Vec<i32>) {
     let list: Value<Vec<i32>> = Rc::new(RefCell::new(list));
 }
-#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
 #[byte_size(8)]
 pub struct Pair {
     #[offset(0)]
@@ -17,7 +17,7 @@ pub struct Pair {
     #[offset(4)]
     pub b: i32,
 }
-#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg)]
+#[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg)]
 #[byte_size(8)]
 pub struct Holder {
     #[offset(0)]
@@ -36,7 +36,7 @@ impl Default for Holder {
 pub fn sum_1(p: Ptr<Pair>) -> i32 {
     return ({ p.with(|__s| __s.a) } + { p.with(|__s| __s.b) });
 }
-#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg)]
+#[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg)]
 #[byte_size(4)]
 pub struct Seven {
     #[offset(0)]

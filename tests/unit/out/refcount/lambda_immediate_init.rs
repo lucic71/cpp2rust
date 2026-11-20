@@ -9,7 +9,7 @@ use std::rc::{Rc, Weak};
 pub fn pick_0(mut x: i32) -> i32 {
     return x;
 }
-#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg)]
+#[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg)]
 #[byte_size(8)]
 pub struct S {
     #[offset(0)]

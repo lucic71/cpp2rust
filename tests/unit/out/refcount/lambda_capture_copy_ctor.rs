@@ -6,7 +6,7 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Record, ByteRepr, VaArg, FnPtrArg, MoveCtor)]
+#[derive(Record, ByteRepr, Uninit, VaArg, FnPtrArg, MoveCtor)]
 #[byte_size(8)]
 pub struct Counted {
     #[offset(0)]
@@ -51,7 +51,7 @@ impl Default for Counted {
 thread_local!(
     pub static drops_0: Value<i32> = Rc::new(RefCell::new(0));
 );
-#[derive(Record, ByteRepr, VaArg, FnPtrArg, MoveCtor, Destructor)]
+#[derive(Record, ByteRepr, Uninit, VaArg, FnPtrArg, MoveCtor, Destructor)]
 #[byte_size(1)]
 pub struct Dropped {}
 impl Dropped {

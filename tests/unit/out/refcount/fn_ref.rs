@@ -21,7 +21,7 @@ pub fn call_deduced_3(f: FnPtr<fn(i32) -> i32>, mut x: i32) -> i32 {
 pub fn call_forwarded_4(f: FnPtr<fn(i32) -> i32>, mut x: i32) -> i32 {
     return ({ f.call(x) });
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
 #[byte_size(8)]
 pub struct Holder {
     #[offset(0)]

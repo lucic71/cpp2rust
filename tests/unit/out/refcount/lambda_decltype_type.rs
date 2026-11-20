@@ -6,11 +6,12 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg)]
+#[derive(Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg)]
 #[byte_size(24)]
 pub struct Sorted__lambda_at_lambda_decltype_type_cpp_22_18__ {
     #[offset(0)]
     #[byte_size(16)]
+    #[array_len(4)]
     pub items: Box<[i32]>,
     #[offset(16)]
     pub size: i32,
@@ -33,11 +34,12 @@ impl Default for Sorted__lambda_at_lambda_decltype_type_cpp_22_18__ {
         }
     }
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg)]
+#[derive(Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg)]
 #[byte_size(24)]
 pub struct Sorted__lambda_at_lambda_decltype_type_cpp_19_23__ {
     #[offset(0)]
     #[byte_size(16)]
+    #[array_len(4)]
     pub items: Box<[i32]>,
     #[offset(16)]
     pub size: i32,

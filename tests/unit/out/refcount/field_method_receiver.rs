@@ -6,13 +6,13 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
 #[byte_size(4)]
 pub struct Counter {
     #[offset(0)]
     pub n: i32,
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, MoveCtor, MoveAssign)]
+#[derive(Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, MoveCtor, MoveAssign)]
 #[byte_size(40)]
 pub struct S {
     #[offset(0)]
@@ -22,6 +22,7 @@ pub struct S {
     pub c: Counter,
     #[offset(8)]
     #[byte_size(8)]
+    #[array_len(2)]
     pub arr: Box<[Counter]>,
     #[offset(16)]
     #[byte_size(24)]

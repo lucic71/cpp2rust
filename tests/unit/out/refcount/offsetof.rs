@@ -6,7 +6,7 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
 #[byte_size(12)]
 pub struct Layout {
     #[offset(0)]
@@ -16,13 +16,14 @@ pub struct Layout {
     #[offset(8)]
     pub c: u16,
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg)]
+#[derive(Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg)]
 #[byte_size(66)]
 pub struct Frame {
     #[offset(0)]
     pub tag: u16,
     #[offset(2)]
     #[byte_size(64)]
+    #[array_len(64)]
     pub body: Box<[i8]>,
 }
 impl Default for Frame {

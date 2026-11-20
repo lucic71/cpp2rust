@@ -12,7 +12,7 @@ thread_local!(
 thread_local!(
     pub static last_1: Value<i32> = Rc::new(RefCell::new(0));
 );
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Destructor, Default)]
+#[derive(Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Destructor, Default)]
 #[byte_size(4)]
 pub struct S {
     #[offset(0)]
@@ -27,7 +27,7 @@ pub fn with_default_3(s: S) -> i32 {
     let s: Value<S> = Rc::new(RefCell::new(s));
     return { (*s.borrow()).v };
 }
-#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
 #[byte_size(4)]
 pub struct Holder {
     #[offset(0)]

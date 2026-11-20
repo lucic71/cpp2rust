@@ -6,7 +6,7 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
 #[byte_size(4)]
 pub struct X {
     #[offset(0)]
@@ -40,19 +40,19 @@ pub fn operator_le_4(mut a: X, mut b: X) -> i32 {
 pub fn operator_ge_5(mut a: X, mut b: X) -> i32 {
     return if (a.v >= b.v) { 7 } else { 0 };
 }
-#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
 #[byte_size(4)]
 pub struct Result {
     #[offset(0)]
     pub r: i32,
 }
-#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
 #[byte_size(4)]
 pub struct Custom {
     #[offset(0)]
     pub v: i32,
 }
-#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
 #[byte_size(4)]
 pub struct Mixed {
     #[offset(0)]
@@ -68,7 +68,7 @@ impl CppEq for Mixed {
         ((MixedImpl::operator_eq(__lhs, __rhs.clone())) != 0)
     }
 }
-#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, CppFrom, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, CppFrom, Default)]
 #[cpp_into(bool, to_bool)]
 #[byte_size(1)]
 pub struct MyBool {
@@ -80,7 +80,7 @@ impl MyBool {
         Self { value: v }
     }
 }
-#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
 #[byte_size(4)]
 pub struct Boolish {
     #[offset(0)]
@@ -108,7 +108,7 @@ pub fn operator_eq_7(mut a: Boolish, mut b: Boolish) -> MyBool {
 pub fn operator_lt_6(mut a: Boolish, mut b: Boolish) -> MyBool {
     return MyBool::new({ (a.v < b.v) });
 }
-#[derive(Record, ByteRepr, FnPtrArg, CppFrom, Default)]
+#[derive(Record, ByteRepr, Uninit, FnPtrArg, CppFrom, Default)]
 #[cpp_into(bool, to_bool)]
 #[byte_size(1)]
 pub struct RefBool {
@@ -123,7 +123,7 @@ impl RefBool {
 thread_local!(
     pub static ref_true_8: Value<RefBool> = Rc::new(RefCell::new(RefBool::new({ true })));
 );
-#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
 #[byte_size(4)]
 pub struct RefInt {
     #[offset(0)]

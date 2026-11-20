@@ -14,7 +14,7 @@ pub fn test_0() {
     lvalue.write(2);
     assert!(({ ((*value.borrow()) == 2) }));
 }
-#[derive(Record, ByteRepr, VaArg, FnPtrArg, MoveCtor, CppFrom, Default)]
+#[derive(Record, ByteRepr, Uninit, VaArg, FnPtrArg, MoveCtor, CppFrom, Default)]
 #[cpp_from(i32, new, value)]
 #[byte_size(4)]
 pub struct p6_forward_like_Movable {
@@ -47,7 +47,7 @@ impl Clone for p6_forward_like_Movable {
         p6_forward_like_Movable::copy_from(__src.as_pointer())
     }
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, MoveCtor)]
+#[derive(Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, MoveCtor)]
 #[byte_size(4)]
 pub struct p6_forward_like_Holder {
     #[offset(0)]
@@ -84,7 +84,7 @@ pub fn test_3() {
     let mut moved: p6_forward_like_Movable = ({ take_2(holder.as_pointer()) });
     assert!(({ (moved.value == 1) && ({ (*holder.borrow()).member.value } == 0) }));
 }
-#[derive(Record, ByteRepr, FnPtrArg, MoveCtor, CppFrom, Default)]
+#[derive(Record, ByteRepr, Uninit, FnPtrArg, MoveCtor, CppFrom, Default)]
 #[cpp_from(i32, new, value)]
 #[byte_size(4)]
 pub struct p9_move_Movable {
@@ -139,7 +139,7 @@ pub fn test_4() {
         })
     );
 }
-#[derive(Record, ByteRepr, VaArg, FnPtrArg, MoveCtor, CppFrom)]
+#[derive(Record, ByteRepr, Uninit, VaArg, FnPtrArg, MoveCtor, CppFrom)]
 #[cpp_from(i32, new, value)]
 #[byte_size(12)]
 pub struct p10_forward_in_template_A {
@@ -213,7 +213,7 @@ pub fn test_7() {
     assert!(((moved.value == 1) && (moved.copies == 0)) && (moved.moves == 1));
     assert!(({ ({ (*a.borrow()).value } == 0) }));
 }
-#[derive(Record, ByteRepr, VaArg, FnPtrArg, MoveCtor, CppFrom, Default)]
+#[derive(Record, ByteRepr, Uninit, VaArg, FnPtrArg, MoveCtor, CppFrom, Default)]
 #[cpp_from(i32, new, value)]
 #[byte_size(4)]
 pub struct p11_move_if_noexcept_NoexceptMove {
@@ -246,7 +246,7 @@ impl Clone for p11_move_if_noexcept_NoexceptMove {
         p11_move_if_noexcept_NoexceptMove::copy_from(__src.as_pointer())
     }
 }
-#[derive(Record, ByteRepr, VaArg, FnPtrArg, MoveCtor, CppFrom, Default)]
+#[derive(Record, ByteRepr, Uninit, VaArg, FnPtrArg, MoveCtor, CppFrom, Default)]
 #[cpp_from(i32, new, value)]
 #[byte_size(4)]
 pub struct p11_move_if_noexcept_ThrowingMove {

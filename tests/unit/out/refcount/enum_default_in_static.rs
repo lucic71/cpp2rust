@@ -10,7 +10,7 @@ pub type Mode = u32;
 pub const Mode_MODE_NONE: Mode = 0;
 pub const Mode_MODE_ONE: Mode = 1;
 pub const Mode_MODE_TWO: Mode = 2;
-#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
 #[byte_size(8)]
 pub struct Config {
     #[offset(0)]

@@ -6,11 +6,12 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg)]
+#[derive(Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg)]
 #[byte_size(24)]
 pub struct StackArray {
     #[offset(0)]
     #[byte_size(24)]
+    #[array_len(3)]
     pub arr: Box<[Ptr<i32>]>,
 }
 impl Default for StackArray {

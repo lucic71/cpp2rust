@@ -32,7 +32,7 @@ thread_local!(
     pub static depends_on_call_6: Value<i32> =
         Rc::new(RefCell::new((from_call_5.with(|rc| *rc.borrow()) + 1)));
 );
-#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg)]
+#[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg)]
 #[byte_size(4)]
 pub struct Ctor {
     #[offset(0)]
@@ -67,7 +67,7 @@ thread_local!(
 thread_local!(
     pub static inline_member_11: Value<Ctor> = Rc::new(RefCell::new(Ctor::new_2({ 5 })));
 );
-#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
 #[byte_size(1)]
 pub struct Holder {}
 thread_local!(
@@ -82,7 +82,7 @@ thread_local!(
 thread_local!(
     static local_ctor_14: Value<Ctor> = Rc::new(RefCell::new(Ctor::new_2({ 3 })));
 );
-#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg)]
+#[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg)]
 #[byte_size(4)]
 pub struct Singleton {
     #[offset(0)]

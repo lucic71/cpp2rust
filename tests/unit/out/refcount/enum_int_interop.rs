@@ -19,7 +19,7 @@ pub type Tag = u32;
 pub const Tag_TAG_ZERO: Tag = 0;
 pub const Tag_TAG_ONE: Tag = 1;
 pub const Tag_TAG_TWO: Tag = 2;
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
 #[byte_size(16)]
 pub struct Entry {
     #[offset(0)]

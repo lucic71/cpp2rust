@@ -9,7 +9,7 @@ use std::rc::{Rc, Weak};
 pub type Overload = u32;
 pub const Overload_kLvalueOverload: Overload = 1;
 pub const Overload_kRvalueOverload: Overload = 2;
-#[derive(Record, ByteRepr, VaArg, FnPtrArg, MoveCtor, CppFrom, Default)]
+#[derive(Record, ByteRepr, Uninit, VaArg, FnPtrArg, MoveCtor, CppFrom, Default)]
 #[cpp_from(i32, new, value)]
 #[byte_size(12)]
 pub struct Tracked {
@@ -75,7 +75,7 @@ impl Holder {
         }
     }
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, MoveCtor, CppFrom, Default)]
+#[derive(Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, MoveCtor, CppFrom, Default)]
 #[cpp_from(Tracked, new_1, mut_ptr)]
 #[cpp_from_move(Tracked, new_2, ptr)]
 #[byte_size(12)]

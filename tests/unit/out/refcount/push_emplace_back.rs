@@ -6,13 +6,13 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
 #[byte_size(4)]
 pub struct Chunk {
     #[offset(0)]
     pub data: i32,
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
 #[byte_size(16)]
 pub struct Writer {
     #[offset(0)]
@@ -22,7 +22,7 @@ pub struct Writer {
     #[byte_size(4)]
     pub chunk: Chunk,
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, MoveCtor, MoveAssign, Default)]
+#[derive(Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, MoveCtor, MoveAssign, Default)]
 #[byte_size(48)]
 pub struct JPEGData {
     #[offset(0)]
@@ -114,7 +114,7 @@ pub fn self_ref_push_6(mut comps: Ptr<Vec<Chunk>>) {
         comps.with_mut(|__v: &mut Vec<Chunk>| __v.push(a0_clone))
     };
 }
-#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, CppFrom)]
+#[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, CppFrom)]
 #[cpp_from(i32, new_1, value)]
 #[byte_size(8)]
 pub struct Pair {
@@ -250,7 +250,7 @@ pub fn emplace_ref_self_read_13(values: Ptr<Vec<i64>>) -> Ptr<i64> {
         })
     };
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, MoveCtor, MoveAssign)]
+#[derive(Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, MoveCtor, MoveAssign)]
 #[byte_size(32)]
 pub struct Bytes {
     #[offset(0)]
@@ -258,6 +258,7 @@ pub struct Bytes {
     pub v: Vec<Vec<u8>>,
     #[offset(24)]
     #[byte_size(3)]
+    #[array_len(3)]
     pub b: Box<[u8]>,
 }
 impl Bytes {
@@ -298,13 +299,14 @@ pub fn emplace_from_element_14(mut v: Ptr<Vec<Vec<u8>>>) {
         v.with_mut(|__v: &mut Vec<Vec<u8>>| __v.push(__tmp_15));
     };
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg)]
+#[derive(Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg)]
 #[byte_size(24)]
 pub struct Plain {
     #[offset(0)]
     pub a: i32,
     #[offset(8)]
     #[byte_size(16)]
+    #[array_len(2)]
     pub b: Box<[f64]>,
 }
 impl Default for Plain {
@@ -330,7 +332,7 @@ thread_local!(
     pub static all_counted_16: Value<Ptr<Vec<Counted>>> =
         Rc::new(RefCell::new(Ptr::<Vec<Counted>>::null()));
 );
-#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
 #[byte_size(8)]
 pub struct Counted {
     #[offset(0)]

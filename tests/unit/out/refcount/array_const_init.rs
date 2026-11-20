@@ -6,16 +6,18 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg)]
+#[derive(Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg)]
 #[byte_size(20)]
 pub struct S {
     #[offset(0)]
     pub head: i32,
     #[offset(4)]
     #[byte_size(12)]
+    #[array_len(3)]
     pub tail: Box<[i32]>,
     #[offset(16)]
     #[byte_size(4)]
+    #[array_len(4)]
     pub buf: Box<[i8]>,
 }
 impl Default for S {
@@ -36,7 +38,7 @@ thread_local!(
         buf: Box::new([0; 4]),
     }));
 );
-#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
 #[byte_size(8)]
 pub struct P {
     #[offset(0)]

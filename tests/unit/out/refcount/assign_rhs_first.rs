@@ -15,7 +15,7 @@ pub fn advance_1() -> i32 {
     });
     return 10;
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
 #[byte_size(8)]
 pub struct S {
     #[offset(0)]

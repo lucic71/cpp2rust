@@ -23,7 +23,7 @@ pub fn sum_0(n: i32, __args: Box<[VaArg]>) -> i32 {
     }
     return total;
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, CppFrom, Destructor, Default)]
+#[derive(Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, CppFrom, Destructor, Default)]
 #[cpp_from(Ptr<VaArg> , new, mut_ptr)]
 #[byte_size(16)]
 pub struct Guard_1 {
@@ -59,7 +59,7 @@ pub fn sum_ptr_2(n: i32, __args: Box<[VaArg]>) -> i32 {
     };
     return total;
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
 #[byte_size(8)]
 pub struct Cursor_3 {
     #[offset(0)]

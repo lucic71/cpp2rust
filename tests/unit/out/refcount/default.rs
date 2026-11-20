@@ -6,7 +6,7 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg)]
+#[derive(Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg)]
 #[byte_size(144)]
 pub struct Pointers {
     #[offset(0)]
@@ -17,9 +17,11 @@ pub struct Pointers {
     pub x2: Ptr<i32>,
     #[offset(16)]
     #[byte_size(40)]
+    #[array_len(5)]
     pub x3: Box<[Ptr<i32>]>,
     #[offset(56)]
     #[byte_size(80)]
+    #[array_len(10)]
     pub x4: Box<[Ptr<i32>]>,
     #[offset(136)]
     pub x5: i32,
@@ -41,20 +43,23 @@ impl Default for Pointers {
         }
     }
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg)]
+#[derive(Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg)]
 #[byte_size(440)]
 pub struct SmallArrays {
     #[offset(0)]
     #[byte_size(128)]
+    #[array_len(32)]
     pub a: Box<[i32]>,
     #[offset(128)]
     #[byte_size(8)]
     pub f: FnPtr<fn(i32) -> i32>,
     #[offset(136)]
     #[byte_size(16)]
+    #[array_len(2)]
     pub fs: Box<[FnPtr<fn(i32) -> i32>]>,
     #[offset(152)]
     #[byte_size(288)]
+    #[array_len(2)]
     pub p: Box<[Pointers]>,
 }
 impl Default for SmallArrays {
@@ -73,11 +78,12 @@ impl Default for SmallArrays {
         }
     }
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg)]
+#[derive(Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg)]
 #[byte_size(132)]
 pub struct BigArray {
     #[offset(0)]
     #[byte_size(132)]
+    #[array_len(33)]
     pub a: Box<[i32]>,
 }
 impl Default for BigArray {

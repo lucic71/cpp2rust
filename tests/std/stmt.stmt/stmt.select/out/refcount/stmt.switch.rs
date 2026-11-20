@@ -18,7 +18,7 @@ thread_local!(
 thread_local!(
     pub static useCount_3: Value<i32> = Rc::new(RefCell::new(0));
 );
-#[derive(Record, ByteRepr, VaArg, FnPtrArg, CopyAssign, Destructor)]
+#[derive(Record, ByteRepr, Uninit, VaArg, FnPtrArg, CopyAssign, Destructor)]
 #[byte_size(4)]
 pub struct LifetimeTracked {
     #[offset(0)]
@@ -76,7 +76,7 @@ thread_local!(
 thread_local!(
     pub static dtorCount_6: Value<i32> = Rc::new(RefCell::new(0));
 );
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, CppFrom, Destructor, Default)]
+#[derive(Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, CppFrom, Destructor, Default)]
 #[cpp_into(i32, to_i32)]
 #[byte_size(4)]
 pub struct p2_condition_variable_lives_for_whole_statement_ConvertsToInt {

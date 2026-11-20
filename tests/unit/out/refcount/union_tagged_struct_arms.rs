@@ -10,7 +10,7 @@ pub type Choice_enum = u32;
 pub const Choice_enum_C_LIST: Choice_enum = 1;
 pub const Choice_enum_C_LETTERS: Choice_enum = 2;
 pub const Choice_enum_C_INTEGERS: Choice_enum = 3;
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
 #[byte_size(24)]
 pub struct anon_1 {
     #[offset(0)]
@@ -21,7 +21,7 @@ pub struct anon_1 {
     #[offset(16)]
     pub cursor: i64,
 }
-#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
 #[byte_size(16)]
 pub struct anon_2 {
     #[offset(0)]
@@ -33,7 +33,7 @@ pub struct anon_2 {
     #[offset(12)]
     pub step: u8,
 }
-#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
 #[byte_size(40)]
 pub struct anon_3 {
     #[offset(0)]
@@ -47,11 +47,12 @@ pub struct anon_3 {
     #[offset(32)]
     pub width: i32,
 }
-#[derive(VaArg, FnPtrArg, ByteRepr, Clone)]
+#[derive(VaArg, FnPtrArg, ByteRepr, Clone, Uninit)]
 #[byte_size(40)]
 pub struct anon_0 {
     #[offset(0)]
     #[byte_size(40)]
+    #[array_len(40)]
     __bytes: Box<[u8]>,
 }
 impl anon_0 {
@@ -72,7 +73,7 @@ impl Default for anon_0 {
         }
     }
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
 #[byte_size(48)]
 pub struct Branch {
     #[offset(0)]

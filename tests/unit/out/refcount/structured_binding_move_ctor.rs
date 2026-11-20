@@ -12,7 +12,7 @@ thread_local!(
 thread_local!(
     pub static moves_1: Value<i32> = Rc::new(RefCell::new(0));
 );
-#[derive(Record, ByteRepr, VaArg, FnPtrArg, MoveCtor, Default)]
+#[derive(Record, ByteRepr, Uninit, VaArg, FnPtrArg, MoveCtor, Default)]
 #[byte_size(8)]
 pub struct Movable {
     #[offset(0)]
@@ -52,7 +52,7 @@ impl Clone for Movable {
         Movable::copy_from(__src.as_pointer())
     }
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, MoveCtor, MoveAssign, Default)]
+#[derive(Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, MoveCtor, MoveAssign, Default)]
 #[byte_size(48)]
 pub struct Holder {
     #[offset(0)]

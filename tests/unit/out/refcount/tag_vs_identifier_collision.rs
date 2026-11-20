@@ -10,7 +10,7 @@ pub type widget_enum = u32;
 pub const widget_enum_MODE_IDLE: widget_enum = 0;
 pub const widget_enum_MODE_ACTIVE: widget_enum = 1;
 pub const widget_enum_MODE_DONE: widget_enum = 2;
-#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
 #[byte_size(8)]
 pub struct widget {
     #[offset(0)]
@@ -18,7 +18,7 @@ pub struct widget {
     #[offset(4)]
     pub mode: widget_enum,
 }
-#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
 #[byte_size(8)]
 pub struct point_struct {
     #[offset(0)]
@@ -26,11 +26,12 @@ pub struct point_struct {
     #[offset(4)]
     pub y: i32,
 }
-#[derive(VaArg, FnPtrArg, ByteRepr, Clone)]
+#[derive(VaArg, FnPtrArg, ByteRepr, Clone, Uninit)]
 #[byte_size(4)]
 pub struct point {
     #[offset(0)]
     #[byte_size(4)]
+    #[array_len(4)]
     __bytes: Box<[u8]>,
 }
 impl point {
@@ -48,11 +49,12 @@ impl Default for point {
         }
     }
 }
-#[derive(VaArg, FnPtrArg, ByteRepr, Clone)]
+#[derive(VaArg, FnPtrArg, ByteRepr, Clone, Uninit)]
 #[byte_size(4)]
 pub struct slot_union {
     #[offset(0)]
     #[byte_size(4)]
+    #[array_len(4)]
     __bytes: Box<[u8]>,
 }
 impl slot_union {
@@ -73,20 +75,20 @@ impl Default for slot_union {
 pub type slot = u32;
 pub const slot_SLOT_A: slot = 0;
 pub const slot_SLOT_B: slot = 1;
-#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
 #[byte_size(4)]
 pub struct Inner {
     #[offset(0)]
     pub tag_field: i32,
 }
-#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
 #[byte_size(4)]
 pub struct Outer {
     #[offset(0)]
     #[byte_size(4)]
     pub field: Inner,
 }
-#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
 #[byte_size(4)]
 pub struct Inner_struct {
     #[offset(0)]

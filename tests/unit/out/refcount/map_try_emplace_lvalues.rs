@@ -12,7 +12,7 @@ thread_local!(
 thread_local!(
     pub static visits_1: Value<i32> = Rc::new(RefCell::new(0));
 );
-#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg)]
+#[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg)]
 #[byte_size(4)]
 pub struct Item {
     #[offset(0)]
@@ -54,13 +54,14 @@ pub fn place_3(n: Ptr<i32>) -> Ptr<i32> {
 thread_local!(
     pub static temporary_calls_4: Value<i32> = Rc::new(RefCell::new(0));
 );
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg)]
+#[derive(Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg)]
 #[byte_size(12)]
 pub struct Temporary {
     #[offset(0)]
     pub n: i32,
     #[offset(4)]
     #[byte_size(8)]
+    #[array_len(2)]
     pub data: Box<[i32]>,
 }
 impl Temporary {
@@ -78,7 +79,7 @@ impl Default for Temporary {
         { Temporary::new() }
     }
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
 #[byte_size(12)]
 pub struct Nested {
     #[offset(0)]
@@ -91,7 +92,7 @@ pub fn make_temporary_5() -> Temporary {
 pub fn make_nested_6() -> Nested {
     return <Nested>::default();
 }
-#[derive(Record, ByteRepr, FnPtrArg, MoveCtor, MoveAssign)]
+#[derive(Record, ByteRepr, Uninit, FnPtrArg, MoveCtor, MoveAssign)]
 #[byte_size(8)]
 pub struct Owner {
     #[offset(0)]
@@ -115,7 +116,7 @@ impl Default for Owner {
         { Owner::new() }
     }
 }
-#[derive(Record, ByteRepr, FnPtrArg)]
+#[derive(Record, ByteRepr, Uninit, FnPtrArg)]
 #[byte_size(4)]
 pub struct Noncopy {
     #[offset(0)]
@@ -126,7 +127,7 @@ impl Default for Noncopy {
         { Noncopy { n: 5 } }
     }
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, CppFrom)]
+#[derive(Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, CppFrom)]
 #[cpp_from(i32, new_1, ptr)]
 #[byte_size(8)]
 pub struct Held {

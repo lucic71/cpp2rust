@@ -12,7 +12,7 @@ pub fn foo_0(mut x: u32) {
 pub fn bar_1(x: Ptr<u32>) {
     x.write({ (x.read()).wrapping_add(1_u32) });
 }
-#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg)]
+#[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg)]
 #[byte_size(8)]
 pub struct Point {
     #[offset(0)]

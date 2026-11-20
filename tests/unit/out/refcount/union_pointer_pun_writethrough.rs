@@ -18,11 +18,12 @@ fn main_0() -> i32 {
     assert!(({ ((*x.borrow()) == 42_i64) }));
     return 0;
 }
-#[derive(VaArg, FnPtrArg, ByteRepr, Clone)]
+#[derive(VaArg, FnPtrArg, ByteRepr, Clone, Uninit)]
 #[byte_size(8)]
 pub struct anon_0 {
     #[offset(0)]
     #[byte_size(8)]
+    #[array_len(8)]
     __bytes: Box<[u8]>,
 }
 impl anon_0 {

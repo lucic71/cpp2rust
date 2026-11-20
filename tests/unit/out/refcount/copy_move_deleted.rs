@@ -6,7 +6,7 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Record, ByteRepr, FnPtrArg, MoveCtor, CppFrom, MoveAssign, Default)]
+#[derive(Record, ByteRepr, Uninit, FnPtrArg, MoveCtor, CppFrom, MoveAssign, Default)]
 #[cpp_from(i32, new, value)]
 #[byte_size(4)]
 pub struct NoCopy {
@@ -25,7 +25,7 @@ impl NoCopy {
         __this
     }
 }
-#[derive(Record, ByteRepr, FnPtrArg, MoveCtor, MoveAssign)]
+#[derive(Record, ByteRepr, Uninit, FnPtrArg, MoveCtor, MoveAssign)]
 #[byte_size(4)]
 pub struct PrivateCopy {
     #[offset(0)]
@@ -48,7 +48,7 @@ impl Default for PrivateCopy {
         { PrivateCopy::new() }
     }
 }
-#[derive(Record, ByteRepr, FnPtrArg)]
+#[derive(Record, ByteRepr, Uninit, FnPtrArg)]
 #[byte_size(4)]
 pub struct Immovable {
     #[offset(0)]
@@ -64,7 +64,7 @@ impl Default for Immovable {
         { Immovable::new() }
     }
 }
-#[derive(Record, ByteRepr, FnPtrArg, MoveCtor, MoveAssign, Default)]
+#[derive(Record, ByteRepr, Uninit, FnPtrArg, MoveCtor, MoveAssign, Default)]
 #[byte_size(8)]
 pub struct Container {
     #[offset(0)]
@@ -81,7 +81,7 @@ impl Container {
         }
     }
 }
-#[derive(Record, ByteRepr, FnPtrArg, MoveCtor, MoveAssign, Default)]
+#[derive(Record, ByteRepr, Uninit, FnPtrArg, MoveCtor, MoveAssign, Default)]
 #[byte_size(24)]
 pub struct VecHolder {
     #[offset(0)]

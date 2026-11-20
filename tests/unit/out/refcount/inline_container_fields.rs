@@ -6,13 +6,14 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, MoveCtor, MoveAssign)]
+#[derive(Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, MoveCtor, MoveAssign)]
 #[byte_size(48)]
 pub struct Elem {
     #[offset(0)]
     pub id: i32,
     #[offset(4)]
     #[byte_size(16)]
+    #[array_len(4)]
     pub hist: Box<[i32]>,
     #[offset(24)]
     #[byte_size(24)]
@@ -40,16 +41,18 @@ impl Default for Elem {
         }
     }
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, MoveCtor, MoveAssign)]
+#[derive(Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, MoveCtor, MoveAssign)]
 #[byte_size(88)]
 pub struct State {
     #[offset(0)]
     pub count: i32,
     #[offset(4)]
     #[byte_size(24)]
+    #[array_len(2, 3)]
     pub grid: Box<[Box<[i32]>]>,
     #[offset(28)]
     #[byte_size(12)]
+    #[array_len(3)]
     pub arr: Box<[i32]>,
     #[offset(40)]
     #[byte_size(24)]
@@ -146,7 +149,7 @@ thread_local!(
 thread_local!(
     pub static move_assigns_5: Value<i32> = Rc::new(RefCell::new(0));
 );
-#[derive(Record, ByteRepr, VaArg, FnPtrArg, MoveCtor, CopyAssign, MoveAssign)]
+#[derive(Record, ByteRepr, Uninit, VaArg, FnPtrArg, MoveCtor, CopyAssign, MoveAssign)]
 #[byte_size(4)]
 pub struct Counted {
     #[offset(0)]

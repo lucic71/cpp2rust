@@ -6,7 +6,7 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Record, ByteRepr, FnPtrArg, MoveCtor, CppFrom, MoveAssign, Default)]
+#[derive(Record, ByteRepr, Uninit, FnPtrArg, MoveCtor, CppFrom, MoveAssign, Default)]
 #[cpp_from(i32, new, value)]
 #[byte_size(4)]
 pub struct MoveOnly {
@@ -25,7 +25,7 @@ impl MoveOnly {
         __this
     }
 }
-#[derive(Record, ByteRepr, FnPtrArg)]
+#[derive(Record, ByteRepr, Uninit, FnPtrArg)]
 #[byte_size(4)]
 pub struct ConstMoveAssign {
     #[offset(0)]

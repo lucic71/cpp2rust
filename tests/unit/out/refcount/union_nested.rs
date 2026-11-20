@@ -6,13 +6,14 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg)]
+#[derive(Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg)]
 #[byte_size(16)]
 pub struct record {
     #[offset(0)]
     pub code: u16,
     #[offset(2)]
     #[byte_size(14)]
+    #[array_len(14)]
     pub pad: Box<[i8]>,
 }
 impl Default for record {
@@ -25,11 +26,12 @@ impl Default for record {
         }
     }
 }
-#[derive(VaArg, FnPtrArg, ByteRepr, Clone)]
+#[derive(VaArg, FnPtrArg, ByteRepr, Clone, Uninit)]
 #[byte_size(128)]
 pub struct anon_0 {
     #[offset(0)]
     #[byte_size(128)]
+    #[array_len(128)]
     __bytes: Box<[u8]>,
 }
 impl anon_0 {
@@ -47,18 +49,19 @@ impl Default for anon_0 {
         }
     }
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
 #[byte_size(128)]
 pub struct inner {
     #[offset(0)]
     #[byte_size(128)]
     pub view: anon_0,
 }
-#[derive(VaArg, FnPtrArg, ByteRepr, Clone)]
+#[derive(VaArg, FnPtrArg, ByteRepr, Clone, Uninit)]
 #[byte_size(128)]
 pub struct anon_1 {
     #[offset(0)]
     #[byte_size(128)]
+    #[array_len(128)]
     __bytes: Box<[u8]>,
 }
 impl anon_1 {
@@ -76,7 +79,7 @@ impl Default for anon_1 {
         }
     }
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
 #[byte_size(144)]
 pub struct Outer {
     #[offset(0)]

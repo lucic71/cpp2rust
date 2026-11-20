@@ -9,7 +9,7 @@ use std::rc::{Rc, Weak};
 thread_local!(
     pub static copies_0: Value<i32> = Rc::new(RefCell::new(0));
 );
-#[derive(Record, ByteRepr, VaArg, FnPtrArg, CopyAssign, Default)]
+#[derive(Record, ByteRepr, Uninit, VaArg, FnPtrArg, CopyAssign, Default)]
 #[byte_size(8)]
 pub struct Counted {
     #[offset(0)]

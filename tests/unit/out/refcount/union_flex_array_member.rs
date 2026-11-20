@@ -6,11 +6,12 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(VaArg, FnPtrArg, ByteRepr, Clone)]
+#[derive(VaArg, FnPtrArg, ByteRepr, Clone, Uninit)]
 #[byte_size(8)]
 pub struct anon_0 {
     #[offset(0)]
     #[byte_size(8)]
+    #[array_len(8)]
     __bytes: Box<[u8]>,
 }
 impl anon_0 {
@@ -28,7 +29,7 @@ impl Default for anon_0 {
         }
     }
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
 #[byte_size(24)]
 pub struct node {
     #[offset(0)]

@@ -6,7 +6,7 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg)]
+#[derive(Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg)]
 #[byte_size(32)]
 pub struct S {
     #[offset(0)]
@@ -17,6 +17,7 @@ pub struct S {
     pub b: i64,
     #[offset(16)]
     #[byte_size(5)]
+    #[array_len(5)]
     pub c: Box<[i8]>,
     #[offset(24)]
     pub last: i32,

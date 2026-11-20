@@ -6,7 +6,7 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
 #[byte_size(8)]
 pub struct Point {
     #[offset(0)]
@@ -14,16 +14,18 @@ pub struct Point {
     #[offset(4)]
     pub y: i32,
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg)]
+#[derive(Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg)]
 #[byte_size(48)]
 pub struct Shape {
     #[offset(0)]
     pub id: i32,
     #[offset(4)]
     #[byte_size(16)]
+    #[array_len(4)]
     pub coords: Box<[i32]>,
     #[offset(20)]
     #[byte_size(24)]
+    #[array_len(3)]
     pub points: Box<[Point]>,
     #[offset(44)]
     pub tail: i32,

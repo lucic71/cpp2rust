@@ -6,7 +6,7 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
 #[byte_size(16)]
 pub struct Handler {
     #[offset(0)]
@@ -21,7 +21,7 @@ pub fn double_it_0(mut x: i32) -> i32 {
 pub fn negate_1(mut x: i32) -> i32 {
     return -x;
 }
-#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
 #[byte_size(1)]
 pub struct S {}
 impl S {
@@ -35,7 +35,7 @@ impl S {
         return (x + 3);
     }
 }
-#[derive(Record, ByteRepr, FnPtrArg, MoveCtor, CppFrom, Default)]
+#[derive(Record, ByteRepr, Uninit, FnPtrArg, MoveCtor, CppFrom, Default)]
 #[cpp_from(i32, new, value)]
 #[byte_size(4)]
 pub struct MoveOnly {

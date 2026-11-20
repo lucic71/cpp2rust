@@ -24,7 +24,7 @@ pub fn test_double_cast_2() {
     assert!((({ fn2.call(5,) }) == 10));
     assert!(({ (fn2).clone() } == { (fn_).clone() }));
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
 #[byte_size(8)]
 pub struct Command {
     #[offset(0)]

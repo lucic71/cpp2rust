@@ -20,7 +20,7 @@ pub fn pick_3(mut i: i32) -> Ptr<i32> {
     (*calls_0.with(Value::clone).borrow_mut()).prefix_inc();
     return xs_1.with(|v| v.decay()).offset(i);
 }
-#[derive(Record, ByteRepr, VaArg, FnPtrArg, CppFrom, CopyAssign, Default)]
+#[derive(Record, ByteRepr, Uninit, VaArg, FnPtrArg, CppFrom, CopyAssign, Default)]
 #[cpp_from(i32, new, value)]
 #[byte_size(4)]
 pub struct Bag {

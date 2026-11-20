@@ -6,11 +6,12 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg)]
+#[derive(Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg)]
 #[byte_size(40)]
 pub struct table {
     #[offset(0)]
     #[byte_size(30)]
+    #[array_len(3, 10)]
     pub rows: Box<[Box<[i8]>]>,
     #[offset(32)]
     pub count: usize,

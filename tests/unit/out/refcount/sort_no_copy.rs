@@ -9,7 +9,7 @@ use std::rc::{Rc, Weak};
 thread_local!(
     pub static copies_0: Value<i32> = Rc::new(RefCell::new(0));
 );
-#[derive(Record, ByteRepr, VaArg, FnPtrArg, MoveCtor, CppFrom, CopyAssign, MoveAssign)]
+#[derive(Record, ByteRepr, Uninit, VaArg, FnPtrArg, MoveCtor, CppFrom, CopyAssign, MoveAssign)]
 #[cpp_from(i32, new_1, value)]
 #[byte_size(4)]
 pub struct Tracked {
@@ -64,7 +64,7 @@ pub fn operator_lt_1(a: Ptr<Tracked>, b: Ptr<Tracked>) -> bool {
 pub fn greater_2(a: Ptr<Tracked>, b: Ptr<Tracked>) -> bool {
     return ({ a.with(|__s| __s.v) } > { b.with(|__s| __s.v) });
 }
-#[derive(Record, ByteRepr, FnPtrArg, MoveCtor, CppFrom, MoveAssign, Default)]
+#[derive(Record, ByteRepr, Uninit, FnPtrArg, MoveCtor, CppFrom, MoveAssign, Default)]
 #[cpp_from(i32, new, value)]
 #[byte_size(4)]
 pub struct MoveOnly {
@@ -95,7 +95,7 @@ impl CppEq for MoveOnly {
 pub fn operator_lt_3(a: Ptr<MoveOnly>, b: Ptr<MoveOnly>) -> bool {
     return ({ a.with(|__s| __s.v) } < { b.with(|__s| __s.v) });
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, MoveCtor, MoveAssign, Default)]
+#[derive(Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, MoveCtor, MoveAssign, Default)]
 #[byte_size(24)]
 pub struct Bag {
     #[offset(0)]

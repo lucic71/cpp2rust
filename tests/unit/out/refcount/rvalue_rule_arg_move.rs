@@ -12,7 +12,7 @@ thread_local!(
 thread_local!(
     pub static moves_1: Value<i32> = Rc::new(RefCell::new(0));
 );
-#[derive(Record, ByteRepr, VaArg, FnPtrArg, MoveCtor, CppFrom, CopyAssign, Default)]
+#[derive(Record, ByteRepr, Uninit, VaArg, FnPtrArg, MoveCtor, CppFrom, CopyAssign, Default)]
 #[cpp_from(i32, new, value)]
 #[byte_size(4)]
 pub struct Elem {

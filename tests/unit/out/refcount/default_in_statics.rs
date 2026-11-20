@@ -6,7 +6,7 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
 #[byte_size(16)]
 pub struct Inner {
     #[offset(0)]
@@ -15,7 +15,7 @@ pub struct Inner {
     #[byte_size(8)]
     pub name: Ptr<i8>,
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg)]
+#[derive(Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg)]
 #[byte_size(88)]
 pub struct Outer {
     #[offset(0)]
@@ -26,6 +26,7 @@ pub struct Outer {
     pub p2: Ptr<i32>,
     #[offset(16)]
     #[byte_size(24)]
+    #[array_len(3)]
     pub arr: Box<[Ptr<i32>]>,
     #[offset(40)]
     #[byte_size(8)]
@@ -60,7 +61,7 @@ impl Default for Outer {
         }
     }
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
 #[byte_size(40)]
 pub struct Foo {
     #[offset(0)]

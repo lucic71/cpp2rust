@@ -6,13 +6,13 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
 #[byte_size(4)]
 pub struct Bar {
     #[offset(0)]
     pub w: i32,
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg)]
+#[derive(Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg)]
 #[byte_size(40)]
 pub struct Foo {
     #[offset(0)]
@@ -25,6 +25,7 @@ pub struct Foo {
     pub z: Ptr<i32>,
     #[offset(24)]
     #[byte_size(12)]
+    #[array_len(3)]
     pub a: Box<[i32]>,
     #[offset(36)]
     #[byte_size(4)]
@@ -43,7 +44,7 @@ impl Default for Foo {
         }
     }
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
 #[byte_size(16)]
 pub struct Refs {
     #[offset(0)]

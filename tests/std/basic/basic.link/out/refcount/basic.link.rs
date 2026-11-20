@@ -29,11 +29,12 @@ pub fn test_11() {
     assert!((ceiling_10.with(|rc| *rc.borrow()) == 40));
     assert!(((ceiling_10.with(|v| v.as_pointer())) == ({ ceiling_address_in_b_12() })));
 }
-#[derive(VaArg, FnPtrArg, ByteRepr, Clone)]
+#[derive(VaArg, FnPtrArg, ByteRepr, Clone, Uninit)]
 #[byte_size(4)]
 pub struct anon_13 {
     #[offset(0)]
     #[byte_size(4)]
+    #[array_len(4)]
     __bytes: Box<[u8]>,
 }
 impl anon_13 {
@@ -66,7 +67,7 @@ thread_local!(
 pub fn bump_18() -> i32 {
     return (*(*counter_17.with(Value::clone).borrow_mut()).prefix_inc());
 }
-#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg)]
+#[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg)]
 #[byte_size(4)]
 pub struct Record_19 {
     #[offset(0)]
@@ -102,7 +103,7 @@ pub fn test_29() {
     level_28.with(|rc| *rc.borrow_mut() = 10);
     assert!((({ raise_30(1,) }) == 11));
 }
-#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
 #[byte_size(1)]
 pub struct Tally_31 {}
 thread_local!(
@@ -114,7 +115,7 @@ pub fn test_33() {
     assert!((({ add_in_b_34(1,) }) == 102));
     assert!((total_32.with(|rc| *rc.borrow()) == 11));
 }
-#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
 #[byte_size(1)]
 pub struct p5_members_of_class_with_external_linkage_Ledger {}
 pub fn test_36() {
@@ -182,7 +183,7 @@ pub fn test_55() {
     assert!((({ second_key_plus_value_53() }) == 32));
     assert!((({ key_in_b_56() }) == 400));
 }
-#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg)]
+#[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg)]
 #[byte_size(4)]
 pub struct Entry_52 {
     #[offset(0)]
@@ -193,7 +194,7 @@ impl Default for Entry_52 {
         { Entry_52 { key: 1 } }
     }
 }
-#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg)]
+#[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg)]
 #[byte_size(8)]
 pub struct Entry_54 {
     #[offset(0)]
@@ -265,11 +266,12 @@ thread_local!(
 pub fn ceiling_address_in_b_12() -> Ptr<i32> {
     return (ceiling_10.with(|v| v.as_pointer()));
 }
-#[derive(VaArg, FnPtrArg, ByteRepr, Clone)]
+#[derive(VaArg, FnPtrArg, ByteRepr, Clone, Uninit)]
 #[byte_size(4)]
 pub struct anon_62 {
     #[offset(0)]
     #[byte_size(4)]
+    #[array_len(4)]
     __bytes: Box<[u8]>,
 }
 impl anon_62 {
@@ -302,7 +304,7 @@ thread_local!(
 pub fn bump_64() -> i32 {
     return (*(*counter_63.with(Value::clone).borrow_mut()).prefix_inc());
 }
-#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg)]
+#[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg)]
 #[byte_size(16)]
 pub struct Record_65 {
     #[offset(0)]
@@ -346,7 +348,7 @@ pub fn raise_30(mut by: i32) -> i32 {
     level_28.with(|rc| *rc.borrow_mut() += by);
     return level_28.with(|rc| *rc.borrow());
 }
-#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
 #[byte_size(1)]
 pub struct Tally_67 {}
 thread_local!(
@@ -388,7 +390,7 @@ pub fn key_in_b_56() -> i32 {
     let mut entry: Entry_71 = <Entry_71>::default();
     return (entry.key as i32);
 }
-#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg)]
+#[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg)]
 #[byte_size(8)]
 pub struct Entry_71 {
     #[offset(0)]

@@ -18,7 +18,7 @@ pub fn test_0() {
     }
     assert!((level == 5));
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
 #[byte_size(16)]
 pub struct p1_own_address_in_initializer_SelfLinked {
     #[offset(0)]
@@ -73,7 +73,7 @@ pub fn test_3() {
 pub type anon_4 = u32;
 pub const anon_4_limit: anon_4 = 13;
 pub const anon_4_above: anon_4 = 14;
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg)]
+#[derive(Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg)]
 #[byte_size(8)]
 pub struct p9_func_declared_before_function_body_RecordsConstructorName {
     #[offset(0)]

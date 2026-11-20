@@ -16,11 +16,12 @@ pub fn strlen_1(mut s: Ptr<i8>) -> i32 {
     }
     return c;
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg)]
+#[derive(Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg)]
 #[byte_size(12)]
 pub struct Row {
     #[offset(0)]
     #[byte_size(12)]
+    #[array_len(3)]
     pub a: Box<[i32]>,
 }
 impl Default for Row {

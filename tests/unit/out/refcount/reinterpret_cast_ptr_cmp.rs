@@ -6,7 +6,7 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
 #[byte_size(8)]
 pub struct S {
     #[offset(0)]
@@ -14,13 +14,14 @@ pub struct S {
     #[offset(4)]
     pub y: i32,
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg)]
+#[derive(Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg)]
 #[byte_size(28)]
 pub struct W {
     #[offset(0)]
     pub h: i32,
     #[offset(4)]
     #[byte_size(24)]
+    #[array_len(3)]
     pub arr: Box<[S]>,
 }
 impl Default for W {
@@ -33,7 +34,7 @@ impl Default for W {
         }
     }
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg)]
+#[derive(Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg)]
 #[byte_size(32)]
 pub struct P {
     #[offset(0)]
@@ -41,6 +42,7 @@ pub struct P {
     pub a: Ptr<i32>,
     #[offset(8)]
     #[byte_size(24)]
+    #[array_len(3)]
     pub arr: Box<[Ptr<i32>]>,
 }
 impl Default for P {

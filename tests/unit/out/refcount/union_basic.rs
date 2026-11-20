@@ -6,11 +6,12 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(VaArg, FnPtrArg, ByteRepr, Clone)]
+#[derive(VaArg, FnPtrArg, ByteRepr, Clone, Uninit)]
 #[byte_size(4)]
 pub struct basic {
     #[offset(0)]
     #[byte_size(4)]
+    #[array_len(4)]
     __bytes: Box<[u8]>,
 }
 impl basic {
@@ -28,11 +29,12 @@ impl Default for basic {
         }
     }
 }
-#[derive(VaArg, FnPtrArg, ByteRepr, Clone)]
+#[derive(VaArg, FnPtrArg, ByteRepr, Clone, Uninit)]
 #[byte_size(1)]
 pub struct empty {
     #[offset(0)]
     #[byte_size(1)]
+    #[array_len(1)]
     __bytes: Box<[u8]>,
 }
 impl empty {}
@@ -43,11 +45,12 @@ impl Default for empty {
         }
     }
 }
-#[derive(VaArg, FnPtrArg, ByteRepr, Clone)]
+#[derive(VaArg, FnPtrArg, ByteRepr, Clone, Uninit)]
 #[byte_size(8)]
 pub struct underscores {
     #[offset(0)]
     #[byte_size(8)]
+    #[array_len(8)]
     __bytes: Box<[u8]>,
 }
 impl underscores {
@@ -120,11 +123,12 @@ fn main_0() -> i32 {
     assert!(((__ + ___) == 3));
     return 0;
 }
-#[derive(VaArg, FnPtrArg, ByteRepr, Clone)]
+#[derive(VaArg, FnPtrArg, ByteRepr, Clone, Uninit)]
 #[byte_size(4)]
 pub struct anon_0 {
     #[offset(0)]
     #[byte_size(4)]
+    #[array_len(4)]
     __bytes: Box<[u8]>,
 }
 impl anon_0 {

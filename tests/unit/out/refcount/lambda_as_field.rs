@@ -6,7 +6,7 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Destructor)]
+#[derive(Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Destructor)]
 #[byte_size(1)]
 pub struct Guard__lambda_at_lambda_as_field_cpp_34_13__ {
     #[offset(0)]
@@ -24,14 +24,14 @@ impl Default for Guard__lambda_at_lambda_as_field_cpp_34_13__ {
         }
     }
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Destructor, Default)]
+#[derive(Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Destructor, Default)]
 #[byte_size(8)]
 pub struct Guard__lambda_at_lambda_as_field_cpp_45_13__ {
     #[offset(0)]
     #[byte_size(8)]
     pub f: FnPtr<fn()>,
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg)]
+#[derive(Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg)]
 #[byte_size(8)]
 pub struct Holder__lambda_at_lambda_as_field_cpp_39_12__ {
     #[offset(0)]
@@ -54,7 +54,7 @@ impl Default for Holder__lambda_at_lambda_as_field_cpp_39_12__ {
         }
     }
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
 #[byte_size(8)]
 pub struct Holder__lambda_at_lambda_as_field_cpp_51_12__ {
     #[offset(0)]
@@ -63,7 +63,7 @@ pub struct Holder__lambda_at_lambda_as_field_cpp_51_12__ {
     #[offset(4)]
     pub calls: i32,
 }
-#[derive(Record, ByteRepr, FnPtrArg, MoveCtor, CppFrom)]
+#[derive(Record, ByteRepr, Uninit, FnPtrArg, MoveCtor, CppFrom)]
 #[cpp_from(FnPtr<fn(i32  ,) -> i32  >  , new, value)]
 #[byte_size(8)]
 pub struct Moving__lambda_at_lambda_as_field_cpp_64_12__ {

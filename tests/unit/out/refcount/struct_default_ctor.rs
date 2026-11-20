@@ -6,7 +6,7 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg)]
+#[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg)]
 #[byte_size(8)]
 pub struct S {
     #[offset(0)]
@@ -24,18 +24,19 @@ impl Default for S {
         { S::new() }
     }
 }
-#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
 #[byte_size(4)]
 pub struct Declared {
     #[offset(0)]
     pub v: i32,
 }
 impl Declared {}
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg)]
+#[derive(Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg)]
 #[byte_size(16)]
 pub struct Holder {
     #[offset(0)]
     #[byte_size(16)]
+    #[array_len(2)]
     pub items: Box<[S]>,
 }
 impl Default for Holder {
@@ -50,7 +51,7 @@ impl Default for Holder {
 thread_local!(
     pub static kInit_0: Value<i32> = Rc::new(RefCell::new(3));
 );
-#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg)]
+#[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg)]
 #[byte_size(4)]
 pub struct FromStatic {
     #[offset(0)]

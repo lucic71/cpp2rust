@@ -6,13 +6,14 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg)]
+#[derive(Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg)]
 #[byte_size(4)]
 pub struct F {
     #[offset(0)]
     pub n: i32,
     #[offset(4)]
     #[byte_size(0)]
+    #[array_len(0)]
     pub tail: Box<[i8]>,
 }
 impl Default for F {

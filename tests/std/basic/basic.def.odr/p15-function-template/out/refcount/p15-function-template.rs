@@ -18,7 +18,7 @@ thread_local!(
 thread_local!(
     pub static useCount_3: Value<i32> = Rc::new(RefCell::new(0));
 );
-#[derive(Record, ByteRepr, VaArg, FnPtrArg, CopyAssign, Destructor)]
+#[derive(Record, ByteRepr, Uninit, VaArg, FnPtrArg, CopyAssign, Destructor)]
 #[byte_size(4)]
 pub struct LifetimeTracked {
     #[offset(0)]
@@ -67,7 +67,7 @@ impl Default for LifetimeTracked {
         { LifetimeTracked::new() }
     }
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Destructor, Default)]
+#[derive(Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Destructor, Default)]
 #[byte_size(4)]
 pub struct AssertsDtorCountAtExit {
     #[offset(0)]
@@ -139,7 +139,7 @@ fn main_0() -> i32 {
     assert!((ctorCount_0.with(|rc| *rc.borrow()) == 4));
     return 0;
 }
-#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
 #[byte_size(1)]
 pub struct S_14 {}
 pub fn count_18() -> i32 {
@@ -164,7 +164,7 @@ pub fn b_count_long_17() -> i32 {
 pub fn b_count_local_15() -> i32 {
     return ({ count_18() });
 }
-#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
 #[byte_size(1)]
 pub struct S_21 {}
 pub trait AssertsDtorCountAtExitImpl {

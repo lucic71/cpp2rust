@@ -9,7 +9,7 @@ use std::rc::{Rc, Weak};
 thread_local!(
     pub static copies_0: Value<i32> = Rc::new(RefCell::new(0));
 );
-#[derive(Record, ByteRepr, VaArg, FnPtrArg, MoveCtor, CppFrom, CopyAssign, MoveAssign)]
+#[derive(Record, ByteRepr, Uninit, VaArg, FnPtrArg, MoveCtor, CppFrom, CopyAssign, MoveAssign)]
 #[cpp_from(i32, new_1, value)]
 #[byte_size(4)]
 pub struct Tracked {
@@ -47,7 +47,9 @@ impl Default for Tracked {
         { Tracked::new_2() }
     }
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, MoveCtor, CopyAssign, MoveAssign, Default)]
+#[derive(
+    Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, MoveCtor, CopyAssign, MoveAssign, Default,
+)]
 #[byte_size(8)]
 pub struct Pair {
     #[offset(0)]
@@ -65,14 +67,16 @@ impl Pair {
         }
     }
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, MoveCtor, CopyAssign, MoveAssign)]
+#[derive(Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, MoveCtor, CopyAssign, MoveAssign)]
 #[byte_size(16)]
 pub struct Arrays {
     #[offset(0)]
     #[byte_size(8)]
+    #[array_len(2)]
     pub a: Box<[Tracked]>,
     #[offset(8)]
     #[byte_size(8)]
+    #[array_len(2)]
     pub b: Box<[Tracked]>,
 }
 impl Arrays {
@@ -107,7 +111,7 @@ thread_local!(
 thread_local!(
     pub static copy_only_dtors_2: Value<i32> = Rc::new(RefCell::new(0));
 );
-#[derive(Record, ByteRepr, VaArg, FnPtrArg, CppFrom, CopyAssign, Destructor, Default)]
+#[derive(Record, ByteRepr, Uninit, VaArg, FnPtrArg, CppFrom, CopyAssign, Destructor, Default)]
 #[cpp_from(i32, new, value)]
 #[byte_size(4)]
 pub struct CopyOnly {
@@ -132,7 +136,7 @@ impl Clone for CopyOnly {
         CopyOnly::copy_from(__src.as_pointer())
     }
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, CopyAssign, Destructor, Default)]
+#[derive(Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, CopyAssign, Destructor, Default)]
 #[byte_size(8)]
 pub struct CopyOnlyPair {
     #[offset(0)]
@@ -154,6 +158,7 @@ thread_local!(
 #[derive(
     Record,
     ByteRepr,
+    Uninit,
     VaArg,
     FnPtrArg,
     MoveCtor,
@@ -196,7 +201,17 @@ impl Clone for Moved {
     }
 }
 #[derive(
-    Clone, Record, ByteRepr, VaArg, FnPtrArg, MoveCtor, CopyAssign, MoveAssign, Destructor, Default,
+    Clone,
+    Record,
+    ByteRepr,
+    Uninit,
+    VaArg,
+    FnPtrArg,
+    MoveCtor,
+    CopyAssign,
+    MoveAssign,
+    Destructor,
+    Default,
 )]
 #[byte_size(8)]
 pub struct MovedPair {
@@ -232,7 +247,7 @@ pub fn swapped_once_6() -> bool {
     });
     return ok;
 }
-#[derive(Record, ByteRepr, FnPtrArg, MoveCtor, MoveAssign, Default)]
+#[derive(Record, ByteRepr, Uninit, FnPtrArg, MoveCtor, MoveAssign, Default)]
 #[byte_size(8)]
 pub struct Owner {
     #[offset(0)]

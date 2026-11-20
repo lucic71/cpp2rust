@@ -6,7 +6,7 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
 #[byte_size(8)]
 pub struct Inner {
     #[offset(0)]
@@ -17,11 +17,12 @@ pub struct Inner {
 pub fn sum_inner_0(mut i: Ptr<Inner>) -> i32 {
     return ({ i.with(|__s| __s.a) } + { i.with(|__s| __s.b) });
 }
-#[derive(VaArg, FnPtrArg, ByteRepr, Clone)]
+#[derive(VaArg, FnPtrArg, ByteRepr, Clone, Uninit)]
 #[byte_size(16)]
 pub struct anon_1 {
     #[offset(0)]
     #[byte_size(16)]
+    #[array_len(16)]
     __bytes: Box<[u8]>,
 }
 impl anon_1 {
@@ -39,7 +40,7 @@ impl Default for anon_1 {
         }
     }
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
 #[byte_size(16)]
 pub struct Outer {
     #[offset(0)]

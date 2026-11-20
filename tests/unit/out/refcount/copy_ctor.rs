@@ -9,7 +9,7 @@ use std::rc::{Rc, Weak};
 thread_local!(
     pub static copies_0: Value<i32> = Rc::new(RefCell::new(0));
 );
-#[derive(Record, ByteRepr, VaArg, FnPtrArg, CppFrom, CopyAssign, Default)]
+#[derive(Record, ByteRepr, Uninit, VaArg, FnPtrArg, CppFrom, CopyAssign, Default)]
 #[cpp_from(i32, new, value)]
 #[byte_size(4)]
 pub struct Counted {
@@ -34,7 +34,7 @@ impl Clone for Counted {
         Counted::copy_from(__src.as_pointer())
     }
 }
-#[derive(Record, ByteRepr, VaArg, FnPtrArg, CopyAssign)]
+#[derive(Record, ByteRepr, Uninit, VaArg, FnPtrArg, CopyAssign)]
 #[byte_size(4)]
 pub struct NonConst {
     #[offset(0)]
@@ -68,7 +68,7 @@ impl Default for NonConst {
         { NonConst::new() }
     }
 }
-#[derive(Record, ByteRepr, VaArg, FnPtrArg, CppFrom, CopyAssign, Default)]
+#[derive(Record, ByteRepr, Uninit, VaArg, FnPtrArg, CppFrom, CopyAssign, Default)]
 #[cpp_from(i32, new, value)]
 #[byte_size(4)]
 pub struct Ignored {
@@ -91,7 +91,7 @@ impl Clone for Ignored {
         Ignored::copy_from(__src.as_pointer())
     }
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, CopyAssign)]
+#[derive(Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, CopyAssign)]
 #[byte_size(12)]
 pub struct Holder {
     #[offset(0)]
@@ -99,6 +99,7 @@ pub struct Holder {
     pub c: Counted,
     #[offset(4)]
     #[byte_size(8)]
+    #[array_len(2)]
     pub arr: Box<[Counted]>,
 }
 impl Default for Holder {
@@ -113,7 +114,7 @@ impl Default for Holder {
         }
     }
 }
-#[derive(Record, ByteRepr, VaArg, FnPtrArg, MoveCtor, CppFrom, Default)]
+#[derive(Record, ByteRepr, Uninit, VaArg, FnPtrArg, MoveCtor, CppFrom, Default)]
 #[cpp_from(i32, new, value)]
 #[byte_size(4)]
 pub struct Box_int_ {
@@ -143,7 +144,7 @@ impl Clone for Box_int_ {
         Box_int_::copy_from(__src.as_pointer())
     }
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, MoveCtor, Default)]
+#[derive(Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, MoveCtor, Default)]
 #[byte_size(4)]
 pub struct Owner {
     #[offset(0)]
@@ -157,7 +158,7 @@ impl Owner {
         }
     }
 }
-#[derive(Record, ByteRepr, VaArg, FnPtrArg, CppFrom, CopyAssign, Default)]
+#[derive(Record, ByteRepr, Uninit, VaArg, FnPtrArg, CppFrom, CopyAssign, Default)]
 #[cpp_from(i32, new, value)]
 #[byte_size(4)]
 pub struct OutOfLine {
@@ -183,7 +184,7 @@ impl Clone for OutOfLine {
     }
 }
 impl OutOfLine {}
-#[derive(Record, ByteRepr, VaArg, FnPtrArg, CopyAssign)]
+#[derive(Record, ByteRepr, Uninit, VaArg, FnPtrArg, CopyAssign)]
 #[byte_size(4)]
 pub struct Tracked {
     #[offset(0)]

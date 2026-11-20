@@ -6,7 +6,7 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
 #[byte_size(8)]
 pub struct p3_arrow_star_HasTwoInts {
     #[offset(0)]
@@ -27,7 +27,7 @@ pub fn test_0() {
     assert!(({ ({ (*obj.borrow()).first } == 3) }));
     assert!((((p).member::<i32>(pm)) == ((p).member::<i32>(pm))));
 }
-#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
 #[byte_size(4)]
 pub struct p4_object_expression_sequenced_first_HasValue {
     #[offset(0)]
@@ -69,7 +69,7 @@ pub fn test_7() {
     assert!((object_stamp_2.with(|rc| *rc.borrow()) == 1));
     assert!((member_stamp_3.with(|rc| *rc.borrow()) == 2));
 }
-#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
 #[byte_size(8)]
 pub struct p6_data_member_of_lvalue_is_lvalue_HasTwoInts {
     #[offset(0)]
@@ -98,7 +98,7 @@ thread_local!(
 thread_local!(
     pub static moveCount_10: Value<i32> = Rc::new(RefCell::new(0));
 );
-#[derive(Record, ByteRepr, VaArg, FnPtrArg, MoveCtor, Default)]
+#[derive(Record, ByteRepr, Uninit, VaArg, FnPtrArg, MoveCtor, Default)]
 #[byte_size(1)]
 pub struct p6_data_member_of_rvalue_is_xvalue_CountsCopiesAndMoves {}
 impl p6_data_member_of_rvalue_is_xvalue_CountsCopiesAndMoves {
@@ -121,7 +121,7 @@ impl Clone for p6_data_member_of_rvalue_is_xvalue_CountsCopiesAndMoves {
         p6_data_member_of_rvalue_is_xvalue_CountsCopiesAndMoves::copy_from(__src.as_pointer())
     }
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, MoveCtor, Default)]
+#[derive(Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, MoveCtor, Default)]
 #[byte_size(1)]
 pub struct p6_data_member_of_rvalue_is_xvalue_HoldsCounted {
     #[offset(0)]

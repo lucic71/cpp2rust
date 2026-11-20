@@ -6,14 +6,16 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg)]
+#[derive(Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg)]
 #[byte_size(32)]
 pub struct pair {
     #[offset(0)]
     #[byte_size(16)]
+    #[array_len(4)]
     pub a: Box<[i32]>,
     #[offset(16)]
     #[byte_size(16)]
+    #[array_len(4)]
     pub b: Box<[i32]>,
 }
 impl Default for pair {

@@ -18,7 +18,7 @@ thread_local!(
 thread_local!(
     pub static useCount_3: Value<i32> = Rc::new(RefCell::new(0));
 );
-#[derive(Record, ByteRepr, VaArg, FnPtrArg, CopyAssign, Destructor)]
+#[derive(Record, ByteRepr, Uninit, VaArg, FnPtrArg, CopyAssign, Destructor)]
 #[byte_size(4)]
 pub struct LifetimeTracked {
     #[offset(0)]
@@ -76,7 +76,7 @@ thread_local!(
         __static
     };
 );
-#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
 #[byte_size(1)]
 pub struct HasStaticMember_int_ {}
 thread_local!(
@@ -88,7 +88,7 @@ thread_local!(
         __static
     };
 );
-#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
 #[byte_size(1)]
 pub struct HasStaticMember_long_ {}
 pub fn main() {

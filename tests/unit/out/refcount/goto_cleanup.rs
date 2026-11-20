@@ -74,7 +74,7 @@ pub fn from_switch_2(mut n: i32) -> i32 {
     });
     panic!("ub: non-void function does not return a value")
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
 #[byte_size(8)]
 pub struct wrapper {
     #[offset(0)]

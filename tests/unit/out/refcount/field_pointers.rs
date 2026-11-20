@@ -6,13 +6,14 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg)]
+#[derive(Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg)]
 #[byte_size(12)]
 pub struct Inner {
     #[offset(0)]
     pub a: i32,
     #[offset(4)]
     #[byte_size(8)]
+    #[array_len(8)]
     pub name: Box<[i8]>,
 }
 impl Default for Inner {
@@ -25,7 +26,7 @@ impl Default for Inner {
         }
     }
 }
-#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
 #[byte_size(8)]
 pub struct Header {
     #[offset(0)]
@@ -33,7 +34,7 @@ pub struct Header {
     #[offset(4)]
     pub size: i16,
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, MoveCtor, MoveAssign)]
+#[derive(Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, MoveCtor, MoveAssign)]
 #[byte_size(104)]
 pub struct Outer {
     #[offset(0)]
@@ -43,6 +44,7 @@ pub struct Outer {
     pub inner: Inner,
     #[offset(16)]
     #[byte_size(36)]
+    #[array_len(3)]
     pub items: Box<[Inner]>,
     #[offset(56)]
     #[byte_size(24)]
@@ -52,6 +54,7 @@ pub struct Outer {
     pub cursor: Ptr<i32>,
     #[offset(88)]
     #[byte_size(16)]
+    #[array_len(4)]
     pub buf: Box<[i32]>,
 }
 impl Outer {

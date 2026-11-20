@@ -12,7 +12,7 @@ pub fn test_0() {
     assert!((target == 1));
     assert!((source == 1));
 }
-#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
 #[byte_size(8)]
 pub struct p9_move_trivially_copyable_Point {
     #[offset(0)]
@@ -43,7 +43,7 @@ pub fn test_1() {
     assert!((points[0_usize].x == 5) && (points[0_usize].y == 6));
     assert!((element.x == 5) && (element.y == 6));
 }
-#[derive(Record, ByteRepr, FnPtrArg, MoveCtor, CppFrom, Default)]
+#[derive(Record, ByteRepr, Uninit, FnPtrArg, MoveCtor, CppFrom, Default)]
 #[cpp_from(i32, new, value)]
 #[byte_size(4)]
 pub struct p10_move_constructor_A {

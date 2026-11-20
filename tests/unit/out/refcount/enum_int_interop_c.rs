@@ -19,7 +19,7 @@ pub type Tag_enum = u32;
 pub const Tag_enum_TAG_ZERO: Tag_enum = 0;
 pub const Tag_enum_TAG_ONE: Tag_enum = 1;
 pub const Tag_enum_TAG_TWO: Tag_enum = 2;
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
 #[byte_size(16)]
 pub struct Entry {
     #[offset(0)]

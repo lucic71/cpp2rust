@@ -6,7 +6,7 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
 #[byte_size(4)]
 pub struct Lt {
     #[offset(0)]
@@ -22,7 +22,7 @@ impl CppEq for Lt {
         !(LtImpl::operator_lt(__lhs, __rhs.clone())) && !(LtImpl::operator_lt(__rhs, __lhs.clone()))
     }
 }
-#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
 #[byte_size(4)]
 pub struct Eq {
     #[offset(0)]
@@ -33,7 +33,7 @@ impl CppEq for Eq {
         EqImpl::operator_eq(__lhs, __rhs.clone())
     }
 }
-#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
 #[byte_size(4)]
 pub struct Cmp {
     #[offset(0)]
@@ -49,7 +49,7 @@ impl CppEq for Cmp {
         CmpImpl::operator_eq(__lhs, __rhs.clone())
     }
 }
-#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
 #[byte_size(4)]
 pub struct Free {
     #[offset(0)]
@@ -71,7 +71,7 @@ pub fn operator_lt_0(a: Ptr<Free>, b: Ptr<Free>) -> bool {
 pub fn operator_eq_1(a: Ptr<Free>, b: Ptr<Free>) -> bool {
     return ({ a.with(|__s| __s.v) } == { b.with(|__s| __s.v) });
 }
-#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
 #[byte_size(4)]
 pub struct Wrapped_int_ {
     #[offset(0)]

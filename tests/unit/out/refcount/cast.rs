@@ -10,7 +10,7 @@ pub type E = u32;
 pub const E_A: E = 0;
 pub const E_B: E = 1;
 pub const E_C: E = 2;
-#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
 #[byte_size(8)]
 pub struct Pair {
     #[offset(0)]
@@ -18,23 +18,25 @@ pub struct Pair {
     #[offset(4)]
     pub y: i32,
 }
-#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
 #[byte_size(64)]
 #[byte_align(64)]
 pub struct Wide {
     #[offset(0)]
     pub c: i8,
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg)]
+#[derive(Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg)]
 #[byte_size(40)]
 pub struct Grid {
     #[offset(0)]
     pub h: i32,
     #[offset(4)]
     #[byte_size(12)]
+    #[array_len(3)]
     pub row: Box<[i32]>,
     #[offset(16)]
     #[byte_size(24)]
+    #[array_len(2, 3)]
     pub cells: Box<[Box<[i32]>]>,
 }
 impl Default for Grid {
@@ -50,7 +52,7 @@ impl Default for Grid {
         }
     }
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, MoveCtor, MoveAssign, Default)]
+#[derive(Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, MoveCtor, MoveAssign, Default)]
 #[byte_size(32)]
 pub struct Bag {
     #[offset(0)]

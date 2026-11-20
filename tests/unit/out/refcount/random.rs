@@ -6,7 +6,7 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg)]
+#[derive(Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg)]
 #[byte_size(72)]
 pub struct Pair {
     #[offset(0)]
@@ -15,6 +15,7 @@ pub struct Pair {
     pub y: i32,
     #[offset(8)]
     #[byte_size(20)]
+    #[array_len(5)]
     pub a: Box<[i32]>,
     #[offset(32)]
     #[byte_size(8)]
@@ -27,6 +28,7 @@ pub struct Pair {
     pub pair: Ptr<Pair>,
     #[offset(56)]
     #[byte_size(16)]
+    #[array_len(2)]
     pub ap: Box<[Ptr<i32>]>,
 }
 impl Default for Pair {
@@ -49,7 +51,7 @@ impl Default for Pair {
 pub fn zero_0() -> i32 {
     return 0;
 }
-#[derive(Copy, Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
 #[byte_size(1)]
 pub struct X1 {}
 pub fn foo_1(mut x1: i32, x2: Ptr<i32>, mut x3: Ptr<i32>, p2: Ptr<Pair>, mut p3: Ptr<Pair>) {}
