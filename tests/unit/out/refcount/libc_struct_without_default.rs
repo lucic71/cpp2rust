@@ -65,6 +65,9 @@ impl FieldIsLibcType {
     pub fn copy_from(this: Ptr<FieldIsLibcType>, _a0: Ptr<FieldIsLibcType>) {
         field!(this, addr).write(_a0.with(|__s| __s.addr.clone()));
     }
+    pub fn move_from(this: Ptr<FieldIsLibcType>, _a0: Ptr<FieldIsLibcType>) {
+        field!(this, addr).write(field!(_a0, addr).read());
+    }
 }
 impl Default for FieldIsLibcType {
     fn default() -> Self {
