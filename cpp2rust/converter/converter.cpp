@@ -62,7 +62,8 @@ void Converter::EmitVirtualMethods(std::string &out) {
 }
 
 std::string Converter::ForceGlobalInit(const clang::VarDecl *decl) {
-  return std::format("(*&raw const {}).get();", GetNamedDeclAsString(decl));
+  return std::format("std::cell::LazyCell::force(&*&raw const {});",
+                     GetNamedDeclAsString(decl));
 }
 
 void Converter::EmitGlobalInits(Model model, std::string &out) {
@@ -716,14 +717,7 @@ void Converter::ConvertGlobalVarDecl(clang::VarDecl *decl) {
     PushLazyInit lazy(*this, LazyStaticInit());
     StrCat(keyword_unsafe_);
     PushBrace push(*this);
-    bool writes_value = LazyStaticInit() && !IsPlacementInitialized(decl);
-    if (writes_value) {
-      StrCat("__p.write(");
-    }
     ConvertVarDeclInitializer(decl);
-    if (writes_value) {
-      StrCat(")");
-    }
   }
   StrCat(token::kSemiColon);
 }
@@ -780,8 +774,9 @@ bool Converter::VarTypeNeedsDestructor(clang::QualType type) const {
 
 std::string Converter::StaticDestructorCall(const clang::VarDecl *decl) {
   auto destroy = AsLambdaClass(decl->getType()) ? "destroy" : kDestructorName;
-  return std::format("(*(*&raw const {}).get()).{}()",
-                     GetNamedDeclAsString(decl), destroy);
+  return std::format(
+      "(*std::cell::LazyCell::force_mut(&mut *&raw mut {})).{}()",
+      GetNamedDeclAsString(decl), destroy);
 }
 
 void Converter::EmitScopedDestructor(const clang::VarDecl *decl) {
@@ -1108,6 +1103,17 @@ void Converter::ConvertPlacementInit(clang::Expr *init,
     ConvertPlacementConstruct(construct, dest);
     return;
   }
+  if (auto *construct = clang::dyn_cast<clang::CXXConstructExpr>(init);
+      construct && construct->getConstructor()->isDefaultConstructor() &&
+      construct->getConstructor()->isTrivial() &&
+      IsPlacementConstructed(construct->getType())) {
+    if (construct->requiresZeroInitialization()) {
+      ConvertPlacementZeroInit(dest, construct->getType());
+    } else {
+      StrCat("()");
+    }
+    return;
+  }
   if (auto *list = clang::dyn_cast<clang::InitListExpr>(init)) {
     ConvertPlacementInitList(list, dest);
     return;
@@ -1154,7 +1160,7 @@ void Converter::ConvertPlacementInit(clang::Expr *init,
     Convert(call);
     return;
   }
-  StrCat(std::format("{}.write({})", dest, ConvertPlacementFallback(init)));
+  StrCat(std::format("({}).write({})", dest, ConvertPlacementFallback(init)));
 }
 
 void Converter::ConvertPlacementFieldInit(const std::string &base,
@@ -1201,21 +1207,14 @@ void Converter::ConvertPlacementMemberInits(clang::CXXConstructorDecl *decl) {
 }
 
 bool Converter::IsPlacementInitialized(const clang::VarDecl *decl) const {
-  bool is_global = IsGlobalVar(decl);
-  return (is_global ? LazyStaticInit() : decl->isLocalVarDecl()) &&
-         decl->hasInit() && !hoisted_decls_.contains(decl) &&
+  return decl->isLocalVarDecl() && !IsGlobalVar(decl) && decl->hasInit() &&
+         !hoisted_decls_.contains(decl) &&
          !clang::isa<clang::DecompositionDecl>(decl) &&
          !decl->getType()->isReferenceType() &&
          IsPlacementConstructed(decl->getType());
 }
 
 std::string Converter::GetPlacementVarPtr(const clang::VarDecl *decl) {
-  if (IsGlobalVar(decl)) {
-    return decl->getType()->isArrayType()
-               ? std::format("__p.cast::<{}>()",
-                             ToString(ctx_.getBaseElementType(decl->getType())))
-               : "__p";
-  }
   auto name = GetNamedDeclAsString(decl);
   return decl->getType()->isArrayType()
              ? std::format("(&raw mut {}).cast::<{}>()", name,
@@ -1256,7 +1255,10 @@ std::string Converter::ConvertPlacementValue(clang::Expr *init) {
     PushBrace brace(*this);
     StrCat(keyword::kLet, keyword::kMut, "__v", token::kColon,
            ToString(init->getType()), token::kAssign,
-           CreateUninitStorage(init->getType()), token::kSemiColon);
+           in_const_initializer_
+               ? "::std::mem::MaybeUninit::zeroed().assume_init()"
+               : CreateUninitStorage(init->getType()),
+           token::kSemiColon);
     ConvertPlacementInit(
         init,
         init->getType()->isArrayType()
@@ -2650,7 +2652,7 @@ void Converter::ConvertParamTyConstCast(clang::QualType param_type,
 }
 
 void Converter::ConvertPlacementZeroBytes(const std::string &dest) {
-  StrCat(std::format("{}.write_bytes(0, 1)", dest));
+  StrCat(std::format("({}).write_bytes(0, 1)", dest));
 }
 
 void Converter::ConvertPlacementZeroInit(const std::string &dest,
@@ -2668,7 +2670,7 @@ void Converter::ConvertPlacementZeroInit(const std::string &dest,
     return;
   }
   PushBrace brace(*this);
-  StrCat(keyword::kLet, "__z", token::kAssign, dest, ".clone()",
+  StrCat(keyword::kLet, "__z", token::kAssign, "(", dest, ").clone()",
          token::kSemiColon);
   ConvertPlacementZeroBytes("__z");
   StrCat(token::kSemiColon);
@@ -3878,7 +3880,8 @@ std::string Converter::ConvertDeclRef(clang::Expr *expr,
 
   if (auto *var = clang::dyn_cast<clang::VarDecl>(decl);
       var && IsGlobalVar(var) && LazyStaticInit()) {
-    return std::format("(*(*&raw const {}).get())", GetNamedDeclAsString(decl));
+    return std::format("(*std::cell::LazyCell::force_mut(&mut *&raw mut {}))",
+                       GetNamedDeclAsString(decl));
   }
 
   if (auto it = range_iterator_names_.find(decl);
@@ -5208,9 +5211,7 @@ void Converter::ConvertVarInit(clang::QualType qual_type, clang::Expr *expr) {
   if (initialized_var_ && initialized_var_->getInit() == expr &&
       IsPlacementInitialized(initialized_var_)) {
     auto *var = std::exchange(initialized_var_, nullptr);
-    if (!IsGlobalVar(var)) {
-      StrCat(CreateUninitStorage(qual_type), token::kSemiColon);
-    }
+    StrCat(CreateUninitStorage(qual_type), token::kSemiColon);
     ConvertPlacementInit(expr, GetPlacementVarPtr(var));
     initialized_var_ = var;
     return;

@@ -785,11 +785,13 @@ void ConverterRefCount::AddCloneTrait(const clang::RecordDecl *decl) {
   StrCat(keyword::kImpl, "Clone for", record_name, '{');
   StrCat("fn clone(&self) -> Self {");
 
-  if (IsPlacementConstructed(ctx_.getCanonicalTagType(cxx))) {
-    auto ctor = llvm::find_if(cxx->ctors(), [](auto *ctor) {
-      return ctor->isCopyConstructor() && !ctor->isDeleted() && ctor->hasBody();
-    });
-    assert(ctor != cxx->ctor_end());
+  if (auto ctor = llvm::find_if(cxx->ctors(),
+                                [](auto *ctor) {
+                                  return ctor->isCopyConstructor() &&
+                                         ctor->hasBody() &&
+                                         IsPlacementConstructor(ctor);
+                                });
+      ctor != cxx->ctor_end()) {
     PushConversionKind push(*this, ConversionKind::FullRefCount);
     StrCat(std::format("let __src: Value<{}> = {};", record_name,
                        BoxValue(GetShallowCopy(decl, "self"))));

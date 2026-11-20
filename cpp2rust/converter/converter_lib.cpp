@@ -902,13 +902,79 @@ bool IsPassThroughConstructor(const clang::CXXConstructorDecl *ctor) {
           IsRValueConvertingConstructor(ctor));
 }
 
+static bool HasSynthesizedMoveConstructor(const clang::CXXRecordDecl *decl);
+
+static bool HasTranslatedMoveConstructor(const clang::CXXRecordDecl *decl) {
+  return llvm::any_of(decl->ctors(),
+                      [](const clang::CXXConstructorDecl *ctor) {
+                        return ctor->isMoveConstructor() &&
+                               ctor->isUserProvided() && !ctor->isDeleted();
+                      }) ||
+         HasSynthesizedMoveConstructor(decl);
+}
+
+static bool HasSynthesizedMoveConstructor(const clang::CXXRecordDecl *decl) {
+  if (!IsConvertibleImplicitMemberParent(decl)) {
+    return false;
+  }
+  bool moves =
+      !HasDefaultedCopyConstructor(decl) ||
+      llvm::any_of(decl->fields(), [](const clang::FieldDecl *field) {
+        auto *record =
+            field->getType()->getBaseElementTypeUnsafe()->getAsCXXRecordDecl();
+        if (!record || !record->hasDefinition()) {
+          return false;
+        }
+        if (!IsUserDefinedDecl(record)) {
+          return !record->hasTrivialMoveConstructor();
+        }
+        return HasTranslatedMoveConstructor(record->getDefinition());
+      });
+  if (!moves) {
+    return false;
+  }
+  if (decl->needsImplicitMoveConstructor()) {
+    return !decl->defaultedMoveConstructorIsDeleted();
+  }
+  return llvm::any_of(decl->ctors(), [](const clang::CXXConstructorDecl *ctor) {
+    return ctor->isMoveConstructor() && !ctor->isUserProvided() &&
+           !ctor->isDeleted();
+  });
+}
+
 static bool IsPlacementRecord(const clang::CXXRecordDecl *decl) {
   if (!decl || !decl->hasDefinition()) {
     return false;
   }
   decl = decl->getDefinition();
-  return !decl->isLambda() && !decl->isUnion() && !decl->isDependentContext() &&
-         IsUserDefinedDecl(decl);
+  if (decl->isLambda() || decl->isUnion() || decl->isDependentContext() ||
+      !IsUserDefinedDecl(decl)) {
+    return false;
+  }
+  static std::unordered_map<const clang::CXXRecordDecl *, bool> cache;
+  if (auto it = cache.find(decl); it != cache.end()) {
+    return it->second;
+  }
+  cache[decl] = false;
+  bool placement =
+      llvm::any_of(decl->ctors(),
+                   [](const clang::CXXConstructorDecl *ctor) {
+                     return ctor->isUserProvided() && !ctor->isDeleted();
+                   }) ||
+      llvm::any_of(decl->decls(),
+                   [](const clang::Decl *member) {
+                     auto *tmpl =
+                         clang::dyn_cast<clang::FunctionTemplateDecl>(member);
+                     return tmpl && clang::isa<clang::CXXConstructorDecl>(
+                                        tmpl->getTemplatedDecl());
+                   }) ||
+      llvm::any_of(decl->fields(),
+                   [](const clang::FieldDecl *field) {
+                     return IsPlacementConstructed(field->getType());
+                   }) ||
+      HasSynthesizedMoveConstructor(decl);
+  cache[decl] = placement;
+  return placement;
 }
 
 clang::Expr *IgnorePlacementWrappers(clang::Expr *expr) {
@@ -945,7 +1011,12 @@ bool IsPlacementConstructed(clang::QualType type) {
 }
 
 bool IsPlacementConstructor(const clang::CXXConstructorDecl *ctor) {
-  return !ctor->isDeleted() && IsPlacementRecord(ctor->getParent());
+  auto *parent = ctor->getParent();
+  if (ctor->isDeleted() || !IsPlacementRecord(parent)) {
+    return false;
+  }
+  return ctor->isUserProvided() || !ctor->isTrivial() ||
+         (ctor->isMoveConstructor() && HasSynthesizedMoveConstructor(parent));
 }
 
 bool IsImplicitPlacementConstructor(const clang::CXXMethodDecl *method) {
@@ -965,8 +1036,8 @@ void DefinePlacementConstructors(clang::Sema &sema,
   auto *saved_tu_scope = std::exchange(sema.TUScope, &tu_scope);
   sema.ForceDeclarationOfImplicitMembers(decl);
   for (auto *ctor : decl->ctors()) {
-    if (ctor->isUserProvided() || ctor->isDeleted() ||
-        ctor->doesThisDeclarationHaveABody()) {
+    if (ctor->isUserProvided() || ctor->doesThisDeclarationHaveABody() ||
+        !IsPlacementConstructor(ctor)) {
       continue;
     }
     RuleDecls::Trial trial(sema);

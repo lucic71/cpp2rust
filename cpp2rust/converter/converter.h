@@ -720,8 +720,8 @@ protected:
       PushDelim<token::kOpenCurlyBracket, token::kCloseCurlyBracket>;
   using PushParen = PushDelim<token::kOpenParen, token::kCloseParen>;
   using PushBracket = PushDelim<token::kOpenBracket, token::kCloseBracket>;
-  using PushLazyType = PushDelim<token::kLazyStorageType, token::kGt>;
-  using PushLazyInit = PushDelim<token::kLazyStorageNew, token::kCloseParen>;
+  using PushLazyType = PushDelim<token::kLazyCellType, token::kGt>;
+  using PushLazyInit = PushDelim<token::kLazyCellNew, token::kCloseParen>;
 
   template <typename T>
   inline std::string
