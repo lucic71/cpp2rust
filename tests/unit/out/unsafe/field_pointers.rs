@@ -25,6 +25,7 @@ impl Inner {
             (*_a0).name[(__i)]
         }));
     }
+    pub unsafe fn new_1(this: *mut Inner) {}
 }
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
@@ -33,7 +34,12 @@ pub struct Header {
     pub size: i16,
 }
 impl Header {
+    pub unsafe fn new_1(this: *mut Header) {}
     pub unsafe fn copy_from(this: *mut Header, _a0: *const Header) {
+        (&raw mut (*this).tag).write((*_a0).tag);
+        (&raw mut (*this).size).write((*_a0).size);
+    }
+    pub unsafe fn move_from(this: *mut Header, _a0: *mut Header) {
         (&raw mut (*this).tag).write((*_a0).tag);
         (&raw mut (*this).size).write((*_a0).size);
     }
@@ -115,6 +121,16 @@ impl Outer {
             __tmp_2
         };
         return &mut (*(self as *mut Outer));
+    }
+    pub unsafe fn new_1(this: *mut Outer) {
+        Inner::new_1((&raw mut (*this).inner));
+        {
+            let __d = (&raw mut (*this).items).cast::<Inner>();
+            for __i in 0..3_isize {
+                Inner::new_1(__d.offset(__i));
+            }
+        };
+        (&raw mut (*this).v).write(Vec::new());
     }
 }
 pub unsafe fn set_0(mut p: *mut i32, mut value: i32) {

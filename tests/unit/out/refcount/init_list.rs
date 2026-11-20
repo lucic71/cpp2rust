@@ -22,6 +22,11 @@ impl Pair {
         field!(this, a).write(_a0.with(|__s| __s.a));
         field!(this, b).write(_a0.with(|__s| __s.b));
     }
+    pub fn move_from(this: Ptr<Pair>, _a0: Ptr<Pair>) {
+        field!(this, a).write({ (*_a0.upgrade().deref()).a });
+        field!(this, b).write({ (*_a0.upgrade().deref()).b });
+    }
+    pub fn new_1(this: Ptr<Pair>) {}
 }
 #[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg)]
 #[byte_size(8)]
@@ -40,6 +45,9 @@ impl Holder {
     }
     pub fn copy_from(this: Ptr<Holder>, _a0: Ptr<Holder>) {
         Pair::copy_from(field_ptr!(this, p), { field_ptr!(_a0, p) });
+    }
+    pub fn move_from(this: Ptr<Holder>, _a0: Ptr<Holder>) {
+        Pair::move_from(field_ptr!(this, p), { field_ptr!(_a0, p) });
     }
 }
 impl Default for Holder {
@@ -72,8 +80,14 @@ pub struct Seven {
     pub v: i32,
 }
 impl Seven {
+    pub fn new_1(this: Ptr<Seven>) {
+        field!(this, v).write(7);
+    }
     pub fn copy_from(this: Ptr<Seven>, _a0: Ptr<Seven>) {
         field!(this, v).write(_a0.with(|__s| __s.v));
+    }
+    pub fn move_from(this: Ptr<Seven>, _a0: Ptr<Seven>) {
+        field!(this, v).write({ (*_a0.upgrade().deref()).v });
     }
 }
 impl Default for Seven {

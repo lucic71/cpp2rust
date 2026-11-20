@@ -12,7 +12,11 @@ pub struct Point {
     pub x: i32,
 }
 impl Point {
+    pub unsafe fn new_1(this: *mut Point) {}
     pub unsafe fn copy_from(this: *mut Point, _a0: *const Point) {
+        (&raw mut (*this).x).write((*_a0).x);
+    }
+    pub unsafe fn move_from(this: *mut Point, _a0: *mut Point) {
         (&raw mut (*this).x).write((*_a0).x);
     }
 }
@@ -25,7 +29,11 @@ impl Box_int_ {
     pub unsafe fn twice(&mut self) -> i32 {
         return ((self.val) + (self.val));
     }
+    pub unsafe fn new_1(this: *mut Box_int_) {}
     pub unsafe fn copy_from(this: *mut Box_int_, _a0: *const Box_int_) {
+        (&raw mut (*this).val).write((*_a0).val);
+    }
+    pub unsafe fn move_from(this: *mut Box_int_, _a0: *mut Box_int_) {
         (&raw mut (*this).val).write((*_a0).val);
     }
 }
@@ -39,8 +47,14 @@ impl Box_Point_ {
         Point::copy_from(__ret.clone(), { &self.val });
         return;
     }
+    pub unsafe fn new_1(this: *mut Box_Point_) {
+        Point::new_1((&raw mut (*this).val));
+    }
     pub unsafe fn copy_from(this: *mut Box_Point_, _a0: *const Box_Point_) {
         Point::copy_from((&raw mut (*this).val), { &(*_a0).val });
+    }
+    pub unsafe fn move_from(this: *mut Box_Point_, _a0: *mut Box_Point_) {
+        Point::move_from((&raw mut (*this).val), { &mut (*_a0).val });
     }
 }
 #[repr(C)]
@@ -52,7 +66,11 @@ impl Deduced_int_ {
     pub unsafe fn twice(&mut self) -> i32 {
         return ((self.val) + (self.val));
     }
+    pub unsafe fn new_1(this: *mut Deduced_int_) {}
     pub unsafe fn copy_from(this: *mut Deduced_int_, _a0: *const Deduced_int_) {
+        (&raw mut (*this).val).write((*_a0).val);
+    }
+    pub unsafe fn move_from(this: *mut Deduced_int_, _a0: *mut Deduced_int_) {
         (&raw mut (*this).val).write((*_a0).val);
     }
 }
@@ -66,8 +84,14 @@ impl Deduced_Point_ {
         Point::copy_from(__ret.clone(), { &self.val });
         return;
     }
+    pub unsafe fn new_1(this: *mut Deduced_Point_) {
+        Point::new_1((&raw mut (*this).val));
+    }
     pub unsafe fn copy_from(this: *mut Deduced_Point_, _a0: *const Deduced_Point_) {
         Point::copy_from((&raw mut (*this).val), { &(*_a0).val });
+    }
+    pub unsafe fn move_from(this: *mut Deduced_Point_, _a0: *mut Deduced_Point_) {
+        Point::move_from((&raw mut (*this).val), { &mut (*_a0).val });
     }
 }
 pub fn main() {

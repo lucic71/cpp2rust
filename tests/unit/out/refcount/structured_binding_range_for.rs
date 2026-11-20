@@ -15,9 +15,14 @@ pub struct Pair {
     pub second: i32,
 }
 impl Pair {
+    pub fn new_1(this: Ptr<Pair>) {}
     pub fn copy_from(this: Ptr<Pair>, _a0: Ptr<Pair>) {
         field!(this, first).write(_a0.with(|__s| __s.first));
         field!(this, second).write(_a0.with(|__s| __s.second));
+    }
+    pub fn move_from(this: Ptr<Pair>, _a0: Ptr<Pair>) {
+        field!(this, first).write({ (*_a0.upgrade().deref()).first });
+        field!(this, second).write({ (*_a0.upgrade().deref()).second });
     }
 }
 pub fn main() {
@@ -56,8 +61,11 @@ fn main_0() -> i32 {
     assert!(({ ({ (*arr.borrow())[(0) as usize].first } == 3) }));
     assert!(({ ({ (*arr.borrow())[(2) as usize].first } == 11) }));
     'loop_: for __decomp_1 in IterRange::new(arr.decay(), arr.decay().offset((3_i64) as isize)) {
-        let __decomp_1: Value<Pair> = Rc::new(RefCell::new(<Pair>::uninit()));
-        Pair::copy_from(__decomp_1.as_pointer(), { (__decomp_1).clone() });
+        let __decomp_1: Value<Pair> = {
+            let __v: Value<Pair> = Rc::new(RefCell::new(<Pair>::uninit()));
+            Pair::copy_from(__v.as_pointer(), { (__decomp_1).clone() });
+            __v
+        };
         (*__decomp_1.borrow_mut()).first = 0;
         (*__decomp_1.borrow_mut()).second = 0;
     }

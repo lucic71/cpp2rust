@@ -26,6 +26,9 @@ impl Bar {
     pub fn copy_from(this: Ptr<Bar>, _a0: Ptr<Bar>) {
         field!(this, v).write(_a0.with(|__s| __s.v));
     }
+    pub fn move_from(this: Ptr<Bar>, _a0: Ptr<Bar>) {
+        field!(this, v).write({ (*_a0.upgrade().deref()).v });
+    }
 }
 impl Default for Bar {
     fn default() -> Self {
@@ -79,6 +82,9 @@ impl Holder_int_ {
     }
     pub fn copy_from(this: Ptr<Holder_int_>, _a0: Ptr<Holder_int_>) {
         field!(this, v).write(_a0.with(|__s| __s.v));
+    }
+    pub fn move_from(this: Ptr<Holder_int_>, _a0: Ptr<Holder_int_>) {
+        field!(this, v).write({ (*_a0.upgrade().deref()).v });
     }
 }
 pub fn main() {

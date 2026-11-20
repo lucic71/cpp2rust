@@ -13,8 +13,12 @@ pub struct Data {
     pub v: i32,
 }
 impl Data {
+    pub fn new_1(this: Ptr<Data>) {}
     pub fn copy_from(this: Ptr<Data>, _a0: Ptr<Data>) {
         field!(this, v).write(_a0.with(|__s| __s.v));
+    }
+    pub fn move_from(this: Ptr<Data>, _a0: Ptr<Data>) {
+        field!(this, v).write({ (*_a0.upgrade().deref()).v });
     }
 }
 #[derive(Record, ByteRepr, Uninit, FnPtrArg, MoveCtor, MoveAssign, Default)]

@@ -16,7 +16,12 @@ pub struct Defaulted {
     pub b: i32,
 }
 impl Defaulted {
+    pub unsafe fn new_1(this: *mut Defaulted) {}
     pub unsafe fn copy_from(this: *mut Defaulted, _a0: *const Defaulted) {
+        (&raw mut (*this).a).write((*_a0).a);
+        (&raw mut (*this).b).write((*_a0).b);
+    }
+    pub unsafe fn move_from(this: *mut Defaulted, _a0: *mut Defaulted) {
         (&raw mut (*this).a).write((*_a0).a);
         (&raw mut (*this).b).write((*_a0).b);
     }
@@ -48,7 +53,11 @@ pub struct DefaultedOrd {
     pub a: i32,
 }
 impl DefaultedOrd {
+    pub unsafe fn new_1(this: *mut DefaultedOrd) {}
     pub unsafe fn copy_from(this: *mut DefaultedOrd, _a0: *const DefaultedOrd) {
+        (&raw mut (*this).a).write((*_a0).a);
+    }
+    pub unsafe fn move_from(this: *mut DefaultedOrd, _a0: *mut DefaultedOrd) {
         (&raw mut (*this).a).write((*_a0).a);
     }
 }
@@ -87,7 +96,11 @@ pub struct Inline {
     pub a: i32,
 }
 impl Inline {
+    pub unsafe fn new_1(this: *mut Inline) {}
     pub unsafe fn copy_from(this: *mut Inline, _a0: *const Inline) {
+        (&raw mut (*this).a).write((*_a0).a);
+    }
+    pub unsafe fn move_from(this: *mut Inline, _a0: *mut Inline) {
         (&raw mut (*this).a).write((*_a0).a);
     }
 }
@@ -121,7 +134,11 @@ pub struct OutOfLine {
     pub a: i32,
 }
 impl OutOfLine {
+    pub unsafe fn new_1(this: *mut OutOfLine) {}
     pub unsafe fn copy_from(this: *mut OutOfLine, _a0: *const OutOfLine) {
+        (&raw mut (*this).a).write((*_a0).a);
+    }
+    pub unsafe fn move_from(this: *mut OutOfLine, _a0: *mut OutOfLine) {
         (&raw mut (*this).a).write((*_a0).a);
     }
 }
@@ -156,7 +173,11 @@ pub struct Tmpl_int_ {
     pub v: i32,
 }
 impl Tmpl_int_ {
+    pub unsafe fn new_1(this: *mut Tmpl_int_) {}
     pub unsafe fn copy_from(this: *mut Tmpl_int_, _a0: *const Tmpl_int_) {
+        (&raw mut (*this).v).write((*_a0).v);
+    }
+    pub unsafe fn move_from(this: *mut Tmpl_int_, _a0: *mut Tmpl_int_) {
         (&raw mut (*this).v).write((*_a0).v);
     }
 }
@@ -190,7 +211,11 @@ pub struct Tmpl_long_ {
     pub v: i64,
 }
 impl Tmpl_long_ {
+    pub unsafe fn new_1(this: *mut Tmpl_long_) {}
     pub unsafe fn copy_from(this: *mut Tmpl_long_, _a0: *const Tmpl_long_) {
+        (&raw mut (*this).v).write((*_a0).v);
+    }
+    pub unsafe fn move_from(this: *mut Tmpl_long_, _a0: *mut Tmpl_long_) {
         (&raw mut (*this).v).write((*_a0).v);
     }
 }
@@ -206,7 +231,11 @@ pub struct TmplDefaulted_int_ {
     pub v: i32,
 }
 impl TmplDefaulted_int_ {
+    pub unsafe fn new_1(this: *mut TmplDefaulted_int_) {}
     pub unsafe fn copy_from(this: *mut TmplDefaulted_int_, _a0: *const TmplDefaulted_int_) {
+        (&raw mut (*this).v).write((*_a0).v);
+    }
+    pub unsafe fn move_from(this: *mut TmplDefaulted_int_, _a0: *mut TmplDefaulted_int_) {
         (&raw mut (*this).v).write((*_a0).v);
     }
 }
@@ -341,13 +370,15 @@ unsafe fn main_0() -> i32 {
     assert!(
         (unsafe {
             let mut _x: Inline = ::std::mem::MaybeUninit::uninit().assume_init();
+            let __tmp_0 = &raw mut _x;
             (unsafe {
                 let _x: *const Inline = &i1;
-                operator_add_5(&raw mut _x, _x, &i2)
+                operator_add_5(__tmp_0, _x, &i2)
             });
             let mut _y: Inline = ::std::mem::MaybeUninit::uninit().assume_init();
+            let __tmp_1 = &raw mut _y;
             {
-                let __d = &raw mut _y;
+                let __d = __tmp_1;
                 (&raw mut (*__d).a).write(3);
             };
             operator_eq_3(&mut _x, &mut _y)

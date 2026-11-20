@@ -18,6 +18,10 @@ impl Inner {
         (&raw mut (*this).v).write((*_a0).v);
         (&raw mut (*this).name).write((*_a0).name);
     }
+    pub unsafe fn move_from(this: *mut Inner, _a0: *mut Inner) {
+        (&raw mut (*this).v).write((*_a0).v);
+        (&raw mut (*this).name).write((*_a0).name);
+    }
 }
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
@@ -47,6 +51,18 @@ impl Outer {
         (&raw mut (*this).x).write((*_a0).x);
         (&raw mut (*this).fn_).write(((*_a0).fn_));
     }
+    pub unsafe fn move_from(this: *mut Outer, _a0: *mut Outer) {
+        (&raw mut (*this).p1).write((*_a0).p1);
+        (&raw mut (*this).p2).write((*_a0).p2);
+        (&raw mut (*this).arr).write(std::array::from_fn::<_, 3, _>(|__i: usize| {
+            (*_a0).arr[(__i)]
+        }));
+        (&raw mut (*this).cp).write((*_a0).cp);
+        (&raw mut (*this).pp).write((*_a0).pp);
+        Inner::move_from((&raw mut (*this).inner), { &mut (*_a0).inner });
+        (&raw mut (*this).x).write((*_a0).x);
+        (&raw mut (*this).fn_).write(((*_a0).fn_));
+    }
 }
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
@@ -58,7 +74,15 @@ pub struct Foo {
     pub n: i32,
 }
 impl Foo {
+    pub unsafe fn new_1(this: *mut Foo) {}
     pub unsafe fn copy_from(this: *mut Foo, _a0: *const Foo) {
+        (&raw mut (*this).s1).write((*_a0).s1);
+        (&raw mut (*this).s2).write((*_a0).s2);
+        (&raw mut (*this).fn1).write(((*_a0).fn1));
+        (&raw mut (*this).fn2).write(((*_a0).fn2));
+        (&raw mut (*this).n).write((*_a0).n);
+    }
+    pub unsafe fn move_from(this: *mut Foo, _a0: *mut Foo) {
         (&raw mut (*this).s1).write((*_a0).s1);
         (&raw mut (*this).s2).write((*_a0).s2);
         (&raw mut (*this).fn1).write(((*_a0).fn1));

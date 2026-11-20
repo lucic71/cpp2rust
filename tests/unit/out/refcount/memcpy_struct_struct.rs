@@ -15,9 +15,14 @@ pub struct Entry {
     pub value: u16,
 }
 impl Entry {
+    pub fn new_1(this: Ptr<Entry>) {}
     pub fn copy_from(this: Ptr<Entry>, _a0: Ptr<Entry>) {
         field!(this, bits).write(_a0.with(|__s| __s.bits));
         field!(this, value).write(_a0.with(|__s| __s.value));
+    }
+    pub fn move_from(this: Ptr<Entry>, _a0: Ptr<Entry>) {
+        field!(this, bits).write({ (*_a0.upgrade().deref()).bits });
+        field!(this, value).write({ (*_a0.upgrade().deref()).value });
     }
 }
 pub fn main() {

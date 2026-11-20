@@ -20,6 +20,9 @@ impl Inner {
     pub fn move_from(this: Ptr<Inner>, _a0: Ptr<Inner>) {
         field!(this, values).write(field!(_a0, values).with_mut(std::mem::take));
     }
+    pub fn new_1(this: Ptr<Inner>) {
+        field!(this, values).write(Vec::new());
+    }
 }
 #[derive(Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, MoveCtor, MoveAssign)]
 #[byte_size(56)]
@@ -49,6 +52,10 @@ impl Outer {
         field!(this, name).write(Box::new(std::array::from_fn::<_, 8, _>(|__i: usize| {
             (*_a0.upgrade().deref()).name[(__i) as usize]
         })));
+    }
+    pub fn new_1(this: Ptr<Outer>) {
+        field!(this, values).write(Vec::new());
+        Inner::new_1(field_ptr!(this, inner));
     }
 }
 impl Default for Outer {

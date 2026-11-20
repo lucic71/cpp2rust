@@ -35,6 +35,10 @@ impl S {
         field!(this, j).write(_a0.with(|__s| __s.j));
         field!(this, k).write(_a0.with(|__s| __s.k));
     }
+    pub fn move_from(this: Ptr<S>, _a0: Ptr<S>) {
+        field!(this, j).write({ (*_a0.upgrade().deref()).j });
+        field!(this, k).write({ (*_a0.upgrade().deref()).k });
+    }
 }
 impl Default for S {
     fn default() -> Self {

@@ -36,6 +36,9 @@ impl Command {
     pub fn copy_from(this: Ptr<Command>, _a0: Ptr<Command>) {
         field!(this, data).write(_a0.with(|__s| __s.data.clone()));
     }
+    pub fn move_from(this: Ptr<Command>, _a0: Ptr<Command>) {
+        field!(this, data).write({ (*_a0.upgrade().deref()).data.clone() });
+    }
 }
 pub fn test_void_ptr_to_fn_3() {
     let cmd: Value<Command> = Rc::new(RefCell::new(<Command>::uninit()));

@@ -31,6 +31,12 @@ impl p1_template_constructor_from_own_type_Probe {
     ) {
         field!(this, value).write(_a0.with(|__s| __s.value));
     }
+    pub fn move_from(
+        this: Ptr<p1_template_constructor_from_own_type_Probe>,
+        _a0: Ptr<p1_template_constructor_from_own_type_Probe>,
+    ) {
+        field!(this, value).write({ (*_a0.upgrade().deref()).value });
+    }
 }
 pub fn test_0() {
     let probe: Value<p1_template_constructor_from_own_type_Probe> = Rc::new(RefCell::new(

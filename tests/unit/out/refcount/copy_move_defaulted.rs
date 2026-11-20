@@ -19,6 +19,7 @@ impl Inner {
     pub fn move_from(this: Ptr<Inner>, _a0: Ptr<Inner>) {
         field!(this, x).write({ (*_a0.upgrade().deref()).x });
     }
+    pub fn new_1(this: Ptr<Inner>) {}
 }
 #[derive(Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, CppFrom, Destructor)]
 #[cpp_from(i32, new, value)]
@@ -83,6 +84,9 @@ pub struct Implicit {
     pub arr: Box<[i32]>,
 }
 impl Implicit {
+    pub fn new_1(this: Ptr<Implicit>) {
+        Inner::new_1(field_ptr!(this, inner));
+    }
     pub fn copy_from(this: Ptr<Implicit>, _a0: Ptr<Implicit>) {
         field!(this, v).write(_a0.with(|__s| __s.v));
         Inner::copy_from(field_ptr!(this, inner), { field_ptr!(_a0, inner) });

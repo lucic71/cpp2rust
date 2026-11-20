@@ -95,6 +95,10 @@ impl Pair {
         });
         return &mut (*(self as *mut Pair));
     }
+    pub unsafe fn new_1(this: *mut Pair) {
+        Tracked::new_2((&raw mut (*this).x));
+        Tracked::new_2((&raw mut (*this).y));
+    }
 }
 #[repr(C)]
 #[derive(Clone, VaArg, FnPtrArg, MoveCtorUnsafe, CopyAssignUnsafe, MoveAssignUnsafe, Default)]
@@ -236,6 +240,10 @@ pub struct CopyOnlyPair {
 }
 impl CopyOnlyPair {
     pub unsafe fn copy_from(this: *mut CopyOnlyPair, _a0: *const CopyOnlyPair) {
+        CopyOnly::copy_from((&raw mut (*this).x), { &(*_a0).x });
+        CopyOnly::copy_from((&raw mut (*this).y), { &(*_a0).y });
+    }
+    pub unsafe fn move_from(this: *mut CopyOnlyPair, _a0: *mut CopyOnlyPair) {
         CopyOnly::copy_from((&raw mut (*this).x), { &(*_a0).x });
         CopyOnly::copy_from((&raw mut (*this).y), { &(*_a0).y });
     }
@@ -396,6 +404,9 @@ impl Owner {
         };
         return &mut (*(self as *mut Owner));
     }
+    pub unsafe fn new_1(this: *mut Owner) {
+        (&raw mut (*this).p).write(None);
+    }
 }
 pub fn main() {
     unsafe {
@@ -414,7 +425,8 @@ unsafe fn main_0() -> i32 {
     let mut m1: UnsafeMap<i32, (i32, Tracked)> = UnsafeMap::new();
     (unsafe {
         let mut _o: Tracked = ::std::mem::MaybeUninit::uninit().assume_init();
-        Tracked::new_1(&raw mut _o, { 10 });
+        let __tmp_0 = &raw mut _o;
+        Tracked::new_1(__tmp_0, { 10 });
         Tracked::move_assign(
             &mut (*m1.subscript_move(&mut 1, |__k| cpp_move_unsafe!(__k), || <Tracked>::default())),
             &mut _o,
@@ -422,7 +434,8 @@ unsafe fn main_0() -> i32 {
     });
     (unsafe {
         let mut _o: Tracked = ::std::mem::MaybeUninit::uninit().assume_init();
-        Tracked::new_1(&raw mut _o, { 20 });
+        let __tmp_1 = &raw mut _o;
+        Tracked::new_1(__tmp_1, { 20 });
         Tracked::move_assign(
             &mut (*m1.subscript_move(&mut 2, |__k| cpp_move_unsafe!(__k), || <Tracked>::default())),
             &mut _o,
@@ -431,7 +444,8 @@ unsafe fn main_0() -> i32 {
     let mut m2: UnsafeMap<i32, (i32, Tracked)> = UnsafeMap::new();
     (unsafe {
         let mut _o: Tracked = ::std::mem::MaybeUninit::uninit().assume_init();
-        Tracked::new_1(&raw mut _o, { 30 });
+        let __tmp_2 = &raw mut _o;
+        Tracked::new_1(__tmp_2, { 30 });
         Tracked::move_assign(
             &mut (*m2.subscript_move(&mut 3, |__k| cpp_move_unsafe!(__k), || <Tracked>::default())),
             &mut _o,
@@ -572,7 +586,8 @@ unsafe fn main_0() -> i32 {
         std::array::from_fn::<_, 2, _>(|_| UnsafeMap::new());
     (unsafe {
         let mut _o: Tracked = ::std::mem::MaybeUninit::uninit().assume_init();
-        Tracked::new_1(&raw mut _o, { 1 });
+        let __tmp_3 = &raw mut _o;
+        Tracked::new_1(__tmp_3, { 1 });
         Tracked::move_assign(
             &mut (*maps[(0) as usize].subscript_move(
                 &mut 1,
@@ -584,7 +599,8 @@ unsafe fn main_0() -> i32 {
     });
     (unsafe {
         let mut _o: Tracked = ::std::mem::MaybeUninit::uninit().assume_init();
-        Tracked::new_1(&raw mut _o, { 2 });
+        let __tmp_4 = &raw mut _o;
+        Tracked::new_1(__tmp_4, { 2 });
         Tracked::move_assign(
             &mut (*maps[(1) as usize].subscript_move(
                 &mut 2,

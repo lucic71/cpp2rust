@@ -12,7 +12,11 @@ pub struct list_head {
     pub next: *mut list_head,
 }
 impl list_head {
+    pub unsafe fn new_1(this: *mut list_head) {}
     pub unsafe fn copy_from(this: *mut list_head, _a0: *const list_head) {
+        (&raw mut (*this).next).write((*_a0).next);
+    }
+    pub unsafe fn move_from(this: *mut list_head, _a0: *mut list_head) {
         (&raw mut (*this).next).write((*_a0).next);
     }
 }
@@ -23,7 +27,12 @@ pub struct node {
     pub value_ptr: *mut i32,
 }
 impl node {
+    pub unsafe fn new_1(this: *mut node) {}
     pub unsafe fn copy_from(this: *mut node, _a0: *const node) {
+        (&raw mut (*this).value).write((*_a0).value);
+        (&raw mut (*this).value_ptr).write((*_a0).value_ptr);
+    }
+    pub unsafe fn move_from(this: *mut node, _a0: *mut node) {
         (&raw mut (*this).value).write((*_a0).value);
         (&raw mut (*this).value_ptr).write((*_a0).value_ptr);
     }
@@ -35,7 +44,15 @@ pub struct node_with_defaults {
     pub value: i32,
 }
 impl node_with_defaults {
+    pub unsafe fn new_1(this: *mut node_with_defaults) {
+        (&raw mut (*this).next).write(std::ptr::null_mut());
+        (&raw mut (*this).value).write(3);
+    }
     pub unsafe fn copy_from(this: *mut node_with_defaults, _a0: *const node_with_defaults) {
+        (&raw mut (*this).next).write((*_a0).next);
+        (&raw mut (*this).value).write((*_a0).value);
+    }
+    pub unsafe fn move_from(this: *mut node_with_defaults, _a0: *mut node_with_defaults) {
         (&raw mut (*this).next).write((*_a0).next);
         (&raw mut (*this).value).write((*_a0).value);
     }

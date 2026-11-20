@@ -75,6 +75,10 @@ impl Holder {
         };
         return &mut (*(self as *mut Holder));
     }
+    pub unsafe fn new_1(this: *mut Holder) {
+        (&raw mut (*this).xs).write(Vec::new());
+        (&raw mut (*this).ys).write(Vec::new());
+    }
 }
 pub fn main() {
     unsafe {
@@ -85,8 +89,11 @@ pub fn main() {
 unsafe fn main_0() -> i32 {
     let mut m: Movable = ::std::mem::MaybeUninit::uninit().assume_init();
     Movable::new(&raw mut m, { 3 }, { 4 });
-    let mut __decomp_2: Movable = ::std::mem::MaybeUninit::uninit().assume_init();
-    Movable::move_from(&raw mut __decomp_2, { &mut m });
+    let mut __decomp_2: Movable = {
+        let mut __v: Movable = ::std::mem::MaybeUninit::uninit().assume_init();
+        Movable::move_from(&raw mut __v, { &mut m });
+        __v
+    };
     assert!(((*(*&raw const moves_1).get()) == (1)));
     assert!(((*(*&raw const copies_0).get()) == (0)));
     assert!(((__decomp_2.x) == (3)));
@@ -99,8 +106,11 @@ unsafe fn main_0() -> i32 {
         (&raw mut (*__d).xs).write(Vec::from([1, 2, 3]));
         (&raw mut (*__d).ys).write(Vec::from([4, 5]));
     };
-    let mut __decomp_3: Holder = ::std::mem::MaybeUninit::uninit().assume_init();
-    (unsafe { Holder::extract(&mut h, &raw mut __decomp_3) });
+    let mut __decomp_3: Holder = {
+        let mut __v: Holder = ::std::mem::MaybeUninit::uninit().assume_init();
+        (unsafe { Holder::extract(&mut h, &raw mut __v) });
+        __v
+    };
     assert!(((__decomp_3.xs.len()) == (3_usize)));
     assert!(((__decomp_3.ys.len()) == (2_usize)));
     assert!(((__decomp_3.xs[(2_usize)]) == (3)));

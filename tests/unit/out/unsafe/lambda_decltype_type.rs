@@ -48,6 +48,16 @@ impl Sorted__lambda_at_lambda_decltype_type_cpp_22_18__ {
         (&raw mut (*this).size).write((*_a0).size);
         (&raw mut (*this).cmp).write((*_a0).cmp.copy_from());
     }
+    pub unsafe fn move_from(
+        this: *mut Sorted__lambda_at_lambda_decltype_type_cpp_22_18__,
+        _a0: *mut Sorted__lambda_at_lambda_decltype_type_cpp_22_18__,
+    ) {
+        (&raw mut (*this).items).write(std::array::from_fn::<_, 4, _>(|__i: usize| {
+            (*_a0).items[(__i)]
+        }));
+        (&raw mut (*this).size).write((*_a0).size);
+        (&raw mut (*this).cmp).write((*_a0).cmp.move_from());
+    }
 }
 impl Default for Sorted__lambda_at_lambda_decltype_type_cpp_22_18__ {
     fn default() -> Self {
@@ -105,6 +115,16 @@ impl Sorted__lambda_at_lambda_decltype_type_cpp_19_23__ {
         }));
         (&raw mut (*this).size).write((*_a0).size);
         (&raw mut (*this).cmp).write((*_a0).cmp.copy_from());
+    }
+    pub unsafe fn move_from(
+        this: *mut Sorted__lambda_at_lambda_decltype_type_cpp_19_23__,
+        _a0: *mut Sorted__lambda_at_lambda_decltype_type_cpp_19_23__,
+    ) {
+        (&raw mut (*this).items).write(std::array::from_fn::<_, 4, _>(|__i: usize| {
+            (*_a0).items[(__i)]
+        }));
+        (&raw mut (*this).size).write((*_a0).size);
+        (&raw mut (*this).cmp).write((*_a0).cmp.move_from());
     }
 }
 impl Default for Sorted__lambda_at_lambda_decltype_type_cpp_19_23__ {

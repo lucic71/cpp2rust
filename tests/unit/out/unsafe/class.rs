@@ -40,7 +40,12 @@ impl Pair {
                 Pair::Set(self, _field, new_second)
             }));
     }
+    pub unsafe fn new_1(this: *mut Pair) {}
     pub unsafe fn copy_from(this: *mut Pair, _a0: *const Pair) {
+        (&raw mut (*this).first).write((*_a0).first);
+        (&raw mut (*this).second).write((*_a0).second);
+    }
+    pub unsafe fn move_from(this: *mut Pair, _a0: *mut Pair) {
         (&raw mut (*this).first).write((*_a0).first);
         (&raw mut (*this).second).write((*_a0).second);
     }
@@ -57,8 +62,15 @@ impl Route {
         self.cost = new_cost;
         return old_cost;
     }
+    pub unsafe fn new_1(this: *mut Route) {
+        Pair::new_1((&raw mut (*this).path));
+    }
     pub unsafe fn copy_from(this: *mut Route, _a0: *const Route) {
         Pair::copy_from((&raw mut (*this).path), { &(*_a0).path });
+        (&raw mut (*this).cost).write((*_a0).cost);
+    }
+    pub unsafe fn move_from(this: *mut Route, _a0: *mut Route) {
+        Pair::move_from((&raw mut (*this).path), { &mut (*_a0).path });
         (&raw mut (*this).cost).write((*_a0).cost);
     }
 }
@@ -77,7 +89,12 @@ impl Counter {
         (*(&raw const self.calls).cast_mut()).prefix_inc();
         return ((self.v) == ((*o).v));
     }
+    pub unsafe fn new_1(this: *mut Counter) {}
     pub unsafe fn copy_from(this: *mut Counter, _a0: *const Counter) {
+        (&raw mut (*this).v).write((*_a0).v);
+        (&raw mut (*this).calls).write((*_a0).calls);
+    }
+    pub unsafe fn move_from(this: *mut Counter, _a0: *mut Counter) {
         (&raw mut (*this).v).write((*_a0).v);
         (&raw mut (*this).calls).write((*_a0).calls);
     }
@@ -102,7 +119,11 @@ impl Tally {
         (*(&raw const self.calls).cast_mut()) += 10;
         return 2;
     }
+    pub unsafe fn new_1(this: *mut Tally) {}
     pub unsafe fn copy_from(this: *mut Tally, _a0: *const Tally) {
+        (&raw mut (*this).calls).write((*_a0).calls);
+    }
+    pub unsafe fn move_from(this: *mut Tally, _a0: *mut Tally) {
         (&raw mut (*this).calls).write((*_a0).calls);
     }
 }

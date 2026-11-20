@@ -39,6 +39,10 @@ impl Writer {
         field!(this, output).write(_a0.with(|__s| __s.output.clone()));
         Chunk::copy_from(field_ptr!(this, chunk), { field_ptr!(_a0, chunk) });
     }
+    pub fn move_from(this: Ptr<Writer>, _a0: Ptr<Writer>) {
+        field!(this, output).write({ (*_a0.upgrade().deref()).output.clone() });
+        Chunk::move_from(field_ptr!(this, chunk), { field_ptr!(_a0, chunk) });
+    }
 }
 #[derive(Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, MoveCtor, MoveAssign, Default)]
 #[byte_size(48)]
@@ -400,6 +404,9 @@ impl Bytes {
             (*_a0.upgrade().deref()).b[(__i) as usize]
         })));
     }
+    pub fn new_1(this: Ptr<Bytes>) {
+        field!(this, v).write(Vec::new());
+    }
 }
 impl Default for Bytes {
     fn default() -> Self {
@@ -440,8 +447,15 @@ pub struct Plain {
     pub b: Box<[f64]>,
 }
 impl Plain {
+    pub fn new_1(this: Ptr<Plain>) {}
     pub fn copy_from(this: Ptr<Plain>, _a0: Ptr<Plain>) {
         field!(this, a).write(_a0.with(|__s| __s.a));
+        field!(this, b).write(Box::new(std::array::from_fn::<_, 2, _>(|__i: usize| {
+            (*_a0.upgrade().deref()).b[(__i) as usize]
+        })));
+    }
+    pub fn move_from(this: Ptr<Plain>, _a0: Ptr<Plain>) {
+        field!(this, a).write({ (*_a0.upgrade().deref()).a });
         field!(this, b).write(Box::new(std::array::from_fn::<_, 2, _>(|__i: usize| {
             (*_a0.upgrade().deref()).b[(__i) as usize]
         })));

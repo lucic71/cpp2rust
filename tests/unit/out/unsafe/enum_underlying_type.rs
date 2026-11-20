@@ -37,6 +37,9 @@ impl HoldsEmpty {
     pub unsafe fn copy_from(this: *mut HoldsEmpty, _a0: *const HoldsEmpty) {
         (&raw mut (*this).e).write((*_a0).e);
     }
+    pub unsafe fn move_from(this: *mut HoldsEmpty, _a0: *mut HoldsEmpty) {
+        (&raw mut (*this).e).write((*_a0).e);
+    }
 }
 impl Default for HoldsEmpty {
     fn default() -> Self {

@@ -13,7 +13,12 @@ pub struct Point {
     pub y: i32,
 }
 impl Point {
+    pub unsafe fn new_1(this: *mut Point) {}
     pub unsafe fn copy_from(this: *mut Point, _a0: *const Point) {
+        (&raw mut (*this).x).write((*_a0).x);
+        (&raw mut (*this).y).write((*_a0).y);
+    }
+    pub unsafe fn move_from(this: *mut Point, _a0: *mut Point) {
         (&raw mut (*this).x).write((*_a0).x);
         (&raw mut (*this).y).write((*_a0).y);
     }
@@ -27,6 +32,14 @@ pub struct Shape {
     pub tail: i32,
 }
 impl Shape {
+    pub unsafe fn new_1(this: *mut Shape) {
+        {
+            let __d = (&raw mut (*this).points).cast::<Point>();
+            for __i in 0..3_isize {
+                Point::new_1(__d.offset(__i));
+            }
+        };
+    }
     pub unsafe fn copy_from(this: *mut Shape, _a0: *const Shape) {
         (&raw mut (*this).id).write((*_a0).id);
         (&raw mut (*this).coords).write(std::array::from_fn::<_, 4, _>(|__i: usize| {
@@ -36,6 +49,19 @@ impl Shape {
             let __d = (&raw mut (*this).points).cast::<Point>();
             for __i in 0..3_usize {
                 Point::copy_from(__d.offset(__i as isize), { &(*_a0).points[(__i)] });
+            }
+        };
+        (&raw mut (*this).tail).write((*_a0).tail);
+    }
+    pub unsafe fn move_from(this: *mut Shape, _a0: *mut Shape) {
+        (&raw mut (*this).id).write((*_a0).id);
+        (&raw mut (*this).coords).write(std::array::from_fn::<_, 4, _>(|__i: usize| {
+            (*_a0).coords[(__i)]
+        }));
+        {
+            let __d = (&raw mut (*this).points).cast::<Point>();
+            for __i in 0..3_usize {
+                Point::move_from(__d.offset(__i as isize), { &mut (*_a0).points[(__i)] });
             }
         };
         (&raw mut (*this).tail).write((*_a0).tail);

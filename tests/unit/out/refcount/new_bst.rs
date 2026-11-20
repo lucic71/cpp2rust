@@ -19,10 +19,16 @@ pub struct node_t {
     pub value: i32,
 }
 impl node_t {
+    pub fn new_1(this: Ptr<node_t>) {}
     pub fn copy_from(this: Ptr<node_t>, _a0: Ptr<node_t>) {
         field!(this, left).write(_a0.with(|__s| __s.left.clone()));
         field!(this, right).write(_a0.with(|__s| __s.right.clone()));
         field!(this, value).write(_a0.with(|__s| __s.value));
+    }
+    pub fn move_from(this: Ptr<node_t>, _a0: Ptr<node_t>) {
+        field!(this, left).write({ (*_a0.upgrade().deref()).left.clone() });
+        field!(this, right).write({ (*_a0.upgrade().deref()).right.clone() });
+        field!(this, value).write({ (*_a0.upgrade().deref()).value });
     }
 }
 pub fn find_0(mut node: Ptr<node_t>, mut value: i32) -> Ptr<node_t> {

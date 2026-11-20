@@ -33,6 +33,7 @@ impl Meters {
     pub unsafe fn to_i32(&self) -> i32 {
         return self.value;
     }
+    pub unsafe fn new_1(this: *mut Meters) {}
     pub unsafe fn copy_from(this: *mut Meters, _a0: *const Meters) {
         (&raw mut (*this).value).write((*_a0).value);
     }
@@ -51,6 +52,9 @@ impl Label {
         (&raw mut (*this).id).write((*c).degrees);
     }
     pub unsafe fn copy_from(this: *mut Label, _a0: *const Label) {
+        (&raw mut (*this).id).write((*_a0).id);
+    }
+    pub unsafe fn move_from(this: *mut Label, _a0: *mut Label) {
         (&raw mut (*this).id).write((*_a0).id);
     }
 }
@@ -75,6 +79,10 @@ impl Owner {
         (&raw mut (*this).taken).write((*_a0).taken);
         (&raw mut (*this).copied).write((*_a0).copied);
     }
+    pub unsafe fn move_from(this: *mut Owner, _a0: *mut Owner) {
+        (&raw mut (*this).taken).write((*_a0).taken);
+        (&raw mut (*this).copied).write((*_a0).copied);
+    }
 }
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, CppFromUnsafe, Default)]
@@ -89,6 +97,9 @@ impl Holder {
     pub unsafe fn copy_from(this: *mut Holder, _a0: *const Holder) {
         (&raw mut (*this).value).write((*_a0).value);
     }
+    pub unsafe fn move_from(this: *mut Holder, _a0: *mut Holder) {
+        (&raw mut (*this).value).write((*_a0).value);
+    }
 }
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, CppFromUnsafe)]
@@ -101,6 +112,9 @@ impl Fallback {
         (&raw mut (*this).value).write(v);
     }
     pub unsafe fn copy_from(this: *mut Fallback, _a0: *const Fallback) {
+        (&raw mut (*this).value).write((*_a0).value);
+    }
+    pub unsafe fn move_from(this: *mut Fallback, _a0: *mut Fallback) {
         (&raw mut (*this).value).write((*_a0).value);
     }
 }
@@ -121,7 +135,11 @@ pub struct Counter {
     pub hits: i32,
 }
 impl Counter {
+    pub unsafe fn new_1(this: *mut Counter) {}
     pub unsafe fn copy_from(this: *mut Counter, _a0: *const Counter) {
+        (&raw mut (*this).hits).write((*_a0).hits);
+    }
+    pub unsafe fn move_from(this: *mut Counter, _a0: *mut Counter) {
         (&raw mut (*this).hits).write((*_a0).hits);
     }
 }
@@ -137,6 +155,9 @@ impl Observer {
         (*c).hits.postfix_inc();
     }
     pub unsafe fn copy_from(this: *mut Observer, _a0: *const Observer) {
+        (&raw mut (*this).seen).write((*_a0).seen);
+    }
+    pub unsafe fn move_from(this: *mut Observer, _a0: *mut Observer) {
         (&raw mut (*this).seen).write((*_a0).seen);
     }
 }
@@ -155,6 +176,9 @@ impl Tag {
     pub unsafe fn copy_from(this: *mut Tag, _a0: *const Tag) {
         (&raw mut (*this).code).write((*_a0).code);
     }
+    pub unsafe fn move_from(this: *mut Tag, _a0: *mut Tag) {
+        (&raw mut (*this).code).write((*_a0).code);
+    }
 }
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, CppFromUnsafe, Default)]
@@ -170,6 +194,9 @@ impl Name {
         }
     }
     pub unsafe fn copy_from(this: *mut Name, _a0: *const Name) {
+        (&raw mut (*this).len).write((*_a0).len);
+    }
+    pub unsafe fn move_from(this: *mut Name, _a0: *mut Name) {
         (&raw mut (*this).len).write((*_a0).len);
     }
 }

@@ -33,7 +33,11 @@ impl S {
     pub unsafe fn operator_mul_7(&self, mut o: i32) -> i32 {
         return (((self.v) * (o)) + (1));
     }
+    pub unsafe fn new_1(this: *mut S) {}
     pub unsafe fn copy_from(this: *mut S, _a0: *const S) {
+        (&raw mut (*this).v).write((*_a0).v);
+    }
+    pub unsafe fn move_from(this: *mut S, _a0: *mut S) {
         (&raw mut (*this).v).write((*_a0).v);
     }
 }
@@ -98,19 +102,17 @@ unsafe fn main_0() -> i32 {
     );
     assert!(
         ((unsafe {
-            let _a: S = (|__p: *mut S| {
-                S::copy_from(__p, { &s });
-                __p
-            })((&mut ::std::mem::MaybeUninit::<S>::uninit()).as_mut_ptr());
+            let mut __tmp_0: S = ::std::mem::MaybeUninit::uninit().assume_init();
+            S::copy_from(&raw mut __tmp_0, { &s });
+            let _a = &raw mut __tmp_0;
             operator_div_1(_a, 4)
         }) == (2))
     );
     assert!(
         ((unsafe {
-            let _a: S = (|__p: *mut S| {
-                S::copy_from(__p, { &s });
-                __p
-            })((&mut ::std::mem::MaybeUninit::<S>::uninit()).as_mut_ptr());
+            let mut __tmp_1: S = ::std::mem::MaybeUninit::uninit().assume_init();
+            S::copy_from(&raw mut __tmp_1, { &s });
+            let _a = &raw mut __tmp_1;
             operator_rem_2(
                 _a,
                 (|__p: *mut S| {

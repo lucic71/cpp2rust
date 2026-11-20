@@ -20,9 +20,15 @@ impl p1_allocation_function_is_static_Allocates {
         (*(*&raw const allocations_0).get()) += 10;
         return libcc2rs::malloc_unsafe(size);
     }
+    pub unsafe fn new_1(this: *mut p1_allocation_function_is_static_Allocates) {}
     pub unsafe fn copy_from(
         this: *mut p1_allocation_function_is_static_Allocates,
         _a0: *const p1_allocation_function_is_static_Allocates,
+    ) {
+    }
+    pub unsafe fn move_from(
+        this: *mut p1_allocation_function_is_static_Allocates,
+        _a0: *mut p1_allocation_function_is_static_Allocates,
     ) {
     }
 }
@@ -59,9 +65,15 @@ impl p3_deallocation_function_is_static_Deallocates {
         (*(*&raw const deallocations_2).get()) += 10;
         libcc2rs::free_unsafe(ptr);
     }
+    pub unsafe fn new_1(this: *mut p3_deallocation_function_is_static_Deallocates) {}
     pub unsafe fn copy_from(
         this: *mut p3_deallocation_function_is_static_Deallocates,
         _a0: *const p3_deallocation_function_is_static_Deallocates,
+    ) {
+    }
+    pub unsafe fn move_from(
+        this: *mut p3_deallocation_function_is_static_Deallocates,
+        _a0: *mut p3_deallocation_function_is_static_Deallocates,
     ) {
     }
 }

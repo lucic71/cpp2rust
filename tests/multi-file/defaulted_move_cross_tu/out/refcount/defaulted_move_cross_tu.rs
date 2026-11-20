@@ -54,6 +54,9 @@ impl T {
     pub fn move_from(this: Ptr<T>, _a0: Ptr<T>) {
         field!(this, v).write(field!(_a0, v).with_mut(std::mem::take));
     }
+    pub fn new_1(this: Ptr<T>) {
+        field!(this, v).write(Vec::new());
+    }
 }
 pub fn sum_0(s: Ptr<S>) -> i32 {
     return ({

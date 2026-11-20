@@ -15,6 +15,9 @@ impl Text {
     pub unsafe fn copy_from(this: *mut Text, _a0: *const Text) {
         (&raw mut (*this).value).write((*_a0).value);
     }
+    pub unsafe fn move_from(this: *mut Text, _a0: *mut Text) {
+        (&raw mut (*this).value).write((*_a0).value);
+    }
 }
 pub unsafe fn receiver_0(s: *mut Vec<libc::c_char>, calls: *mut i32) -> *mut Vec<libc::c_char> {
     (*calls).prefix_inc();

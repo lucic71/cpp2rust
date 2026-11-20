@@ -80,6 +80,9 @@ impl Record_19 {
     pub fn copy_from(this: Ptr<Record_19>, _a0: Ptr<Record_19>) {
         field!(this, id).write(_a0.with(|__s| __s.id));
     }
+    pub fn move_from(this: Ptr<Record_19>, _a0: Ptr<Record_19>) {
+        field!(this, id).write({ (*_a0.upgrade().deref()).id });
+    }
 }
 impl Default for Record_19 {
     fn default() -> Self {
@@ -118,6 +121,7 @@ pub struct Tally_31 {}
 impl Tally_31 {
     pub fn new_1(this: Ptr<Tally_31>) {}
     pub fn copy_from(this: Ptr<Tally_31>, _a0: Ptr<Tally_31>) {}
+    pub fn move_from(this: Ptr<Tally_31>, _a0: Ptr<Tally_31>) {}
 }
 thread_local!(
     pub static total_32: Value<i32> = Rc::new(RefCell::new(10));
@@ -133,7 +137,13 @@ pub fn test_33() {
 #[byte_size(1)]
 pub struct p5_members_of_class_with_external_linkage_Ledger {}
 impl p5_members_of_class_with_external_linkage_Ledger {
+    pub fn new_1(this: Ptr<p5_members_of_class_with_external_linkage_Ledger>) {}
     pub fn copy_from(
+        this: Ptr<p5_members_of_class_with_external_linkage_Ledger>,
+        _a0: Ptr<p5_members_of_class_with_external_linkage_Ledger>,
+    ) {
+    }
+    pub fn move_from(
         this: Ptr<p5_members_of_class_with_external_linkage_Ledger>,
         _a0: Ptr<p5_members_of_class_with_external_linkage_Ledger>,
     ) {
@@ -219,6 +229,9 @@ impl Entry_52 {
     pub fn copy_from(this: Ptr<Entry_52>, _a0: Ptr<Entry_52>) {
         field!(this, key).write(_a0.with(|__s| __s.key));
     }
+    pub fn move_from(this: Ptr<Entry_52>, _a0: Ptr<Entry_52>) {
+        field!(this, key).write({ (*_a0.upgrade().deref()).key });
+    }
 }
 impl Default for Entry_52 {
     fn default() -> Self {
@@ -241,6 +254,10 @@ impl Entry_54 {
     pub fn copy_from(this: Ptr<Entry_54>, _a0: Ptr<Entry_54>) {
         field!(this, key).write(_a0.with(|__s| __s.key));
         field!(this, value).write(_a0.with(|__s| __s.value));
+    }
+    pub fn move_from(this: Ptr<Entry_54>, _a0: Ptr<Entry_54>) {
+        field!(this, key).write({ (*_a0.upgrade().deref()).key });
+        field!(this, value).write({ (*_a0.upgrade().deref()).value });
     }
 }
 impl Default for Entry_54 {
@@ -362,6 +379,10 @@ impl Record_65 {
         field!(this, id).write(_a0.with(|__s| __s.id));
         field!(this, extra).write(_a0.with(|__s| __s.extra));
     }
+    pub fn move_from(this: Ptr<Record_65>, _a0: Ptr<Record_65>) {
+        field!(this, id).write({ (*_a0.upgrade().deref()).id });
+        field!(this, extra).write({ (*_a0.upgrade().deref()).extra });
+    }
 }
 impl Default for Record_65 {
     fn default() -> Self {
@@ -406,6 +427,7 @@ pub struct Tally_67 {}
 impl Tally_67 {
     pub fn new_1(this: Ptr<Tally_67>) {}
     pub fn copy_from(this: Ptr<Tally_67>, _a0: Ptr<Tally_67>) {}
+    pub fn move_from(this: Ptr<Tally_67>, _a0: Ptr<Tally_67>) {}
 }
 thread_local!(
     pub static total_68: Value<i32> = Rc::new(RefCell::new(100));
@@ -460,6 +482,9 @@ impl Entry_71 {
     }
     pub fn copy_from(this: Ptr<Entry_71>, _a0: Ptr<Entry_71>) {
         field!(this, key).write(_a0.with(|__s| __s.key));
+    }
+    pub fn move_from(this: Ptr<Entry_71>, _a0: Ptr<Entry_71>) {
+        field!(this, key).write({ (*_a0.upgrade().deref()).key });
     }
 }
 impl Default for Entry_71 {

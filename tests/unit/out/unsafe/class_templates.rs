@@ -150,7 +150,11 @@ impl Boxed_short_ {
     pub unsafe fn plus(&self, mut other: i16) -> i16 {
         return (((self.value as i32) + (other as i32)) as i16);
     }
+    pub unsafe fn new_1(this: *mut Boxed_short_) {}
     pub unsafe fn copy_from(this: *mut Boxed_short_, _a0: *const Boxed_short_) {
+        (&raw mut (*this).value).write((*_a0).value);
+    }
+    pub unsafe fn move_from(this: *mut Boxed_short_, _a0: *mut Boxed_short_) {
         (&raw mut (*this).value).write((*_a0).value);
     }
 }
@@ -166,7 +170,11 @@ impl Boxed_int_ {
     pub unsafe fn plus(&self, mut other: i32) -> i32 {
         return ((self.value) + (other));
     }
+    pub unsafe fn new_1(this: *mut Boxed_int_) {}
     pub unsafe fn copy_from(this: *mut Boxed_int_, _a0: *const Boxed_int_) {
+        (&raw mut (*this).value).write((*_a0).value);
+    }
+    pub unsafe fn move_from(this: *mut Boxed_int_, _a0: *mut Boxed_int_) {
         (&raw mut (*this).value).write((*_a0).value);
     }
 }
@@ -182,7 +190,11 @@ impl Boxed_long_ {
     pub unsafe fn plus(&self, mut other: i64) -> i64 {
         return ((self.value) + (other));
     }
+    pub unsafe fn new_1(this: *mut Boxed_long_) {}
     pub unsafe fn copy_from(this: *mut Boxed_long_, _a0: *const Boxed_long_) {
+        (&raw mut (*this).value).write((*_a0).value);
+    }
+    pub unsafe fn move_from(this: *mut Boxed_long_, _a0: *mut Boxed_long_) {
         (&raw mut (*this).value).write((*_a0).value);
     }
 }
@@ -196,7 +208,12 @@ impl Outer_int__Inner_int_ {
     pub unsafe fn sum(&self) -> i32 {
         return ((self.t as i32) + (self.u as i32));
     }
+    pub unsafe fn new_1(this: *mut Outer_int__Inner_int_) {}
     pub unsafe fn copy_from(this: *mut Outer_int__Inner_int_, _a0: *const Outer_int__Inner_int_) {
+        (&raw mut (*this).t).write((*_a0).t);
+        (&raw mut (*this).u).write((*_a0).u);
+    }
+    pub unsafe fn move_from(this: *mut Outer_int__Inner_int_, _a0: *mut Outer_int__Inner_int_) {
         (&raw mut (*this).t).write((*_a0).t);
         (&raw mut (*this).u).write((*_a0).u);
     }
@@ -215,7 +232,11 @@ impl Outer_int_ {
         };
         return;
     }
+    pub unsafe fn new_1(this: *mut Outer_int_) {}
     pub unsafe fn copy_from(this: *mut Outer_int_, _a0: *const Outer_int_) {
+        (&raw mut (*this).v).write((*_a0).v);
+    }
+    pub unsafe fn move_from(this: *mut Outer_int_, _a0: *mut Outer_int_) {
         (&raw mut (*this).v).write((*_a0).v);
     }
 }
@@ -229,7 +250,12 @@ impl Outer_long__Inner_int_ {
     pub unsafe fn sum(&self) -> i32 {
         return ((self.t as i32) + (self.u as i32));
     }
+    pub unsafe fn new_1(this: *mut Outer_long__Inner_int_) {}
     pub unsafe fn copy_from(this: *mut Outer_long__Inner_int_, _a0: *const Outer_long__Inner_int_) {
+        (&raw mut (*this).t).write((*_a0).t);
+        (&raw mut (*this).u).write((*_a0).u);
+    }
+    pub unsafe fn move_from(this: *mut Outer_long__Inner_int_, _a0: *mut Outer_long__Inner_int_) {
         (&raw mut (*this).t).write((*_a0).t);
         (&raw mut (*this).u).write((*_a0).u);
     }
@@ -244,10 +270,15 @@ impl Outer_long__Inner_char_ {
     pub unsafe fn sum(&self) -> i32 {
         return ((self.t as i32) + (self.u as i32));
     }
+    pub unsafe fn new_1(this: *mut Outer_long__Inner_char_) {}
     pub unsafe fn copy_from(
         this: *mut Outer_long__Inner_char_,
         _a0: *const Outer_long__Inner_char_,
     ) {
+        (&raw mut (*this).t).write((*_a0).t);
+        (&raw mut (*this).u).write((*_a0).u);
+    }
+    pub unsafe fn move_from(this: *mut Outer_long__Inner_char_, _a0: *mut Outer_long__Inner_char_) {
         (&raw mut (*this).t).write((*_a0).t);
         (&raw mut (*this).u).write((*_a0).u);
     }
@@ -266,7 +297,11 @@ impl Outer_long_ {
         };
         return;
     }
+    pub unsafe fn new_1(this: *mut Outer_long_) {}
     pub unsafe fn copy_from(this: *mut Outer_long_, _a0: *const Outer_long_) {
+        (&raw mut (*this).v).write((*_a0).v);
+    }
+    pub unsafe fn move_from(this: *mut Outer_long_, _a0: *mut Outer_long_) {
         (&raw mut (*this).v).write((*_a0).v);
     }
 }
@@ -276,6 +311,7 @@ pub struct Elem {
     pub i: i32,
 }
 impl Elem {
+    pub unsafe fn new_1(this: *mut Elem) {}
     pub unsafe fn copy_from(this: *mut Elem, _a0: *const Elem) {
         (&raw mut (*this).i).write((*_a0).i);
     }

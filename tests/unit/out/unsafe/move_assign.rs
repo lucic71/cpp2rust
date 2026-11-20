@@ -82,7 +82,8 @@ unsafe fn main_0() -> i32 {
     assert!(((b.v) == (0)));
     (unsafe {
         let mut _o: MoveOnly = ::std::mem::MaybeUninit::uninit().assume_init();
-        MoveOnly::new(&raw mut _o, { 3 });
+        let __tmp_0 = &raw mut _o;
+        MoveOnly::new(__tmp_0, { 3 });
         MoveOnly::move_assign(&mut b, &mut _o)
     });
     (unsafe {
@@ -94,13 +95,15 @@ unsafe fn main_0() -> i32 {
     assert!((((b.v) == (0)) && ((a.v) == (0))) && ((c.v) == (3)));
     (unsafe {
         let mut _o: MoveOnly = ::std::mem::MaybeUninit::uninit().assume_init();
-        MoveOnly::new(&raw mut _o, { 5 });
+        let __tmp_1 = &raw mut _o;
+        MoveOnly::new(__tmp_1, { 5 });
         MoveOnly::move_assign(&mut a, &mut _o)
     });
     assert!(((a.v) == (5)));
     (unsafe {
         let mut _o: MoveOnly = ::std::mem::MaybeUninit::uninit().assume_init();
-        (unsafe { make_0(&raw mut _o, 6) });
+        let __tmp_2 = &raw mut _o;
+        (unsafe { make_0(__tmp_2, 6) });
         MoveOnly::move_assign(&mut a, &mut _o)
     });
     assert!(((a.v) == (6)));

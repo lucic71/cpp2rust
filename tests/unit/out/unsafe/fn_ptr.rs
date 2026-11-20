@@ -50,6 +50,12 @@ impl HashHolder_unsigned_long__ptr__bool__ {
     ) {
         (&raw mut (*this).h).write(((*_a0).h));
     }
+    pub unsafe fn move_from(
+        this: *mut HashHolder_unsigned_long__ptr__bool__,
+        _a0: *mut HashHolder_unsigned_long__ptr__bool__,
+    ) {
+        (&raw mut (*this).h).write(((*_a0).h));
+    }
 }
 pub static mut total_7: libcc2rs::LazyStorage<i32> =
     libcc2rs::LazyStorage::new(|__p| unsafe { __p.write(0) });

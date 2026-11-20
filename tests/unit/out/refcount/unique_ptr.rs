@@ -18,6 +18,9 @@ impl SafePointer {
         field!(this, ptr)
             .write(field!(_a0, ptr).with_mut(|__v: &mut Option<Value<i32>>| __v.take()));
     }
+    pub fn new_1(this: Ptr<SafePointer>) {
+        field!(this, ptr).write(None);
+    }
 }
 #[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
 #[byte_size(8)]
@@ -103,7 +106,11 @@ pub fn Consume_1(mut safe_ptr: Option<Value<SafePointer>>) -> i32 {
     let mut x: Option<Value<SafePointer>> = safe_ptr.take();
     let mut p: Option<Value<Pair>> = {
         let __p = Ptr::alloc(<Pair>::uninit());
-        Pair::new_1(__p.clone());
+        {
+            let __d = __p.clone();
+            ();
+            Pair::new_1(__d)
+        };
         __p
     }
     .to_owned_opt();

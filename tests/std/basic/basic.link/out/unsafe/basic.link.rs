@@ -73,6 +73,9 @@ impl Record_19 {
     pub unsafe fn copy_from(this: *mut Record_19, _a0: *const Record_19) {
         (&raw mut (*this).id).write((*_a0).id);
     }
+    pub unsafe fn move_from(this: *mut Record_19, _a0: *mut Record_19) {
+        (&raw mut (*this).id).write((*_a0).id);
+    }
 }
 impl Default for Record_19 {
     fn default() -> Self {
@@ -114,6 +117,7 @@ impl Tally_31 {
     }
     pub unsafe fn new_1(this: *mut Tally_31) {}
     pub unsafe fn copy_from(this: *mut Tally_31, _a0: *const Tally_31) {}
+    pub unsafe fn move_from(this: *mut Tally_31, _a0: *mut Tally_31) {}
 }
 pub static mut total_32: libcc2rs::LazyStorage<i32> =
     libcc2rs::LazyStorage::new(|__p| unsafe { __p.write(10) });
@@ -128,9 +132,15 @@ pub unsafe fn test_33() {
 #[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct p5_members_of_class_with_external_linkage_Ledger {}
 impl p5_members_of_class_with_external_linkage_Ledger {
+    pub unsafe fn new_1(this: *mut p5_members_of_class_with_external_linkage_Ledger) {}
     pub unsafe fn copy_from(
         this: *mut p5_members_of_class_with_external_linkage_Ledger,
         _a0: *const p5_members_of_class_with_external_linkage_Ledger,
+    ) {
+    }
+    pub unsafe fn move_from(
+        this: *mut p5_members_of_class_with_external_linkage_Ledger,
+        _a0: *mut p5_members_of_class_with_external_linkage_Ledger,
     ) {
     }
 }
@@ -210,6 +220,9 @@ impl Entry_52 {
     pub unsafe fn copy_from(this: *mut Entry_52, _a0: *const Entry_52) {
         (&raw mut (*this).key).write((*_a0).key);
     }
+    pub unsafe fn move_from(this: *mut Entry_52, _a0: *mut Entry_52) {
+        (&raw mut (*this).key).write((*_a0).key);
+    }
 }
 impl Default for Entry_52 {
     fn default() -> Self {
@@ -228,6 +241,10 @@ impl Entry_54 {
         (&raw mut (*this).value).write(30);
     }
     pub unsafe fn copy_from(this: *mut Entry_54, _a0: *const Entry_54) {
+        (&raw mut (*this).key).write((*_a0).key);
+        (&raw mut (*this).value).write((*_a0).value);
+    }
+    pub unsafe fn move_from(this: *mut Entry_54, _a0: *mut Entry_54) {
         (&raw mut (*this).key).write((*_a0).key);
         (&raw mut (*this).value).write((*_a0).value);
     }
@@ -329,6 +346,10 @@ impl Record_65 {
         (&raw mut (*this).id).write((*_a0).id);
         (&raw mut (*this).extra).write((*_a0).extra);
     }
+    pub unsafe fn move_from(this: *mut Record_65, _a0: *mut Record_65) {
+        (&raw mut (*this).id).write((*_a0).id);
+        (&raw mut (*this).extra).write((*_a0).extra);
+    }
 }
 impl Default for Record_65 {
     fn default() -> Self {
@@ -374,6 +395,7 @@ impl Tally_67 {
     }
     pub unsafe fn new_1(this: *mut Tally_67) {}
     pub unsafe fn copy_from(this: *mut Tally_67, _a0: *const Tally_67) {}
+    pub unsafe fn move_from(this: *mut Tally_67, _a0: *mut Tally_67) {}
 }
 pub static mut total_68: libcc2rs::LazyStorage<i32> =
     libcc2rs::LazyStorage::new(|__p| unsafe { __p.write(100) });
@@ -421,6 +443,9 @@ impl Entry_71 {
         (&raw mut (*this).key).write(400_i64);
     }
     pub unsafe fn copy_from(this: *mut Entry_71, _a0: *const Entry_71) {
+        (&raw mut (*this).key).write((*_a0).key);
+    }
+    pub unsafe fn move_from(this: *mut Entry_71, _a0: *mut Entry_71) {
         (&raw mut (*this).key).write((*_a0).key);
     }
 }

@@ -19,9 +19,14 @@ pub struct Pair {
     pub y: i32,
 }
 impl Pair {
+    pub fn new_1(this: Ptr<Pair>) {}
     pub fn copy_from(this: Ptr<Pair>, _a0: Ptr<Pair>) {
         field!(this, x).write(_a0.with(|__s| __s.x));
         field!(this, y).write(_a0.with(|__s| __s.y));
+    }
+    pub fn move_from(this: Ptr<Pair>, _a0: Ptr<Pair>) {
+        field!(this, x).write({ (*_a0.upgrade().deref()).x });
+        field!(this, y).write({ (*_a0.upgrade().deref()).y });
     }
 }
 #[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
@@ -35,6 +40,9 @@ impl Wide {
     pub fn new_1(this: Ptr<Wide>) {}
     pub fn copy_from(this: Ptr<Wide>, _a0: Ptr<Wide>) {
         field!(this, c).write(_a0.with(|__s| __s.c));
+    }
+    pub fn move_from(this: Ptr<Wide>, _a0: Ptr<Wide>) {
+        field!(this, c).write({ (*_a0.upgrade().deref()).c });
     }
 }
 #[derive(Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg)]
@@ -52,8 +60,20 @@ pub struct Grid {
     pub cells: Box<[Box<[i32]>]>,
 }
 impl Grid {
+    pub fn new_1(this: Ptr<Grid>) {}
     pub fn copy_from(this: Ptr<Grid>, _a0: Ptr<Grid>) {
         field!(this, h).write(_a0.with(|__s| __s.h));
+        field!(this, row).write(Box::new(std::array::from_fn::<_, 3, _>(|__i: usize| {
+            (*_a0.upgrade().deref()).row[(__i) as usize]
+        })));
+        field!(this, cells).write(Box::new(std::array::from_fn::<_, 2, _>(|__i: usize| {
+            Box::<[_]>::from(std::array::from_fn::<_, 3, _>(|__i2: usize| {
+                (*_a0.upgrade().deref()).cells[(__i) as usize][(__i2) as usize]
+            }))
+        })));
+    }
+    pub fn move_from(this: Ptr<Grid>, _a0: Ptr<Grid>) {
+        field!(this, h).write({ (*_a0.upgrade().deref()).h });
         field!(this, row).write(Box::new(std::array::from_fn::<_, 3, _>(|__i: usize| {
             (*_a0.upgrade().deref()).row[(__i) as usize]
         })));
@@ -328,11 +348,9 @@ pub fn nested_5() {
     let g: Value<Grid> = Rc::new(RefCell::new(<Grid>::uninit()));
     {
         let __d = g.as_pointer();
-        field!(__d, h).write(0_i32);
-        field!(__d, row).write(Box::new([0; 3]));
-        field!(__d, cells).write(Box::new(std::array::from_fn::<_, 2, _>(|_| {
-            Default::default()
-        })));
+        ();
+        ();
+        ();
     };
     let mut ig: usize = (g.as_pointer()).to_int();
     assert!(

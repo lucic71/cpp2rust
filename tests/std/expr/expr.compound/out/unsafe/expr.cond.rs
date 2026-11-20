@@ -13,9 +13,17 @@ pub struct p7_4_pointer_to_member_and_null_HasTwoInts {
     pub second: i32,
 }
 impl p7_4_pointer_to_member_and_null_HasTwoInts {
+    pub unsafe fn new_1(this: *mut p7_4_pointer_to_member_and_null_HasTwoInts) {}
     pub unsafe fn copy_from(
         this: *mut p7_4_pointer_to_member_and_null_HasTwoInts,
         _a0: *const p7_4_pointer_to_member_and_null_HasTwoInts,
+    ) {
+        (&raw mut (*this).first).write((*_a0).first);
+        (&raw mut (*this).second).write((*_a0).second);
+    }
+    pub unsafe fn move_from(
+        this: *mut p7_4_pointer_to_member_and_null_HasTwoInts,
+        _a0: *mut p7_4_pointer_to_member_and_null_HasTwoInts,
     ) {
         (&raw mut (*this).first).write((*_a0).first);
         (&raw mut (*this).second).write((*_a0).second);

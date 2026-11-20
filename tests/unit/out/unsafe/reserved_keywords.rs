@@ -49,7 +49,48 @@ pub struct S {
     pub vec_: i32,
 }
 impl S {
+    pub unsafe fn new_1(this: *mut S) {}
     pub unsafe fn copy_from(this: *mut S, _a0: *const S) {
+        (&raw mut (*this).as_).write((*_a0).as_);
+        (&raw mut (*this).async_).write((*_a0).async_);
+        (&raw mut (*this).await_).write((*_a0).await_);
+        (&raw mut (*this).crate_).write((*_a0).crate_);
+        (&raw mut (*this).dyn_).write((*_a0).dyn_);
+        (&raw mut (*this).fn_).write((*_a0).fn_);
+        (&raw mut (*this).impl_).write((*_a0).impl_);
+        (&raw mut (*this).in_).write((*_a0).in_);
+        (&raw mut (*this).let_).write((*_a0).let_);
+        (&raw mut (*this).loop_).write((*_a0).loop_);
+        (&raw mut (*this).match_).write((*_a0).match_);
+        (&raw mut (*this).mod_).write((*_a0).mod_);
+        (&raw mut (*this).move_).write((*_a0).move_);
+        (&raw mut (*this).mut_).write((*_a0).mut_);
+        (&raw mut (*this).pub_).write((*_a0).pub_);
+        (&raw mut (*this).ref_).write((*_a0).ref_);
+        (&raw mut (*this).self_).write((*_a0).self_);
+        (&raw mut (*this).Self_).write((*_a0).Self_);
+        (&raw mut (*this).super_).write((*_a0).super_);
+        (&raw mut (*this).trait_).write((*_a0).trait_);
+        (&raw mut (*this).type_).write((*_a0).type_);
+        (&raw mut (*this).unsafe_).write((*_a0).unsafe_);
+        (&raw mut (*this).use_).write((*_a0).use_);
+        (&raw mut (*this).where_).write((*_a0).where_);
+        (&raw mut (*this).abstract_).write((*_a0).abstract_);
+        (&raw mut (*this).become_).write((*_a0).become_);
+        (&raw mut (*this).box_).write((*_a0).box_);
+        (&raw mut (*this).final_).write((*_a0).final_);
+        (&raw mut (*this).gen_).write((*_a0).gen_);
+        (&raw mut (*this).macro_).write((*_a0).macro_);
+        (&raw mut (*this).override_).write((*_a0).override_);
+        (&raw mut (*this).priv_).write((*_a0).priv_);
+        (&raw mut (*this).unsized_).write((*_a0).unsized_);
+        (&raw mut (*this).yield_).write((*_a0).yield_);
+        (&raw mut (*this).macro_rules_).write((*_a0).macro_rules_);
+        (&raw mut (*this).raw_).write((*_a0).raw_);
+        (&raw mut (*this).safe_).write((*_a0).safe_);
+        (&raw mut (*this).vec_).write((*_a0).vec_);
+    }
+    pub unsafe fn move_from(this: *mut S, _a0: *mut S) {
         (&raw mut (*this).as_).write((*_a0).as_);
         (&raw mut (*this).async_).write((*_a0).async_);
         (&raw mut (*this).await_).write((*_a0).await_);
@@ -96,7 +137,11 @@ pub struct type_ {
     pub v: i32,
 }
 impl type_ {
+    pub unsafe fn new_1(this: *mut type_) {}
     pub unsafe fn copy_from(this: *mut type_, _a0: *const type_) {
+        (&raw mut (*this).v).write((*_a0).v);
+    }
+    pub unsafe fn move_from(this: *mut type_, _a0: *mut type_) {
         (&raw mut (*this).v).write((*_a0).v);
     }
 }
@@ -106,8 +151,14 @@ pub struct loop_ {
     pub t: type_,
 }
 impl loop_ {
+    pub unsafe fn new_1(this: *mut loop_) {
+        type_::new_1((&raw mut (*this).t));
+    }
     pub unsafe fn copy_from(this: *mut loop_, _a0: *const loop_) {
         type_::copy_from((&raw mut (*this).t), { &(*_a0).t });
+    }
+    pub unsafe fn move_from(this: *mut loop_, _a0: *mut loop_) {
+        type_::move_from((&raw mut (*this).t), { &mut (*_a0).t });
     }
 }
 pub unsafe fn foo_0(

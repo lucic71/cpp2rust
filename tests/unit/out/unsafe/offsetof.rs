@@ -14,7 +14,13 @@ pub struct Layout {
     pub c: u16,
 }
 impl Layout {
+    pub unsafe fn new_1(this: *mut Layout) {}
     pub unsafe fn copy_from(this: *mut Layout, _a0: *const Layout) {
+        (&raw mut (*this).a).write((*_a0).a);
+        (&raw mut (*this).b).write((*_a0).b);
+        (&raw mut (*this).c).write((*_a0).c);
+    }
+    pub unsafe fn move_from(this: *mut Layout, _a0: *mut Layout) {
         (&raw mut (*this).a).write((*_a0).a);
         (&raw mut (*this).b).write((*_a0).b);
         (&raw mut (*this).c).write((*_a0).c);
@@ -27,7 +33,14 @@ pub struct Frame {
     pub body: [libc::c_char; 64],
 }
 impl Frame {
+    pub unsafe fn new_1(this: *mut Frame) {}
     pub unsafe fn copy_from(this: *mut Frame, _a0: *const Frame) {
+        (&raw mut (*this).tag).write((*_a0).tag);
+        (&raw mut (*this).body).write(std::array::from_fn::<_, 64, _>(|__i: usize| {
+            (*_a0).body[(__i)]
+        }));
+    }
+    pub unsafe fn move_from(this: *mut Frame, _a0: *mut Frame) {
         (&raw mut (*this).tag).write((*_a0).tag);
         (&raw mut (*this).body).write(std::array::from_fn::<_, 64, _>(|__i: usize| {
             (*_a0).body[(__i)]

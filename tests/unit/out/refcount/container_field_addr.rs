@@ -65,7 +65,11 @@ fn main_0() -> i32 {
     ({ run_1((local.as_pointer())) });
     let mut heap: Ptr<S> = {
         let __p = Ptr::alloc(<S>::uninit());
-        S::new_1(__p.clone());
+        {
+            let __d = __p.clone();
+            ();
+            S::new_1(__d)
+        };
         __p
     };
     field!(heap, tag).write(7);

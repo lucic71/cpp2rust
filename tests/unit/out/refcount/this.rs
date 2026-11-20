@@ -40,6 +40,10 @@ impl S {
         field!(this, a_).write(_a0.with(|__s| __s.a_));
         field!(this, self__).write(_a0.with(|__s| __s.self__.clone()));
     }
+    pub fn move_from(this: Ptr<S>, _a0: Ptr<S>) {
+        field!(this, a_).write({ (*_a0.upgrade().deref()).a_ });
+        field!(this, self__).write({ (*_a0.upgrade().deref()).self__.clone() });
+    }
 }
 pub fn bump_0(mut p: Ptr<S>) {
     field!(p, a_).with_mut(|__v| __v.postfix_inc());
@@ -60,6 +64,9 @@ impl D {
     }
     pub fn copy_from(this: Ptr<D>, _a0: Ptr<D>) {
         field!(this, a_).write(_a0.with(|__s| __s.a_));
+    }
+    pub fn move_from(this: Ptr<D>, _a0: Ptr<D>) {
+        field!(this, a_).write({ (*_a0.upgrade().deref()).a_ });
     }
 }
 pub fn main() {

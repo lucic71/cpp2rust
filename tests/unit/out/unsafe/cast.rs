@@ -17,7 +17,12 @@ pub struct Pair {
     pub y: i32,
 }
 impl Pair {
+    pub unsafe fn new_1(this: *mut Pair) {}
     pub unsafe fn copy_from(this: *mut Pair, _a0: *const Pair) {
+        (&raw mut (*this).x).write((*_a0).x);
+        (&raw mut (*this).y).write((*_a0).y);
+    }
+    pub unsafe fn move_from(this: *mut Pair, _a0: *mut Pair) {
         (&raw mut (*this).x).write((*_a0).x);
         (&raw mut (*this).y).write((*_a0).y);
     }
@@ -32,6 +37,9 @@ impl Wide {
     pub unsafe fn copy_from(this: *mut Wide, _a0: *const Wide) {
         (&raw mut (*this).c).write((*_a0).c);
     }
+    pub unsafe fn move_from(this: *mut Wide, _a0: *mut Wide) {
+        (&raw mut (*this).c).write((*_a0).c);
+    }
 }
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
@@ -41,7 +49,17 @@ pub struct Grid {
     pub cells: [[i32; 3]; 2],
 }
 impl Grid {
+    pub unsafe fn new_1(this: *mut Grid) {}
     pub unsafe fn copy_from(this: *mut Grid, _a0: *const Grid) {
+        (&raw mut (*this).h).write((*_a0).h);
+        (&raw mut (*this).row).write(std::array::from_fn::<_, 3, _>(|__i: usize| {
+            (*_a0).row[(__i)]
+        }));
+        (&raw mut (*this).cells).write(std::array::from_fn::<_, 2, _>(|__i: usize| {
+            std::array::from_fn::<_, 3, _>(|__i2: usize| (*_a0).cells[(__i)][(__i2)])
+        }));
+    }
+    pub unsafe fn move_from(this: *mut Grid, _a0: *mut Grid) {
         (&raw mut (*this).h).write((*_a0).h);
         (&raw mut (*this).row).write(std::array::from_fn::<_, 3, _>(|__i: usize| {
             (*_a0).row[(__i)]

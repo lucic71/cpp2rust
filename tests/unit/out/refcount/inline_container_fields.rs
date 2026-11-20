@@ -100,6 +100,13 @@ impl State {
         field!(this, elems).write(field!(_a0, elems).with_mut(std::mem::take));
         field!(this, rows).write(field!(_a0, rows).with_mut(std::mem::take));
     }
+    pub fn new_1(this: Ptr<State>) {
+        field!(this, arr).write(Box::<[i32]>::from(std::array::from_fn::<_, 3, _>(|_| {
+            0_i32
+        })));
+        field!(this, elems).write(Vec::new());
+        field!(this, rows).write(Vec::new());
+    }
 }
 impl Default for State {
     fn default() -> Self {
@@ -213,10 +220,8 @@ fn main_0() -> i32 {
     let s: Value<State> = Rc::new(RefCell::new(<State>::uninit()));
     {
         let __d = s.as_pointer();
-        field!(__d, count).write(0_i32);
-        field!(__d, grid).write(Box::new(std::array::from_fn::<_, 2, _>(|_| {
-            Default::default()
-        })));
+        ();
+        ();
         field!(__d, arr).write(Box::<[i32]>::from(std::array::from_fn::<_, 3, _>(|_| {
             0_i32
         })));
@@ -355,10 +360,8 @@ fn main_0() -> i32 {
     let assigned: Value<State> = Rc::new(RefCell::new(<State>::uninit()));
     {
         let __d = assigned.as_pointer();
-        field!(__d, count).write(0_i32);
-        field!(__d, grid).write(Box::new(std::array::from_fn::<_, 2, _>(|_| {
-            Default::default()
-        })));
+        ();
+        ();
         field!(__d, arr).write(Box::<[i32]>::from(std::array::from_fn::<_, 3, _>(|_| {
             0_i32
         })));

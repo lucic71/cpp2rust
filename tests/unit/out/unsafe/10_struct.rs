@@ -13,7 +13,12 @@ pub struct GraphNode {
     pub next: *mut GraphNode,
 }
 impl GraphNode {
+    pub unsafe fn new_1(this: *mut GraphNode) {}
     pub unsafe fn copy_from(this: *mut GraphNode, _a0: *const GraphNode) {
+        (&raw mut (*this).dst).write((*_a0).dst);
+        (&raw mut (*this).next).write((*_a0).next);
+    }
+    pub unsafe fn move_from(this: *mut GraphNode, _a0: *mut GraphNode) {
         (&raw mut (*this).dst).write((*_a0).dst);
         (&raw mut (*this).next).write((*_a0).next);
     }
@@ -45,7 +50,12 @@ impl Graph {
             __p
         };
     }
+    pub unsafe fn new_1(this: *mut Graph) {}
     pub unsafe fn copy_from(this: *mut Graph, _a0: *const Graph) {
+        (&raw mut (*this).V).write((*_a0).V);
+        (&raw mut (*this).adj).write((*_a0).adj);
+    }
+    pub unsafe fn move_from(this: *mut Graph, _a0: *mut Graph) {
         (&raw mut (*this).V).write((*_a0).V);
         (&raw mut (*this).adj).write((*_a0).adj);
     }
@@ -65,6 +75,9 @@ impl Partial {
     pub unsafe fn copy_from(this: *mut Partial, _a0: *const Partial) {
         (&raw mut (*this).p).write((*_a0).p);
     }
+    pub unsafe fn move_from(this: *mut Partial, _a0: *mut Partial) {
+        (&raw mut (*this).p).write((*_a0).p);
+    }
 }
 impl Default for Partial {
     fn default() -> Self {
@@ -80,6 +93,7 @@ impl Default for Partial {
 pub struct Declared {}
 impl Declared {
     pub unsafe fn copy_from(this: *mut Declared, _a0: *const Declared) {}
+    pub unsafe fn move_from(this: *mut Declared, _a0: *mut Declared) {}
 }
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
@@ -88,7 +102,12 @@ pub struct S {
     pub d: *mut Declared,
 }
 impl S {
+    pub unsafe fn new_1(this: *mut S) {}
     pub unsafe fn copy_from(this: *mut S, _a0: *const S) {
+        (&raw mut (*this).i).write((*_a0).i);
+        (&raw mut (*this).d).write((*_a0).d);
+    }
+    pub unsafe fn move_from(this: *mut S, _a0: *mut S) {
         (&raw mut (*this).i).write((*_a0).i);
         (&raw mut (*this).d).write((*_a0).d);
     }

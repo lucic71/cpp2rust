@@ -13,8 +13,12 @@ pub struct p1_as_const_Counter {
     pub value: i32,
 }
 impl p1_as_const_Counter {
+    pub fn new_1(this: Ptr<p1_as_const_Counter>) {}
     pub fn copy_from(this: Ptr<p1_as_const_Counter>, _a0: Ptr<p1_as_const_Counter>) {
         field!(this, value).write(_a0.with(|__s| __s.value));
+    }
+    pub fn move_from(this: Ptr<p1_as_const_Counter>, _a0: Ptr<p1_as_const_Counter>) {
+        field!(this, value).write({ (*_a0.upgrade().deref()).value });
     }
 }
 pub fn test_0() {

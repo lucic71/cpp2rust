@@ -58,7 +58,9 @@ thread_local!(
 #[byte_size(1)]
 pub struct S_8 {}
 impl S_8 {
+    pub fn new_1(this: Ptr<S_8>) {}
     pub fn copy_from(this: Ptr<S_8>, _a0: Ptr<S_8>) {}
+    pub fn move_from(this: Ptr<S_8>, _a0: Ptr<S_8>) {}
 }
 pub fn main() {
     __cpp2rust_init_globals();

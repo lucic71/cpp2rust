@@ -17,10 +17,16 @@ pub struct Triple {
     pub c: i32,
 }
 impl Triple {
+    pub fn new_1(this: Ptr<Triple>) {}
     pub fn copy_from(this: Ptr<Triple>, _a0: Ptr<Triple>) {
         field!(this, a).write(_a0.with(|__s| __s.a));
         field!(this, b).write(_a0.with(|__s| __s.b));
         field!(this, c).write(_a0.with(|__s| __s.c));
+    }
+    pub fn move_from(this: Ptr<Triple>, _a0: Ptr<Triple>) {
+        field!(this, a).write({ (*_a0.upgrade().deref()).a });
+        field!(this, b).write({ (*_a0.upgrade().deref()).b });
+        field!(this, c).write({ (*_a0.upgrade().deref()).c });
     }
 }
 pub fn sum_0(t: Ptr<Triple>) -> i32 {

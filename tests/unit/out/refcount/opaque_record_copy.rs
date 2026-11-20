@@ -10,7 +10,9 @@ use std::rc::{Rc, Weak};
 #[byte_size(1)]
 pub struct Probe {}
 impl Probe {
+    pub fn new_1(this: Ptr<Probe>) {}
     pub fn copy_from(this: Ptr<Probe>, _a0: Ptr<Probe>) {}
+    pub fn move_from(this: Ptr<Probe>, _a0: Ptr<Probe>) {}
 }
 #[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
 #[byte_size(8)]
@@ -22,9 +24,16 @@ pub struct Wrapper_Probe_ {
     pub tag: i32,
 }
 impl Wrapper_Probe_ {
+    pub fn new_1(this: Ptr<Wrapper_Probe_>) {
+        Probe::new_1(field_ptr!(this, base_));
+    }
     pub fn copy_from(this: Ptr<Wrapper_Probe_>, _a0: Ptr<Wrapper_Probe_>) {
         Probe::copy_from(field_ptr!(this, base_), { field_ptr!(_a0, base_) });
         field!(this, tag).write(_a0.with(|__s| __s.tag));
+    }
+    pub fn move_from(this: Ptr<Wrapper_Probe_>, _a0: Ptr<Wrapper_Probe_>) {
+        Probe::move_from(field_ptr!(this, base_), { field_ptr!(_a0, base_) });
+        field!(this, tag).write({ (*_a0.upgrade().deref()).tag });
     }
 }
 pub fn main() {
@@ -38,7 +47,7 @@ fn main_0() -> i32 {
         {
             let __d = field_ptr!(__d, base_);
         };
-        field!(__d, tag).write(0_i32);
+        ();
     };
     (*a.borrow_mut()).tag = 3;
     let b: Value<Wrapper_Probe_> = Rc::new(RefCell::new(<Wrapper_Probe_>::uninit()));

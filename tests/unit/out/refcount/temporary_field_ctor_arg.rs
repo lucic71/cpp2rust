@@ -20,6 +20,9 @@ impl Outer {
     pub fn move_from(this: Ptr<Outer>, _a0: Ptr<Outer>) {
         field!(this, values).write(field!(_a0, values).with_mut(std::mem::take));
     }
+    pub fn new_1(this: Ptr<Outer>) {
+        field!(this, values).write(Vec::new());
+    }
 }
 pub fn make_0(__ret: Ptr<Outer>) {
     {
@@ -41,6 +44,9 @@ impl H {
     }
     pub fn copy_from(this: Ptr<H>, _a0: Ptr<H>) {
         field!(this, last).write(_a0.with(|__s| __s.last));
+    }
+    pub fn move_from(this: Ptr<H>, _a0: Ptr<H>) {
+        field!(this, last).write({ (*_a0.upgrade().deref()).last });
     }
 }
 pub fn main() {

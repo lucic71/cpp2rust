@@ -28,12 +28,20 @@ pub struct p1_own_address_in_initializer_SelfLinked {
     pub value: i32,
 }
 impl p1_own_address_in_initializer_SelfLinked {
+    pub fn new_1(this: Ptr<p1_own_address_in_initializer_SelfLinked>) {}
     pub fn copy_from(
         this: Ptr<p1_own_address_in_initializer_SelfLinked>,
         _a0: Ptr<p1_own_address_in_initializer_SelfLinked>,
     ) {
         field!(this, next).write(_a0.with(|__s| __s.next.clone()));
         field!(this, value).write(_a0.with(|__s| __s.value));
+    }
+    pub fn move_from(
+        this: Ptr<p1_own_address_in_initializer_SelfLinked>,
+        _a0: Ptr<p1_own_address_in_initializer_SelfLinked>,
+    ) {
+        field!(this, next).write({ (*_a0.upgrade().deref()).next.clone() });
+        field!(this, value).write({ (*_a0.upgrade().deref()).value });
     }
 }
 pub fn test_1() {
@@ -107,6 +115,12 @@ impl p9_func_declared_before_function_body_RecordsConstructorName {
         _a0: Ptr<p9_func_declared_before_function_body_RecordsConstructorName>,
     ) {
         field!(this, name).write(_a0.with(|__s| __s.name.clone()));
+    }
+    pub fn move_from(
+        this: Ptr<p9_func_declared_before_function_body_RecordsConstructorName>,
+        _a0: Ptr<p9_func_declared_before_function_body_RecordsConstructorName>,
+    ) {
+        field!(this, name).write({ (*_a0.upgrade().deref()).name.clone() });
     }
 }
 impl Default for p9_func_declared_before_function_body_RecordsConstructorName {

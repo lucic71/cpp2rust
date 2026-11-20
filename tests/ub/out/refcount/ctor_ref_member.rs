@@ -21,6 +21,9 @@ impl S {
     pub fn copy_from(this: Ptr<S>, _a0: Ptr<S>) {
         field!(this, r).write((_a0.with(|__s| __s.r.clone())).clone());
     }
+    pub fn move_from(this: Ptr<S>, _a0: Ptr<S>) {
+        field!(this, r).write(({ (*_a0.upgrade().deref()).r.clone() }).clone());
+    }
 }
 pub fn main() {
     __cpp2rust_init_globals();

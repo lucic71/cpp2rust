@@ -12,9 +12,16 @@ pub struct p1_result_is_updated_operand_Counter {
     pub n: i32,
 }
 impl p1_result_is_updated_operand_Counter {
+    pub unsafe fn new_1(this: *mut p1_result_is_updated_operand_Counter) {}
     pub unsafe fn copy_from(
         this: *mut p1_result_is_updated_operand_Counter,
         _a0: *const p1_result_is_updated_operand_Counter,
+    ) {
+        (&raw mut (*this).n).write((*_a0).n);
+    }
+    pub unsafe fn move_from(
+        this: *mut p1_result_is_updated_operand_Counter,
+        _a0: *mut p1_result_is_updated_operand_Counter,
     ) {
         (&raw mut (*this).n).write((*_a0).n);
     }

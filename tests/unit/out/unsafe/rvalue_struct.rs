@@ -21,6 +21,10 @@ impl S {
         (&raw mut (*this).a).write((*_a0).a);
         (&raw mut (*this).b).write((*_a0).b);
     }
+    pub unsafe fn move_from(this: *mut S, _a0: *mut S) {
+        (&raw mut (*this).a).write((*_a0).a);
+        (&raw mut (*this).b).write((*_a0).b);
+    }
 }
 pub fn main() {
     unsafe {

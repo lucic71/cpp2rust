@@ -20,6 +20,9 @@ impl Degrees {
     pub fn copy_from(this: Ptr<Degrees>, _a0: Ptr<Degrees>) {
         field!(this, value).write(_a0.with(|__s| __s.value));
     }
+    pub fn move_from(this: Ptr<Degrees>, _a0: Ptr<Degrees>) {
+        field!(this, value).write({ (*_a0.upgrade().deref()).value });
+    }
 }
 #[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, CppFrom, Default)]
 #[cpp_into(i64, to_i64)]
@@ -29,8 +32,12 @@ pub struct Reading {
     pub raw_: i32,
 }
 impl Reading {
+    pub fn new_1(this: Ptr<Reading>) {}
     pub fn copy_from(this: Ptr<Reading>, _a0: Ptr<Reading>) {
         field!(this, raw_).write(_a0.with(|__s| __s.raw_));
+    }
+    pub fn move_from(this: Ptr<Reading>, _a0: Ptr<Reading>) {
+        field!(this, raw_).write({ (*_a0.upgrade().deref()).raw_ });
     }
 }
 pub fn main() {

@@ -26,6 +26,7 @@ pub struct Access_S_ {}
 impl Access_S_ {
     pub fn new_1(this: Ptr<Access_S_>) {}
     pub fn copy_from(this: Ptr<Access_S_>, _a0: Ptr<Access_S_>) {}
+    pub fn move_from(this: Ptr<Access_S_>, _a0: Ptr<Access_S_>) {}
 }
 #[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
 #[byte_size(4)]
@@ -34,8 +35,12 @@ pub struct S {
     pub base: i32,
 }
 impl S {
+    pub fn new_1(this: Ptr<S>) {}
     pub fn copy_from(this: Ptr<S>, _a0: Ptr<S>) {
         field!(this, base).write(_a0.with(|__s| __s.base));
+    }
+    pub fn move_from(this: Ptr<S>, _a0: Ptr<S>) {
+        field!(this, base).write({ (*_a0.upgrade().deref()).base });
     }
 }
 #[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
@@ -45,8 +50,12 @@ pub struct Box_ {
     pub v: i32,
 }
 impl Box_ {
+    pub fn new_1(this: Ptr<Box_>) {}
     pub fn copy_from(this: Ptr<Box_>, _a0: Ptr<Box_>) {
         field!(this, v).write(_a0.with(|__s| __s.v));
+    }
+    pub fn move_from(this: Ptr<Box_>, _a0: Ptr<Box_>) {
+        field!(this, v).write({ (*_a0.upgrade().deref()).v });
     }
 }
 pub fn main() {

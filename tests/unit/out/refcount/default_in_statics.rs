@@ -21,6 +21,10 @@ impl Inner {
         field!(this, v).write(_a0.with(|__s| __s.v));
         field!(this, name).write(_a0.with(|__s| __s.name.clone()));
     }
+    pub fn move_from(this: Ptr<Inner>, _a0: Ptr<Inner>) {
+        field!(this, v).write({ (*_a0.upgrade().deref()).v });
+        field!(this, name).write({ (*_a0.upgrade().deref()).name.clone() });
+    }
 }
 #[derive(Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg)]
 #[byte_size(88)]
@@ -66,6 +70,18 @@ impl Outer {
         field!(this, x).write(_a0.with(|__s| __s.x));
         field!(this, fn_).write(_a0.with(|__s| __s.fn_.clone()));
     }
+    pub fn move_from(this: Ptr<Outer>, _a0: Ptr<Outer>) {
+        field!(this, p1).write({ (*_a0.upgrade().deref()).p1.clone() });
+        field!(this, p2).write({ (*_a0.upgrade().deref()).p2.clone() });
+        field!(this, arr).write(Box::new(std::array::from_fn::<_, 3, _>(|__i: usize| {
+            ((*_a0.upgrade().deref()).arr[(__i) as usize]).clone()
+        })));
+        field!(this, cp).write({ (*_a0.upgrade().deref()).cp.clone() });
+        field!(this, pp).write({ (*_a0.upgrade().deref()).pp.clone() });
+        Inner::move_from(field_ptr!(this, inner), { field_ptr!(_a0, inner) });
+        field!(this, x).write({ (*_a0.upgrade().deref()).x });
+        field!(this, fn_).write({ (*_a0.upgrade().deref()).fn_.clone() });
+    }
 }
 impl Default for Outer {
     fn default() -> Self {
@@ -104,12 +120,20 @@ pub struct Foo {
     pub n: i32,
 }
 impl Foo {
+    pub fn new_1(this: Ptr<Foo>) {}
     pub fn copy_from(this: Ptr<Foo>, _a0: Ptr<Foo>) {
         field!(this, s1).write(_a0.with(|__s| __s.s1.clone()));
         field!(this, s2).write(_a0.with(|__s| __s.s2.clone()));
         field!(this, fn1).write(_a0.with(|__s| __s.fn1.clone()));
         field!(this, fn2).write(_a0.with(|__s| __s.fn2.clone()));
         field!(this, n).write(_a0.with(|__s| __s.n));
+    }
+    pub fn move_from(this: Ptr<Foo>, _a0: Ptr<Foo>) {
+        field!(this, s1).write({ (*_a0.upgrade().deref()).s1.clone() });
+        field!(this, s2).write({ (*_a0.upgrade().deref()).s2.clone() });
+        field!(this, fn1).write({ (*_a0.upgrade().deref()).fn1.clone() });
+        field!(this, fn2).write({ (*_a0.upgrade().deref()).fn2.clone() });
+        field!(this, n).write({ (*_a0.upgrade().deref()).n });
     }
 }
 thread_local!(

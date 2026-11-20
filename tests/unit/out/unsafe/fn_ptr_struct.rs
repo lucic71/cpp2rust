@@ -13,7 +13,12 @@ pub struct Handler {
     pub cb: Option<unsafe fn(i32) -> i32>,
 }
 impl Handler {
+    pub unsafe fn new_1(this: *mut Handler) {}
     pub unsafe fn copy_from(this: *mut Handler, _a0: *const Handler) {
+        (&raw mut (*this).tag).write((*_a0).tag);
+        (&raw mut (*this).cb).write(((*_a0).cb));
+    }
+    pub unsafe fn move_from(this: *mut Handler, _a0: *mut Handler) {
         (&raw mut (*this).tag).write((*_a0).tag);
         (&raw mut (*this).cb).write(((*_a0).cb));
     }
@@ -37,7 +42,9 @@ impl S {
     pub unsafe fn solo(mut x: i32) -> i32 {
         return ((x) + (3));
     }
+    pub unsafe fn new_1(this: *mut S) {}
     pub unsafe fn copy_from(this: *mut S, _a0: *const S) {}
+    pub unsafe fn move_from(this: *mut S, _a0: *mut S) {}
 }
 #[repr(C)]
 #[derive(FnPtrArg, MoveCtorUnsafe, CppFromUnsafe, Default)]

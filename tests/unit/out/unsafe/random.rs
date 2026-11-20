@@ -47,6 +47,17 @@ impl Pair {
             (*_a0).ap[(__i)]
         }));
     }
+    pub unsafe fn move_from(this: *mut Pair, _a0: *mut Pair) {
+        (&raw mut (*this).x).write((*_a0).x);
+        (&raw mut (*this).y).write((*_a0).y);
+        (&raw mut (*this).a).write(std::array::from_fn::<_, 5, _>(|__i: usize| (*_a0).a[(__i)]));
+        (&raw mut (*this).r).write((*_a0).r);
+        (&raw mut (*this).p).write((*_a0).p);
+        (&raw mut (*this).pair).write((*_a0).pair);
+        (&raw mut (*this).ap).write(std::array::from_fn::<_, 2, _>(|__i: usize| {
+            (*_a0).ap[(__i)]
+        }));
+    }
 }
 pub unsafe fn zero_0() -> i32 {
     return 0;
@@ -55,7 +66,9 @@ pub unsafe fn zero_0() -> i32 {
 #[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct X1 {}
 impl X1 {
+    pub unsafe fn new_1(this: *mut X1) {}
     pub unsafe fn copy_from(this: *mut X1, _a0: *const X1) {}
+    pub unsafe fn move_from(this: *mut X1, _a0: *mut X1) {}
 }
 pub unsafe fn foo_1(mut x1: i32, x2: *mut i32, mut x3: *mut i32, p2: *mut Pair, mut p3: *mut Pair) {
 }

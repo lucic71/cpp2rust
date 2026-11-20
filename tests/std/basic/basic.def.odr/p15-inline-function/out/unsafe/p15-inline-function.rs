@@ -81,6 +81,7 @@ impl AssertsDtorCountAtExit {
     pub unsafe fn destructor(&mut self) {
         assert!(((*(*&raw const dtorCount_2).get()) == (self.expected)));
     }
+    pub unsafe fn new_1(this: *mut AssertsDtorCountAtExit) {}
     pub unsafe fn copy_from(this: *mut AssertsDtorCountAtExit, _a0: *const AssertsDtorCountAtExit) {
         (&raw mut (*this).expected).write((*_a0).expected);
     }

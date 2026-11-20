@@ -21,6 +21,10 @@ impl S {
         (&raw mut (*this).a).write((*_a0).a);
         (&raw mut (*this).b).write((*_a0).b);
     }
+    pub unsafe fn move_from(this: *mut S, _a0: *mut S) {
+        (&raw mut (*this).a).write((*_a0).a);
+        (&raw mut (*this).b).write((*_a0).b);
+    }
 }
 impl Default for S {
     fn default() -> Self {
@@ -40,6 +44,9 @@ pub struct Declared {
 }
 impl Declared {
     pub unsafe fn copy_from(this: *mut Declared, _a0: *const Declared) {
+        (&raw mut (*this).v).write((*_a0).v);
+    }
+    pub unsafe fn move_from(this: *mut Declared, _a0: *mut Declared) {
         (&raw mut (*this).v).write((*_a0).v);
     }
 }
@@ -65,6 +72,14 @@ impl Holder {
             }
         };
     }
+    pub unsafe fn move_from(this: *mut Holder, _a0: *mut Holder) {
+        {
+            let __d = (&raw mut (*this).items).cast::<S>();
+            for __i in 0..2_usize {
+                S::move_from(__d.offset(__i as isize), { &mut (*_a0).items[(__i)] });
+            }
+        };
+    }
 }
 pub static mut kInit_0: libcc2rs::LazyStorage<i32> =
     libcc2rs::LazyStorage::new(|__p| unsafe { __p.write(3) });
@@ -78,6 +93,9 @@ impl FromStatic {
         (&raw mut (*this).v).write((*(*&raw const kInit_0).get()));
     }
     pub unsafe fn copy_from(this: *mut FromStatic, _a0: *const FromStatic) {
+        (&raw mut (*this).v).write((*_a0).v);
+    }
+    pub unsafe fn move_from(this: *mut FromStatic, _a0: *mut FromStatic) {
         (&raw mut (*this).v).write((*_a0).v);
     }
 }

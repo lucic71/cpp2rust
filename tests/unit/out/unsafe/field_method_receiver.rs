@@ -31,6 +31,7 @@ impl Counter {
     pub unsafe fn move_from(this: *mut Counter, _a0: *mut Counter) {
         (&raw mut (*this).n).write((*_a0).n);
     }
+    pub unsafe fn new_1(this: *mut Counter) {}
 }
 #[repr(C)]
 #[derive(Clone, VaArg, FnPtrArg, MoveCtorUnsafe, MoveAssignUnsafe, Default)]
@@ -84,6 +85,16 @@ impl S {
             self.v = std::mem::take(&mut (*_a0).v);
         };
         return &mut (*(self as *mut S));
+    }
+    pub unsafe fn new_1(this: *mut S) {
+        Counter::new_1((&raw mut (*this).c));
+        {
+            let __d = (&raw mut (*this).arr).cast::<Counter>();
+            for __i in 0..2_isize {
+                Counter::new_1(__d.offset(__i));
+            }
+        };
+        (&raw mut (*this).v).write(Vec::new());
     }
 }
 pub unsafe fn run_0(mut o: *mut S) {

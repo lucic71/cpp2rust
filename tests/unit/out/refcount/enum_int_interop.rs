@@ -31,10 +31,16 @@ pub struct Entry {
     pub opt: Option,
 }
 impl Entry {
+    pub fn new_1(this: Ptr<Entry>) {}
     pub fn copy_from(this: Ptr<Entry>, _a0: Ptr<Entry>) {
         field!(this, name).write(_a0.with(|__s| __s.name.clone()));
         field!(this, color).write(_a0.with(|__s| __s.color));
         field!(this, opt).write(_a0.with(|__s| __s.opt));
+    }
+    pub fn move_from(this: Ptr<Entry>, _a0: Ptr<Entry>) {
+        field!(this, name).write({ (*_a0.upgrade().deref()).name.clone() });
+        field!(this, color).write({ (*_a0.upgrade().deref()).color });
+        field!(this, opt).write({ (*_a0.upgrade().deref()).opt });
     }
 }
 thread_local!(

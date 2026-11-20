@@ -91,6 +91,7 @@ impl p2_condition_variable_lives_for_whole_statement_ConvertsToInt {
     pub unsafe fn destructor(&mut self) {
         (*(*&raw const dtorCount_6).get()).prefix_inc();
     }
+    pub unsafe fn new_1(this: *mut p2_condition_variable_lives_for_whole_statement_ConvertsToInt) {}
     pub unsafe fn copy_from(
         this: *mut p2_condition_variable_lives_for_whole_statement_ConvertsToInt,
         _a0: *const p2_condition_variable_lives_for_whole_statement_ConvertsToInt,

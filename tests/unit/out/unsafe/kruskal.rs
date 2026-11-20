@@ -14,7 +14,13 @@ pub struct Edge {
     pub weight: f64,
 }
 impl Edge {
+    pub unsafe fn new_1(this: *mut Edge) {}
     pub unsafe fn copy_from(this: *mut Edge, _a0: *const Edge) {
+        (&raw mut (*this).u).write((*_a0).u);
+        (&raw mut (*this).v).write((*_a0).v);
+        (&raw mut (*this).weight).write((*_a0).weight);
+    }
+    pub unsafe fn move_from(this: *mut Edge, _a0: *mut Edge) {
         (&raw mut (*this).u).write((*_a0).u);
         (&raw mut (*this).v).write((*_a0).v);
         (&raw mut (*this).weight).write((*_a0).weight);
@@ -315,6 +321,10 @@ impl DisjointSet {
         self.n = (*_a0).n;
         return &mut (*(self as *mut DisjointSet));
     }
+    pub unsafe fn new_1(this: *mut DisjointSet) {
+        (&raw mut (*this).rank).write(None);
+        (&raw mut (*this).parent).write(None);
+    }
 }
 #[repr(C)]
 #[derive(FnPtrArg, MoveCtorUnsafe, MoveAssignUnsafe, Default)]
@@ -336,6 +346,9 @@ impl Graph {
         self.V = (*_a0).V;
         self.E = (*_a0).E;
         return &mut (*(self as *mut Graph));
+    }
+    pub unsafe fn new_1(this: *mut Graph) {
+        (&raw mut (*this).edges).write(None);
     }
 }
 pub unsafe fn MSTKruskal_2(graph: *mut Graph) -> f64 {

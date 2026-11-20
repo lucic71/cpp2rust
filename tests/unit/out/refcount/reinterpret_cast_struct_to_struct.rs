@@ -15,9 +15,14 @@ pub struct Point {
     pub y: u32,
 }
 impl Point {
+    pub fn new_1(this: Ptr<Point>) {}
     pub fn copy_from(this: Ptr<Point>, _a0: Ptr<Point>) {
         field!(this, x).write(_a0.with(|__s| __s.x));
         field!(this, y).write(_a0.with(|__s| __s.y));
+    }
+    pub fn move_from(this: Ptr<Point>, _a0: Ptr<Point>) {
+        field!(this, x).write({ (*_a0.upgrade().deref()).x });
+        field!(this, y).write({ (*_a0.upgrade().deref()).y });
     }
 }
 #[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
@@ -29,9 +34,14 @@ pub struct Pair {
     pub second: u32,
 }
 impl Pair {
+    pub fn new_1(this: Ptr<Pair>) {}
     pub fn copy_from(this: Ptr<Pair>, _a0: Ptr<Pair>) {
         field!(this, first).write(_a0.with(|__s| __s.first));
         field!(this, second).write(_a0.with(|__s| __s.second));
+    }
+    pub fn move_from(this: Ptr<Pair>, _a0: Ptr<Pair>) {
+        field!(this, first).write({ (*_a0.upgrade().deref()).first });
+        field!(this, second).write({ (*_a0.upgrade().deref()).second });
     }
 }
 pub fn main() {

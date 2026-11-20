@@ -70,6 +70,12 @@ impl p9_static_member_hides_namespace_variable_HasStaticStep {
     ) {
         (&raw mut (*this).total).write((*_a0).total);
     }
+    pub unsafe fn move_from(
+        this: *mut p9_static_member_hides_namespace_variable_HasStaticStep,
+        _a0: *mut p9_static_member_hides_namespace_variable_HasStaticStep,
+    ) {
+        (&raw mut (*this).total).write((*_a0).total);
+    }
 }
 impl Default for p9_static_member_hides_namespace_variable_HasStaticStep {
     fn default() -> Self {
@@ -128,6 +134,12 @@ impl p9_evaluated_each_time_called_Widget {
     ) {
         (&raw mut (*this).id).write((*_a0).id);
     }
+    pub unsafe fn move_from(
+        this: *mut p9_evaluated_each_time_called_Widget,
+        _a0: *mut p9_evaluated_each_time_called_Widget,
+    ) {
+        (&raw mut (*this).id).write((*_a0).id);
+    }
 }
 impl Default for p9_evaluated_each_time_called_Widget {
     fn default() -> Self {
@@ -169,6 +181,12 @@ impl p9_evaluated_each_time_called_Account {
     pub unsafe fn copy_from(
         this: *mut p9_evaluated_each_time_called_Account,
         _a0: *const p9_evaluated_each_time_called_Account,
+    ) {
+        (&raw mut (*this).balance).write((*_a0).balance);
+    }
+    pub unsafe fn move_from(
+        this: *mut p9_evaluated_each_time_called_Account,
+        _a0: *mut p9_evaluated_each_time_called_Account,
     ) {
         (&raw mut (*this).balance).write((*_a0).balance);
     }
@@ -241,9 +259,15 @@ impl p9_not_part_of_the_type_Scale {
     pub unsafe fn times(mut a: i32, mut b: i32) -> i32 {
         return ((a) * (b));
     }
+    pub unsafe fn new_1(this: *mut p9_not_part_of_the_type_Scale) {}
     pub unsafe fn copy_from(
         this: *mut p9_not_part_of_the_type_Scale,
         _a0: *const p9_not_part_of_the_type_Scale,
+    ) {
+    }
+    pub unsafe fn move_from(
+        this: *mut p9_not_part_of_the_type_Scale,
+        _a0: *mut p9_not_part_of_the_type_Scale,
     ) {
     }
 }

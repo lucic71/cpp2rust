@@ -20,7 +20,11 @@ impl S {
     pub unsafe fn to_u8(&self) -> u8 {
         return (((self.v) + (1)) as u8);
     }
+    pub unsafe fn new_1(this: *mut S) {}
     pub unsafe fn copy_from(this: *mut S, _a0: *const S) {
+        (&raw mut (*this).v).write((*_a0).v);
+    }
+    pub unsafe fn move_from(this: *mut S, _a0: *mut S) {
         (&raw mut (*this).v).write((*_a0).v);
     }
 }
@@ -37,7 +41,11 @@ impl T {
     pub unsafe fn to_i64_2(&self) -> i64 {
         return (((self.v) + (1)) as i64);
     }
+    pub unsafe fn new_1(this: *mut T) {}
     pub unsafe fn copy_from(this: *mut T, _a0: *const T) {
+        (&raw mut (*this).v).write((*_a0).v);
+    }
+    pub unsafe fn move_from(this: *mut T, _a0: *mut T) {
         (&raw mut (*this).v).write((*_a0).v);
     }
 }

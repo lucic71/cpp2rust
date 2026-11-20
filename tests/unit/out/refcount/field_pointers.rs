@@ -29,6 +29,7 @@ impl Inner {
             (*_a0.upgrade().deref()).name[(__i) as usize]
         })));
     }
+    pub fn new_1(this: Ptr<Inner>) {}
 }
 impl Default for Inner {
     fn default() -> Self {
@@ -49,9 +50,14 @@ pub struct Header {
     pub size: i16,
 }
 impl Header {
+    pub fn new_1(this: Ptr<Header>) {}
     pub fn copy_from(this: Ptr<Header>, _a0: Ptr<Header>) {
         field!(this, tag).write(_a0.with(|__s| __s.tag));
         field!(this, size).write(_a0.with(|__s| __s.size));
+    }
+    pub fn move_from(this: Ptr<Header>, _a0: Ptr<Header>) {
+        field!(this, tag).write({ (*_a0.upgrade().deref()).tag });
+        field!(this, size).write({ (*_a0.upgrade().deref()).size });
     }
 }
 #[derive(Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, MoveCtor, MoveAssign)]
@@ -112,6 +118,16 @@ impl Outer {
             (*_a0.upgrade().deref()).buf[(__i) as usize]
         })));
     }
+    pub fn new_1(this: Ptr<Outer>) {
+        Inner::new_1(field_ptr!(this, inner));
+        {
+            let __d = array_field_ptr!(this, items);
+            for __i in 0..3_isize {
+                Inner::new_1(__d.offset(__i));
+            }
+        };
+        field!(this, v).write(Vec::new());
+    }
 }
 impl Default for Outer {
     fn default() -> Self {
@@ -142,33 +158,33 @@ fn main_0() -> i32 {
     let o: Value<Outer> = Rc::new(RefCell::new(<Outer>::uninit()));
     {
         let __d = o.as_pointer();
-        field!(__d, x).write(0_i32);
+        ();
         {
             let __d = field_ptr!(__d, inner);
-            field!(__d, a).write(0_i32);
-            field!(__d, name).write(Box::new([0; 8]));
+            ();
+            ();
         };
         {
             let __d = array_field_ptr!(__d, items);
             {
                 let __d = __d.offset(0);
-                field!(__d, a).write(0_i32);
-                field!(__d, name).write(Box::new([0; 8]));
+                ();
+                ();
             };
             {
                 let __d = __d.offset(1);
-                field!(__d, a).write(0_i32);
-                field!(__d, name).write(Box::new([0; 8]));
+                ();
+                ();
             };
             {
                 let __d = __d.offset(2);
-                field!(__d, a).write(0_i32);
-                field!(__d, name).write(Box::new([0; 8]));
+                ();
+                ();
             };
         };
         field!(__d, v).write(Vec::new());
-        field!(__d, cursor).write(Ptr::<i32>::null());
-        field!(__d, buf).write(Box::new([0; 4]));
+        ();
+        ();
     };
     (*o.borrow_mut()).x = 1;
     let mut px: Ptr<i32> = (field_ptr!(o.as_pointer(), x));

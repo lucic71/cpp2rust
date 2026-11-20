@@ -51,7 +51,9 @@ impl S_8 {
     pub unsafe fn get(&self) -> i32 {
         return (*(*(*&raw const x_7).get()).prefix_inc());
     }
+    pub unsafe fn new_1(this: *mut S_8) {}
     pub unsafe fn copy_from(this: *mut S_8, _a0: *const S_8) {}
+    pub unsafe fn move_from(this: *mut S_8, _a0: *mut S_8) {}
 }
 pub fn main() {
     unsafe {

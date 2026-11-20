@@ -15,6 +15,7 @@ pub struct C {}
 impl C {
     pub fn new_1(this: Ptr<C>) {}
     pub fn copy_from(this: Ptr<C>, _a0: Ptr<C>) {}
+    pub fn move_from(this: Ptr<C>, _a0: Ptr<C>) {}
 }
 thread_local!(
     pub static inner_const_1: Value<i32> = Rc::new(RefCell::new(2));
@@ -30,6 +31,7 @@ impl S {
     }
     pub fn new_1(this: Ptr<S>) {}
     pub fn copy_from(this: Ptr<S>, _a0: Ptr<S>) {}
+    pub fn move_from(this: Ptr<S>, _a0: Ptr<S>) {}
 }
 thread_local!(
     pub static counter_2: Value<i32> = Rc::new(RefCell::new(10));

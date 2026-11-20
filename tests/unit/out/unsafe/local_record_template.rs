@@ -57,7 +57,11 @@ pub struct Local_5 {
     pub x: i32,
 }
 impl Local_5 {
+    pub unsafe fn new_1(this: *mut Local_5) {}
     pub unsafe fn copy_from(this: *mut Local_5, _a0: *const Local_5) {
+        (&raw mut (*this).x).write((*_a0).x);
+    }
+    pub unsafe fn move_from(this: *mut Local_5, _a0: *mut Local_5) {
         (&raw mut (*this).x).write((*_a0).x);
     }
 }
@@ -67,7 +71,11 @@ pub struct Local_7 {
     pub x: i64,
 }
 impl Local_7 {
+    pub unsafe fn new_1(this: *mut Local_7) {}
     pub unsafe fn copy_from(this: *mut Local_7, _a0: *const Local_7) {
+        (&raw mut (*this).x).write((*_a0).x);
+    }
+    pub unsafe fn move_from(this: *mut Local_7, _a0: *mut Local_7) {
         (&raw mut (*this).x).write((*_a0).x);
     }
 }
@@ -94,7 +102,12 @@ pub struct Local_1 {
     pub y: i64,
 }
 impl Local_1 {
+    pub unsafe fn new_1(this: *mut Local_1) {}
     pub unsafe fn copy_from(this: *mut Local_1, _a0: *const Local_1) {
+        (&raw mut (*this).x).write((*_a0).x);
+        (&raw mut (*this).y).write((*_a0).y);
+    }
+    pub unsafe fn move_from(this: *mut Local_1, _a0: *mut Local_1) {
         (&raw mut (*this).x).write((*_a0).x);
         (&raw mut (*this).y).write((*_a0).y);
     }
@@ -142,7 +155,11 @@ pub struct Local_3 {
     pub x: i32,
 }
 impl Local_3 {
+    pub unsafe fn new_1(this: *mut Local_3) {}
     pub unsafe fn copy_from(this: *mut Local_3, _a0: *const Local_3) {
+        (&raw mut (*this).x).write((*_a0).x);
+    }
+    pub unsafe fn move_from(this: *mut Local_3, _a0: *mut Local_3) {
         (&raw mut (*this).x).write((*_a0).x);
     }
 }

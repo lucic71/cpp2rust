@@ -15,6 +15,11 @@ impl Guard__lambda_at_lambda_as_field_cpp_34_13__ {
     pub unsafe fn destructor(&mut self) {
         (unsafe { self.f.call() });
     }
+    pub unsafe fn new_1(this: *mut Guard__lambda_at_lambda_as_field_cpp_34_13__) {
+        (&raw mut (*this).f).write(FnPtr::<fn()>::new(|| unsafe {
+            (*(*&raw const count_0).get()).postfix_inc();
+        }));
+    }
     pub unsafe fn copy_from(
         this: *mut Guard__lambda_at_lambda_as_field_cpp_34_13__,
         _a0: *const Guard__lambda_at_lambda_as_field_cpp_34_13__,
@@ -60,11 +65,25 @@ impl Holder__lambda_at_lambda_as_field_cpp_39_12__ {
         self.calls.postfix_inc();
         return (unsafe { self.f.call(x) });
     }
+    pub unsafe fn new_1(this: *mut Holder__lambda_at_lambda_as_field_cpp_39_12__) {
+        (&raw mut (*this).f).write(FnPtr::<fn(i32) -> i32>::new(|mut x: i32| -> i32 {
+            unsafe {
+                return ((x) + (1));
+            }
+        }));
+    }
     pub unsafe fn copy_from(
         this: *mut Holder__lambda_at_lambda_as_field_cpp_39_12__,
         _a0: *const Holder__lambda_at_lambda_as_field_cpp_39_12__,
     ) {
         (&raw mut (*this).f).write((*_a0).f.copy_from());
+        (&raw mut (*this).calls).write((*_a0).calls);
+    }
+    pub unsafe fn move_from(
+        this: *mut Holder__lambda_at_lambda_as_field_cpp_39_12__,
+        _a0: *mut Holder__lambda_at_lambda_as_field_cpp_39_12__,
+    ) {
+        (&raw mut (*this).f).write((*_a0).f.move_from());
         (&raw mut (*this).calls).write((*_a0).calls);
     }
 }
@@ -98,6 +117,13 @@ impl Holder__lambda_at_lambda_as_field_cpp_51_12__ {
         _a0: *const Holder__lambda_at_lambda_as_field_cpp_51_12__,
     ) {
         (&raw mut (*this).f).write((*_a0).f.copy_from());
+        (&raw mut (*this).calls).write((*_a0).calls);
+    }
+    pub unsafe fn move_from(
+        this: *mut Holder__lambda_at_lambda_as_field_cpp_51_12__,
+        _a0: *mut Holder__lambda_at_lambda_as_field_cpp_51_12__,
+    ) {
+        (&raw mut (*this).f).write((*_a0).f.move_from());
         (&raw mut (*this).calls).write((*_a0).calls);
     }
 }

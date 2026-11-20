@@ -12,6 +12,7 @@ pub struct A {}
 impl A {
     pub unsafe fn new_1(this: *mut A) {}
     pub unsafe fn copy_from(this: *mut A, _a0: *const A) {}
+    pub unsafe fn move_from(this: *mut A, _a0: *mut A) {}
 }
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
@@ -25,7 +26,9 @@ impl D {
             }
         };
     }
+    pub unsafe fn new_1(this: *mut D) {}
     pub unsafe fn copy_from(this: *mut D, _a0: *const D) {}
+    pub unsafe fn move_from(this: *mut D, _a0: *mut D) {}
 }
 pub fn main() {
     unsafe {

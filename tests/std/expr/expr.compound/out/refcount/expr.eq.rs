@@ -15,9 +15,14 @@ pub struct p4_1_both_null_HasTwoInts {
     pub second: i32,
 }
 impl p4_1_both_null_HasTwoInts {
+    pub fn new_1(this: Ptr<p4_1_both_null_HasTwoInts>) {}
     pub fn copy_from(this: Ptr<p4_1_both_null_HasTwoInts>, _a0: Ptr<p4_1_both_null_HasTwoInts>) {
         field!(this, first).write(_a0.with(|__s| __s.first));
         field!(this, second).write(_a0.with(|__s| __s.second));
+    }
+    pub fn move_from(this: Ptr<p4_1_both_null_HasTwoInts>, _a0: Ptr<p4_1_both_null_HasTwoInts>) {
+        field!(this, first).write({ (*_a0.upgrade().deref()).first });
+        field!(this, second).write({ (*_a0.upgrade().deref()).second });
     }
 }
 pub fn test_0() {
@@ -35,9 +40,14 @@ pub struct p4_2_one_null_HasTwoInts {
     pub second: i32,
 }
 impl p4_2_one_null_HasTwoInts {
+    pub fn new_1(this: Ptr<p4_2_one_null_HasTwoInts>) {}
     pub fn copy_from(this: Ptr<p4_2_one_null_HasTwoInts>, _a0: Ptr<p4_2_one_null_HasTwoInts>) {
         field!(this, first).write(_a0.with(|__s| __s.first));
         field!(this, second).write(_a0.with(|__s| __s.second));
+    }
+    pub fn move_from(this: Ptr<p4_2_one_null_HasTwoInts>, _a0: Ptr<p4_2_one_null_HasTwoInts>) {
+        field!(this, first).write({ (*_a0.upgrade().deref()).first });
+        field!(this, second).write({ (*_a0.upgrade().deref()).second });
     }
 }
 pub fn test_1() {
@@ -86,12 +96,20 @@ pub struct p4_6_data_members_HasTwoInts {
     pub second: i32,
 }
 impl p4_6_data_members_HasTwoInts {
+    pub fn new_1(this: Ptr<p4_6_data_members_HasTwoInts>) {}
     pub fn copy_from(
         this: Ptr<p4_6_data_members_HasTwoInts>,
         _a0: Ptr<p4_6_data_members_HasTwoInts>,
     ) {
         field!(this, first).write(_a0.with(|__s| __s.first));
         field!(this, second).write(_a0.with(|__s| __s.second));
+    }
+    pub fn move_from(
+        this: Ptr<p4_6_data_members_HasTwoInts>,
+        _a0: Ptr<p4_6_data_members_HasTwoInts>,
+    ) {
+        field!(this, first).write({ (*_a0.upgrade().deref()).first });
+        field!(this, second).write({ (*_a0.upgrade().deref()).second });
     }
 }
 pub fn test_3() {

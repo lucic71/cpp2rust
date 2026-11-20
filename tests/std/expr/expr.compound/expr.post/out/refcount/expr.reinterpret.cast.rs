@@ -25,12 +25,20 @@ pub struct p10_null_converts_to_null_HasTwoInts {
     pub second: i32,
 }
 impl p10_null_converts_to_null_HasTwoInts {
+    pub fn new_1(this: Ptr<p10_null_converts_to_null_HasTwoInts>) {}
     pub fn copy_from(
         this: Ptr<p10_null_converts_to_null_HasTwoInts>,
         _a0: Ptr<p10_null_converts_to_null_HasTwoInts>,
     ) {
         field!(this, first).write(_a0.with(|__s| __s.first));
         field!(this, second).write(_a0.with(|__s| __s.second));
+    }
+    pub fn move_from(
+        this: Ptr<p10_null_converts_to_null_HasTwoInts>,
+        _a0: Ptr<p10_null_converts_to_null_HasTwoInts>,
+    ) {
+        field!(this, first).write({ (*_a0.upgrade().deref()).first });
+        field!(this, second).write({ (*_a0.upgrade().deref()).second });
     }
 }
 #[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
@@ -40,11 +48,18 @@ pub struct p10_null_converts_to_null_HasChar {
     pub character: i8,
 }
 impl p10_null_converts_to_null_HasChar {
+    pub fn new_1(this: Ptr<p10_null_converts_to_null_HasChar>) {}
     pub fn copy_from(
         this: Ptr<p10_null_converts_to_null_HasChar>,
         _a0: Ptr<p10_null_converts_to_null_HasChar>,
     ) {
         field!(this, character).write(_a0.with(|__s| __s.character));
+    }
+    pub fn move_from(
+        this: Ptr<p10_null_converts_to_null_HasChar>,
+        _a0: Ptr<p10_null_converts_to_null_HasChar>,
+    ) {
+        field!(this, character).write({ (*_a0.upgrade().deref()).character });
     }
 }
 pub fn test_1() {
@@ -61,12 +76,20 @@ pub struct p10_2_data_member_round_trip_HasTwoInts {
     pub second: i32,
 }
 impl p10_2_data_member_round_trip_HasTwoInts {
+    pub fn new_1(this: Ptr<p10_2_data_member_round_trip_HasTwoInts>) {}
     pub fn copy_from(
         this: Ptr<p10_2_data_member_round_trip_HasTwoInts>,
         _a0: Ptr<p10_2_data_member_round_trip_HasTwoInts>,
     ) {
         field!(this, first).write(_a0.with(|__s| __s.first));
         field!(this, second).write(_a0.with(|__s| __s.second));
+    }
+    pub fn move_from(
+        this: Ptr<p10_2_data_member_round_trip_HasTwoInts>,
+        _a0: Ptr<p10_2_data_member_round_trip_HasTwoInts>,
+    ) {
+        field!(this, first).write({ (*_a0.upgrade().deref()).first });
+        field!(this, second).write({ (*_a0.upgrade().deref()).second });
     }
 }
 #[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
@@ -76,11 +99,18 @@ pub struct p10_2_data_member_round_trip_HasChar {
     pub character: i8,
 }
 impl p10_2_data_member_round_trip_HasChar {
+    pub fn new_1(this: Ptr<p10_2_data_member_round_trip_HasChar>) {}
     pub fn copy_from(
         this: Ptr<p10_2_data_member_round_trip_HasChar>,
         _a0: Ptr<p10_2_data_member_round_trip_HasChar>,
     ) {
         field!(this, character).write(_a0.with(|__s| __s.character));
+    }
+    pub fn move_from(
+        this: Ptr<p10_2_data_member_round_trip_HasChar>,
+        _a0: Ptr<p10_2_data_member_round_trip_HasChar>,
+    ) {
+        field!(this, character).write({ (*_a0.upgrade().deref()).character });
     }
 }
 pub fn test_2() {

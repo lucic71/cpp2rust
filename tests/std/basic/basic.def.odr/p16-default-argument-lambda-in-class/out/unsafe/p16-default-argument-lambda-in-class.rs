@@ -81,6 +81,7 @@ impl AssertsDtorCountAtExit {
     pub unsafe fn destructor(&mut self) {
         assert!(((*(*&raw const dtorCount_2).get()) == (self.expected)));
     }
+    pub unsafe fn new_1(this: *mut AssertsDtorCountAtExit) {}
     pub unsafe fn copy_from(this: *mut AssertsDtorCountAtExit, _a0: *const AssertsDtorCountAtExit) {
         (&raw mut (*this).expected).write((*_a0).expected);
     }
@@ -106,6 +107,7 @@ impl X {
     }
     pub unsafe fn new_1(this: *mut X) {}
     pub unsafe fn copy_from(this: *mut X, _a0: *const X) {}
+    pub unsafe fn move_from(this: *mut X, _a0: *mut X) {}
 }
 static mut local_4: libcc2rs::LazyStorage<LifetimeTracked> =
     libcc2rs::LazyStorage::new(|__p| unsafe {

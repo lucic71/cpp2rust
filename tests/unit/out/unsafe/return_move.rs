@@ -13,7 +13,12 @@ pub struct node {
     pub next: *mut node,
 }
 impl node {
+    pub unsafe fn new_1(this: *mut node) {}
     pub unsafe fn copy_from(this: *mut node, _a0: *const node) {
+        (&raw mut (*this).value).write((*_a0).value);
+        (&raw mut (*this).next).write((*_a0).next);
+    }
+    pub unsafe fn move_from(this: *mut node, _a0: *mut node) {
         (&raw mut (*this).value).write((*_a0).value);
         (&raw mut (*this).next).write((*_a0).next);
     }

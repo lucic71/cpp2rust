@@ -12,9 +12,16 @@ pub struct p4_reference_const_cast_Pair {
     pub x: i32,
 }
 impl p4_reference_const_cast_Pair {
+    pub unsafe fn new_1(this: *mut p4_reference_const_cast_Pair) {}
     pub unsafe fn copy_from(
         this: *mut p4_reference_const_cast_Pair,
         _a0: *const p4_reference_const_cast_Pair,
+    ) {
+        (&raw mut (*this).x).write((*_a0).x);
+    }
+    pub unsafe fn move_from(
+        this: *mut p4_reference_const_cast_Pair,
+        _a0: *mut p4_reference_const_cast_Pair,
     ) {
         (&raw mut (*this).x).write((*_a0).x);
     }

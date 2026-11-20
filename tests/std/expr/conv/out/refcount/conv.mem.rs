@@ -15,12 +15,20 @@ pub struct p1_null_distinct_from_first_member_HasTwoInts {
     pub second: i32,
 }
 impl p1_null_distinct_from_first_member_HasTwoInts {
+    pub fn new_1(this: Ptr<p1_null_distinct_from_first_member_HasTwoInts>) {}
     pub fn copy_from(
         this: Ptr<p1_null_distinct_from_first_member_HasTwoInts>,
         _a0: Ptr<p1_null_distinct_from_first_member_HasTwoInts>,
     ) {
         field!(this, first).write(_a0.with(|__s| __s.first));
         field!(this, second).write(_a0.with(|__s| __s.second));
+    }
+    pub fn move_from(
+        this: Ptr<p1_null_distinct_from_first_member_HasTwoInts>,
+        _a0: Ptr<p1_null_distinct_from_first_member_HasTwoInts>,
+    ) {
+        field!(this, first).write({ (*_a0.upgrade().deref()).first });
+        field!(this, second).write({ (*_a0.upgrade().deref()).second });
     }
 }
 pub fn test_0() {

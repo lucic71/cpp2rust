@@ -16,6 +16,9 @@ impl XX {
     pub unsafe fn copy_from(this: *mut XX, _a0: *const XX) {
         (&raw mut (*this).x).write((*_a0).x);
     }
+    pub unsafe fn move_from(this: *mut XX, _a0: *mut XX) {
+        (&raw mut (*this).x).write((*_a0).x);
+    }
 }
 pub fn main() {
     unsafe {

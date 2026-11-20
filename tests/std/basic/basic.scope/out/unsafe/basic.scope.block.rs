@@ -90,6 +90,7 @@ impl p1_1_condition_variable_visible_in_else_ConvertsToBool {
     pub unsafe fn destructor(&mut self) {
         (*(*&raw const dtorCount_6).get()).prefix_inc();
     }
+    pub unsafe fn new_1(this: *mut p1_1_condition_variable_visible_in_else_ConvertsToBool) {}
     pub unsafe fn copy_from(
         this: *mut p1_1_condition_variable_visible_in_else_ConvertsToBool,
         _a0: *const p1_1_condition_variable_visible_in_else_ConvertsToBool,

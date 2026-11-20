@@ -38,6 +38,9 @@ impl HoldsEmpty {
     pub fn copy_from(this: Ptr<HoldsEmpty>, _a0: Ptr<HoldsEmpty>) {
         field!(this, e).write(_a0.with(|__s| __s.e));
     }
+    pub fn move_from(this: Ptr<HoldsEmpty>, _a0: Ptr<HoldsEmpty>) {
+        field!(this, e).write({ (*_a0.upgrade().deref()).e });
+    }
 }
 impl Default for HoldsEmpty {
     fn default() -> Self {

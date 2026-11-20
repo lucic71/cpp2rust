@@ -25,8 +25,12 @@ pub struct V {
     pub x: i32,
 }
 impl V {
+    pub fn new_1(this: Ptr<V>) {}
     pub fn copy_from(this: Ptr<V>, _a0: Ptr<V>) {
         field!(this, x).write(_a0.with(|__s| __s.x));
+    }
+    pub fn move_from(this: Ptr<V>, _a0: Ptr<V>) {
+        field!(this, x).write({ (*_a0.upgrade().deref()).x });
     }
 }
 impl CppEq for V {
@@ -44,8 +48,12 @@ pub struct W_int_ {
     pub x: i32,
 }
 impl W_int_ {
+    pub fn new_1(this: Ptr<W_int_>) {}
     pub fn copy_from(this: Ptr<W_int_>, _a0: Ptr<W_int_>) {
         field!(this, x).write(_a0.with(|__s| __s.x));
+    }
+    pub fn move_from(this: Ptr<W_int_>, _a0: Ptr<W_int_>) {
+        field!(this, x).write({ (*_a0.upgrade().deref()).x });
     }
 }
 pub fn get_5(w: Ptr<W_long_>) -> i64 {
@@ -58,8 +66,12 @@ pub struct W_long_ {
     pub x: i64,
 }
 impl W_long_ {
+    pub fn new_1(this: Ptr<W_long_>) {}
     pub fn copy_from(this: Ptr<W_long_>, _a0: Ptr<W_long_>) {
         field!(this, x).write(_a0.with(|__s| __s.x));
+    }
+    pub fn move_from(this: Ptr<W_long_>, _a0: Ptr<W_long_>) {
+        field!(this, x).write({ (*_a0.upgrade().deref()).x });
     }
 }
 #[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
@@ -69,8 +81,12 @@ pub struct D {
     pub x: i32,
 }
 impl D {
+    pub fn new_1(this: Ptr<D>) {}
     pub fn copy_from(this: Ptr<D>, _a0: Ptr<D>) {
         field!(this, x).write(_a0.with(|__s| __s.x));
+    }
+    pub fn move_from(this: Ptr<D>, _a0: Ptr<D>) {
+        field!(this, x).write({ (*_a0.upgrade().deref()).x });
     }
 }
 pub fn declared_then_defined_6(d: Ptr<D>) -> i32 {

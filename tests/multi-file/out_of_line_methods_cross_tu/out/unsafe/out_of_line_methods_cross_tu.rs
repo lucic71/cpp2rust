@@ -31,6 +31,9 @@ impl Derived {
     pub unsafe fn copy_from(this: *mut Derived, _a0: *const Derived) {
         (&raw mut (*this).factor).write((*_a0).factor);
     }
+    pub unsafe fn move_from(this: *mut Derived, _a0: *mut Derived) {
+        (&raw mut (*this).factor).write((*_a0).factor);
+    }
 }
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
@@ -39,7 +42,12 @@ pub struct Pair {
     pub second: i32,
 }
 impl Pair {
+    pub unsafe fn new_1(this: *mut Pair) {}
     pub unsafe fn copy_from(this: *mut Pair, _a0: *const Pair) {
+        (&raw mut (*this).first).write((*_a0).first);
+        (&raw mut (*this).second).write((*_a0).second);
+    }
+    pub unsafe fn move_from(this: *mut Pair, _a0: *mut Pair) {
         (&raw mut (*this).first).write((*_a0).first);
         (&raw mut (*this).second).write((*_a0).second);
     }

@@ -19,7 +19,13 @@ impl p3_2_static_member_is_ordinary_pointer_HasStaticMembers {
     pub fn run() {
         (*calls_1.with(Value::clone).borrow_mut()).prefix_inc();
     }
+    pub fn new_1(this: Ptr<p3_2_static_member_is_ordinary_pointer_HasStaticMembers>) {}
     pub fn copy_from(
+        this: Ptr<p3_2_static_member_is_ordinary_pointer_HasStaticMembers>,
+        _a0: Ptr<p3_2_static_member_is_ordinary_pointer_HasStaticMembers>,
+    ) {
+    }
+    pub fn move_from(
         this: Ptr<p3_2_static_member_is_ordinary_pointer_HasStaticMembers>,
         _a0: Ptr<p3_2_static_member_is_ordinary_pointer_HasStaticMembers>,
     ) {
@@ -42,11 +48,21 @@ pub struct p3_2_explicit_object_member_is_ordinary_pointer_HasExplicitObjectMemb
     pub base: i32,
 }
 impl p3_2_explicit_object_member_is_ordinary_pointer_HasExplicitObjectMember {
+    pub fn new_1(
+        this: Ptr<p3_2_explicit_object_member_is_ordinary_pointer_HasExplicitObjectMember>,
+    ) {
+    }
     pub fn copy_from(
         this: Ptr<p3_2_explicit_object_member_is_ordinary_pointer_HasExplicitObjectMember>,
         _a0: Ptr<p3_2_explicit_object_member_is_ordinary_pointer_HasExplicitObjectMember>,
     ) {
         field!(this, base).write(_a0.with(|__s| __s.base));
+    }
+    pub fn move_from(
+        this: Ptr<p3_2_explicit_object_member_is_ordinary_pointer_HasExplicitObjectMember>,
+        _a0: Ptr<p3_2_explicit_object_member_is_ordinary_pointer_HasExplicitObjectMember>,
+    ) {
+        field!(this, base).write({ (*_a0.upgrade().deref()).base });
     }
 }
 pub fn test_3() {
@@ -70,11 +86,21 @@ pub struct p4_parenthesized_qualified_id_is_object_pointer_TakesAddressOfOwnMemb
     pub value: i32,
 }
 impl p4_parenthesized_qualified_id_is_object_pointer_TakesAddressOfOwnMember {
+    pub fn new_1(
+        this: Ptr<p4_parenthesized_qualified_id_is_object_pointer_TakesAddressOfOwnMember>,
+    ) {
+    }
     pub fn copy_from(
         this: Ptr<p4_parenthesized_qualified_id_is_object_pointer_TakesAddressOfOwnMember>,
         _a0: Ptr<p4_parenthesized_qualified_id_is_object_pointer_TakesAddressOfOwnMember>,
     ) {
         field!(this, value).write(_a0.with(|__s| __s.value));
+    }
+    pub fn move_from(
+        this: Ptr<p4_parenthesized_qualified_id_is_object_pointer_TakesAddressOfOwnMember>,
+        _a0: Ptr<p4_parenthesized_qualified_id_is_object_pointer_TakesAddressOfOwnMember>,
+    ) {
+        field!(this, value).write({ (*_a0.upgrade().deref()).value });
     }
 }
 pub fn test_4() {

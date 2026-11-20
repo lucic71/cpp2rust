@@ -12,12 +12,15 @@ pub struct A {}
 impl A {
     pub fn new_1(this: Ptr<A>) {}
     pub fn copy_from(this: Ptr<A>, _a0: Ptr<A>) {}
+    pub fn move_from(this: Ptr<A>, _a0: Ptr<A>) {}
 }
 #[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
 #[byte_size(1)]
 pub struct D {}
 impl D {
+    pub fn new_1(this: Ptr<D>) {}
     pub fn copy_from(this: Ptr<D>, _a0: Ptr<D>) {}
+    pub fn move_from(this: Ptr<D>, _a0: Ptr<D>) {}
 }
 pub fn main() {
     __cpp2rust_init_globals();

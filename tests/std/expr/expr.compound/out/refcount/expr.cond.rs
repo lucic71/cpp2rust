@@ -15,12 +15,20 @@ pub struct p7_4_pointer_to_member_and_null_HasTwoInts {
     pub second: i32,
 }
 impl p7_4_pointer_to_member_and_null_HasTwoInts {
+    pub fn new_1(this: Ptr<p7_4_pointer_to_member_and_null_HasTwoInts>) {}
     pub fn copy_from(
         this: Ptr<p7_4_pointer_to_member_and_null_HasTwoInts>,
         _a0: Ptr<p7_4_pointer_to_member_and_null_HasTwoInts>,
     ) {
         field!(this, first).write(_a0.with(|__s| __s.first));
         field!(this, second).write(_a0.with(|__s| __s.second));
+    }
+    pub fn move_from(
+        this: Ptr<p7_4_pointer_to_member_and_null_HasTwoInts>,
+        _a0: Ptr<p7_4_pointer_to_member_and_null_HasTwoInts>,
+    ) {
+        field!(this, first).write({ (*_a0.upgrade().deref()).first });
+        field!(this, second).write({ (*_a0.upgrade().deref()).second });
     }
 }
 pub fn second_or_null_0(mut choose_second: bool) -> isize {

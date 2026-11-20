@@ -81,6 +81,7 @@ pub struct AssertsDtorCountAtExit {
     pub expected: i32,
 }
 impl AssertsDtorCountAtExit {
+    pub fn new_1(this: Ptr<AssertsDtorCountAtExit>) {}
     pub fn copy_from(this: Ptr<AssertsDtorCountAtExit>, _a0: Ptr<AssertsDtorCountAtExit>) {
         field!(this, expected).write(_a0.with(|__s| __s.expected));
     }

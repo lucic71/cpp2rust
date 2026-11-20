@@ -82,8 +82,11 @@ fn main_0() -> i32 {
     };
     let mut base_copies: i32 = copies_0.with(|rc| *rc.borrow());
     let mut base_moves: i32 = moves_1.with(|rc| *rc.borrow());
-    let __decomp_3: Value<Two> = Rc::new(RefCell::new(<Two>::uninit()));
-    Two::copy_from(__decomp_3.as_pointer(), { t.as_pointer() });
+    let __decomp_3: Value<Two> = {
+        let __v: Value<Two> = Rc::new(RefCell::new(<Two>::uninit()));
+        Two::copy_from(__v.as_pointer(), { t.as_pointer() });
+        __v
+    };
     assert!((copies_0.with(|rc| *rc.borrow()) == (base_copies + 2)));
     assert!((moves_1.with(|rc| *rc.borrow()) == base_moves));
     assert!(({ ({ (*__decomp_3.borrow()).a.v } == 101) }));
@@ -93,16 +96,22 @@ fn main_0() -> i32 {
     assert!(({ ({ (*__decomp_4.upgrade().deref()).a.v } == 1) }));
     field!(field!(__decomp_4, a), v).write(50);
     assert!(({ ({ (*t.borrow()).a.v } == 50) }));
-    let __decomp_5: Value<Two> = Rc::new(RefCell::new(<Two>::uninit()));
-    Two::move_from(__decomp_5.as_pointer(), { t.as_pointer() });
+    let __decomp_5: Value<Two> = {
+        let __v: Value<Two> = Rc::new(RefCell::new(<Two>::uninit()));
+        Two::move_from(__v.as_pointer(), { t.as_pointer() });
+        __v
+    };
     assert!((moves_1.with(|rc| *rc.borrow()) == (base_moves + 2)));
     assert!(({ ({ (*__decomp_5.borrow()).a.v } == 1050) }));
     assert!(({ ({ (*__decomp_5.borrow()).b.v } == 1002) }));
     assert!(({ ({ (*t.borrow()).a.v } == -1_i32) }));
     let mut before_copies: i32 = copies_0.with(|rc| *rc.borrow());
     let mut before_moves: i32 = moves_1.with(|rc| *rc.borrow());
-    let __decomp_6: Value<Two> = Rc::new(RefCell::new(<Two>::uninit()));
-    ({ make_two_2(__decomp_6.as_pointer()) });
+    let __decomp_6: Value<Two> = {
+        let __v: Value<Two> = Rc::new(RefCell::new(<Two>::uninit()));
+        ({ make_two_2(__v.as_pointer()) });
+        __v
+    };
     assert!((copies_0.with(|rc| *rc.borrow()) == before_copies));
     assert!((moves_1.with(|rc| *rc.borrow()) == before_moves));
     assert!(({ ({ (*__decomp_6.borrow()).a.v } == 1) }));

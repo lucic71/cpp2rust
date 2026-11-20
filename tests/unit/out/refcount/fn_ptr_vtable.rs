@@ -20,10 +20,16 @@ pub struct Vtable {
     pub destroy: FnPtr<fn(AnyPtr)>,
 }
 impl Vtable {
+    pub fn new_1(this: Ptr<Vtable>) {}
     pub fn copy_from(this: Ptr<Vtable>, _a0: Ptr<Vtable>) {
         field!(this, create).write(_a0.with(|__s| __s.create.clone()));
         field!(this, get).write(_a0.with(|__s| __s.get.clone()));
         field!(this, destroy).write(_a0.with(|__s| __s.destroy.clone()));
+    }
+    pub fn move_from(this: Ptr<Vtable>, _a0: Ptr<Vtable>) {
+        field!(this, create).write({ (*_a0.upgrade().deref()).create.clone() });
+        field!(this, get).write({ (*_a0.upgrade().deref()).get.clone() });
+        field!(this, destroy).write({ (*_a0.upgrade().deref()).destroy.clone() });
     }
 }
 thread_local!(

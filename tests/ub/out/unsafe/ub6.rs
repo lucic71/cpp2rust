@@ -17,6 +17,10 @@ impl Pair {
         (&raw mut (*this).x1).write((*_a0).x1);
         (&raw mut (*this).x2).write((*_a0).x2);
     }
+    pub unsafe fn move_from(this: *mut Pair, _a0: *mut Pair) {
+        (&raw mut (*this).x1).write((*_a0).x1);
+        (&raw mut (*this).x2).write((*_a0).x2);
+    }
 }
 pub unsafe fn mkPair_0(__ret: *mut Pair, x1: *mut i32, x2: *mut i32) {
     {

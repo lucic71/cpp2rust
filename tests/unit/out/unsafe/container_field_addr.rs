@@ -68,7 +68,11 @@ unsafe fn main_0() -> i32 {
     (unsafe { run_1((&mut local as *mut S)) });
     let mut heap: *mut S = {
         let __p = Box::into_raw(Box::<S>::new_uninit()) as *mut S;
-        S::new_1(__p);
+        {
+            let __d = __p;
+            __d.write_bytes(0, 1);
+            S::new_1(__d)
+        };
         __p
     };
     (*heap).tag = 7;

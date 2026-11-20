@@ -13,11 +13,18 @@ pub struct p1_result_is_updated_operand_Counter {
     pub n: i32,
 }
 impl p1_result_is_updated_operand_Counter {
+    pub fn new_1(this: Ptr<p1_result_is_updated_operand_Counter>) {}
     pub fn copy_from(
         this: Ptr<p1_result_is_updated_operand_Counter>,
         _a0: Ptr<p1_result_is_updated_operand_Counter>,
     ) {
         field!(this, n).write(_a0.with(|__s| __s.n));
+    }
+    pub fn move_from(
+        this: Ptr<p1_result_is_updated_operand_Counter>,
+        _a0: Ptr<p1_result_is_updated_operand_Counter>,
+    ) {
+        field!(this, n).write({ (*_a0.upgrade().deref()).n });
     }
 }
 pub fn test_0() {

@@ -17,6 +17,9 @@ impl XX {
     pub fn copy_from(this: Ptr<XX>, _a0: Ptr<XX>) {
         field!(this, x).write(_a0.with(|__s| __s.x));
     }
+    pub fn move_from(this: Ptr<XX>, _a0: Ptr<XX>) {
+        field!(this, x).write({ (*_a0.upgrade().deref()).x });
+    }
 }
 pub fn main() {
     __cpp2rust_init_globals();

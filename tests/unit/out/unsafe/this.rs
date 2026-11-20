@@ -99,6 +99,10 @@ impl S {
         (&raw mut (*this).a_).write((*_a0).a_);
         (&raw mut (*this).self__).write((*_a0).self__);
     }
+    pub unsafe fn move_from(this: *mut S, _a0: *mut S) {
+        (&raw mut (*this).a_).write((*_a0).a_);
+        (&raw mut (*this).self__).write((*_a0).self__);
+    }
 }
 pub unsafe fn bump_0(mut p: *mut S) {
     (*p).a_.postfix_inc();
@@ -115,6 +119,9 @@ impl D {
         (*this).a_ *= 2;
     }
     pub unsafe fn copy_from(this: *mut D, _a0: *const D) {
+        (&raw mut (*this).a_).write((*_a0).a_);
+    }
+    pub unsafe fn move_from(this: *mut D, _a0: *mut D) {
         (&raw mut (*this).a_).write((*_a0).a_);
     }
 }

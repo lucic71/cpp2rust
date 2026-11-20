@@ -13,8 +13,12 @@ pub struct Point {
     pub x: i32,
 }
 impl Point {
+    pub fn new_1(this: Ptr<Point>) {}
     pub fn copy_from(this: Ptr<Point>, _a0: Ptr<Point>) {
         field!(this, x).write(_a0.with(|__s| __s.x));
+    }
+    pub fn move_from(this: Ptr<Point>, _a0: Ptr<Point>) {
+        field!(this, x).write({ (*_a0.upgrade().deref()).x });
     }
 }
 #[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
@@ -24,8 +28,12 @@ pub struct Box_int_ {
     pub val: i32,
 }
 impl Box_int_ {
+    pub fn new_1(this: Ptr<Box_int_>) {}
     pub fn copy_from(this: Ptr<Box_int_>, _a0: Ptr<Box_int_>) {
         field!(this, val).write(_a0.with(|__s| __s.val));
+    }
+    pub fn move_from(this: Ptr<Box_int_>, _a0: Ptr<Box_int_>) {
+        field!(this, val).write({ (*_a0.upgrade().deref()).val });
     }
 }
 #[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
@@ -36,8 +44,14 @@ pub struct Box_Point_ {
     pub val: Point,
 }
 impl Box_Point_ {
+    pub fn new_1(this: Ptr<Box_Point_>) {
+        Point::new_1(field_ptr!(this, val));
+    }
     pub fn copy_from(this: Ptr<Box_Point_>, _a0: Ptr<Box_Point_>) {
         Point::copy_from(field_ptr!(this, val), { field_ptr!(_a0, val) });
+    }
+    pub fn move_from(this: Ptr<Box_Point_>, _a0: Ptr<Box_Point_>) {
+        Point::move_from(field_ptr!(this, val), { field_ptr!(_a0, val) });
     }
 }
 #[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
@@ -47,8 +61,12 @@ pub struct Deduced_int_ {
     pub val: i32,
 }
 impl Deduced_int_ {
+    pub fn new_1(this: Ptr<Deduced_int_>) {}
     pub fn copy_from(this: Ptr<Deduced_int_>, _a0: Ptr<Deduced_int_>) {
         field!(this, val).write(_a0.with(|__s| __s.val));
+    }
+    pub fn move_from(this: Ptr<Deduced_int_>, _a0: Ptr<Deduced_int_>) {
+        field!(this, val).write({ (*_a0.upgrade().deref()).val });
     }
 }
 #[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
@@ -59,8 +77,14 @@ pub struct Deduced_Point_ {
     pub val: Point,
 }
 impl Deduced_Point_ {
+    pub fn new_1(this: Ptr<Deduced_Point_>) {
+        Point::new_1(field_ptr!(this, val));
+    }
     pub fn copy_from(this: Ptr<Deduced_Point_>, _a0: Ptr<Deduced_Point_>) {
         Point::copy_from(field_ptr!(this, val), { field_ptr!(_a0, val) });
+    }
+    pub fn move_from(this: Ptr<Deduced_Point_>, _a0: Ptr<Deduced_Point_>) {
+        Point::move_from(field_ptr!(this, val), { field_ptr!(_a0, val) });
     }
 }
 pub fn main() {

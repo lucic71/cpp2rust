@@ -19,6 +19,7 @@ impl Counter {
     pub fn move_from(this: Ptr<Counter>, _a0: Ptr<Counter>) {
         field!(this, n).write({ (*_a0.upgrade().deref()).n });
     }
+    pub fn new_1(this: Ptr<Counter>) {}
 }
 #[derive(Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, MoveCtor, MoveAssign)]
 #[byte_size(40)]
@@ -62,6 +63,16 @@ impl S {
             }
         };
         field!(this, v).write(field!(_a0, v).with_mut(std::mem::take));
+    }
+    pub fn new_1(this: Ptr<S>) {
+        Counter::new_1(field_ptr!(this, c));
+        {
+            let __d = array_field_ptr!(this, arr);
+            for __i in 0..2_isize {
+                Counter::new_1(__d.offset(__i));
+            }
+        };
+        field!(this, v).write(Vec::new());
     }
 }
 impl Default for S {
@@ -120,20 +131,20 @@ fn main_0() -> i32 {
     let local: Value<S> = Rc::new(RefCell::new(<S>::uninit()));
     {
         let __d = local.as_pointer();
-        field!(__d, tag).write(0_i32);
+        ();
         {
             let __d = field_ptr!(__d, c);
-            field!(__d, n).write(0_i32);
+            ();
         };
         {
             let __d = array_field_ptr!(__d, arr);
             {
                 let __d = __d.offset(0);
-                field!(__d, n).write(0_i32);
+                ();
             };
             {
                 let __d = __d.offset(1);
-                field!(__d, n).write(0_i32);
+                ();
             };
         };
         field!(__d, v).write(Vec::new());
@@ -144,20 +155,20 @@ fn main_0() -> i32 {
         let __p = Ptr::alloc(<S>::uninit());
         {
             let __d = __p.clone();
-            field!(__d, tag).write(0_i32);
+            ();
             {
                 let __d = field_ptr!(__d, c);
-                field!(__d, n).write(0_i32);
+                ();
             };
             {
                 let __d = array_field_ptr!(__d, arr);
                 {
                     let __d = __d.offset(0);
-                    field!(__d, n).write(0_i32);
+                    ();
                 };
                 {
                     let __d = __d.offset(1);
-                    field!(__d, n).write(0_i32);
+                    ();
                 };
             };
             field!(__d, v).write(Vec::new());

@@ -20,6 +20,10 @@ impl Inner {
         field!(this, a).write(_a0.with(|__s| __s.a));
         field!(this, b).write(_a0.with(|__s| __s.b));
     }
+    pub fn move_from(this: Ptr<Inner>, _a0: Ptr<Inner>) {
+        field!(this, a).write({ (*_a0.upgrade().deref()).a });
+        field!(this, b).write({ (*_a0.upgrade().deref()).b });
+    }
 }
 #[derive(Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg)]
 #[byte_size(48)]
@@ -53,6 +57,15 @@ impl Cookie {
             (*_a0.upgrade().deref()).arr[(__i) as usize]
         })));
     }
+    pub fn move_from(this: Ptr<Cookie>, _a0: Ptr<Cookie>) {
+        field!(this, x).write({ (*_a0.upgrade().deref()).x });
+        field!(this, data).write({ (*_a0.upgrade().deref()).data.clone() });
+        field!(this, in_).write({ (*_a0.upgrade().deref()).in_.clone() });
+        Inner::move_from(field_ptr!(this, inner), { field_ptr!(_a0, inner) });
+        field!(this, arr).write(Box::new(std::array::from_fn::<_, 4, _>(|__i: usize| {
+            (*_a0.upgrade().deref()).arr[(__i) as usize]
+        })));
+    }
 }
 impl Default for Cookie {
     fn default() -> Self {
@@ -79,6 +92,9 @@ impl Counter {
     }
     pub fn copy_from(this: Ptr<Counter>, _a0: Ptr<Counter>) {
         field!(this, n).write(_a0.with(|__s| __s.n));
+    }
+    pub fn move_from(this: Ptr<Counter>, _a0: Ptr<Counter>) {
+        field!(this, n).write({ (*_a0.upgrade().deref()).n });
     }
 }
 impl Default for Counter {

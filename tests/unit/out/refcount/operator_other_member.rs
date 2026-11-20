@@ -15,6 +15,7 @@ impl Static {
     }
     pub fn new_1(this: Ptr<Static>) {}
     pub fn copy_from(this: Ptr<Static>, _a0: Ptr<Static>) {}
+    pub fn move_from(this: Ptr<Static>, _a0: Ptr<Static>) {}
 }
 #[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, CppFrom, Default)]
 #[cpp_into(i32, to_i32)]
@@ -24,8 +25,12 @@ pub struct S {
     pub v: i32,
 }
 impl S {
+    pub fn new_1(this: Ptr<S>) {}
     pub fn copy_from(this: Ptr<S>, _a0: Ptr<S>) {
         field!(this, v).write(_a0.with(|__s| __s.v));
+    }
+    pub fn move_from(this: Ptr<S>, _a0: Ptr<S>) {
+        field!(this, v).write({ (*_a0.upgrade().deref()).v });
     }
 }
 pub fn main() {

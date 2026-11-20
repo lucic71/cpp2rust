@@ -332,6 +332,9 @@ impl returned_object_Aggregate {
     pub fn move_from(this: Ptr<returned_object_Aggregate>, _a0: Ptr<returned_object_Aggregate>) {
         Tracker::move_from(field_ptr!(this, tracker), { field_ptr!(_a0, tracker) });
     }
+    pub fn new_1(this: Ptr<returned_object_Aggregate>) {
+        Tracker::new_2(field_ptr!(this, tracker));
+    }
 }
 pub fn test_17() {
     let r: Value<Tracker> = Rc::new(RefCell::new(<Tracker>::uninit()));

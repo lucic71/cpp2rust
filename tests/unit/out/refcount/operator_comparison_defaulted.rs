@@ -15,9 +15,14 @@ pub struct Eq {
     pub b: i32,
 }
 impl Eq {
+    pub fn new_1(this: Ptr<Eq>) {}
     pub fn copy_from(this: Ptr<Eq>, _a0: Ptr<Eq>) {
         field!(this, a).write(_a0.with(|__s| __s.a));
         field!(this, b).write(_a0.with(|__s| __s.b));
+    }
+    pub fn move_from(this: Ptr<Eq>, _a0: Ptr<Eq>) {
+        field!(this, a).write({ (*_a0.upgrade().deref()).a });
+        field!(this, b).write({ (*_a0.upgrade().deref()).b });
     }
 }
 impl CppEq for Eq {
@@ -34,9 +39,14 @@ pub struct Cmp {
     pub b: i32,
 }
 impl Cmp {
+    pub fn new_1(this: Ptr<Cmp>) {}
     pub fn copy_from(this: Ptr<Cmp>, _a0: Ptr<Cmp>) {
         field!(this, a).write(_a0.with(|__s| __s.a));
         field!(this, b).write(_a0.with(|__s| __s.b));
+    }
+    pub fn move_from(this: Ptr<Cmp>, _a0: Ptr<Cmp>) {
+        field!(this, a).write({ (*_a0.upgrade().deref()).a });
+        field!(this, b).write({ (*_a0.upgrade().deref()).b });
     }
 }
 impl CppLess for Cmp {
@@ -56,8 +66,12 @@ pub struct Both {
     pub a: i32,
 }
 impl Both {
+    pub fn new_1(this: Ptr<Both>) {}
     pub fn copy_from(this: Ptr<Both>, _a0: Ptr<Both>) {
         field!(this, a).write(_a0.with(|__s| __s.a));
+    }
+    pub fn move_from(this: Ptr<Both>, _a0: Ptr<Both>) {
+        field!(this, a).write({ (*_a0.upgrade().deref()).a });
     }
 }
 impl CppLess for Both {
@@ -77,8 +91,12 @@ pub struct OrdOnly {
     pub a: i32,
 }
 impl OrdOnly {
+    pub fn new_1(this: Ptr<OrdOnly>) {}
     pub fn copy_from(this: Ptr<OrdOnly>, _a0: Ptr<OrdOnly>) {
         field!(this, a).write(_a0.with(|__s| __s.a));
+    }
+    pub fn move_from(this: Ptr<OrdOnly>, _a0: Ptr<OrdOnly>) {
+        field!(this, a).write({ (*_a0.upgrade().deref()).a });
     }
 }
 impl CppLess for OrdOnly {
@@ -98,8 +116,12 @@ pub struct Inner {
     pub x: i32,
 }
 impl Inner {
+    pub fn new_1(this: Ptr<Inner>) {}
     pub fn copy_from(this: Ptr<Inner>, _a0: Ptr<Inner>) {
         field!(this, x).write(_a0.with(|__s| __s.x));
+    }
+    pub fn move_from(this: Ptr<Inner>, _a0: Ptr<Inner>) {
+        field!(this, x).write({ (*_a0.upgrade().deref()).x });
     }
 }
 impl CppLess for Inner {
@@ -122,9 +144,16 @@ pub struct Outer {
     pub y: i32,
 }
 impl Outer {
+    pub fn new_1(this: Ptr<Outer>) {
+        Inner::new_1(field_ptr!(this, i));
+    }
     pub fn copy_from(this: Ptr<Outer>, _a0: Ptr<Outer>) {
         Inner::copy_from(field_ptr!(this, i), { field_ptr!(_a0, i) });
         field!(this, y).write(_a0.with(|__s| __s.y));
+    }
+    pub fn move_from(this: Ptr<Outer>, _a0: Ptr<Outer>) {
+        Inner::move_from(field_ptr!(this, i), { field_ptr!(_a0, i) });
+        field!(this, y).write({ (*_a0.upgrade().deref()).y });
     }
 }
 impl CppLess for Outer {
@@ -144,8 +173,12 @@ pub struct Secondary {
     pub a: i32,
 }
 impl Secondary {
+    pub fn new_1(this: Ptr<Secondary>) {}
     pub fn copy_from(this: Ptr<Secondary>, _a0: Ptr<Secondary>) {
         field!(this, a).write(_a0.with(|__s| __s.a));
+    }
+    pub fn move_from(this: Ptr<Secondary>, _a0: Ptr<Secondary>) {
+        field!(this, a).write({ (*_a0.upgrade().deref()).a });
     }
 }
 impl CppLess for Secondary {
@@ -166,8 +199,12 @@ pub struct PtrMember {
     pub p: Ptr<i32>,
 }
 impl PtrMember {
+    pub fn new_1(this: Ptr<PtrMember>) {}
     pub fn copy_from(this: Ptr<PtrMember>, _a0: Ptr<PtrMember>) {
         field!(this, p).write(_a0.with(|__s| __s.p.clone()));
+    }
+    pub fn move_from(this: Ptr<PtrMember>, _a0: Ptr<PtrMember>) {
+        field!(this, p).write({ (*_a0.upgrade().deref()).p.clone() });
     }
 }
 impl CppLess for PtrMember {

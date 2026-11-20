@@ -83,7 +83,12 @@ pub struct P_4 {
     pub y: i32,
 }
 impl P_4 {
+    pub unsafe fn new_1(this: *mut P_4) {}
     pub unsafe fn copy_from(this: *mut P_4, _a0: *const P_4) {
+        (&raw mut (*this).x).write((*_a0).x);
+        (&raw mut (*this).y).write((*_a0).y);
+    }
+    pub unsafe fn move_from(this: *mut P_4, _a0: *mut P_4) {
         (&raw mut (*this).x).write((*_a0).x);
         (&raw mut (*this).y).write((*_a0).y);
     }

@@ -14,8 +14,12 @@ pub struct list_head {
     pub next: Ptr<list_head>,
 }
 impl list_head {
+    pub fn new_1(this: Ptr<list_head>) {}
     pub fn copy_from(this: Ptr<list_head>, _a0: Ptr<list_head>) {
         field!(this, next).write(_a0.with(|__s| __s.next.clone()));
+    }
+    pub fn move_from(this: Ptr<list_head>, _a0: Ptr<list_head>) {
+        field!(this, next).write({ (*_a0.upgrade().deref()).next.clone() });
     }
 }
 #[derive(Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
@@ -28,9 +32,14 @@ pub struct node {
     pub value_ptr: Ptr<i32>,
 }
 impl node {
+    pub fn new_1(this: Ptr<node>) {}
     pub fn copy_from(this: Ptr<node>, _a0: Ptr<node>) {
         field!(this, value).write(_a0.with(|__s| __s.value));
         field!(this, value_ptr).write(_a0.with(|__s| __s.value_ptr.clone()));
+    }
+    pub fn move_from(this: Ptr<node>, _a0: Ptr<node>) {
+        field!(this, value).write({ (*_a0.upgrade().deref()).value });
+        field!(this, value_ptr).write({ (*_a0.upgrade().deref()).value_ptr.clone() });
     }
 }
 #[derive(Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg)]
@@ -43,9 +52,17 @@ pub struct node_with_defaults {
     pub value: i32,
 }
 impl node_with_defaults {
+    pub fn new_1(this: Ptr<node_with_defaults>) {
+        field!(this, next).write(Ptr::<node_with_defaults>::null());
+        field!(this, value).write(3);
+    }
     pub fn copy_from(this: Ptr<node_with_defaults>, _a0: Ptr<node_with_defaults>) {
         field!(this, next).write(_a0.with(|__s| __s.next.clone()));
         field!(this, value).write(_a0.with(|__s| __s.value));
+    }
+    pub fn move_from(this: Ptr<node_with_defaults>, _a0: Ptr<node_with_defaults>) {
+        field!(this, next).write({ (*_a0.upgrade().deref()).next.clone() });
+        field!(this, value).write({ (*_a0.upgrade().deref()).value });
     }
 }
 impl Default for node_with_defaults {

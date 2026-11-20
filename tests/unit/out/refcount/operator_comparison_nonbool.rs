@@ -13,6 +13,7 @@ pub struct X {
     pub v: i32,
 }
 impl X {
+    pub fn new_1(this: Ptr<X>) {}
     pub fn copy_from(this: Ptr<X>, _a0: Ptr<X>) {
         field!(this, v).write(_a0.with(|__s| __s.v));
     }
@@ -85,8 +86,12 @@ pub struct Result {
     pub r: i32,
 }
 impl Result {
+    pub fn new_1(this: Ptr<Result>) {}
     pub fn copy_from(this: Ptr<Result>, _a0: Ptr<Result>) {
         field!(this, r).write(_a0.with(|__s| __s.r));
+    }
+    pub fn move_from(this: Ptr<Result>, _a0: Ptr<Result>) {
+        field!(this, r).write({ (*_a0.upgrade().deref()).r });
     }
 }
 #[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
@@ -96,8 +101,12 @@ pub struct Custom {
     pub v: i32,
 }
 impl Custom {
+    pub fn new_1(this: Ptr<Custom>) {}
     pub fn copy_from(this: Ptr<Custom>, _a0: Ptr<Custom>) {
         field!(this, v).write(_a0.with(|__s| __s.v));
+    }
+    pub fn move_from(this: Ptr<Custom>, _a0: Ptr<Custom>) {
+        field!(this, v).write({ (*_a0.upgrade().deref()).v });
     }
 }
 #[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
@@ -107,6 +116,7 @@ pub struct Mixed {
     pub v: i32,
 }
 impl Mixed {
+    pub fn new_1(this: Ptr<Mixed>) {}
     pub fn copy_from(this: Ptr<Mixed>, _a0: Ptr<Mixed>) {
         field!(this, v).write(_a0.with(|__s| __s.v));
     }
@@ -138,6 +148,9 @@ impl MyBool {
     pub fn copy_from(this: Ptr<MyBool>, _a0: Ptr<MyBool>) {
         field!(this, value).write(_a0.with(|__s| __s.value));
     }
+    pub fn move_from(this: Ptr<MyBool>, _a0: Ptr<MyBool>) {
+        field!(this, value).write({ (*_a0.upgrade().deref()).value });
+    }
 }
 #[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
 #[byte_size(4)]
@@ -146,6 +159,7 @@ pub struct Boolish {
     pub v: i32,
 }
 impl Boolish {
+    pub fn new_1(this: Ptr<Boolish>) {}
     pub fn copy_from(this: Ptr<Boolish>, _a0: Ptr<Boolish>) {
         field!(this, v).write(_a0.with(|__s| __s.v));
     }
@@ -217,8 +231,12 @@ pub struct RefInt {
     pub v: i32,
 }
 impl RefInt {
+    pub fn new_1(this: Ptr<RefInt>) {}
     pub fn copy_from(this: Ptr<RefInt>, _a0: Ptr<RefInt>) {
         field!(this, v).write(_a0.with(|__s| __s.v));
+    }
+    pub fn move_from(this: Ptr<RefInt>, _a0: Ptr<RefInt>) {
+        field!(this, v).write({ (*_a0.upgrade().deref()).v });
     }
 }
 impl CppEq for RefInt {
@@ -251,7 +269,7 @@ fn main_0() -> i32 {
     };
     assert!(
         (({
-            let _a: X = {
+            let _a = {
                 let __v: Value<X> = Rc::new(RefCell::new(<X>::uninit()));
                 X::copy_from(__v.as_pointer(), { a.as_pointer() });
                 __v
@@ -265,7 +283,7 @@ fn main_0() -> i32 {
     );
     assert!(
         (({
-            let _a: X = {
+            let _a = {
                 let __v: Value<X> = Rc::new(RefCell::new(<X>::uninit()));
                 X::copy_from(__v.as_pointer(), { a.as_pointer() });
                 __v
@@ -279,7 +297,7 @@ fn main_0() -> i32 {
     );
     assert!(
         (({
-            let _a: X = {
+            let _a = {
                 let __v: Value<X> = Rc::new(RefCell::new(<X>::uninit()));
                 X::copy_from(__v.as_pointer(), { a.as_pointer() });
                 __v
@@ -293,7 +311,7 @@ fn main_0() -> i32 {
     );
     assert!(
         (({
-            let _a: X = {
+            let _a = {
                 let __v: Value<X> = Rc::new(RefCell::new(<X>::uninit()));
                 X::copy_from(__v.as_pointer(), { a.as_pointer() });
                 __v
@@ -307,7 +325,7 @@ fn main_0() -> i32 {
     );
     assert!(
         (({
-            let _a: X = {
+            let _a = {
                 let __v: Value<X> = Rc::new(RefCell::new(<X>::uninit()));
                 X::copy_from(__v.as_pointer(), { b.as_pointer() });
                 __v
@@ -321,7 +339,7 @@ fn main_0() -> i32 {
     );
     assert!(
         (({
-            let _a: X = {
+            let _a = {
                 let __v: Value<X> = Rc::new(RefCell::new(<X>::uninit()));
                 X::copy_from(__v.as_pointer(), { a.as_pointer() });
                 __v
@@ -335,7 +353,7 @@ fn main_0() -> i32 {
     );
     assert!(
         (({
-            let _a: X = {
+            let _a = {
                 let __v: Value<X> = Rc::new(RefCell::new(<X>::uninit()));
                 X::copy_from(__v.as_pointer(), { a.as_pointer() });
                 __v
@@ -468,7 +486,7 @@ fn main_0() -> i32 {
                 &{
                     let __v: Value<MyBool> = Rc::new(RefCell::new(<MyBool>::uninit()));
                     ({
-                        let _a: Boolish = {
+                        let _a = {
                             let __v: Value<Boolish> = Rc::new(RefCell::new(<Boolish>::uninit()));
                             Boolish::copy_from(__v.as_pointer(), { b1.as_pointer() });
                             __v
@@ -494,7 +512,7 @@ fn main_0() -> i32 {
                 &{
                     let __v: Value<MyBool> = Rc::new(RefCell::new(<MyBool>::uninit()));
                     ({
-                        let _a: Boolish = {
+                        let _a = {
                             let __v: Value<Boolish> = Rc::new(RefCell::new(<Boolish>::uninit()));
                             Boolish::copy_from(__v.as_pointer(), { b2.as_pointer() });
                             __v
@@ -513,7 +531,7 @@ fn main_0() -> i32 {
     );
     let lt: Value<MyBool> = Rc::new(RefCell::new(<MyBool>::uninit()));
     ({
-        let _a: Boolish = {
+        let _a = {
             let __v: Value<Boolish> = Rc::new(RefCell::new(<Boolish>::uninit()));
             Boolish::copy_from(__v.as_pointer(), { b1.as_pointer() });
             __v

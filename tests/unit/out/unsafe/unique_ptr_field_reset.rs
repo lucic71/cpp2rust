@@ -12,7 +12,11 @@ pub struct Data {
     pub v: i32,
 }
 impl Data {
+    pub unsafe fn new_1(this: *mut Data) {}
     pub unsafe fn copy_from(this: *mut Data, _a0: *const Data) {
+        (&raw mut (*this).v).write((*_a0).v);
+    }
+    pub unsafe fn move_from(this: *mut Data, _a0: *mut Data) {
         (&raw mut (*this).v).write((*_a0).v);
     }
 }

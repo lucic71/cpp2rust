@@ -15,9 +15,14 @@ pub struct Pair {
     pub second: i32,
 }
 impl Pair {
+    pub fn new_1(this: Ptr<Pair>) {}
     pub fn copy_from(this: Ptr<Pair>, _a0: Ptr<Pair>) {
         field!(this, first).write(_a0.with(|__s| __s.first));
         field!(this, second).write(_a0.with(|__s| __s.second));
+    }
+    pub fn move_from(this: Ptr<Pair>, _a0: Ptr<Pair>) {
+        field!(this, first).write({ (*_a0.upgrade().deref()).first });
+        field!(this, second).write({ (*_a0.upgrade().deref()).second });
     }
 }
 #[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
@@ -30,9 +35,16 @@ pub struct Route {
     pub cost: f64,
 }
 impl Route {
+    pub fn new_1(this: Ptr<Route>) {
+        Pair::new_1(field_ptr!(this, path));
+    }
     pub fn copy_from(this: Ptr<Route>, _a0: Ptr<Route>) {
         Pair::copy_from(field_ptr!(this, path), { field_ptr!(_a0, path) });
         field!(this, cost).write(_a0.with(|__s| __s.cost));
+    }
+    pub fn move_from(this: Ptr<Route>, _a0: Ptr<Route>) {
+        Pair::move_from(field_ptr!(this, path), { field_ptr!(_a0, path) });
+        field!(this, cost).write({ (*_a0.upgrade().deref()).cost });
     }
 }
 #[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
@@ -44,9 +56,14 @@ pub struct Counter {
     pub calls: i32,
 }
 impl Counter {
+    pub fn new_1(this: Ptr<Counter>) {}
     pub fn copy_from(this: Ptr<Counter>, _a0: Ptr<Counter>) {
         field!(this, v).write(_a0.with(|__s| __s.v));
         field!(this, calls).write(_a0.with(|__s| __s.calls));
+    }
+    pub fn move_from(this: Ptr<Counter>, _a0: Ptr<Counter>) {
+        field!(this, v).write({ (*_a0.upgrade().deref()).v });
+        field!(this, calls).write({ (*_a0.upgrade().deref()).calls });
     }
 }
 impl CppEq for Counter {
@@ -61,8 +78,12 @@ pub struct Tally {
     pub calls: i32,
 }
 impl Tally {
+    pub fn new_1(this: Ptr<Tally>) {}
     pub fn copy_from(this: Ptr<Tally>, _a0: Ptr<Tally>) {
         field!(this, calls).write(_a0.with(|__s| __s.calls));
+    }
+    pub fn move_from(this: Ptr<Tally>, _a0: Ptr<Tally>) {
+        field!(this, calls).write({ (*_a0.upgrade().deref()).calls });
     }
 }
 pub fn RandomRoute_0(route: Ptr<Route>) -> i32 {

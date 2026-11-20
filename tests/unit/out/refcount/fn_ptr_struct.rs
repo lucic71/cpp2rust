@@ -16,9 +16,14 @@ pub struct Handler {
     pub cb: FnPtr<fn(i32) -> i32>,
 }
 impl Handler {
+    pub fn new_1(this: Ptr<Handler>) {}
     pub fn copy_from(this: Ptr<Handler>, _a0: Ptr<Handler>) {
         field!(this, tag).write(_a0.with(|__s| __s.tag));
         field!(this, cb).write(_a0.with(|__s| __s.cb.clone()));
+    }
+    pub fn move_from(this: Ptr<Handler>, _a0: Ptr<Handler>) {
+        field!(this, tag).write({ (*_a0.upgrade().deref()).tag });
+        field!(this, cb).write({ (*_a0.upgrade().deref()).cb.clone() });
     }
 }
 pub fn double_it_0(mut x: i32) -> i32 {
@@ -40,7 +45,9 @@ impl S {
     pub fn solo(mut x: i32) -> i32 {
         return (x + 3);
     }
+    pub fn new_1(this: Ptr<S>) {}
     pub fn copy_from(this: Ptr<S>, _a0: Ptr<S>) {}
+    pub fn move_from(this: Ptr<S>, _a0: Ptr<S>) {}
 }
 #[derive(Record, ByteRepr, Uninit, FnPtrArg, MoveCtor, CppFrom, Default)]
 #[cpp_from(i32, new, value)]

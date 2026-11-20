@@ -19,6 +19,7 @@ pub struct p9_move_trivially_copyable_Point {
     pub y: i32,
 }
 impl p9_move_trivially_copyable_Point {
+    pub unsafe fn new_1(this: *mut p9_move_trivially_copyable_Point) {}
     pub unsafe fn copy_from(
         this: *mut p9_move_trivially_copyable_Point,
         _a0: *const p9_move_trivially_copyable_Point,

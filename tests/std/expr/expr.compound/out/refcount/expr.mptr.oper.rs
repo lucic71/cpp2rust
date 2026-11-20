@@ -15,9 +15,14 @@ pub struct p3_arrow_star_HasTwoInts {
     pub second: i32,
 }
 impl p3_arrow_star_HasTwoInts {
+    pub fn new_1(this: Ptr<p3_arrow_star_HasTwoInts>) {}
     pub fn copy_from(this: Ptr<p3_arrow_star_HasTwoInts>, _a0: Ptr<p3_arrow_star_HasTwoInts>) {
         field!(this, first).write(_a0.with(|__s| __s.first));
         field!(this, second).write(_a0.with(|__s| __s.second));
+    }
+    pub fn move_from(this: Ptr<p3_arrow_star_HasTwoInts>, _a0: Ptr<p3_arrow_star_HasTwoInts>) {
+        field!(this, first).write({ (*_a0.upgrade().deref()).first });
+        field!(this, second).write({ (*_a0.upgrade().deref()).second });
     }
 }
 pub fn test_0() {
@@ -43,11 +48,18 @@ pub struct p4_object_expression_sequenced_first_HasValue {
     pub value: i32,
 }
 impl p4_object_expression_sequenced_first_HasValue {
+    pub fn new_1(this: Ptr<p4_object_expression_sequenced_first_HasValue>) {}
     pub fn copy_from(
         this: Ptr<p4_object_expression_sequenced_first_HasValue>,
         _a0: Ptr<p4_object_expression_sequenced_first_HasValue>,
     ) {
         field!(this, value).write(_a0.with(|__s| __s.value));
+    }
+    pub fn move_from(
+        this: Ptr<p4_object_expression_sequenced_first_HasValue>,
+        _a0: Ptr<p4_object_expression_sequenced_first_HasValue>,
+    ) {
+        field!(this, value).write({ (*_a0.upgrade().deref()).value });
     }
 }
 thread_local!(
@@ -102,12 +114,20 @@ pub struct p6_data_member_of_lvalue_is_lvalue_HasTwoInts {
     pub second: i32,
 }
 impl p6_data_member_of_lvalue_is_lvalue_HasTwoInts {
+    pub fn new_1(this: Ptr<p6_data_member_of_lvalue_is_lvalue_HasTwoInts>) {}
     pub fn copy_from(
         this: Ptr<p6_data_member_of_lvalue_is_lvalue_HasTwoInts>,
         _a0: Ptr<p6_data_member_of_lvalue_is_lvalue_HasTwoInts>,
     ) {
         field!(this, first).write(_a0.with(|__s| __s.first));
         field!(this, second).write(_a0.with(|__s| __s.second));
+    }
+    pub fn move_from(
+        this: Ptr<p6_data_member_of_lvalue_is_lvalue_HasTwoInts>,
+        _a0: Ptr<p6_data_member_of_lvalue_is_lvalue_HasTwoInts>,
+    ) {
+        field!(this, first).write({ (*_a0.upgrade().deref()).first });
+        field!(this, second).write({ (*_a0.upgrade().deref()).second });
     }
 }
 pub fn test_8() {

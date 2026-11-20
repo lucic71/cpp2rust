@@ -17,11 +17,21 @@ pub struct p2_pointer_to_array_member_HasIntArray {
     pub elements: Box<[i32]>,
 }
 impl p2_pointer_to_array_member_HasIntArray {
+    pub fn new_1(this: Ptr<p2_pointer_to_array_member_HasIntArray>) {}
     pub fn copy_from(
         this: Ptr<p2_pointer_to_array_member_HasIntArray>,
         _a0: Ptr<p2_pointer_to_array_member_HasIntArray>,
     ) {
         field!(this, before).write(_a0.with(|__s| __s.before));
+        field!(this, elements).write(Box::new(std::array::from_fn::<_, 3, _>(|__i: usize| {
+            (*_a0.upgrade().deref()).elements[(__i) as usize]
+        })));
+    }
+    pub fn move_from(
+        this: Ptr<p2_pointer_to_array_member_HasIntArray>,
+        _a0: Ptr<p2_pointer_to_array_member_HasIntArray>,
+    ) {
+        field!(this, before).write({ (*_a0.upgrade().deref()).before });
         field!(this, elements).write(Box::new(std::array::from_fn::<_, 3, _>(|__i: usize| {
             (*_a0.upgrade().deref()).elements[(__i) as usize]
         })));
@@ -63,12 +73,20 @@ pub struct p2_pointer_to_data_member_HasTwoInts {
     pub second: i32,
 }
 impl p2_pointer_to_data_member_HasTwoInts {
+    pub fn new_1(this: Ptr<p2_pointer_to_data_member_HasTwoInts>) {}
     pub fn copy_from(
         this: Ptr<p2_pointer_to_data_member_HasTwoInts>,
         _a0: Ptr<p2_pointer_to_data_member_HasTwoInts>,
     ) {
         field!(this, first).write(_a0.with(|__s| __s.first));
         field!(this, second).write(_a0.with(|__s| __s.second));
+    }
+    pub fn move_from(
+        this: Ptr<p2_pointer_to_data_member_HasTwoInts>,
+        _a0: Ptr<p2_pointer_to_data_member_HasTwoInts>,
+    ) {
+        field!(this, first).write({ (*_a0.upgrade().deref()).first });
+        field!(this, second).write({ (*_a0.upgrade().deref()).second });
     }
 }
 pub fn test_1() {
@@ -103,12 +121,20 @@ pub struct p2_pointer_to_member_of_incomplete_class_CompletedLater {
     pub second: i32,
 }
 impl p2_pointer_to_member_of_incomplete_class_CompletedLater {
+    pub fn new_1(this: Ptr<p2_pointer_to_member_of_incomplete_class_CompletedLater>) {}
     pub fn copy_from(
         this: Ptr<p2_pointer_to_member_of_incomplete_class_CompletedLater>,
         _a0: Ptr<p2_pointer_to_member_of_incomplete_class_CompletedLater>,
     ) {
         field!(this, first).write(_a0.with(|__s| __s.first));
         field!(this, second).write(_a0.with(|__s| __s.second));
+    }
+    pub fn move_from(
+        this: Ptr<p2_pointer_to_member_of_incomplete_class_CompletedLater>,
+        _a0: Ptr<p2_pointer_to_member_of_incomplete_class_CompletedLater>,
+    ) {
+        field!(this, first).write({ (*_a0.upgrade().deref()).first });
+        field!(this, second).write({ (*_a0.upgrade().deref()).second });
     }
 }
 pub fn test_3() {
@@ -143,12 +169,20 @@ pub struct p2_pointer_to_member_of_pointer_to_member_type_HasTwoInts {
     pub second: i32,
 }
 impl p2_pointer_to_member_of_pointer_to_member_type_HasTwoInts {
+    pub fn new_1(this: Ptr<p2_pointer_to_member_of_pointer_to_member_type_HasTwoInts>) {}
     pub fn copy_from(
         this: Ptr<p2_pointer_to_member_of_pointer_to_member_type_HasTwoInts>,
         _a0: Ptr<p2_pointer_to_member_of_pointer_to_member_type_HasTwoInts>,
     ) {
         field!(this, first).write(_a0.with(|__s| __s.first));
         field!(this, second).write(_a0.with(|__s| __s.second));
+    }
+    pub fn move_from(
+        this: Ptr<p2_pointer_to_member_of_pointer_to_member_type_HasTwoInts>,
+        _a0: Ptr<p2_pointer_to_member_of_pointer_to_member_type_HasTwoInts>,
+    ) {
+        field!(this, first).write({ (*_a0.upgrade().deref()).first });
+        field!(this, second).write({ (*_a0.upgrade().deref()).second });
     }
 }
 #[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg)]
@@ -159,11 +193,18 @@ pub struct p2_pointer_to_member_of_pointer_to_member_type_HoldsSelector {
     pub selector: isize,
 }
 impl p2_pointer_to_member_of_pointer_to_member_type_HoldsSelector {
+    pub fn new_1(this: Ptr<p2_pointer_to_member_of_pointer_to_member_type_HoldsSelector>) {}
     pub fn copy_from(
         this: Ptr<p2_pointer_to_member_of_pointer_to_member_type_HoldsSelector>,
         _a0: Ptr<p2_pointer_to_member_of_pointer_to_member_type_HoldsSelector>,
     ) {
         field!(this, selector).write(_a0.with(|__s| __s.selector));
+    }
+    pub fn move_from(
+        this: Ptr<p2_pointer_to_member_of_pointer_to_member_type_HoldsSelector>,
+        _a0: Ptr<p2_pointer_to_member_of_pointer_to_member_type_HoldsSelector>,
+    ) {
+        field!(this, selector).write({ (*_a0.upgrade().deref()).selector });
     }
 }
 impl Default for p2_pointer_to_member_of_pointer_to_member_type_HoldsSelector {

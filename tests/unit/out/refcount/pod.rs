@@ -17,10 +17,16 @@ pub struct POD {
     pub x3: i32,
 }
 impl POD {
+    pub fn new_1(this: Ptr<POD>) {}
     pub fn copy_from(this: Ptr<POD>, _a0: Ptr<POD>) {
         field!(this, x1).write(_a0.with(|__s| __s.x1));
         field!(this, x2).write(_a0.with(|__s| __s.x2));
         field!(this, x3).write(_a0.with(|__s| __s.x3));
+    }
+    pub fn move_from(this: Ptr<POD>, _a0: Ptr<POD>) {
+        field!(this, x1).write({ (*_a0.upgrade().deref()).x1 });
+        field!(this, x2).write({ (*_a0.upgrade().deref()).x2 });
+        field!(this, x3).write({ (*_a0.upgrade().deref()).x3 });
     }
 }
 pub fn PODIncrement_0(pod: Ptr<POD>) {

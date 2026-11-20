@@ -30,6 +30,12 @@ impl p7_1_function_body_names_later_member_HasLaterMembers {
     ) {
         field!(this, stock).write(_a0.with(|__s| __s.stock));
     }
+    pub fn move_from(
+        this: Ptr<p7_1_function_body_names_later_member_HasLaterMembers>,
+        _a0: Ptr<p7_1_function_body_names_later_member_HasLaterMembers>,
+    ) {
+        field!(this, stock).write({ (*_a0.upgrade().deref()).stock });
+    }
 }
 impl Default for p7_1_function_body_names_later_member_HasLaterMembers {
     fn default() -> Self {
@@ -70,6 +76,12 @@ impl p7_2_default_argument_names_later_member_HasLaterStaticStep {
         _a0: Ptr<p7_2_default_argument_names_later_member_HasLaterStaticStep>,
     ) {
         field!(this, total).write(_a0.with(|__s| __s.total));
+    }
+    pub fn move_from(
+        this: Ptr<p7_2_default_argument_names_later_member_HasLaterStaticStep>,
+        _a0: Ptr<p7_2_default_argument_names_later_member_HasLaterStaticStep>,
+    ) {
+        field!(this, total).write({ (*_a0.upgrade().deref()).total });
     }
 }
 impl Default for p7_2_default_argument_names_later_member_HasLaterStaticStep {

@@ -21,11 +21,18 @@ pub struct MinHeapNode {
     pub right: Ptr<MinHeapNode>,
 }
 impl MinHeapNode {
+    pub fn new_1(this: Ptr<MinHeapNode>) {}
     pub fn copy_from(this: Ptr<MinHeapNode>, _a0: Ptr<MinHeapNode>) {
         field!(this, data).write(_a0.with(|__s| __s.data));
         field!(this, freq).write(_a0.with(|__s| __s.freq));
         field!(this, left).write(_a0.with(|__s| __s.left.clone()));
         field!(this, right).write(_a0.with(|__s| __s.right.clone()));
+    }
+    pub fn move_from(this: Ptr<MinHeapNode>, _a0: Ptr<MinHeapNode>) {
+        field!(this, data).write({ (*_a0.upgrade().deref()).data });
+        field!(this, freq).write({ (*_a0.upgrade().deref()).freq });
+        field!(this, left).write({ (*_a0.upgrade().deref()).left.clone() });
+        field!(this, right).write({ (*_a0.upgrade().deref()).right.clone() });
     }
 }
 pub fn Swap_0(a: Ptr<MinHeapNode>, b: Ptr<MinHeapNode>) {
@@ -82,6 +89,10 @@ impl MinHeap {
         field!(this, alloc).write(
             field!(_a0, alloc).with_mut(|__v: &mut Option<Value<Box<[MinHeapNode]>>>| __v.take()),
         );
+    }
+    pub fn new_1(this: Ptr<MinHeap>) {
+        field!(this, arr).write(None);
+        field!(this, alloc).write(None);
     }
 }
 pub fn AllocMinHeap_1(mut capacity: i32) -> Option<Value<MinHeap>> {

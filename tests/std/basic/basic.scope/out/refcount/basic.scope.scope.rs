@@ -54,6 +54,11 @@ impl p2_11_unscoped_enumerator_in_both_scopes_HasUnscopedEnum {
         _a0: Ptr<p2_11_unscoped_enumerator_in_both_scopes_HasUnscopedEnum>,
     ) {
     }
+    pub fn move_from(
+        this: Ptr<p2_11_unscoped_enumerator_in_both_scopes_HasUnscopedEnum>,
+        _a0: Ptr<p2_11_unscoped_enumerator_in_both_scopes_HasUnscopedEnum>,
+    ) {
+    }
 }
 pub fn test_5() {
     assert!(((p2_11_unscoped_enumerator_in_both_scopes_Direction_north as i32) == 4));
@@ -88,7 +93,13 @@ impl p2_12_class_name_in_own_scope_HasStaticCounter {
     pub fn bump() {
         (*count_6.with(Value::clone).borrow_mut()).prefix_inc();
     }
+    pub fn new_1(this: Ptr<p2_12_class_name_in_own_scope_HasStaticCounter>) {}
     pub fn copy_from(
+        this: Ptr<p2_12_class_name_in_own_scope_HasStaticCounter>,
+        _a0: Ptr<p2_12_class_name_in_own_scope_HasStaticCounter>,
+    ) {
+    }
+    pub fn move_from(
         this: Ptr<p2_12_class_name_in_own_scope_HasStaticCounter>,
         _a0: Ptr<p2_12_class_name_in_own_scope_HasStaticCounter>,
     ) {
@@ -171,6 +182,13 @@ impl p2_13_anonymous_union_members_in_parent_scope_HasAnonymousUnion {
         field!(this, tag).write(_a0.with(|__s| __s.tag));
         field!(this, anon_9).write(_a0.with(|__s| __s.anon_9.clone()));
     }
+    pub fn move_from(
+        this: Ptr<p2_13_anonymous_union_members_in_parent_scope_HasAnonymousUnion>,
+        _a0: Ptr<p2_13_anonymous_union_members_in_parent_scope_HasAnonymousUnion>,
+    ) {
+        field!(this, tag).write({ (*_a0.upgrade().deref()).tag });
+        field!(this, anon_9).write({ (*_a0.upgrade().deref()).anon_9.clone() });
+    }
 }
 pub fn test_10() {
     anon_8::namespace_count(anon_8.with(|v| v.as_pointer())).write(4);
@@ -243,6 +261,13 @@ impl p3_2_const_qualified_member_is_distinct_HasConstOverload {
         field!(this, plain_calls).write(_a0.with(|__s| __s.plain_calls));
         field!(this, const_calls).write(_a0.with(|__s| __s.const_calls));
     }
+    pub fn move_from(
+        this: Ptr<p3_2_const_qualified_member_is_distinct_HasConstOverload>,
+        _a0: Ptr<p3_2_const_qualified_member_is_distinct_HasConstOverload>,
+    ) {
+        field!(this, plain_calls).write({ (*_a0.upgrade().deref()).plain_calls });
+        field!(this, const_calls).write({ (*_a0.upgrade().deref()).const_calls });
+    }
 }
 impl Default for p3_2_const_qualified_member_is_distinct_HasConstOverload {
     fn default() -> Self {
@@ -299,6 +324,12 @@ impl p3_2_explicit_object_and_rvalue_members_are_distinct_HasExplicitObjectOverl
     ) {
         field!(this, base).write(_a0.with(|__s| __s.base));
     }
+    pub fn move_from(
+        this: Ptr<p3_2_explicit_object_and_rvalue_members_are_distinct_HasExplicitObjectOverload>,
+        _a0: Ptr<p3_2_explicit_object_and_rvalue_members_are_distinct_HasExplicitObjectOverload>,
+    ) {
+        field!(this, base).write({ (*_a0.upgrade().deref()).base });
+    }
 }
 impl Default for p3_2_explicit_object_and_rvalue_members_are_distinct_HasExplicitObjectOverload {
     fn default() -> Self {
@@ -328,7 +359,9 @@ pub fn test_15() {
     assert!(
         (({
             p3_2_explicit_object_and_rvalue_members_are_distinct_HasExplicitObjectOverloadImpl :: pick_2 ( &{ let __v : Value<p3_2_explicit_object_and_rvalue_members_are_distinct_HasExplicitObjectOverload >  = Rc::new(RefCell::new(<p3_2_explicit_object_and_rvalue_members_are_distinct_HasExplicitObjectOverload  >::uninit())) ;
- p3_2_explicit_object_and_rvalue_members_are_distinct_HasExplicitObjectOverload :: new_1 ( __v.as_pointer() , )  ;
+ { let __d = __v.as_pointer() ;
+ () ;
+ p3_2_explicit_object_and_rvalue_members_are_distinct_HasExplicitObjectOverload :: new_1 ( __d , )  } ;
  __v } .as_pointer() , 2  , )
         }) == 112)
     );
@@ -347,6 +380,11 @@ pub struct p3_2_ref_qualified_members_are_distinct_HasRefQualifiedOverloads {}
 impl p3_2_ref_qualified_members_are_distinct_HasRefQualifiedOverloads {
     pub fn new_1(this: Ptr<p3_2_ref_qualified_members_are_distinct_HasRefQualifiedOverloads>) {}
     pub fn copy_from(
+        this: Ptr<p3_2_ref_qualified_members_are_distinct_HasRefQualifiedOverloads>,
+        _a0: Ptr<p3_2_ref_qualified_members_are_distinct_HasRefQualifiedOverloads>,
+    ) {
+    }
+    pub fn move_from(
         this: Ptr<p3_2_ref_qualified_members_are_distinct_HasRefQualifiedOverloads>,
         _a0: Ptr<p3_2_ref_qualified_members_are_distinct_HasRefQualifiedOverloads>,
     ) {
@@ -376,9 +414,11 @@ pub fn test_18() {
                         <p3_2_ref_qualified_members_are_distinct_HasRefQualifiedOverloads>::uninit(
                         ),
                     ));
-                    p3_2_ref_qualified_members_are_distinct_HasRefQualifiedOverloads::new_1(
-                        __v.as_pointer(),
-                    );
+                    {
+                        let __d = __v.as_pointer();
+                        ();
+                        p3_2_ref_qualified_members_are_distinct_HasRefQualifiedOverloads::new_1(__d)
+                    };
                     __v
                 }
                 .as_pointer(),
@@ -418,6 +458,13 @@ impl p3_4_const_qualified_member_templates_are_distinct_HasConstTemplateOverload
     ) {
         field!(this, plain_calls).write(_a0.with(|__s| __s.plain_calls));
         field!(this, const_calls).write(_a0.with(|__s| __s.const_calls));
+    }
+    pub fn move_from(
+        this: Ptr<p3_4_const_qualified_member_templates_are_distinct_HasConstTemplateOverload>,
+        _a0: Ptr<p3_4_const_qualified_member_templates_are_distinct_HasConstTemplateOverload>,
+    ) {
+        field!(this, plain_calls).write({ (*_a0.upgrade().deref()).plain_calls });
+        field!(this, const_calls).write({ (*_a0.upgrade().deref()).const_calls });
     }
 }
 impl Default for p3_4_const_qualified_member_templates_are_distinct_HasConstTemplateOverload {
@@ -478,6 +525,13 @@ impl p3_4_ref_qualified_member_templates_are_distinct_HasRefQualifiedTemplateOve
         _a0: Ptr<p3_4_ref_qualified_member_templates_are_distinct_HasRefQualifiedTemplateOverloads>,
     ) {
     }
+    pub fn move_from(
+        this: Ptr<
+            p3_4_ref_qualified_member_templates_are_distinct_HasRefQualifiedTemplateOverloads,
+        >,
+        _a0: Ptr<p3_4_ref_qualified_member_templates_are_distinct_HasRefQualifiedTemplateOverloads>,
+    ) {
+    }
 }
 pub fn test_22() {
     let object: Value<
@@ -499,7 +553,9 @@ pub fn test_22() {
     assert!(
         (({
             p3_4_ref_qualified_member_templates_are_distinct_HasRefQualifiedTemplateOverloadsImpl :: get_2_int ( &{ let __v : Value<p3_4_ref_qualified_member_templates_are_distinct_HasRefQualifiedTemplateOverloads >  = Rc::new(RefCell::new(<p3_4_ref_qualified_member_templates_are_distinct_HasRefQualifiedTemplateOverloads  >::uninit())) ;
- p3_4_ref_qualified_member_templates_are_distinct_HasRefQualifiedTemplateOverloads :: new_1 ( __v.as_pointer() , )  ;
+ { let __d = __v.as_pointer() ;
+ () ;
+ p3_4_ref_qualified_member_templates_are_distinct_HasRefQualifiedTemplateOverloads :: new_1 ( __d , )  } ;
  __v } .as_pointer() , 10  , )
         }) == 14)
     );
@@ -520,7 +576,16 @@ thread_local!(
 #[byte_size(1)]
 pub struct p4_friend_definition_defines_earlier_friend_declaration_DeclaresFriend {}
 impl p4_friend_definition_defines_earlier_friend_declaration_DeclaresFriend {
+    pub fn new_1(
+        this: Ptr<p4_friend_definition_defines_earlier_friend_declaration_DeclaresFriend>,
+    ) {
+    }
     pub fn copy_from(
+        this: Ptr<p4_friend_definition_defines_earlier_friend_declaration_DeclaresFriend>,
+        _a0: Ptr<p4_friend_definition_defines_earlier_friend_declaration_DeclaresFriend>,
+    ) {
+    }
+    pub fn move_from(
         this: Ptr<p4_friend_definition_defines_earlier_friend_declaration_DeclaresFriend>,
         _a0: Ptr<p4_friend_definition_defines_earlier_friend_declaration_DeclaresFriend>,
     ) {
@@ -534,7 +599,14 @@ pub fn shared_friend_24() -> i32 {
 #[byte_size(1)]
 pub struct p4_friend_definition_defines_earlier_friend_declaration_DefinesFriend {}
 impl p4_friend_definition_defines_earlier_friend_declaration_DefinesFriend {
+    pub fn new_1(this: Ptr<p4_friend_definition_defines_earlier_friend_declaration_DefinesFriend>) {
+    }
     pub fn copy_from(
+        this: Ptr<p4_friend_definition_defines_earlier_friend_declaration_DefinesFriend>,
+        _a0: Ptr<p4_friend_definition_defines_earlier_friend_declaration_DefinesFriend>,
+    ) {
+    }
+    pub fn move_from(
         this: Ptr<p4_friend_definition_defines_earlier_friend_declaration_DefinesFriend>,
         _a0: Ptr<p4_friend_definition_defines_earlier_friend_declaration_DefinesFriend>,
     ) {
@@ -576,11 +648,18 @@ pub struct p4_2_class_and_function_share_name_Reading {
     pub value: i32,
 }
 impl p4_2_class_and_function_share_name_Reading {
+    pub fn new_1(this: Ptr<p4_2_class_and_function_share_name_Reading>) {}
     pub fn copy_from(
         this: Ptr<p4_2_class_and_function_share_name_Reading>,
         _a0: Ptr<p4_2_class_and_function_share_name_Reading>,
     ) {
         field!(this, value).write(_a0.with(|__s| __s.value));
+    }
+    pub fn move_from(
+        this: Ptr<p4_2_class_and_function_share_name_Reading>,
+        _a0: Ptr<p4_2_class_and_function_share_name_Reading>,
+    ) {
+        field!(this, value).write({ (*_a0.upgrade().deref()).value });
     }
 }
 pub fn Reading_32(mut raw_: i32) -> i32 {
@@ -607,11 +686,18 @@ pub struct p4_2_class_and_variable_share_name_Limit {
     pub value: i32,
 }
 impl p4_2_class_and_variable_share_name_Limit {
+    pub fn new_1(this: Ptr<p4_2_class_and_variable_share_name_Limit>) {}
     pub fn copy_from(
         this: Ptr<p4_2_class_and_variable_share_name_Limit>,
         _a0: Ptr<p4_2_class_and_variable_share_name_Limit>,
     ) {
         field!(this, value).write(_a0.with(|__s| __s.value));
+    }
+    pub fn move_from(
+        this: Ptr<p4_2_class_and_variable_share_name_Limit>,
+        _a0: Ptr<p4_2_class_and_variable_share_name_Limit>,
+    ) {
+        field!(this, value).write({ (*_a0.upgrade().deref()).value });
     }
 }
 thread_local!(

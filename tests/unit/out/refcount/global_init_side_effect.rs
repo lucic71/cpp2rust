@@ -18,6 +18,7 @@ impl S {
         total_0.with(|rc| *rc.borrow_mut() += x);
     }
     pub fn copy_from(this: Ptr<S>, _a0: Ptr<S>) {}
+    pub fn move_from(this: Ptr<S>, _a0: Ptr<S>) {}
 }
 thread_local!(
     pub static a_1: Value<S> = {

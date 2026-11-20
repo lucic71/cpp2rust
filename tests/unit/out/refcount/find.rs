@@ -13,8 +13,12 @@ pub struct P {
     pub x: i32,
 }
 impl P {
+    pub fn new_1(this: Ptr<P>) {}
     pub fn copy_from(this: Ptr<P>, _a0: Ptr<P>) {
         field!(this, x).write(_a0.with(|__s| __s.x));
+    }
+    pub fn move_from(this: Ptr<P>, _a0: Ptr<P>) {
+        field!(this, x).write({ (*_a0.upgrade().deref()).x });
     }
 }
 impl CppEq for P {

@@ -13,8 +13,12 @@ pub struct S {
     pub v: u32,
 }
 impl S {
+    pub fn new_1(this: Ptr<S>) {}
     pub fn copy_from(this: Ptr<S>, _a0: Ptr<S>) {
         field!(this, v).write(_a0.with(|__s| __s.v));
+    }
+    pub fn move_from(this: Ptr<S>, _a0: Ptr<S>) {
+        field!(this, v).write({ (*_a0.upgrade().deref()).v });
     }
 }
 pub fn operator_bitnot_0(__ret: Ptr<S>, a: Ptr<S>) {

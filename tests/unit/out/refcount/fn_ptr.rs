@@ -46,6 +46,12 @@ impl HashHolder_unsigned_long__ptr__bool__ {
     ) {
         field!(this, h).write(_a0.with(|__s| __s.h.clone()));
     }
+    pub fn move_from(
+        this: Ptr<HashHolder_unsigned_long__ptr__bool__>,
+        _a0: Ptr<HashHolder_unsigned_long__ptr__bool__>,
+    ) {
+        field!(this, h).write({ (*_a0.upgrade().deref()).h.clone() });
+    }
 }
 thread_local!(
     pub static total_7: Value<i32> = Rc::new(RefCell::new(0));

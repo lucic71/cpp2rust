@@ -12,7 +12,11 @@ pub struct Inner {
     pub x: i32,
 }
 impl Inner {
+    pub unsafe fn new_1(this: *mut Inner) {}
     pub unsafe fn copy_from(this: *mut Inner, _a0: *const Inner) {
+        (&raw mut (*this).x).write((*_a0).x);
+    }
+    pub unsafe fn move_from(this: *mut Inner, _a0: *mut Inner) {
         (&raw mut (*this).x).write((*_a0).x);
     }
 }
@@ -23,11 +27,20 @@ pub struct S {
     pub inner: Inner,
 }
 impl S {
+    pub unsafe fn new_1(this: *mut S) {
+        Inner::new_1((&raw mut (*this).inner));
+    }
     pub unsafe fn copy_from(this: *mut S, _a0: *const S) {
         (&raw mut (*this).data).write(std::array::from_fn::<_, 3, _>(|__i: usize| {
             (*_a0).data[(__i)]
         }));
         Inner::copy_from((&raw mut (*this).inner), { &(*_a0).inner });
+    }
+    pub unsafe fn move_from(this: *mut S, _a0: *mut S) {
+        (&raw mut (*this).data).write(std::array::from_fn::<_, 3, _>(|__i: usize| {
+            (*_a0).data[(__i)]
+        }));
+        Inner::move_from((&raw mut (*this).inner), { &mut (*_a0).inner });
     }
 }
 pub unsafe fn operator_deref_0(s: *mut S) -> *mut Inner {

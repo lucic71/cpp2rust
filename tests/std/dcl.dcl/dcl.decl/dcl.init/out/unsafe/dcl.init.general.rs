@@ -13,9 +13,17 @@ pub struct p6_1_zero_initialized_pointer_to_member_HasTwoInts {
     pub second: i32,
 }
 impl p6_1_zero_initialized_pointer_to_member_HasTwoInts {
+    pub unsafe fn new_1(this: *mut p6_1_zero_initialized_pointer_to_member_HasTwoInts) {}
     pub unsafe fn copy_from(
         this: *mut p6_1_zero_initialized_pointer_to_member_HasTwoInts,
         _a0: *const p6_1_zero_initialized_pointer_to_member_HasTwoInts,
+    ) {
+        (&raw mut (*this).first).write((*_a0).first);
+        (&raw mut (*this).second).write((*_a0).second);
+    }
+    pub unsafe fn move_from(
+        this: *mut p6_1_zero_initialized_pointer_to_member_HasTwoInts,
+        _a0: *mut p6_1_zero_initialized_pointer_to_member_HasTwoInts,
     ) {
         (&raw mut (*this).first).write((*_a0).first);
         (&raw mut (*this).second).write((*_a0).second);
@@ -27,9 +35,16 @@ pub struct p6_1_zero_initialized_pointer_to_member_HoldsSelector {
     pub selector: isize,
 }
 impl p6_1_zero_initialized_pointer_to_member_HoldsSelector {
+    pub unsafe fn new_1(this: *mut p6_1_zero_initialized_pointer_to_member_HoldsSelector) {}
     pub unsafe fn copy_from(
         this: *mut p6_1_zero_initialized_pointer_to_member_HoldsSelector,
         _a0: *const p6_1_zero_initialized_pointer_to_member_HoldsSelector,
+    ) {
+        (&raw mut (*this).selector).write((*_a0).selector);
+    }
+    pub unsafe fn move_from(
+        this: *mut p6_1_zero_initialized_pointer_to_member_HoldsSelector,
+        _a0: *mut p6_1_zero_initialized_pointer_to_member_HoldsSelector,
     ) {
         (&raw mut (*this).selector).write((*_a0).selector);
     }

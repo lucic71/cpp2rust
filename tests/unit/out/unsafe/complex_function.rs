@@ -21,7 +21,11 @@ pub struct X1 {
     pub v: i32,
 }
 impl X1 {
+    pub unsafe fn new_1(this: *mut X1) {}
     pub unsafe fn copy_from(this: *mut X1, _a0: *const X1) {
+        (&raw mut (*this).v).write((*_a0).v);
+    }
+    pub unsafe fn move_from(this: *mut X1, _a0: *mut X1) {
         (&raw mut (*this).v).write((*_a0).v);
     }
 }
@@ -37,6 +41,9 @@ impl X2 {
     pub unsafe fn copy_from(this: *mut X2, _a0: *const X2) {
         (&raw mut (*this).v).write((*_a0).v);
     }
+    pub unsafe fn move_from(this: *mut X2, _a0: *mut X2) {
+        (&raw mut (*this).v).write((*_a0).v);
+    }
 }
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
@@ -47,7 +54,11 @@ impl X3 {
     pub unsafe fn get(&mut self) -> *mut X2 {
         return self.v;
     }
+    pub unsafe fn new_1(this: *mut X3) {}
     pub unsafe fn copy_from(this: *mut X3, _a0: *const X3) {
+        (&raw mut (*this).v).write((*_a0).v);
+    }
+    pub unsafe fn move_from(this: *mut X3, _a0: *mut X3) {
         (&raw mut (*this).v).write((*_a0).v);
     }
 }
@@ -60,8 +71,14 @@ impl X4 {
     pub unsafe fn get(&mut self) -> *mut X3 {
         return &mut self.v;
     }
+    pub unsafe fn new_1(this: *mut X4) {
+        X3::new_1((&raw mut (*this).v));
+    }
     pub unsafe fn copy_from(this: *mut X4, _a0: *const X4) {
         X3::copy_from((&raw mut (*this).v), { &(*_a0).v });
+    }
+    pub unsafe fn move_from(this: *mut X4, _a0: *mut X4) {
+        X3::move_from((&raw mut (*this).v), { &mut (*_a0).v });
     }
 }
 pub fn main() {

@@ -14,7 +14,13 @@ pub struct Vtable {
     pub destroy: Option<unsafe fn(*mut ::libc::c_void)>,
 }
 impl Vtable {
+    pub unsafe fn new_1(this: *mut Vtable) {}
     pub unsafe fn copy_from(this: *mut Vtable, _a0: *const Vtable) {
+        (&raw mut (*this).create).write(((*_a0).create));
+        (&raw mut (*this).get).write(((*_a0).get));
+        (&raw mut (*this).destroy).write(((*_a0).destroy));
+    }
+    pub unsafe fn move_from(this: *mut Vtable, _a0: *mut Vtable) {
         (&raw mut (*this).create).write(((*_a0).create));
         (&raw mut (*this).get).write(((*_a0).get));
         (&raw mut (*this).destroy).write(((*_a0).destroy));

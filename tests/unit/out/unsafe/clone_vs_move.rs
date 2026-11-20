@@ -15,6 +15,10 @@ impl Bar {
     pub unsafe fn copy_from(this: *mut Bar, _a0: *const Bar) {
         (&raw mut (*this).w).write((*_a0).w);
     }
+    pub unsafe fn move_from(this: *mut Bar, _a0: *mut Bar) {
+        (&raw mut (*this).w).write((*_a0).w);
+    }
+    pub unsafe fn new_1(this: *mut Bar) {}
 }
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
@@ -33,6 +37,13 @@ impl Foo {
         (&raw mut (*this).a).write(std::array::from_fn::<_, 3, _>(|__i: usize| (*_a0).a[(__i)]));
         Bar::copy_from((&raw mut (*this).bar), { &(*_a0).bar });
     }
+    pub unsafe fn move_from(this: *mut Foo, _a0: *mut Foo) {
+        (&raw mut (*this).x).write((*_a0).x);
+        (&raw mut (*this).y).write((*_a0).y);
+        (&raw mut (*this).z).write((*_a0).z);
+        (&raw mut (*this).a).write(std::array::from_fn::<_, 3, _>(|__i: usize| (*_a0).a[(__i)]));
+        Bar::move_from((&raw mut (*this).bar), { &mut (*_a0).bar });
+    }
 }
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
@@ -42,6 +53,10 @@ pub struct Refs {
 }
 impl Refs {
     pub unsafe fn copy_from(this: *mut Refs, _a0: *const Refs) {
+        (&raw mut (*this).a).write((*_a0).a);
+        (&raw mut (*this).b).write((*_a0).b);
+    }
+    pub unsafe fn move_from(this: *mut Refs, _a0: *mut Refs) {
         (&raw mut (*this).a).write((*_a0).a);
         (&raw mut (*this).b).write((*_a0).b);
     }

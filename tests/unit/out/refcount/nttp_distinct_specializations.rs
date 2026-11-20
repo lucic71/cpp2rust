@@ -15,9 +15,14 @@ pub struct S_2_ {
     pub w: i32,
 }
 impl S_2_ {
+    pub fn new_1(this: Ptr<S_2_>) {}
     pub fn copy_from(this: Ptr<S_2_>, _a0: Ptr<S_2_>) {
         field!(this, v).write(_a0.with(|__s| __s.v));
         field!(this, w).write(_a0.with(|__s| __s.w));
+    }
+    pub fn move_from(this: Ptr<S_2_>, _a0: Ptr<S_2_>) {
+        field!(this, v).write({ (*_a0.upgrade().deref()).v });
+        field!(this, w).write({ (*_a0.upgrade().deref()).w });
     }
 }
 #[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
@@ -27,8 +32,12 @@ pub struct S_1_ {
     pub v: i32,
 }
 impl S_1_ {
+    pub fn new_1(this: Ptr<S_1_>) {}
     pub fn copy_from(this: Ptr<S_1_>, _a0: Ptr<S_1_>) {
         field!(this, v).write(_a0.with(|__s| __s.v));
+    }
+    pub fn move_from(this: Ptr<S_1_>, _a0: Ptr<S_1_>) {
+        field!(this, v).write({ (*_a0.upgrade().deref()).v });
     }
 }
 #[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
@@ -38,8 +47,12 @@ pub struct S_3_ {
     pub v: i32,
 }
 impl S_3_ {
+    pub fn new_1(this: Ptr<S_3_>) {}
     pub fn copy_from(this: Ptr<S_3_>, _a0: Ptr<S_3_>) {
         field!(this, v).write(_a0.with(|__s| __s.v));
+    }
+    pub fn move_from(this: Ptr<S_3_>, _a0: Ptr<S_3_>) {
+        field!(this, v).write({ (*_a0.upgrade().deref()).v });
     }
 }
 pub fn scale_0(mut x: i32) -> i32 {

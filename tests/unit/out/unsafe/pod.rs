@@ -14,7 +14,13 @@ pub struct POD {
     pub x3: i32,
 }
 impl POD {
+    pub unsafe fn new_1(this: *mut POD) {}
     pub unsafe fn copy_from(this: *mut POD, _a0: *const POD) {
+        (&raw mut (*this).x1).write((*_a0).x1);
+        (&raw mut (*this).x2).write((*_a0).x2);
+        (&raw mut (*this).x3).write((*_a0).x3);
+    }
+    pub unsafe fn move_from(this: *mut POD, _a0: *mut POD) {
         (&raw mut (*this).x1).write((*_a0).x1);
         (&raw mut (*this).x2).write((*_a0).x2);
         (&raw mut (*this).x3).write((*_a0).x3);

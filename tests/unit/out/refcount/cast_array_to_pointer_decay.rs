@@ -25,7 +25,13 @@ pub struct Row {
     pub a: Box<[i32]>,
 }
 impl Row {
+    pub fn new_1(this: Ptr<Row>) {}
     pub fn copy_from(this: Ptr<Row>, _a0: Ptr<Row>) {
+        field!(this, a).write(Box::new(std::array::from_fn::<_, 3, _>(|__i: usize| {
+            (*_a0.upgrade().deref()).a[(__i) as usize]
+        })));
+    }
+    pub fn move_from(this: Ptr<Row>, _a0: Ptr<Row>) {
         field!(this, a).write(Box::new(std::array::from_fn::<_, 3, _>(|__i: usize| {
             (*_a0.upgrade().deref()).a[(__i) as usize]
         })));

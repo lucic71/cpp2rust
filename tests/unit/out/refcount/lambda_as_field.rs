@@ -14,6 +14,11 @@ pub struct Guard__lambda_at_lambda_as_field_cpp_34_13__ {
     pub f: FnPtr<fn()>,
 }
 impl Guard__lambda_at_lambda_as_field_cpp_34_13__ {
+    pub fn new_1(this: Ptr<Guard__lambda_at_lambda_as_field_cpp_34_13__>) {
+        field!(this, f).write(FnPtr::<fn()>::new(|| {
+            (*count_0.with(Value::clone).borrow_mut()).postfix_inc();
+        }));
+    }
     pub fn copy_from(
         this: Ptr<Guard__lambda_at_lambda_as_field_cpp_34_13__>,
         _a0: Ptr<Guard__lambda_at_lambda_as_field_cpp_34_13__>,
@@ -57,12 +62,26 @@ pub struct Holder__lambda_at_lambda_as_field_cpp_39_12__ {
     pub calls: i32,
 }
 impl Holder__lambda_at_lambda_as_field_cpp_39_12__ {
+    pub fn new_1(this: Ptr<Holder__lambda_at_lambda_as_field_cpp_39_12__>) {
+        field!(this, f).write(FnPtr::<fn(i32) -> i32>::new(|mut x: i32| -> i32 {
+            {
+                return (x + 1);
+            }
+        }));
+    }
     pub fn copy_from(
         this: Ptr<Holder__lambda_at_lambda_as_field_cpp_39_12__>,
         _a0: Ptr<Holder__lambda_at_lambda_as_field_cpp_39_12__>,
     ) {
         field!(this, f).write((*_a0.upgrade().deref()).f.copy_from());
         field!(this, calls).write(_a0.with(|__s| __s.calls));
+    }
+    pub fn move_from(
+        this: Ptr<Holder__lambda_at_lambda_as_field_cpp_39_12__>,
+        _a0: Ptr<Holder__lambda_at_lambda_as_field_cpp_39_12__>,
+    ) {
+        field!(this, f).write((*_a0.upgrade().deref()).f.move_from());
+        field!(this, calls).write({ (*_a0.upgrade().deref()).calls });
     }
 }
 impl Default for Holder__lambda_at_lambda_as_field_cpp_39_12__ {
@@ -95,6 +114,13 @@ impl Holder__lambda_at_lambda_as_field_cpp_51_12__ {
     ) {
         field!(this, f).write((*_a0.upgrade().deref()).f.copy_from());
         field!(this, calls).write(_a0.with(|__s| __s.calls));
+    }
+    pub fn move_from(
+        this: Ptr<Holder__lambda_at_lambda_as_field_cpp_51_12__>,
+        _a0: Ptr<Holder__lambda_at_lambda_as_field_cpp_51_12__>,
+    ) {
+        field!(this, f).write((*_a0.upgrade().deref()).f.move_from());
+        field!(this, calls).write({ (*_a0.upgrade().deref()).calls });
     }
 }
 #[derive(Record, ByteRepr, Uninit, FnPtrArg, MoveCtor, CppFrom)]

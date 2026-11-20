@@ -16,6 +16,10 @@ impl Bar {
     pub fn copy_from(this: Ptr<Bar>, _a0: Ptr<Bar>) {
         field!(this, w).write(_a0.with(|__s| __s.w));
     }
+    pub fn move_from(this: Ptr<Bar>, _a0: Ptr<Bar>) {
+        field!(this, w).write({ (*_a0.upgrade().deref()).w });
+    }
+    pub fn new_1(this: Ptr<Bar>) {}
 }
 #[derive(Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg)]
 #[byte_size(40)]
@@ -46,6 +50,15 @@ impl Foo {
         })));
         Bar::copy_from(field_ptr!(this, bar), { field_ptr!(_a0, bar) });
     }
+    pub fn move_from(this: Ptr<Foo>, _a0: Ptr<Foo>) {
+        field!(this, x).write({ (*_a0.upgrade().deref()).x });
+        field!(this, y).write(({ (*_a0.upgrade().deref()).y.clone() }).clone());
+        field!(this, z).write({ (*_a0.upgrade().deref()).z.clone() });
+        field!(this, a).write(Box::new(std::array::from_fn::<_, 3, _>(|__i: usize| {
+            (*_a0.upgrade().deref()).a[(__i) as usize]
+        })));
+        Bar::move_from(field_ptr!(this, bar), { field_ptr!(_a0, bar) });
+    }
 }
 impl Default for Foo {
     fn default() -> Self {
@@ -74,6 +87,10 @@ impl Refs {
     pub fn copy_from(this: Ptr<Refs>, _a0: Ptr<Refs>) {
         field!(this, a).write((_a0.with(|__s| __s.a.clone())).clone());
         field!(this, b).write((_a0.with(|__s| __s.b.clone())).clone());
+    }
+    pub fn move_from(this: Ptr<Refs>, _a0: Ptr<Refs>) {
+        field!(this, a).write(({ (*_a0.upgrade().deref()).a.clone() }).clone());
+        field!(this, b).write(({ (*_a0.upgrade().deref()).b.clone() }).clone());
     }
 }
 pub fn main() {

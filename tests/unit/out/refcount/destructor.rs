@@ -27,6 +27,9 @@ impl Defaulted {
     pub fn copy_from(this: Ptr<Defaulted>, _a0: Ptr<Defaulted>) {
         S::copy_from(field_ptr!(this, s), { field_ptr!(_a0, s) });
     }
+    pub fn new_1(this: Ptr<Defaulted>) {
+        S::new_1(field_ptr!(this, s));
+    }
 }
 #[derive(Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Destructor, Default)]
 #[byte_size(1)]
@@ -39,6 +42,12 @@ impl Middle {
     pub fn copy_from(this: Ptr<Middle>, _a0: Ptr<Middle>) {
         S::copy_from(field_ptr!(this, s), { field_ptr!(_a0, s) });
     }
+    pub fn move_from(this: Ptr<Middle>, _a0: Ptr<Middle>) {
+        S::copy_from(field_ptr!(this, s), { field_ptr!(_a0, s) });
+    }
+    pub fn new_1(this: Ptr<Middle>) {
+        S::new_1(field_ptr!(this, s));
+    }
 }
 #[derive(Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Destructor, Default)]
 #[byte_size(1)]
@@ -48,8 +57,14 @@ pub struct Outer {
     pub m: Middle,
 }
 impl Outer {
+    pub fn new_1(this: Ptr<Outer>) {
+        Middle::new_1(field_ptr!(this, m));
+    }
     pub fn copy_from(this: Ptr<Outer>, _a0: Ptr<Outer>) {
         Middle::copy_from(field_ptr!(this, m), { field_ptr!(_a0, m) });
+    }
+    pub fn move_from(this: Ptr<Outer>, _a0: Ptr<Outer>) {
+        Middle::move_from(field_ptr!(this, m), { field_ptr!(_a0, m) });
     }
 }
 #[derive(Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Destructor)]
@@ -68,6 +83,24 @@ impl ArrayMember {
                 S::copy_from(__d.offset(__i as isize), {
                     array_field_ptr!(_a0, items).offset(__i)
                 });
+            }
+        };
+    }
+    pub fn move_from(this: Ptr<ArrayMember>, _a0: Ptr<ArrayMember>) {
+        {
+            let __d = array_field_ptr!(this, items);
+            for __i in 0..3_usize {
+                S::copy_from(__d.offset(__i as isize), {
+                    array_field_ptr!(_a0, items).offset(__i)
+                });
+            }
+        };
+    }
+    pub fn new_1(this: Ptr<ArrayMember>) {
+        {
+            let __d = array_field_ptr!(this, items);
+            for __i in 0..3_isize {
+                S::new_1(__d.offset(__i));
             }
         };
     }
@@ -92,6 +125,9 @@ impl EmptyBody {
     pub fn copy_from(this: Ptr<EmptyBody>, _a0: Ptr<EmptyBody>) {
         S::copy_from(field_ptr!(this, s), { field_ptr!(_a0, s) });
     }
+    pub fn new_1(this: Ptr<EmptyBody>) {
+        S::new_1(field_ptr!(this, s));
+    }
 }
 #[derive(Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Destructor, Default)]
 #[byte_size(1)]
@@ -100,6 +136,7 @@ pub struct Templated_char_ {
     pub v: i8,
 }
 impl Templated_char_ {
+    pub fn new_1(this: Ptr<Templated_char_>) {}
     pub fn copy_from(this: Ptr<Templated_char_>, _a0: Ptr<Templated_char_>) {
         field!(this, v).write(_a0.with(|__s| __s.v));
     }
@@ -111,6 +148,7 @@ pub struct Templated_int_ {
     pub v: i32,
 }
 impl Templated_int_ {
+    pub fn new_1(this: Ptr<Templated_int_>) {}
     pub fn copy_from(this: Ptr<Templated_int_>, _a0: Ptr<Templated_int_>) {
         field!(this, v).write(_a0.with(|__s| __s.v));
     }
@@ -122,6 +160,7 @@ pub struct Copied {
     pub v: i32,
 }
 impl Copied {
+    pub fn new_1(this: Ptr<Copied>) {}
     pub fn copy_from(this: Ptr<Copied>, _a0: Ptr<Copied>) {
         field!(this, v).write(_a0.with(|__s| __s.v));
     }
@@ -143,6 +182,7 @@ impl Tagged {
     pub fn copy_from(this: Ptr<Tagged>, _a0: Ptr<Tagged>) {
         field!(this, tag).write(_a0.with(|__s| __s.tag));
     }
+    pub fn new_1(this: Ptr<Tagged>) {}
 }
 #[derive(Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Destructor, Default)]
 #[byte_size(20)]
@@ -168,6 +208,18 @@ impl Ordered {
         Tagged::copy_from(field_ptr!(this, second), { field_ptr!(_a0, second) });
         field!(this, dummy2).write(_a0.with(|__s| __s.dummy2));
         Tagged::copy_from(field_ptr!(this, third), { field_ptr!(_a0, third) });
+    }
+    pub fn move_from(this: Ptr<Ordered>, _a0: Ptr<Ordered>) {
+        Tagged::copy_from(field_ptr!(this, first), { field_ptr!(_a0, first) });
+        field!(this, dummy1).write({ (*_a0.upgrade().deref()).dummy1 });
+        Tagged::copy_from(field_ptr!(this, second), { field_ptr!(_a0, second) });
+        field!(this, dummy2).write({ (*_a0.upgrade().deref()).dummy2 });
+        Tagged::copy_from(field_ptr!(this, third), { field_ptr!(_a0, third) });
+    }
+    pub fn new_1(this: Ptr<Ordered>) {
+        Tagged::new_1(field_ptr!(this, first));
+        Tagged::new_1(field_ptr!(this, second));
+        Tagged::new_1(field_ptr!(this, third));
     }
 }
 pub fn main() {
@@ -251,13 +303,13 @@ fn main_0() -> i32 {
         let tc: Value<Templated_char_> = Rc::new(RefCell::new(<Templated_char_>::uninit()));
         {
             let __d = tc.as_pointer();
-            field!(__d, v).write(0_i8);
+            ();
         };
         let _dtor_tc = std::mem::DropGuard::new(tc.clone(), |__p| __p.as_pointer().destructor());
         let ti: Value<Templated_int_> = Rc::new(RefCell::new(<Templated_int_>::uninit()));
         {
             let __d = ti.as_pointer();
-            field!(__d, v).write(0_i32);
+            ();
         };
         let _dtor_ti = std::mem::DropGuard::new(ti.clone(), |__p| __p.as_pointer().destructor());
     }

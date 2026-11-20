@@ -35,6 +35,9 @@ impl Item {
     pub fn copy_from(this: Ptr<Item>, _a0: Ptr<Item>) {
         field!(this, value).write(_a0.with(|__s| __s.value));
     }
+    pub fn move_from(this: Ptr<Item>, _a0: Ptr<Item>) {
+        field!(this, value).write({ (*_a0.upgrade().deref()).value });
+    }
 }
 impl Default for Item {
     fn default() -> Self {
@@ -83,6 +86,12 @@ impl Temporary {
             (*_a0.upgrade().deref()).data[(__i) as usize]
         })));
     }
+    pub fn move_from(this: Ptr<Temporary>, _a0: Ptr<Temporary>) {
+        field!(this, n).write({ (*_a0.upgrade().deref()).n });
+        field!(this, data).write(Box::new(std::array::from_fn::<_, 2, _>(|__i: usize| {
+            (*_a0.upgrade().deref()).data[(__i) as usize]
+        })));
+    }
 }
 impl Default for Temporary {
     fn default() -> Self {
@@ -110,13 +119,20 @@ impl Nested {
     pub fn copy_from(this: Ptr<Nested>, _a0: Ptr<Nested>) {
         Temporary::copy_from(field_ptr!(this, inner), { field_ptr!(_a0, inner) });
     }
+    pub fn move_from(this: Ptr<Nested>, _a0: Ptr<Nested>) {
+        Temporary::move_from(field_ptr!(this, inner), { field_ptr!(_a0, inner) });
+    }
 }
 pub fn make_temporary_5(__ret: Ptr<Temporary>) {
     Temporary::new(__ret.clone());
     return;
 }
 pub fn make_nested_6(__ret: Ptr<Nested>) {
-    Nested::new_1(__ret.clone());
+    {
+        let __d = __ret.clone();
+        ();
+        Nested::new_1(__d)
+    };
     return;
 }
 #[derive(Record, ByteRepr, Uninit, FnPtrArg, MoveCtor, MoveAssign)]
@@ -192,6 +208,9 @@ impl Held {
     }
     pub fn copy_from(this: Ptr<Held>, _a0: Ptr<Held>) {
         field!(this, ptr).write(_a0.with(|__s| __s.ptr.clone()));
+    }
+    pub fn move_from(this: Ptr<Held>, _a0: Ptr<Held>) {
+        field!(this, ptr).write({ (*_a0.upgrade().deref()).ptr.clone() });
     }
 }
 impl Default for Held {
@@ -1976,7 +1995,11 @@ fn main_0() -> i32 {
                                 Rc::try_unwrap({
                                     let __v: Value<Nested> =
                                         Rc::new(RefCell::new(<Nested>::uninit()));
-                                    Nested::new_1(__v.as_pointer());
+                                    {
+                                        let __d = __v.as_pointer();
+                                        ();
+                                        Nested::new_1(__d)
+                                    };
                                     __v
                                 })
                                 .ok()
@@ -2406,7 +2429,11 @@ fn main_0() -> i32 {
             __tmp_111 = Rc::new(RefCell::new(Some(Rc::new(RefCell::new(
                 Rc::try_unwrap({
                     let __v: Value<Noncopy> = Rc::new(RefCell::new(<Noncopy>::uninit()));
-                    Noncopy::new(__v.as_pointer());
+                    {
+                        let __d = __v.as_pointer();
+                        ();
+                        Noncopy::new(__d)
+                    };
                     __v
                 })
                 .ok()
@@ -2451,7 +2478,11 @@ fn main_0() -> i32 {
             __tmp_113 = Rc::new(RefCell::new(Some(Rc::new(RefCell::new(
                 Rc::try_unwrap({
                     let __v: Value<Noncopy> = Rc::new(RefCell::new(<Noncopy>::uninit()));
-                    Noncopy::new(__v.as_pointer());
+                    {
+                        let __d = __v.as_pointer();
+                        ();
+                        Noncopy::new(__d)
+                    };
                     __v
                 })
                 .ok()

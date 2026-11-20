@@ -15,7 +15,13 @@ pub struct StackArray {
     pub arr: Box<[Ptr<i32>]>,
 }
 impl StackArray {
+    pub fn new_1(this: Ptr<StackArray>) {}
     pub fn copy_from(this: Ptr<StackArray>, _a0: Ptr<StackArray>) {
+        field!(this, arr).write(Box::new(std::array::from_fn::<_, 3, _>(|__i: usize| {
+            ((*_a0.upgrade().deref()).arr[(__i) as usize]).clone()
+        })));
+    }
+    pub fn move_from(this: Ptr<StackArray>, _a0: Ptr<StackArray>) {
         field!(this, arr).write(Box::new(std::array::from_fn::<_, 3, _>(|__i: usize| {
             ((*_a0.upgrade().deref()).arr[(__i) as usize]).clone()
         })));

@@ -13,6 +13,7 @@ pub struct Lt {
     pub v: i32,
 }
 impl Lt {
+    pub fn new_1(this: Ptr<Lt>) {}
     pub fn copy_from(this: Ptr<Lt>, _a0: Ptr<Lt>) {
         field!(this, v).write(_a0.with(|__s| __s.v));
     }
@@ -37,8 +38,12 @@ pub struct Eq {
     pub v: i32,
 }
 impl Eq {
+    pub fn new_1(this: Ptr<Eq>) {}
     pub fn copy_from(this: Ptr<Eq>, _a0: Ptr<Eq>) {
         field!(this, v).write(_a0.with(|__s| __s.v));
+    }
+    pub fn move_from(this: Ptr<Eq>, _a0: Ptr<Eq>) {
+        field!(this, v).write({ (*_a0.upgrade().deref()).v });
     }
 }
 impl CppEq for Eq {
@@ -53,6 +58,7 @@ pub struct Cmp {
     pub v: i32,
 }
 impl Cmp {
+    pub fn new_1(this: Ptr<Cmp>) {}
     pub fn copy_from(this: Ptr<Cmp>, _a0: Ptr<Cmp>) {
         field!(this, v).write(_a0.with(|__s| __s.v));
     }
@@ -77,6 +83,7 @@ pub struct Free {
     pub v: i32,
 }
 impl Free {
+    pub fn new_1(this: Ptr<Free>) {}
     pub fn copy_from(this: Ptr<Free>, _a0: Ptr<Free>) {
         field!(this, v).write(_a0.with(|__s| __s.v));
     }
@@ -107,8 +114,12 @@ pub struct Wrapped_int_ {
     pub v: i32,
 }
 impl Wrapped_int_ {
+    pub fn new_1(this: Ptr<Wrapped_int_>) {}
     pub fn copy_from(this: Ptr<Wrapped_int_>, _a0: Ptr<Wrapped_int_>) {
         field!(this, v).write(_a0.with(|__s| __s.v));
+    }
+    pub fn move_from(this: Ptr<Wrapped_int_>, _a0: Ptr<Wrapped_int_>) {
+        field!(this, v).write({ (*_a0.upgrade().deref()).v });
     }
 }
 pub fn main() {

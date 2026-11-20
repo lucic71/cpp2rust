@@ -29,6 +29,9 @@ impl Item {
     pub unsafe fn copy_from(this: *mut Item, _a0: *const Item) {
         (&raw mut (*this).value).write((*_a0).value);
     }
+    pub unsafe fn move_from(this: *mut Item, _a0: *mut Item) {
+        (&raw mut (*this).value).write((*_a0).value);
+    }
 }
 impl Default for Item {
     fn default() -> Self {
@@ -69,6 +72,12 @@ impl Temporary {
             (*_a0).data[(__i)]
         }));
     }
+    pub unsafe fn move_from(this: *mut Temporary, _a0: *mut Temporary) {
+        (&raw mut (*this).n).write((*_a0).n);
+        (&raw mut (*this).data).write(std::array::from_fn::<_, 2, _>(|__i: usize| {
+            (*_a0).data[(__i)]
+        }));
+    }
 }
 impl Default for Temporary {
     fn default() -> Self {
@@ -93,13 +102,20 @@ impl Nested {
     pub unsafe fn copy_from(this: *mut Nested, _a0: *const Nested) {
         Temporary::copy_from((&raw mut (*this).inner), { &(*_a0).inner });
     }
+    pub unsafe fn move_from(this: *mut Nested, _a0: *mut Nested) {
+        Temporary::move_from((&raw mut (*this).inner), { &mut (*_a0).inner });
+    }
 }
 pub unsafe fn make_temporary_5(__ret: *mut Temporary) {
     Temporary::new(__ret.clone());
     return;
 }
 pub unsafe fn make_nested_6(__ret: *mut Nested) {
-    Nested::new_1(__ret.clone());
+    {
+        let __d = __ret.clone();
+        __d.write_bytes(0, 1);
+        Nested::new_1(__d)
+    };
     return;
 }
 #[repr(C)]
@@ -176,6 +192,9 @@ impl Held {
     pub unsafe fn copy_from(this: *mut Held, _a0: *const Held) {
         (&raw mut (*this).ptr).write((*_a0).ptr);
     }
+    pub unsafe fn move_from(this: *mut Held, _a0: *mut Held) {
+        (&raw mut (*this).ptr).write((*_a0).ptr);
+    }
 }
 impl Default for Held {
     fn default() -> Self {
@@ -210,7 +229,8 @@ pub static mut global_temporary_14: libcc2rs::LazyStorage<(
         let mut __tmp_1: Temporary;
         match ((&mut (*{
             __tmp_1 = ::std::mem::MaybeUninit::uninit().assume_init();
-            (unsafe { make_temporary_5(&raw mut __tmp_1) });
+            let __tmp_2 = &raw mut __tmp_1;
+            (unsafe { make_temporary_5(__tmp_2) });
             &mut __tmp_1
         })
         .n as *mut i32),)
@@ -227,20 +247,20 @@ pub static mut global_conditional_15: libcc2rs::LazyStorage<(
     __p.write(
         match ((if (*(*&raw const global_choose_13).get()) {
             ({
-                let __tmp_3 = &mut (*(*&raw const global_a_11).get());
-                (*__tmp_3).prefix_inc();
-                __tmp_3
-            } as *mut i32)
-        } else {
-            ({
-                let __tmp_4 = &mut (*(*&raw const global_b_12).get());
+                let __tmp_4 = &mut (*(*&raw const global_a_11).get());
                 (*__tmp_4).prefix_inc();
                 __tmp_4
             } as *mut i32)
+        } else {
+            ({
+                let __tmp_5 = &mut (*(*&raw const global_b_12).get());
+                (*__tmp_5).prefix_inc();
+                __tmp_5
+            } as *mut i32)
         } as *mut i32),)
         {
-            (__tmp_2,) => (*(*&raw const global_values_7).get())
-                .try_emplace((*(*&raw const conditional_key_9).get()), || (*__tmp_2)),
+            (__tmp_3,) => (*(*&raw const global_values_7).get())
+                .try_emplace((*(*&raw const conditional_key_9).get()), || (*__tmp_3)),
         },
     )
 });
@@ -249,14 +269,14 @@ pub static mut global_owned_16: libcc2rs::LazyStorage<(
     bool,
 )> = libcc2rs::LazyStorage::new(|__p| unsafe {
     __p.write({
-        let mut __tmp_6: Option<Box<Temporary>>;
+        let mut __tmp_7: Option<Box<Temporary>>;
         match ((&mut (*(*{
-            __tmp_6 = Some(Box::new({
+            __tmp_7 = Some(Box::new({
                 let mut __v: Temporary = ::std::mem::MaybeUninit::uninit().assume_init();
                 Temporary::new(&raw mut __v);
                 __v
             }));
-            &mut __tmp_6
+            &mut __tmp_7
         })
         .as_deref()
         .map_or(::std::ptr::null_mut(), |v| {
@@ -264,8 +284,8 @@ pub static mut global_owned_16: libcc2rs::LazyStorage<(
         }))
         .n as *mut i32),)
         {
-            (__tmp_5,) => (*(*&raw const global_values_7).get())
-                .try_emplace((*(*&raw const owned_key_10).get()), || (*__tmp_5)),
+            (__tmp_6,) => (*(*&raw const global_values_7).get())
+                .try_emplace((*(*&raw const owned_key_10).get()), || (*__tmp_6)),
         }
     })
 });
@@ -302,14 +322,14 @@ unsafe fn main_0() -> i32 {
     let mut hit: (UnsafeBidirectionalIterator<(i32, Item)>, bool) = match (
         ((unsafe { receiver_2(&mut m) }) as *mut UnsafeMap<i32, (i32, Item)>),
         ({
-            let __tmp_9 = (unsafe { place_3(&mut counter) });
-            (*__tmp_9).prefix_inc();
-            __tmp_9
+            let __tmp_10 = (unsafe { place_3(&mut counter) });
+            (*__tmp_10).prefix_inc();
+            __tmp_10
         } as *mut i32),
     ) {
-        (__tmp_7, __tmp_8) => (*__tmp_7).try_emplace(key, || {
+        (__tmp_8, __tmp_9) => (*__tmp_8).try_emplace(key, || {
             let mut __v: Item = ::std::mem::MaybeUninit::uninit().assume_init();
-            Item::new_2(&raw mut __v, { __tmp_8 }, { 2 });
+            Item::new_2(&raw mut __v, { __tmp_9 }, { 2 });
             __v
         }),
     };
@@ -320,29 +340,29 @@ unsafe fn main_0() -> i32 {
     );
     key.prefix_inc();
     let mut inserted: (UnsafeBidirectionalIterator<(i32, Item)>, bool) = match (({
-        let __tmp_11 = &mut counter;
-        (*__tmp_11).prefix_inc();
-        __tmp_11
+        let __tmp_12 = &mut counter;
+        (*__tmp_12).prefix_inc();
+        __tmp_12
     } as *mut i32),)
     {
-        (__tmp_10,) => m.try_emplace(key, || {
+        (__tmp_11,) => m.try_emplace(key, || {
             let mut __v: Item = ::std::mem::MaybeUninit::uninit().assume_init();
-            Item::new_2(&raw mut __v, { __tmp_10 }, { 2 });
+            Item::new_2(&raw mut __v, { __tmp_11 }, { 2 });
             __v
         }),
     };
     assert!((((counter) == (7)) && ((*(*&raw const made_0).get()) == (1))) && (inserted.1));
     let mut assigned: (UnsafeBidirectionalIterator<(i32, Item)>, bool) =
         match ((match ({ 9 }, (&mut counter as *mut i32)) {
-            (__tmp_14, __tmp_13) => {
-                __tmp_13.write(__tmp_14);
-                __tmp_13
+            (__tmp_15, __tmp_14) => {
+                __tmp_14.write(__tmp_15);
+                __tmp_14
             }
         } as *mut i32),)
         {
-            (__tmp_12,) => m.try_emplace(key, || {
+            (__tmp_13,) => m.try_emplace(key, || {
                 let mut __v: Item = ::std::mem::MaybeUninit::uninit().assume_init();
-                Item::new_2(&raw mut __v, { __tmp_12 }, { 2 });
+                Item::new_2(&raw mut __v, { __tmp_13 }, { 2 });
                 __v
             }),
         };
@@ -350,15 +370,15 @@ unsafe fn main_0() -> i32 {
     key.prefix_inc();
     let mut compound: (UnsafeBidirectionalIterator<(i32, Item)>, bool) =
         match ((match ({ 4 }, (&mut counter as *mut i32)) {
-            (__tmp_17, __tmp_16) => {
-                __tmp_16.write((((*__tmp_16) as i32) + (__tmp_17 as i32)) as i32);
-                __tmp_16
+            (__tmp_18, __tmp_17) => {
+                __tmp_17.write((((*__tmp_17) as i32) + (__tmp_18 as i32)) as i32);
+                __tmp_17
             }
         } as *mut i32),)
         {
-            (__tmp_15,) => m.try_emplace(key, || {
+            (__tmp_16,) => m.try_emplace(key, || {
                 let mut __v: Item = ::std::mem::MaybeUninit::uninit().assume_init();
-                Item::new_2(&raw mut __v, { __tmp_15 }, { 2 });
+                Item::new_2(&raw mut __v, { __tmp_16 }, { 2 });
                 __v
             }),
         };
@@ -371,14 +391,14 @@ unsafe fn main_0() -> i32 {
     let mut index: i32 = 0;
     key.prefix_inc();
     match (({
-        let __tmp_19 = &mut array[(index.postfix_inc()) as usize];
-        (*__tmp_19).prefix_inc();
-        __tmp_19
+        let __tmp_20 = &mut array[(index.postfix_inc()) as usize];
+        (*__tmp_20).prefix_inc();
+        __tmp_20
     } as *mut i32),)
     {
-        (__tmp_18,) => m.try_emplace(key, || {
+        (__tmp_19,) => m.try_emplace(key, || {
             let mut __v: Item = ::std::mem::MaybeUninit::uninit().assume_init();
-            Item::new_2(&raw mut __v, { __tmp_18 }, { 3 });
+            Item::new_2(&raw mut __v, { __tmp_19 }, { 3 });
             __v
         }),
     };
@@ -391,15 +411,15 @@ unsafe fn main_0() -> i32 {
         { 5 },
         (&mut array[(index.postfix_inc()) as usize] as *mut i32),
     ) {
-        (__tmp_22, __tmp_21) => {
-            __tmp_21.write(__tmp_22);
-            __tmp_21
+        (__tmp_23, __tmp_22) => {
+            __tmp_22.write(__tmp_23);
+            __tmp_22
         }
     } as *mut i32),)
     {
-        (__tmp_20,) => m.try_emplace(key, || {
+        (__tmp_21,) => m.try_emplace(key, || {
             let mut __v: Item = ::std::mem::MaybeUninit::uninit().assume_init();
-            Item::new_2(&raw mut __v, { __tmp_20 }, { 3 });
+            Item::new_2(&raw mut __v, { __tmp_21 }, { 3 });
             __v
         }),
     };
@@ -408,15 +428,15 @@ unsafe fn main_0() -> i32 {
             && ((*(*&raw const made_0).get()) == (4))
     );
     match ((match ({ ((counter) + (1)) }, (&mut counter as *mut i32)) {
-        (__tmp_25, __tmp_24) => {
-            __tmp_24.write(__tmp_25);
-            __tmp_24
+        (__tmp_26, __tmp_25) => {
+            __tmp_25.write(__tmp_26);
+            __tmp_25
         }
     } as *mut i32),)
     {
-        (__tmp_23,) => m.try_emplace(key, || {
+        (__tmp_24,) => m.try_emplace(key, || {
             let mut __v: Item = ::std::mem::MaybeUninit::uninit().assume_init();
-            Item::new_2(&raw mut __v, { __tmp_23 }, { 3 });
+            Item::new_2(&raw mut __v, { __tmp_24 }, { 3 });
             __v
         }),
     };
@@ -426,21 +446,21 @@ unsafe fn main_0() -> i32 {
     let mut choose: bool = false;
     match ((if choose {
         ({
-            let __tmp_27 = &mut a;
-            (*__tmp_27).prefix_inc();
-            __tmp_27
-        } as *mut i32)
-    } else {
-        ({
-            let __tmp_28 = &mut b;
+            let __tmp_28 = &mut a;
             (*__tmp_28).prefix_inc();
             __tmp_28
         } as *mut i32)
+    } else {
+        ({
+            let __tmp_29 = &mut b;
+            (*__tmp_29).prefix_inc();
+            __tmp_29
+        } as *mut i32)
     } as *mut i32),)
     {
-        (__tmp_26,) => m.try_emplace(key, || {
+        (__tmp_27,) => m.try_emplace(key, || {
             let mut __v: Item = ::std::mem::MaybeUninit::uninit().assume_init();
-            Item::new_2(&raw mut __v, { __tmp_26 }, { 3 });
+            Item::new_2(&raw mut __v, { __tmp_27 }, { 3 });
             __v
         }),
     };
@@ -448,21 +468,21 @@ unsafe fn main_0() -> i32 {
     choose = true;
     match ((if choose {
         ({
-            let __tmp_30 = &mut a;
-            (*__tmp_30).prefix_inc();
-            __tmp_30
-        } as *mut i32)
-    } else {
-        ({
-            let __tmp_31 = &mut b;
+            let __tmp_31 = &mut a;
             (*__tmp_31).prefix_inc();
             __tmp_31
         } as *mut i32)
+    } else {
+        ({
+            let __tmp_32 = &mut b;
+            (*__tmp_32).prefix_inc();
+            __tmp_32
+        } as *mut i32)
     } as *mut i32),)
     {
-        (__tmp_29,) => m.try_emplace(key, || {
+        (__tmp_30,) => m.try_emplace(key, || {
             let mut __v: Item = ::std::mem::MaybeUninit::uninit().assume_init();
-            Item::new_2(&raw mut __v, { __tmp_29 }, { 3 });
+            Item::new_2(&raw mut __v, { __tmp_30 }, { 3 });
             __v
         }),
     };
@@ -472,9 +492,9 @@ unsafe fn main_0() -> i32 {
         &mut counter
     } as *mut i32),)
     {
-        (__tmp_32,) => m.try_emplace(key, || {
+        (__tmp_33,) => m.try_emplace(key, || {
             let mut __v: Item = ::std::mem::MaybeUninit::uninit().assume_init();
-            Item::new_2(&raw mut __v, { __tmp_32 }, { 3 });
+            Item::new_2(&raw mut __v, { __tmp_33 }, { 3 });
             __v
         }),
     };
@@ -483,13 +503,13 @@ unsafe fn main_0() -> i32 {
     let mut n: u32 = !0_u32;
     let mut wrapped: (UnsafeBidirectionalIterator<(i32, u32)>, bool) =
         match ((match ({ 1_u32 }, (&mut n as *mut u32)) {
-            (__tmp_35, __tmp_34) => {
-                __tmp_34.write((((*__tmp_34) as u32).wrapping_add((__tmp_35 as u32))) as u32);
-                __tmp_34
+            (__tmp_36, __tmp_35) => {
+                __tmp_35.write((((*__tmp_35) as u32).wrapping_add((__tmp_36 as u32))) as u32);
+                __tmp_35
             }
         } as *mut u32),)
         {
-            (__tmp_33,) => unsigned_map.try_emplace(key, || (*__tmp_33)),
+            (__tmp_34,) => unsigned_map.try_emplace(key, || (*__tmp_34)),
         };
     assert!(((n) == (0_u32)) && (((*wrapped.0.iter_deref()).1) == (0_u32)));
     let mut bytes: [u8; 2] = [255_u8, 0_u8];
@@ -499,13 +519,13 @@ unsafe fn main_0() -> i32 {
         { 2 },
         (&mut bytes[(index.postfix_inc()) as usize] as *mut u8),
     ) {
-        (__tmp_38, __tmp_37) => {
-            __tmp_37.write((((*__tmp_37) as i32) + (__tmp_38 as i32)) as u8);
-            __tmp_37
+        (__tmp_39, __tmp_38) => {
+            __tmp_38.write((((*__tmp_38) as i32) + (__tmp_39 as i32)) as u8);
+            __tmp_38
         }
     } as *mut u8),)
     {
-        (__tmp_36,) => unsigned_map.try_emplace(key, || ((*__tmp_36) as u32)),
+        (__tmp_37,) => unsigned_map.try_emplace(key, || ((*__tmp_37) as u32)),
     };
     assert!(
         (((index) == (1)) && ((bytes[(0) as usize] as i32) == (1)))
@@ -517,38 +537,38 @@ unsafe fn main_0() -> i32 {
     let mut erased: (UnsafeBidirectionalIterator<(i32, i32)>, bool) = match (({
         changed.erase_key(&key);
         {
-            let __tmp_40 = &mut effects;
-            (*__tmp_40).prefix_inc();
-            __tmp_40
+            let __tmp_41 = &mut effects;
+            (*__tmp_41).prefix_inc();
+            __tmp_41
         }
     } as *mut i32),)
     {
-        (__tmp_39,) => changed.try_emplace(key, || (*__tmp_39)),
+        (__tmp_40,) => changed.try_emplace(key, || (*__tmp_40)),
     };
     assert!((((effects) == (1)) && (erased.1)) && (((*erased.0.iter_deref()).1) == (1)));
     let mut updated: (UnsafeBidirectionalIterator<(i32, i32)>, bool) = match (({
         (*changed.subscript(&key, || 0_i32)).prefix_inc();
         {
-            let __tmp_42 = &mut effects;
-            (*__tmp_42).prefix_inc();
-            __tmp_42
+            let __tmp_43 = &mut effects;
+            (*__tmp_43).prefix_inc();
+            __tmp_43
         }
     } as *mut i32),)
     {
-        (__tmp_41,) => changed.try_emplace(key, || (*__tmp_41)),
+        (__tmp_42,) => changed.try_emplace(key, || (*__tmp_42)),
     };
     assert!((((effects) == (2)) && (!(updated.1))) && (((*updated.0.iter_deref()).1) == (2)));
     let mut pointers: UnsafeMap<i32, (i32, *mut i32)> = UnsafeMap::new();
     let mut p: *mut i32 = array.as_mut_ptr();
     let mut pointer: (UnsafeBidirectionalIterator<(i32, *mut i32)>, bool) =
         match ((match ({ 1 }, (&mut p as *mut *mut i32)) {
-            (__tmp_45, __tmp_44) => {
-                __tmp_44.write((*__tmp_44).offset((__tmp_45 as isize)));
-                __tmp_44
+            (__tmp_46, __tmp_45) => {
+                __tmp_45.write((*__tmp_45).offset((__tmp_46 as isize)));
+                __tmp_45
             }
         } as *mut *mut i32),)
         {
-            (__tmp_43,) => pointers.try_emplace(key, || (*__tmp_43)),
+            (__tmp_44,) => pointers.try_emplace(key, || (*__tmp_44)),
         };
     assert!(
         ((p) == (array.as_mut_ptr().offset((1) as isize)))
@@ -574,60 +594,60 @@ unsafe fn main_0() -> i32 {
             let mut assigned: i32 = 0;
             let mut nested: i32 = 0;
             let mut r0: (UnsafeBidirectionalIterator<(i32, i32)>, bool) = match (({
-                let __tmp_47 = &mut moved;
-                (*__tmp_47).prefix_inc();
-                __tmp_47
+                let __tmp_48 = &mut moved;
+                (*__tmp_48).prefix_inc();
+                __tmp_48
             }
                 as *mut i32),)
             {
-                (__tmp_46,) => values.try_emplace(keys[(0) as usize], || (*__tmp_46)),
+                (__tmp_47,) => values.try_emplace(keys[(0) as usize], || (*__tmp_47)),
             };
             let mut r1: (UnsafeBidirectionalIterator<(i32, i32)>, bool) = match (({
-                let __tmp_49 = &mut forwarded;
-                (*__tmp_49).prefix_inc();
-                __tmp_49
+                let __tmp_50 = &mut forwarded;
+                (*__tmp_50).prefix_inc();
+                __tmp_50
             }
                 as *mut i32),)
             {
-                (__tmp_48,) => values.try_emplace(keys[(1) as usize], || (*__tmp_48)),
+                (__tmp_49,) => values.try_emplace(keys[(1) as usize], || (*__tmp_49)),
             };
             let mut r2: (UnsafeBidirectionalIterator<(i32, i32)>, bool) = match (({
-                let __tmp_51 = &mut xvalue;
-                (*__tmp_51).prefix_inc();
-                __tmp_51
+                let __tmp_52 = &mut xvalue;
+                (*__tmp_52).prefix_inc();
+                __tmp_52
             }
                 as *mut i32),)
             {
-                (__tmp_50,) => values.try_emplace(keys[(2) as usize], || (*__tmp_50)),
+                (__tmp_51,) => values.try_emplace(keys[(2) as usize], || (*__tmp_51)),
             };
             let mut r3: (UnsafeBidirectionalIterator<(i32, i32)>, bool) = match (({
-                let __tmp_53 = &mut lvalue;
-                (*__tmp_53).prefix_inc();
-                __tmp_53
+                let __tmp_54 = &mut lvalue;
+                (*__tmp_54).prefix_inc();
+                __tmp_54
             }
                 as *mut i32),)
             {
-                (__tmp_52,) => values.try_emplace(keys[(3) as usize], || (*__tmp_52)),
+                (__tmp_53,) => values.try_emplace(keys[(3) as usize], || (*__tmp_53)),
             };
             let mut r4: (UnsafeBidirectionalIterator<(i32, i32)>, bool) =
                 match ((match ({ 5 }, (&mut assigned as *mut i32)) {
-                    (__tmp_56, __tmp_55) => {
-                        __tmp_55.write(__tmp_56);
-                        __tmp_55
+                    (__tmp_57, __tmp_56) => {
+                        __tmp_56.write(__tmp_57);
+                        __tmp_56
                     }
                 } as *mut i32),)
                 {
-                    (__tmp_54,) => values.try_emplace(keys[(4) as usize], || (*__tmp_54)),
+                    (__tmp_55,) => values.try_emplace(keys[(4) as usize], || (*__tmp_55)),
                 };
             let mut r5: (UnsafeBidirectionalIterator<(i32, i32)>, bool) =
                 match ((match ({ 1 }, (&mut nested as *mut i32)) {
-                    (__tmp_59, __tmp_58) => {
-                        __tmp_58.write((((*__tmp_58) as i32) + (__tmp_59 as i32)) as i32);
-                        __tmp_58
+                    (__tmp_60, __tmp_59) => {
+                        __tmp_59.write((((*__tmp_59) as i32) + (__tmp_60 as i32)) as i32);
+                        __tmp_59
                     }
                 } as *mut i32),)
                 {
-                    (__tmp_57,) => values.try_emplace(keys[(5) as usize], || (*__tmp_57)),
+                    (__tmp_58,) => values.try_emplace(keys[(5) as usize], || (*__tmp_58)),
                 };
             assert!(
                 ((((((moved) == (1)) && ((forwarded) == (1))) && ((xvalue) == (1)))
@@ -682,69 +702,69 @@ unsafe fn main_0() -> i32 {
                     let mut prefix: (UnsafeBidirectionalIterator<(i32, Item)>, bool) =
                         match ((if (choose != 0) {
                             ({
-                                let __tmp_61 = &mut a;
-                                (*__tmp_61).prefix_inc();
-                                __tmp_61
-                            } as *mut i32)
-                        } else {
-                            ({
-                                let __tmp_62 = &mut b;
+                                let __tmp_62 = &mut a;
                                 (*__tmp_62).prefix_inc();
                                 __tmp_62
                             } as *mut i32)
+                        } else {
+                            ({
+                                let __tmp_63 = &mut b;
+                                (*__tmp_63).prefix_inc();
+                                __tmp_63
+                            } as *mut i32)
                         } as *mut i32),)
                         {
-                            (__tmp_60,) => selected.try_emplace(keys[(0) as usize], || {
+                            (__tmp_61,) => selected.try_emplace(keys[(0) as usize], || {
                                 let mut __v: Item = ::std::mem::MaybeUninit::uninit().assume_init();
-                                Item::new_2(&raw mut __v, { __tmp_60 }, { 2 });
+                                Item::new_2(&raw mut __v, { __tmp_61 }, { 2 });
                                 __v
                             }),
                         };
                     let mut assignment: (UnsafeBidirectionalIterator<(i32, Item)>, bool) =
                         match ((if (choose != 0) {
                             ((match ({ 5 }, (&mut c as *mut i32)) {
-                                (__tmp_65, __tmp_64) => {
-                                    __tmp_64.write(__tmp_65);
-                                    __tmp_64
+                                (__tmp_66, __tmp_65) => {
+                                    __tmp_65.write(__tmp_66);
+                                    __tmp_65
                                 }
                             }) as *mut i32)
                         } else {
                             ((match ({ 6 }, (&mut d as *mut i32)) {
-                                (__tmp_67, __tmp_66) => {
-                                    __tmp_66.write(__tmp_67);
-                                    __tmp_66
+                                (__tmp_68, __tmp_67) => {
+                                    __tmp_67.write(__tmp_68);
+                                    __tmp_67
                                 }
                             }) as *mut i32)
                         } as *mut i32),)
                         {
-                            (__tmp_63,) => selected.try_emplace(keys[(1) as usize], || {
+                            (__tmp_64,) => selected.try_emplace(keys[(1) as usize], || {
                                 let mut __v: Item = ::std::mem::MaybeUninit::uninit().assume_init();
-                                Item::new_2(&raw mut __v, { __tmp_63 }, { 2 });
+                                Item::new_2(&raw mut __v, { __tmp_64 }, { 2 });
                                 __v
                             }),
                         };
                     let mut compound: (UnsafeBidirectionalIterator<(i32, Item)>, bool) =
                         match ((if (choose != 0) {
                             ((match ({ 1 }, (&mut e as *mut i32)) {
-                                (__tmp_70, __tmp_69) => {
-                                    __tmp_69
-                                        .write((((*__tmp_69) as i32) + (__tmp_70 as i32)) as i32);
-                                    __tmp_69
+                                (__tmp_71, __tmp_70) => {
+                                    __tmp_70
+                                        .write((((*__tmp_70) as i32) + (__tmp_71 as i32)) as i32);
+                                    __tmp_70
                                 }
                             }) as *mut i32)
                         } else {
                             ((match ({ 2 }, (&mut f as *mut i32)) {
-                                (__tmp_72, __tmp_71) => {
-                                    __tmp_71
-                                        .write((((*__tmp_71) as i32) + (__tmp_72 as i32)) as i32);
-                                    __tmp_71
+                                (__tmp_73, __tmp_72) => {
+                                    __tmp_72
+                                        .write((((*__tmp_72) as i32) + (__tmp_73 as i32)) as i32);
+                                    __tmp_72
                                 }
                             }) as *mut i32)
                         } as *mut i32),)
                         {
-                            (__tmp_68,) => selected.try_emplace(keys[(2) as usize], || {
+                            (__tmp_69,) => selected.try_emplace(keys[(2) as usize], || {
                                 let mut __v: Item = ::std::mem::MaybeUninit::uninit().assume_init();
-                                Item::new_2(&raw mut __v, { __tmp_68 }, { 2 });
+                                Item::new_2(&raw mut __v, { __tmp_69 }, { 2 });
                                 __v
                             }),
                         };
@@ -824,40 +844,43 @@ unsafe fn main_0() -> i32 {
             let mut before: i32 = (*(*&raw const temporary_calls_4).get());
             let mut index: i32 = 0;
             let mut member: (UnsafeBidirectionalIterator<(i32, i32)>, bool) = {
-                let mut __tmp_74: Temporary;
+                let mut __tmp_75: Temporary;
                 match ((&mut (*{
-                    __tmp_74 = ::std::mem::MaybeUninit::uninit().assume_init();
-                    (unsafe { make_temporary_5(&raw mut __tmp_74) });
-                    &mut __tmp_74
+                    __tmp_75 = ::std::mem::MaybeUninit::uninit().assume_init();
+                    let __tmp_76 = &raw mut __tmp_75;
+                    (unsafe { make_temporary_5(__tmp_76) });
+                    &mut __tmp_75
                 })
                 .n as *mut i32),)
                 {
-                    (__tmp_73,) => values.try_emplace(keys[(0) as usize], || (*__tmp_73)),
+                    (__tmp_74,) => values.try_emplace(keys[(0) as usize], || (*__tmp_74)),
                 }
             };
             let mut nested: (UnsafeBidirectionalIterator<(i32, i32)>, bool) = {
-                let mut __tmp_76: Nested;
+                let mut __tmp_78: Nested;
                 match ((&mut (*&mut (*{
-                    __tmp_76 = ::std::mem::MaybeUninit::uninit().assume_init();
-                    (unsafe { make_nested_6(&raw mut __tmp_76) });
-                    &mut __tmp_76
+                    __tmp_78 = ::std::mem::MaybeUninit::uninit().assume_init();
+                    let __tmp_79 = &raw mut __tmp_78;
+                    (unsafe { make_nested_6(__tmp_79) });
+                    &mut __tmp_78
                 })
                 .inner)
                     .n as *mut i32),)
                 {
-                    (__tmp_75,) => values.try_emplace(keys[(1) as usize], || (*__tmp_75)),
+                    (__tmp_77,) => values.try_emplace(keys[(1) as usize], || (*__tmp_77)),
                 }
             };
             let mut element: (UnsafeBidirectionalIterator<(i32, i32)>, bool) = {
-                let mut __tmp_78: Temporary;
+                let mut __tmp_81: Temporary;
                 match ((&mut (*{
-                    __tmp_78 = ::std::mem::MaybeUninit::uninit().assume_init();
-                    (unsafe { make_temporary_5(&raw mut __tmp_78) });
-                    &mut __tmp_78
+                    __tmp_81 = ::std::mem::MaybeUninit::uninit().assume_init();
+                    let __tmp_82 = &raw mut __tmp_81;
+                    (unsafe { make_temporary_5(__tmp_82) });
+                    &mut __tmp_81
                 })
                 .data[(index.postfix_inc()) as usize] as *mut i32),)
                 {
-                    (__tmp_77,) => values.try_emplace(keys[(2) as usize], || (*__tmp_77)),
+                    (__tmp_80,) => values.try_emplace(keys[(2) as usize], || (*__tmp_80)),
                 }
             };
             assert!(
@@ -889,31 +912,33 @@ unsafe fn main_0() -> i32 {
                     index = 0;
                     let mut value: i32 = 0;
                     {
-                        let mut __tmp_80: Nested;
-                        let mut __tmp_81: Temporary;
+                        let mut __tmp_84: Nested;
+                        let mut __tmp_86: Temporary;
                         {
                             match ((if (choose != 0) {
                                 (&mut (*&mut (*{
-                                    __tmp_80 = ::std::mem::MaybeUninit::uninit().assume_init();
-                                    (unsafe { make_nested_6(&raw mut __tmp_80) });
-                                    &mut __tmp_80
+                                    __tmp_84 = ::std::mem::MaybeUninit::uninit().assume_init();
+                                    let __tmp_85 = &raw mut __tmp_84;
+                                    (unsafe { make_nested_6(__tmp_85) });
+                                    &mut __tmp_84
                                 })
                                 .inner)
                                     .n as *mut i32)
                             } else {
                                 (&mut (*{
-                                    __tmp_81 = ::std::mem::MaybeUninit::uninit().assume_init();
-                                    (unsafe { make_temporary_5(&raw mut __tmp_81) });
-                                    &mut __tmp_81
+                                    __tmp_86 = ::std::mem::MaybeUninit::uninit().assume_init();
+                                    let __tmp_87 = &raw mut __tmp_86;
+                                    (unsafe { make_temporary_5(__tmp_87) });
+                                    &mut __tmp_86
                                 })
                                 .data[(index.postfix_inc()) as usize]
                                     as *mut i32)
                             } as *mut i32),)
                             {
-                                (__tmp_79,) => references.try_emplace(key, || {
+                                (__tmp_83,) => references.try_emplace(key, || {
                                     let mut __v: Held =
                                         ::std::mem::MaybeUninit::uninit().assume_init();
-                                    Held::new_1(&raw mut __v, { __tmp_79 });
+                                    Held::new_1(&raw mut __v, { __tmp_83 });
                                     __v
                                 }),
                             };
@@ -943,30 +968,32 @@ unsafe fn main_0() -> i32 {
                     }
                     before = (*(*&raw const temporary_calls_4).get());
                     {
-                        let mut __tmp_83: Nested;
-                        let mut __tmp_84: Temporary;
+                        let mut __tmp_89: Nested;
+                        let mut __tmp_91: Temporary;
                         {
                             match ((if (choose != 0) {
                                 (&mut (*&mut (*{
-                                    __tmp_83 = ::std::mem::MaybeUninit::uninit().assume_init();
-                                    (unsafe { make_nested_6(&raw mut __tmp_83) });
-                                    &mut __tmp_83
+                                    __tmp_89 = ::std::mem::MaybeUninit::uninit().assume_init();
+                                    let __tmp_90 = &raw mut __tmp_89;
+                                    (unsafe { make_nested_6(__tmp_90) });
+                                    &mut __tmp_89
                                 })
                                 .inner)
                                     .data as *mut [i32; 2])
                             } else {
                                 (&mut (*{
-                                    __tmp_84 = ::std::mem::MaybeUninit::uninit().assume_init();
-                                    (unsafe { make_temporary_5(&raw mut __tmp_84) });
-                                    &mut __tmp_84
+                                    __tmp_91 = ::std::mem::MaybeUninit::uninit().assume_init();
+                                    let __tmp_92 = &raw mut __tmp_91;
+                                    (unsafe { make_temporary_5(__tmp_92) });
+                                    &mut __tmp_91
                                 })
                                 .data as *mut [i32; 2])
                             } as *mut [i32; 2]),)
                             {
-                                (__tmp_82,) => arrays.try_emplace(key, || {
+                                (__tmp_88,) => arrays.try_emplace(key, || {
                                     let mut __v: Held =
                                         ::std::mem::MaybeUninit::uninit().assume_init();
-                                    Held::new_3(&raw mut __v, { __tmp_82 }, { 0 });
+                                    Held::new_3(&raw mut __v, { __tmp_88 }, { 0 });
                                     __v
                                 }),
                             };
@@ -1001,83 +1028,8 @@ unsafe fn main_0() -> i32 {
             let mut before: i32 = (*(*&raw const temporary_calls_4).get());
             let mut index: i32 = 0;
             let mut arrow: (UnsafeBidirectionalIterator<(i32, i32)>, bool) = {
-                let mut __tmp_86: Option<Box<Temporary>>;
-                match ((&mut (*(*{
-                    __tmp_86 = Some(Box::new({
-                        let mut __v: Temporary = ::std::mem::MaybeUninit::uninit().assume_init();
-                        Temporary::new(&raw mut __v);
-                        __v
-                    }));
-                    &mut __tmp_86
-                })
-                .as_deref()
-                .map_or(::std::ptr::null_mut(), |v| {
-                    v as *const Temporary as *mut Temporary
-                }))
-                .n as *mut i32),)
-                {
-                    (__tmp_85,) => values.try_emplace(keys[(0) as usize], || (*__tmp_85)),
-                }
-            };
-            let mut nested: (UnsafeBidirectionalIterator<(i32, i32)>, bool) = {
-                let mut __tmp_88: Option<Box<Nested>>;
-                match ((&mut (*&mut (*(*{
-                    __tmp_88 = Some(Box::new({
-                        let mut __v: Nested = ::std::mem::MaybeUninit::uninit().assume_init();
-                        Nested::new_1(&raw mut __v);
-                        __v
-                    }));
-                    &mut __tmp_88
-                })
-                .as_deref()
-                .map_or(::std::ptr::null_mut(), |v| {
-                    v as *const Nested as *mut Nested
-                }))
-                .inner)
-                    .n as *mut i32),)
-                {
-                    (__tmp_87,) => values.try_emplace(keys[(1) as usize], || (*__tmp_87)),
-                }
-            };
-            let mut element: (UnsafeBidirectionalIterator<(i32, i32)>, bool) = {
-                let mut __tmp_90: Option<Box<Temporary>>;
-                match ((&mut (*(*{
-                    __tmp_90 = Some(Box::new({
-                        let mut __v: Temporary = ::std::mem::MaybeUninit::uninit().assume_init();
-                        Temporary::new(&raw mut __v);
-                        __v
-                    }));
-                    &mut __tmp_90
-                })
-                .as_deref()
-                .map_or(::std::ptr::null_mut(), |v| {
-                    v as *const Temporary as *mut Temporary
-                }))
-                .data[(index.postfix_inc()) as usize] as *mut i32),)
-                {
-                    (__tmp_89,) => values.try_emplace(keys[(2) as usize], || (*__tmp_89)),
-                }
-            };
-            let mut get: (UnsafeBidirectionalIterator<(i32, i32)>, bool) = {
-                let mut __tmp_92: Option<Box<Temporary>>;
-                match ((&mut (*(*{
-                    __tmp_92 = Some(Box::new({
-                        let mut __v: Temporary = ::std::mem::MaybeUninit::uninit().assume_init();
-                        Temporary::new(&raw mut __v);
-                        __v
-                    }));
-                    &mut __tmp_92
-                })
-                .as_deref_mut()
-                .map_or(::std::ptr::null_mut(), |v| v as *mut Temporary))
-                .n as *mut i32),)
-                {
-                    (__tmp_91,) => values.try_emplace(keys[(3) as usize], || (*__tmp_91)),
-                }
-            };
-            let mut deref: (UnsafeBidirectionalIterator<(i32, i32)>, bool) = {
                 let mut __tmp_94: Option<Box<Temporary>>;
-                match ((&mut (*((*{
+                match ((&mut (*(*{
                     __tmp_94 = Some(Box::new({
                         let mut __v: Temporary = ::std::mem::MaybeUninit::uninit().assume_init();
                         Temporary::new(&raw mut __v);
@@ -1088,21 +1040,100 @@ unsafe fn main_0() -> i32 {
                 .as_deref()
                 .map_or(::std::ptr::null_mut(), |v| {
                     v as *const Temporary as *mut Temporary
+                }))
+                .n as *mut i32),)
+                {
+                    (__tmp_93,) => values.try_emplace(keys[(0) as usize], || (*__tmp_93)),
+                }
+            };
+            let mut nested: (UnsafeBidirectionalIterator<(i32, i32)>, bool) = {
+                let mut __tmp_96: Option<Box<Nested>>;
+                match ((&mut (*&mut (*(*{
+                    __tmp_96 = Some(Box::new({
+                        let mut __v: Nested = ::std::mem::MaybeUninit::uninit().assume_init();
+                        {
+                            let __d = &raw mut __v;
+                            __d.write_bytes(0, 1);
+                            Nested::new_1(__d)
+                        };
+                        __v
+                    }));
+                    &mut __tmp_96
+                })
+                .as_deref()
+                .map_or(::std::ptr::null_mut(), |v| {
+                    v as *const Nested as *mut Nested
+                }))
+                .inner)
+                    .n as *mut i32),)
+                {
+                    (__tmp_95,) => values.try_emplace(keys[(1) as usize], || (*__tmp_95)),
+                }
+            };
+            let mut element: (UnsafeBidirectionalIterator<(i32, i32)>, bool) = {
+                let mut __tmp_98: Option<Box<Temporary>>;
+                match ((&mut (*(*{
+                    __tmp_98 = Some(Box::new({
+                        let mut __v: Temporary = ::std::mem::MaybeUninit::uninit().assume_init();
+                        Temporary::new(&raw mut __v);
+                        __v
+                    }));
+                    &mut __tmp_98
+                })
+                .as_deref()
+                .map_or(::std::ptr::null_mut(), |v| {
+                    v as *const Temporary as *mut Temporary
+                }))
+                .data[(index.postfix_inc()) as usize] as *mut i32),)
+                {
+                    (__tmp_97,) => values.try_emplace(keys[(2) as usize], || (*__tmp_97)),
+                }
+            };
+            let mut get: (UnsafeBidirectionalIterator<(i32, i32)>, bool) = {
+                let mut __tmp_100: Option<Box<Temporary>>;
+                match ((&mut (*(*{
+                    __tmp_100 = Some(Box::new({
+                        let mut __v: Temporary = ::std::mem::MaybeUninit::uninit().assume_init();
+                        Temporary::new(&raw mut __v);
+                        __v
+                    }));
+                    &mut __tmp_100
+                })
+                .as_deref_mut()
+                .map_or(::std::ptr::null_mut(), |v| v as *mut Temporary))
+                .n as *mut i32),)
+                {
+                    (__tmp_99,) => values.try_emplace(keys[(3) as usize], || (*__tmp_99)),
+                }
+            };
+            let mut deref: (UnsafeBidirectionalIterator<(i32, i32)>, bool) = {
+                let mut __tmp_102: Option<Box<Temporary>>;
+                match ((&mut (*((*{
+                    __tmp_102 = Some(Box::new({
+                        let mut __v: Temporary = ::std::mem::MaybeUninit::uninit().assume_init();
+                        Temporary::new(&raw mut __v);
+                        __v
+                    }));
+                    &mut __tmp_102
+                })
+                .as_deref()
+                .map_or(::std::ptr::null_mut(), |v| {
+                    v as *const Temporary as *mut Temporary
                 })))
                 .n as *mut i32),)
                 {
-                    (__tmp_93,) => values.try_emplace(keys[(4) as usize], || (*__tmp_93)),
+                    (__tmp_101,) => values.try_emplace(keys[(4) as usize], || (*__tmp_101)),
                 }
             };
             let mut indirect: (UnsafeBidirectionalIterator<(i32, i32)>, bool) = {
-                let mut __tmp_96: Option<Box<Option<Box<Temporary>>>>;
+                let mut __tmp_104: Option<Box<Option<Box<Temporary>>>>;
                 match ((&mut (*((*(*{
-                    __tmp_96 = Some(Box::new(Some(Box::new({
+                    __tmp_104 = Some(Box::new(Some(Box::new({
                         let mut __v: Temporary = ::std::mem::MaybeUninit::uninit().assume_init();
                         Temporary::new(&raw mut __v);
                         __v
                     }))));
-                    &mut __tmp_96
+                    &mut __tmp_104
                 })
                 .as_deref()
                 .map_or(::std::ptr::null_mut(), |v| {
@@ -1114,7 +1145,7 @@ unsafe fn main_0() -> i32 {
                 })))
                 .n as *mut i32),)
                 {
-                    (__tmp_95,) => values.try_emplace(keys[(5) as usize], || (*__tmp_95)),
+                    (__tmp_103,) => values.try_emplace(keys[(5) as usize], || (*__tmp_103)),
                 }
             };
             assert!(
@@ -1155,18 +1186,18 @@ unsafe fn main_0() -> i32 {
                     index = 0;
                     let mut value: i32 = 0;
                     {
-                        let mut __tmp_98: Option<Box<Temporary>>;
-                        let mut __tmp_99: Option<Box<Temporary>>;
+                        let mut __tmp_106: Option<Box<Temporary>>;
+                        let mut __tmp_107: Option<Box<Temporary>>;
                         {
                             match ((if (choose != 0) {
                                 (&mut (*(*{
-                                    __tmp_98 = Some(Box::new({
+                                    __tmp_106 = Some(Box::new({
                                         let mut __v: Temporary =
                                             ::std::mem::MaybeUninit::uninit().assume_init();
                                         Temporary::new(&raw mut __v);
                                         __v
                                     }));
-                                    &mut __tmp_98
+                                    &mut __tmp_106
                                 })
                                 .as_deref()
                                 .map_or(::std::ptr::null_mut(), |v| {
@@ -1175,13 +1206,13 @@ unsafe fn main_0() -> i32 {
                                 .n as *mut i32)
                             } else {
                                 (&mut (*(*{
-                                    __tmp_99 = Some(Box::new({
+                                    __tmp_107 = Some(Box::new({
                                         let mut __v: Temporary =
                                             ::std::mem::MaybeUninit::uninit().assume_init();
                                         Temporary::new(&raw mut __v);
                                         __v
                                     }));
-                                    &mut __tmp_99
+                                    &mut __tmp_107
                                 })
                                 .as_deref()
                                 .map_or(::std::ptr::null_mut(), |v| {
@@ -1191,10 +1222,10 @@ unsafe fn main_0() -> i32 {
                                     as *mut i32)
                             } as *mut i32),)
                             {
-                                (__tmp_97,) => references.try_emplace(key, || {
+                                (__tmp_105,) => references.try_emplace(key, || {
                                     let mut __v: Held =
                                         ::std::mem::MaybeUninit::uninit().assume_init();
-                                    Held::new_1(&raw mut __v, { __tmp_97 });
+                                    Held::new_1(&raw mut __v, { __tmp_105 });
                                     __v
                                 }),
                             };
@@ -1224,9 +1255,9 @@ unsafe fn main_0() -> i32 {
                             ))
                         }) as *const i32),)
                         {
-                            (__tmp_100,) => owners.try_emplace(key, || {
+                            (__tmp_108,) => owners.try_emplace(key, || {
                                 let mut __v: Held = ::std::mem::MaybeUninit::uninit().assume_init();
-                                Held::new_1(&raw mut __v, { __tmp_100 });
+                                Held::new_1(&raw mut __v, { __tmp_108 });
                                 __v
                             }),
                         };
@@ -1244,34 +1275,42 @@ unsafe fn main_0() -> i32 {
         UnsafeBidirectionalIterator<(i32, (Option<Box<Noncopy>>, i32))>,
         bool,
     ) = {
-        let mut __tmp_102: Option<Box<Noncopy>>;
+        let mut __tmp_110: Option<Box<Noncopy>>;
         match (({
-            __tmp_102 = Some(Box::new({
+            __tmp_110 = Some(Box::new({
                 let mut __v: Noncopy = ::std::mem::MaybeUninit::uninit().assume_init();
-                Noncopy::new(&raw mut __v);
+                {
+                    let __d = &raw mut __v;
+                    __d.write_bytes(0, 1);
+                    Noncopy::new(__d)
+                };
                 __v
             }));
-            &mut __tmp_102
+            &mut __tmp_110
         } as *mut Option<Box<Noncopy>>),)
         {
-            (__tmp_101,) => move_only.try_emplace(key, || ((*__tmp_101).take(), 7)),
+            (__tmp_109,) => move_only.try_emplace(key, || ((*__tmp_109).take(), 7)),
         }
     };
     let mut move_hit: (
         UnsafeBidirectionalIterator<(i32, (Option<Box<Noncopy>>, i32))>,
         bool,
     ) = {
-        let mut __tmp_104: Option<Box<Noncopy>>;
+        let mut __tmp_112: Option<Box<Noncopy>>;
         match (({
-            __tmp_104 = Some(Box::new({
+            __tmp_112 = Some(Box::new({
                 let mut __v: Noncopy = ::std::mem::MaybeUninit::uninit().assume_init();
-                Noncopy::new(&raw mut __v);
+                {
+                    let __d = &raw mut __v;
+                    __d.write_bytes(0, 1);
+                    Noncopy::new(__d)
+                };
                 __v
             }));
-            &mut __tmp_104
+            &mut __tmp_112
         } as *mut Option<Box<Noncopy>>),)
         {
-            (__tmp_103,) => move_only.try_emplace(key, || ((*__tmp_103).take(), 9)),
+            (__tmp_111,) => move_only.try_emplace(key, || ((*__tmp_111).take(), 9)),
         }
     };
     assert!((move_new.1) && (!(move_hit.1)));
@@ -1310,7 +1349,7 @@ unsafe fn main_0() -> i32 {
     }
         as *mut Vec<libc::c_char>),)
     {
-        (__tmp_105,) => strings.try_emplace(key, || std::mem::replace(&mut (*__tmp_105), vec![0])),
+        (__tmp_113,) => strings.try_emplace(key, || std::mem::replace(&mut (*__tmp_113), vec![0])),
     };
     assert!(
         (((*(*&raw const visits_1).get()) == (3)) && (!(string_hit.1)))
@@ -1332,7 +1371,7 @@ unsafe fn main_0() -> i32 {
     }
         as *mut Vec<libc::c_char>),)
     {
-        (__tmp_106,) => strings.try_emplace(key, || std::mem::replace(&mut (*__tmp_106), vec![0])),
+        (__tmp_114,) => strings.try_emplace(key, || std::mem::replace(&mut (*__tmp_114), vec![0])),
     };
     assert!(
         (((*(*&raw const visits_1).get()) == (4)) && (string_new.1))

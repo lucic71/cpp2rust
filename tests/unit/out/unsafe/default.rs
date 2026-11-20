@@ -28,6 +28,17 @@ impl Pointers {
         }));
         (&raw mut (*this).x5).write((*_a0).x5);
     }
+    pub unsafe fn move_from(this: *mut Pointers, _a0: *mut Pointers) {
+        (&raw mut (*this).x1).write((*_a0).x1);
+        (&raw mut (*this).x2).write((*_a0).x2);
+        (&raw mut (*this).x3).write(std::array::from_fn::<_, 5, _>(|__i: usize| {
+            (*_a0).x3[(__i)]
+        }));
+        (&raw mut (*this).x4).write(std::array::from_fn::<_, 10, _>(|__i: usize| {
+            (*_a0).x4[(__i)]
+        }));
+        (&raw mut (*this).x5).write((*_a0).x5);
+    }
 }
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
@@ -61,6 +72,21 @@ impl SmallArrays {
             }
         };
     }
+    pub unsafe fn move_from(this: *mut SmallArrays, _a0: *mut SmallArrays) {
+        (&raw mut (*this).a).write(std::array::from_fn::<_, 32, _>(|__i: usize| {
+            (*_a0).a[(__i)]
+        }));
+        (&raw mut (*this).f).write(((*_a0).f));
+        (&raw mut (*this).fs).write(std::array::from_fn::<_, 2, _>(|__i: usize| {
+            (*_a0).fs[(__i)]
+        }));
+        {
+            let __d = (&raw mut (*this).p).cast::<Pointers>();
+            for __i in 0..2_usize {
+                Pointers::move_from(__d.offset(__i as isize), { &mut (*_a0).p[(__i)] });
+            }
+        };
+    }
 }
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg)]
@@ -70,6 +96,11 @@ pub struct BigArray {
 impl BigArray {
     pub unsafe fn new_1(this: *mut BigArray) {}
     pub unsafe fn copy_from(this: *mut BigArray, _a0: *const BigArray) {
+        (&raw mut (*this).a).write(std::array::from_fn::<_, 33, _>(|__i: usize| {
+            (*_a0).a[(__i)]
+        }));
+    }
+    pub unsafe fn move_from(this: *mut BigArray, _a0: *mut BigArray) {
         (&raw mut (*this).a).write(std::array::from_fn::<_, 33, _>(|__i: usize| {
             (*_a0).a[(__i)]
         }));

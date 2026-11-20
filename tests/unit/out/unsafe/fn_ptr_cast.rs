@@ -39,6 +39,9 @@ impl Command {
     pub unsafe fn copy_from(this: *mut Command, _a0: *const Command) {
         (&raw mut (*this).data).write((*_a0).data);
     }
+    pub unsafe fn move_from(this: *mut Command, _a0: *mut Command) {
+        (&raw mut (*this).data).write((*_a0).data);
+    }
 }
 pub unsafe fn test_void_ptr_to_fn_3() {
     let mut cmd: Command = ::std::mem::MaybeUninit::uninit().assume_init();

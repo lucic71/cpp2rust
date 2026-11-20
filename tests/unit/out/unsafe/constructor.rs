@@ -58,6 +58,10 @@ impl Point {
         (&raw mut (*this).x).write((*_a0).x);
         (&raw mut (*this).y).write((*_a0).y);
     }
+    pub unsafe fn move_from(this: *mut Point, _a0: *mut Point) {
+        (&raw mut (*this).x).write((*_a0).x);
+        (&raw mut (*this).y).write((*_a0).y);
+    }
 }
 impl Default for Point {
     fn default() -> Self {

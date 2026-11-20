@@ -22,6 +22,11 @@ impl Key {
         field!(this, order).write(_a0.with(|__s| __s.order));
         field!(this, identity).write(_a0.with(|__s| __s.identity));
     }
+    pub fn move_from(this: Ptr<Key>, _a0: Ptr<Key>) {
+        field!(this, order).write({ (*_a0.upgrade().deref()).order });
+        field!(this, identity).write({ (*_a0.upgrade().deref()).identity });
+    }
+    pub fn new_1(this: Ptr<Key>) {}
 }
 impl CppLess for Key {
     fn less(__lhs: &Ptr<Self>, __rhs: &Ptr<Self>) -> bool {
@@ -52,6 +57,9 @@ impl Mapped {
     }
     pub fn copy_from(this: Ptr<Mapped>, _a0: Ptr<Mapped>) {
         field!(this, value).write(_a0.with(|__s| __s.value));
+    }
+    pub fn move_from(this: Ptr<Mapped>, _a0: Ptr<Mapped>) {
+        field!(this, value).write({ (*_a0.upgrade().deref()).value });
     }
 }
 impl Default for Mapped {

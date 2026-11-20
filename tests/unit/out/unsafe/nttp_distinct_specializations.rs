@@ -16,7 +16,12 @@ impl S_2_ {
     pub unsafe fn get(&self) -> i32 {
         return ((self.v) - (self.w));
     }
+    pub unsafe fn new_1(this: *mut S_2_) {}
     pub unsafe fn copy_from(this: *mut S_2_, _a0: *const S_2_) {
+        (&raw mut (*this).v).write((*_a0).v);
+        (&raw mut (*this).w).write((*_a0).w);
+    }
+    pub unsafe fn move_from(this: *mut S_2_, _a0: *mut S_2_) {
         (&raw mut (*this).v).write((*_a0).v);
         (&raw mut (*this).w).write((*_a0).w);
     }
@@ -30,7 +35,11 @@ impl S_1_ {
     pub unsafe fn get(&self) -> i32 {
         return ((self.v) * (1));
     }
+    pub unsafe fn new_1(this: *mut S_1_) {}
     pub unsafe fn copy_from(this: *mut S_1_, _a0: *const S_1_) {
+        (&raw mut (*this).v).write((*_a0).v);
+    }
+    pub unsafe fn move_from(this: *mut S_1_, _a0: *mut S_1_) {
         (&raw mut (*this).v).write((*_a0).v);
     }
 }
@@ -43,7 +52,11 @@ impl S_3_ {
     pub unsafe fn get(&self) -> i32 {
         return ((self.v) * (3));
     }
+    pub unsafe fn new_1(this: *mut S_3_) {}
     pub unsafe fn copy_from(this: *mut S_3_, _a0: *const S_3_) {
+        (&raw mut (*this).v).write((*_a0).v);
+    }
+    pub unsafe fn move_from(this: *mut S_3_, _a0: *mut S_3_) {
         (&raw mut (*this).v).write((*_a0).v);
     }
 }

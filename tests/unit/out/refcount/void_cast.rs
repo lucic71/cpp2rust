@@ -41,8 +41,12 @@ pub struct Holder {
     pub field: i32,
 }
 impl Holder {
+    pub fn new_1(this: Ptr<Holder>) {}
     pub fn copy_from(this: Ptr<Holder>, _a0: Ptr<Holder>) {
         field!(this, field).write(_a0.with(|__s| __s.field));
+    }
+    pub fn move_from(this: Ptr<Holder>, _a0: Ptr<Holder>) {
+        field!(this, field).write({ (*_a0.upgrade().deref()).field });
     }
 }
 #[derive(Record, ByteRepr, Uninit, FnPtrArg, MoveCtor, MoveAssign, Default)]
@@ -56,6 +60,9 @@ impl NonCopyable {
     pub fn move_from(this: Ptr<NonCopyable>, _a0: Ptr<NonCopyable>) {
         field!(this, value)
             .write(field!(_a0, value).with_mut(|__v: &mut Option<Value<i32>>| __v.take()));
+    }
+    pub fn new_1(this: Ptr<NonCopyable>) {
+        field!(this, value).write(None);
     }
 }
 pub fn unused_noncopyable_param_5(x: Ptr<NonCopyable>) {}

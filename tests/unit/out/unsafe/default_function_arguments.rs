@@ -25,6 +25,9 @@ impl Bar {
     pub unsafe fn copy_from(this: *mut Bar, _a0: *const Bar) {
         (&raw mut (*this).v).write((*_a0).v);
     }
+    pub unsafe fn move_from(this: *mut Bar, _a0: *mut Bar) {
+        (&raw mut (*this).v).write((*_a0).v);
+    }
 }
 impl Default for Bar {
     fn default() -> Self {
@@ -69,6 +72,9 @@ impl Holder_int_ {
         (&raw mut (*this).v).write(v);
     }
     pub unsafe fn copy_from(this: *mut Holder_int_, _a0: *const Holder_int_) {
+        (&raw mut (*this).v).write((*_a0).v);
+    }
+    pub unsafe fn move_from(this: *mut Holder_int_, _a0: *mut Holder_int_) {
         (&raw mut (*this).v).write((*_a0).v);
     }
 }
@@ -121,14 +127,16 @@ unsafe fn main_0() -> i32 {
     assert!(
         ((unsafe {
             let mut _b: Bar = ::std::mem::MaybeUninit::uninit().assume_init();
-            Bar::new(&raw mut _b, { 7 });
+            let __tmp_0 = &raw mut _b;
+            Bar::new(__tmp_0, { 7 });
             by_ref_5(&mut _b)
         }) == (7))
     );
     assert!(
         ((unsafe {
             let mut _b: Bar = ::std::mem::MaybeUninit::uninit().assume_init();
-            Bar::new(&raw mut _b, { 3 });
+            let __tmp_1 = &raw mut _b;
+            Bar::new(__tmp_1, { 3 });
             by_ref_5(&mut _b)
         }) == (3))
     );
@@ -136,7 +144,8 @@ unsafe fn main_0() -> i32 {
     assert!(
         ((unsafe {
             let mut _b: Bar = ::std::mem::MaybeUninit::uninit().assume_init();
-            Bar::new(&raw mut _b, { 4 });
+            let __tmp_2 = &raw mut _b;
+            Bar::new(__tmp_2, { 4 });
             by_global_ref_7(&mut _b)
         }) == (4))
     );

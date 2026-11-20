@@ -50,8 +50,11 @@ pub fn main() {
 fn main_0() -> i32 {
     let s: Value<Counted> = Rc::new(RefCell::new(<Counted>::uninit()));
     Counted::new(s.as_pointer(), { 1 }, { 2 });
-    let __decomp_2: Value<Counted> = Rc::new(RefCell::new(<Counted>::uninit()));
-    Counted::copy_from(__decomp_2.as_pointer(), { s.as_pointer() });
+    let __decomp_2: Value<Counted> = {
+        let __v: Value<Counted> = Rc::new(RefCell::new(<Counted>::uninit()));
+        Counted::copy_from(__v.as_pointer(), { s.as_pointer() });
+        __v
+    };
     assert!((copies_0.with(|rc| *rc.borrow()) == 1));
     assert!(({ ({ (*__decomp_2.borrow()).x } == 2) }));
     assert!(({ ({ (*__decomp_2.borrow()).y } == 4) }));
@@ -62,8 +65,11 @@ fn main_0() -> i32 {
     let __decomp_4: Ptr<Counted> = s.as_pointer();
     assert!((copies_0.with(|rc| *rc.borrow()) == 1));
     assert!((__decomp_4.with(|__s| __s.x) == 1));
-    let __decomp_5: Value<Counted> = Rc::new(RefCell::new(<Counted>::uninit()));
-    ({ make_counted_1(__decomp_5.as_pointer()) });
+    let __decomp_5: Value<Counted> = {
+        let __v: Value<Counted> = Rc::new(RefCell::new(<Counted>::uninit()));
+        ({ make_counted_1(__v.as_pointer()) });
+        __v
+    };
     assert!((copies_0.with(|rc| *rc.borrow()) == 1));
     assert!(({ ({ (*__decomp_5.borrow()).x } == 5) }));
     assert!(({ ({ (*__decomp_5.borrow()).y } == 6) }));

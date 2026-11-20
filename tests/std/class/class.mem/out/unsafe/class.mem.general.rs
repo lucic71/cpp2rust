@@ -37,6 +37,12 @@ impl p7_1_function_body_names_later_member_HasLaterMembers {
     ) {
         (&raw mut (*this).stock).write((*_a0).stock);
     }
+    pub unsafe fn move_from(
+        this: *mut p7_1_function_body_names_later_member_HasLaterMembers,
+        _a0: *mut p7_1_function_body_names_later_member_HasLaterMembers,
+    ) {
+        (&raw mut (*this).stock).write((*_a0).stock);
+    }
 }
 impl Default for p7_1_function_body_names_later_member_HasLaterMembers {
     fn default() -> Self {
@@ -74,6 +80,12 @@ impl p7_2_default_argument_names_later_member_HasLaterStaticStep {
     pub unsafe fn copy_from(
         this: *mut p7_2_default_argument_names_later_member_HasLaterStaticStep,
         _a0: *const p7_2_default_argument_names_later_member_HasLaterStaticStep,
+    ) {
+        (&raw mut (*this).total).write((*_a0).total);
+    }
+    pub unsafe fn move_from(
+        this: *mut p7_2_default_argument_names_later_member_HasLaterStaticStep,
+        _a0: *mut p7_2_default_argument_names_later_member_HasLaterStaticStep,
     ) {
         (&raw mut (*this).total).write((*_a0).total);
     }

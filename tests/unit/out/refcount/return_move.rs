@@ -16,9 +16,14 @@ pub struct node {
     pub next: Ptr<node>,
 }
 impl node {
+    pub fn new_1(this: Ptr<node>) {}
     pub fn copy_from(this: Ptr<node>, _a0: Ptr<node>) {
         field!(this, value).write(_a0.with(|__s| __s.value));
         field!(this, next).write(_a0.with(|__s| __s.next.clone()));
+    }
+    pub fn move_from(this: Ptr<node>, _a0: Ptr<node>) {
+        field!(this, value).write({ (*_a0.upgrade().deref()).value });
+        field!(this, next).write({ (*_a0.upgrade().deref()).next.clone() });
     }
 }
 #[derive(Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]

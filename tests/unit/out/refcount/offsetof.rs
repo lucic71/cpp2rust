@@ -17,10 +17,16 @@ pub struct Layout {
     pub c: u16,
 }
 impl Layout {
+    pub fn new_1(this: Ptr<Layout>) {}
     pub fn copy_from(this: Ptr<Layout>, _a0: Ptr<Layout>) {
         field!(this, a).write(_a0.with(|__s| __s.a));
         field!(this, b).write(_a0.with(|__s| __s.b));
         field!(this, c).write(_a0.with(|__s| __s.c));
+    }
+    pub fn move_from(this: Ptr<Layout>, _a0: Ptr<Layout>) {
+        field!(this, a).write({ (*_a0.upgrade().deref()).a });
+        field!(this, b).write({ (*_a0.upgrade().deref()).b });
+        field!(this, c).write({ (*_a0.upgrade().deref()).c });
     }
 }
 #[derive(Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg)]
@@ -34,8 +40,15 @@ pub struct Frame {
     pub body: Box<[i8]>,
 }
 impl Frame {
+    pub fn new_1(this: Ptr<Frame>) {}
     pub fn copy_from(this: Ptr<Frame>, _a0: Ptr<Frame>) {
         field!(this, tag).write(_a0.with(|__s| __s.tag));
+        field!(this, body).write(Box::new(std::array::from_fn::<_, 64, _>(|__i: usize| {
+            (*_a0.upgrade().deref()).body[(__i) as usize]
+        })));
+    }
+    pub fn move_from(this: Ptr<Frame>, _a0: Ptr<Frame>) {
+        field!(this, tag).write({ (*_a0.upgrade().deref()).tag });
         field!(this, body).write(Box::new(std::array::from_fn::<_, 64, _>(|__i: usize| {
             (*_a0.upgrade().deref()).body[(__i) as usize]
         })));
@@ -63,8 +76,8 @@ fn main_0() -> i32 {
     {
         let __d = v.as_pointer();
         field!(__d, a).write(0_u8);
-        field!(__d, b).write(0_u32);
-        field!(__d, c).write(0_u16);
+        ();
+        ();
     };
     (*v.borrow_mut()).b = 3735928559_u32;
     let mut base: Ptr<u8> = (v.as_pointer()).reinterpret_cast::<u8>();

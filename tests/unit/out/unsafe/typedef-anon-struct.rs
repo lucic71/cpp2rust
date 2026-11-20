@@ -18,6 +18,10 @@ impl Outer_RunInfo {
         (&raw mut (*this).block_idx).write((*_a0).block_idx);
         (&raw mut (*this).num_extra_zero_runs).write((*_a0).num_extra_zero_runs);
     }
+    pub unsafe fn move_from(this: *mut Outer_RunInfo, _a0: *mut Outer_RunInfo) {
+        (&raw mut (*this).block_idx).write((*_a0).block_idx);
+        (&raw mut (*this).num_extra_zero_runs).write((*_a0).num_extra_zero_runs);
+    }
 }
 #[repr(C)]
 #[derive(Clone, VaArg, FnPtrArg, MoveCtorUnsafe, MoveAssignUnsafe, Default)]

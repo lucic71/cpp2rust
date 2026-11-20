@@ -70,6 +70,12 @@ impl p9_static_member_hides_namespace_variable_HasStaticStep {
     ) {
         field!(this, total).write(_a0.with(|__s| __s.total));
     }
+    pub fn move_from(
+        this: Ptr<p9_static_member_hides_namespace_variable_HasStaticStep>,
+        _a0: Ptr<p9_static_member_hides_namespace_variable_HasStaticStep>,
+    ) {
+        field!(this, total).write({ (*_a0.upgrade().deref()).total });
+    }
 }
 impl Default for p9_static_member_hides_namespace_variable_HasStaticStep {
     fn default() -> Self {
@@ -134,6 +140,12 @@ impl p9_evaluated_each_time_called_Widget {
     ) {
         field!(this, id).write(_a0.with(|__s| __s.id));
     }
+    pub fn move_from(
+        this: Ptr<p9_evaluated_each_time_called_Widget>,
+        _a0: Ptr<p9_evaluated_each_time_called_Widget>,
+    ) {
+        field!(this, id).write({ (*_a0.upgrade().deref()).id });
+    }
 }
 impl Default for p9_evaluated_each_time_called_Widget {
     fn default() -> Self {
@@ -177,6 +189,12 @@ impl p9_evaluated_each_time_called_Account {
         _a0: Ptr<p9_evaluated_each_time_called_Account>,
     ) {
         field!(this, balance).write(_a0.with(|__s| __s.balance));
+    }
+    pub fn move_from(
+        this: Ptr<p9_evaluated_each_time_called_Account>,
+        _a0: Ptr<p9_evaluated_each_time_called_Account>,
+    ) {
+        field!(this, balance).write({ (*_a0.upgrade().deref()).balance });
     }
 }
 impl Default for p9_evaluated_each_time_called_Account {
@@ -249,7 +267,13 @@ impl p9_not_part_of_the_type_Scale {
     pub fn times(mut a: i32, mut b: i32) -> i32 {
         return (a * b);
     }
+    pub fn new_1(this: Ptr<p9_not_part_of_the_type_Scale>) {}
     pub fn copy_from(
+        this: Ptr<p9_not_part_of_the_type_Scale>,
+        _a0: Ptr<p9_not_part_of_the_type_Scale>,
+    ) {
+    }
+    pub fn move_from(
         this: Ptr<p9_not_part_of_the_type_Scale>,
         _a0: Ptr<p9_not_part_of_the_type_Scale>,
     ) {

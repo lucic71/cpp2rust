@@ -15,9 +15,14 @@ pub struct HasTwoInts {
     pub second: i32,
 }
 impl HasTwoInts {
+    pub fn new_1(this: Ptr<HasTwoInts>) {}
     pub fn copy_from(this: Ptr<HasTwoInts>, _a0: Ptr<HasTwoInts>) {
         field!(this, first).write(_a0.with(|__s| __s.first));
         field!(this, second).write(_a0.with(|__s| __s.second));
+    }
+    pub fn move_from(this: Ptr<HasTwoInts>, _a0: Ptr<HasTwoInts>) {
+        field!(this, first).write({ (*_a0.upgrade().deref()).first });
+        field!(this, second).write({ (*_a0.upgrade().deref()).second });
     }
 }
 #[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
@@ -29,9 +34,14 @@ pub struct AlsoHasTwoInts {
     pub second: i32,
 }
 impl AlsoHasTwoInts {
+    pub fn new_1(this: Ptr<AlsoHasTwoInts>) {}
     pub fn copy_from(this: Ptr<AlsoHasTwoInts>, _a0: Ptr<AlsoHasTwoInts>) {
         field!(this, first).write(_a0.with(|__s| __s.first));
         field!(this, second).write(_a0.with(|__s| __s.second));
+    }
+    pub fn move_from(this: Ptr<AlsoHasTwoInts>, _a0: Ptr<AlsoHasTwoInts>) {
+        field!(this, first).write({ (*_a0.upgrade().deref()).first });
+        field!(this, second).write({ (*_a0.upgrade().deref()).second });
     }
 }
 pub fn main() {

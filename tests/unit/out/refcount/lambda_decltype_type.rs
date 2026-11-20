@@ -40,6 +40,16 @@ impl Sorted__lambda_at_lambda_decltype_type_cpp_22_18__ {
         field!(this, size).write(_a0.with(|__s| __s.size));
         field!(this, cmp).write((*_a0.upgrade().deref()).cmp.copy_from());
     }
+    pub fn move_from(
+        this: Ptr<Sorted__lambda_at_lambda_decltype_type_cpp_22_18__>,
+        _a0: Ptr<Sorted__lambda_at_lambda_decltype_type_cpp_22_18__>,
+    ) {
+        field!(this, items).write(Box::new(std::array::from_fn::<_, 4, _>(|__i: usize| {
+            (*_a0.upgrade().deref()).items[(__i) as usize]
+        })));
+        field!(this, size).write({ (*_a0.upgrade().deref()).size });
+        field!(this, cmp).write((*_a0.upgrade().deref()).cmp.move_from());
+    }
 }
 impl Default for Sorted__lambda_at_lambda_decltype_type_cpp_22_18__ {
     fn default() -> Self {
@@ -89,6 +99,16 @@ impl Sorted__lambda_at_lambda_decltype_type_cpp_19_23__ {
         })));
         field!(this, size).write(_a0.with(|__s| __s.size));
         field!(this, cmp).write((*_a0.upgrade().deref()).cmp.copy_from());
+    }
+    pub fn move_from(
+        this: Ptr<Sorted__lambda_at_lambda_decltype_type_cpp_19_23__>,
+        _a0: Ptr<Sorted__lambda_at_lambda_decltype_type_cpp_19_23__>,
+    ) {
+        field!(this, items).write(Box::new(std::array::from_fn::<_, 4, _>(|__i: usize| {
+            (*_a0.upgrade().deref()).items[(__i) as usize]
+        })));
+        field!(this, size).write({ (*_a0.upgrade().deref()).size });
+        field!(this, cmp).write((*_a0.upgrade().deref()).cmp.move_from());
     }
 }
 impl Default for Sorted__lambda_at_lambda_decltype_type_cpp_19_23__ {

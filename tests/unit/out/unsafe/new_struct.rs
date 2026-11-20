@@ -13,7 +13,12 @@ pub struct Pair {
     pub y: i32,
 }
 impl Pair {
+    pub unsafe fn new_1(this: *mut Pair) {}
     pub unsafe fn copy_from(this: *mut Pair, _a0: *const Pair) {
+        (&raw mut (*this).x).write((*_a0).x);
+        (&raw mut (*this).y).write((*_a0).y);
+    }
+    pub unsafe fn move_from(this: *mut Pair, _a0: *mut Pair) {
         (&raw mut (*this).x).write((*_a0).x);
         (&raw mut (*this).y).write((*_a0).y);
     }
@@ -26,10 +31,18 @@ pub struct Triple {
     pub p: Pair,
 }
 impl Triple {
+    pub unsafe fn new_1(this: *mut Triple) {
+        Pair::new_1((&raw mut (*this).p));
+    }
     pub unsafe fn copy_from(this: *mut Triple, _a0: *const Triple) {
         (&raw mut (*this).a).write((*_a0).a);
         (&raw mut (*this).b).write((*_a0).b);
         Pair::copy_from((&raw mut (*this).p), { &(*_a0).p });
+    }
+    pub unsafe fn move_from(this: *mut Triple, _a0: *mut Triple) {
+        (&raw mut (*this).a).write((*_a0).a);
+        (&raw mut (*this).b).write((*_a0).b);
+        Pair::move_from((&raw mut (*this).p), { &mut (*_a0).p });
     }
 }
 pub fn main() {

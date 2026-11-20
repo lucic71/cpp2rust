@@ -43,7 +43,11 @@ pub struct Holder {
     pub field: i32,
 }
 impl Holder {
+    pub unsafe fn new_1(this: *mut Holder) {}
     pub unsafe fn copy_from(this: *mut Holder, _a0: *const Holder) {
+        (&raw mut (*this).field).write((*_a0).field);
+    }
+    pub unsafe fn move_from(this: *mut Holder, _a0: *mut Holder) {
         (&raw mut (*this).field).write((*_a0).field);
     }
 }
@@ -61,6 +65,9 @@ impl NonCopyable {
             self.value = (*_a0).value.take();
         };
         return &mut (*(self as *mut NonCopyable));
+    }
+    pub unsafe fn new_1(this: *mut NonCopyable) {
+        (&raw mut (*this).value).write(None);
     }
 }
 pub unsafe fn unused_noncopyable_param_5(x: *const NonCopyable) {}

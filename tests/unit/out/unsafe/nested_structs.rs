@@ -12,9 +12,16 @@ pub struct Level0_Level1_1_Level2_1_Level3_1 {
     pub x1: i32,
 }
 impl Level0_Level1_1_Level2_1_Level3_1 {
+    pub unsafe fn new_1(this: *mut Level0_Level1_1_Level2_1_Level3_1) {}
     pub unsafe fn copy_from(
         this: *mut Level0_Level1_1_Level2_1_Level3_1,
         _a0: *const Level0_Level1_1_Level2_1_Level3_1,
+    ) {
+        (&raw mut (*this).x1).write((*_a0).x1);
+    }
+    pub unsafe fn move_from(
+        this: *mut Level0_Level1_1_Level2_1_Level3_1,
+        _a0: *mut Level0_Level1_1_Level2_1_Level3_1,
     ) {
         (&raw mut (*this).x1).write((*_a0).x1);
     }
@@ -26,9 +33,17 @@ pub struct Level0_Level1_1_Level2_1_Level3_2 {
     pub x2: i32,
 }
 impl Level0_Level1_1_Level2_1_Level3_2 {
+    pub unsafe fn new_1(this: *mut Level0_Level1_1_Level2_1_Level3_2) {}
     pub unsafe fn copy_from(
         this: *mut Level0_Level1_1_Level2_1_Level3_2,
         _a0: *const Level0_Level1_1_Level2_1_Level3_2,
+    ) {
+        (&raw mut (*this).x1).write((*_a0).x1);
+        (&raw mut (*this).x2).write((*_a0).x2);
+    }
+    pub unsafe fn move_from(
+        this: *mut Level0_Level1_1_Level2_1_Level3_2,
+        _a0: *mut Level0_Level1_1_Level2_1_Level3_2,
     ) {
         (&raw mut (*this).x1).write((*_a0).x1);
         (&raw mut (*this).x2).write((*_a0).x2);
@@ -40,9 +55,16 @@ pub struct Level0_Level1_1_Level2_1 {
     pub x1: i32,
 }
 impl Level0_Level1_1_Level2_1 {
+    pub unsafe fn new_1(this: *mut Level0_Level1_1_Level2_1) {}
     pub unsafe fn copy_from(
         this: *mut Level0_Level1_1_Level2_1,
         _a0: *const Level0_Level1_1_Level2_1,
+    ) {
+        (&raw mut (*this).x1).write((*_a0).x1);
+    }
+    pub unsafe fn move_from(
+        this: *mut Level0_Level1_1_Level2_1,
+        _a0: *mut Level0_Level1_1_Level2_1,
     ) {
         (&raw mut (*this).x1).write((*_a0).x1);
     }
@@ -53,7 +75,11 @@ pub struct Level0_Level1_1 {
     pub x1: i32,
 }
 impl Level0_Level1_1 {
+    pub unsafe fn new_1(this: *mut Level0_Level1_1) {}
     pub unsafe fn copy_from(this: *mut Level0_Level1_1, _a0: *const Level0_Level1_1) {
+        (&raw mut (*this).x1).write((*_a0).x1);
+    }
+    pub unsafe fn move_from(this: *mut Level0_Level1_1, _a0: *mut Level0_Level1_1) {
         (&raw mut (*this).x1).write((*_a0).x1);
     }
 }
@@ -64,7 +90,12 @@ pub struct Level0_Level1_2 {
     pub x2: i32,
 }
 impl Level0_Level1_2 {
+    pub unsafe fn new_1(this: *mut Level0_Level1_2) {}
     pub unsafe fn copy_from(this: *mut Level0_Level1_2, _a0: *const Level0_Level1_2) {
+        (&raw mut (*this).x1).write((*_a0).x1);
+        (&raw mut (*this).x2).write((*_a0).x2);
+    }
+    pub unsafe fn move_from(this: *mut Level0_Level1_2, _a0: *mut Level0_Level1_2) {
         (&raw mut (*this).x1).write((*_a0).x1);
         (&raw mut (*this).x2).write((*_a0).x2);
     }
@@ -73,7 +104,9 @@ impl Level0_Level1_2 {
 #[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct Level0 {}
 impl Level0 {
+    pub unsafe fn new_1(this: *mut Level0) {}
     pub unsafe fn copy_from(this: *mut Level0, _a0: *const Level0) {}
+    pub unsafe fn move_from(this: *mut Level0, _a0: *mut Level0) {}
 }
 pub fn main() {
     unsafe {

@@ -12,7 +12,11 @@ pub struct S {
     pub v: i32,
 }
 impl S {
+    pub unsafe fn new_1(this: *mut S) {}
     pub unsafe fn copy_from(this: *mut S, _a0: *const S) {
+        (&raw mut (*this).v).write((*_a0).v);
+    }
+    pub unsafe fn move_from(this: *mut S, _a0: *mut S) {
         (&raw mut (*this).v).write((*_a0).v);
     }
 }
@@ -62,9 +66,10 @@ unsafe fn main_0() -> i32 {
             let mut __v: S = ::std::mem::MaybeUninit::uninit().assume_init();
             (unsafe {
                 let mut _a: S = ::std::mem::MaybeUninit::uninit().assume_init();
+                let __tmp_0 = &raw mut _a;
                 (unsafe {
                     let _a: *const S = &s;
-                    operator_comma_0(&raw mut _a, _a, &t)
+                    operator_comma_0(__tmp_0, _a, &t)
                 });
                 let _b: *const S = &s;
                 operator_comma_0(&raw mut __v, &mut _a, _b)

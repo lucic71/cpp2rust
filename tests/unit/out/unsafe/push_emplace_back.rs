@@ -34,6 +34,10 @@ impl Writer {
         (&raw mut (*this).output).write((*_a0).output);
         Chunk::copy_from((&raw mut (*this).chunk), { &(*_a0).chunk });
     }
+    pub unsafe fn move_from(this: *mut Writer, _a0: *mut Writer) {
+        (&raw mut (*this).output).write((*_a0).output);
+        Chunk::move_from((&raw mut (*this).chunk), { &mut (*_a0).chunk });
+    }
 }
 #[repr(C)]
 #[derive(Clone, VaArg, FnPtrArg, MoveCtorUnsafe, MoveAssignUnsafe, Default)]
@@ -278,6 +282,9 @@ impl Bytes {
         };
         return &mut (*(self as *mut Bytes));
     }
+    pub unsafe fn new_1(this: *mut Bytes) {
+        (&raw mut (*this).v).write(Vec::new());
+    }
 }
 pub unsafe fn emplace_from_element_14(mut v: *mut Vec<Vec<u8>>) {
     let mut p: *mut u8 = (&mut (*v))[(0_usize)].as_mut_ptr();
@@ -299,7 +306,12 @@ pub struct Plain {
     pub b: [f64; 2],
 }
 impl Plain {
+    pub unsafe fn new_1(this: *mut Plain) {}
     pub unsafe fn copy_from(this: *mut Plain, _a0: *const Plain) {
+        (&raw mut (*this).a).write((*_a0).a);
+        (&raw mut (*this).b).write(std::array::from_fn::<_, 2, _>(|__i: usize| (*_a0).b[(__i)]));
+    }
+    pub unsafe fn move_from(this: *mut Plain, _a0: *mut Plain) {
         (&raw mut (*this).a).write((*_a0).a);
         (&raw mut (*this).b).write(std::array::from_fn::<_, 2, _>(|__i: usize| (*_a0).b[(__i)]));
     }

@@ -56,8 +56,12 @@ pub struct Local_5 {
     pub x: i32,
 }
 impl Local_5 {
+    pub fn new_1(this: Ptr<Local_5>) {}
     pub fn copy_from(this: Ptr<Local_5>, _a0: Ptr<Local_5>) {
         field!(this, x).write(_a0.with(|__s| __s.x));
+    }
+    pub fn move_from(this: Ptr<Local_5>, _a0: Ptr<Local_5>) {
+        field!(this, x).write({ (*_a0.upgrade().deref()).x });
     }
 }
 #[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
@@ -67,8 +71,12 @@ pub struct Local_7 {
     pub x: i64,
 }
 impl Local_7 {
+    pub fn new_1(this: Ptr<Local_7>) {}
     pub fn copy_from(this: Ptr<Local_7>, _a0: Ptr<Local_7>) {
         field!(this, x).write(_a0.with(|__s| __s.x));
+    }
+    pub fn move_from(this: Ptr<Local_7>, _a0: Ptr<Local_7>) {
+        field!(this, x).write({ (*_a0.upgrade().deref()).x });
     }
 }
 pub fn other_11() -> i32 {
@@ -95,9 +103,14 @@ pub struct Local_1 {
     pub y: i64,
 }
 impl Local_1 {
+    pub fn new_1(this: Ptr<Local_1>) {}
     pub fn copy_from(this: Ptr<Local_1>, _a0: Ptr<Local_1>) {
         field!(this, x).write(_a0.with(|__s| __s.x));
         field!(this, y).write(_a0.with(|__s| __s.y));
+    }
+    pub fn move_from(this: Ptr<Local_1>, _a0: Ptr<Local_1>) {
+        field!(this, x).write({ (*_a0.upgrade().deref()).x });
+        field!(this, y).write({ (*_a0.upgrade().deref()).y });
     }
 }
 pub fn main() {
@@ -140,8 +153,12 @@ pub struct Local_3 {
     pub x: i32,
 }
 impl Local_3 {
+    pub fn new_1(this: Ptr<Local_3>) {}
     pub fn copy_from(this: Ptr<Local_3>, _a0: Ptr<Local_3>) {
         field!(this, x).write(_a0.with(|__s| __s.x));
+    }
+    pub fn move_from(this: Ptr<Local_3>, _a0: Ptr<Local_3>) {
+        field!(this, x).write({ (*_a0.upgrade().deref()).x });
     }
 }
 pub fn __cpp2rust_init_globals() {}

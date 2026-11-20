@@ -13,7 +13,12 @@ pub struct Foo {
     pub x2: i32,
 }
 impl Foo {
+    pub unsafe fn new_1(this: *mut Foo) {}
     pub unsafe fn copy_from(this: *mut Foo, _a0: *const Foo) {
+        (&raw mut (*this).x1).write((*_a0).x1);
+        (&raw mut (*this).x2).write((*_a0).x2);
+    }
+    pub unsafe fn move_from(this: *mut Foo, _a0: *mut Foo) {
         (&raw mut (*this).x1).write((*_a0).x1);
         (&raw mut (*this).x2).write((*_a0).x2);
     }

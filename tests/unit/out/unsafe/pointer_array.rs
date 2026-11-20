@@ -12,7 +12,13 @@ pub struct StackArray {
     pub arr: [*mut i32; 3],
 }
 impl StackArray {
+    pub unsafe fn new_1(this: *mut StackArray) {}
     pub unsafe fn copy_from(this: *mut StackArray, _a0: *const StackArray) {
+        (&raw mut (*this).arr).write(std::array::from_fn::<_, 3, _>(|__i: usize| {
+            (*_a0).arr[(__i)]
+        }));
+    }
+    pub unsafe fn move_from(this: *mut StackArray, _a0: *mut StackArray) {
         (&raw mut (*this).arr).write(std::array::from_fn::<_, 3, _>(|__i: usize| {
             (*_a0).arr[(__i)]
         }));

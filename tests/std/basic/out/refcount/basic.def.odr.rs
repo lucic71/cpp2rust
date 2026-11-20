@@ -264,6 +264,11 @@ impl p4_1_pure_virtual_without_definition_OverridesPureVirtual {
         _a0: Ptr<p4_1_pure_virtual_without_definition_OverridesPureVirtual>,
     ) {
     }
+    pub fn move_from(
+        this: Ptr<p4_1_pure_virtual_without_definition_OverridesPureVirtual>,
+        _a0: Ptr<p4_1_pure_virtual_without_definition_OverridesPureVirtual>,
+    ) {
+    }
 }
 pub fn test_11() {
     let d: Value<p4_1_pure_virtual_without_definition_OverridesPureVirtual> = Rc::new(
@@ -460,6 +465,17 @@ impl p6_unevaluated_binding_needs_no_capture_HasTwoMembers {
         LifetimeTracked::copy_from(field_ptr!(this, a), { field_ptr!(_a0, a) });
         LifetimeTracked::copy_from(field_ptr!(this, b), { field_ptr!(_a0, b) });
     }
+    pub fn move_from(
+        this: Ptr<p6_unevaluated_binding_needs_no_capture_HasTwoMembers>,
+        _a0: Ptr<p6_unevaluated_binding_needs_no_capture_HasTwoMembers>,
+    ) {
+        LifetimeTracked::copy_from(field_ptr!(this, a), { field_ptr!(_a0, a) });
+        LifetimeTracked::copy_from(field_ptr!(this, b), { field_ptr!(_a0, b) });
+    }
+    pub fn new_1(this: Ptr<p6_unevaluated_binding_needs_no_capture_HasTwoMembers>) {
+        LifetimeTracked::new(field_ptr!(this, a));
+        LifetimeTracked::new(field_ptr!(this, b));
+    }
 }
 pub fn test_20() {
     ({ LifetimeTracked::reset() });
@@ -500,6 +516,13 @@ impl p7_member_access_captures_this_HasMemberUsedInLambda {
     ) {
         LifetimeTracked::copy_from(field_ptr!(this, x), { field_ptr!(_a0, x) });
         field!(this, n).write(_a0.with(|__s| __s.n));
+    }
+    pub fn move_from(
+        this: Ptr<p7_member_access_captures_this_HasMemberUsedInLambda>,
+        _a0: Ptr<p7_member_access_captures_this_HasMemberUsedInLambda>,
+    ) {
+        LifetimeTracked::copy_from(field_ptr!(this, x), { field_ptr!(_a0, x) });
+        field!(this, n).write({ (*_a0.upgrade().deref()).n });
     }
     pub fn new_1(this: Ptr<p7_member_access_captures_this_HasMemberUsedInLambda>) {
         LifetimeTracked::new(field_ptr!(this, x));
@@ -543,6 +566,12 @@ pub struct p7_unevaluated_this_needs_no_capture_HasMemberUsedInLambda {
 }
 impl p7_unevaluated_this_needs_no_capture_HasMemberUsedInLambda {
     pub fn copy_from(
+        this: Ptr<p7_unevaluated_this_needs_no_capture_HasMemberUsedInLambda>,
+        _a0: Ptr<p7_unevaluated_this_needs_no_capture_HasMemberUsedInLambda>,
+    ) {
+        LifetimeTracked::copy_from(field_ptr!(this, x), { field_ptr!(_a0, x) });
+    }
+    pub fn move_from(
         this: Ptr<p7_unevaluated_this_needs_no_capture_HasMemberUsedInLambda>,
         _a0: Ptr<p7_unevaluated_this_needs_no_capture_HasMemberUsedInLambda>,
     ) {
@@ -707,6 +736,14 @@ pub struct p9_unused_implicit_assignment_HasMemberWithUndefinedCopyAssignment {
     pub m: p9_unused_implicit_assignment_HasUndefinedCopyAssignment,
 }
 impl p9_unused_implicit_assignment_HasMemberWithUndefinedCopyAssignment {
+    pub fn move_from(
+        this: Ptr<p9_unused_implicit_assignment_HasMemberWithUndefinedCopyAssignment>,
+        _a0: Ptr<p9_unused_implicit_assignment_HasMemberWithUndefinedCopyAssignment>,
+    ) {
+        p9_unused_implicit_assignment_HasUndefinedCopyAssignment::copy_from(field_ptr!(this, m), {
+            field_ptr!(_a0, m)
+        });
+    }
     pub fn new_1(this: Ptr<p9_unused_implicit_assignment_HasMemberWithUndefinedCopyAssignment>) {
         p9_unused_implicit_assignment_HasUndefinedCopyAssignment::new(field_ptr!(this, m));
     }

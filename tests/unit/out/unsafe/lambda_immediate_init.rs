@@ -33,6 +33,10 @@ impl S {
         (&raw mut (*this).j).write((*_a0).j);
         (&raw mut (*this).k).write((*_a0).k);
     }
+    pub unsafe fn move_from(this: *mut S, _a0: *mut S) {
+        (&raw mut (*this).j).write((*_a0).j);
+        (&raw mut (*this).k).write((*_a0).k);
+    }
 }
 impl Default for S {
     fn default() -> Self {

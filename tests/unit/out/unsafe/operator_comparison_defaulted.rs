@@ -17,7 +17,12 @@ impl Eq {
         return (((*(self as *const Eq)).a) == ((*_a0).a))
             && (((*(self as *const Eq)).b) == ((*_a0).b));
     }
+    pub unsafe fn new_1(this: *mut Eq) {}
     pub unsafe fn copy_from(this: *mut Eq, _a0: *const Eq) {
+        (&raw mut (*this).a).write((*_a0).a);
+        (&raw mut (*this).b).write((*_a0).b);
+    }
+    pub unsafe fn move_from(this: *mut Eq, _a0: *mut Eq) {
         (&raw mut (*this).a).write((*_a0).a);
         (&raw mut (*this).b).write((*_a0).b);
     }
@@ -56,7 +61,12 @@ impl Cmp {
         return (((*(self as *const Cmp)).a) == ((*_a0).a))
             && (((*(self as *const Cmp)).b) == ((*_a0).b));
     }
+    pub unsafe fn new_1(this: *mut Cmp) {}
     pub unsafe fn copy_from(this: *mut Cmp, _a0: *const Cmp) {
+        (&raw mut (*this).a).write((*_a0).a);
+        (&raw mut (*this).b).write((*_a0).b);
+    }
+    pub unsafe fn move_from(this: *mut Cmp, _a0: *mut Cmp) {
         (&raw mut (*this).a).write((*_a0).a);
         (&raw mut (*this).b).write((*_a0).b);
     }
@@ -96,7 +106,11 @@ impl Both {
         }
         return std::cmp::Ordering::Equal;
     }
+    pub unsafe fn new_1(this: *mut Both) {}
     pub unsafe fn copy_from(this: *mut Both, _a0: *const Both) {
+        (&raw mut (*this).a).write((*_a0).a);
+    }
+    pub unsafe fn move_from(this: *mut Both, _a0: *mut Both) {
         (&raw mut (*this).a).write((*_a0).a);
     }
 }
@@ -132,7 +146,11 @@ impl OrdOnly {
         }
         return std::cmp::Ordering::Equal;
     }
+    pub unsafe fn new_1(this: *mut OrdOnly) {}
     pub unsafe fn copy_from(this: *mut OrdOnly, _a0: *const OrdOnly) {
+        (&raw mut (*this).a).write((*_a0).a);
+    }
+    pub unsafe fn move_from(this: *mut OrdOnly, _a0: *mut OrdOnly) {
         (&raw mut (*this).a).write((*_a0).a);
     }
 }
@@ -171,7 +189,11 @@ impl Inner {
     pub unsafe fn operator_eq(&self, _a0: *const Inner) -> bool {
         return (((*(self as *const Inner)).x) == ((*_a0).x));
     }
+    pub unsafe fn new_1(this: *mut Inner) {}
     pub unsafe fn copy_from(this: *mut Inner, _a0: *const Inner) {
+        (&raw mut (*this).x).write((*_a0).x);
+    }
+    pub unsafe fn move_from(this: *mut Inner, _a0: *mut Inner) {
         (&raw mut (*this).x).write((*_a0).x);
     }
 }
@@ -223,8 +245,15 @@ impl Outer {
             Inner::operator_eq(&(*(self as *const Outer)).i, _arg0)
         }) && (((*(self as *const Outer)).y) == ((*_a0).y));
     }
+    pub unsafe fn new_1(this: *mut Outer) {
+        Inner::new_1((&raw mut (*this).i));
+    }
     pub unsafe fn copy_from(this: *mut Outer, _a0: *const Outer) {
         Inner::copy_from((&raw mut (*this).i), { &(*_a0).i });
+        (&raw mut (*this).y).write((*_a0).y);
+    }
+    pub unsafe fn move_from(this: *mut Outer, _a0: *mut Outer) {
+        Inner::move_from((&raw mut (*this).i), { &mut (*_a0).i });
         (&raw mut (*this).y).write((*_a0).y);
     }
 }
@@ -281,7 +310,11 @@ impl Secondary {
             Secondary::operator_cmp(&(*(self as *const Secondary)), _arg0)
         }) != std::cmp::Ordering::Less;
     }
+    pub unsafe fn new_1(this: *mut Secondary) {}
     pub unsafe fn copy_from(this: *mut Secondary, _a0: *const Secondary) {
+        (&raw mut (*this).a).write((*_a0).a);
+    }
+    pub unsafe fn move_from(this: *mut Secondary, _a0: *mut Secondary) {
         (&raw mut (*this).a).write((*_a0).a);
     }
 }
@@ -320,7 +353,11 @@ impl PtrMember {
     pub unsafe fn operator_eq(&self, _a0: *const PtrMember) -> bool {
         return (((*(self as *const PtrMember)).p) == ((*_a0).p));
     }
+    pub unsafe fn new_1(this: *mut PtrMember) {}
     pub unsafe fn copy_from(this: *mut PtrMember, _a0: *const PtrMember) {
+        (&raw mut (*this).p).write((*_a0).p);
+    }
+    pub unsafe fn move_from(this: *mut PtrMember, _a0: *mut PtrMember) {
         (&raw mut (*this).p).write((*_a0).p);
     }
 }

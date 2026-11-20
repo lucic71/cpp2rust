@@ -81,6 +81,9 @@ impl RefItem {
     pub unsafe fn copy_from(this: *mut RefItem, _a0: *const RefItem) {
         (&raw mut (*this).value).write((*_a0).value);
     }
+    pub unsafe fn move_from(this: *mut RefItem, _a0: *mut RefItem) {
+        (&raw mut (*this).value).write((*_a0).value);
+    }
 }
 impl Default for RefItem {
     fn default() -> Self {
@@ -353,7 +356,8 @@ unsafe fn main_0() -> i32 {
         let mut __tmp_13: Item;
         match (({
             __tmp_13 = ::std::mem::MaybeUninit::uninit().assume_init();
-            Item::new_1(&raw mut __tmp_13, { 30 });
+            let __tmp_14 = &raw mut __tmp_13;
+            Item::new_1(__tmp_14, { 30 });
             &mut __tmp_13
         } as *mut Item),)
         {
@@ -373,16 +377,17 @@ unsafe fn main_0() -> i32 {
     key.prefix_inc();
     key.prefix_inc();
     let mut temporary_new: (UnsafeBidirectionalIterator<(i32, Item)>, bool) = {
-        let mut __tmp_15: Item;
+        let mut __tmp_16: Item;
         match (({
-            __tmp_15 = ::std::mem::MaybeUninit::uninit().assume_init();
-            Item::new_1(&raw mut __tmp_15, { 40 });
-            &mut __tmp_15
+            __tmp_16 = ::std::mem::MaybeUninit::uninit().assume_init();
+            let __tmp_17 = &raw mut __tmp_16;
+            Item::new_1(__tmp_17, { 40 });
+            &mut __tmp_16
         } as *mut Item),)
         {
-            (__tmp_14,) => items.try_emplace(key, || {
+            (__tmp_15,) => items.try_emplace(key, || {
                 let mut __v: Item = ::std::mem::MaybeUninit::uninit().assume_init();
-                Item::move_from(&raw mut __v, { __tmp_14 });
+                Item::move_from(&raw mut __v, { __tmp_15 });
                 __v
             }),
         }

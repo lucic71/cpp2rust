@@ -25,7 +25,9 @@ pub fn bar_4(x: Ptr<i32>) -> i32 {
 #[byte_size(1)]
 pub struct Foo {}
 impl Foo {
+    pub fn new_1(this: Ptr<Foo>) {}
     pub fn copy_from(this: Ptr<Foo>, _a0: Ptr<Foo>) {}
+    pub fn move_from(this: Ptr<Foo>, _a0: Ptr<Foo>) {}
 }
 pub fn func_5(mut x: i32) -> i32 {
     return 1;

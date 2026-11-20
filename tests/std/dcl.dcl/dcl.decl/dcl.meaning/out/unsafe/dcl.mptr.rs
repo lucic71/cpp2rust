@@ -13,9 +13,19 @@ pub struct p2_pointer_to_array_member_HasIntArray {
     pub elements: [i32; 3],
 }
 impl p2_pointer_to_array_member_HasIntArray {
+    pub unsafe fn new_1(this: *mut p2_pointer_to_array_member_HasIntArray) {}
     pub unsafe fn copy_from(
         this: *mut p2_pointer_to_array_member_HasIntArray,
         _a0: *const p2_pointer_to_array_member_HasIntArray,
+    ) {
+        (&raw mut (*this).before).write((*_a0).before);
+        (&raw mut (*this).elements).write(std::array::from_fn::<_, 3, _>(|__i: usize| {
+            (*_a0).elements[(__i)]
+        }));
+    }
+    pub unsafe fn move_from(
+        this: *mut p2_pointer_to_array_member_HasIntArray,
+        _a0: *mut p2_pointer_to_array_member_HasIntArray,
     ) {
         (&raw mut (*this).before).write((*_a0).before);
         (&raw mut (*this).elements).write(std::array::from_fn::<_, 3, _>(|__i: usize| {
@@ -58,9 +68,17 @@ pub struct p2_pointer_to_data_member_HasTwoInts {
     pub second: i32,
 }
 impl p2_pointer_to_data_member_HasTwoInts {
+    pub unsafe fn new_1(this: *mut p2_pointer_to_data_member_HasTwoInts) {}
     pub unsafe fn copy_from(
         this: *mut p2_pointer_to_data_member_HasTwoInts,
         _a0: *const p2_pointer_to_data_member_HasTwoInts,
+    ) {
+        (&raw mut (*this).first).write((*_a0).first);
+        (&raw mut (*this).second).write((*_a0).second);
+    }
+    pub unsafe fn move_from(
+        this: *mut p2_pointer_to_data_member_HasTwoInts,
+        _a0: *mut p2_pointer_to_data_member_HasTwoInts,
     ) {
         (&raw mut (*this).first).write((*_a0).first);
         (&raw mut (*this).second).write((*_a0).second);
@@ -109,9 +127,17 @@ pub struct p2_pointer_to_member_of_incomplete_class_CompletedLater {
     pub second: i32,
 }
 impl p2_pointer_to_member_of_incomplete_class_CompletedLater {
+    pub unsafe fn new_1(this: *mut p2_pointer_to_member_of_incomplete_class_CompletedLater) {}
     pub unsafe fn copy_from(
         this: *mut p2_pointer_to_member_of_incomplete_class_CompletedLater,
         _a0: *const p2_pointer_to_member_of_incomplete_class_CompletedLater,
+    ) {
+        (&raw mut (*this).first).write((*_a0).first);
+        (&raw mut (*this).second).write((*_a0).second);
+    }
+    pub unsafe fn move_from(
+        this: *mut p2_pointer_to_member_of_incomplete_class_CompletedLater,
+        _a0: *mut p2_pointer_to_member_of_incomplete_class_CompletedLater,
     ) {
         (&raw mut (*this).first).write((*_a0).first);
         (&raw mut (*this).second).write((*_a0).second);
@@ -144,9 +170,17 @@ pub struct p2_pointer_to_member_of_pointer_to_member_type_HasTwoInts {
     pub second: i32,
 }
 impl p2_pointer_to_member_of_pointer_to_member_type_HasTwoInts {
+    pub unsafe fn new_1(this: *mut p2_pointer_to_member_of_pointer_to_member_type_HasTwoInts) {}
     pub unsafe fn copy_from(
         this: *mut p2_pointer_to_member_of_pointer_to_member_type_HasTwoInts,
         _a0: *const p2_pointer_to_member_of_pointer_to_member_type_HasTwoInts,
+    ) {
+        (&raw mut (*this).first).write((*_a0).first);
+        (&raw mut (*this).second).write((*_a0).second);
+    }
+    pub unsafe fn move_from(
+        this: *mut p2_pointer_to_member_of_pointer_to_member_type_HasTwoInts,
+        _a0: *mut p2_pointer_to_member_of_pointer_to_member_type_HasTwoInts,
     ) {
         (&raw mut (*this).first).write((*_a0).first);
         (&raw mut (*this).second).write((*_a0).second);
@@ -158,9 +192,16 @@ pub struct p2_pointer_to_member_of_pointer_to_member_type_HoldsSelector {
     pub selector: isize,
 }
 impl p2_pointer_to_member_of_pointer_to_member_type_HoldsSelector {
+    pub unsafe fn new_1(this: *mut p2_pointer_to_member_of_pointer_to_member_type_HoldsSelector) {}
     pub unsafe fn copy_from(
         this: *mut p2_pointer_to_member_of_pointer_to_member_type_HoldsSelector,
         _a0: *const p2_pointer_to_member_of_pointer_to_member_type_HoldsSelector,
+    ) {
+        (&raw mut (*this).selector).write((*_a0).selector);
+    }
+    pub unsafe fn move_from(
+        this: *mut p2_pointer_to_member_of_pointer_to_member_type_HoldsSelector,
+        _a0: *mut p2_pointer_to_member_of_pointer_to_member_type_HoldsSelector,
     ) {
         (&raw mut (*this).selector).write((*_a0).selector);
     }

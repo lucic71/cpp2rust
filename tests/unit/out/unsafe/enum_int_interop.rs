@@ -27,7 +27,13 @@ pub struct Entry {
     pub opt: Option,
 }
 impl Entry {
+    pub unsafe fn new_1(this: *mut Entry) {}
     pub unsafe fn copy_from(this: *mut Entry, _a0: *const Entry) {
+        (&raw mut (*this).name).write((*_a0).name);
+        (&raw mut (*this).color).write((*_a0).color);
+        (&raw mut (*this).opt).write((*_a0).opt);
+    }
+    pub unsafe fn move_from(this: *mut Entry, _a0: *mut Entry) {
         (&raw mut (*this).name).write((*_a0).name);
         (&raw mut (*this).color).write((*_a0).color);
         (&raw mut (*this).opt).write((*_a0).opt);

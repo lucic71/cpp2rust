@@ -13,9 +13,17 @@ pub struct p3_arrow_star_HasTwoInts {
     pub second: i32,
 }
 impl p3_arrow_star_HasTwoInts {
+    pub unsafe fn new_1(this: *mut p3_arrow_star_HasTwoInts) {}
     pub unsafe fn copy_from(
         this: *mut p3_arrow_star_HasTwoInts,
         _a0: *const p3_arrow_star_HasTwoInts,
+    ) {
+        (&raw mut (*this).first).write((*_a0).first);
+        (&raw mut (*this).second).write((*_a0).second);
+    }
+    pub unsafe fn move_from(
+        this: *mut p3_arrow_star_HasTwoInts,
+        _a0: *mut p3_arrow_star_HasTwoInts,
     ) {
         (&raw mut (*this).first).write((*_a0).first);
         (&raw mut (*this).second).write((*_a0).second);
@@ -47,9 +55,16 @@ pub struct p4_object_expression_sequenced_first_HasValue {
     pub value: i32,
 }
 impl p4_object_expression_sequenced_first_HasValue {
+    pub unsafe fn new_1(this: *mut p4_object_expression_sequenced_first_HasValue) {}
     pub unsafe fn copy_from(
         this: *mut p4_object_expression_sequenced_first_HasValue,
         _a0: *const p4_object_expression_sequenced_first_HasValue,
+    ) {
+        (&raw mut (*this).value).write((*_a0).value);
+    }
+    pub unsafe fn move_from(
+        this: *mut p4_object_expression_sequenced_first_HasValue,
+        _a0: *mut p4_object_expression_sequenced_first_HasValue,
     ) {
         (&raw mut (*this).value).write((*_a0).value);
     }
@@ -92,9 +107,17 @@ pub struct p6_data_member_of_lvalue_is_lvalue_HasTwoInts {
     pub second: i32,
 }
 impl p6_data_member_of_lvalue_is_lvalue_HasTwoInts {
+    pub unsafe fn new_1(this: *mut p6_data_member_of_lvalue_is_lvalue_HasTwoInts) {}
     pub unsafe fn copy_from(
         this: *mut p6_data_member_of_lvalue_is_lvalue_HasTwoInts,
         _a0: *const p6_data_member_of_lvalue_is_lvalue_HasTwoInts,
+    ) {
+        (&raw mut (*this).first).write((*_a0).first);
+        (&raw mut (*this).second).write((*_a0).second);
+    }
+    pub unsafe fn move_from(
+        this: *mut p6_data_member_of_lvalue_is_lvalue_HasTwoInts,
+        _a0: *mut p6_data_member_of_lvalue_is_lvalue_HasTwoInts,
     ) {
         (&raw mut (*this).first).write((*_a0).first);
         (&raw mut (*this).second).write((*_a0).second);

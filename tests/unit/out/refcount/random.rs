@@ -45,6 +45,19 @@ impl Pair {
             ((*_a0.upgrade().deref()).ap[(__i) as usize]).clone()
         })));
     }
+    pub fn move_from(this: Ptr<Pair>, _a0: Ptr<Pair>) {
+        field!(this, x).write({ (*_a0.upgrade().deref()).x });
+        field!(this, y).write({ (*_a0.upgrade().deref()).y });
+        field!(this, a).write(Box::new(std::array::from_fn::<_, 5, _>(|__i: usize| {
+            (*_a0.upgrade().deref()).a[(__i) as usize]
+        })));
+        field!(this, r).write(({ (*_a0.upgrade().deref()).r.clone() }).clone());
+        field!(this, p).write({ (*_a0.upgrade().deref()).p.clone() });
+        field!(this, pair).write({ (*_a0.upgrade().deref()).pair.clone() });
+        field!(this, ap).write(Box::new(std::array::from_fn::<_, 2, _>(|__i: usize| {
+            ((*_a0.upgrade().deref()).ap[(__i) as usize]).clone()
+        })));
+    }
 }
 impl Default for Pair {
     fn default() -> Self {
@@ -70,7 +83,9 @@ pub fn zero_0() -> i32 {
 #[byte_size(1)]
 pub struct X1 {}
 impl X1 {
+    pub fn new_1(this: Ptr<X1>) {}
     pub fn copy_from(this: Ptr<X1>, _a0: Ptr<X1>) {}
+    pub fn move_from(this: Ptr<X1>, _a0: Ptr<X1>) {}
 }
 pub fn foo_1(mut x1: i32, x2: Ptr<i32>, mut x3: Ptr<i32>, p2: Ptr<Pair>, mut p3: Ptr<Pair>) {}
 pub fn main() {

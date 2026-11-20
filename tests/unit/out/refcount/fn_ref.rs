@@ -32,6 +32,9 @@ impl Holder {
     pub fn copy_from(this: Ptr<Holder>, _a0: Ptr<Holder>) {
         field!(this, f).write((_a0.with(|__s| __s.f.clone())).clone());
     }
+    pub fn move_from(this: Ptr<Holder>, _a0: Ptr<Holder>) {
+        field!(this, f).write(({ (*_a0.upgrade().deref()).f.clone() }).clone());
+    }
 }
 pub fn main() {
     __cpp2rust_init_globals();

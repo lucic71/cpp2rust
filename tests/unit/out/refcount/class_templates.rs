@@ -70,8 +70,12 @@ impl Boxed_short_ {
     pub fn twice(mut v: i16) -> i16 {
         return (((v as i32) + (v as i32)) as i16);
     }
+    pub fn new_1(this: Ptr<Boxed_short_>) {}
     pub fn copy_from(this: Ptr<Boxed_short_>, _a0: Ptr<Boxed_short_>) {
         field!(this, value).write(_a0.with(|__s| __s.value));
+    }
+    pub fn move_from(this: Ptr<Boxed_short_>, _a0: Ptr<Boxed_short_>) {
+        field!(this, value).write({ (*_a0.upgrade().deref()).value });
     }
 }
 #[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
@@ -84,8 +88,12 @@ impl Boxed_int_ {
     pub fn twice(mut v: i32) -> i32 {
         return (v + v);
     }
+    pub fn new_1(this: Ptr<Boxed_int_>) {}
     pub fn copy_from(this: Ptr<Boxed_int_>, _a0: Ptr<Boxed_int_>) {
         field!(this, value).write(_a0.with(|__s| __s.value));
+    }
+    pub fn move_from(this: Ptr<Boxed_int_>, _a0: Ptr<Boxed_int_>) {
+        field!(this, value).write({ (*_a0.upgrade().deref()).value });
     }
 }
 #[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
@@ -98,8 +106,12 @@ impl Boxed_long_ {
     pub fn twice(mut v: i64) -> i64 {
         return (v + v);
     }
+    pub fn new_1(this: Ptr<Boxed_long_>) {}
     pub fn copy_from(this: Ptr<Boxed_long_>, _a0: Ptr<Boxed_long_>) {
         field!(this, value).write(_a0.with(|__s| __s.value));
+    }
+    pub fn move_from(this: Ptr<Boxed_long_>, _a0: Ptr<Boxed_long_>) {
+        field!(this, value).write({ (*_a0.upgrade().deref()).value });
     }
 }
 #[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
@@ -111,9 +123,14 @@ pub struct Outer_int__Inner_int_ {
     pub u: i32,
 }
 impl Outer_int__Inner_int_ {
+    pub fn new_1(this: Ptr<Outer_int__Inner_int_>) {}
     pub fn copy_from(this: Ptr<Outer_int__Inner_int_>, _a0: Ptr<Outer_int__Inner_int_>) {
         field!(this, t).write(_a0.with(|__s| __s.t));
         field!(this, u).write(_a0.with(|__s| __s.u));
+    }
+    pub fn move_from(this: Ptr<Outer_int__Inner_int_>, _a0: Ptr<Outer_int__Inner_int_>) {
+        field!(this, t).write({ (*_a0.upgrade().deref()).t });
+        field!(this, u).write({ (*_a0.upgrade().deref()).u });
     }
 }
 #[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
@@ -123,8 +140,12 @@ pub struct Outer_int_ {
     pub v: i32,
 }
 impl Outer_int_ {
+    pub fn new_1(this: Ptr<Outer_int_>) {}
     pub fn copy_from(this: Ptr<Outer_int_>, _a0: Ptr<Outer_int_>) {
         field!(this, v).write(_a0.with(|__s| __s.v));
+    }
+    pub fn move_from(this: Ptr<Outer_int_>, _a0: Ptr<Outer_int_>) {
+        field!(this, v).write({ (*_a0.upgrade().deref()).v });
     }
 }
 #[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
@@ -136,9 +157,14 @@ pub struct Outer_long__Inner_int_ {
     pub u: i32,
 }
 impl Outer_long__Inner_int_ {
+    pub fn new_1(this: Ptr<Outer_long__Inner_int_>) {}
     pub fn copy_from(this: Ptr<Outer_long__Inner_int_>, _a0: Ptr<Outer_long__Inner_int_>) {
         field!(this, t).write(_a0.with(|__s| __s.t));
         field!(this, u).write(_a0.with(|__s| __s.u));
+    }
+    pub fn move_from(this: Ptr<Outer_long__Inner_int_>, _a0: Ptr<Outer_long__Inner_int_>) {
+        field!(this, t).write({ (*_a0.upgrade().deref()).t });
+        field!(this, u).write({ (*_a0.upgrade().deref()).u });
     }
 }
 #[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
@@ -150,9 +176,14 @@ pub struct Outer_long__Inner_char_ {
     pub u: i8,
 }
 impl Outer_long__Inner_char_ {
+    pub fn new_1(this: Ptr<Outer_long__Inner_char_>) {}
     pub fn copy_from(this: Ptr<Outer_long__Inner_char_>, _a0: Ptr<Outer_long__Inner_char_>) {
         field!(this, t).write(_a0.with(|__s| __s.t));
         field!(this, u).write(_a0.with(|__s| __s.u));
+    }
+    pub fn move_from(this: Ptr<Outer_long__Inner_char_>, _a0: Ptr<Outer_long__Inner_char_>) {
+        field!(this, t).write({ (*_a0.upgrade().deref()).t });
+        field!(this, u).write({ (*_a0.upgrade().deref()).u });
     }
 }
 #[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
@@ -162,8 +193,12 @@ pub struct Outer_long_ {
     pub v: i64,
 }
 impl Outer_long_ {
+    pub fn new_1(this: Ptr<Outer_long_>) {}
     pub fn copy_from(this: Ptr<Outer_long_>, _a0: Ptr<Outer_long_>) {
         field!(this, v).write(_a0.with(|__s| __s.v));
+    }
+    pub fn move_from(this: Ptr<Outer_long_>, _a0: Ptr<Outer_long_>) {
+        field!(this, v).write({ (*_a0.upgrade().deref()).v });
     }
 }
 #[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
@@ -173,6 +208,7 @@ pub struct Elem {
     pub i: i32,
 }
 impl Elem {
+    pub fn new_1(this: Ptr<Elem>) {}
     pub fn copy_from(this: Ptr<Elem>, _a0: Ptr<Elem>) {
         field!(this, i).write(_a0.with(|__s| __s.i));
     }

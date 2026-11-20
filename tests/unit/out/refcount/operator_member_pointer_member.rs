@@ -13,8 +13,12 @@ pub struct Inner {
     pub x: i32,
 }
 impl Inner {
+    pub fn new_1(this: Ptr<Inner>) {}
     pub fn copy_from(this: Ptr<Inner>, _a0: Ptr<Inner>) {
         field!(this, x).write(_a0.with(|__s| __s.x));
+    }
+    pub fn move_from(this: Ptr<Inner>, _a0: Ptr<Inner>) {
+        field!(this, x).write({ (*_a0.upgrade().deref()).x });
     }
 }
 #[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
@@ -26,6 +30,7 @@ impl Table {
     }
     pub fn new_1(this: Ptr<Table>) {}
     pub fn copy_from(this: Ptr<Table>, _a0: Ptr<Table>) {}
+    pub fn move_from(this: Ptr<Table>, _a0: Ptr<Table>) {}
 }
 thread_local!(
     pub static table_0: Value<Box<[i32]>> = Rc::new(RefCell::new(Box::new([7, 8, 9])));
@@ -42,11 +47,20 @@ pub struct S {
     pub inner: Inner,
 }
 impl S {
+    pub fn new_1(this: Ptr<S>) {
+        Inner::new_1(field_ptr!(this, inner));
+    }
     pub fn copy_from(this: Ptr<S>, _a0: Ptr<S>) {
         field!(this, data).write(Box::new(std::array::from_fn::<_, 3, _>(|__i: usize| {
             (*_a0.upgrade().deref()).data[(__i) as usize]
         })));
         Inner::copy_from(field_ptr!(this, inner), { field_ptr!(_a0, inner) });
+    }
+    pub fn move_from(this: Ptr<S>, _a0: Ptr<S>) {
+        field!(this, data).write(Box::new(std::array::from_fn::<_, 3, _>(|__i: usize| {
+            (*_a0.upgrade().deref()).data[(__i) as usize]
+        })));
+        Inner::move_from(field_ptr!(this, inner), { field_ptr!(_a0, inner) });
     }
 }
 impl Default for S {

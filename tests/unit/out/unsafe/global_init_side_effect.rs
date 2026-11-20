@@ -17,6 +17,7 @@ impl S {
         (*(*&raw const total_0).get()) += x;
     }
     pub unsafe fn copy_from(this: *mut S, _a0: *const S) {}
+    pub unsafe fn move_from(this: *mut S, _a0: *mut S) {}
 }
 pub static mut a_1: libcc2rs::LazyStorage<S> =
     libcc2rs::LazyStorage::new(|__p| unsafe { S::new(__p, { 1 }) });

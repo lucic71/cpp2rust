@@ -15,9 +15,14 @@ pub struct S {
     pub x: i64,
 }
 impl S {
+    pub fn new_1(this: Ptr<S>) {}
     pub fn copy_from(this: Ptr<S>, _a0: Ptr<S>) {
         field!(this, c).write(_a0.with(|__s| __s.c));
         field!(this, x).write(_a0.with(|__s| __s.x));
+    }
+    pub fn move_from(this: Ptr<S>, _a0: Ptr<S>) {
+        field!(this, c).write({ (*_a0.upgrade().deref()).c });
+        field!(this, x).write({ (*_a0.upgrade().deref()).x });
     }
 }
 pub fn pack_size_0() -> u64 {
@@ -37,8 +42,8 @@ fn main_0() -> i32 {
     let s: Value<S> = Rc::new(RefCell::new(<S>::uninit()));
     {
         let __d = s.as_pointer();
-        field!(__d, c).write(0_i8);
-        field!(__d, x).write(0_i64);
+        ();
+        ();
     };
     assert!((::std::mem::size_of::<i32>() == 4_usize));
     assert!((::std::mem::size_of::<[i64; 4]>() == 32_usize));

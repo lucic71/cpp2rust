@@ -26,6 +26,7 @@ impl S {
     pub unsafe fn copy_from(this: *mut S, _a0: *const S) {
         (&raw mut (*this).v).write((*_a0).v);
     }
+    pub unsafe fn new_1(this: *mut S) {}
 }
 #[repr(C)]
 #[derive(Clone, VaArg, FnPtrArg, DestructorUnsafe, Default)]
@@ -37,6 +38,13 @@ impl Outer {
     pub unsafe fn copy_from(this: *mut Outer, _a0: *const Outer) {
         S::copy_from((&raw mut (*this).inner), { &(*_a0).inner });
         (&raw mut (*this).w).write((*_a0).w);
+    }
+    pub unsafe fn move_from(this: *mut Outer, _a0: *mut Outer) {
+        S::copy_from((&raw mut (*this).inner), { &(*_a0).inner });
+        (&raw mut (*this).w).write((*_a0).w);
+    }
+    pub unsafe fn new_1(this: *mut Outer) {
+        S::new_1((&raw mut (*this).inner));
     }
 }
 impl Outer {
@@ -131,7 +139,8 @@ unsafe fn main_0() -> i32 {
     (*(*&raw const destroyed_0).get()) = 0;
     x = (unsafe {
         let mut _s: S = ::std::mem::MaybeUninit::uninit().assume_init();
-        (unsafe { make_2(&raw mut _s, 6) });
+        let __tmp_0 = &raw mut _s;
+        (unsafe { make_2(__tmp_0, 6) });
         use_4(&mut _s)
     });
     assert!(
@@ -141,15 +150,17 @@ unsafe fn main_0() -> i32 {
     (*(*&raw const destroyed_0).get()) = 0;
     x = ((unsafe {
         let mut _s: S = ::std::mem::MaybeUninit::uninit().assume_init();
+        let __tmp_1 = &raw mut _s;
         {
-            let __d = &raw mut _s;
+            let __d = __tmp_1;
             (&raw mut (*__d).v).write(1);
         };
         value_5(&mut _s)
     }) + (unsafe {
         let mut _s: S = ::std::mem::MaybeUninit::uninit().assume_init();
+        let __tmp_2 = &raw mut _s;
         {
-            let __d = &raw mut _s;
+            let __d = __tmp_2;
             (&raw mut (*__d).v).write(2);
         };
         value_5(&mut _s)
@@ -172,9 +183,10 @@ unsafe fn main_0() -> i32 {
     );
     (*(*&raw const destroyed_0).get()) = 0;
     {
-        let mut __tmp_0: S = ::std::mem::MaybeUninit::uninit().assume_init();
-        (unsafe { make_2(&raw mut __tmp_0, 11) });
-        let r: *const S = &mut __tmp_0;
+        let mut __tmp_3: S = ::std::mem::MaybeUninit::uninit().assume_init();
+        let __tmp_4 = &raw mut __tmp_3;
+        (unsafe { make_2(__tmp_4, 11) });
+        let r: *const S = &mut __tmp_3;
         assert!(((*(*&raw const destroyed_0).get()) == (0)) && (((*r).v) == (11)));
     }
     assert!(((*(*&raw const destroyed_0).get()) == (1)) && ((*(*&raw const last_1).get()) == (11)));

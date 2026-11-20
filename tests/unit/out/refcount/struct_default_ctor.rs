@@ -23,6 +23,10 @@ impl S {
         field!(this, a).write(_a0.with(|__s| __s.a));
         field!(this, b).write(_a0.with(|__s| __s.b));
     }
+    pub fn move_from(this: Ptr<S>, _a0: Ptr<S>) {
+        field!(this, a).write({ (*_a0.upgrade().deref()).a });
+        field!(this, b).write({ (*_a0.upgrade().deref()).b });
+    }
 }
 impl Default for S {
     fn default() -> Self {
@@ -45,6 +49,9 @@ pub struct Declared {
 impl Declared {
     pub fn copy_from(this: Ptr<Declared>, _a0: Ptr<Declared>) {
         field!(this, v).write(_a0.with(|__s| __s.v));
+    }
+    pub fn move_from(this: Ptr<Declared>, _a0: Ptr<Declared>) {
+        field!(this, v).write({ (*_a0.upgrade().deref()).v });
     }
 }
 #[derive(Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg)]
@@ -69,6 +76,16 @@ impl Holder {
             let __d = array_field_ptr!(this, items);
             for __i in 0..2_usize {
                 S::copy_from(__d.offset(__i as isize), {
+                    array_field_ptr!(_a0, items).offset(__i)
+                });
+            }
+        };
+    }
+    pub fn move_from(this: Ptr<Holder>, _a0: Ptr<Holder>) {
+        {
+            let __d = array_field_ptr!(this, items);
+            for __i in 0..2_usize {
+                S::move_from(__d.offset(__i as isize), {
                     array_field_ptr!(_a0, items).offset(__i)
                 });
             }
@@ -99,6 +116,9 @@ impl FromStatic {
     }
     pub fn copy_from(this: Ptr<FromStatic>, _a0: Ptr<FromStatic>) {
         field!(this, v).write(_a0.with(|__s| __s.v));
+    }
+    pub fn move_from(this: Ptr<FromStatic>, _a0: Ptr<FromStatic>) {
+        field!(this, v).write({ (*_a0.upgrade().deref()).v });
     }
 }
 impl Default for FromStatic {

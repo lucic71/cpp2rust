@@ -15,9 +15,14 @@ pub struct Pair {
     pub second: i32,
 }
 impl Pair {
+    pub fn new_1(this: Ptr<Pair>) {}
     pub fn copy_from(this: Ptr<Pair>, _a0: Ptr<Pair>) {
         field!(this, first).write(_a0.with(|__s| __s.first));
         field!(this, second).write(_a0.with(|__s| __s.second));
+    }
+    pub fn move_from(this: Ptr<Pair>, _a0: Ptr<Pair>) {
+        field!(this, first).write({ (*_a0.upgrade().deref()).first });
+        field!(this, second).write({ (*_a0.upgrade().deref()).second });
     }
 }
 pub fn twice_0(v: Ptr<i64>) -> i64 {

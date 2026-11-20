@@ -87,6 +87,7 @@ pub struct S {
     pub vec_: i32,
 }
 impl S {
+    pub fn new_1(this: Ptr<S>) {}
     pub fn copy_from(this: Ptr<S>, _a0: Ptr<S>) {
         field!(this, as_).write(_a0.with(|__s| __s.as_));
         field!(this, async_).write(_a0.with(|__s| __s.async_));
@@ -127,6 +128,46 @@ impl S {
         field!(this, safe_).write(_a0.with(|__s| __s.safe_));
         field!(this, vec_).write(_a0.with(|__s| __s.vec_));
     }
+    pub fn move_from(this: Ptr<S>, _a0: Ptr<S>) {
+        field!(this, as_).write({ (*_a0.upgrade().deref()).as_ });
+        field!(this, async_).write({ (*_a0.upgrade().deref()).async_ });
+        field!(this, await_).write({ (*_a0.upgrade().deref()).await_ });
+        field!(this, crate_).write({ (*_a0.upgrade().deref()).crate_ });
+        field!(this, dyn_).write({ (*_a0.upgrade().deref()).dyn_ });
+        field!(this, fn_).write({ (*_a0.upgrade().deref()).fn_ });
+        field!(this, impl_).write({ (*_a0.upgrade().deref()).impl_ });
+        field!(this, in_).write({ (*_a0.upgrade().deref()).in_ });
+        field!(this, let_).write({ (*_a0.upgrade().deref()).let_ });
+        field!(this, loop_).write({ (*_a0.upgrade().deref()).loop_ });
+        field!(this, match_).write({ (*_a0.upgrade().deref()).match_ });
+        field!(this, mod_).write({ (*_a0.upgrade().deref()).mod_ });
+        field!(this, move_).write({ (*_a0.upgrade().deref()).move_ });
+        field!(this, mut_).write({ (*_a0.upgrade().deref()).mut_ });
+        field!(this, pub_).write({ (*_a0.upgrade().deref()).pub_ });
+        field!(this, ref_).write({ (*_a0.upgrade().deref()).ref_ });
+        field!(this, self_).write({ (*_a0.upgrade().deref()).self_ });
+        field!(this, Self_).write({ (*_a0.upgrade().deref()).Self_ });
+        field!(this, super_).write({ (*_a0.upgrade().deref()).super_ });
+        field!(this, trait_).write({ (*_a0.upgrade().deref()).trait_ });
+        field!(this, type_).write({ (*_a0.upgrade().deref()).type_ });
+        field!(this, unsafe_).write({ (*_a0.upgrade().deref()).unsafe_ });
+        field!(this, use_).write({ (*_a0.upgrade().deref()).use_ });
+        field!(this, where_).write({ (*_a0.upgrade().deref()).where_ });
+        field!(this, abstract_).write({ (*_a0.upgrade().deref()).abstract_ });
+        field!(this, become_).write({ (*_a0.upgrade().deref()).become_ });
+        field!(this, box_).write({ (*_a0.upgrade().deref()).box_ });
+        field!(this, final_).write({ (*_a0.upgrade().deref()).final_ });
+        field!(this, gen_).write({ (*_a0.upgrade().deref()).gen_ });
+        field!(this, macro_).write({ (*_a0.upgrade().deref()).macro_ });
+        field!(this, override_).write({ (*_a0.upgrade().deref()).override_ });
+        field!(this, priv_).write({ (*_a0.upgrade().deref()).priv_ });
+        field!(this, unsized_).write({ (*_a0.upgrade().deref()).unsized_ });
+        field!(this, yield_).write({ (*_a0.upgrade().deref()).yield_ });
+        field!(this, macro_rules_).write({ (*_a0.upgrade().deref()).macro_rules_ });
+        field!(this, raw_).write({ (*_a0.upgrade().deref()).raw_ });
+        field!(this, safe_).write({ (*_a0.upgrade().deref()).safe_ });
+        field!(this, vec_).write({ (*_a0.upgrade().deref()).vec_ });
+    }
 }
 #[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
 #[byte_size(4)]
@@ -135,8 +176,12 @@ pub struct type_ {
     pub v: i32,
 }
 impl type_ {
+    pub fn new_1(this: Ptr<type_>) {}
     pub fn copy_from(this: Ptr<type_>, _a0: Ptr<type_>) {
         field!(this, v).write(_a0.with(|__s| __s.v));
+    }
+    pub fn move_from(this: Ptr<type_>, _a0: Ptr<type_>) {
+        field!(this, v).write({ (*_a0.upgrade().deref()).v });
     }
 }
 #[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
@@ -147,8 +192,14 @@ pub struct loop_ {
     pub t: type_,
 }
 impl loop_ {
+    pub fn new_1(this: Ptr<loop_>) {
+        type_::new_1(field_ptr!(this, t));
+    }
     pub fn copy_from(this: Ptr<loop_>, _a0: Ptr<loop_>) {
         type_::copy_from(field_ptr!(this, t), { field_ptr!(_a0, t) });
+    }
+    pub fn move_from(this: Ptr<loop_>, _a0: Ptr<loop_>) {
+        type_::move_from(field_ptr!(this, t), { field_ptr!(_a0, t) });
     }
 }
 pub fn foo_0(

@@ -20,6 +20,7 @@ impl S {
         (*(*&raw const destroyed_0).get()).postfix_inc();
         (*(*&raw const last_1).get()) = self.v;
     }
+    pub unsafe fn new_1(this: *mut S) {}
     pub unsafe fn copy_from(this: *mut S, _a0: *const S) {
         (&raw mut (*this).v).write((*_a0).v);
     }
@@ -44,6 +45,9 @@ impl Holder {
         return ((self.v) + ((*s).v));
     }
     pub unsafe fn copy_from(this: *mut Holder, _a0: *const Holder) {
+        (&raw mut (*this).v).write((*_a0).v);
+    }
+    pub unsafe fn move_from(this: *mut Holder, _a0: *mut Holder) {
         (&raw mut (*this).v).write((*_a0).v);
     }
 }

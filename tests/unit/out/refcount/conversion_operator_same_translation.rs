@@ -15,8 +15,12 @@ pub struct S {
     pub v: i32,
 }
 impl S {
+    pub fn new_1(this: Ptr<S>) {}
     pub fn copy_from(this: Ptr<S>, _a0: Ptr<S>) {
         field!(this, v).write(_a0.with(|__s| __s.v));
+    }
+    pub fn move_from(this: Ptr<S>, _a0: Ptr<S>) {
+        field!(this, v).write({ (*_a0.upgrade().deref()).v });
     }
 }
 #[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, CppFrom, Default)]
@@ -27,8 +31,12 @@ pub struct T {
     pub v: i32,
 }
 impl T {
+    pub fn new_1(this: Ptr<T>) {}
     pub fn copy_from(this: Ptr<T>, _a0: Ptr<T>) {
         field!(this, v).write(_a0.with(|__s| __s.v));
+    }
+    pub fn move_from(this: Ptr<T>, _a0: Ptr<T>) {
+        field!(this, v).write({ (*_a0.upgrade().deref()).v });
     }
 }
 pub fn main() {

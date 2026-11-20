@@ -23,9 +23,17 @@ pub struct p10_null_converts_to_null_HasTwoInts {
     pub second: i32,
 }
 impl p10_null_converts_to_null_HasTwoInts {
+    pub unsafe fn new_1(this: *mut p10_null_converts_to_null_HasTwoInts) {}
     pub unsafe fn copy_from(
         this: *mut p10_null_converts_to_null_HasTwoInts,
         _a0: *const p10_null_converts_to_null_HasTwoInts,
+    ) {
+        (&raw mut (*this).first).write((*_a0).first);
+        (&raw mut (*this).second).write((*_a0).second);
+    }
+    pub unsafe fn move_from(
+        this: *mut p10_null_converts_to_null_HasTwoInts,
+        _a0: *mut p10_null_converts_to_null_HasTwoInts,
     ) {
         (&raw mut (*this).first).write((*_a0).first);
         (&raw mut (*this).second).write((*_a0).second);
@@ -37,9 +45,16 @@ pub struct p10_null_converts_to_null_HasChar {
     pub character: libc::c_char,
 }
 impl p10_null_converts_to_null_HasChar {
+    pub unsafe fn new_1(this: *mut p10_null_converts_to_null_HasChar) {}
     pub unsafe fn copy_from(
         this: *mut p10_null_converts_to_null_HasChar,
         _a0: *const p10_null_converts_to_null_HasChar,
+    ) {
+        (&raw mut (*this).character).write((*_a0).character);
+    }
+    pub unsafe fn move_from(
+        this: *mut p10_null_converts_to_null_HasChar,
+        _a0: *mut p10_null_converts_to_null_HasChar,
     ) {
         (&raw mut (*this).character).write((*_a0).character);
     }
@@ -56,9 +71,17 @@ pub struct p10_2_data_member_round_trip_HasTwoInts {
     pub second: i32,
 }
 impl p10_2_data_member_round_trip_HasTwoInts {
+    pub unsafe fn new_1(this: *mut p10_2_data_member_round_trip_HasTwoInts) {}
     pub unsafe fn copy_from(
         this: *mut p10_2_data_member_round_trip_HasTwoInts,
         _a0: *const p10_2_data_member_round_trip_HasTwoInts,
+    ) {
+        (&raw mut (*this).first).write((*_a0).first);
+        (&raw mut (*this).second).write((*_a0).second);
+    }
+    pub unsafe fn move_from(
+        this: *mut p10_2_data_member_round_trip_HasTwoInts,
+        _a0: *mut p10_2_data_member_round_trip_HasTwoInts,
     ) {
         (&raw mut (*this).first).write((*_a0).first);
         (&raw mut (*this).second).write((*_a0).second);
@@ -70,9 +93,16 @@ pub struct p10_2_data_member_round_trip_HasChar {
     pub character: libc::c_char,
 }
 impl p10_2_data_member_round_trip_HasChar {
+    pub unsafe fn new_1(this: *mut p10_2_data_member_round_trip_HasChar) {}
     pub unsafe fn copy_from(
         this: *mut p10_2_data_member_round_trip_HasChar,
         _a0: *const p10_2_data_member_round_trip_HasChar,
+    ) {
+        (&raw mut (*this).character).write((*_a0).character);
+    }
+    pub unsafe fn move_from(
+        this: *mut p10_2_data_member_round_trip_HasChar,
+        _a0: *mut p10_2_data_member_round_trip_HasChar,
     ) {
         (&raw mut (*this).character).write((*_a0).character);
     }

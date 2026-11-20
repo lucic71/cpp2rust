@@ -22,7 +22,11 @@ pub struct Row {
     pub a: [i32; 3],
 }
 impl Row {
+    pub unsafe fn new_1(this: *mut Row) {}
     pub unsafe fn copy_from(this: *mut Row, _a0: *const Row) {
+        (&raw mut (*this).a).write(std::array::from_fn::<_, 3, _>(|__i: usize| (*_a0).a[(__i)]));
+    }
+    pub unsafe fn move_from(this: *mut Row, _a0: *mut Row) {
         (&raw mut (*this).a).write(std::array::from_fn::<_, 3, _>(|__i: usize| (*_a0).a[(__i)]));
     }
 }

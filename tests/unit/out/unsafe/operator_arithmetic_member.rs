@@ -83,6 +83,7 @@ impl S {
         S::move_from(__ret.clone(), { &mut old });
         return;
     }
+    pub unsafe fn new_1(this: *mut S) {}
     pub unsafe fn copy_from(this: *mut S, _a0: *const S) {
         (&raw mut (*this).v).write((*_a0).v);
     }
@@ -192,8 +193,9 @@ unsafe fn main_0() -> i32 {
             let mut __v: S = ::std::mem::MaybeUninit::uninit().assume_init();
             (unsafe {
                 let mut _o: S = ::std::mem::MaybeUninit::uninit().assume_init();
+                let __tmp_0 = &raw mut _o;
                 {
-                    let __d = &raw mut _o;
+                    let __d = __tmp_0;
                     (&raw mut (*__d).v).write(4);
                 };
                 S::operator_add_1(

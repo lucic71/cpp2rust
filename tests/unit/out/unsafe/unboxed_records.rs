@@ -18,6 +18,10 @@ impl Inner {
         (&raw mut (*this).a).write((*_a0).a);
         (&raw mut (*this).b).write((*_a0).b);
     }
+    pub unsafe fn move_from(this: *mut Inner, _a0: *mut Inner) {
+        (&raw mut (*this).a).write((*_a0).a);
+        (&raw mut (*this).b).write((*_a0).b);
+    }
 }
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
@@ -41,6 +45,15 @@ impl Cookie {
             (*_a0).arr[(__i)]
         }));
     }
+    pub unsafe fn move_from(this: *mut Cookie, _a0: *mut Cookie) {
+        (&raw mut (*this).x).write((*_a0).x);
+        (&raw mut (*this).data).write((*_a0).data);
+        (&raw mut (*this).in_).write((*_a0).in_);
+        Inner::move_from((&raw mut (*this).inner), { &mut (*_a0).inner });
+        (&raw mut (*this).arr).write(std::array::from_fn::<_, 4, _>(|__i: usize| {
+            (*_a0).arr[(__i)]
+        }));
+    }
 }
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg)]
@@ -55,6 +68,9 @@ impl Counter {
         (&raw mut (*this).n).write(0);
     }
     pub unsafe fn copy_from(this: *mut Counter, _a0: *const Counter) {
+        (&raw mut (*this).n).write((*_a0).n);
+    }
+    pub unsafe fn move_from(this: *mut Counter, _a0: *mut Counter) {
         (&raw mut (*this).n).write((*_a0).n);
     }
 }

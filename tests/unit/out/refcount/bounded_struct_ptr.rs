@@ -15,9 +15,14 @@ pub struct Foo {
     pub x2: i32,
 }
 impl Foo {
+    pub fn new_1(this: Ptr<Foo>) {}
     pub fn copy_from(this: Ptr<Foo>, _a0: Ptr<Foo>) {
         field!(this, x1).write(_a0.with(|__s| __s.x1));
         field!(this, x2).write(_a0.with(|__s| __s.x2));
+    }
+    pub fn move_from(this: Ptr<Foo>, _a0: Ptr<Foo>) {
+        field!(this, x1).write({ (*_a0.upgrade().deref()).x1 });
+        field!(this, x2).write({ (*_a0.upgrade().deref()).x2 });
     }
 }
 pub fn main() {

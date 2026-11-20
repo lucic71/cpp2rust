@@ -17,6 +17,7 @@ pub struct p6_array_of_pointers_to_data_members_HasThreeInts {
     pub third: i32,
 }
 impl p6_array_of_pointers_to_data_members_HasThreeInts {
+    pub fn new_1(this: Ptr<p6_array_of_pointers_to_data_members_HasThreeInts>) {}
     pub fn copy_from(
         this: Ptr<p6_array_of_pointers_to_data_members_HasThreeInts>,
         _a0: Ptr<p6_array_of_pointers_to_data_members_HasThreeInts>,
@@ -24,6 +25,14 @@ impl p6_array_of_pointers_to_data_members_HasThreeInts {
         field!(this, first).write(_a0.with(|__s| __s.first));
         field!(this, second).write(_a0.with(|__s| __s.second));
         field!(this, third).write(_a0.with(|__s| __s.third));
+    }
+    pub fn move_from(
+        this: Ptr<p6_array_of_pointers_to_data_members_HasThreeInts>,
+        _a0: Ptr<p6_array_of_pointers_to_data_members_HasThreeInts>,
+    ) {
+        field!(this, first).write({ (*_a0.upgrade().deref()).first });
+        field!(this, second).write({ (*_a0.upgrade().deref()).second });
+        field!(this, third).write({ (*_a0.upgrade().deref()).third });
     }
 }
 pub fn test_0() {

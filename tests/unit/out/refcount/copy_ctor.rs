@@ -119,6 +119,17 @@ impl Holder {
             }
         };
     }
+    pub fn move_from(this: Ptr<Holder>, _a0: Ptr<Holder>) {
+        Counted::copy_from(field_ptr!(this, c), { field_ptr!(_a0, c) });
+        {
+            let __d = array_field_ptr!(this, arr);
+            for __i in 0..2_usize {
+                Counted::copy_from(__d.offset(__i as isize), {
+                    array_field_ptr!(_a0, arr).offset(__i)
+                });
+            }
+        };
+    }
 }
 impl Default for Holder {
     fn default() -> Self {

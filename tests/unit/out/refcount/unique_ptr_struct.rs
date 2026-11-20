@@ -15,6 +15,7 @@ pub struct Point {
     pub y: i32,
 }
 impl Point {
+    pub fn new_1(this: Ptr<Point>) {}
     pub fn copy_from(this: Ptr<Point>, _a0: Ptr<Point>) {
         field!(this, x).write(_a0.with(|__s| __s.x));
         field!(this, y).write(_a0.with(|__s| __s.y));

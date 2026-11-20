@@ -13,8 +13,12 @@ pub struct Inner {
     pub value: i32,
 }
 impl Inner {
+    pub fn new_1(this: Ptr<Inner>) {}
     pub fn copy_from(this: Ptr<Inner>, _a0: Ptr<Inner>) {
         field!(this, value).write(_a0.with(|__s| __s.value));
+    }
+    pub fn move_from(this: Ptr<Inner>, _a0: Ptr<Inner>) {
+        field!(this, value).write({ (*_a0.upgrade().deref()).value });
     }
 }
 #[derive(Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
@@ -25,8 +29,12 @@ pub struct Outer {
     pub p: Ptr<Inner>,
 }
 impl Outer {
+    pub fn new_1(this: Ptr<Outer>) {}
     pub fn copy_from(this: Ptr<Outer>, _a0: Ptr<Outer>) {
         field!(this, p).write(_a0.with(|__s| __s.p.clone()));
+    }
+    pub fn move_from(this: Ptr<Outer>, _a0: Ptr<Outer>) {
+        field!(this, p).write({ (*_a0.upgrade().deref()).p.clone() });
     }
 }
 thread_local!(

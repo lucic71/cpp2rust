@@ -19,6 +19,7 @@ pub struct node_t {
     pub value: i32,
 }
 impl node_t {
+    pub fn new_1(this: Ptr<node_t>) {}
     pub fn copy_from(this: Ptr<node_t>, _a0: Ptr<node_t>) {
         field!(this, left).write(_a0.with(|__s| __s.left.clone()));
         field!(this, right).write(_a0.with(|__s| __s.right.clone()));

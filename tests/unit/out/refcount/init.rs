@@ -17,6 +17,9 @@ impl X {
     pub fn copy_from(this: Ptr<X>, _a0: Ptr<X>) {
         field!(this, x).write(_a0.with(|__s| __s.x));
     }
+    pub fn move_from(this: Ptr<X>, _a0: Ptr<X>) {
+        field!(this, x).write({ (*_a0.upgrade().deref()).x });
+    }
 }
 pub fn func_0() -> i32 {
     return 42;

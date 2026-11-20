@@ -48,6 +48,9 @@ impl Ctor {
     pub fn copy_from(this: Ptr<Ctor>, _a0: Ptr<Ctor>) {
         field!(this, v).write(_a0.with(|__s| __s.v));
     }
+    pub fn move_from(this: Ptr<Ctor>, _a0: Ptr<Ctor>) {
+        field!(this, v).write({ (*_a0.upgrade().deref()).v });
+    }
 }
 impl Default for Ctor {
     fn default() -> Self {
@@ -93,7 +96,9 @@ thread_local!(
 #[byte_size(1)]
 pub struct Holder {}
 impl Holder {
+    pub fn new_1(this: Ptr<Holder>) {}
     pub fn copy_from(this: Ptr<Holder>, _a0: Ptr<Holder>) {}
+    pub fn move_from(this: Ptr<Holder>, _a0: Ptr<Holder>) {}
 }
 thread_local!(
     pub static member_10: Value<i32> = Rc::new(RefCell::new(({ next_0() })));
@@ -126,6 +131,9 @@ impl Singleton {
     }
     pub fn copy_from(this: Ptr<Singleton>, _a0: Ptr<Singleton>) {
         field!(this, hits).write(_a0.with(|__s| __s.hits));
+    }
+    pub fn move_from(this: Ptr<Singleton>, _a0: Ptr<Singleton>) {
+        field!(this, hits).write({ (*_a0.upgrade().deref()).hits });
     }
 }
 impl Default for Singleton {

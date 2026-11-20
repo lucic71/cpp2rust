@@ -15,12 +15,20 @@ pub struct p2_pointer_to_data_member_bytes_round_trip_HasTwoInts {
     pub second: i32,
 }
 impl p2_pointer_to_data_member_bytes_round_trip_HasTwoInts {
+    pub fn new_1(this: Ptr<p2_pointer_to_data_member_bytes_round_trip_HasTwoInts>) {}
     pub fn copy_from(
         this: Ptr<p2_pointer_to_data_member_bytes_round_trip_HasTwoInts>,
         _a0: Ptr<p2_pointer_to_data_member_bytes_round_trip_HasTwoInts>,
     ) {
         field!(this, first).write(_a0.with(|__s| __s.first));
         field!(this, second).write(_a0.with(|__s| __s.second));
+    }
+    pub fn move_from(
+        this: Ptr<p2_pointer_to_data_member_bytes_round_trip_HasTwoInts>,
+        _a0: Ptr<p2_pointer_to_data_member_bytes_round_trip_HasTwoInts>,
+    ) {
+        field!(this, first).write({ (*_a0.upgrade().deref()).first });
+        field!(this, second).write({ (*_a0.upgrade().deref()).second });
     }
 }
 pub fn test_0() {
@@ -89,12 +97,20 @@ pub struct p3_pointer_to_data_member_bytes_copied_to_other_object_HasTwoInts {
     pub second: i32,
 }
 impl p3_pointer_to_data_member_bytes_copied_to_other_object_HasTwoInts {
+    pub fn new_1(this: Ptr<p3_pointer_to_data_member_bytes_copied_to_other_object_HasTwoInts>) {}
     pub fn copy_from(
         this: Ptr<p3_pointer_to_data_member_bytes_copied_to_other_object_HasTwoInts>,
         _a0: Ptr<p3_pointer_to_data_member_bytes_copied_to_other_object_HasTwoInts>,
     ) {
         field!(this, first).write(_a0.with(|__s| __s.first));
         field!(this, second).write(_a0.with(|__s| __s.second));
+    }
+    pub fn move_from(
+        this: Ptr<p3_pointer_to_data_member_bytes_copied_to_other_object_HasTwoInts>,
+        _a0: Ptr<p3_pointer_to_data_member_bytes_copied_to_other_object_HasTwoInts>,
+    ) {
+        field!(this, first).write({ (*_a0.upgrade().deref()).first });
+        field!(this, second).write({ (*_a0.upgrade().deref()).second });
     }
 }
 pub fn test_1() {

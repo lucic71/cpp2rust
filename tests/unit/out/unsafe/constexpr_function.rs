@@ -30,7 +30,11 @@ impl Flag {
     pub unsafe fn to_bool(&self) -> bool {
         return ((self.v) != (0));
     }
+    pub unsafe fn new_1(this: *mut Flag) {}
     pub unsafe fn copy_from(this: *mut Flag, _a0: *const Flag) {
+        (&raw mut (*this).v).write((*_a0).v);
+    }
+    pub unsafe fn move_from(this: *mut Flag, _a0: *mut Flag) {
         (&raw mut (*this).v).write((*_a0).v);
     }
 }
@@ -59,7 +63,11 @@ impl P {
     pub unsafe fn get(&self) -> i32 {
         return self.v;
     }
+    pub unsafe fn new_1(this: *mut P) {}
     pub unsafe fn copy_from(this: *mut P, _a0: *const P) {
+        (&raw mut (*this).v).write((*_a0).v);
+    }
+    pub unsafe fn move_from(this: *mut P, _a0: *mut P) {
         (&raw mut (*this).v).write((*_a0).v);
     }
 }

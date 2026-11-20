@@ -13,6 +13,7 @@ pub struct Point {
     pub y: i32,
 }
 impl Point {
+    pub unsafe fn new_1(this: *mut Point) {}
     pub unsafe fn copy_from(this: *mut Point, _a0: *const Point) {
         (&raw mut (*this).x).write((*_a0).x);
         (&raw mut (*this).y).write((*_a0).y);

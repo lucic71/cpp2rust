@@ -67,7 +67,11 @@ pub struct Cursor_3 {
     pub ap: *mut *const VaArg,
 }
 impl Cursor_3 {
+    pub unsafe fn new_1(this: *mut Cursor_3) {}
     pub unsafe fn copy_from(this: *mut Cursor_3, _a0: *const Cursor_3) {
+        (&raw mut (*this).ap).write((*_a0).ap);
+    }
+    pub unsafe fn move_from(this: *mut Cursor_3, _a0: *mut Cursor_3) {
         (&raw mut (*this).ap).write((*_a0).ap);
     }
 }

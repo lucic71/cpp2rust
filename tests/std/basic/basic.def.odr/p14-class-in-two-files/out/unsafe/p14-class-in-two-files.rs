@@ -81,6 +81,7 @@ impl AssertsDtorCountAtExit {
     pub unsafe fn destructor(&mut self) {
         assert!(((*(*&raw const dtorCount_2).get()) == (self.expected)));
     }
+    pub unsafe fn new_1(this: *mut AssertsDtorCountAtExit) {}
     pub unsafe fn copy_from(this: *mut AssertsDtorCountAtExit, _a0: *const AssertsDtorCountAtExit) {
         (&raw mut (*this).expected).write((*_a0).expected);
     }
@@ -111,7 +112,9 @@ impl HasInlineMembers {
     pub unsafe fn instance() -> *mut LifetimeTracked {
         return &mut (*(*&raw const local_6).get());
     }
+    pub unsafe fn new_1(this: *mut HasInlineMembers) {}
     pub unsafe fn copy_from(this: *mut HasInlineMembers, _a0: *const HasInlineMembers) {}
+    pub unsafe fn move_from(this: *mut HasInlineMembers, _a0: *mut HasInlineMembers) {}
 }
 static mut local_6: libcc2rs::LazyStorage<LifetimeTracked> =
     libcc2rs::LazyStorage::new(|__p| unsafe {

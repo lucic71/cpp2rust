@@ -117,6 +117,15 @@ impl Holder {
             }
         };
     }
+    pub unsafe fn move_from(this: *mut Holder, _a0: *mut Holder) {
+        Partial::copy_from((&raw mut (*this).p), { &(*_a0).p });
+        {
+            let __d = (&raw mut (*this).arr).cast::<Partial>();
+            for __i in 0..2_usize {
+                Partial::copy_from(__d.offset(__i as isize), { &(*_a0).arr[(__i)] });
+            }
+        };
+    }
     pub unsafe fn copy_assign(&mut self, _a0: *const Holder) -> *mut Holder {
         (unsafe {
             let _o: *const Partial = &(*_a0).p;
@@ -181,6 +190,15 @@ impl HasCopyCounted {
             }
         };
     }
+    pub unsafe fn move_from(this: *mut HasCopyCounted, _a0: *mut HasCopyCounted) {
+        CopyCounted::copy_from((&raw mut (*this).c), { &(*_a0).c });
+        {
+            let __d = (&raw mut (*this).arr).cast::<CopyCounted>();
+            for __i in 0..2_usize {
+                CopyCounted::copy_from(__d.offset(__i as isize), { &(*_a0).arr[(__i)] });
+            }
+        };
+    }
     pub unsafe fn copy_assign(&mut self, _a0: *const HasCopyCounted) -> *mut HasCopyCounted {
         (unsafe {
             let _arg0: *const CopyCounted = &(*_a0).c;
@@ -224,7 +242,8 @@ unsafe fn main_0() -> i32 {
     assert!(((*(*&raw const assigns_0).get()) == (3)));
     (unsafe {
         let mut _o: Partial = ::std::mem::MaybeUninit::uninit().assume_init();
-        Partial::new(&raw mut _o, { 9 }, { 900 });
+        let __tmp_2 = &raw mut _o;
+        Partial::new(__tmp_2, { 9 }, { 900 });
         Partial::copy_assign(&mut a, &mut _o)
     });
     assert!(((a.v) == (9)) && ((a.keep) == (100)));

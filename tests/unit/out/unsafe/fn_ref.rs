@@ -33,6 +33,9 @@ impl Holder {
     pub unsafe fn copy_from(this: *mut Holder, _a0: *const Holder) {
         (&raw mut (*this).f).write((*_a0).f);
     }
+    pub unsafe fn move_from(this: *mut Holder, _a0: *mut Holder) {
+        (&raw mut (*this).f).write((*_a0).f);
+    }
 }
 pub fn main() {
     unsafe {

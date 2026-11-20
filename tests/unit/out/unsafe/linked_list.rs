@@ -16,7 +16,12 @@ impl Node {
     pub unsafe fn SetNext(&mut self, mut next: *mut Node) {
         self.next = next;
     }
+    pub unsafe fn new_1(this: *mut Node) {}
     pub unsafe fn copy_from(this: *mut Node, _a0: *const Node) {
+        (&raw mut (*this).val).write((*_a0).val);
+        (&raw mut (*this).next).write((*_a0).next);
+    }
+    pub unsafe fn move_from(this: *mut Node, _a0: *mut Node) {
         (&raw mut (*this).val).write((*_a0).val);
         (&raw mut (*this).next).write((*_a0).next);
     }

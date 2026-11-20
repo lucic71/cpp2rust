@@ -12,7 +12,11 @@ pub struct Pod {
     pub v: i32,
 }
 impl Pod {
+    pub unsafe fn new_1(this: *mut Pod) {}
     pub unsafe fn copy_from(this: *mut Pod, _a0: *const Pod) {
+        (&raw mut (*this).v).write((*_a0).v);
+    }
+    pub unsafe fn move_from(this: *mut Pod, _a0: *mut Pod) {
         (&raw mut (*this).v).write((*_a0).v);
     }
 }

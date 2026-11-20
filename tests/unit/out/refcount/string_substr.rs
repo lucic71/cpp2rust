@@ -17,6 +17,9 @@ impl Text {
     pub fn copy_from(this: Ptr<Text>, _a0: Ptr<Text>) {
         field!(this, value).write((_a0.with(|__s| __s.value.clone())).clone());
     }
+    pub fn move_from(this: Ptr<Text>, _a0: Ptr<Text>) {
+        field!(this, value).write(({ (*_a0.upgrade().deref()).value.clone() }).clone());
+    }
 }
 pub fn receiver_0(s: Ptr<Vec<i8>>, calls: Ptr<i32>) -> Ptr<Vec<i8>> {
     calls.with_mut(|__v| {

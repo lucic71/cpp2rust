@@ -22,6 +22,9 @@ impl A {
     pub unsafe fn copy_from(this: *mut A, _a0: *const A) {
         (&raw mut (*this).v).write((*_a0).v);
     }
+    pub unsafe fn move_from(this: *mut A, _a0: *mut A) {
+        (&raw mut (*this).v).write((*_a0).v);
+    }
 }
 impl Default for A {
     fn default() -> Self {
@@ -44,6 +47,9 @@ impl B {
         (&raw mut (*this).v).write(2);
     }
     pub unsafe fn copy_from(this: *mut B, _a0: *const B) {
+        (&raw mut (*this).v).write((*_a0).v);
+    }
+    pub unsafe fn move_from(this: *mut B, _a0: *mut B) {
         (&raw mut (*this).v).write((*_a0).v);
     }
 }
@@ -69,6 +75,9 @@ impl NoDefault {
         (&raw mut (*this).v).write(v);
     }
     pub unsafe fn copy_from(this: *mut NoDefault, _a0: *const NoDefault) {
+        (&raw mut (*this).v).write((*_a0).v);
+    }
+    pub unsafe fn move_from(this: *mut NoDefault, _a0: *mut NoDefault) {
         (&raw mut (*this).v).write((*_a0).v);
     }
 }
@@ -98,6 +107,9 @@ impl S_NoDefault_ {
         return ((self.v) + ((*t).v));
     }
     pub unsafe fn copy_from(this: *mut S_NoDefault_, _a0: *const S_NoDefault_) {
+        (&raw mut (*this).v).write((*_a0).v);
+    }
+    pub unsafe fn move_from(this: *mut S_NoDefault_, _a0: *mut S_NoDefault_) {
         (&raw mut (*this).v).write((*_a0).v);
     }
 }

@@ -91,6 +91,7 @@ pub struct p2_condition_variable_lives_for_whole_statement_ConvertsToInt {
     pub value: i32,
 }
 impl p2_condition_variable_lives_for_whole_statement_ConvertsToInt {
+    pub fn new_1(this: Ptr<p2_condition_variable_lives_for_whole_statement_ConvertsToInt>) {}
     pub fn copy_from(
         this: Ptr<p2_condition_variable_lives_for_whole_statement_ConvertsToInt>,
         _a0: Ptr<p2_condition_variable_lives_for_whole_statement_ConvertsToInt>,

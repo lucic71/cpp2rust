@@ -72,6 +72,10 @@ impl Pair {
         Tracked::move_from(field_ptr!(this, x), { field_ptr!(_a0, x) });
         Tracked::move_from(field_ptr!(this, y), { field_ptr!(_a0, y) });
     }
+    pub fn new_1(this: Ptr<Pair>) {
+        Tracked::new_2(field_ptr!(this, x));
+        Tracked::new_2(field_ptr!(this, y));
+    }
 }
 #[derive(Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, MoveCtor, CopyAssign, MoveAssign)]
 #[byte_size(16)]
@@ -196,6 +200,10 @@ impl CopyOnlyPair {
         CopyOnly::copy_from(field_ptr!(this, x), { field_ptr!(_a0, x) });
         CopyOnly::copy_from(field_ptr!(this, y), { field_ptr!(_a0, y) });
     }
+    pub fn move_from(this: Ptr<CopyOnlyPair>, _a0: Ptr<CopyOnlyPair>) {
+        CopyOnly::copy_from(field_ptr!(this, x), { field_ptr!(_a0, x) });
+        CopyOnly::copy_from(field_ptr!(this, y), { field_ptr!(_a0, y) });
+    }
 }
 thread_local!(
     pub static moves_3: Value<i32> = Rc::new(RefCell::new(0));
@@ -306,6 +314,9 @@ pub struct Owner {
 impl Owner {
     pub fn move_from(this: Ptr<Owner>, _a0: Ptr<Owner>) {
         field!(this, p).write(field!(_a0, p).with_mut(|__v: &mut Option<Value<i32>>| __v.take()));
+    }
+    pub fn new_1(this: Ptr<Owner>) {
+        field!(this, p).write(None);
     }
 }
 pub fn main() {

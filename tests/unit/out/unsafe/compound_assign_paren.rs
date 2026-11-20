@@ -12,7 +12,11 @@ pub struct Item {
     pub flags: u8,
 }
 impl Item {
+    pub unsafe fn new_1(this: *mut Item) {}
     pub unsafe fn copy_from(this: *mut Item, _a0: *const Item) {
+        (&raw mut (*this).flags).write((*_a0).flags);
+    }
+    pub unsafe fn move_from(this: *mut Item, _a0: *mut Item) {
         (&raw mut (*this).flags).write((*_a0).flags);
     }
 }

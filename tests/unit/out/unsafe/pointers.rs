@@ -24,7 +24,11 @@ impl Test {
     pub unsafe fn update(&mut self, mut x: i32, mut y: i32) {
         self.x = ((x) + (y));
     }
+    pub unsafe fn new_1(this: *mut Test) {}
     pub unsafe fn copy_from(this: *mut Test, _a0: *const Test) {
+        (&raw mut (*this).x).write((*_a0).x);
+    }
+    pub unsafe fn move_from(this: *mut Test, _a0: *mut Test) {
         (&raw mut (*this).x).write((*_a0).x);
     }
 }

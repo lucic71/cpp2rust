@@ -137,7 +137,8 @@ unsafe fn main_0() -> i32 {
     assert!(
         ((unsafe {
             let mut _args: Tracked = ::std::mem::MaybeUninit::uninit().assume_init();
-            Tracked::new(&raw mut _args, { 2 });
+            let __tmp_0 = &raw mut _args;
+            Tracked::new(__tmp_0, { 2 });
             forward_pack_6(&mut _args)
         }) == (Overload_kRvalueOverload as i32))
     );
@@ -145,7 +146,8 @@ unsafe fn main_0() -> i32 {
     assert!(
         ((unsafe {
             let mut _args_1: Tracked = ::std::mem::MaybeUninit::uninit().assume_init();
-            Tracked::new(&raw mut _args_1, { 4 });
+            let __tmp_1 = &raw mut _args_1;
+            Tracked::new(__tmp_1, { 4 });
             let mut _args_3: i32 = 5;
             forward_pack_7(&mut a, &mut _args_1, &mut i, &mut _args_3)
         }) == (1234))
@@ -157,7 +159,8 @@ unsafe fn main_0() -> i32 {
     let mut p: Pair = ::std::mem::MaybeUninit::uninit().assume_init();
     (unsafe {
         let mut _args_1: Tracked = ::std::mem::MaybeUninit::uninit().assume_init();
-        Tracked::new(&raw mut _args_1, { 7 });
+        let __tmp_2 = &raw mut _args_1;
+        Tracked::new(__tmp_2, { 7 });
         forward_pack_into_ctor_8(&raw mut p, &mut lhs, &mut _args_1)
     });
     assert!(((p.a.v) == (6)));

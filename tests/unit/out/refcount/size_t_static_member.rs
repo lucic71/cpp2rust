@@ -13,7 +13,9 @@ thread_local!(
 #[byte_size(1)]
 pub struct S {}
 impl S {
+    pub fn new_1(this: Ptr<S>) {}
     pub fn copy_from(this: Ptr<S>, _a0: Ptr<S>) {}
+    pub fn move_from(this: Ptr<S>, _a0: Ptr<S>) {}
 }
 thread_local!(
     pub static table_size_1: Value<usize> = Rc::new(RefCell::new(256_usize));
@@ -22,7 +24,9 @@ thread_local!(
 #[byte_size(1)]
 pub struct Table_char_ {}
 impl Table_char_ {
+    pub fn new_1(this: Ptr<Table_char_>) {}
     pub fn copy_from(this: Ptr<Table_char_>, _a0: Ptr<Table_char_>) {}
+    pub fn move_from(this: Ptr<Table_char_>, _a0: Ptr<Table_char_>) {}
 }
 pub fn main() {
     __cpp2rust_init_globals();

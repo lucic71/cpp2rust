@@ -68,6 +68,10 @@ impl Holder {
         field!(this, xs).write(field!(_a0, xs).with_mut(std::mem::take));
         field!(this, ys).write(field!(_a0, ys).with_mut(std::mem::take));
     }
+    pub fn new_1(this: Ptr<Holder>) {
+        field!(this, xs).write(Vec::new());
+        field!(this, ys).write(Vec::new());
+    }
 }
 pub fn main() {
     __cpp2rust_init_globals();
@@ -76,8 +80,11 @@ pub fn main() {
 fn main_0() -> i32 {
     let m: Value<Movable> = Rc::new(RefCell::new(<Movable>::uninit()));
     Movable::new(m.as_pointer(), { 3 }, { 4 });
-    let __decomp_2: Value<Movable> = Rc::new(RefCell::new(<Movable>::uninit()));
-    Movable::move_from(__decomp_2.as_pointer(), { m.as_pointer() });
+    let __decomp_2: Value<Movable> = {
+        let __v: Value<Movable> = Rc::new(RefCell::new(<Movable>::uninit()));
+        Movable::move_from(__v.as_pointer(), { m.as_pointer() });
+        __v
+    };
     assert!((moves_1.with(|rc| *rc.borrow()) == 1));
     assert!((copies_0.with(|rc| *rc.borrow()) == 0));
     assert!(({ ({ (*__decomp_2.borrow()).x } == 3) }));
@@ -90,8 +97,11 @@ fn main_0() -> i32 {
         field!(__d, xs).write(Vec::from([1, 2, 3]));
         field!(__d, ys).write(Vec::from([4, 5]));
     };
-    let __decomp_3: Value<Holder> = Rc::new(RefCell::new(<Holder>::uninit()));
-    ({ HolderImpl::extract(&h.as_pointer(), __decomp_3.as_pointer()) });
+    let __decomp_3: Value<Holder> = {
+        let __v: Value<Holder> = Rc::new(RefCell::new(<Holder>::uninit()));
+        ({ HolderImpl::extract(&h.as_pointer(), __v.as_pointer()) });
+        __v
+    };
     assert!(({ ((*__decomp_3.borrow()).xs.len() == 3_usize) }));
     assert!(({ ((*__decomp_3.borrow()).ys.len() == 2_usize) }));
     assert!(((elem!(field_ref!(__decomp_3.as_pointer(), xs).decay(), 2_usize).read()) == 3));

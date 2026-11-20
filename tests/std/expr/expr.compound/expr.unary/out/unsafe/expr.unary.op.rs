@@ -17,9 +17,15 @@ impl p3_2_static_member_is_ordinary_pointer_HasStaticMembers {
     pub unsafe fn run() {
         (*(*&raw const calls_1).get()).prefix_inc();
     }
+    pub unsafe fn new_1(this: *mut p3_2_static_member_is_ordinary_pointer_HasStaticMembers) {}
     pub unsafe fn copy_from(
         this: *mut p3_2_static_member_is_ordinary_pointer_HasStaticMembers,
         _a0: *const p3_2_static_member_is_ordinary_pointer_HasStaticMembers,
+    ) {
+    }
+    pub unsafe fn move_from(
+        this: *mut p3_2_static_member_is_ordinary_pointer_HasStaticMembers,
+        _a0: *mut p3_2_static_member_is_ordinary_pointer_HasStaticMembers,
     ) {
     }
 }
@@ -45,9 +51,19 @@ impl p3_2_explicit_object_member_is_ordinary_pointer_HasExplicitObjectMember {
     ) -> i32 {
         return (((*self_).base) + (amount));
     }
+    pub unsafe fn new_1(
+        this: *mut p3_2_explicit_object_member_is_ordinary_pointer_HasExplicitObjectMember,
+    ) {
+    }
     pub unsafe fn copy_from(
         this: *mut p3_2_explicit_object_member_is_ordinary_pointer_HasExplicitObjectMember,
         _a0: *const p3_2_explicit_object_member_is_ordinary_pointer_HasExplicitObjectMember,
+    ) {
+        (&raw mut (*this).base).write((*_a0).base);
+    }
+    pub unsafe fn move_from(
+        this: *mut p3_2_explicit_object_member_is_ordinary_pointer_HasExplicitObjectMember,
+        _a0: *mut p3_2_explicit_object_member_is_ordinary_pointer_HasExplicitObjectMember,
     ) {
         (&raw mut (*this).base).write((*_a0).base);
     }
@@ -81,9 +97,19 @@ impl p4_parenthesized_qualified_id_is_object_pointer_TakesAddressOfOwnMember {
     pub unsafe fn unqualified(&mut self) -> *mut i32 {
         return (&mut self.value as *mut i32);
     }
+    pub unsafe fn new_1(
+        this: *mut p4_parenthesized_qualified_id_is_object_pointer_TakesAddressOfOwnMember,
+    ) {
+    }
     pub unsafe fn copy_from(
         this: *mut p4_parenthesized_qualified_id_is_object_pointer_TakesAddressOfOwnMember,
         _a0: *const p4_parenthesized_qualified_id_is_object_pointer_TakesAddressOfOwnMember,
+    ) {
+        (&raw mut (*this).value).write((*_a0).value);
+    }
+    pub unsafe fn move_from(
+        this: *mut p4_parenthesized_qualified_id_is_object_pointer_TakesAddressOfOwnMember,
+        _a0: *mut p4_parenthesized_qualified_id_is_object_pointer_TakesAddressOfOwnMember,
     ) {
         (&raw mut (*this).value).write((*_a0).value);
     }

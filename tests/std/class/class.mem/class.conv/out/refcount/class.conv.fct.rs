@@ -14,11 +14,18 @@ pub struct p2_non_const_conversion_function_Gauge {
     pub value: i64,
 }
 impl p2_non_const_conversion_function_Gauge {
+    pub fn new_1(this: Ptr<p2_non_const_conversion_function_Gauge>) {}
     pub fn copy_from(
         this: Ptr<p2_non_const_conversion_function_Gauge>,
         _a0: Ptr<p2_non_const_conversion_function_Gauge>,
     ) {
         field!(this, value).write(_a0.with(|__s| __s.value));
+    }
+    pub fn move_from(
+        this: Ptr<p2_non_const_conversion_function_Gauge>,
+        _a0: Ptr<p2_non_const_conversion_function_Gauge>,
+    ) {
+        field!(this, value).write({ (*_a0.upgrade().deref()).value });
     }
 }
 pub fn test_0() {

@@ -31,6 +31,12 @@ impl p1_member_hides_namespace_variable_HasBalance {
     ) {
         (&raw mut (*this).balance).write((*_a0).balance);
     }
+    pub unsafe fn move_from(
+        this: *mut p1_member_hides_namespace_variable_HasBalance,
+        _a0: *mut p1_member_hides_namespace_variable_HasBalance,
+    ) {
+        (&raw mut (*this).balance).write((*_a0).balance);
+    }
 }
 impl Default for p1_member_hides_namespace_variable_HasBalance {
     fn default() -> Self {
@@ -69,6 +75,12 @@ impl p1_out_of_class_definition_is_in_class_scope_HasStaticTotal {
     pub unsafe fn copy_from(
         this: *mut p1_out_of_class_definition_is_in_class_scope_HasStaticTotal,
         _a0: *const p1_out_of_class_definition_is_in_class_scope_HasStaticTotal,
+    ) {
+        (&raw mut (*this).held).write((*_a0).held);
+    }
+    pub unsafe fn move_from(
+        this: *mut p1_out_of_class_definition_is_in_class_scope_HasStaticTotal,
+        _a0: *mut p1_out_of_class_definition_is_in_class_scope_HasStaticTotal,
     ) {
         (&raw mut (*this).held).write((*_a0).held);
     }

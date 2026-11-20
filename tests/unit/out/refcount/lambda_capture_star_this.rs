@@ -13,8 +13,12 @@ pub struct S {
     pub n: i32,
 }
 impl S {
+    pub fn new_1(this: Ptr<S>) {}
     pub fn copy_from(this: Ptr<S>, _a0: Ptr<S>) {
         field!(this, n).write(_a0.with(|__s| __s.n));
+    }
+    pub fn move_from(this: Ptr<S>, _a0: Ptr<S>) {
+        field!(this, n).write({ (*_a0.upgrade().deref()).n });
     }
 }
 pub fn main() {

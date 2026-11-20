@@ -22,8 +22,12 @@ pub struct X1 {
     pub v: i32,
 }
 impl X1 {
+    pub fn new_1(this: Ptr<X1>) {}
     pub fn copy_from(this: Ptr<X1>, _a0: Ptr<X1>) {
         field!(this, v).write(_a0.with(|__s| __s.v));
+    }
+    pub fn move_from(this: Ptr<X1>, _a0: Ptr<X1>) {
+        field!(this, v).write({ (*_a0.upgrade().deref()).v });
     }
 }
 #[derive(Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
@@ -37,6 +41,9 @@ impl X2 {
     pub fn copy_from(this: Ptr<X2>, _a0: Ptr<X2>) {
         field!(this, v).write((_a0.with(|__s| __s.v.clone())).clone());
     }
+    pub fn move_from(this: Ptr<X2>, _a0: Ptr<X2>) {
+        field!(this, v).write(({ (*_a0.upgrade().deref()).v.clone() }).clone());
+    }
 }
 #[derive(Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
 #[byte_size(8)]
@@ -46,8 +53,12 @@ pub struct X3 {
     pub v: Ptr<X2>,
 }
 impl X3 {
+    pub fn new_1(this: Ptr<X3>) {}
     pub fn copy_from(this: Ptr<X3>, _a0: Ptr<X3>) {
         field!(this, v).write(_a0.with(|__s| __s.v.clone()));
+    }
+    pub fn move_from(this: Ptr<X3>, _a0: Ptr<X3>) {
+        field!(this, v).write({ (*_a0.upgrade().deref()).v.clone() });
     }
 }
 #[derive(Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
@@ -58,8 +69,14 @@ pub struct X4 {
     pub v: X3,
 }
 impl X4 {
+    pub fn new_1(this: Ptr<X4>) {
+        X3::new_1(field_ptr!(this, v));
+    }
     pub fn copy_from(this: Ptr<X4>, _a0: Ptr<X4>) {
         X3::copy_from(field_ptr!(this, v), { field_ptr!(_a0, v) });
+    }
+    pub fn move_from(this: Ptr<X4>, _a0: Ptr<X4>) {
+        X3::move_from(field_ptr!(this, v), { field_ptr!(_a0, v) });
     }
 }
 pub fn main() {

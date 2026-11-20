@@ -15,6 +15,7 @@ pub struct Dog {}
 impl Dog {
     pub fn new_1(this: Ptr<Dog>) {}
     pub fn copy_from(this: Ptr<Dog>, _a0: Ptr<Dog>) {}
+    pub fn move_from(this: Ptr<Dog>, _a0: Ptr<Dog>) {}
 }
 #[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
 #[byte_size(8)]
@@ -22,6 +23,7 @@ pub struct Cat {}
 impl Cat {
     pub fn new_1(this: Ptr<Cat>) {}
     pub fn copy_from(this: Ptr<Cat>, _a0: Ptr<Cat>) {}
+    pub fn move_from(this: Ptr<Cat>, _a0: Ptr<Cat>) {}
 }
 pub fn main() {
     __cpp2rust_init_globals();
@@ -29,11 +31,19 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     let dog: Value<Dog> = Rc::new(RefCell::new(<Dog>::uninit()));
-    Dog::new_1(dog.as_pointer());
+    {
+        let __d = dog.as_pointer();
+        ();
+        Dog::new_1(__d)
+    };
     let mut animal: PtrDyn<dyn Animal> = (dog.as_pointer()).to_dyn::<dyn Animal>(|w| w);
     let mut eat1: bool = ({ (*animal.upgrade().deref()).bark() });
     let cat: Value<Cat> = Rc::new(RefCell::new(<Cat>::uninit()));
-    Cat::new_1(cat.as_pointer());
+    {
+        let __d = cat.as_pointer();
+        ();
+        Cat::new_1(__d)
+    };
     animal = (cat.as_pointer()).to_dyn::<dyn Animal>(|w| w);
     let mut eat2: bool = ({ (*animal.upgrade().deref()).bark() });
     assert!((eat1) && (!(eat2)));

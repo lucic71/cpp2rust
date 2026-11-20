@@ -24,7 +24,11 @@ pub struct V {
     pub x: i32,
 }
 impl V {
+    pub unsafe fn new_1(this: *mut V) {}
     pub unsafe fn copy_from(this: *mut V, _a0: *const V) {
+        (&raw mut (*this).x).write((*_a0).x);
+    }
+    pub unsafe fn move_from(this: *mut V, _a0: *mut V) {
         (&raw mut (*this).x).write((*_a0).x);
     }
 }
@@ -43,7 +47,11 @@ pub struct W_int_ {
     pub x: i32,
 }
 impl W_int_ {
+    pub unsafe fn new_1(this: *mut W_int_) {}
     pub unsafe fn copy_from(this: *mut W_int_, _a0: *const W_int_) {
+        (&raw mut (*this).x).write((*_a0).x);
+    }
+    pub unsafe fn move_from(this: *mut W_int_, _a0: *mut W_int_) {
         (&raw mut (*this).x).write((*_a0).x);
     }
 }
@@ -56,7 +64,11 @@ pub struct W_long_ {
     pub x: i64,
 }
 impl W_long_ {
+    pub unsafe fn new_1(this: *mut W_long_) {}
     pub unsafe fn copy_from(this: *mut W_long_, _a0: *const W_long_) {
+        (&raw mut (*this).x).write((*_a0).x);
+    }
+    pub unsafe fn move_from(this: *mut W_long_, _a0: *mut W_long_) {
         (&raw mut (*this).x).write((*_a0).x);
     }
 }
@@ -66,7 +78,11 @@ pub struct D {
     pub x: i32,
 }
 impl D {
+    pub unsafe fn new_1(this: *mut D) {}
     pub unsafe fn copy_from(this: *mut D, _a0: *const D) {
+        (&raw mut (*this).x).write((*_a0).x);
+    }
+    pub unsafe fn move_from(this: *mut D, _a0: *mut D) {
         (&raw mut (*this).x).write((*_a0).x);
     }
 }

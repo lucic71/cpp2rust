@@ -32,6 +32,7 @@ pub struct Meters {
     pub value: i32,
 }
 impl Meters {
+    pub fn new_1(this: Ptr<Meters>) {}
     pub fn copy_from(this: Ptr<Meters>, _a0: Ptr<Meters>) {
         field!(this, value).write(_a0.with(|__s| __s.value));
     }
@@ -52,6 +53,9 @@ impl Label {
     }
     pub fn copy_from(this: Ptr<Label>, _a0: Ptr<Label>) {
         field!(this, id).write(_a0.with(|__s| __s.id));
+    }
+    pub fn move_from(this: Ptr<Label>, _a0: Ptr<Label>) {
+        field!(this, id).write({ (*_a0.upgrade().deref()).id });
     }
 }
 #[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, CppFrom, Default)]
@@ -77,6 +81,10 @@ impl Owner {
         field!(this, taken).write(_a0.with(|__s| __s.taken));
         field!(this, copied).write(_a0.with(|__s| __s.copied));
     }
+    pub fn move_from(this: Ptr<Owner>, _a0: Ptr<Owner>) {
+        field!(this, taken).write({ (*_a0.upgrade().deref()).taken });
+        field!(this, copied).write({ (*_a0.upgrade().deref()).copied });
+    }
 }
 #[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, CppFrom, Default)]
 #[cpp_from(Celsius, new, storage)]
@@ -92,6 +100,9 @@ impl Holder {
     pub fn copy_from(this: Ptr<Holder>, _a0: Ptr<Holder>) {
         field!(this, value).write(_a0.with(|__s| __s.value));
     }
+    pub fn move_from(this: Ptr<Holder>, _a0: Ptr<Holder>) {
+        field!(this, value).write({ (*_a0.upgrade().deref()).value });
+    }
 }
 #[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, CppFrom)]
 #[cpp_from(i32, new, value)]
@@ -106,6 +117,9 @@ impl Fallback {
     }
     pub fn copy_from(this: Ptr<Fallback>, _a0: Ptr<Fallback>) {
         field!(this, value).write(_a0.with(|__s| __s.value));
+    }
+    pub fn move_from(this: Ptr<Fallback>, _a0: Ptr<Fallback>) {
+        field!(this, value).write({ (*_a0.upgrade().deref()).value });
     }
 }
 impl Default for Fallback {
@@ -127,8 +141,12 @@ pub struct Counter {
     pub hits: i32,
 }
 impl Counter {
+    pub fn new_1(this: Ptr<Counter>) {}
     pub fn copy_from(this: Ptr<Counter>, _a0: Ptr<Counter>) {
         field!(this, hits).write(_a0.with(|__s| __s.hits));
+    }
+    pub fn move_from(this: Ptr<Counter>, _a0: Ptr<Counter>) {
+        field!(this, hits).write({ (*_a0.upgrade().deref()).hits });
     }
 }
 #[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, CppFrom, Default)]
@@ -146,6 +164,9 @@ impl Observer {
     pub fn copy_from(this: Ptr<Observer>, _a0: Ptr<Observer>) {
         field!(this, seen).write(_a0.with(|__s| __s.seen));
     }
+    pub fn move_from(this: Ptr<Observer>, _a0: Ptr<Observer>) {
+        field!(this, seen).write({ (*_a0.upgrade().deref()).seen });
+    }
 }
 impl Tag {
     pub fn new(this: Ptr<Tag>, u: Ptr<Celsius>) {
@@ -162,6 +183,9 @@ pub struct Tag {
 impl Tag {
     pub fn copy_from(this: Ptr<Tag>, _a0: Ptr<Tag>) {
         field!(this, code).write(_a0.with(|__s| __s.code));
+    }
+    pub fn move_from(this: Ptr<Tag>, _a0: Ptr<Tag>) {
+        field!(this, code).write({ (*_a0.upgrade().deref()).code });
     }
 }
 #[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, CppFrom, Default)]
@@ -182,6 +206,9 @@ impl Name {
     }
     pub fn copy_from(this: Ptr<Name>, _a0: Ptr<Name>) {
         field!(this, len).write(_a0.with(|__s| __s.len));
+    }
+    pub fn move_from(this: Ptr<Name>, _a0: Ptr<Name>) {
+        field!(this, len).write({ (*_a0.upgrade().deref()).len });
     }
 }
 pub fn main() {

@@ -13,9 +13,17 @@ pub struct p2_pointer_to_data_member_bytes_round_trip_HasTwoInts {
     pub second: i32,
 }
 impl p2_pointer_to_data_member_bytes_round_trip_HasTwoInts {
+    pub unsafe fn new_1(this: *mut p2_pointer_to_data_member_bytes_round_trip_HasTwoInts) {}
     pub unsafe fn copy_from(
         this: *mut p2_pointer_to_data_member_bytes_round_trip_HasTwoInts,
         _a0: *const p2_pointer_to_data_member_bytes_round_trip_HasTwoInts,
+    ) {
+        (&raw mut (*this).first).write((*_a0).first);
+        (&raw mut (*this).second).write((*_a0).second);
+    }
+    pub unsafe fn move_from(
+        this: *mut p2_pointer_to_data_member_bytes_round_trip_HasTwoInts,
+        _a0: *mut p2_pointer_to_data_member_bytes_round_trip_HasTwoInts,
     ) {
         (&raw mut (*this).first).write((*_a0).first);
         (&raw mut (*this).second).write((*_a0).second);
@@ -93,9 +101,20 @@ pub struct p3_pointer_to_data_member_bytes_copied_to_other_object_HasTwoInts {
     pub second: i32,
 }
 impl p3_pointer_to_data_member_bytes_copied_to_other_object_HasTwoInts {
+    pub unsafe fn new_1(
+        this: *mut p3_pointer_to_data_member_bytes_copied_to_other_object_HasTwoInts,
+    ) {
+    }
     pub unsafe fn copy_from(
         this: *mut p3_pointer_to_data_member_bytes_copied_to_other_object_HasTwoInts,
         _a0: *const p3_pointer_to_data_member_bytes_copied_to_other_object_HasTwoInts,
+    ) {
+        (&raw mut (*this).first).write((*_a0).first);
+        (&raw mut (*this).second).write((*_a0).second);
+    }
+    pub unsafe fn move_from(
+        this: *mut p3_pointer_to_data_member_bytes_copied_to_other_object_HasTwoInts,
+        _a0: *mut p3_pointer_to_data_member_bytes_copied_to_other_object_HasTwoInts,
     ) {
         (&raw mut (*this).first).write((*_a0).first);
         (&raw mut (*this).second).write((*_a0).second);

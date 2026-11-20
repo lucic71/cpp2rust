@@ -12,7 +12,11 @@ pub struct Inner {
     pub x: i32,
 }
 impl Inner {
+    pub unsafe fn new_1(this: *mut Inner) {}
     pub unsafe fn copy_from(this: *mut Inner, _a0: *const Inner) {
+        (&raw mut (*this).x).write((*_a0).x);
+    }
+    pub unsafe fn move_from(this: *mut Inner, _a0: *mut Inner) {
         (&raw mut (*this).x).write((*_a0).x);
     }
 }
@@ -25,6 +29,7 @@ impl Table {
     }
     pub unsafe fn new_1(this: *mut Table) {}
     pub unsafe fn copy_from(this: *mut Table, _a0: *const Table) {}
+    pub unsafe fn move_from(this: *mut Table, _a0: *mut Table) {}
 }
 pub static mut table_0: libcc2rs::LazyStorage<[i32; 3]> =
     libcc2rs::LazyStorage::new(|__p| unsafe { __p.write([7, 8, 9]) });
@@ -50,11 +55,20 @@ impl S {
     pub unsafe fn operator_addr(&mut self) -> *mut i32 {
         return (&mut self.data[(0) as usize] as *mut i32);
     }
+    pub unsafe fn new_1(this: *mut S) {
+        Inner::new_1((&raw mut (*this).inner));
+    }
     pub unsafe fn copy_from(this: *mut S, _a0: *const S) {
         (&raw mut (*this).data).write(std::array::from_fn::<_, 3, _>(|__i: usize| {
             (*_a0).data[(__i)]
         }));
         Inner::copy_from((&raw mut (*this).inner), { &(*_a0).inner });
+    }
+    pub unsafe fn move_from(this: *mut S, _a0: *mut S) {
+        (&raw mut (*this).data).write(std::array::from_fn::<_, 3, _>(|__i: usize| {
+            (*_a0).data[(__i)]
+        }));
+        Inner::move_from((&raw mut (*this).inner), { &mut (*_a0).inner });
     }
 }
 pub fn main() {

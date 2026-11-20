@@ -52,8 +52,11 @@ pub fn main() {
 unsafe fn main_0() -> i32 {
     let mut s: Counted = ::std::mem::MaybeUninit::uninit().assume_init();
     Counted::new(&raw mut s, { 1 }, { 2 });
-    let mut __decomp_2: Counted = ::std::mem::MaybeUninit::uninit().assume_init();
-    Counted::copy_from(&raw mut __decomp_2, { &s });
+    let mut __decomp_2: Counted = {
+        let mut __v: Counted = ::std::mem::MaybeUninit::uninit().assume_init();
+        Counted::copy_from(&raw mut __v, { &s });
+        __v
+    };
     assert!(((*(*&raw const copies_0).get()) == (1)));
     assert!(((__decomp_2.x) == (2)));
     assert!(((__decomp_2.y) == (4)));
@@ -64,8 +67,11 @@ unsafe fn main_0() -> i32 {
     let __decomp_4: *const Counted = &s;
     assert!(((*(*&raw const copies_0).get()) == (1)));
     assert!((((*__decomp_4).x) == (1)));
-    let mut __decomp_5: Counted = ::std::mem::MaybeUninit::uninit().assume_init();
-    (unsafe { make_counted_1(&raw mut __decomp_5) });
+    let mut __decomp_5: Counted = {
+        let mut __v: Counted = ::std::mem::MaybeUninit::uninit().assume_init();
+        (unsafe { make_counted_1(&raw mut __v) });
+        __v
+    };
     assert!(((*(*&raw const copies_0).get()) == (1)));
     assert!(((__decomp_5.x) == (5)));
     assert!(((__decomp_5.y) == (6)));

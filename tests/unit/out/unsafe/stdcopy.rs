@@ -19,6 +19,9 @@ impl Degrees {
     pub unsafe fn copy_from(this: *mut Degrees, _a0: *const Degrees) {
         (&raw mut (*this).value).write((*_a0).value);
     }
+    pub unsafe fn move_from(this: *mut Degrees, _a0: *mut Degrees) {
+        (&raw mut (*this).value).write((*_a0).value);
+    }
 }
 pub fn main() {
     unsafe {

@@ -16,9 +16,14 @@ pub struct GraphNode {
     pub next: Ptr<GraphNode>,
 }
 impl GraphNode {
+    pub fn new_1(this: Ptr<GraphNode>) {}
     pub fn copy_from(this: Ptr<GraphNode>, _a0: Ptr<GraphNode>) {
         field!(this, dst).write(_a0.with(|__s| __s.dst));
         field!(this, next).write(_a0.with(|__s| __s.next.clone()));
+    }
+    pub fn move_from(this: Ptr<GraphNode>, _a0: Ptr<GraphNode>) {
+        field!(this, dst).write({ (*_a0.upgrade().deref()).dst });
+        field!(this, next).write({ (*_a0.upgrade().deref()).next.clone() });
     }
 }
 #[derive(Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
@@ -31,9 +36,14 @@ pub struct Graph {
     pub adj: Ptr<Ptr<GraphNode>>,
 }
 impl Graph {
+    pub fn new_1(this: Ptr<Graph>) {}
     pub fn copy_from(this: Ptr<Graph>, _a0: Ptr<Graph>) {
         field!(this, V).write(_a0.with(|__s| __s.V));
         field!(this, adj).write(_a0.with(|__s| __s.adj.clone()));
+    }
+    pub fn move_from(this: Ptr<Graph>, _a0: Ptr<Graph>) {
+        field!(this, V).write({ (*_a0.upgrade().deref()).V });
+        field!(this, adj).write({ (*_a0.upgrade().deref()).adj.clone() });
     }
 }
 #[derive(Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg)]
@@ -53,6 +63,9 @@ impl Partial {
     pub fn copy_from(this: Ptr<Partial>, _a0: Ptr<Partial>) {
         field!(this, p).write(_a0.with(|__s| __s.p.clone()));
     }
+    pub fn move_from(this: Ptr<Partial>, _a0: Ptr<Partial>) {
+        field!(this, p).write({ (*_a0.upgrade().deref()).p.clone() });
+    }
 }
 impl Default for Partial {
     fn default() -> Self {
@@ -68,6 +81,7 @@ impl Default for Partial {
 pub struct Declared {}
 impl Declared {
     pub fn copy_from(this: Ptr<Declared>, _a0: Ptr<Declared>) {}
+    pub fn move_from(this: Ptr<Declared>, _a0: Ptr<Declared>) {}
 }
 #[derive(Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
 #[byte_size(16)]
@@ -79,9 +93,14 @@ pub struct S {
     pub d: Ptr<Declared>,
 }
 impl S {
+    pub fn new_1(this: Ptr<S>) {}
     pub fn copy_from(this: Ptr<S>, _a0: Ptr<S>) {
         field!(this, i).write(_a0.with(|__s| __s.i));
         field!(this, d).write(_a0.with(|__s| __s.d.clone()));
+    }
+    pub fn move_from(this: Ptr<S>, _a0: Ptr<S>) {
+        field!(this, i).write({ (*_a0.upgrade().deref()).i });
+        field!(this, d).write({ (*_a0.upgrade().deref()).d.clone() });
     }
 }
 pub fn main() {

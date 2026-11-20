@@ -31,7 +31,9 @@ impl Foo {
     pub unsafe fn method_4(&self, mut x: i32) {}
     pub unsafe fn method2_5(&self, mut x: i32, mut y: i32) {}
     pub unsafe fn method2_6(&self, mut x: f64, mut y: f64) {}
+    pub unsafe fn new_1(this: *mut Foo) {}
     pub unsafe fn copy_from(this: *mut Foo, _a0: *const Foo) {}
+    pub unsafe fn move_from(this: *mut Foo, _a0: *mut Foo) {}
 }
 pub unsafe fn func_5(mut x: i32) -> i32 {
     return 1;

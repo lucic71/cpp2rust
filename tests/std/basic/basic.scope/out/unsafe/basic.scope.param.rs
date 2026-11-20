@@ -31,6 +31,12 @@ impl p1_1_parameter_hides_member_in_constructor_HasMemberNamedLikeParameter {
     ) {
         (&raw mut (*this).amount).write((*_a0).amount);
     }
+    pub unsafe fn move_from(
+        this: *mut p1_1_parameter_hides_member_in_constructor_HasMemberNamedLikeParameter,
+        _a0: *mut p1_1_parameter_hides_member_in_constructor_HasMemberNamedLikeParameter,
+    ) {
+        (&raw mut (*this).amount).write((*_a0).amount);
+    }
 }
 pub unsafe fn test_0() {
     let mut object: p1_1_parameter_hides_member_in_constructor_HasMemberNamedLikeParameter =

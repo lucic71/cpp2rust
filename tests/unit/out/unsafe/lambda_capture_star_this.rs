@@ -65,7 +65,11 @@ impl S {
         self.n = 0;
         return (unsafe { f.call() });
     }
+    pub unsafe fn new_1(this: *mut S) {}
     pub unsafe fn copy_from(this: *mut S, _a0: *const S) {
+        (&raw mut (*this).n).write((*_a0).n);
+    }
+    pub unsafe fn move_from(this: *mut S, _a0: *mut S) {
         (&raw mut (*this).n).write((*_a0).n);
     }
 }

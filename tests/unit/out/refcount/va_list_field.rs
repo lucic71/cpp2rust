@@ -72,8 +72,12 @@ pub struct Cursor_3 {
     pub ap: Ptr<Ptr<VaArg>>,
 }
 impl Cursor_3 {
+    pub fn new_1(this: Ptr<Cursor_3>) {}
     pub fn copy_from(this: Ptr<Cursor_3>, _a0: Ptr<Cursor_3>) {
         field!(this, ap).write(_a0.with(|__s| __s.ap.clone()));
+    }
+    pub fn move_from(this: Ptr<Cursor_3>, _a0: Ptr<Cursor_3>) {
+        field!(this, ap).write({ (*_a0.upgrade().deref()).ap.clone() });
     }
 }
 pub fn main() {

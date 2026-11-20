@@ -13,7 +13,12 @@ pub struct Pair {
     pub second: i32,
 }
 impl Pair {
+    pub unsafe fn new_1(this: *mut Pair) {}
     pub unsafe fn copy_from(this: *mut Pair, _a0: *const Pair) {
+        (&raw mut (*this).first).write((*_a0).first);
+        (&raw mut (*this).second).write((*_a0).second);
+    }
+    pub unsafe fn move_from(this: *mut Pair, _a0: *mut Pair) {
         (&raw mut (*this).first).write((*_a0).first);
         (&raw mut (*this).second).write((*_a0).second);
     }
@@ -25,11 +30,9 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    let mut __decomp_0: Pair = ::std::mem::MaybeUninit::uninit().assume_init();
-    {
-        let __d = &raw mut __decomp_0;
-        (&raw mut (*__d).first).write(1);
-        (&raw mut (*__d).second).write(2);
+    let mut __decomp_0: Pair = Pair {
+        first: 1,
+        second: 2,
     };
     assert!(((__decomp_0.first) == (1)));
     assert!(((__decomp_0.second) == (2)));
@@ -39,8 +42,11 @@ unsafe fn main_0() -> i32 {
         (&raw mut (*__d).first).write(10);
         (&raw mut (*__d).second).write(20);
     };
-    let mut __decomp_1: Pair = ::std::mem::MaybeUninit::uninit().assume_init();
-    Pair::copy_from(&raw mut __decomp_1, { &p });
+    let mut __decomp_1: Pair = {
+        let mut __v: Pair = ::std::mem::MaybeUninit::uninit().assume_init();
+        Pair::copy_from(&raw mut __v, { &p });
+        __v
+    };
     __decomp_1.first = 11;
     __decomp_1.second += 1;
     assert!(((__decomp_1.first) == (11)));

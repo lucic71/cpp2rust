@@ -24,6 +24,9 @@ impl Inner {
         };
         return &mut (*(self as *mut Inner));
     }
+    pub unsafe fn new_1(this: *mut Inner) {
+        (&raw mut (*this).values).write(Vec::new());
+    }
 }
 #[repr(C)]
 #[derive(Clone, VaArg, FnPtrArg, MoveCtorUnsafe, MoveAssignUnsafe, Default)]
@@ -49,6 +52,10 @@ impl Outer {
             Inner::move_assign(&mut self.inner, _arg0)
         });
         return &mut (*(self as *mut Outer));
+    }
+    pub unsafe fn new_1(this: *mut Outer) {
+        (&raw mut (*this).values).write(Vec::new());
+        Inner::new_1((&raw mut (*this).inner));
     }
 }
 pub unsafe fn make_0(__ret: *mut Outer) {

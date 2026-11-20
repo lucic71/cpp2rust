@@ -13,8 +13,12 @@ pub struct S {
     pub v: i32,
 }
 impl S {
+    pub fn new_1(this: Ptr<S>) {}
     pub fn copy_from(this: Ptr<S>, _a0: Ptr<S>) {
         field!(this, v).write(_a0.with(|__s| __s.v));
+    }
+    pub fn move_from(this: Ptr<S>, _a0: Ptr<S>) {
+        field!(this, v).write({ (*_a0.upgrade().deref()).v });
     }
 }
 impl CppLess for S {
@@ -58,8 +62,12 @@ pub struct V {
     pub v: i32,
 }
 impl V {
+    pub fn new_1(this: Ptr<V>) {}
     pub fn copy_from(this: Ptr<V>, _a0: Ptr<V>) {
         field!(this, v).write(_a0.with(|__s| __s.v));
+    }
+    pub fn move_from(this: Ptr<V>, _a0: Ptr<V>) {
+        field!(this, v).write({ (*_a0.upgrade().deref()).v });
     }
 }
 impl CppLess for V {
@@ -112,7 +120,7 @@ fn main_0() -> i32 {
     };
     assert!(
         ({
-            let _a: V = {
+            let _a = {
                 let __v: Value<V> = Rc::new(RefCell::new(<V>::uninit()));
                 V::copy_from(__v.as_pointer(), { x.as_pointer() });
                 __v
@@ -126,7 +134,7 @@ fn main_0() -> i32 {
     );
     assert!(
         ({
-            let _a: V = {
+            let _a = {
                 let __v: Value<V> = Rc::new(RefCell::new(<V>::uninit()));
                 V::copy_from(__v.as_pointer(), { x.as_pointer() });
                 __v
@@ -140,7 +148,7 @@ fn main_0() -> i32 {
     );
     assert!(
         ({
-            let _a: V = {
+            let _a = {
                 let __v: Value<V> = Rc::new(RefCell::new(<V>::uninit()));
                 V::copy_from(__v.as_pointer(), { x.as_pointer() });
                 __v
@@ -154,7 +162,7 @@ fn main_0() -> i32 {
     );
     assert!(
         ({
-            let _a: V = {
+            let _a = {
                 let __v: Value<V> = Rc::new(RefCell::new(<V>::uninit()));
                 V::copy_from(__v.as_pointer(), { y.as_pointer() });
                 __v
@@ -168,7 +176,7 @@ fn main_0() -> i32 {
     );
     assert!(
         !({
-            let _a: V = {
+            let _a = {
                 let __v: Value<V> = Rc::new(RefCell::new(<V>::uninit()));
                 V::copy_from(__v.as_pointer(), { y.as_pointer() });
                 __v

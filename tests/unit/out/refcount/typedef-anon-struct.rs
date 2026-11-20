@@ -20,6 +20,10 @@ impl Outer_RunInfo {
         field!(this, block_idx).write(_a0.with(|__s| __s.block_idx));
         field!(this, num_extra_zero_runs).write(_a0.with(|__s| __s.num_extra_zero_runs));
     }
+    pub fn move_from(this: Ptr<Outer_RunInfo>, _a0: Ptr<Outer_RunInfo>) {
+        field!(this, block_idx).write({ (*_a0.upgrade().deref()).block_idx });
+        field!(this, num_extra_zero_runs).write({ (*_a0.upgrade().deref()).num_extra_zero_runs });
+    }
 }
 #[derive(Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, MoveCtor, MoveAssign, Default)]
 #[byte_size(24)]

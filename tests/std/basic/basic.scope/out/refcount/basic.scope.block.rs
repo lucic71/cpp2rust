@@ -90,6 +90,7 @@ pub struct p1_1_condition_variable_visible_in_else_ConvertsToBool {
     pub value: i32,
 }
 impl p1_1_condition_variable_visible_in_else_ConvertsToBool {
+    pub fn new_1(this: Ptr<p1_1_condition_variable_visible_in_else_ConvertsToBool>) {}
     pub fn copy_from(
         this: Ptr<p1_1_condition_variable_visible_in_else_ConvertsToBool>,
         _a0: Ptr<p1_1_condition_variable_visible_in_else_ConvertsToBool>,

@@ -15,9 +15,14 @@ pub struct Outer_Named {
     pub b: i32,
 }
 impl Outer_Named {
+    pub fn new_1(this: Ptr<Outer_Named>) {}
     pub fn copy_from(this: Ptr<Outer_Named>, _a0: Ptr<Outer_Named>) {
         field!(this, a).write(_a0.with(|__s| __s.a));
         field!(this, b).write(_a0.with(|__s| __s.b));
+    }
+    pub fn move_from(this: Ptr<Outer_Named>, _a0: Ptr<Outer_Named>) {
+        field!(this, a).write({ (*_a0.upgrade().deref()).a });
+        field!(this, b).write({ (*_a0.upgrade().deref()).b });
     }
 }
 #[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
@@ -29,9 +34,14 @@ pub struct anon_0 {
     pub d: i32,
 }
 impl anon_0 {
+    pub fn new_1(this: Ptr<anon_0>) {}
     pub fn copy_from(this: Ptr<anon_0>, _a0: Ptr<anon_0>) {
         field!(this, c).write(_a0.with(|__s| __s.c));
         field!(this, d).write(_a0.with(|__s| __s.d));
+    }
+    pub fn move_from(this: Ptr<anon_0>, _a0: Ptr<anon_0>) {
+        field!(this, c).write({ (*_a0.upgrade().deref()).c });
+        field!(this, d).write({ (*_a0.upgrade().deref()).d });
     }
 }
 #[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
@@ -43,9 +53,14 @@ pub struct anon_1 {
     pub h: i32,
 }
 impl anon_1 {
+    pub fn new_1(this: Ptr<anon_1>) {}
     pub fn copy_from(this: Ptr<anon_1>, _a0: Ptr<anon_1>) {
         field!(this, g).write(_a0.with(|__s| __s.g));
         field!(this, h).write(_a0.with(|__s| __s.h));
+    }
+    pub fn move_from(this: Ptr<anon_1>, _a0: Ptr<anon_1>) {
+        field!(this, g).write({ (*_a0.upgrade().deref()).g });
+        field!(this, h).write({ (*_a0.upgrade().deref()).h });
     }
 }
 #[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
@@ -57,9 +72,14 @@ pub struct anon_2 {
     pub f: i32,
 }
 impl anon_2 {
+    pub fn new_1(this: Ptr<anon_2>) {}
     pub fn copy_from(this: Ptr<anon_2>, _a0: Ptr<anon_2>) {
         field!(this, e).write(_a0.with(|__s| __s.e));
         field!(this, f).write(_a0.with(|__s| __s.f));
+    }
+    pub fn move_from(this: Ptr<anon_2>, _a0: Ptr<anon_2>) {
+        field!(this, e).write({ (*_a0.upgrade().deref()).e });
+        field!(this, f).write({ (*_a0.upgrade().deref()).f });
     }
 }
 #[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
@@ -69,8 +89,12 @@ pub struct anon_4 {
     pub j: i32,
 }
 impl anon_4 {
+    pub fn new_1(this: Ptr<anon_4>) {}
     pub fn copy_from(this: Ptr<anon_4>, _a0: Ptr<anon_4>) {
         field!(this, j).write(_a0.with(|__s| __s.j));
+    }
+    pub fn move_from(this: Ptr<anon_4>, _a0: Ptr<anon_4>) {
+        field!(this, j).write({ (*_a0.upgrade().deref()).j });
     }
 }
 #[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
@@ -80,8 +104,12 @@ pub struct anon_5 {
     pub k: i32,
 }
 impl anon_5 {
+    pub fn new_1(this: Ptr<anon_5>) {}
     pub fn copy_from(this: Ptr<anon_5>, _a0: Ptr<anon_5>) {
         field!(this, k).write(_a0.with(|__s| __s.k));
+    }
+    pub fn move_from(this: Ptr<anon_5>, _a0: Ptr<anon_5>) {
+        field!(this, k).write({ (*_a0.upgrade().deref()).k });
     }
 }
 #[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
@@ -97,12 +125,22 @@ pub struct anon_3 {
     pub anon_5: anon_5,
 }
 impl anon_3 {
+    pub fn new_1(this: Ptr<anon_3>) {
+        anon_4::new_1(field_ptr!(this, inner_named));
+    }
     pub fn copy_from(this: Ptr<anon_3>, _a0: Ptr<anon_3>) {
         field!(this, i).write(_a0.with(|__s| __s.i));
         anon_4::copy_from(field_ptr!(this, inner_named), {
             field_ptr!(_a0, inner_named)
         });
         anon_5::copy_from(field_ptr!(this, anon_5), { field_ptr!(_a0, anon_5) });
+    }
+    pub fn move_from(this: Ptr<anon_3>, _a0: Ptr<anon_3>) {
+        field!(this, i).write({ (*_a0.upgrade().deref()).i });
+        anon_4::move_from(field_ptr!(this, inner_named), {
+            field_ptr!(_a0, inner_named)
+        });
+        anon_5::move_from(field_ptr!(this, anon_5), { field_ptr!(_a0, anon_5) });
     }
 }
 #[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
@@ -125,6 +163,11 @@ pub struct Outer {
     pub anon_3: anon_3,
 }
 impl Outer {
+    pub fn new_1(this: Ptr<Outer>) {
+        Outer_Named::new_1(field_ptr!(this, named));
+        anon_0::new_1(field_ptr!(this, anonymous_named_0));
+        anon_1::new_1(field_ptr!(this, anonymous_named_1));
+    }
     pub fn copy_from(this: Ptr<Outer>, _a0: Ptr<Outer>) {
         Outer_Named::copy_from(field_ptr!(this, named), { field_ptr!(_a0, named) });
         anon_0::copy_from(field_ptr!(this, anonymous_named_0), {
@@ -135,6 +178,17 @@ impl Outer {
         });
         anon_2::copy_from(field_ptr!(this, anon_2), { field_ptr!(_a0, anon_2) });
         anon_3::copy_from(field_ptr!(this, anon_3), { field_ptr!(_a0, anon_3) });
+    }
+    pub fn move_from(this: Ptr<Outer>, _a0: Ptr<Outer>) {
+        Outer_Named::move_from(field_ptr!(this, named), { field_ptr!(_a0, named) });
+        anon_0::move_from(field_ptr!(this, anonymous_named_0), {
+            field_ptr!(_a0, anonymous_named_0)
+        });
+        anon_1::move_from(field_ptr!(this, anonymous_named_1), {
+            field_ptr!(_a0, anonymous_named_1)
+        });
+        anon_2::move_from(field_ptr!(this, anon_2), { field_ptr!(_a0, anon_2) });
+        anon_3::move_from(field_ptr!(this, anon_3), { field_ptr!(_a0, anon_3) });
     }
 }
 pub fn main() {
@@ -147,34 +201,34 @@ fn main_0() -> i32 {
         let __d = o.as_pointer();
         {
             let __d = field_ptr!(__d, named);
-            field!(__d, a).write(0_i32);
-            field!(__d, b).write(0_i32);
+            ();
+            ();
         };
         {
             let __d = field_ptr!(__d, anonymous_named_0);
-            field!(__d, c).write(0_i32);
-            field!(__d, d).write(0_i32);
+            ();
+            ();
         };
         {
             let __d = field_ptr!(__d, anonymous_named_1);
-            field!(__d, g).write(0_i32);
-            field!(__d, h).write(0_i32);
+            ();
+            ();
         };
         {
             let __d = field_ptr!(__d, anon_2);
-            field!(__d, e).write(0_i32);
-            field!(__d, f).write(0_i32);
+            ();
+            ();
         };
         {
             let __d = field_ptr!(__d, anon_3);
-            field!(__d, i).write(0_i32);
+            ();
             {
                 let __d = field_ptr!(__d, inner_named);
-                field!(__d, j).write(0_i32);
+                ();
             };
             {
                 let __d = field_ptr!(__d, anon_5);
-                field!(__d, k).write(0_i32);
+                ();
             };
         };
     };
@@ -235,6 +289,10 @@ impl anon_6 {
     pub fn copy_from(this: Ptr<anon_6>, _a0: Ptr<anon_6>) {
         field!(this, x).write(_a0.with(|__s| __s.x));
         field!(this, z).write(_a0.with(|__s| __s.z));
+    }
+    pub fn move_from(this: Ptr<anon_6>, _a0: Ptr<anon_6>) {
+        field!(this, x).write({ (*_a0.upgrade().deref()).x });
+        field!(this, z).write({ (*_a0.upgrade().deref()).z });
     }
 }
 pub fn __cpp2rust_init_globals() {}

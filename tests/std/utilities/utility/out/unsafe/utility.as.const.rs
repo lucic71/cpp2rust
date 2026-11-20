@@ -18,7 +18,11 @@ impl p1_as_const_Counter {
     pub unsafe fn get_2(&self) -> i32 {
         return self.value;
     }
+    pub unsafe fn new_1(this: *mut p1_as_const_Counter) {}
     pub unsafe fn copy_from(this: *mut p1_as_const_Counter, _a0: *const p1_as_const_Counter) {
+        (&raw mut (*this).value).write((*_a0).value);
+    }
+    pub unsafe fn move_from(this: *mut p1_as_const_Counter, _a0: *mut p1_as_const_Counter) {
         (&raw mut (*this).value).write((*_a0).value);
     }
 }

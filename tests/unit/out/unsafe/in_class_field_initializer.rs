@@ -21,6 +21,10 @@ impl Inner {
         (&raw mut (*this).x).write((*_a0).x);
         (&raw mut (*this).y).write((*_a0).y);
     }
+    pub unsafe fn move_from(this: *mut Inner, _a0: *mut Inner) {
+        (&raw mut (*this).x).write((*_a0).x);
+        (&raw mut (*this).y).write((*_a0).y);
+    }
 }
 impl Default for Inner {
     fn default() -> Self {
@@ -52,6 +56,12 @@ impl S {
         Inner::copy_from((&raw mut (*this).c), { &(*_a0).c });
         Inner::copy_from((&raw mut (*this).d), { &(*_a0).d });
     }
+    pub unsafe fn move_from(this: *mut S, _a0: *mut S) {
+        (&raw mut (*this).a).write((*_a0).a);
+        (&raw mut (*this).b).write((*_a0).b);
+        Inner::move_from((&raw mut (*this).c), { &mut (*_a0).c });
+        Inner::move_from((&raw mut (*this).d), { &mut (*_a0).d });
+    }
 }
 impl Default for S {
     fn default() -> Self {
@@ -77,6 +87,10 @@ impl Boxed_int_ {
         (&raw mut (*this).tag).write(t);
     }
     pub unsafe fn copy_from(this: *mut Boxed_int_, _a0: *const Boxed_int_) {
+        (&raw mut (*this).v).write((*_a0).v);
+        (&raw mut (*this).tag).write((*_a0).tag);
+    }
+    pub unsafe fn move_from(this: *mut Boxed_int_, _a0: *mut Boxed_int_) {
         (&raw mut (*this).v).write((*_a0).v);
         (&raw mut (*this).tag).write((*_a0).tag);
     }

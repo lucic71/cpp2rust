@@ -12,7 +12,11 @@ pub struct S {
     pub v: i32,
 }
 impl S {
+    pub unsafe fn new_1(this: *mut S) {}
     pub unsafe fn copy_from(this: *mut S, _a0: *const S) {
+        (&raw mut (*this).v).write((*_a0).v);
+    }
+    pub unsafe fn move_from(this: *mut S, _a0: *mut S) {
         (&raw mut (*this).v).write((*_a0).v);
     }
 }
@@ -70,7 +74,11 @@ pub struct V {
     pub v: i32,
 }
 impl V {
+    pub unsafe fn new_1(this: *mut V) {}
     pub unsafe fn copy_from(this: *mut V, _a0: *const V) {
+        (&raw mut (*this).v).write((*_a0).v);
+    }
+    pub unsafe fn move_from(this: *mut V, _a0: *mut V) {
         (&raw mut (*this).v).write((*_a0).v);
     }
 }
@@ -145,10 +153,9 @@ unsafe fn main_0() -> i32 {
     };
     assert!(
         (unsafe {
-            let _a: V = (|__p: *mut V| {
-                V::copy_from(__p, { &x });
-                __p
-            })((&mut ::std::mem::MaybeUninit::<V>::uninit()).as_mut_ptr());
+            let mut __tmp_0: V = ::std::mem::MaybeUninit::uninit().assume_init();
+            V::copy_from(&raw mut __tmp_0, { &x });
+            let _a = &raw mut __tmp_0;
             operator_eq_9(
                 _a,
                 (|__p: *mut V| {
@@ -160,10 +167,9 @@ unsafe fn main_0() -> i32 {
     );
     assert!(
         (unsafe {
-            let _a: V = (|__p: *mut V| {
-                V::copy_from(__p, { &x });
-                __p
-            })((&mut ::std::mem::MaybeUninit::<V>::uninit()).as_mut_ptr());
+            let mut __tmp_1: V = ::std::mem::MaybeUninit::uninit().assume_init();
+            V::copy_from(&raw mut __tmp_1, { &x });
+            let _a = &raw mut __tmp_1;
             operator_ne_10(
                 _a,
                 (|__p: *mut V| {
@@ -175,10 +181,9 @@ unsafe fn main_0() -> i32 {
     );
     assert!(
         (unsafe {
-            let _a: V = (|__p: *mut V| {
-                V::copy_from(__p, { &x });
-                __p
-            })((&mut ::std::mem::MaybeUninit::<V>::uninit()).as_mut_ptr());
+            let mut __tmp_2: V = ::std::mem::MaybeUninit::uninit().assume_init();
+            V::copy_from(&raw mut __tmp_2, { &x });
+            let _a = &raw mut __tmp_2;
             operator_lt_8(
                 _a,
                 (|__p: *mut V| {
@@ -190,10 +195,9 @@ unsafe fn main_0() -> i32 {
     );
     assert!(
         (unsafe {
-            let _a: V = (|__p: *mut V| {
-                V::copy_from(__p, { &y });
-                __p
-            })((&mut ::std::mem::MaybeUninit::<V>::uninit()).as_mut_ptr());
+            let mut __tmp_3: V = ::std::mem::MaybeUninit::uninit().assume_init();
+            V::copy_from(&raw mut __tmp_3, { &y });
+            let _a = &raw mut __tmp_3;
             operator_gt_11(
                 _a,
                 (|__p: *mut V| {
@@ -205,10 +209,9 @@ unsafe fn main_0() -> i32 {
     );
     assert!(
         !(unsafe {
-            let _a: V = (|__p: *mut V| {
-                V::copy_from(__p, { &y });
-                __p
-            })((&mut ::std::mem::MaybeUninit::<V>::uninit()).as_mut_ptr());
+            let mut __tmp_4: V = ::std::mem::MaybeUninit::uninit().assume_init();
+            V::copy_from(&raw mut __tmp_4, { &y });
+            let _a = &raw mut __tmp_4;
             operator_lt_8(
                 _a,
                 (|__p: *mut V| {

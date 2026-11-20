@@ -17,6 +17,7 @@ impl C {
     }
     pub unsafe fn new_1(this: *mut C) {}
     pub unsafe fn copy_from(this: *mut C, _a0: *const C) {}
+    pub unsafe fn move_from(this: *mut C, _a0: *mut C) {}
 }
 pub static mut inner_const_1: libcc2rs::LazyStorage<i32> =
     libcc2rs::LazyStorage::new(|__p| unsafe { __p.write(2) });
@@ -31,6 +32,7 @@ impl S {
     }
     pub unsafe fn new_1(this: *mut S) {}
     pub unsafe fn copy_from(this: *mut S, _a0: *const S) {}
+    pub unsafe fn move_from(this: *mut S, _a0: *mut S) {}
 }
 pub static mut counter_2: libcc2rs::LazyStorage<i32> =
     libcc2rs::LazyStorage::new(|__p| unsafe { __p.write(10) });

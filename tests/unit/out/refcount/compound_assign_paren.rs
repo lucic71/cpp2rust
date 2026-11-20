@@ -13,8 +13,12 @@ pub struct Item {
     pub flags: u8,
 }
 impl Item {
+    pub fn new_1(this: Ptr<Item>) {}
     pub fn copy_from(this: Ptr<Item>, _a0: Ptr<Item>) {
         field!(this, flags).write(_a0.with(|__s| __s.flags));
+    }
+    pub fn move_from(this: Ptr<Item>, _a0: Ptr<Item>) {
+        field!(this, flags).write({ (*_a0.upgrade().deref()).flags });
     }
 }
 pub fn main() {

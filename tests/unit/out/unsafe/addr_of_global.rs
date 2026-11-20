@@ -12,7 +12,11 @@ pub struct Inner {
     pub value: i32,
 }
 impl Inner {
+    pub unsafe fn new_1(this: *mut Inner) {}
     pub unsafe fn copy_from(this: *mut Inner, _a0: *const Inner) {
+        (&raw mut (*this).value).write((*_a0).value);
+    }
+    pub unsafe fn move_from(this: *mut Inner, _a0: *mut Inner) {
         (&raw mut (*this).value).write((*_a0).value);
     }
 }
@@ -22,7 +26,11 @@ pub struct Outer {
     pub p: *mut Inner,
 }
 impl Outer {
+    pub unsafe fn new_1(this: *mut Outer) {}
     pub unsafe fn copy_from(this: *mut Outer, _a0: *const Outer) {
+        (&raw mut (*this).p).write((*_a0).p);
+    }
+    pub unsafe fn move_from(this: *mut Outer, _a0: *mut Outer) {
         (&raw mut (*this).p).write((*_a0).p);
     }
 }

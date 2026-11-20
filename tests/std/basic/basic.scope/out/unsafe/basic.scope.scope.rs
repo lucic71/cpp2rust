@@ -56,6 +56,11 @@ impl p2_11_unscoped_enumerator_in_both_scopes_HasUnscopedEnum {
         _a0: *const p2_11_unscoped_enumerator_in_both_scopes_HasUnscopedEnum,
     ) {
     }
+    pub unsafe fn move_from(
+        this: *mut p2_11_unscoped_enumerator_in_both_scopes_HasUnscopedEnum,
+        _a0: *mut p2_11_unscoped_enumerator_in_both_scopes_HasUnscopedEnum,
+    ) {
+    }
 }
 pub unsafe fn test_5() {
     assert!(((p2_11_unscoped_enumerator_in_both_scopes_Direction_north as i32) == (4)));
@@ -84,9 +89,15 @@ impl p2_12_class_name_in_own_scope_HasStaticCounter {
     pub unsafe fn bump() {
         (*(*&raw const count_6).get()).prefix_inc();
     }
+    pub unsafe fn new_1(this: *mut p2_12_class_name_in_own_scope_HasStaticCounter) {}
     pub unsafe fn copy_from(
         this: *mut p2_12_class_name_in_own_scope_HasStaticCounter,
         _a0: *const p2_12_class_name_in_own_scope_HasStaticCounter,
+    ) {
+    }
+    pub unsafe fn move_from(
+        this: *mut p2_12_class_name_in_own_scope_HasStaticCounter,
+        _a0: *mut p2_12_class_name_in_own_scope_HasStaticCounter,
     ) {
     }
 }
@@ -140,6 +151,13 @@ impl p2_13_anonymous_union_members_in_parent_scope_HasAnonymousUnion {
     pub unsafe fn copy_from(
         this: *mut p2_13_anonymous_union_members_in_parent_scope_HasAnonymousUnion,
         _a0: *const p2_13_anonymous_union_members_in_parent_scope_HasAnonymousUnion,
+    ) {
+        (&raw mut (*this).tag).write((*_a0).tag);
+        (&raw mut (*this).anon_9).write((*_a0).anon_9);
+    }
+    pub unsafe fn move_from(
+        this: *mut p2_13_anonymous_union_members_in_parent_scope_HasAnonymousUnion,
+        _a0: *mut p2_13_anonymous_union_members_in_parent_scope_HasAnonymousUnion,
     ) {
         (&raw mut (*this).tag).write((*_a0).tag);
         (&raw mut (*this).anon_9).write((*_a0).anon_9);
@@ -207,6 +225,13 @@ impl p3_2_const_qualified_member_is_distinct_HasConstOverload {
         (&raw mut (*this).plain_calls).write((*_a0).plain_calls);
         (&raw mut (*this).const_calls).write((*_a0).const_calls);
     }
+    pub unsafe fn move_from(
+        this: *mut p3_2_const_qualified_member_is_distinct_HasConstOverload,
+        _a0: *mut p3_2_const_qualified_member_is_distinct_HasConstOverload,
+    ) {
+        (&raw mut (*this).plain_calls).write((*_a0).plain_calls);
+        (&raw mut (*this).const_calls).write((*_a0).const_calls);
+    }
 }
 impl Default for p3_2_const_qualified_member_is_distinct_HasConstOverload {
     fn default() -> Self {
@@ -269,6 +294,12 @@ impl p3_2_explicit_object_and_rvalue_members_are_distinct_HasExplicitObjectOverl
     ) {
         (&raw mut (*this).base).write((*_a0).base);
     }
+    pub unsafe fn move_from(
+        this: *mut p3_2_explicit_object_and_rvalue_members_are_distinct_HasExplicitObjectOverload,
+        _a0: *mut p3_2_explicit_object_and_rvalue_members_are_distinct_HasExplicitObjectOverload,
+    ) {
+        (&raw mut (*this).base).write((*_a0).base);
+    }
 }
 impl Default for p3_2_explicit_object_and_rvalue_members_are_distinct_HasExplicitObjectOverload {
     fn default() -> Self {
@@ -297,7 +328,9 @@ pub unsafe fn test_15() {
     assert!(((*(*&raw const rvalue_calls_14).get()) == (0)));
     assert!(
         ((unsafe {
-            p3_2_explicit_object_and_rvalue_members_are_distinct_HasExplicitObjectOverload :: pick_2 ( &mut *(|__p: *mut p3_2_explicit_object_and_rvalue_members_are_distinct_HasExplicitObjectOverload | { p3_2_explicit_object_and_rvalue_members_are_distinct_HasExplicitObjectOverload :: new_1 ( __p , )  ;
+            p3_2_explicit_object_and_rvalue_members_are_distinct_HasExplicitObjectOverload :: pick_2 ( &mut *(|__p: *mut p3_2_explicit_object_and_rvalue_members_are_distinct_HasExplicitObjectOverload | { { let __d = __p ;
+ __d.write_bytes(0, 1) ;
+ p3_2_explicit_object_and_rvalue_members_are_distinct_HasExplicitObjectOverload :: new_1 ( __d , )  } ;
  __p } )((&mut ::std::mem::MaybeUninit::<p3_2_explicit_object_and_rvalue_members_are_distinct_HasExplicitObjectOverload >::uninit()).as_mut_ptr())  , 2 , )
         }) == (112))
     );
@@ -329,6 +362,11 @@ impl p3_2_ref_qualified_members_are_distinct_HasRefQualifiedOverloads {
         _a0: *const p3_2_ref_qualified_members_are_distinct_HasRefQualifiedOverloads,
     ) {
     }
+    pub unsafe fn move_from(
+        this: *mut p3_2_ref_qualified_members_are_distinct_HasRefQualifiedOverloads,
+        _a0: *mut p3_2_ref_qualified_members_are_distinct_HasRefQualifiedOverloads,
+    ) {
+    }
 }
 pub unsafe fn test_18() {
     let mut object: p3_2_ref_qualified_members_are_distinct_HasRefQualifiedOverloads =
@@ -343,7 +381,9 @@ pub unsafe fn test_18() {
     assert!(((*(*&raw const rvalue_calls_17).get()) == (0)));
     assert!(
         ((unsafe {
-            p3_2_ref_qualified_members_are_distinct_HasRefQualifiedOverloads :: get_2 ( &mut *(|__p: *mut p3_2_ref_qualified_members_are_distinct_HasRefQualifiedOverloads | { p3_2_ref_qualified_members_are_distinct_HasRefQualifiedOverloads :: new_1 ( __p , )  ;
+            p3_2_ref_qualified_members_are_distinct_HasRefQualifiedOverloads :: get_2 ( &mut *(|__p: *mut p3_2_ref_qualified_members_are_distinct_HasRefQualifiedOverloads | { { let __d = __p ;
+ __d.write_bytes(0, 1) ;
+ p3_2_ref_qualified_members_are_distinct_HasRefQualifiedOverloads :: new_1 ( __d , )  } ;
  __p } )((&mut ::std::mem::MaybeUninit::<p3_2_ref_qualified_members_are_distinct_HasRefQualifiedOverloads >::uninit()).as_mut_ptr())  , )
         }) == (4))
     );
@@ -373,6 +413,13 @@ impl p3_4_const_qualified_member_templates_are_distinct_HasConstTemplateOverload
     pub unsafe fn copy_from(
         this: *mut p3_4_const_qualified_member_templates_are_distinct_HasConstTemplateOverload,
         _a0: *const p3_4_const_qualified_member_templates_are_distinct_HasConstTemplateOverload,
+    ) {
+        (&raw mut (*this).plain_calls).write((*_a0).plain_calls);
+        (&raw mut (*this).const_calls).write((*_a0).const_calls);
+    }
+    pub unsafe fn move_from(
+        this: *mut p3_4_const_qualified_member_templates_are_distinct_HasConstTemplateOverload,
+        _a0: *mut p3_4_const_qualified_member_templates_are_distinct_HasConstTemplateOverload,
     ) {
         (&raw mut (*this).plain_calls).write((*_a0).plain_calls);
         (&raw mut (*this).const_calls).write((*_a0).const_calls);
@@ -442,6 +489,11 @@ impl p3_4_ref_qualified_member_templates_are_distinct_HasRefQualifiedTemplateOve
         _a0 : *const p3_4_ref_qualified_member_templates_are_distinct_HasRefQualifiedTemplateOverloads,
     ) {
     }
+    pub unsafe fn move_from(
+        this: *mut p3_4_ref_qualified_member_templates_are_distinct_HasRefQualifiedTemplateOverloads,
+        _a0: *mut p3_4_ref_qualified_member_templates_are_distinct_HasRefQualifiedTemplateOverloads,
+    ) {
+    }
     pub unsafe fn get_1_int(&mut self, mut value: i32) -> i32 {
         (*(*&raw const lvalue_calls_20).get()).prefix_inc();
         return ((value) + (3));
@@ -465,7 +517,9 @@ pub unsafe fn test_22() {
     assert!(((*(*&raw const rvalue_calls_21).get()) == (0)));
     assert!(
         ((unsafe {
-            p3_4_ref_qualified_member_templates_are_distinct_HasRefQualifiedTemplateOverloads :: get_2_int ( &mut *(|__p: *mut p3_4_ref_qualified_member_templates_are_distinct_HasRefQualifiedTemplateOverloads | { p3_4_ref_qualified_member_templates_are_distinct_HasRefQualifiedTemplateOverloads :: new_1 ( __p , )  ;
+            p3_4_ref_qualified_member_templates_are_distinct_HasRefQualifiedTemplateOverloads :: get_2_int ( &mut *(|__p: *mut p3_4_ref_qualified_member_templates_are_distinct_HasRefQualifiedTemplateOverloads | { { let __d = __p ;
+ __d.write_bytes(0, 1) ;
+ p3_4_ref_qualified_member_templates_are_distinct_HasRefQualifiedTemplateOverloads :: new_1 ( __d , )  } ;
  __p } )((&mut ::std::mem::MaybeUninit::<p3_4_ref_qualified_member_templates_are_distinct_HasRefQualifiedTemplateOverloads >::uninit()).as_mut_ptr())  , 10 , )
         }) == (14))
     );
@@ -485,9 +539,18 @@ pub static mut friend_calls_23: libcc2rs::LazyStorage<i32> =
 #[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct p4_friend_definition_defines_earlier_friend_declaration_DeclaresFriend {}
 impl p4_friend_definition_defines_earlier_friend_declaration_DeclaresFriend {
+    pub unsafe fn new_1(
+        this: *mut p4_friend_definition_defines_earlier_friend_declaration_DeclaresFriend,
+    ) {
+    }
     pub unsafe fn copy_from(
         this: *mut p4_friend_definition_defines_earlier_friend_declaration_DeclaresFriend,
         _a0: *const p4_friend_definition_defines_earlier_friend_declaration_DeclaresFriend,
+    ) {
+    }
+    pub unsafe fn move_from(
+        this: *mut p4_friend_definition_defines_earlier_friend_declaration_DeclaresFriend,
+        _a0: *mut p4_friend_definition_defines_earlier_friend_declaration_DeclaresFriend,
     ) {
     }
 }
@@ -499,9 +562,18 @@ pub unsafe fn shared_friend_24() -> i32 {
 #[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct p4_friend_definition_defines_earlier_friend_declaration_DefinesFriend {}
 impl p4_friend_definition_defines_earlier_friend_declaration_DefinesFriend {
+    pub unsafe fn new_1(
+        this: *mut p4_friend_definition_defines_earlier_friend_declaration_DefinesFriend,
+    ) {
+    }
     pub unsafe fn copy_from(
         this: *mut p4_friend_definition_defines_earlier_friend_declaration_DefinesFriend,
         _a0: *const p4_friend_definition_defines_earlier_friend_declaration_DefinesFriend,
+    ) {
+    }
+    pub unsafe fn move_from(
+        this: *mut p4_friend_definition_defines_earlier_friend_declaration_DefinesFriend,
+        _a0: *mut p4_friend_definition_defines_earlier_friend_declaration_DefinesFriend,
     ) {
     }
 }
@@ -537,9 +609,16 @@ pub struct p4_2_class_and_function_share_name_Reading {
     pub value: i32,
 }
 impl p4_2_class_and_function_share_name_Reading {
+    pub unsafe fn new_1(this: *mut p4_2_class_and_function_share_name_Reading) {}
     pub unsafe fn copy_from(
         this: *mut p4_2_class_and_function_share_name_Reading,
         _a0: *const p4_2_class_and_function_share_name_Reading,
+    ) {
+        (&raw mut (*this).value).write((*_a0).value);
+    }
+    pub unsafe fn move_from(
+        this: *mut p4_2_class_and_function_share_name_Reading,
+        _a0: *mut p4_2_class_and_function_share_name_Reading,
     ) {
         (&raw mut (*this).value).write((*_a0).value);
     }
@@ -566,9 +645,16 @@ pub struct p4_2_class_and_variable_share_name_Limit {
     pub value: i32,
 }
 impl p4_2_class_and_variable_share_name_Limit {
+    pub unsafe fn new_1(this: *mut p4_2_class_and_variable_share_name_Limit) {}
     pub unsafe fn copy_from(
         this: *mut p4_2_class_and_variable_share_name_Limit,
         _a0: *const p4_2_class_and_variable_share_name_Limit,
+    ) {
+        (&raw mut (*this).value).write((*_a0).value);
+    }
+    pub unsafe fn move_from(
+        this: *mut p4_2_class_and_variable_share_name_Limit,
+        _a0: *mut p4_2_class_and_variable_share_name_Limit,
     ) {
         (&raw mut (*this).value).write((*_a0).value);
     }

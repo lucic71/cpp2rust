@@ -21,6 +21,9 @@ impl S_int_ {
     pub unsafe fn copy_from(this: *mut S_int_, _a0: *const S_int_) {
         (&raw mut (*this).x).write((*_a0).x);
     }
+    pub unsafe fn move_from(this: *mut S_int_, _a0: *mut S_int_) {
+        (&raw mut (*this).x).write((*_a0).x);
+    }
 }
 impl Default for S_int_ {
     fn default() -> Self {

@@ -12,6 +12,7 @@ pub struct X {
     pub v: i32,
 }
 impl X {
+    pub unsafe fn new_1(this: *mut X) {}
     pub unsafe fn copy_from(this: *mut X, _a0: *const X) {
         (&raw mut (*this).v).write((*_a0).v);
     }
@@ -80,7 +81,11 @@ pub struct Result {
     pub r: i32,
 }
 impl Result {
+    pub unsafe fn new_1(this: *mut Result) {}
     pub unsafe fn copy_from(this: *mut Result, _a0: *const Result) {
+        (&raw mut (*this).r).write((*_a0).r);
+    }
+    pub unsafe fn move_from(this: *mut Result, _a0: *mut Result) {
         (&raw mut (*this).r).write((*_a0).r);
     }
 }
@@ -97,7 +102,11 @@ impl Custom {
         };
         return;
     }
+    pub unsafe fn new_1(this: *mut Custom) {}
     pub unsafe fn copy_from(this: *mut Custom, _a0: *const Custom) {
+        (&raw mut (*this).v).write((*_a0).v);
+    }
+    pub unsafe fn move_from(this: *mut Custom, _a0: *mut Custom) {
         (&raw mut (*this).v).write((*_a0).v);
     }
 }
@@ -120,6 +129,7 @@ impl Mixed {
     pub unsafe fn operator_eq(&self, o: *const Mixed) -> i32 {
         return if ((self.v) == ((*o).v)) { 9 } else { 0 };
     }
+    pub unsafe fn new_1(this: *mut Mixed) {}
     pub unsafe fn copy_from(this: *mut Mixed, _a0: *const Mixed) {
         (&raw mut (*this).v).write((*_a0).v);
     }
@@ -167,6 +177,9 @@ impl MyBool {
     pub unsafe fn copy_from(this: *mut MyBool, _a0: *const MyBool) {
         (&raw mut (*this).value).write((*_a0).value);
     }
+    pub unsafe fn move_from(this: *mut MyBool, _a0: *mut MyBool) {
+        (&raw mut (*this).value).write((*_a0).value);
+    }
 }
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
@@ -174,6 +187,7 @@ pub struct Boolish {
     pub v: i32,
 }
 impl Boolish {
+    pub unsafe fn new_1(this: *mut Boolish) {}
     pub unsafe fn copy_from(this: *mut Boolish, _a0: *const Boolish) {
         (&raw mut (*this).v).write((*_a0).v);
     }
@@ -264,7 +278,11 @@ impl RefInt {
     pub unsafe fn operator_eq(&self, _a0: *const RefInt) -> *mut RefBool {
         return &mut (*(*&raw const ref_true_8).get());
     }
+    pub unsafe fn new_1(this: *mut RefInt) {}
     pub unsafe fn copy_from(this: *mut RefInt, _a0: *const RefInt) {
+        (&raw mut (*this).v).write((*_a0).v);
+    }
+    pub unsafe fn move_from(this: *mut RefInt, _a0: *mut RefInt) {
         (&raw mut (*this).v).write((*_a0).v);
     }
 }
@@ -303,10 +321,9 @@ unsafe fn main_0() -> i32 {
     };
     assert!(
         ((unsafe {
-            let _a: X = (|__p: *mut X| {
-                X::copy_from(__p, { &a });
-                __p
-            })((&mut ::std::mem::MaybeUninit::<X>::uninit()).as_mut_ptr());
+            let mut __tmp_0: X = ::std::mem::MaybeUninit::uninit().assume_init();
+            X::copy_from(&raw mut __tmp_0, { &a });
+            let _a = &raw mut __tmp_0;
             operator_eq_1(
                 _a,
                 (|__p: *mut X| {
@@ -318,10 +335,9 @@ unsafe fn main_0() -> i32 {
     );
     assert!(
         ((unsafe {
-            let _a: X = (|__p: *mut X| {
-                X::copy_from(__p, { &a });
-                __p
-            })((&mut ::std::mem::MaybeUninit::<X>::uninit()).as_mut_ptr());
+            let mut __tmp_1: X = ::std::mem::MaybeUninit::uninit().assume_init();
+            X::copy_from(&raw mut __tmp_1, { &a });
+            let _a = &raw mut __tmp_1;
             operator_eq_1(
                 _a,
                 (|__p: *mut X| {
@@ -333,10 +349,9 @@ unsafe fn main_0() -> i32 {
     );
     assert!(
         ((unsafe {
-            let _a: X = (|__p: *mut X| {
-                X::copy_from(__p, { &a });
-                __p
-            })((&mut ::std::mem::MaybeUninit::<X>::uninit()).as_mut_ptr());
+            let mut __tmp_2: X = ::std::mem::MaybeUninit::uninit().assume_init();
+            X::copy_from(&raw mut __tmp_2, { &a });
+            let _a = &raw mut __tmp_2;
             operator_ne_2(
                 _a,
                 (|__p: *mut X| {
@@ -348,10 +363,9 @@ unsafe fn main_0() -> i32 {
     );
     assert!(
         ((unsafe {
-            let _a: X = (|__p: *mut X| {
-                X::copy_from(__p, { &a });
-                __p
-            })((&mut ::std::mem::MaybeUninit::<X>::uninit()).as_mut_ptr());
+            let mut __tmp_3: X = ::std::mem::MaybeUninit::uninit().assume_init();
+            X::copy_from(&raw mut __tmp_3, { &a });
+            let _a = &raw mut __tmp_3;
             operator_lt_0(
                 _a,
                 (|__p: *mut X| {
@@ -363,10 +377,9 @@ unsafe fn main_0() -> i32 {
     );
     assert!(
         ((unsafe {
-            let _a: X = (|__p: *mut X| {
-                X::copy_from(__p, { &b });
-                __p
-            })((&mut ::std::mem::MaybeUninit::<X>::uninit()).as_mut_ptr());
+            let mut __tmp_4: X = ::std::mem::MaybeUninit::uninit().assume_init();
+            X::copy_from(&raw mut __tmp_4, { &b });
+            let _a = &raw mut __tmp_4;
             operator_gt_3(
                 _a,
                 (|__p: *mut X| {
@@ -378,10 +391,9 @@ unsafe fn main_0() -> i32 {
     );
     assert!(
         ((unsafe {
-            let _a: X = (|__p: *mut X| {
-                X::copy_from(__p, { &a });
-                __p
-            })((&mut ::std::mem::MaybeUninit::<X>::uninit()).as_mut_ptr());
+            let mut __tmp_5: X = ::std::mem::MaybeUninit::uninit().assume_init();
+            X::copy_from(&raw mut __tmp_5, { &a });
+            let _a = &raw mut __tmp_5;
             operator_le_4(
                 _a,
                 (|__p: *mut X| {
@@ -393,10 +405,9 @@ unsafe fn main_0() -> i32 {
     );
     assert!(
         ((unsafe {
-            let _a: X = (|__p: *mut X| {
-                X::copy_from(__p, { &a });
-                __p
-            })((&mut ::std::mem::MaybeUninit::<X>::uninit()).as_mut_ptr());
+            let mut __tmp_6: X = ::std::mem::MaybeUninit::uninit().assume_init();
+            X::copy_from(&raw mut __tmp_6, { &a });
+            let _a = &raw mut __tmp_6;
             operator_ge_5(
                 _a,
                 (|__p: *mut X| {
@@ -423,16 +434,16 @@ unsafe fn main_0() -> i32 {
         };
     };
     {
-        let mut __tmp_0 = { xs.as_mut_ptr() };
-        let __n = xs.as_mut_ptr().offset((3) as isize).iter_distance(&__tmp_0);
+        let mut __tmp_7 = { xs.as_mut_ptr() };
+        let __n = xs.as_mut_ptr().offset((3) as isize).iter_distance(&__tmp_7);
         let mut __order: Vec<isize> = (0..__n).collect();
-        __order.sort_by(|&__x, &__y| (*__tmp_0.iter_at(__x)).cmp(&*__tmp_0.iter_at(__y)));
+        __order.sort_by(|&__x, &__y| (*__tmp_7.iter_at(__x)).cmp(&*__tmp_7.iter_at(__y)));
         let __values: Vec<_> = __order
             .iter()
-            .map(|&__i| std::ptr::read(__tmp_0.iter_at(__i)))
+            .map(|&__i| std::ptr::read(__tmp_7.iter_at(__i)))
             .collect();
         for (__i, __v) in (0..__n).zip(__values) {
-            std::ptr::write(__tmp_0.iter_at(__i), __v);
+            std::ptr::write(__tmp_7.iter_at(__i), __v);
         }
     };
     assert!(
@@ -488,16 +499,16 @@ unsafe fn main_0() -> i32 {
         };
     };
     {
-        let mut __tmp_1 = { ms.as_mut_ptr() };
-        let __n = ms.as_mut_ptr().offset((3) as isize).iter_distance(&__tmp_1);
+        let mut __tmp_8 = { ms.as_mut_ptr() };
+        let __n = ms.as_mut_ptr().offset((3) as isize).iter_distance(&__tmp_8);
         let mut __order: Vec<isize> = (0..__n).collect();
-        __order.sort_by(|&__x, &__y| (*__tmp_1.iter_at(__x)).cmp(&*__tmp_1.iter_at(__y)));
+        __order.sort_by(|&__x, &__y| (*__tmp_8.iter_at(__x)).cmp(&*__tmp_8.iter_at(__y)));
         let __values: Vec<_> = __order
             .iter()
-            .map(|&__i| std::ptr::read(__tmp_1.iter_at(__i)))
+            .map(|&__i| std::ptr::read(__tmp_8.iter_at(__i)))
             .collect();
         for (__i, __v) in (0..__n).zip(__values) {
-            std::ptr::write(__tmp_1.iter_at(__i), __v);
+            std::ptr::write(__tmp_8.iter_at(__i), __v);
         }
     };
     assert!(
@@ -524,12 +535,9 @@ unsafe fn main_0() -> i32 {
         (unsafe {
             MyBool::to_bool(&mut *(|__p: *mut MyBool| {
                 (unsafe {
-                    let _a: Boolish = (|__p: *mut Boolish| {
-                        Boolish::copy_from(__p, { &b1 });
-                        __p
-                    })(
-                        (&mut ::std::mem::MaybeUninit::<Boolish>::uninit()).as_mut_ptr(),
-                    );
+                    let mut __tmp_9: Boolish = ::std::mem::MaybeUninit::uninit().assume_init();
+                    Boolish::copy_from(&raw mut __tmp_9, { &b1 });
+                    let _a = &raw mut __tmp_9;
                     operator_eq_7(
                         __p,
                         _a,
@@ -554,12 +562,9 @@ unsafe fn main_0() -> i32 {
         !(unsafe {
             MyBool::to_bool(&mut *(|__p: *mut MyBool| {
                 (unsafe {
-                    let _a: Boolish = (|__p: *mut Boolish| {
-                        Boolish::copy_from(__p, { &b2 });
-                        __p
-                    })(
-                        (&mut ::std::mem::MaybeUninit::<Boolish>::uninit()).as_mut_ptr(),
-                    );
+                    let mut __tmp_10: Boolish = ::std::mem::MaybeUninit::uninit().assume_init();
+                    Boolish::copy_from(&raw mut __tmp_10, { &b2 });
+                    let _a = &raw mut __tmp_10;
                     operator_lt_6(
                         __p,
                         _a,
@@ -579,11 +584,9 @@ unsafe fn main_0() -> i32 {
     );
     let mut lt: MyBool = ::std::mem::MaybeUninit::uninit().assume_init();
     (unsafe {
-        let _a: Boolish =
-            (|__p: *mut Boolish| {
-                Boolish::copy_from(__p, { &b1 });
-                __p
-            })((&mut ::std::mem::MaybeUninit::<Boolish>::uninit()).as_mut_ptr());
+        let mut __tmp_11: Boolish = ::std::mem::MaybeUninit::uninit().assume_init();
+        Boolish::copy_from(&raw mut __tmp_11, { &b1 });
+        let _a = &raw mut __tmp_11;
         operator_lt_6(
             &raw mut lt,
             _a,
@@ -611,16 +614,19 @@ unsafe fn main_0() -> i32 {
         };
     };
     {
-        let mut __tmp_2 = { bs.as_mut_ptr() };
-        let __n = bs.as_mut_ptr().offset((3) as isize).iter_distance(&__tmp_2);
+        let mut __tmp_12 = { bs.as_mut_ptr() };
+        let __n = bs
+            .as_mut_ptr()
+            .offset((3) as isize)
+            .iter_distance(&__tmp_12);
         let mut __order: Vec<isize> = (0..__n).collect();
-        __order.sort_by(|&__x, &__y| (*__tmp_2.iter_at(__x)).cmp(&*__tmp_2.iter_at(__y)));
+        __order.sort_by(|&__x, &__y| (*__tmp_12.iter_at(__x)).cmp(&*__tmp_12.iter_at(__y)));
         let __values: Vec<_> = __order
             .iter()
-            .map(|&__i| std::ptr::read(__tmp_2.iter_at(__i)))
+            .map(|&__i| std::ptr::read(__tmp_12.iter_at(__i)))
             .collect();
         for (__i, __v) in (0..__n).zip(__values) {
-            std::ptr::write(__tmp_2.iter_at(__i), __v);
+            std::ptr::write(__tmp_12.iter_at(__i), __v);
         }
     };
     assert!(
@@ -652,9 +658,9 @@ unsafe fn main_0() -> i32 {
     };
     assert!(
         (({
-            let mut __tmp_3 = { ris.as_mut_ptr().offset((2) as isize) };
+            let mut __tmp_13 = { ris.as_mut_ptr().offset((2) as isize) };
             let mut __it = ris.as_mut_ptr();
-            while __it != __tmp_3 && *__it.iter_deref() != ri2 {
+            while __it != __tmp_13 && *__it.iter_deref() != ri2 {
                 __it.iter_inc();
             }
             __it

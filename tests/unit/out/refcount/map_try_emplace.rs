@@ -92,6 +92,9 @@ impl RefItem {
     pub fn copy_from(this: Ptr<RefItem>, _a0: Ptr<RefItem>) {
         field!(this, value).write(_a0.with(|__s| __s.value));
     }
+    pub fn move_from(this: Ptr<RefItem>, _a0: Ptr<RefItem>) {
+        field!(this, value).write({ (*_a0.upgrade().deref()).value });
+    }
 }
 impl Default for RefItem {
     fn default() -> Self {

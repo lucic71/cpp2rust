@@ -221,6 +221,11 @@ impl p4_1_pure_virtual_without_definition_OverridesPureVirtual {
         _a0: *const p4_1_pure_virtual_without_definition_OverridesPureVirtual,
     ) {
     }
+    pub unsafe fn move_from(
+        this: *mut p4_1_pure_virtual_without_definition_OverridesPureVirtual,
+        _a0: *mut p4_1_pure_virtual_without_definition_OverridesPureVirtual,
+    ) {
+    }
 }
 pub unsafe fn test_11() {
     let mut d: p4_1_pure_virtual_without_definition_OverridesPureVirtual =
@@ -401,6 +406,17 @@ impl p6_unevaluated_binding_needs_no_capture_HasTwoMembers {
         LifetimeTracked::copy_from((&raw mut (*this).a), { &(*_a0).a });
         LifetimeTracked::copy_from((&raw mut (*this).b), { &(*_a0).b });
     }
+    pub unsafe fn move_from(
+        this: *mut p6_unevaluated_binding_needs_no_capture_HasTwoMembers,
+        _a0: *mut p6_unevaluated_binding_needs_no_capture_HasTwoMembers,
+    ) {
+        LifetimeTracked::copy_from((&raw mut (*this).a), { &(*_a0).a });
+        LifetimeTracked::copy_from((&raw mut (*this).b), { &(*_a0).b });
+    }
+    pub unsafe fn new_1(this: *mut p6_unevaluated_binding_needs_no_capture_HasTwoMembers) {
+        LifetimeTracked::new((&raw mut (*this).a));
+        LifetimeTracked::new((&raw mut (*this).b));
+    }
     pub unsafe fn copy_assign(
         &mut self,
         _a0: *const p6_unevaluated_binding_needs_no_capture_HasTwoMembers,
@@ -469,6 +485,13 @@ impl p7_member_access_captures_this_HasMemberUsedInLambda {
         LifetimeTracked::copy_from((&raw mut (*this).x), { &(*_a0).x });
         (&raw mut (*this).n).write((*_a0).n);
     }
+    pub unsafe fn move_from(
+        this: *mut p7_member_access_captures_this_HasMemberUsedInLambda,
+        _a0: *mut p7_member_access_captures_this_HasMemberUsedInLambda,
+    ) {
+        LifetimeTracked::copy_from((&raw mut (*this).x), { &(*_a0).x });
+        (&raw mut (*this).n).write((*_a0).n);
+    }
     pub unsafe fn new_1(this: *mut p7_member_access_captures_this_HasMemberUsedInLambda) {
         LifetimeTracked::new((&raw mut (*this).x));
         (&raw mut (*this).n).write(1);
@@ -532,6 +555,12 @@ impl p7_unevaluated_this_needs_no_capture_HasMemberUsedInLambda {
     pub unsafe fn copy_from(
         this: *mut p7_unevaluated_this_needs_no_capture_HasMemberUsedInLambda,
         _a0: *const p7_unevaluated_this_needs_no_capture_HasMemberUsedInLambda,
+    ) {
+        LifetimeTracked::copy_from((&raw mut (*this).x), { &(*_a0).x });
+    }
+    pub unsafe fn move_from(
+        this: *mut p7_unevaluated_this_needs_no_capture_HasMemberUsedInLambda,
+        _a0: *mut p7_unevaluated_this_needs_no_capture_HasMemberUsedInLambda,
     ) {
         LifetimeTracked::copy_from((&raw mut (*this).x), { &(*_a0).x });
     }
@@ -694,6 +723,15 @@ pub struct p9_unused_implicit_assignment_HasMemberWithUndefinedCopyAssignment {
     pub m: p9_unused_implicit_assignment_HasUndefinedCopyAssignment,
 }
 impl p9_unused_implicit_assignment_HasMemberWithUndefinedCopyAssignment {
+    pub unsafe fn move_from(
+        this: *mut p9_unused_implicit_assignment_HasMemberWithUndefinedCopyAssignment,
+        _a0: *mut p9_unused_implicit_assignment_HasMemberWithUndefinedCopyAssignment,
+    ) {
+        p9_unused_implicit_assignment_HasUndefinedCopyAssignment::copy_from(
+            (&raw mut (*this).m),
+            { &(*_a0).m },
+        );
+    }
     pub unsafe fn new_1(
         this: *mut p9_unused_implicit_assignment_HasMemberWithUndefinedCopyAssignment,
     ) {

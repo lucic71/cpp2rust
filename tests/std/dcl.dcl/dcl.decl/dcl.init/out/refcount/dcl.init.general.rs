@@ -15,12 +15,20 @@ pub struct p6_1_zero_initialized_pointer_to_member_HasTwoInts {
     pub second: i32,
 }
 impl p6_1_zero_initialized_pointer_to_member_HasTwoInts {
+    pub fn new_1(this: Ptr<p6_1_zero_initialized_pointer_to_member_HasTwoInts>) {}
     pub fn copy_from(
         this: Ptr<p6_1_zero_initialized_pointer_to_member_HasTwoInts>,
         _a0: Ptr<p6_1_zero_initialized_pointer_to_member_HasTwoInts>,
     ) {
         field!(this, first).write(_a0.with(|__s| __s.first));
         field!(this, second).write(_a0.with(|__s| __s.second));
+    }
+    pub fn move_from(
+        this: Ptr<p6_1_zero_initialized_pointer_to_member_HasTwoInts>,
+        _a0: Ptr<p6_1_zero_initialized_pointer_to_member_HasTwoInts>,
+    ) {
+        field!(this, first).write({ (*_a0.upgrade().deref()).first });
+        field!(this, second).write({ (*_a0.upgrade().deref()).second });
     }
 }
 #[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg)]
@@ -31,11 +39,18 @@ pub struct p6_1_zero_initialized_pointer_to_member_HoldsSelector {
     pub selector: isize,
 }
 impl p6_1_zero_initialized_pointer_to_member_HoldsSelector {
+    pub fn new_1(this: Ptr<p6_1_zero_initialized_pointer_to_member_HoldsSelector>) {}
     pub fn copy_from(
         this: Ptr<p6_1_zero_initialized_pointer_to_member_HoldsSelector>,
         _a0: Ptr<p6_1_zero_initialized_pointer_to_member_HoldsSelector>,
     ) {
         field!(this, selector).write(_a0.with(|__s| __s.selector));
+    }
+    pub fn move_from(
+        this: Ptr<p6_1_zero_initialized_pointer_to_member_HoldsSelector>,
+        _a0: Ptr<p6_1_zero_initialized_pointer_to_member_HoldsSelector>,
+    ) {
+        field!(this, selector).write({ (*_a0.upgrade().deref()).selector });
     }
 }
 impl Default for p6_1_zero_initialized_pointer_to_member_HoldsSelector {
@@ -65,7 +80,7 @@ pub fn test_1() {
     );
     {
         let __d = holder.as_pointer();
-        field!(__d, selector).write(-1_isize);
+        ();
     };
     assert!(({ (({ (*holder.borrow()).selector }) == -1_isize) }));
     assert!(

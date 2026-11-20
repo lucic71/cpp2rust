@@ -15,9 +15,14 @@ pub struct Point {
     pub y: i32,
 }
 impl Point {
+    pub fn new_1(this: Ptr<Point>) {}
     pub fn copy_from(this: Ptr<Point>, _a0: Ptr<Point>) {
         field!(this, x).write(_a0.with(|__s| __s.x));
         field!(this, y).write(_a0.with(|__s| __s.y));
+    }
+    pub fn move_from(this: Ptr<Point>, _a0: Ptr<Point>) {
+        field!(this, x).write({ (*_a0.upgrade().deref()).x });
+        field!(this, y).write({ (*_a0.upgrade().deref()).y });
     }
 }
 #[derive(Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg)]
@@ -37,6 +42,14 @@ pub struct Shape {
     pub tail: i32,
 }
 impl Shape {
+    pub fn new_1(this: Ptr<Shape>) {
+        {
+            let __d = array_field_ptr!(this, points);
+            for __i in 0..3_isize {
+                Point::new_1(__d.offset(__i));
+            }
+        };
+    }
     pub fn copy_from(this: Ptr<Shape>, _a0: Ptr<Shape>) {
         field!(this, id).write(_a0.with(|__s| __s.id));
         field!(this, coords).write(Box::new(std::array::from_fn::<_, 4, _>(|__i: usize| {
@@ -51,6 +64,21 @@ impl Shape {
             }
         };
         field!(this, tail).write(_a0.with(|__s| __s.tail));
+    }
+    pub fn move_from(this: Ptr<Shape>, _a0: Ptr<Shape>) {
+        field!(this, id).write({ (*_a0.upgrade().deref()).id });
+        field!(this, coords).write(Box::new(std::array::from_fn::<_, 4, _>(|__i: usize| {
+            (*_a0.upgrade().deref()).coords[(__i) as usize]
+        })));
+        {
+            let __d = array_field_ptr!(this, points);
+            for __i in 0..3_usize {
+                Point::move_from(__d.offset(__i as isize), {
+                    array_field_ptr!(_a0, points).offset(__i)
+                });
+            }
+        };
+        field!(this, tail).write({ (*_a0.upgrade().deref()).tail });
     }
 }
 impl Default for Shape {

@@ -20,6 +20,10 @@ impl S {
         field!(this, x).write(_a0.with(|__s| __s.x));
         field!(this, y).write(_a0.with(|__s| __s.y));
     }
+    pub fn move_from(this: Ptr<S>, _a0: Ptr<S>) {
+        field!(this, x).write({ (*_a0.upgrade().deref()).x });
+        field!(this, y).write({ (*_a0.upgrade().deref()).y });
+    }
 }
 #[derive(Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg)]
 #[byte_size(28)]
@@ -51,6 +55,17 @@ impl W {
             }
         };
     }
+    pub fn move_from(this: Ptr<W>, _a0: Ptr<W>) {
+        field!(this, h).write({ (*_a0.upgrade().deref()).h });
+        {
+            let __d = array_field_ptr!(this, arr);
+            for __i in 0..3_usize {
+                S::move_from(__d.offset(__i as isize), {
+                    array_field_ptr!(_a0, arr).offset(__i)
+                });
+            }
+        };
+    }
 }
 impl Default for W {
     fn default() -> Self {
@@ -77,6 +92,12 @@ impl P {
     pub fn new_1(this: Ptr<P>) {}
     pub fn copy_from(this: Ptr<P>, _a0: Ptr<P>) {
         field!(this, a).write(_a0.with(|__s| __s.a.clone()));
+        field!(this, arr).write(Box::new(std::array::from_fn::<_, 3, _>(|__i: usize| {
+            ((*_a0.upgrade().deref()).arr[(__i) as usize]).clone()
+        })));
+    }
+    pub fn move_from(this: Ptr<P>, _a0: Ptr<P>) {
+        field!(this, a).write({ (*_a0.upgrade().deref()).a.clone() });
         field!(this, arr).write(Box::new(std::array::from_fn::<_, 3, _>(|__i: usize| {
             ((*_a0.upgrade().deref()).arr[(__i) as usize]).clone()
         })));

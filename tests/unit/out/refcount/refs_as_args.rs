@@ -38,6 +38,7 @@ pub struct Val {
     pub x: i32,
 }
 impl Val {
+    pub fn new_1(this: Ptr<Val>) {}
     pub fn copy_from(this: Ptr<Val>, _a0: Ptr<Val>) {
         field!(this, x).write(_a0.with(|__s| __s.x));
     }
@@ -63,25 +64,12 @@ fn main_0() -> i32 {
         field!(__d, x).write(5);
     };
     let mut acc: i32 = ({
-        let _a: Val = {
+        let _a = {
             let __v: Value<Val> = Rc::new(RefCell::new(<Val>::uninit()));
             Val::copy_from(__v.as_pointer(), { v.as_pointer() });
             __v
         };
-        let _b: Val = {
-            let __v: Value<Val> = Rc::new(RefCell::new(<Val>::uninit()));
-            Val::copy_from(__v.as_pointer(), { v.as_pointer() });
-            __v
-        };
-        sum_1(_a, _b)
-    });
-    acc += ({
-        let _a: Val = {
-            let __v: Value<Val> = Rc::new(RefCell::new(<Val>::uninit()));
-            Val::copy_from(__v.as_pointer(), { v.as_pointer() });
-            __v
-        };
-        let _b: Val = {
+        let _b = {
             let __v: Value<Val> = Rc::new(RefCell::new(<Val>::uninit()));
             Val::copy_from(__v.as_pointer(), { v.as_pointer() });
             __v
@@ -89,12 +77,25 @@ fn main_0() -> i32 {
         sum_1(_a, _b)
     });
     acc += ({
-        let _a: Val = {
+        let _a = {
+            let __v: Value<Val> = Rc::new(RefCell::new(<Val>::uninit()));
+            Val::copy_from(__v.as_pointer(), { v.as_pointer() });
+            __v
+        };
+        let _b = {
+            let __v: Value<Val> = Rc::new(RefCell::new(<Val>::uninit()));
+            Val::copy_from(__v.as_pointer(), { v.as_pointer() });
+            __v
+        };
+        sum_1(_a, _b)
+    });
+    acc += ({
+        let _a = {
             let __v: Value<Val> = Rc::new(RefCell::new(<Val>::uninit()));
             Val::move_from(__v.as_pointer(), { v.as_pointer() });
             __v
         };
-        let _b: Val = {
+        let _b = {
             let __v: Value<Val> = Rc::new(RefCell::new(<Val>::uninit()));
             Val::copy_from(__v.as_pointer(), { v.as_pointer() });
             __v
@@ -102,12 +103,12 @@ fn main_0() -> i32 {
         sum_1(_a, _b)
     });
     acc += ({
-        let _a: Val = {
+        let _a = {
             let __v: Value<Val> = Rc::new(RefCell::new(<Val>::uninit()));
             Val::copy_from(__v.as_pointer(), { v.as_pointer() });
             __v
         };
-        let _b: Val = {
+        let _b = {
             let __v: Value<Val> = Rc::new(RefCell::new(<Val>::uninit()));
             Val::copy_from(__v.as_pointer(), { v.as_pointer() });
             __v

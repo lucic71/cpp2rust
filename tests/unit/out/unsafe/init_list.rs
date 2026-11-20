@@ -18,6 +18,11 @@ impl Pair {
         (&raw mut (*this).a).write((*_a0).a);
         (&raw mut (*this).b).write((*_a0).b);
     }
+    pub unsafe fn move_from(this: *mut Pair, _a0: *mut Pair) {
+        (&raw mut (*this).a).write((*_a0).a);
+        (&raw mut (*this).b).write((*_a0).b);
+    }
+    pub unsafe fn new_1(this: *mut Pair) {}
 }
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg)]
@@ -39,6 +44,9 @@ impl Holder {
     pub unsafe fn copy_from(this: *mut Holder, _a0: *const Holder) {
         Pair::copy_from((&raw mut (*this).p), { &(*_a0).p });
     }
+    pub unsafe fn move_from(this: *mut Holder, _a0: *mut Holder) {
+        Pair::move_from((&raw mut (*this).p), { &mut (*_a0).p });
+    }
 }
 impl Default for Holder {
     fn default() -> Self {
@@ -58,7 +66,13 @@ pub struct Seven {
     pub v: i32,
 }
 impl Seven {
+    pub unsafe fn new_1(this: *mut Seven) {
+        (&raw mut (*this).v).write(7);
+    }
     pub unsafe fn copy_from(this: *mut Seven, _a0: *const Seven) {
+        (&raw mut (*this).v).write((*_a0).v);
+    }
+    pub unsafe fn move_from(this: *mut Seven, _a0: *mut Seven) {
         (&raw mut (*this).v).write((*_a0).v);
     }
 }

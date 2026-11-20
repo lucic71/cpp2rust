@@ -78,8 +78,11 @@ unsafe fn main_0() -> i32 {
     };
     let mut base_copies: i32 = (*(*&raw const copies_0).get());
     let mut base_moves: i32 = (*(*&raw const moves_1).get());
-    let mut __decomp_3: Two = ::std::mem::MaybeUninit::uninit().assume_init();
-    Two::copy_from(&raw mut __decomp_3, { &t });
+    let mut __decomp_3: Two = {
+        let mut __v: Two = ::std::mem::MaybeUninit::uninit().assume_init();
+        Two::copy_from(&raw mut __v, { &t });
+        __v
+    };
     assert!(((*(*&raw const copies_0).get()) == ((base_copies) + (2))));
     assert!(((*(*&raw const moves_1).get()) == (base_moves)));
     assert!(((__decomp_3.a.v) == (101)));
@@ -89,16 +92,22 @@ unsafe fn main_0() -> i32 {
     assert!((((*__decomp_4).a.v) == (1)));
     (*__decomp_4).a.v = 50;
     assert!(((t.a.v) == (50)));
-    let mut __decomp_5: Two = ::std::mem::MaybeUninit::uninit().assume_init();
-    Two::move_from(&raw mut __decomp_5, { &mut t });
+    let mut __decomp_5: Two = {
+        let mut __v: Two = ::std::mem::MaybeUninit::uninit().assume_init();
+        Two::move_from(&raw mut __v, { &mut t });
+        __v
+    };
     assert!(((*(*&raw const moves_1).get()) == ((base_moves) + (2))));
     assert!(((__decomp_5.a.v) == (1050)));
     assert!(((__decomp_5.b.v) == (1002)));
     assert!(((t.a.v) == (-1_i32)));
     let mut before_copies: i32 = (*(*&raw const copies_0).get());
     let mut before_moves: i32 = (*(*&raw const moves_1).get());
-    let mut __decomp_6: Two = ::std::mem::MaybeUninit::uninit().assume_init();
-    (unsafe { make_two_2(&raw mut __decomp_6) });
+    let mut __decomp_6: Two = {
+        let mut __v: Two = ::std::mem::MaybeUninit::uninit().assume_init();
+        (unsafe { make_two_2(&raw mut __v) });
+        __v
+    };
     assert!(((*(*&raw const copies_0).get()) == (before_copies)));
     assert!(((*(*&raw const moves_1).get()) == (before_moves)));
     assert!(((__decomp_6.a.v) == (1)));

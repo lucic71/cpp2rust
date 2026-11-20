@@ -45,6 +45,9 @@ impl Ctor {
     pub unsafe fn copy_from(this: *mut Ctor, _a0: *const Ctor) {
         (&raw mut (*this).v).write((*_a0).v);
     }
+    pub unsafe fn move_from(this: *mut Ctor, _a0: *mut Ctor) {
+        (&raw mut (*this).v).write((*_a0).v);
+    }
 }
 impl Default for Ctor {
     fn default() -> Self {
@@ -77,7 +80,9 @@ pub static mut inline_member_11: libcc2rs::LazyStorage<Ctor> =
 #[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct Holder {}
 impl Holder {
+    pub unsafe fn new_1(this: *mut Holder) {}
     pub unsafe fn copy_from(this: *mut Holder, _a0: *const Holder) {}
+    pub unsafe fn move_from(this: *mut Holder, _a0: *mut Holder) {}
 }
 pub static mut member_10: libcc2rs::LazyStorage<i32> =
     libcc2rs::LazyStorage::new(|__p| unsafe { __p.write((unsafe { next_0() })) });
@@ -101,6 +106,9 @@ impl Singleton {
         return &mut (*(*&raw const s_15).get());
     }
     pub unsafe fn copy_from(this: *mut Singleton, _a0: *const Singleton) {
+        (&raw mut (*this).hits).write((*_a0).hits);
+    }
+    pub unsafe fn move_from(this: *mut Singleton, _a0: *mut Singleton) {
         (&raw mut (*this).hits).write((*_a0).hits);
     }
 }

@@ -30,6 +30,9 @@ impl Derived {
     pub fn copy_from(this: Ptr<Derived>, _a0: Ptr<Derived>) {
         field!(this, factor).write(_a0.with(|__s| __s.factor));
     }
+    pub fn move_from(this: Ptr<Derived>, _a0: Ptr<Derived>) {
+        field!(this, factor).write({ (*_a0.upgrade().deref()).factor });
+    }
 }
 #[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
 #[byte_size(8)]
@@ -40,9 +43,14 @@ pub struct Pair {
     pub second: i32,
 }
 impl Pair {
+    pub fn new_1(this: Ptr<Pair>) {}
     pub fn copy_from(this: Ptr<Pair>, _a0: Ptr<Pair>) {
         field!(this, first).write(_a0.with(|__s| __s.first));
         field!(this, second).write(_a0.with(|__s| __s.second));
+    }
+    pub fn move_from(this: Ptr<Pair>, _a0: Ptr<Pair>) {
+        field!(this, first).write({ (*_a0.upgrade().deref()).first });
+        field!(this, second).write({ (*_a0.upgrade().deref()).second });
     }
 }
 pub fn pair_diff_0(mut p: Ptr<Pair>) -> i32 {

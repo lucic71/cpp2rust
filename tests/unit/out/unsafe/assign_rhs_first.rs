@@ -18,7 +18,11 @@ pub struct S {
     pub ptr: *mut i32,
 }
 impl S {
+    pub unsafe fn new_1(this: *mut S) {}
     pub unsafe fn copy_from(this: *mut S, _a0: *const S) {
+        (&raw mut (*this).ptr).write((*_a0).ptr);
+    }
+    pub unsafe fn move_from(this: *mut S, _a0: *mut S) {
         (&raw mut (*this).ptr).write((*_a0).ptr);
     }
 }

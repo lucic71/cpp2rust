@@ -28,6 +28,9 @@ impl SafePointer {
         };
         return &mut (*(self as *mut SafePointer));
     }
+    pub unsafe fn new_1(this: *mut SafePointer) {
+        (&raw mut (*this).ptr).write(None);
+    }
 }
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
@@ -143,7 +146,11 @@ pub unsafe fn Consume_1(mut safe_ptr: Option<Box<SafePointer>>) -> i32 {
     let mut x: Option<Box<SafePointer>> = safe_ptr.take();
     let mut p: Option<Box<Pair>> = Some(Box::from_raw({
         let __p = Box::into_raw(Box::<Pair>::new_uninit()) as *mut Pair;
-        Pair::new_1(__p);
+        {
+            let __d = __p;
+            __d.write_bytes(0, 1);
+            Pair::new_1(__d)
+        };
         __p
     }));
     return ((*(*x.as_deref().map_or(::std::ptr::null_mut(), |v| {

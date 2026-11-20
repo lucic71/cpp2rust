@@ -14,9 +14,18 @@ pub struct p6_array_of_pointers_to_data_members_HasThreeInts {
     pub third: i32,
 }
 impl p6_array_of_pointers_to_data_members_HasThreeInts {
+    pub unsafe fn new_1(this: *mut p6_array_of_pointers_to_data_members_HasThreeInts) {}
     pub unsafe fn copy_from(
         this: *mut p6_array_of_pointers_to_data_members_HasThreeInts,
         _a0: *const p6_array_of_pointers_to_data_members_HasThreeInts,
+    ) {
+        (&raw mut (*this).first).write((*_a0).first);
+        (&raw mut (*this).second).write((*_a0).second);
+        (&raw mut (*this).third).write((*_a0).third);
+    }
+    pub unsafe fn move_from(
+        this: *mut p6_array_of_pointers_to_data_members_HasThreeInts,
+        _a0: *mut p6_array_of_pointers_to_data_members_HasThreeInts,
     ) {
         (&raw mut (*this).first).write((*_a0).first);
         (&raw mut (*this).second).write((*_a0).second);

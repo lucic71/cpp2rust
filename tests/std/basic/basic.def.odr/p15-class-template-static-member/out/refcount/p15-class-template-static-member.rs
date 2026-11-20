@@ -91,7 +91,9 @@ thread_local!(
 #[byte_size(1)]
 pub struct HasStaticMember_int_ {}
 impl HasStaticMember_int_ {
+    pub fn new_1(this: Ptr<HasStaticMember_int_>) {}
     pub fn copy_from(this: Ptr<HasStaticMember_int_>, _a0: Ptr<HasStaticMember_int_>) {}
+    pub fn move_from(this: Ptr<HasStaticMember_int_>, _a0: Ptr<HasStaticMember_int_>) {}
 }
 thread_local!(
     pub static member_5: Value<LifetimeTracked> = {
@@ -110,7 +112,9 @@ thread_local!(
 #[byte_size(1)]
 pub struct HasStaticMember_long_ {}
 impl HasStaticMember_long_ {
+    pub fn new_1(this: Ptr<HasStaticMember_long_>) {}
     pub fn copy_from(this: Ptr<HasStaticMember_long_>, _a0: Ptr<HasStaticMember_long_>) {}
+    pub fn move_from(this: Ptr<HasStaticMember_long_>, _a0: Ptr<HasStaticMember_long_>) {}
 }
 pub fn main() {
     __cpp2rust_init_globals();

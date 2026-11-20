@@ -21,6 +21,10 @@ impl Pair {
         field!(this, x1).write((_a0.with(|__s| __s.x1.clone())).clone());
         field!(this, x2).write((_a0.with(|__s| __s.x2.clone())).clone());
     }
+    pub fn move_from(this: Ptr<Pair>, _a0: Ptr<Pair>) {
+        field!(this, x1).write(({ (*_a0.upgrade().deref()).x1.clone() }).clone());
+        field!(this, x2).write(({ (*_a0.upgrade().deref()).x2.clone() }).clone());
+    }
 }
 pub fn mkPair_0(__ret: Ptr<Pair>, x1: Ptr<i32>, x2: Ptr<i32>) {
     {

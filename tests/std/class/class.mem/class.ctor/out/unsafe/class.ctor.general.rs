@@ -264,6 +264,9 @@ impl returned_object_Aggregate {
     ) {
         Tracker::move_from((&raw mut (*this).tracker), { &mut (*_a0).tracker });
     }
+    pub unsafe fn new_1(this: *mut returned_object_Aggregate) {
+        Tracker::new_2((&raw mut (*this).tracker));
+    }
 }
 pub unsafe fn test_17() {
     let mut r: Tracker = ::std::mem::MaybeUninit::uninit().assume_init();
@@ -288,7 +291,8 @@ pub unsafe fn test_18() {
         })
     );
     let mut __tmp_0: Tracker = ::std::mem::MaybeUninit::uninit().assume_init();
-    Tracker::new_1(&raw mut __tmp_0, { 12 });
+    let __tmp_1 = &raw mut __tmp_0;
+    Tracker::new_1(__tmp_1, { 12 });
     let bound: *const Tracker = &mut __tmp_0;
     assert!(((((*bound).self_).cast_const()) == (bound)) && (((*bound).value) == (12)));
 }

@@ -19,6 +19,11 @@ impl Key {
         (&raw mut (*this).order).write((*_a0).order);
         (&raw mut (*this).identity).write((*_a0).identity);
     }
+    pub unsafe fn move_from(this: *mut Key, _a0: *mut Key) {
+        (&raw mut (*this).order).write((*_a0).order);
+        (&raw mut (*this).identity).write((*_a0).identity);
+    }
+    pub unsafe fn new_1(this: *mut Key) {}
 }
 impl std::cmp::Ord for Key {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering {
@@ -61,6 +66,9 @@ impl Mapped {
         (*(*&raw const default_constructions_0).get()).prefix_inc();
     }
     pub unsafe fn copy_from(this: *mut Mapped, _a0: *const Mapped) {
+        (&raw mut (*this).value).write((*_a0).value);
+    }
+    pub unsafe fn move_from(this: *mut Mapped, _a0: *mut Mapped) {
         (&raw mut (*this).value).write((*_a0).value);
     }
 }

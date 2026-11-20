@@ -35,6 +35,9 @@ impl HoldsTracker {
     pub unsafe fn copy_from(this: *mut HoldsTracker, _a0: *const HoldsTracker) {
         Tracker::copy_from((&raw mut (*this).member), { &(*_a0).member });
     }
+    pub unsafe fn move_from(this: *mut HoldsTracker, _a0: *mut HoldsTracker) {
+        Tracker::copy_from((&raw mut (*this).member), { &(*_a0).member });
+    }
 }
 impl HoldsTracker {
     pub unsafe fn destructor(&mut self) {
@@ -47,7 +50,11 @@ pub struct TriviallyDestructible {
     pub value: i32,
 }
 impl TriviallyDestructible {
+    pub unsafe fn new_1(this: *mut TriviallyDestructible) {}
     pub unsafe fn copy_from(this: *mut TriviallyDestructible, _a0: *const TriviallyDestructible) {
+        (&raw mut (*this).value).write((*_a0).value);
+    }
+    pub unsafe fn move_from(this: *mut TriviallyDestructible, _a0: *mut TriviallyDestructible) {
         (&raw mut (*this).value).write((*_a0).value);
     }
 }
@@ -117,9 +124,15 @@ pub static mut trivial_9: libcc2rs::LazyStorage<TriviallyDestructible> =
 #[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct p3_reverse_completion_order_WithStaticMember {}
 impl p3_reverse_completion_order_WithStaticMember {
+    pub unsafe fn new_1(this: *mut p3_reverse_completion_order_WithStaticMember) {}
     pub unsafe fn copy_from(
         this: *mut p3_reverse_completion_order_WithStaticMember,
         _a0: *const p3_reverse_completion_order_WithStaticMember,
+    ) {
+    }
+    pub unsafe fn move_from(
+        this: *mut p3_reverse_completion_order_WithStaticMember,
+        _a0: *mut p3_reverse_completion_order_WithStaticMember,
     ) {
     }
 }

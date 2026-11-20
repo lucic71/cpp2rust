@@ -17,10 +17,16 @@ pub struct Edge {
     pub weight: f64,
 }
 impl Edge {
+    pub fn new_1(this: Ptr<Edge>) {}
     pub fn copy_from(this: Ptr<Edge>, _a0: Ptr<Edge>) {
         field!(this, u).write(_a0.with(|__s| __s.u));
         field!(this, v).write(_a0.with(|__s| __s.v));
         field!(this, weight).write(_a0.with(|__s| __s.weight));
+    }
+    pub fn move_from(this: Ptr<Edge>, _a0: Ptr<Edge>) {
+        field!(this, u).write({ (*_a0.upgrade().deref()).u });
+        field!(this, v).write({ (*_a0.upgrade().deref()).v });
+        field!(this, weight).write({ (*_a0.upgrade().deref()).weight });
     }
 }
 pub fn partition_0(arr: Ptr<Option<Value<Box<[Edge]>>>>, mut start: i32, mut end: i32) -> i32 {
@@ -147,6 +153,10 @@ impl DisjointSet {
             .write(field!(_a0, parent).with_mut(|__v: &mut Option<Value<Box<[i32]>>>| __v.take()));
         field!(this, n).write({ (*_a0.upgrade().deref()).n });
     }
+    pub fn new_1(this: Ptr<DisjointSet>) {
+        field!(this, rank).write(None);
+        field!(this, parent).write(None);
+    }
 }
 #[derive(Record, ByteRepr, Uninit, FnPtrArg, MoveCtor, MoveAssign, Default)]
 #[byte_size(16)]
@@ -165,6 +175,9 @@ impl Graph {
             .write(field!(_a0, edges).with_mut(|__v: &mut Option<Value<Box<[Edge]>>>| __v.take()));
         field!(this, V).write({ (*_a0.upgrade().deref()).V });
         field!(this, E).write({ (*_a0.upgrade().deref()).E });
+    }
+    pub fn new_1(this: Ptr<Graph>) {
+        field!(this, edges).write(None);
     }
 }
 pub fn MSTKruskal_2(graph: Ptr<Graph>) -> f64 {

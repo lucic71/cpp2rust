@@ -113,6 +113,17 @@ impl Holder {
             }
         };
     }
+    pub fn move_from(this: Ptr<Holder>, _a0: Ptr<Holder>) {
+        Partial::copy_from(field_ptr!(this, p), { field_ptr!(_a0, p) });
+        {
+            let __d = array_field_ptr!(this, arr);
+            for __i in 0..2_usize {
+                Partial::copy_from(__d.offset(__i as isize), {
+                    array_field_ptr!(_a0, arr).offset(__i)
+                });
+            }
+        };
+    }
 }
 impl Default for Holder {
     fn default() -> Self {
@@ -166,6 +177,17 @@ pub struct HasCopyCounted {
 }
 impl HasCopyCounted {
     pub fn copy_from(this: Ptr<HasCopyCounted>, _a0: Ptr<HasCopyCounted>) {
+        CopyCounted::copy_from(field_ptr!(this, c), { field_ptr!(_a0, c) });
+        {
+            let __d = array_field_ptr!(this, arr);
+            for __i in 0..2_usize {
+                CopyCounted::copy_from(__d.offset(__i as isize), {
+                    array_field_ptr!(_a0, arr).offset(__i)
+                });
+            }
+        };
+    }
+    pub fn move_from(this: Ptr<HasCopyCounted>, _a0: Ptr<HasCopyCounted>) {
         CopyCounted::copy_from(field_ptr!(this, c), { field_ptr!(_a0, c) });
         {
             let __d = array_field_ptr!(this, arr);

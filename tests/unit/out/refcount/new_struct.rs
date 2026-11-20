@@ -15,9 +15,14 @@ pub struct Pair {
     pub y: i32,
 }
 impl Pair {
+    pub fn new_1(this: Ptr<Pair>) {}
     pub fn copy_from(this: Ptr<Pair>, _a0: Ptr<Pair>) {
         field!(this, x).write(_a0.with(|__s| __s.x));
         field!(this, y).write(_a0.with(|__s| __s.y));
+    }
+    pub fn move_from(this: Ptr<Pair>, _a0: Ptr<Pair>) {
+        field!(this, x).write({ (*_a0.upgrade().deref()).x });
+        field!(this, y).write({ (*_a0.upgrade().deref()).y });
     }
 }
 #[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
@@ -32,10 +37,18 @@ pub struct Triple {
     pub p: Pair,
 }
 impl Triple {
+    pub fn new_1(this: Ptr<Triple>) {
+        Pair::new_1(field_ptr!(this, p));
+    }
     pub fn copy_from(this: Ptr<Triple>, _a0: Ptr<Triple>) {
         field!(this, a).write(_a0.with(|__s| __s.a));
         field!(this, b).write(_a0.with(|__s| __s.b));
         Pair::copy_from(field_ptr!(this, p), { field_ptr!(_a0, p) });
+    }
+    pub fn move_from(this: Ptr<Triple>, _a0: Ptr<Triple>) {
+        field!(this, a).write({ (*_a0.upgrade().deref()).a });
+        field!(this, b).write({ (*_a0.upgrade().deref()).b });
+        Pair::move_from(field_ptr!(this, p), { field_ptr!(_a0, p) });
     }
 }
 pub fn main() {
@@ -59,11 +72,11 @@ fn main_0() -> i32 {
     {
         let __d = t.as_pointer();
         field!(__d, a).write(1);
-        field!(__d, b).write(0_i32);
+        ();
         {
             let __d = field_ptr!(__d, p);
-            field!(__d, x).write(0_i32);
-            field!(__d, y).write(0_i32);
+            ();
+            ();
         };
     };
     assert!(({ ({ (*t.borrow()).a } == 1) }));
@@ -77,8 +90,8 @@ fn main_0() -> i32 {
             field!(__d, b).write(3);
             {
                 let __d = field_ptr!(__d, p);
-                field!(__d, x).write(0_i32);
-                field!(__d, y).write(0_i32);
+                ();
+                ();
             };
         };
         __p

@@ -28,8 +28,12 @@ pub struct Flag {
     pub v: i32,
 }
 impl Flag {
+    pub fn new_1(this: Ptr<Flag>) {}
     pub fn copy_from(this: Ptr<Flag>, _a0: Ptr<Flag>) {
         field!(this, v).write(_a0.with(|__s| __s.v));
+    }
+    pub fn move_from(this: Ptr<Flag>, _a0: Ptr<Flag>) {
+        field!(this, v).write({ (*_a0.upgrade().deref()).v });
     }
 }
 pub fn use_4(f: Value<Flag>) -> i32 {
@@ -55,8 +59,12 @@ pub struct P {
     pub v: i32,
 }
 impl P {
+    pub fn new_1(this: Ptr<P>) {}
     pub fn copy_from(this: Ptr<P>, _a0: Ptr<P>) {
         field!(this, v).write(_a0.with(|__s| __s.v));
+    }
+    pub fn move_from(this: Ptr<P>, _a0: Ptr<P>) {
+        field!(this, v).write({ (*_a0.upgrade().deref()).v });
     }
 }
 pub fn main() {

@@ -25,9 +25,17 @@ pub struct p1_own_address_in_initializer_SelfLinked {
     pub value: i32,
 }
 impl p1_own_address_in_initializer_SelfLinked {
+    pub unsafe fn new_1(this: *mut p1_own_address_in_initializer_SelfLinked) {}
     pub unsafe fn copy_from(
         this: *mut p1_own_address_in_initializer_SelfLinked,
         _a0: *const p1_own_address_in_initializer_SelfLinked,
+    ) {
+        (&raw mut (*this).next).write((*_a0).next);
+        (&raw mut (*this).value).write((*_a0).value);
+    }
+    pub unsafe fn move_from(
+        this: *mut p1_own_address_in_initializer_SelfLinked,
+        _a0: *mut p1_own_address_in_initializer_SelfLinked,
     ) {
         (&raw mut (*this).next).write((*_a0).next);
         (&raw mut (*this).value).write((*_a0).value);
@@ -97,6 +105,12 @@ impl p9_func_declared_before_function_body_RecordsConstructorName {
     pub unsafe fn copy_from(
         this: *mut p9_func_declared_before_function_body_RecordsConstructorName,
         _a0: *const p9_func_declared_before_function_body_RecordsConstructorName,
+    ) {
+        (&raw mut (*this).name).write((*_a0).name);
+    }
+    pub unsafe fn move_from(
+        this: *mut p9_func_declared_before_function_body_RecordsConstructorName,
+        _a0: *mut p9_func_declared_before_function_body_RecordsConstructorName,
     ) {
         (&raw mut (*this).name).write((*_a0).name);
     }

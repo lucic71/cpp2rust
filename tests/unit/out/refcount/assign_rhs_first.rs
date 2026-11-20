@@ -23,8 +23,12 @@ pub struct S {
     pub ptr: Ptr<i32>,
 }
 impl S {
+    pub fn new_1(this: Ptr<S>) {}
     pub fn copy_from(this: Ptr<S>, _a0: Ptr<S>) {
         field!(this, ptr).write(_a0.with(|__s| __s.ptr.clone()));
+    }
+    pub fn move_from(this: Ptr<S>, _a0: Ptr<S>) {
+        field!(this, ptr).write({ (*_a0.upgrade().deref()).ptr.clone() });
     }
 }
 pub fn by_ref_2(r: Ptr<Ptr<i32>>) {

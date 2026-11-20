@@ -13,7 +13,12 @@ pub struct pair {
     pub b: i32,
 }
 impl pair {
+    pub unsafe fn new_1(this: *mut pair) {}
     pub unsafe fn copy_from(this: *mut pair, _a0: *const pair) {
+        (&raw mut (*this).a).write((*_a0).a);
+        (&raw mut (*this).b).write((*_a0).b);
+    }
+    pub unsafe fn move_from(this: *mut pair, _a0: *mut pair) {
         (&raw mut (*this).a).write((*_a0).a);
         (&raw mut (*this).b).write((*_a0).b);
     }

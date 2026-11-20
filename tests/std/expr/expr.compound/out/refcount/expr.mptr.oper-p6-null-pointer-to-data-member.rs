@@ -15,9 +15,14 @@ pub struct HasTwoInts {
     pub second: i32,
 }
 impl HasTwoInts {
+    pub fn new_1(this: Ptr<HasTwoInts>) {}
     pub fn copy_from(this: Ptr<HasTwoInts>, _a0: Ptr<HasTwoInts>) {
         field!(this, first).write(_a0.with(|__s| __s.first));
         field!(this, second).write(_a0.with(|__s| __s.second));
+    }
+    pub fn move_from(this: Ptr<HasTwoInts>, _a0: Ptr<HasTwoInts>) {
+        field!(this, first).write({ (*_a0.upgrade().deref()).first });
+        field!(this, second).write({ (*_a0.upgrade().deref()).second });
     }
 }
 pub fn main() {

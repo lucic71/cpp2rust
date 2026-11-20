@@ -86,7 +86,11 @@ pub struct Item {
     pub value: i32,
 }
 impl Item {
+    pub unsafe fn new_1(this: *mut Item) {}
     pub unsafe fn copy_from(this: *mut Item, _a0: *const Item) {
+        (&raw mut (*this).value).write((*_a0).value);
+    }
+    pub unsafe fn move_from(this: *mut Item, _a0: *mut Item) {
         (&raw mut (*this).value).write((*_a0).value);
     }
 }
@@ -102,8 +106,8 @@ pub static mut aggregate_selected_9: libcc2rs::LazyStorage<i32> =
             let mut __tmp_8: i32;
             let mut __tmp_9: i32;
             let mut __tmp_7: [i32; 1];
-            let mut __tmp_11: i32;
             let mut __tmp_12: i32;
+            let mut __tmp_13: i32;
             let mut __tmp_10: Item;
             ((unsafe {
                 __tmp_7 = [{
@@ -118,14 +122,15 @@ pub static mut aggregate_selected_9: libcc2rs::LazyStorage<i32> =
                 read_array_7(&mut __tmp_7)
             }) + (unsafe {
                 __tmp_10 = ::std::mem::MaybeUninit::uninit().assume_init();
+                let __tmp_11 = &raw mut __tmp_10;
                 {
-                    let __d = &raw mut __tmp_10;
+                    let __d = __tmp_11;
                     (&raw mut (*__d).value).write({
-                        __tmp_11 = 5;
-                        __tmp_12 = 6;
+                        __tmp_12 = 5;
+                        __tmp_13 = 6;
                         (*{
-                            let __a: *const _ = &mut __tmp_11;
-                            let __b: *const _ = &mut __tmp_12;
+                            let __a: *const _ = &mut __tmp_12;
+                            let __b: *const _ = &mut __tmp_13;
                             if *__a < *__b { __b } else { __a }
                         })
                     });
@@ -141,12 +146,12 @@ pub static mut right_11: libcc2rs::LazyStorage<usize> =
 pub static mut mapped_selected_12: libcc2rs::LazyStorage<usize> =
     libcc2rs::LazyStorage::new(|__p| unsafe {
         __p.write({
-            let mut __tmp_13: u64;
+            let mut __tmp_14: u64;
             (({
-                __tmp_13 = ((*(*&raw const right_11).get()) as u64);
+                __tmp_14 = ((*(*&raw const right_11).get()) as u64);
                 (*{
                     let __a: *const _ = &mut (*(*&raw const left_10).get());
-                    let __b: *const _ = &mut __tmp_13;
+                    let __b: *const _ = &mut __tmp_14;
                     if *__b < *__a { __b } else { __a }
                 })
             }) as usize)
@@ -157,12 +162,12 @@ pub unsafe fn get_13() -> usize {
 }
 static mut value_14: libcc2rs::LazyStorage<usize> = libcc2rs::LazyStorage::new(|__p| unsafe {
     __p.write({
-        let mut __tmp_14: u64;
+        let mut __tmp_15: u64;
         (({
-            __tmp_14 = ((*(*&raw const right_11).get()) as u64);
+            __tmp_15 = ((*(*&raw const right_11).get()) as u64);
             (*{
                 let __a: *const _ = &mut (*(*&raw const left_10).get());
-                let __b: *const _ = &mut __tmp_14;
+                let __b: *const _ = &mut __tmp_15;
                 if *__a < *__b { __b } else { __a }
             })
         }) as usize)
@@ -188,38 +193,39 @@ unsafe fn main_0() -> i32 {
 static mut aggregate_static_15: libcc2rs::LazyStorage<i32> =
     libcc2rs::LazyStorage::new(|__p| unsafe {
         __p.write({
-            let mut __tmp_16: i32;
             let mut __tmp_17: i32;
-            let mut __tmp_15: [i32; 1];
-            let mut __tmp_19: i32;
-            let mut __tmp_20: i32;
-            let mut __tmp_18: Item;
+            let mut __tmp_18: i32;
+            let mut __tmp_16: [i32; 1];
+            let mut __tmp_21: i32;
+            let mut __tmp_22: i32;
+            let mut __tmp_19: Item;
             ((unsafe {
-                __tmp_15 = [{
-                    __tmp_16 = 7;
-                    __tmp_17 = 8;
+                __tmp_16 = [{
+                    __tmp_17 = 7;
+                    __tmp_18 = 8;
                     (*{
-                        let __a: *const _ = &mut __tmp_16;
-                        let __b: *const _ = &mut __tmp_17;
+                        let __a: *const _ = &mut __tmp_17;
+                        let __b: *const _ = &mut __tmp_18;
                         if *__a < *__b { __b } else { __a }
                     })
                 }];
-                read_array_7(&mut __tmp_15)
+                read_array_7(&mut __tmp_16)
             }) + (unsafe {
-                __tmp_18 = ::std::mem::MaybeUninit::uninit().assume_init();
+                __tmp_19 = ::std::mem::MaybeUninit::uninit().assume_init();
+                let __tmp_20 = &raw mut __tmp_19;
                 {
-                    let __d = &raw mut __tmp_18;
+                    let __d = __tmp_20;
                     (&raw mut (*__d).value).write({
-                        __tmp_19 = 9;
-                        __tmp_20 = 10;
+                        __tmp_21 = 9;
+                        __tmp_22 = 10;
                         (*{
-                            let __a: *const _ = &mut __tmp_19;
-                            let __b: *const _ = &mut __tmp_20;
+                            let __a: *const _ = &mut __tmp_21;
+                            let __b: *const _ = &mut __tmp_22;
                             if *__b < *__a { __b } else { __a }
                         })
                     });
                 };
-                read_record_8(&mut __tmp_18)
+                read_record_8(&mut __tmp_19)
             }))
         })
     });

@@ -14,6 +14,7 @@ pub struct node_t {
     pub value: i32,
 }
 impl node_t {
+    pub unsafe fn new_1(this: *mut node_t) {}
     pub unsafe fn copy_from(this: *mut node_t, _a0: *const node_t) {
         (&raw mut (*this).left).write((*_a0).left);
         (&raw mut (*this).right).write((*_a0).right);

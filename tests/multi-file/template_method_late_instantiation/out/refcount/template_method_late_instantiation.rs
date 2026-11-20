@@ -19,6 +19,9 @@ impl S_int_ {
     pub fn copy_from(this: Ptr<S_int_>, _a0: Ptr<S_int_>) {
         field!(this, x).write(_a0.with(|__s| __s.x));
     }
+    pub fn move_from(this: Ptr<S_int_>, _a0: Ptr<S_int_>) {
+        field!(this, x).write({ (*_a0.upgrade().deref()).x });
+    }
 }
 impl Default for S_int_ {
     fn default() -> Self {

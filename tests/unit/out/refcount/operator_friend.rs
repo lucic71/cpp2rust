@@ -19,9 +19,14 @@ pub struct Defaulted {
     pub b: i32,
 }
 impl Defaulted {
+    pub fn new_1(this: Ptr<Defaulted>) {}
     pub fn copy_from(this: Ptr<Defaulted>, _a0: Ptr<Defaulted>) {
         field!(this, a).write(_a0.with(|__s| __s.a));
         field!(this, b).write(_a0.with(|__s| __s.b));
+    }
+    pub fn move_from(this: Ptr<Defaulted>, _a0: Ptr<Defaulted>) {
+        field!(this, a).write({ (*_a0.upgrade().deref()).a });
+        field!(this, b).write({ (*_a0.upgrade().deref()).b });
     }
 }
 impl CppEq for Defaulted {
@@ -51,8 +56,12 @@ pub struct DefaultedOrd {
     pub a: i32,
 }
 impl DefaultedOrd {
+    pub fn new_1(this: Ptr<DefaultedOrd>) {}
     pub fn copy_from(this: Ptr<DefaultedOrd>, _a0: Ptr<DefaultedOrd>) {
         field!(this, a).write(_a0.with(|__s| __s.a));
+    }
+    pub fn move_from(this: Ptr<DefaultedOrd>, _a0: Ptr<DefaultedOrd>) {
+        field!(this, a).write({ (*_a0.upgrade().deref()).a });
     }
 }
 impl CppLess for DefaultedOrd {
@@ -85,8 +94,12 @@ pub struct Inline {
     pub a: i32,
 }
 impl Inline {
+    pub fn new_1(this: Ptr<Inline>) {}
     pub fn copy_from(this: Ptr<Inline>, _a0: Ptr<Inline>) {
         field!(this, a).write(_a0.with(|__s| __s.a));
+    }
+    pub fn move_from(this: Ptr<Inline>, _a0: Ptr<Inline>) {
+        field!(this, a).write({ (*_a0.upgrade().deref()).a });
     }
 }
 impl CppLess for Inline {
@@ -106,8 +119,12 @@ pub struct OutOfLine {
     pub a: i32,
 }
 impl OutOfLine {
+    pub fn new_1(this: Ptr<OutOfLine>) {}
     pub fn copy_from(this: Ptr<OutOfLine>, _a0: Ptr<OutOfLine>) {
         field!(this, a).write(_a0.with(|__s| __s.a));
+    }
+    pub fn move_from(this: Ptr<OutOfLine>, _a0: Ptr<OutOfLine>) {
+        field!(this, a).write({ (*_a0.upgrade().deref()).a });
     }
 }
 impl CppEq for OutOfLine {
@@ -141,8 +158,12 @@ pub struct Tmpl_int_ {
     pub v: i32,
 }
 impl Tmpl_int_ {
+    pub fn new_1(this: Ptr<Tmpl_int_>) {}
     pub fn copy_from(this: Ptr<Tmpl_int_>, _a0: Ptr<Tmpl_int_>) {
         field!(this, v).write(_a0.with(|__s| __s.v));
+    }
+    pub fn move_from(this: Ptr<Tmpl_int_>, _a0: Ptr<Tmpl_int_>) {
+        field!(this, v).write({ (*_a0.upgrade().deref()).v });
     }
 }
 impl CppLess for Tmpl_int_ {
@@ -162,8 +183,12 @@ pub struct Tmpl_long_ {
     pub v: i64,
 }
 impl Tmpl_long_ {
+    pub fn new_1(this: Ptr<Tmpl_long_>) {}
     pub fn copy_from(this: Ptr<Tmpl_long_>, _a0: Ptr<Tmpl_long_>) {
         field!(this, v).write(_a0.with(|__s| __s.v));
+    }
+    pub fn move_from(this: Ptr<Tmpl_long_>, _a0: Ptr<Tmpl_long_>) {
+        field!(this, v).write({ (*_a0.upgrade().deref()).v });
     }
 }
 pub fn operator_eq_11(_a0: Ptr<TmplDefaulted_int_>, _a1: Ptr<TmplDefaulted_int_>) -> bool {
@@ -176,8 +201,12 @@ pub struct TmplDefaulted_int_ {
     pub v: i32,
 }
 impl TmplDefaulted_int_ {
+    pub fn new_1(this: Ptr<TmplDefaulted_int_>) {}
     pub fn copy_from(this: Ptr<TmplDefaulted_int_>, _a0: Ptr<TmplDefaulted_int_>) {
         field!(this, v).write(_a0.with(|__s| __s.v));
+    }
+    pub fn move_from(this: Ptr<TmplDefaulted_int_>, _a0: Ptr<TmplDefaulted_int_>) {
+        field!(this, v).write({ (*_a0.upgrade().deref()).v });
     }
 }
 impl CppEq for TmplDefaulted_int_ {

@@ -15,6 +15,7 @@ pub struct Inner {
     pub y: i32,
 }
 impl Inner {
+    pub fn new_1(this: Ptr<Inner>) {}
     pub fn copy_from(this: Ptr<Inner>, _a0: Ptr<Inner>) {
         field!(this, x).write(_a0.with(|__s| __s.x));
         field!(this, y).write(_a0.with(|__s| __s.y));
@@ -35,6 +36,9 @@ impl Outer {
     pub fn move_from(this: Ptr<Outer>, _a0: Ptr<Outer>) {
         field!(this, inner)
             .write(field!(_a0, inner).with_mut(|__v: &mut Option<Value<Inner>>| __v.take()));
+    }
+    pub fn new_1(this: Ptr<Outer>) {
+        field!(this, inner).write(None);
     }
 }
 pub fn main() {

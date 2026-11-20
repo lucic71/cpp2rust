@@ -27,6 +27,9 @@ impl Defaulted {
     pub unsafe fn copy_from(this: *mut Defaulted, _a0: *const Defaulted) {
         S::copy_from((&raw mut (*this).s), { &(*_a0).s });
     }
+    pub unsafe fn new_1(this: *mut Defaulted) {
+        S::new_1((&raw mut (*this).s));
+    }
 }
 impl Defaulted {
     pub unsafe fn destructor(&mut self) {
@@ -42,6 +45,12 @@ impl Middle {
     pub unsafe fn copy_from(this: *mut Middle, _a0: *const Middle) {
         S::copy_from((&raw mut (*this).s), { &(*_a0).s });
     }
+    pub unsafe fn move_from(this: *mut Middle, _a0: *mut Middle) {
+        S::copy_from((&raw mut (*this).s), { &(*_a0).s });
+    }
+    pub unsafe fn new_1(this: *mut Middle) {
+        S::new_1((&raw mut (*this).s));
+    }
 }
 impl Middle {
     pub unsafe fn destructor(&mut self) {
@@ -54,8 +63,14 @@ pub struct Outer {
     pub m: Middle,
 }
 impl Outer {
+    pub unsafe fn new_1(this: *mut Outer) {
+        Middle::new_1((&raw mut (*this).m));
+    }
     pub unsafe fn copy_from(this: *mut Outer, _a0: *const Outer) {
         Middle::copy_from((&raw mut (*this).m), { &(*_a0).m });
+    }
+    pub unsafe fn move_from(this: *mut Outer, _a0: *mut Outer) {
+        Middle::move_from((&raw mut (*this).m), { &mut (*_a0).m });
     }
 }
 impl Outer {
@@ -74,6 +89,22 @@ impl ArrayMember {
             let __d = (&raw mut (*this).items).cast::<S>();
             for __i in 0..3_usize {
                 S::copy_from(__d.offset(__i as isize), { &(*_a0).items[(__i)] });
+            }
+        };
+    }
+    pub unsafe fn move_from(this: *mut ArrayMember, _a0: *mut ArrayMember) {
+        {
+            let __d = (&raw mut (*this).items).cast::<S>();
+            for __i in 0..3_usize {
+                S::copy_from(__d.offset(__i as isize), { &(*_a0).items[(__i)] });
+            }
+        };
+    }
+    pub unsafe fn new_1(this: *mut ArrayMember) {
+        {
+            let __d = (&raw mut (*this).items).cast::<S>();
+            for __i in 0..3_isize {
+                S::new_1(__d.offset(__i));
             }
         };
     }
@@ -97,6 +128,9 @@ impl EmptyBody {
     pub unsafe fn copy_from(this: *mut EmptyBody, _a0: *const EmptyBody) {
         S::copy_from((&raw mut (*this).s), { &(*_a0).s });
     }
+    pub unsafe fn new_1(this: *mut EmptyBody) {
+        S::new_1((&raw mut (*this).s));
+    }
 }
 #[repr(C)]
 #[derive(Clone, VaArg, FnPtrArg, DestructorUnsafe, Default)]
@@ -109,6 +143,7 @@ impl Templated_char_ {
             .wrapping_add((::std::mem::size_of::<libc::c_char>() as usize)))
             as i32;
     }
+    pub unsafe fn new_1(this: *mut Templated_char_) {}
     pub unsafe fn copy_from(this: *mut Templated_char_, _a0: *const Templated_char_) {
         (&raw mut (*this).v).write((*_a0).v);
     }
@@ -124,6 +159,7 @@ impl Templated_int_ {
             .wrapping_add((::std::mem::size_of::<i32>() as usize)))
             as i32;
     }
+    pub unsafe fn new_1(this: *mut Templated_int_) {}
     pub unsafe fn copy_from(this: *mut Templated_int_, _a0: *const Templated_int_) {
         (&raw mut (*this).v).write((*_a0).v);
     }
@@ -137,6 +173,7 @@ impl Copied {
     pub unsafe fn destructor(&mut self) {
         (*(*&raw const global_0).get()).postfix_inc();
     }
+    pub unsafe fn new_1(this: *mut Copied) {}
     pub unsafe fn copy_from(this: *mut Copied, _a0: *const Copied) {
         (&raw mut (*this).v).write((*_a0).v);
     }
@@ -158,6 +195,7 @@ impl Tagged {
     pub unsafe fn copy_from(this: *mut Tagged, _a0: *const Tagged) {
         (&raw mut (*this).tag).write((*_a0).tag);
     }
+    pub unsafe fn new_1(this: *mut Tagged) {}
 }
 #[repr(C)]
 #[derive(Clone, VaArg, FnPtrArg, DestructorUnsafe, Default)]
@@ -175,6 +213,18 @@ impl Ordered {
         Tagged::copy_from((&raw mut (*this).second), { &(*_a0).second });
         (&raw mut (*this).dummy2).write((*_a0).dummy2);
         Tagged::copy_from((&raw mut (*this).third), { &(*_a0).third });
+    }
+    pub unsafe fn move_from(this: *mut Ordered, _a0: *mut Ordered) {
+        Tagged::copy_from((&raw mut (*this).first), { &(*_a0).first });
+        (&raw mut (*this).dummy1).write((*_a0).dummy1);
+        Tagged::copy_from((&raw mut (*this).second), { &(*_a0).second });
+        (&raw mut (*this).dummy2).write((*_a0).dummy2);
+        Tagged::copy_from((&raw mut (*this).third), { &(*_a0).third });
+    }
+    pub unsafe fn new_1(this: *mut Ordered) {
+        Tagged::new_1((&raw mut (*this).first));
+        Tagged::new_1((&raw mut (*this).second));
+        Tagged::new_1((&raw mut (*this).third));
     }
 }
 impl Ordered {

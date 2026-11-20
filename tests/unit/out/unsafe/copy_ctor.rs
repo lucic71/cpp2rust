@@ -120,6 +120,15 @@ impl Holder {
             }
         };
     }
+    pub unsafe fn move_from(this: *mut Holder, _a0: *mut Holder) {
+        Counted::copy_from((&raw mut (*this).c), { &(*_a0).c });
+        {
+            let __d = (&raw mut (*this).arr).cast::<Counted>();
+            for __i in 0..2_usize {
+                Counted::copy_from(__d.offset(__i as isize), { &(*_a0).arr[(__i)] });
+            }
+        };
+    }
     pub unsafe fn copy_assign(&mut self, _a0: *const Holder) -> *mut Holder {
         (unsafe {
             let _arg0: *const Counted = &(*_a0).c;

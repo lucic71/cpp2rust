@@ -17,9 +17,14 @@ pub struct Entry {
     pub p: Ptr<i32>,
 }
 impl Entry {
+    pub fn new_1(this: Ptr<Entry>) {}
     pub fn copy_from(this: Ptr<Entry>, _a0: Ptr<Entry>) {
         field!(this, name).write(_a0.with(|__s| __s.name.clone()));
         field!(this, p).write(_a0.with(|__s| __s.p.clone()));
+    }
+    pub fn move_from(this: Ptr<Entry>, _a0: Ptr<Entry>) {
+        field!(this, name).write({ (*_a0.upgrade().deref()).name.clone() });
+        field!(this, p).write({ (*_a0.upgrade().deref()).p.clone() });
     }
 }
 thread_local!(

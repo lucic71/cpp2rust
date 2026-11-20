@@ -18,6 +18,7 @@ impl Inner {
     pub unsafe fn move_from(this: *mut Inner, _a0: *mut Inner) {
         (&raw mut (*this).x).write((*_a0).x);
     }
+    pub unsafe fn new_1(this: *mut Inner) {}
 }
 #[repr(C)]
 #[derive(Clone, VaArg, FnPtrArg, CppFromUnsafe, DestructorUnsafe, Default)]
@@ -60,6 +61,9 @@ pub struct Implicit {
     pub arr: [i32; 2],
 }
 impl Implicit {
+    pub unsafe fn new_1(this: *mut Implicit) {
+        Inner::new_1((&raw mut (*this).inner));
+    }
     pub unsafe fn copy_from(this: *mut Implicit, _a0: *const Implicit) {
         (&raw mut (*this).v).write((*_a0).v);
         Inner::copy_from((&raw mut (*this).inner), { &(*_a0).inner });

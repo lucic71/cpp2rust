@@ -15,9 +15,14 @@ pub struct Complex {
     pub img: f64,
 }
 impl Complex {
+    pub fn new_1(this: Ptr<Complex>) {}
     pub fn copy_from(this: Ptr<Complex>, _a0: Ptr<Complex>) {
         field!(this, re).write(_a0.with(|__s| __s.re));
         field!(this, img).write(_a0.with(|__s| __s.img));
+    }
+    pub fn move_from(this: Ptr<Complex>, _a0: Ptr<Complex>) {
+        field!(this, re).write({ (*_a0.upgrade().deref()).re });
+        field!(this, img).write({ (*_a0.upgrade().deref()).img });
     }
 }
 pub fn Product_0(__ret: Ptr<Complex>, z1: Value<Complex>, z2: Value<Complex>) {
@@ -129,22 +134,22 @@ pub fn fft_3(a: Ptr<Option<Value<Box<[Complex]>>>>, mut N: i32) -> Option<Value<
         'loop_: while (k < (N / 2)) {
             let yk: Value<Complex> = Rc::new(RefCell::new(<Complex>::uninit()));
             ({
-                let _z1: Complex = {
+                let _z1 = {
                     let __v: Value<Complex> = Rc::new(RefCell::new(<Complex>::uninit()));
                     Complex::copy_from(__v.as_pointer(), { y0.decay().offset((k as usize)) });
                     __v
                 };
-                let _z2: Complex = {
+                let _z2 = {
                     let __v: Value<Complex> = Rc::new(RefCell::new(<Complex>::uninit()));
                     ({
-                        let _z1: Complex = {
+                        let _z1 = {
                             let __v: Value<Complex> = Rc::new(RefCell::new(<Complex>::uninit()));
                             Complex::copy_from(__v.as_pointer(), {
                                 w.decay().offset((k as usize))
                             });
                             __v
                         };
-                        let _z2: Complex = {
+                        let _z2 = {
                             let __v: Value<Complex> = Rc::new(RefCell::new(<Complex>::uninit()));
                             Complex::copy_from(__v.as_pointer(), {
                                 y1.decay().offset((k as usize))
@@ -163,18 +168,18 @@ pub fn fft_3(a: Ptr<Option<Value<Box<[Complex]>>>>, mut N: i32) -> Option<Value<
             });
             let yk_n2: Value<Complex> = Rc::new(RefCell::new(<Complex>::uninit()));
             ({
-                let _z1: Complex = {
+                let _z1 = {
                     let __v: Value<Complex> = Rc::new(RefCell::new(<Complex>::uninit()));
                     Complex::copy_from(__v.as_pointer(), { y0.decay().offset((k as usize)) });
                     __v
                 };
-                let _z2: Complex = {
+                let _z2 = {
                     let __v: Value<Complex> = Rc::new(RefCell::new(<Complex>::uninit()));
                     ({
                         Neg_2(__v.as_pointer(), {
                             let __v: Value<Complex> = Rc::new(RefCell::new(<Complex>::uninit()));
                             ({
-                                let _z1: Complex = {
+                                let _z1 = {
                                     let __v: Value<Complex> =
                                         Rc::new(RefCell::new(<Complex>::uninit()));
                                     Complex::copy_from(__v.as_pointer(), {
@@ -182,7 +187,7 @@ pub fn fft_3(a: Ptr<Option<Value<Box<[Complex]>>>>, mut N: i32) -> Option<Value<
                                     });
                                     __v
                                 };
-                                let _z2: Complex = {
+                                let _z2 = {
                                     let __v: Value<Complex> =
                                         Rc::new(RefCell::new(<Complex>::uninit()));
                                     Complex::copy_from(__v.as_pointer(), {

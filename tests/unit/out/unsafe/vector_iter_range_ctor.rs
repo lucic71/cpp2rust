@@ -19,6 +19,9 @@ impl Degrees {
     pub unsafe fn copy_from(this: *mut Degrees, _a0: *const Degrees) {
         (&raw mut (*this).value).write((*_a0).value);
     }
+    pub unsafe fn move_from(this: *mut Degrees, _a0: *mut Degrees) {
+        (&raw mut (*this).value).write((*_a0).value);
+    }
 }
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, CppFromUnsafe, Default)]
@@ -30,7 +33,11 @@ impl Reading {
     pub unsafe fn to_i64(&self) -> i64 {
         return ((self.raw_ as i64) * (10_i64));
     }
+    pub unsafe fn new_1(this: *mut Reading) {}
     pub unsafe fn copy_from(this: *mut Reading, _a0: *const Reading) {
+        (&raw mut (*this).raw_).write((*_a0).raw_);
+    }
+    pub unsafe fn move_from(this: *mut Reading, _a0: *mut Reading) {
         (&raw mut (*this).raw_).write((*_a0).raw_);
     }
 }

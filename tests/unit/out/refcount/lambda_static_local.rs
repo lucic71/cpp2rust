@@ -92,9 +92,14 @@ pub struct P_4 {
     pub y: i32,
 }
 impl P_4 {
+    pub fn new_1(this: Ptr<P_4>) {}
     pub fn copy_from(this: Ptr<P_4>, _a0: Ptr<P_4>) {
         field!(this, x).write(_a0.with(|__s| __s.x));
         field!(this, y).write(_a0.with(|__s| __s.y));
+    }
+    pub fn move_from(this: Ptr<P_4>, _a0: Ptr<P_4>) {
+        field!(this, x).write({ (*_a0.upgrade().deref()).x });
+        field!(this, y).write({ (*_a0.upgrade().deref()).y });
     }
 }
 pub fn __cpp2rust_init_globals() {

@@ -13,7 +13,12 @@ pub struct HasTwoInts {
     pub second: i32,
 }
 impl HasTwoInts {
+    pub unsafe fn new_1(this: *mut HasTwoInts) {}
     pub unsafe fn copy_from(this: *mut HasTwoInts, _a0: *const HasTwoInts) {
+        (&raw mut (*this).first).write((*_a0).first);
+        (&raw mut (*this).second).write((*_a0).second);
+    }
+    pub unsafe fn move_from(this: *mut HasTwoInts, _a0: *mut HasTwoInts) {
         (&raw mut (*this).first).write((*_a0).first);
         (&raw mut (*this).second).write((*_a0).second);
     }

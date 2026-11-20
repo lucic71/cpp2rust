@@ -81,6 +81,7 @@ impl AssertsDtorCountAtExit {
     pub unsafe fn destructor(&mut self) {
         assert!(((*(*&raw const dtorCount_2).get()) == (self.expected)));
     }
+    pub unsafe fn new_1(this: *mut AssertsDtorCountAtExit) {}
     pub unsafe fn copy_from(this: *mut AssertsDtorCountAtExit, _a0: *const AssertsDtorCountAtExit) {
         (&raw mut (*this).expected).write((*_a0).expected);
     }
@@ -157,7 +158,9 @@ unsafe fn main_0() -> i32 {
 #[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct S_14 {}
 impl S_14 {
+    pub unsafe fn new_1(this: *mut S_14) {}
     pub unsafe fn copy_from(this: *mut S_14, _a0: *const S_14) {}
+    pub unsafe fn move_from(this: *mut S_14, _a0: *mut S_14) {}
 }
 pub unsafe fn count_18() -> i32 {
     return (*(*(*&raw const n_20).get()).prefix_inc());
@@ -185,7 +188,9 @@ pub unsafe fn b_count_local_15() -> i32 {
 #[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct S_21 {}
 impl S_21 {
+    pub unsafe fn new_1(this: *mut S_21) {}
     pub unsafe fn copy_from(this: *mut S_21, _a0: *const S_21) {}
+    pub unsafe fn move_from(this: *mut S_21, _a0: *mut S_21) {}
 }
 pub unsafe fn __cpp2rust_init_globals() {
     (*&raw const ctorCount_0).get();

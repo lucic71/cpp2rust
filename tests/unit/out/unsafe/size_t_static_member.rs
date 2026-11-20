@@ -12,7 +12,9 @@ pub static mut c_0: libcc2rs::LazyStorage<usize> =
 #[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct S {}
 impl S {
+    pub unsafe fn new_1(this: *mut S) {}
     pub unsafe fn copy_from(this: *mut S, _a0: *const S) {}
+    pub unsafe fn move_from(this: *mut S, _a0: *mut S) {}
 }
 pub static mut table_size_1: libcc2rs::LazyStorage<usize> =
     libcc2rs::LazyStorage::new(|__p| unsafe { __p.write(256_usize) });
@@ -20,7 +22,9 @@ pub static mut table_size_1: libcc2rs::LazyStorage<usize> =
 #[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct Table_char_ {}
 impl Table_char_ {
+    pub unsafe fn new_1(this: *mut Table_char_) {}
     pub unsafe fn copy_from(this: *mut Table_char_, _a0: *const Table_char_) {}
+    pub unsafe fn move_from(this: *mut Table_char_, _a0: *mut Table_char_) {}
 }
 pub fn main() {
     unsafe {

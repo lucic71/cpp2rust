@@ -15,9 +15,14 @@ pub struct Pair {
     pub second: i32,
 }
 impl Pair {
+    pub fn new_1(this: Ptr<Pair>) {}
     pub fn copy_from(this: Ptr<Pair>, _a0: Ptr<Pair>) {
         field!(this, first).write(_a0.with(|__s| __s.first));
         field!(this, second).write(_a0.with(|__s| __s.second));
+    }
+    pub fn move_from(this: Ptr<Pair>, _a0: Ptr<Pair>) {
+        field!(this, first).write({ (*_a0.upgrade().deref()).first });
+        field!(this, second).write({ (*_a0.upgrade().deref()).second });
     }
 }
 pub fn main() {
@@ -25,11 +30,14 @@ pub fn main() {
     libcc2rs::cpp2rust_exit(main_0());
 }
 fn main_0() -> i32 {
-    let __decomp_0: Value<Pair> = Rc::new(RefCell::new(<Pair>::uninit()));
-    {
-        let __d = __decomp_0.as_pointer();
-        field!(__d, first).write(1);
-        field!(__d, second).write(2);
+    let __decomp_0: Value<Pair> = {
+        let __v: Value<Pair> = Rc::new(RefCell::new(<Pair>::uninit()));
+        {
+            let __d = __v.as_pointer();
+            field!(__d, first).write(1);
+            field!(__d, second).write(2);
+        };
+        __v
     };
     assert!(({ ({ (*__decomp_0.borrow()).first } == 1) }));
     assert!(({ ({ (*__decomp_0.borrow()).second } == 2) }));
@@ -39,8 +47,11 @@ fn main_0() -> i32 {
         field!(__d, first).write(10);
         field!(__d, second).write(20);
     };
-    let __decomp_1: Value<Pair> = Rc::new(RefCell::new(<Pair>::uninit()));
-    Pair::copy_from(__decomp_1.as_pointer(), { p.as_pointer() });
+    let __decomp_1: Value<Pair> = {
+        let __v: Value<Pair> = Rc::new(RefCell::new(<Pair>::uninit()));
+        Pair::copy_from(__v.as_pointer(), { p.as_pointer() });
+        __v
+    };
     (*__decomp_1.borrow_mut()).first = 11;
     (*__decomp_1.borrow_mut()).second += 1;
     assert!(({ ({ (*__decomp_1.borrow()).first } == 11) }));

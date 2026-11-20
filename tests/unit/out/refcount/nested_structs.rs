@@ -13,11 +13,18 @@ pub struct Level0_Level1_1_Level2_1_Level3_1 {
     pub x1: i32,
 }
 impl Level0_Level1_1_Level2_1_Level3_1 {
+    pub fn new_1(this: Ptr<Level0_Level1_1_Level2_1_Level3_1>) {}
     pub fn copy_from(
         this: Ptr<Level0_Level1_1_Level2_1_Level3_1>,
         _a0: Ptr<Level0_Level1_1_Level2_1_Level3_1>,
     ) {
         field!(this, x1).write(_a0.with(|__s| __s.x1));
+    }
+    pub fn move_from(
+        this: Ptr<Level0_Level1_1_Level2_1_Level3_1>,
+        _a0: Ptr<Level0_Level1_1_Level2_1_Level3_1>,
+    ) {
+        field!(this, x1).write({ (*_a0.upgrade().deref()).x1 });
     }
 }
 #[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
@@ -29,12 +36,20 @@ pub struct Level0_Level1_1_Level2_1_Level3_2 {
     pub x2: i32,
 }
 impl Level0_Level1_1_Level2_1_Level3_2 {
+    pub fn new_1(this: Ptr<Level0_Level1_1_Level2_1_Level3_2>) {}
     pub fn copy_from(
         this: Ptr<Level0_Level1_1_Level2_1_Level3_2>,
         _a0: Ptr<Level0_Level1_1_Level2_1_Level3_2>,
     ) {
         field!(this, x1).write(_a0.with(|__s| __s.x1));
         field!(this, x2).write(_a0.with(|__s| __s.x2));
+    }
+    pub fn move_from(
+        this: Ptr<Level0_Level1_1_Level2_1_Level3_2>,
+        _a0: Ptr<Level0_Level1_1_Level2_1_Level3_2>,
+    ) {
+        field!(this, x1).write({ (*_a0.upgrade().deref()).x1 });
+        field!(this, x2).write({ (*_a0.upgrade().deref()).x2 });
     }
 }
 #[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
@@ -44,8 +59,12 @@ pub struct Level0_Level1_1_Level2_1 {
     pub x1: i32,
 }
 impl Level0_Level1_1_Level2_1 {
+    pub fn new_1(this: Ptr<Level0_Level1_1_Level2_1>) {}
     pub fn copy_from(this: Ptr<Level0_Level1_1_Level2_1>, _a0: Ptr<Level0_Level1_1_Level2_1>) {
         field!(this, x1).write(_a0.with(|__s| __s.x1));
+    }
+    pub fn move_from(this: Ptr<Level0_Level1_1_Level2_1>, _a0: Ptr<Level0_Level1_1_Level2_1>) {
+        field!(this, x1).write({ (*_a0.upgrade().deref()).x1 });
     }
 }
 #[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
@@ -55,8 +74,12 @@ pub struct Level0_Level1_1 {
     pub x1: i32,
 }
 impl Level0_Level1_1 {
+    pub fn new_1(this: Ptr<Level0_Level1_1>) {}
     pub fn copy_from(this: Ptr<Level0_Level1_1>, _a0: Ptr<Level0_Level1_1>) {
         field!(this, x1).write(_a0.with(|__s| __s.x1));
+    }
+    pub fn move_from(this: Ptr<Level0_Level1_1>, _a0: Ptr<Level0_Level1_1>) {
+        field!(this, x1).write({ (*_a0.upgrade().deref()).x1 });
     }
 }
 #[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
@@ -68,16 +91,23 @@ pub struct Level0_Level1_2 {
     pub x2: i32,
 }
 impl Level0_Level1_2 {
+    pub fn new_1(this: Ptr<Level0_Level1_2>) {}
     pub fn copy_from(this: Ptr<Level0_Level1_2>, _a0: Ptr<Level0_Level1_2>) {
         field!(this, x1).write(_a0.with(|__s| __s.x1));
         field!(this, x2).write(_a0.with(|__s| __s.x2));
+    }
+    pub fn move_from(this: Ptr<Level0_Level1_2>, _a0: Ptr<Level0_Level1_2>) {
+        field!(this, x1).write({ (*_a0.upgrade().deref()).x1 });
+        field!(this, x2).write({ (*_a0.upgrade().deref()).x2 });
     }
 }
 #[derive(Copy, Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Default)]
 #[byte_size(1)]
 pub struct Level0 {}
 impl Level0 {
+    pub fn new_1(this: Ptr<Level0>) {}
     pub fn copy_from(this: Ptr<Level0>, _a0: Ptr<Level0>) {}
+    pub fn move_from(this: Ptr<Level0>, _a0: Ptr<Level0>) {}
 }
 pub fn main() {
     __cpp2rust_init_globals();

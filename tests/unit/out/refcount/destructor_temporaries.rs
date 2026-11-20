@@ -22,6 +22,7 @@ impl S {
     pub fn copy_from(this: Ptr<S>, _a0: Ptr<S>) {
         field!(this, v).write(_a0.with(|__s| __s.v));
     }
+    pub fn new_1(this: Ptr<S>) {}
 }
 #[derive(Clone, Record, ByteRepr, Uninit, VaArg, FnPtrArg, Destructor, Default)]
 #[byte_size(8)]
@@ -36,6 +37,13 @@ impl Outer {
     pub fn copy_from(this: Ptr<Outer>, _a0: Ptr<Outer>) {
         S::copy_from(field_ptr!(this, inner), { field_ptr!(_a0, inner) });
         field!(this, w).write(_a0.with(|__s| __s.w));
+    }
+    pub fn move_from(this: Ptr<Outer>, _a0: Ptr<Outer>) {
+        S::copy_from(field_ptr!(this, inner), { field_ptr!(_a0, inner) });
+        field!(this, w).write({ (*_a0.upgrade().deref()).w });
+    }
+    pub fn new_1(this: Ptr<Outer>) {
+        S::new_1(field_ptr!(this, inner));
     }
 }
 pub fn make_2(__ret: Ptr<S>, mut v: i32) {

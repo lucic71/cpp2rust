@@ -16,9 +16,14 @@ pub struct Node {
     pub next: Ptr<Node>,
 }
 impl Node {
+    pub fn new_1(this: Ptr<Node>) {}
     pub fn copy_from(this: Ptr<Node>, _a0: Ptr<Node>) {
         field!(this, val).write(_a0.with(|__s| __s.val));
         field!(this, next).write(_a0.with(|__s| __s.next.clone()));
+    }
+    pub fn move_from(this: Ptr<Node>, _a0: Ptr<Node>) {
+        field!(this, val).write({ (*_a0.upgrade().deref()).val });
+        field!(this, next).write({ (*_a0.upgrade().deref()).next.clone() });
     }
 }
 pub fn Find_0(mut head: Ptr<Node>, mut idx: i32) -> Ptr<Node> {

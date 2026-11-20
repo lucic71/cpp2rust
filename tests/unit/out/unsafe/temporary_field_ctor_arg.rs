@@ -24,6 +24,9 @@ impl Outer {
         };
         return &mut (*(self as *mut Outer));
     }
+    pub unsafe fn new_1(this: *mut Outer) {
+        (&raw mut (*this).values).write(Vec::new());
+    }
 }
 pub unsafe fn make_0(__ret: *mut Outer) {
     {
@@ -43,6 +46,9 @@ impl H {
         (&raw mut (*this).last).write((&(*values))[(3_usize)]);
     }
     pub unsafe fn copy_from(this: *mut H, _a0: *const H) {
+        (&raw mut (*this).last).write((*_a0).last);
+    }
+    pub unsafe fn move_from(this: *mut H, _a0: *mut H) {
         (&raw mut (*this).last).write((*_a0).last);
     }
 }

@@ -13,6 +13,7 @@ pub struct Inner {
     pub y: i32,
 }
 impl Inner {
+    pub unsafe fn new_1(this: *mut Inner) {}
     pub unsafe fn copy_from(this: *mut Inner, _a0: *const Inner) {
         (&raw mut (*this).x).write((*_a0).x);
         (&raw mut (*this).y).write((*_a0).y);
@@ -36,6 +37,9 @@ impl Outer {
             self.inner = (*_a0).inner.take();
         };
         return &mut (*(self as *mut Outer));
+    }
+    pub unsafe fn new_1(this: *mut Outer) {
+        (&raw mut (*this).inner).write(None);
     }
 }
 pub fn main() {

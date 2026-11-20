@@ -33,6 +33,7 @@ impl Access_S_ {
     }
     pub unsafe fn new_1(this: *mut Access_S_) {}
     pub unsafe fn copy_from(this: *mut Access_S_, _a0: *const Access_S_) {}
+    pub unsafe fn move_from(this: *mut Access_S_, _a0: *mut Access_S_) {}
 }
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
@@ -93,7 +94,11 @@ impl S {
         });
         return (((self.base) + ((*p).0)) + (*q));
     }
+    pub unsafe fn new_1(this: *mut S) {}
     pub unsafe fn copy_from(this: *mut S, _a0: *const S) {
+        (&raw mut (*this).base).write((*_a0).base);
+    }
+    pub unsafe fn move_from(this: *mut S, _a0: *mut S) {
         (&raw mut (*this).base).write((*_a0).base);
     }
     pub unsafe fn width_1_char(&self, mut x: i32) -> i32 {
@@ -121,7 +126,11 @@ pub struct Box_ {
     pub v: i32,
 }
 impl Box_ {
+    pub unsafe fn new_1(this: *mut Box_) {}
     pub unsafe fn copy_from(this: *mut Box_, _a0: *const Box_) {
+        (&raw mut (*this).v).write((*_a0).v);
+    }
+    pub unsafe fn move_from(this: *mut Box_, _a0: *mut Box_) {
         (&raw mut (*this).v).write((*_a0).v);
     }
 }

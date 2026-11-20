@@ -21,6 +21,7 @@ pub struct p9_move_trivially_copyable_Point {
     pub y: i32,
 }
 impl p9_move_trivially_copyable_Point {
+    pub fn new_1(this: Ptr<p9_move_trivially_copyable_Point>) {}
     pub fn copy_from(
         this: Ptr<p9_move_trivially_copyable_Point>,
         _a0: Ptr<p9_move_trivially_copyable_Point>,

@@ -99,6 +99,11 @@ impl State {
         };
         return &mut (*(self as *mut State));
     }
+    pub unsafe fn new_1(this: *mut State) {
+        (&raw mut (*this).arr).write(std::array::from_fn::<_, 3, _>(|_| 0_i32));
+        (&raw mut (*this).elems).write(Vec::new());
+        (&raw mut (*this).rows).write(Vec::new());
+    }
 }
 impl Default for State {
     fn default() -> Self {

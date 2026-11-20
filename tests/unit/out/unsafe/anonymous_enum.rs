@@ -18,7 +18,11 @@ pub struct S {
     pub a: i32,
 }
 impl S {
+    pub unsafe fn new_1(this: *mut S) {}
     pub unsafe fn copy_from(this: *mut S, _a0: *const S) {
+        (&raw mut (*this).a).write((*_a0).a);
+    }
+    pub unsafe fn move_from(this: *mut S, _a0: *mut S) {
         (&raw mut (*this).a).write((*_a0).a);
     }
 }
@@ -37,6 +41,10 @@ pub struct WithAnonField {
 impl WithAnonField {
     pub unsafe fn new_1(this: *mut WithAnonField) {}
     pub unsafe fn copy_from(this: *mut WithAnonField, _a0: *const WithAnonField) {
+        (&raw mut (*this).a).write((*_a0).a);
+        (&raw mut (*this).field).write((*_a0).field);
+    }
+    pub unsafe fn move_from(this: *mut WithAnonField, _a0: *mut WithAnonField) {
         (&raw mut (*this).a).write((*_a0).a);
         (&raw mut (*this).field).write((*_a0).field);
     }

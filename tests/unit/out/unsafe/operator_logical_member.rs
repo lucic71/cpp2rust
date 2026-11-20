@@ -21,7 +21,11 @@ impl S {
     pub unsafe fn operator_or(&self, o: *const S) -> bool {
         return ((self.v) != (0)) || (((*o).v) != (0));
     }
+    pub unsafe fn new_1(this: *mut S) {}
     pub unsafe fn copy_from(this: *mut S, _a0: *const S) {
+        (&raw mut (*this).v).write((*_a0).v);
+    }
+    pub unsafe fn move_from(this: *mut S, _a0: *mut S) {
         (&raw mut (*this).v).write((*_a0).v);
     }
 }

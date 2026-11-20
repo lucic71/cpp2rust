@@ -13,7 +13,12 @@ pub struct Complex {
     pub img: f64,
 }
 impl Complex {
+    pub unsafe fn new_1(this: *mut Complex) {}
     pub unsafe fn copy_from(this: *mut Complex, _a0: *const Complex) {
+        (&raw mut (*this).re).write((*_a0).re);
+        (&raw mut (*this).img).write((*_a0).img);
+    }
+    pub unsafe fn move_from(this: *mut Complex, _a0: *mut Complex) {
         (&raw mut (*this).re).write((*_a0).re);
         (&raw mut (*this).img).write((*_a0).img);
     }
@@ -141,46 +146,34 @@ pub unsafe fn fft_3(a: *mut Option<Box<[Complex]>>, mut N: i32) -> Option<Box<[C
         'loop_: while ((k) < ((N) / (2))) {
             let mut yk: Complex = ::std::mem::MaybeUninit::uninit().assume_init();
             (unsafe {
-                let _z1: Complex = (|__p: *mut Complex| {
-                    Complex::copy_from(__p, {
-                        &(*y0
+                let mut __tmp_0: Complex = ::std::mem::MaybeUninit::uninit().assume_init();
+                Complex::copy_from(&raw mut __tmp_0, {
+                    &(*y0
+                        .as_deref()
+                        .map_or(::std::ptr::null_mut(), |s| s.as_ptr() as *mut Complex)
+                        .add((k as usize)))
+                });
+                let _z1 = &raw mut __tmp_0;
+                let mut __tmp_1: Complex = ::std::mem::MaybeUninit::uninit().assume_init();
+                (unsafe {
+                    let mut __tmp_2: Complex = ::std::mem::MaybeUninit::uninit().assume_init();
+                    Complex::copy_from(&raw mut __tmp_2, {
+                        &(*w.as_deref()
+                            .map_or(::std::ptr::null_mut(), |s| s.as_ptr() as *mut Complex)
+                            .add((k as usize)))
+                    });
+                    let _z1 = &raw mut __tmp_2;
+                    let mut __tmp_3: Complex = ::std::mem::MaybeUninit::uninit().assume_init();
+                    Complex::copy_from(&raw mut __tmp_3, {
+                        &(*y1
                             .as_deref()
                             .map_or(::std::ptr::null_mut(), |s| s.as_ptr() as *mut Complex)
                             .add((k as usize)))
                     });
-                    __p
-                })(
-                    (&mut ::std::mem::MaybeUninit::<Complex>::uninit()).as_mut_ptr(),
-                );
-                let _z2: Complex = (|__p: *mut Complex| {
-                    (unsafe {
-                        let _z1: Complex = (|__p: *mut Complex| {
-                            Complex::copy_from(__p, {
-                                &(*w.as_deref()
-                                    .map_or(::std::ptr::null_mut(), |s| s.as_ptr() as *mut Complex)
-                                    .add((k as usize)))
-                            });
-                            __p
-                        })(
-                            (&mut ::std::mem::MaybeUninit::<Complex>::uninit()).as_mut_ptr(),
-                        );
-                        let _z2: Complex = (|__p: *mut Complex| {
-                            Complex::copy_from(__p, {
-                                &(*y1
-                                    .as_deref()
-                                    .map_or(::std::ptr::null_mut(), |s| s.as_ptr() as *mut Complex)
-                                    .add((k as usize)))
-                            });
-                            __p
-                        })(
-                            (&mut ::std::mem::MaybeUninit::<Complex>::uninit()).as_mut_ptr(),
-                        );
-                        Product_0(__p, _z1, _z2)
-                    });
-                    __p
-                })(
-                    (&mut ::std::mem::MaybeUninit::<Complex>::uninit()).as_mut_ptr(),
-                );
+                    let _z2 = &raw mut __tmp_3;
+                    Product_0(&raw mut __tmp_1, _z1, _z2)
+                });
+                let _z2 = &raw mut __tmp_1;
                 Sum_1(&raw mut yk, _z1, _z2)
             });
             (*y.as_deref()
@@ -191,62 +184,50 @@ pub unsafe fn fft_3(a: *mut Option<Box<[Complex]>>, mut N: i32) -> Option<Box<[C
             };
             let mut yk_n2: Complex = ::std::mem::MaybeUninit::uninit().assume_init();
             (unsafe {
-                let _z1: Complex = (|__p: *mut Complex| {
-                    Complex::copy_from(__p, {
-                        &(*y0
-                            .as_deref()
-                            .map_or(::std::ptr::null_mut(), |s| s.as_ptr() as *mut Complex)
-                            .add((k as usize)))
-                    });
-                    __p
-                })(
-                    (&mut ::std::mem::MaybeUninit::<Complex>::uninit()).as_mut_ptr(),
-                );
-                let _z2: Complex = (|__p: *mut Complex| {
-                    (unsafe {
-                        Neg_2(
-                            __p,
-                            (|__p: *mut Complex| {
-                                (unsafe {
-                                    let _z1: Complex = (|__p: *mut Complex| {
-                                        Complex::copy_from(__p, {
-                                            &(*w.as_deref()
-                                                .map_or(::std::ptr::null_mut(), |s| {
-                                                    s.as_ptr() as *mut Complex
-                                                })
-                                                .add((k as usize)))
-                                        });
-                                        __p
-                                    })(
-                                        (&mut ::std::mem::MaybeUninit::<Complex>::uninit())
-                                            .as_mut_ptr(),
-                                    );
-                                    let _z2: Complex = (|__p: *mut Complex| {
-                                        Complex::copy_from(__p, {
-                                            &(*y1
-                                                .as_deref()
-                                                .map_or(::std::ptr::null_mut(), |s| {
-                                                    s.as_ptr() as *mut Complex
-                                                })
-                                                .add((k as usize)))
-                                        });
-                                        __p
-                                    })(
-                                        (&mut ::std::mem::MaybeUninit::<Complex>::uninit())
-                                            .as_mut_ptr(),
-                                    );
-                                    Product_0(__p, _z1, _z2)
+                let mut __tmp_4: Complex = ::std::mem::MaybeUninit::uninit().assume_init();
+                Complex::copy_from(&raw mut __tmp_4, {
+                    &(*y0
+                        .as_deref()
+                        .map_or(::std::ptr::null_mut(), |s| s.as_ptr() as *mut Complex)
+                        .add((k as usize)))
+                });
+                let _z1 = &raw mut __tmp_4;
+                let mut __tmp_5: Complex = ::std::mem::MaybeUninit::uninit().assume_init();
+                (unsafe {
+                    Neg_2(
+                        &raw mut __tmp_5,
+                        (|__p: *mut Complex| {
+                            (unsafe {
+                                let mut __tmp_6: Complex =
+                                    ::std::mem::MaybeUninit::uninit().assume_init();
+                                Complex::copy_from(&raw mut __tmp_6, {
+                                    &(*w.as_deref()
+                                        .map_or(::std::ptr::null_mut(), |s| {
+                                            s.as_ptr() as *mut Complex
+                                        })
+                                        .add((k as usize)))
                                 });
-                                __p
-                            })(
-                                (&mut ::std::mem::MaybeUninit::<Complex>::uninit()).as_mut_ptr()
-                            ),
-                        )
-                    });
-                    __p
-                })(
-                    (&mut ::std::mem::MaybeUninit::<Complex>::uninit()).as_mut_ptr(),
-                );
+                                let _z1 = &raw mut __tmp_6;
+                                let mut __tmp_7: Complex =
+                                    ::std::mem::MaybeUninit::uninit().assume_init();
+                                Complex::copy_from(&raw mut __tmp_7, {
+                                    &(*y1
+                                        .as_deref()
+                                        .map_or(::std::ptr::null_mut(), |s| {
+                                            s.as_ptr() as *mut Complex
+                                        })
+                                        .add((k as usize)))
+                                });
+                                let _z2 = &raw mut __tmp_7;
+                                Product_0(__p, _z1, _z2)
+                            });
+                            __p
+                        })(
+                            (&mut ::std::mem::MaybeUninit::<Complex>::uninit()).as_mut_ptr()
+                        ),
+                    )
+                });
+                let _z2 = &raw mut __tmp_5;
                 Sum_1(&raw mut yk_n2, _z1, _z2)
             });
             (*y.as_deref()

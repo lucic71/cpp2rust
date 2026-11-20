@@ -84,7 +84,9 @@ pub static mut member_4: libcc2rs::LazyStorage<LifetimeTracked> =
 #[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct HasStaticMember_int_ {}
 impl HasStaticMember_int_ {
+    pub unsafe fn new_1(this: *mut HasStaticMember_int_) {}
     pub unsafe fn copy_from(this: *mut HasStaticMember_int_, _a0: *const HasStaticMember_int_) {}
+    pub unsafe fn move_from(this: *mut HasStaticMember_int_, _a0: *mut HasStaticMember_int_) {}
 }
 pub static mut member_5: libcc2rs::LazyStorage<LifetimeTracked> =
     libcc2rs::LazyStorage::new(|__p| unsafe {
@@ -98,7 +100,9 @@ pub static mut member_5: libcc2rs::LazyStorage<LifetimeTracked> =
 #[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct HasStaticMember_long_ {}
 impl HasStaticMember_long_ {
+    pub unsafe fn new_1(this: *mut HasStaticMember_long_) {}
     pub unsafe fn copy_from(this: *mut HasStaticMember_long_, _a0: *const HasStaticMember_long_) {}
+    pub unsafe fn move_from(this: *mut HasStaticMember_long_, _a0: *mut HasStaticMember_long_) {}
 }
 pub fn main() {
     unsafe {

@@ -59,6 +59,9 @@ impl FieldIsLibcType {
     pub unsafe fn copy_from(this: *mut FieldIsLibcType, _a0: *const FieldIsLibcType) {
         (&raw mut (*this).addr).write((*_a0).addr);
     }
+    pub unsafe fn move_from(this: *mut FieldIsLibcType, _a0: *mut FieldIsLibcType) {
+        (&raw mut (*this).addr).write((*_a0).addr);
+    }
 }
 impl Default for FieldIsLibcType {
     fn default() -> Self {

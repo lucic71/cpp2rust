@@ -13,7 +13,9 @@ thread_local!(
 #[byte_size(1)]
 pub struct Static_int_ {}
 impl Static_int_ {
+    pub fn new_1(this: Ptr<Static_int_>) {}
     pub fn copy_from(this: Ptr<Static_int_>, _a0: Ptr<Static_int_>) {}
+    pub fn move_from(this: Ptr<Static_int_>, _a0: Ptr<Static_int_>) {}
 }
 thread_local!(
     pub static s_1: Value<i8> = Rc::new(RefCell::new(55_i8));
@@ -22,7 +24,9 @@ thread_local!(
 #[byte_size(1)]
 pub struct Static_char_ {}
 impl Static_char_ {
+    pub fn new_1(this: Ptr<Static_char_>) {}
     pub fn copy_from(this: Ptr<Static_char_>, _a0: Ptr<Static_char_>) {}
+    pub fn move_from(this: Ptr<Static_char_>, _a0: Ptr<Static_char_>) {}
 }
 thread_local!(
     pub static s_2: Value<i64> = Rc::new(RefCell::new(55_i64));
@@ -31,7 +35,9 @@ thread_local!(
 #[byte_size(1)]
 pub struct Static_long_ {}
 impl Static_long_ {
+    pub fn new_1(this: Ptr<Static_long_>) {}
     pub fn copy_from(this: Ptr<Static_long_>, _a0: Ptr<Static_long_>) {}
+    pub fn move_from(this: Ptr<Static_long_>, _a0: Ptr<Static_long_>) {}
 }
 thread_local!(
     pub static lo_3: Value<i32> = Rc::new(RefCell::new(-1_i32));
@@ -43,7 +49,9 @@ thread_local!(
 #[byte_size(1)]
 pub struct Range_int_ {}
 impl Range_int_ {
+    pub fn new_1(this: Ptr<Range_int_>) {}
     pub fn copy_from(this: Ptr<Range_int_>, _a0: Ptr<Range_int_>) {}
+    pub fn move_from(this: Ptr<Range_int_>, _a0: Ptr<Range_int_>) {}
 }
 thread_local!(
     pub static lo_5: Value<i64> = Rc::new(RefCell::new((-2_i32 as i64)));
@@ -55,7 +63,9 @@ thread_local!(
 #[byte_size(1)]
 pub struct Range_long_ {}
 impl Range_long_ {
+    pub fn new_1(this: Ptr<Range_long_>) {}
     pub fn copy_from(this: Ptr<Range_long_>, _a0: Ptr<Range_long_>) {}
+    pub fn move_from(this: Ptr<Range_long_>, _a0: Ptr<Range_long_>) {}
 }
 pub fn main() {
     __cpp2rust_init_globals();

@@ -14,7 +14,13 @@ pub struct Triple {
     pub c: i32,
 }
 impl Triple {
+    pub unsafe fn new_1(this: *mut Triple) {}
     pub unsafe fn copy_from(this: *mut Triple, _a0: *const Triple) {
+        (&raw mut (*this).a).write((*_a0).a);
+        (&raw mut (*this).b).write((*_a0).b);
+        (&raw mut (*this).c).write((*_a0).c);
+    }
+    pub unsafe fn move_from(this: *mut Triple, _a0: *mut Triple) {
         (&raw mut (*this).a).write((*_a0).a);
         (&raw mut (*this).b).write((*_a0).b);
         (&raw mut (*this).c).write((*_a0).c);

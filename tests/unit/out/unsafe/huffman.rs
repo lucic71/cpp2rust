@@ -18,7 +18,14 @@ impl MinHeapNode {
     pub unsafe fn IsLeaf(&self) -> bool {
         return ((self.left).is_null()) && ((self.right).is_null());
     }
+    pub unsafe fn new_1(this: *mut MinHeapNode) {}
     pub unsafe fn copy_from(this: *mut MinHeapNode, _a0: *const MinHeapNode) {
+        (&raw mut (*this).data).write((*_a0).data);
+        (&raw mut (*this).freq).write((*_a0).freq);
+        (&raw mut (*this).left).write((*_a0).left);
+        (&raw mut (*this).right).write((*_a0).right);
+    }
+    pub unsafe fn move_from(this: *mut MinHeapNode, _a0: *mut MinHeapNode) {
         (&raw mut (*this).data).write((*_a0).data);
         (&raw mut (*this).freq).write((*_a0).freq);
         (&raw mut (*this).left).write((*_a0).left);
@@ -256,6 +263,10 @@ impl MinHeap {
             self.alloc = (*_a0).alloc.take();
         };
         return &mut (*(self as *mut MinHeap));
+    }
+    pub unsafe fn new_1(this: *mut MinHeap) {
+        (&raw mut (*this).arr).write(None);
+        (&raw mut (*this).alloc).write(None);
     }
 }
 pub unsafe fn AllocMinHeap_1(mut capacity: i32) -> Option<Box<MinHeap>> {

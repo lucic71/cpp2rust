@@ -23,6 +23,10 @@ impl Inner {
         field!(this, x).write(_a0.with(|__s| __s.x));
         field!(this, y).write(_a0.with(|__s| __s.y));
     }
+    pub fn move_from(this: Ptr<Inner>, _a0: Ptr<Inner>) {
+        field!(this, x).write({ (*_a0.upgrade().deref()).x });
+        field!(this, y).write({ (*_a0.upgrade().deref()).y });
+    }
 }
 impl Default for Inner {
     fn default() -> Self {
@@ -59,6 +63,12 @@ impl S {
         field!(this, b).write(_a0.with(|__s| __s.b));
         Inner::copy_from(field_ptr!(this, c), { field_ptr!(_a0, c) });
         Inner::copy_from(field_ptr!(this, d), { field_ptr!(_a0, d) });
+    }
+    pub fn move_from(this: Ptr<S>, _a0: Ptr<S>) {
+        field!(this, a).write({ (*_a0.upgrade().deref()).a });
+        field!(this, b).write({ (*_a0.upgrade().deref()).b });
+        Inner::move_from(field_ptr!(this, c), { field_ptr!(_a0, c) });
+        Inner::move_from(field_ptr!(this, d), { field_ptr!(_a0, d) });
     }
 }
 impl Default for S {
@@ -100,6 +110,10 @@ impl Boxed_int_ {
     pub fn copy_from(this: Ptr<Boxed_int_>, _a0: Ptr<Boxed_int_>) {
         field!(this, v).write(_a0.with(|__s| __s.v));
         field!(this, tag).write(_a0.with(|__s| __s.tag));
+    }
+    pub fn move_from(this: Ptr<Boxed_int_>, _a0: Ptr<Boxed_int_>) {
+        field!(this, v).write({ (*_a0.upgrade().deref()).v });
+        field!(this, tag).write({ (*_a0.upgrade().deref()).tag });
     }
 }
 impl Default for Boxed_int_ {

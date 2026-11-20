@@ -15,6 +15,7 @@ pub struct Item {
     pub value: i32,
 }
 impl Item {
+    pub fn new_1(this: Ptr<Item>) {}
     pub fn copy_from(this: Ptr<Item>, _a0: Ptr<Item>) {
         field!(this, key).write(_a0.with(|__s| __s.key));
         field!(this, value).write(_a0.with(|__s| __s.value));

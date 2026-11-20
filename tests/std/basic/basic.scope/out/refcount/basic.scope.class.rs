@@ -25,6 +25,12 @@ impl p1_member_hides_namespace_variable_HasBalance {
     ) {
         field!(this, balance).write(_a0.with(|__s| __s.balance));
     }
+    pub fn move_from(
+        this: Ptr<p1_member_hides_namespace_variable_HasBalance>,
+        _a0: Ptr<p1_member_hides_namespace_variable_HasBalance>,
+    ) {
+        field!(this, balance).write({ (*_a0.upgrade().deref()).balance });
+    }
 }
 impl Default for p1_member_hides_namespace_variable_HasBalance {
     fn default() -> Self {
@@ -72,6 +78,12 @@ impl p1_out_of_class_definition_is_in_class_scope_HasStaticTotal {
         _a0: Ptr<p1_out_of_class_definition_is_in_class_scope_HasStaticTotal>,
     ) {
         field!(this, held).write(_a0.with(|__s| __s.held));
+    }
+    pub fn move_from(
+        this: Ptr<p1_out_of_class_definition_is_in_class_scope_HasStaticTotal>,
+        _a0: Ptr<p1_out_of_class_definition_is_in_class_scope_HasStaticTotal>,
+    ) {
+        field!(this, held).write({ (*_a0.upgrade().deref()).held });
     }
 }
 impl Default for p1_out_of_class_definition_is_in_class_scope_HasStaticTotal {

@@ -13,7 +13,12 @@ pub struct Pair {
     pub second: i32,
 }
 impl Pair {
+    pub unsafe fn new_1(this: *mut Pair) {}
     pub unsafe fn copy_from(this: *mut Pair, _a0: *const Pair) {
+        (&raw mut (*this).first).write((*_a0).first);
+        (&raw mut (*this).second).write((*_a0).second);
+    }
+    pub unsafe fn move_from(this: *mut Pair, _a0: *mut Pair) {
         (&raw mut (*this).first).write((*_a0).first);
         (&raw mut (*this).second).write((*_a0).second);
     }
@@ -55,8 +60,11 @@ unsafe fn main_0() -> i32 {
     'loop_: for __decomp_1 in
         IterRange::new(arr.as_mut_ptr(), arr.as_mut_ptr().offset((3_i64) as isize))
     {
-        let mut __decomp_1: Pair = ::std::mem::MaybeUninit::uninit().assume_init();
-        Pair::copy_from(&raw mut __decomp_1, { &(*__decomp_1) });
+        let mut __decomp_1: Pair = {
+            let mut __v: Pair = ::std::mem::MaybeUninit::uninit().assume_init();
+            Pair::copy_from(&raw mut __v, { &(*__decomp_1) });
+            __v
+        };
         __decomp_1.first = 0;
         __decomp_1.second = 0;
     }

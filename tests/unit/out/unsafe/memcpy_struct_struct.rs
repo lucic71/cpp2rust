@@ -13,7 +13,12 @@ pub struct Entry {
     pub value: u16,
 }
 impl Entry {
+    pub unsafe fn new_1(this: *mut Entry) {}
     pub unsafe fn copy_from(this: *mut Entry, _a0: *const Entry) {
+        (&raw mut (*this).bits).write((*_a0).bits);
+        (&raw mut (*this).value).write((*_a0).value);
+    }
+    pub unsafe fn move_from(this: *mut Entry, _a0: *mut Entry) {
         (&raw mut (*this).bits).write((*_a0).bits);
         (&raw mut (*this).value).write((*_a0).value);
     }

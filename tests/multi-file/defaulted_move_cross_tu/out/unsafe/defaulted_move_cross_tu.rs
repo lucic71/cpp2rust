@@ -58,6 +58,9 @@ impl T {
         };
         return &mut (*(self as *mut T));
     }
+    pub unsafe fn new_1(this: *mut T) {
+        (&raw mut (*this).v).write(Vec::new());
+    }
 }
 pub unsafe fn sum_0(s: *const S) -> i32 {
     return (((((*s).v.len()) as i32) + ((*s).n[(0) as usize])) + ((*s).n[(1) as usize]));

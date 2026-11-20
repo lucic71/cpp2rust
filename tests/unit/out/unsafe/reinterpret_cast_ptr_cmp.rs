@@ -18,6 +18,10 @@ impl S {
         (&raw mut (*this).x).write((*_a0).x);
         (&raw mut (*this).y).write((*_a0).y);
     }
+    pub unsafe fn move_from(this: *mut S, _a0: *mut S) {
+        (&raw mut (*this).x).write((*_a0).x);
+        (&raw mut (*this).y).write((*_a0).y);
+    }
 }
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
@@ -43,6 +47,15 @@ impl W {
             }
         };
     }
+    pub unsafe fn move_from(this: *mut W, _a0: *mut W) {
+        (&raw mut (*this).h).write((*_a0).h);
+        {
+            let __d = (&raw mut (*this).arr).cast::<S>();
+            for __i in 0..3_usize {
+                S::move_from(__d.offset(__i as isize), { &mut (*_a0).arr[(__i)] });
+            }
+        };
+    }
 }
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
@@ -53,6 +66,12 @@ pub struct P {
 impl P {
     pub unsafe fn new_1(this: *mut P) {}
     pub unsafe fn copy_from(this: *mut P, _a0: *const P) {
+        (&raw mut (*this).a).write((*_a0).a);
+        (&raw mut (*this).arr).write(std::array::from_fn::<_, 3, _>(|__i: usize| {
+            (*_a0).arr[(__i)]
+        }));
+    }
+    pub unsafe fn move_from(this: *mut P, _a0: *mut P) {
         (&raw mut (*this).a).write((*_a0).a);
         (&raw mut (*this).arr).write(std::array::from_fn::<_, 3, _>(|__i: usize| {
             (*_a0).arr[(__i)]

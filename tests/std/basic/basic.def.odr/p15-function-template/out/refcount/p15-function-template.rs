@@ -81,6 +81,7 @@ pub struct AssertsDtorCountAtExit {
     pub expected: i32,
 }
 impl AssertsDtorCountAtExit {
+    pub fn new_1(this: Ptr<AssertsDtorCountAtExit>) {}
     pub fn copy_from(this: Ptr<AssertsDtorCountAtExit>, _a0: Ptr<AssertsDtorCountAtExit>) {
         field!(this, expected).write(_a0.with(|__s| __s.expected));
     }
@@ -175,7 +176,9 @@ fn main_0() -> i32 {
 #[byte_size(1)]
 pub struct S_14 {}
 impl S_14 {
+    pub fn new_1(this: Ptr<S_14>) {}
     pub fn copy_from(this: Ptr<S_14>, _a0: Ptr<S_14>) {}
+    pub fn move_from(this: Ptr<S_14>, _a0: Ptr<S_14>) {}
 }
 pub fn count_18() -> i32 {
     return (*(*n_20.with(Value::clone).borrow_mut()).prefix_inc());
@@ -207,7 +210,9 @@ pub fn b_count_local_15() -> i32 {
 #[byte_size(1)]
 pub struct S_21 {}
 impl S_21 {
+    pub fn new_1(this: Ptr<S_21>) {}
     pub fn copy_from(this: Ptr<S_21>, _a0: Ptr<S_21>) {}
+    pub fn move_from(this: Ptr<S_21>, _a0: Ptr<S_21>) {}
 }
 pub trait AssertsDtorCountAtExitImpl {
     fn destructor(&self);

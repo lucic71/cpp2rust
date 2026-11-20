@@ -15,6 +15,7 @@ impl Lt {
     pub unsafe fn operator_lt(&self, o: *const Lt) -> bool {
         return ((self.v) < ((*o).v));
     }
+    pub unsafe fn new_1(this: *mut Lt) {}
     pub unsafe fn copy_from(this: *mut Lt, _a0: *const Lt) {
         (&raw mut (*this).v).write((*_a0).v);
     }
@@ -58,7 +59,11 @@ impl Eq {
     pub unsafe fn operator_eq(&self, o: *const Eq) -> bool {
         return ((self.v) == ((*o).v));
     }
+    pub unsafe fn new_1(this: *mut Eq) {}
     pub unsafe fn copy_from(this: *mut Eq, _a0: *const Eq) {
+        (&raw mut (*this).v).write((*_a0).v);
+    }
+    pub unsafe fn move_from(this: *mut Eq, _a0: *mut Eq) {
         (&raw mut (*this).v).write((*_a0).v);
     }
 }
@@ -80,6 +85,7 @@ impl Cmp {
     pub unsafe fn operator_eq(&self, o: *const Cmp) -> bool {
         return ((self.v) == ((*o).v));
     }
+    pub unsafe fn new_1(this: *mut Cmp) {}
     pub unsafe fn copy_from(this: *mut Cmp, _a0: *const Cmp) {
         (&raw mut (*this).v).write((*_a0).v);
     }
@@ -109,6 +115,7 @@ pub struct Free {
     pub v: i32,
 }
 impl Free {
+    pub unsafe fn new_1(this: *mut Free) {}
     pub unsafe fn copy_from(this: *mut Free, _a0: *const Free) {
         (&raw mut (*this).v).write((*_a0).v);
     }
@@ -152,7 +159,11 @@ pub struct Wrapped_int_ {
     pub v: i32,
 }
 impl Wrapped_int_ {
+    pub unsafe fn new_1(this: *mut Wrapped_int_) {}
     pub unsafe fn copy_from(this: *mut Wrapped_int_, _a0: *const Wrapped_int_) {
+        (&raw mut (*this).v).write((*_a0).v);
+    }
+    pub unsafe fn move_from(this: *mut Wrapped_int_, _a0: *mut Wrapped_int_) {
         (&raw mut (*this).v).write((*_a0).v);
     }
 }

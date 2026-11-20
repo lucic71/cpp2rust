@@ -16,9 +16,16 @@ impl p2_non_const_conversion_function_Gauge {
     pub unsafe fn to_i64(&mut self) -> i64 {
         return (*self.value.prefix_inc());
     }
+    pub unsafe fn new_1(this: *mut p2_non_const_conversion_function_Gauge) {}
     pub unsafe fn copy_from(
         this: *mut p2_non_const_conversion_function_Gauge,
         _a0: *const p2_non_const_conversion_function_Gauge,
+    ) {
+        (&raw mut (*this).value).write((*_a0).value);
+    }
+    pub unsafe fn move_from(
+        this: *mut p2_non_const_conversion_function_Gauge,
+        _a0: *mut p2_non_const_conversion_function_Gauge,
     ) {
         (&raw mut (*this).value).write((*_a0).value);
     }
